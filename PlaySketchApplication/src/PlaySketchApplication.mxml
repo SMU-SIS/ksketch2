@@ -24,7 +24,14 @@
 			import sg.edu.smu.ksketch.event.KDataSavedEvent;
 			import sg.edu.smu.ksketch.interactor.KLoggerCommandExecutor;
 			import sg.edu.smu.ksketch.logger.KLogger;
-						
+			
+			//ADDED THESE FEW LINES TO TEST IF UPSTREAM CHANGES WILL BE MERGED
+			//
+			//
+			//
+			//
+			//END OF TESTING LINES
+			
 			public function triggerLogger(event:MouseEvent):void
 			{
 				var windowFreezer:Alert = Alert.show("");

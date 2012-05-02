@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<Graphic xmlns:fc="http://ns.adobe.com/flashcatalyst/2009" xmlns:d="http://ns.adobe.com/fxg/2008/dt" xmlns="http://ns.adobe.com/fxg/2008" xmlns:flm="http://ns.adobe.com/flame/2008" version="2.0">
+	<Group d:id="33" flm:knockout="false" d:userLabel="timeLineNotPlayed">
+		<Rect x="1" y="1" radiusX="1.03971" radiusY="1.03971" width="994" height="4">
+			<fill>
+				<LinearGradient rotation="269.949" scaleX="16.8578" x="497.226" y="12.5488">
+					<GradientEntry color="#B6C3C9" ratio="0.381981"/>
+					<GradientEntry color="#8A9499" ratio="0.582913"/>
+					<GradientEntry color="#17181A" ratio="0.769202"/>
+				</LinearGradient>
+			</fill>
+		</Rect>
+		<Rect x="0.5" y="0.5" radiusX="1.03971" radiusY="1.03971" width="995" height="4">
+			<stroke>
+				<SolidColorStroke caps="none" color="#354571" joints="miter" miterLimit="4" weight="1"/>
+			</stroke>
+		</Rect>
+	</Group>
+</Graphic>

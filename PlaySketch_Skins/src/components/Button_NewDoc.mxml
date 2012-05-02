@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:lib="assets.graphics.interfaceDesign_v1.*"
+		xmlns:flm="http://ns.adobe.com/flame/2008"
+		xmlns:d="http://ns.adobe.com/fxg/2008/dt"
+		width="27" height="26">
+	<fx:Metadata>[HostComponent("spark.components.Button")]</fx:Metadata>
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over"/>
+		<s:State name="down"/>
+		<s:State name="disabled"/>
+	</s:states>
+	<lib:ButtonGreyIndent_3 includeIn="over" x="0" y="0" width="27" height="26" flm:knockout="false"/>
+	<lib:buttonGrey includeIn="disabled,down,up" x="1" y="0" width="26" height="25"
+					flm:knockout="false"/>
+	<s:Group d:id="66" d:userLabel="newDocument" x="4" y="3" blendMode="normal">
+		<s:Group d:userLabel="paper" x="2" y="0">
+			<s:Rect x="0" y="0" width="16" height="20">
+				<s:fill>
+					<s:LinearGradient x="7.66113" y="19.8203" scaleX="20.035" rotation="270.17">
+						<s:GradientEntry ratio="0.0181818" color="#B6C3C9"/>
+						<s:GradientEntry ratio="0.424242" color="#8A9499"/>
+						<s:GradientEntry ratio="0.805791" color="#17181A"/>
+					</s:LinearGradient>
+				</s:fill>
+				<s:filters>
+					<s:DropShadowFilter blurX="1.3718" blurY="1.3718" quality="2" alpha="0.25" distance="0.970009"/>
+				</s:filters>
+			</s:Rect>
+			<s:Rect x="1" y="1" width="14" height="19">
+				<s:fill>
+					<s:SolidColor color="#FFFFFF"/>
+				</s:fill>
+			</s:Rect>
+		</s:Group>
+		<s:Group x="0" y="6" blendMode="normal" flm:knockout="false">
+			<s:Group x="0" y="0" blendMode="multiply" alpha="0.25" flm:isolated="false"/>
+		</s:Group>
+		<s:Group x="3" y="3" d:userLabel="star">
+			<s:filters>
+				<s:DropShadowFilter blurX="1.4398" blurY="1.4398" quality="2" alpha="0.25" distance="0.508975"/>
+			</s:filters>
+			<s:Path x="0.761" y="0.818"
+					data="M 4.463 4.082 L 0 4.098 L 3.439 7.156 L 1.847 11.524 L 6.148 8.88 L 10.63 11.524 L 9.039 7.156 L 12.146 4.098 L 7.846 4.098 L 6.148 0 L 4.463 4.082 Z"
+					winding="nonZero">
+				<s:fill>
+					<s:LinearGradient x="6.051" y="11.921" scaleX="12.1438" rotation="270.162">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="0.587879" color="#EC1C24"/>
+						<s:GradientEntry ratio="1" color="#3B090E"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Path>
+			<s:Path x="1.705" y="1.832" winding="nonZero" data="M 3.839 3.455 L 0 3.459 L 2.92 6.086 L 1.727 9.551 L 5.203 7.413 L 8.928 9.664 L 7.504 6.03 L 10.293 3.451 L 6.569 3.442 L 5.207 0 L 3.839 3.455 Z">
+				<s:fill>
+					<s:LinearGradient x="5.167" y="0.31" scaleX="10.1332" rotation="90.3826">
+						<s:GradientEntry ratio="0" color="#F9F8E3"/>
+						<s:GradientEntry ratio="0.29697" color="#F9EC31"/>
+						<s:GradientEntry ratio="1" color="#EC1C24"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Path>
+		</s:Group>
+	</s:Group>
+</s:Skin>

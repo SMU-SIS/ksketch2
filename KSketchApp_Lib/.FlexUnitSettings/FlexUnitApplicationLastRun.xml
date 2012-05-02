@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testrun name="" >
+<testsuite  name="Default Test Suite" project="KSketchApp_Lib">
+<testsuite name="sg.edu.smu.ksketch.test:UnitTestSuit" type="testcaseclass"/>
+</testsuite>
+</testrun>

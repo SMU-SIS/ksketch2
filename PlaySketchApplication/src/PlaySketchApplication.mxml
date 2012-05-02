@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:local="*" showStatusBar = "false"
+					   minWidth ="900" minHeight = "600" width = "900" height = "600"
+					   initialize="_init()" invoke="_loadInitHandler(event)">
+	
+	<fx:Style source="PlaySketchApplication.css" />
+
+	<fx:Script>
+		
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.core.IVisualElement;
+			import mx.core.Window;
+			import mx.events.CloseEvent;
+			
+			import sg.edu.smu.ksketch.event.KDataSavedEvent;
+			import sg.edu.smu.ksketch.interactor.KLoggerCommandExecutor;
+			import sg.edu.smu.ksketch.logger.KLogger;
+						
+			public function triggerLogger(event:MouseEvent):void
+			{
+				var windowFreezer:Alert = Alert.show("");
+				windowFreezer.width = 0;
+				windowFreezer.height = 0;
+				
+				var showConfirmWindow:Boolean = main.appState.userOption.showConfirmWindow;
+				var canvas:LoggerCanvas = new LoggerCanvas();
+				var modelXML:XML = main.facade.saveFile();
+				var logXML:XML = KLogger.logFile;
+				var executor:KLoggerCommandExecutor = new KLoggerCommandExecutor(
+					main.appState,main.appCanvas,main.facade);
+				canvas.initLogger(executor,logXML);	
+				KLogger.enabled = false;
+				main.appState.userOption.showConfirmWindow = false;
+				var close:Function = function (e:Event):void
+				{
+					KLogger.enabled = true;
+					main.appCanvas.loadFile(modelXML);
+					canvas.initLogger(executor,logXML);
+					windowFreezer.setVisible(false);
+					main.appState.userOption.showConfirmWindow = showConfirmWindow;
+				};
+				_showWindow("Logger",420,410,canvas,close);
+			}
+			
+			public function triggerSettings(event:MouseEvent):void
+			{
+				var windowFreezer:Alert = Alert.show("");
+				windowFreezer.width = 0;
+				windowFreezer.height = 0;
+				var close:Function = function (e:Event):void
+				{
+					windowFreezer.setVisible(false);
+				};				
+				_showWindow("Settings",400,400,new OptionCanvas(main),close);
+			}
+			
+			public function triggerDebugger(event:MouseEvent):void
+			{
+				var canvas:DebuggerCanvas = new DebuggerCanvas();
+				canvas.initNewDebuggerCanvas(main.facade,main.appState);
+				var close:Function = function (e:Event):void
+				{
+					canvas.removeAllEventListeners();
+				};	
+				_showWindow("Debugger",400,600,canvas,close);
+			}
+			
+			private function _showWindow(title:String,width:Number,height:Number,
+										 child:IVisualElement,closeHandler:Function):void
+			{
+				var window:Window = new Window();
+				window.setStyle("backgroundColor","#EEEEFF");
+				window.showStatusBar = false;
+				window.title = title;
+				window.width = width;
+				window.height = height;
+				window.addElement(child);
+				window.addEventListener(Event.CLOSE,closeHandler);
+				window.open();	
+			}
+			private function _init():void
+			{
+				nativeWindow.x = (Capabilities.screenResolutionX - nativeWindow.bounds.width)/2;
+				nativeWindow.y = (Capabilities.screenResolutionY - nativeWindow.bounds.height)/2;
+				main.setOptionTrigger(triggerSettings);
+				main.setLogTrigger(triggerLogger);
+				main.setDebugTrigger(triggerDebugger);
+				main.appInit(nativeWindow.bounds.width, nativeWindow.bounds.height, 
+					bounds.width-width, bounds.height-height);
+				nativeWindow.activate();
+			}
+			
+			private function _checkForSave(event:Event):void
+			{
+				event.preventDefault();
+				if (main.appState.undoEnabled)
+					Alert.show("Save data before exit?","",
+						Alert.YES|Alert.NO,this,_saveData);
+				else
+					nativeWindow.close();
+			}
+			
+			private function _saveData(event:CloseEvent):void
+			{
+				if (event.detail==Alert.YES)
+				{
+					main.addEventListener(KDataSavedEvent.EVENT_DATA_SAVED,_exit);
+					main.commandExecutor.save();
+				}
+				else
+					nativeWindow.close();
+			}
+			
+			private function _exit(event:Event):void
+			{
+				nativeWindow.close();
+			}
+			
+			private function _loadInitHandler(event:InvokeEvent):void
+			{
+				if(event.arguments.length > 0)
+				{
+					var file:File = new File(event.arguments[0].toString());			
+					var stream:FileStream = new FileStream();
+					stream.open(file, FileMode.READ);
+					var data:String = stream.readMultiByte(file.size, File.systemCharset);
+					stream.close();	
+					main.appCanvas.loadFile(new XML(data));
+				}
+			}					
+		]]>
+		
+	</fx:Script>
+	
+	<local:PlaySketchCanvas width="100%" height="100%" id="main"/>
+
+</s:WindowedApplication>

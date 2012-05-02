@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="PrivateData_1"/>
+    <classEntry path="PrivateData_3"/>
+    <classEntry path="components.Button_Scale"/>
+    <classEntry path="components.timebarrewindButtion13"/>
+    <classEntry path="components.Group_View"/>
+    <classEntry path="components.Button_Copy"/>
+    <classEntry path="components.timebarSlider2"/>
+    <classEntry path="components.Group_Config"/>
+    <classEntry path="components.Buttons_Settings"/>
+    <classEntry path="components.Button_ZoomOut"/>
+    <classEntry path="components.Button_Translate"/>
+    <classEntry path="components.Button_Rotate"/>
+    <classEntry path="components.Button_WebCam"/>
+    <classEntry path="components.Horizontal_Slider3TrackSkin5"/>
+    <classEntry path="components.Button_SaveAs"/>
+    <classEntry path="components.Button_Sound"/>
+    <classEntry path="components.timebarrewindButton10"/>
+    <classEntry path="components.Buttons_Help"/>
+    <classEntry path="components.timebarSlider2TrackSkin"/>
+    <classEntry path="components.Horizontal_SliderTrackSkin"/>
+    <classEntry path="components.timebarSliderTrackSkin"/>
+    <classEntry path="components.Group_Transform"/>
+    <classEntry path="components.Group_FileHandling"/>
+    <classEntry path="components.Button_Undo"/>
+    <classEntry path="components.Horizontal_Slider2TrackSkin"/>
+    <classEntry path="components.Button_SaveDoc"/>
+    <classEntry path="components.timebarRewindButton3"/>
+    <classEntry path="components.timebarRewindButton1"/>
+    <classEntry path="components.timebarSlider"/>
+    <classEntry path="components.Toolbar_Full"/>
+    <classEntry path="components.Group_Editing"/>
+    <classEntry path="components.timebarPlayButton"/>
+    <classEntry path="components.timeBar"/>
+    <classEntry path="components.Button_ZoomIn"/>
+    <classEntry path="components.timebarrewindButton6"/>
+    <classEntry path="components.timebarRewindButton5"/>
+    <classEntry path="components.timebarSlider2ThumbSkin"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

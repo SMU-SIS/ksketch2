@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="20" borderWeight="0" 
+		 xmlns:timebar="sg.edu.smu.playsketch.components.timebar.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.sliderClasses.Slider;
+			import mx.utils.OnDemandEventDispatcher;
+			
+			import sg.edu.smu.ksketch.components.KHSlider;
+			import sg.edu.smu.ksketch.event.KModelEvent;
+			import sg.edu.smu.ksketch.model.IKeyFrame;
+			import sg.edu.smu.ksketch.model.ISpatialKeyframe;
+			import sg.edu.smu.ksketch.model.KModel;
+			import sg.edu.smu.ksketch.operation.IModelOperation;
+			import sg.edu.smu.ksketch.operation.KModelFacade;
+			import sg.edu.smu.ksketch.utilities.KAppState;
+			
+			public static const OVERVIEW:int = 0;
+			public static const TRANSLATE:int = 1;
+			public static const ROTATE:int = 2;
+			public static const SCALE:int = 3;
+			public static const ACTIVITY:int = 4;
+			public static var widget_max_time:Number;
+			
+			//Widget atrributes
+			private var _appState:KAppState;
+			private var _facade:KModelFacade;
+			private var _pixelPerFrame:Number;
+			private var _slider:KHSlider;
+			private var _type:int;
+			
+			//Variables associated with dragging.
+			private var _targetMarker:Marker;
+			private var _startX:Number;
+			private var _currentX:Number;
+			private var _changeX:Number;
+			private var _snapRange:Number;
+			
+			private var _activityBars:Vector.<ActivityBar>;
+			private var _freeMarkers:Vector.<Marker>;
+			private var _stackedMarkers:Vector.<Marker>;
+			
+			private const _MAXTIME_ALLOWANCE_FACTOR:Number = 1.2;
+			private const KEY_SNAPPING_TOLERANCE:Number = 7;
+			
+			public function initTimeWidget(facade:KModelFacade, appState:KAppState, slider:KHSlider, type:int = -1):void
+			{
+				_facade = facade;
+				_appState = appState;
+				_type = type;
+				_pixelPerFrame = 1;
+				_stackedMarkers = new Vector.<Marker>();
+				_slider = slider;
+				_snapRange = 1;
+				widget_max_time = 0;
+			}
+			
+			/**
+			 * Clears the current set of markers in the widget
+			 * Retrieves required information from the facade
+			 * Renders a new set of markers using the information retrieved
+			 */
+			public function updateTimeWidget(markers:Vector.<Marker>):void
+			{
+				_clearTimeWidget();
+				calibrateTimeWidget();
+				_freeMarkers = new Vector.<Marker>();
+				_activityBars = new Vector.<ActivityBar>();
+				
+				var marker:Marker;
+				var selectedMarkers:Vector.<Marker> = new Vector.<Marker>();
+				var unselectedMarkers:Vector.<Marker> = new Vector.<Marker>();
+				for each(marker in markers)
+				{
+					if(widget_max_time < marker.time)
+						widget_max_time = marker.time;
+					marker.x  = _timeToPosition(marker.time);
+					marker.addEventListener(MouseEvent.MOUSE_DOWN,_marker_MouseDown, false, 0, true);
+					if(marker.selected)
+					{
+						selectedMarkerContainer.addElement(marker);
+						selectedMarkers.push(marker);
+					}
+					else
+					{
+						markerContainer.addElement(marker);
+						unselectedMarkers.push(marker);
+					}
+					marker.originalPosition = marker.x;
+					_freeMarkers.push(marker);
+				}
+				
+				_freeMarkers.sort(_compareMarkerPosition);
+				
+				_generateActivityBars(unselectedMarkers, false);
+				_generateActivityBars(selectedMarkers, true);
+				
+				_renderBars();
+				_appState.maxPlayTime = widget_max_time;
+				_computeAppMaxTime();
+			}
+			
+			/**
+			 * Positions the markers in the widget according to the width of the time slider
+			 * using the current set of markers
+			 */
+			public function rescaleTimeWidget():void
+			{
+				var prevPixelPerFrame:Number = _pixelPerFrame;
+				calibrateTimeWidget();
+
+				var numMarkers:int = markerContainer.numElements;
+				var i:int = 0;
+				var currentMarker:Marker;
+				var frame:Number;
+				
+				for(i; i < numMarkers; i++)
+				{
+					currentMarker = markerContainer.getElementAt(i) as Marker;
+					frame = currentMarker.x /prevPixelPerFrame;
+					currentMarker.x = frame * _pixelPerFrame;
+				}
+			}
+			
+			/**
+			 * Set the time/pixel for this time widget
+			 */
+			public function calibrateTimeWidget():void
+			{
+				_pixelPerFrame = (_slider.width-_slider.thumb.width)/_slider.maximum;
+			}
+			
+			/**
+			 * Function to convert time (in miliseconds) to x position in the widget.
+			 */
+			private function _timeToPosition(time:Number):Number
+			{
+				var currentFrame:Number = time/KAppState.ANIMATION_INTERVAL; //Number or int doesnt matter, difference is small
+				return currentFrame * _pixelPerFrame;
+			}
+			
+			/**
+			 * Function to convert position(pixels) to frame time in miliseconds
+			 */
+			private function _positionToTime(xPos:Number):Number
+			{
+				var currentFrame:Number = xPos/_pixelPerFrame;
+				return Math.ceil(currentFrame*KAppState.ANIMATION_INTERVAL);
+			}
+			
+			/**
+			 * Change a x position to that of the next nearest frame end position
+			 */
+			private function _roundPosition(position:Number):Number
+			{
+				if(position == 0)
+					return 0;
+				
+				var remainder:Number = Math.abs(position%_pixelPerFrame);
+				var roundedPosition:Number;
+				
+				if(position < 0)
+					roundedPosition = position + remainder - _pixelPerFrame;
+				else
+					roundedPosition = position - remainder + _pixelPerFrame;
+				
+				return roundedPosition;
+			}
+			
+			/**
+			 * Sets the dragging of a clicked widget
+			 */
+			private function _marker_MouseDown(event:MouseEvent):void
+			{
+				if(event.target is Marker)
+				{
+					stage.addEventListener(MouseEvent.MOUSE_MOVE,_widget_MouseMove,true, 0, true);
+					stage.addEventListener(MouseEvent.MOUSE_UP,_widget_MouseUp, true, 0, true);
+					
+					_targetMarker = event.target as Marker;
+					
+					if(_targetMarker == null)
+						throw new Error("there is no target marker!");
+					
+					_startX = event.stageX;
+					
+					_stackedMarkers = new Vector.<Marker>();
+					var currentMarker:Marker;
+					var i:int;
+					
+					for(i=0; i<_freeMarkers.length; i++)
+					{
+						currentMarker = _freeMarkers[i];
+						
+						if(currentMarker.x - _targetMarker.x == 0)
+						{
+							_freeMarkers.splice(i,1);
+							_stackedMarkers.push(currentMarker);
+							_stackedMarkers
+							i -= 1;
+						}
+					}
+				}
+			}
+			
+			//need to implement an elastic mode that compresses the markers in the direction of movement
+			//in equal distributions
+			//Let the entire right hand side of target be 100% time
+			//Moving right by 20% reduces the durations of all markers on the right by 20%
+			//Increases the duration of all markers on the left by 20%
+			private function _widget_MouseMove(event:MouseEvent):void
+			{
+				_changeX = event.stageX - _startX;
+				
+				var xPos:Number = _targetMarker.originalPosition+_changeX;
+				var dragWidth:Number = width - _targetMarker.width;
+				
+				if(dragWidth < xPos)
+					_changeX -= xPos - dragWidth;
+				else if(xPos < 0)
+					_changeX -= xPos;
+				
+				var i:int;
+				var posFromTarget:Number;
+				var currentMarker:Marker;
+				
+				for(i=0; i<_stackedMarkers.length; i++)
+				{
+					currentMarker = _stackedMarkers[i];
+					posFromTarget = currentMarker.originalPosition - _targetMarker.originalPosition;
+					currentMarker.updateX(_roundPosition(currentMarker.originalPosition+(_changeX-posFromTarget)));
+				}
+				
+				_onMoveStackMarkers()
+				_onMoveUnstackMarkers();
+				
+				_renderBars();
+			}
+			
+			private function _widget_MouseUp(event:MouseEvent):void
+			{
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE,_widget_MouseMove,true);
+				stage.removeEventListener(MouseEvent.MOUSE_UP,_widget_MouseUp, true);
+				
+				//Actual condition will be for each marker moved
+				//Do the following
+				var keysToRetime:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+				var times:Vector.<Number> = new Vector.<Number>();
+				var stackedMarker:Marker;
+				var retimeTo:Number;
+				var keyInfo:Object;
+				for each(stackedMarker in _stackedMarkers)
+				{
+					retimeTo = _positionToTime(stackedMarker.x);
+					for each(keyInfo in stackedMarker.keyList)
+					{
+						keysToRetime.push(keyInfo.key);
+						times.push(retimeTo);
+					}
+				}
+				
+				var retimeOp:IModelOperation = _facade.retimeKeys(keysToRetime, times, _appState.time);
+				_appState.addOperation(retimeOp);
+			}
+			
+			private function _onMoveStackMarkers():void
+			{
+				var i:int = 0;
+				var currentMarker:Marker;
+				var posDiffFromTarget:Number;
+				var currentXPos:Number = _targetMarker.x;
+				var originalXPos:Number = _targetMarker.originalPosition;
+				
+				for(i; i<_freeMarkers.length; i++)
+				{
+					currentMarker = _freeMarkers[i];
+					
+					if(_type == -1)
+						if(_targetMarker.selected)
+							if(!currentMarker.selected)
+								continue;
+					
+					//Compute distance from dragged marker
+					posDiffFromTarget = currentMarker.x - currentXPos;
+					
+					if(currentMarker.x < originalXPos)
+					{
+						if(posDiffFromTarget >= 0)
+						{
+							_stackedMarkers.push(currentMarker);
+							_freeMarkers.splice(i,1);
+							i-=1;
+						}
+					}
+					else
+					{
+						if(posDiffFromTarget <= 0)
+						{
+							_stackedMarkers.push(currentMarker);
+							_freeMarkers.splice(i,1);
+							i-=1;
+						}
+					}
+				}
+			}
+			
+			private function _onMoveUnstackMarkers():void
+			{
+				var i:int = 0;
+				var currentMarker:Marker;
+				var posDiffFromOriginal:Number;
+				var currentXPos:Number = _targetMarker.x;
+				
+				for(i; i < _stackedMarkers.length; i++)
+				{
+					currentMarker = _stackedMarkers[i];
+					
+					if(currentMarker == _targetMarker)
+						continue;
+					
+					posDiffFromOriginal = Math.floor(currentMarker.x - currentMarker.originalPosition);
+					
+					if(currentMarker.originalPosition < _targetMarker.originalPosition)
+					{
+						if(posDiffFromOriginal > 0)
+						{
+							_freeMarkers.push(currentMarker);
+							currentMarker.updateX(currentMarker.originalPosition);
+							_stackedMarkers.splice(i,1);
+							i-=1;
+						}
+					}
+					else
+					{
+						if(posDiffFromOriginal < 0)
+						{
+							_freeMarkers.push(currentMarker);
+							currentMarker.updateX(currentMarker.originalPosition);
+							_stackedMarkers.splice(i,1);
+							i-=1;
+						}
+					}					
+				}
+			}
+			
+			/**
+			 * Move the markers behind the target marker relative to it
+			 */
+			private function _moveUpcomingMarkers():void
+			{
+				var length:int = _freeMarkers.length;
+				var i:int = 0;
+				var currentMarker:Marker;
+				
+				for(i; i<length; i++)
+				{
+					currentMarker = _freeMarkers[i];
+					
+					if(_type == -1)
+						if(_targetMarker.selected)
+							if(!currentMarker.selected)
+								continue;
+					
+					/*if(_targetMarker.originalPosition < currentMarker.originalPosition)
+					{
+						currentMarker.updateX(Math.ceil(currentMarker.originalPosition + _changeX));
+					}*/
+				}
+			}
+			
+			/**
+			 * Computes and sets the max time of the timeline
+			 */
+			private function _computeAppMaxTime():void
+			{
+				if(widget_max_time <= 4000)
+					_appState.maxTime = 5000;
+				else
+				{
+					var currentRoundedTime:Number = Math.ceil(widget_max_time/1000)*1000;
+					_appState.maxTime = currentRoundedTime*_MAXTIME_ALLOWANCE_FACTOR;
+				}
+			}
+			
+			/**
+			 * rerenders all the bars in this time widget
+			 */
+			private function _renderBars():void
+			{
+				for each(var activityBar:ActivityBar in _activityBars)
+				{
+					activityBar.renderBar();
+				}
+			}
+			
+			/**
+			 * Sort compare function
+			 */
+			private function _compareMarkerPosition(marker1:Marker, marker2:Marker):Number
+			{
+				if(marker1.x <= marker2.x)
+					return -1;
+				else
+					return 1;				
+			}
+			
+			/**
+			 * Removes all markers from the container which holds the time markers
+			 */
+			private function _clearTimeWidget():void
+			{
+				selectedBarContainer.removeAllElements();
+				selectedMarkerContainer.removeAllElements();
+				barContainer.removeAllElements();
+				markerContainer.removeAllElements();
+			}
+			
+			/**
+			 * Generates activity bars for the the given type of markers
+			 */
+			private function _generateActivityBars(markers:Vector.<Marker>,selected:Boolean):void
+			{
+				var targetBarContainer:Group;
+				if(selected)
+					targetBarContainer = selectedBarContainer;
+				else
+					targetBarContainer = barContainer
+				
+				var newActivityBar:ActivityBar;
+
+				var rightKeyInfoList:Vector.<Object>;
+				var leftKeyInfoList:Vector.<Object>;
+				var currentRightKeyInfo:Object;
+				var currentRightKey:IKeyFrame;
+				var currentLeftKeyInfo:Object;
+				var currentLeftKey:IKeyFrame;
+
+				var currentRightMarker:Marker;
+				var currentLeftMarker:Marker;
+				var targetLeftMarker:Marker;
+				
+				var i:int;
+				var j:int;
+				
+				for(i = markers.length-1; -1 < i; i--)
+				{
+					targetLeftMarker = null;
+					
+					currentRightMarker = markers[i];
+					rightKeyInfoList = currentRightMarker.keyList;
+					
+					//Find target left marker
+					//Left marker must be the marker furthest away from the current right marker
+					for each(currentRightKeyInfo in rightKeyInfoList)
+					{
+						currentRightKey = currentRightKeyInfo.key;
+						j = i-1;
+						
+						if(!(currentRightKey is ISpatialKeyframe))
+							continue;
+						
+						for(j; -1 < j; j--)
+						{
+							currentLeftMarker = markers[j];
+							leftKeyInfoList = currentLeftMarker.keyList;
+							
+							for each(currentLeftKeyInfo in leftKeyInfoList)
+							{
+								currentLeftKey = currentLeftKeyInfo.key;
+								
+								if(currentLeftKey == currentRightKey.previous)
+								{
+									if((currentRightKey as ISpatialKeyframe).hasTransform())
+									{
+										targetLeftMarker = currentLeftMarker;
+										break;
+									}
+								}
+							}
+						}
+						
+						if(targetLeftMarker)
+						{
+							newActivityBar = new ActivityBar();
+							newActivityBar.initBar(targetLeftMarker, currentRightMarker);
+							targetBarContainer.addElement(newActivityBar);
+							_activityBars.push(newActivityBar);
+						}
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Group id="barContainer"/>
+	<s:Group id="markerContainer" y="2.5"/>
+	<s:Group id="selectedBarContainer"/>
+	<s:Group id="selectedMarkerContainer" y="2.5"/>
+</s:BorderContainer>

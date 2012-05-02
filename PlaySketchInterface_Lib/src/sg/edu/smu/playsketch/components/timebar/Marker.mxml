@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="11" height="15">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			
+			private var _linkedMarkers:Vector.<Marker>;
+			private var _keyList:Vector.<Object>;
+			private var _selected:Boolean;
+			private var _type:int;
+			private var _time:Number;
+			private var _originalPosition:Number;
+			private var _clone:Marker;
+			private var _hasTransform:Boolean;
+			private var _activityBars:Vector.<ActivityBar>;
+
+			public function get activityBars():Vector.<ActivityBar>
+			{
+				if(!_activityBars)
+					_activityBars = new Vector.<ActivityBar>();
+				return _activityBars;
+			}
+
+			public function set activityBars(value:Vector.<ActivityBar>):void
+			{
+				if(!_activityBars)
+					_activityBars = new Vector.<ActivityBar>();
+				_activityBars = value;
+			}
+
+
+			public function init():void
+			{
+				linkedMarkers = new Vector.<Marker>();
+				keyList = new Vector.<Object>();
+			}
+			
+			public function get linkedMarkers():Vector.<Marker>
+			{
+				return _linkedMarkers;
+			}
+			
+			public function set linkedMarkers(value:Vector.<Marker>):void
+			{
+				_linkedMarkers = value
+			}
+
+			public function get keyList():Vector.<Object>
+			{
+				return _keyList;
+			}
+
+			public function set keyList(value:Vector.<Object>):void
+			{
+				_keyList = value;
+			}
+
+			public function get selected():Boolean
+			{
+				return _selected;
+			}
+
+			public function set selected(value:Boolean):void
+			{
+				_selected = value;
+				if(_selected)
+				{
+					markerOutline.color = 0xFF0000;
+					markerFill.color = 0xFF0000;
+				}
+				else
+				{
+					markerOutline.color = 0x000000;
+					markerFill.color = 0x000000;
+				}
+			}
+
+			public function get type():int
+			{
+				return _type;
+			}
+
+			public function set type(value:int):void
+			{
+				_type = value;
+			}
+
+			public function get time():Number
+			{
+				return _time;
+			}
+
+			public function set time(value:Number):void
+			{
+				_time = value;
+			}
+
+			public function get originalPosition():Number
+			{
+				return _originalPosition;
+			}
+
+			public function set originalPosition(value:Number):void
+			{
+				_originalPosition = value;
+			}
+			
+			public function updateX(xPos:Number):void
+			{
+				x = xPos;
+				
+				for each(var linkedMarker:Marker in _linkedMarkers)
+				{
+					if(linkedMarker.type == TimeWidget.OVERVIEW)
+					{
+						if(linkedMarker.linkedMarkers.length > 1)
+							linkedMarker.moveClone(xPos);
+						else
+							linkedMarker.x = xPos;
+					}
+					else
+						linkedMarker.x = xPos;
+					
+					for each(var activityBar:ActivityBar in linkedMarker.activityBars)
+					{
+						activityBar.renderBar();
+					}
+				}
+				
+				if(x == _originalPosition)
+					removeClone();
+			}
+			
+			public function moveClone(xPos:Number):void
+			{
+				if(!_clone)
+				{
+					_clone = new Marker();
+					_clone.selected = true;
+					(parent as Group).addElement(_clone);
+				}
+				
+				_clone.x = xPos;
+			}
+			
+			public function removeClone():void
+			{
+				if(_clone)
+				{
+					(parent as Group).removeElement(_clone);
+				}
+			}
+
+			public function get hasTransform():Boolean
+			{
+				return _hasTransform;
+			}
+
+			public function set hasTransform(value:Boolean):void
+			{
+				_hasTransform = value;
+			}
+
+			
+		]]>
+	</fx:Script>
+	
+	<s:Rect height="15" width="11">                              
+		<s:stroke>
+			<s:SolidColorStroke color="0x000000" weight="0" id="markerOutline"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="0x000000" alpha="1" id="markerFill"/>
+		</s:fill>
+	</s:Rect>
+</s:Group>

@@ -1,0 +1,10 @@
+<commands>
+  <draw cursorpath="0,100,200 0,100,100 0,75,150 0,125,150" name="stroke1"/>
+  <gesture cursorpath="0,0,0 0,0,500 0,500,500 0,500,0"/>
+
+  <rotate cursorpath="0,100,100 0,150,150" transitiontype="INTERPOLATED"/>
+  <assert-matrix time="0" name="stroke1" rotate="90 100 150"/>
+  
+  <movecenter cursorpath="0,100,150 0,150,150"/>
+  <assert-matrix time="0" name="stroke1" rotate="90 100 150"/>
+</commands>

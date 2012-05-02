@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   minWidth="800" minHeight="600" width="100%" height="100%" 
+			   xmlns:local="*" initialize="_init()" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<fx:Style source="PlaySketchWebApplication.css" />
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.IVisualElement;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import sg.edu.smu.ksketch.logger.KLogger;
+			import sg.edu.smu.ksketch.interactor.KLoggerCommandExecutor;
+			
+			import spark.components.TitleWindow;
+
+			public function triggerLogger(event:MouseEvent):void
+			{
+				var showConfirmWindow:Boolean = main.appState.userOption.showConfirmWindow;
+				var canvas:LoggerCanvas = new LoggerCanvas();
+				var modelXML:XML = main.facade.saveFile();
+				var logXML:XML = KLogger.logFile;
+				var executor:KLoggerCommandExecutor = new KLoggerCommandExecutor(
+					main.appState,main.appCanvas,main.facade);
+				canvas.initLogger(executor,logXML);	
+				KLogger.enabled = false;
+				main.appState.userOption.showConfirmWindow = false;				
+				var close:Function = function (e:Event):void
+				{
+					KLogger.enabled = true;
+					main.appCanvas.loadFile(modelXML);
+					canvas.initLogger(executor,logXML);	
+					(e.target as TitleWindow).removeEventListener(Event.CLOSE, close);
+					PopUpManager.removePopUp(e.target as TitleWindow);
+					main.appState.userOption.showConfirmWindow = showConfirmWindow;
+				};
+				_showWindow("Logger",420,410,canvas,close,true);
+			}
+			
+			public function triggerSettings(event:MouseEvent):void
+			{
+				var close:Function = function(e:Event):void
+				{
+					(e.target as TitleWindow).removeEventListener(Event.CLOSE, close);
+					PopUpManager.removePopUp(e.target as TitleWindow);
+				};
+				_showWindow("Settings",450,450,new OptionCanvas(main),close,true);
+			}
+			
+			public function triggerDebugger(event:MouseEvent):void
+			{
+				var canvas:DebuggerCanvas = new DebuggerCanvas();
+				canvas.initNewDebuggerCanvas(main.facade,main.appState);
+				var close:Function = function (e:Event):void
+				{
+					canvas.removeAllEventListeners();
+					(e.target as TitleWindow).removeEventListener(Event.CLOSE, close);
+					PopUpManager.removePopUp(e.target as TitleWindow);
+				};	
+				_showWindow("Debugger",400,600,canvas,close);
+			}
+			
+			private function _showWindow(title:String,width:Number,height:Number,
+										 child:IVisualElement,closeHandler:Function,
+										 modal:Boolean=false):void
+			{
+				var window:TitleWindow = new TitleWindow();
+				window.setStyle("backgroundColor","#EEEEFF");
+				window.title = title;
+				window.width = width;
+				window.height = height;
+				window.addElement(child);
+				window.addEventListener(Event.CLOSE,closeHandler);
+				PopUpManager.addPopUp(window, main, modal);
+			}
+
+			private function _init():void
+			{
+				main.appInit(width, height, 10,10);
+				main.setLogTrigger(triggerLogger);
+				main.setOptionTrigger(triggerSettings);
+				main.setDebugTrigger(triggerDebugger);			
+			}
+			
+			private function _closeWindow(e:Event):void
+			{
+				(e.target as TitleWindow).removeEventListener(CloseEvent.CLOSE, _closeWindow);
+				PopUpManager.removePopUp(e.target as TitleWindow);
+			}			
+		]]>
+	</fx:Script>
+	
+	<local:PlaySketchCanvas width="100%" height="100%" id="main"/>
+</s:Application>

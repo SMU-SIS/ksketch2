@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="0" height="15">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			private var _leftMarker:Marker;
+			private var _rightMarker:Marker;
+			public var selected:Boolean;
+			
+			public function initBar(left:Marker, right:Marker):void
+			{
+				_leftMarker = left;
+				if(_leftMarker.selected)
+					selected = true;
+				_rightMarker = right;
+				if(_rightMarker.selected)
+					selected = true;
+				_leftMarker.activityBars.push(this);
+				_rightMarker.activityBars.push(this);
+			}
+			
+			public function renderBar():void
+			{
+				x = _leftMarker.x;
+				bar.width = _rightMarker.x - x;
+				if(_leftMarker.selected)
+				{
+					barFill.color = 0xFF0000;
+					bar.height = 4;
+					bar.y = 8;
+					selected = true;
+				}
+				else
+				{
+					barFill.color = 0x000000;
+					bar.height = 4;
+					bar.y = 8
+					selected = false;
+				}
+			}
+
+			public function get leftMarker():Marker
+			{
+				return _leftMarker;
+			}
+
+			public function set leftMarker(value:Marker):void
+			{
+				_leftMarker = value;
+			}
+
+			public function get rightMarker():Marker
+			{
+				return _rightMarker;
+			}
+
+			public function set rightMarker(value:Marker):void
+			{
+				_rightMarker = value;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Rect height="4" id="bar" width="0" y="8">                              
+		<s:fill>
+			<s:SolidColor color="0x000000" alpha="1" id="barFill"/>
+		</s:fill>
+	</s:Rect>
+</s:Group>

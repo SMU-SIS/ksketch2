@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<Graphic xmlns:ATE="http://ns.adobe.com/ate/2009" xmlns:ai="http://ns.adobe.com/ai/2009" xmlns:fc="http://ns.adobe.com/flashcatalyst/2009" xmlns:d="http://ns.adobe.com/fxg/2008/dt" xmlns="http://ns.adobe.com/fxg/2008" xmlns:flm="http://ns.adobe.com/flame/2008" version="2.0">
+	<Library>
+		<Definition name="buttonGrey12345">
+			<Group>
+				<Group d:id="4" flm:knockout="false" d:userLabel="buttonGrey">
+					<filters>
+						<DropShadowFilter alpha="0.25" distance="2.82843" quality="2"/>
+					</filters>
+					<Group flm:knockout="false" d:userLabel="buttonGrey">
+						<Group flm:knockout="false">
+							<Path winding="nonZero" x="0.44" y="0.439" data="M 51.076 47.727 C 51.076 49.57 49.567 51.079 47.723 51.079 L 3.353 51.079 C 1.509 51.079 0 49.57 0 47.727 L 0 3.353 C 0 1.509 1.509 0 3.353 0 L 47.723 0 C 49.567 0 51.076 1.509 51.076 3.353 L 51.076 47.727 Z">
+								<fill>
+									<LinearGradient rotation="270.342" scaleX="72.924" x="25.344" y="57.984">
+										<GradientEntry color="#B6C3C9" ratio="0.0181818"/>
+										<GradientEntry color="#8A9499" ratio="0.424242"/>
+										<GradientEntry color="#17181A" ratio="0.805791"/>
+									</LinearGradient>
+								</fill>
+							</Path>
+						</Group>
+					</Group>
+				</Group>
+				<Group x="1" y="1" d:id="5" flm:knockout="false">
+					<Path winding="nonZero" x="0.555" y="0.682" data="M 48.826 46.28 C 48.826 47.45 47.869 48.408 46.698 48.408 L 2.128 48.408 C 0.958 48.408 0 47.45 0 46.28 L 0 2.128 C 0 0.958 0.958 0 2.128 0 L 46.698 0 C 47.869 0 48.826 0.958 48.826 2.128 L 48.826 46.28 Z">
+						<fill>
+							<SolidColor color="#C2D3DE"/>
+						</fill>
+					</Path>
+				</Group>
+			</Group>
+		</Definition>
+	</Library>
+	<buttonGrey12345 flm:knockout="false"/>
+	<Group x="3" y="3" d:id="6" flm:knockout="false">
+		<Path winding="nonZero" x="-0.035" y="-0.02" data="M 50.448 47.139 C 50.448 48.96 48.958 50.45 47.137 50.45 L 3.312 50.45 C 1.49 50.45 0 48.96 0 47.139 L 0 3.312 C 0 1.49 1.49 0 3.312 0 L 47.137 0 C 48.958 0 50.448 1.49 50.448 3.312 L 50.448 47.139 Z">
+			<fill>
+				<SolidColor color="#E6E7E8"/>
+			</fill>
+		</Path>
+	</Group>
+	<Path winding="nonZero" x="1.786" y="1.781" data="M 3.178 4.844 C 3.191 4.224 3.221 3.004 4.606 3.017 C 5.598 3.026 43.992 3.112 48.283 3.087 C 49.662 3.045 51.379 3.338 51.627 4.593 C 52.426 3.045 50.67 0 49.189 0.032 C 47.884 0.061 6.22 -0.034 3.36 0.015 C 2.349 0.032 0.036 0.608 0.006 3.909 C -0.012 5.836 0.012 43.578 0.069 49.422 C 0.086 51.1 2.719 52.438 4.978 51.648 C 3.22 51.16 3.211 50.191 3.136 48.441 C 3.127 46.307 3.117 7.77 3.178 4.844 Z">
+		<fill>
+			<SolidColor color="#58595B"/>
+		</fill>
+	</Path>
+</Graphic>

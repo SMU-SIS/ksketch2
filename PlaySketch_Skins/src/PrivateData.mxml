@@ -1,0 +1,16 @@
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Group xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:d="http://ns.adobe.com/fxg/2008/dt">
+	<fx:Private>
+		<d:FontMap>
+			<d:Map fontFamily="Myriad Pro" postScriptName="MyriadPro-Regular"/>
+		</d:FontMap>
+	</fx:Private>
+	<!-- This file contains metadata shared between Flash Catalyst and Flash Builder. 
+	It does not affect your compiled application. -->
+</s:Group>

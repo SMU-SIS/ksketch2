@@ -1,13 +1,23 @@
 .actionScriptProperties
+
 .DS_Store
+
 .flexLibProperties
+
 .fxpProperties
+
 .project
+
 .flexProperties
+
 bin
+
 bin-debug
+
 bin\
+
 bin-debug\
+
 KSketchApp_Lib/.actionScriptProperties
 
 KSketchApp_Lib/bin/KSketchApp_Lib.swc
@@ -25,5 +35,7 @@ PlaySketchDevTools/bin/PlaySketchDevTools.swc
 PlaySketchInterface_Lib/.actionScriptProperties
 
 PlaySketchInterface_Lib/bin/PlaySketchInterface_Lib.swc
+
 .metadata
+
 PlaySketchApplication/.DS_Store

@@ -144,7 +144,6 @@ package sg.edu.smu.ksketch.operation
 		{
 			//Initialise and prepare the variables required for translation
 			var startMatrix:Matrix = _object.getFullPathMatrix(time);
-			
 			startMatrix.invert();
 			
 			//The center for a rotation should be in object coordinates
@@ -314,14 +313,16 @@ package sg.edu.smu.ksketch.operation
 						var oldKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 						oldKeys.push(_key);
 						
-						//trace("splitting for prepkey");
 						var splitKeys:Vector.<IKeyFrame> = _key.splitKey(time,_currentOperation,center);
 						
 						_key = splitKeys[0] as ISpatialKeyframe;
 						
-						//Interpolate the bisection here
-						
-						_key.center = center;
+						//Visualise the timeline
+						// if interpolation/instant, we are looking at modifying the front key
+						// if real time, we are looking at preserving the front key
+						if(_transitionType != REALTIME)
+							_key.center = center;
+	
 						var splitOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
 							_object, ref, oldKeys, splitKeys);
 						_currentOperation.addOperation(splitOp);

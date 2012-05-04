@@ -123,5 +123,11 @@ package sg.edu.smu.ksketch.model
 		 * Returns true if there are non-trivial transforms in this keyframe
 		 */
 		function hasTransform():Boolean;
+		
+		/**
+		 * Adds an interpolated translation to the keyframe
+		 * if instant, please provide the time for the offset to occur.
+		 */
+		function interpolateTranslate(dx:Number, dy:Number, instant:Boolean = false, time:Number = 0):void
 	}
 }

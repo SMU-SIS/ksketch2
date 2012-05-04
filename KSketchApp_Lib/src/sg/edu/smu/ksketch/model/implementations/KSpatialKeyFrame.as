@@ -323,7 +323,10 @@ package sg.edu.smu.ksketch.model.implementations
 				_translateTransform.addInterpolatedTransform(dx,dy);
 			else
 			{
-				_translateTransform.addInstantTransform(dx,dy,0);
+				if(time < startTime())
+					time = startTime();
+				
+				_translateTransform.addInstantTransform(dx,dy,time-startTime());
 			}
 		}
 		

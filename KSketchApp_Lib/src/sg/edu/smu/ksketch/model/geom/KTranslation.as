@@ -210,11 +210,19 @@ package sg.edu.smu.ksketch.model.geom
 			return endPoint.subtract(startPoint);
 		}
 		
-		public function addInterpolatedTransform(dx:Number, dy:Number, bigToSmall:Boolean = false):void
+		public function addInterpolatedTransform(dx:Number, dy:Number):void
 		{
 			//Perform Interpolation on current Path
-			KPathProcessor.interpolateTranslationMotionPath(_motionPath.path, dx,dy, bigToSmall);
-			KPathProcessor.interpolateTranslationTransitionPath(_transitionPath.points, dx, dy, bigToSmall);
+			KPathProcessor.interpolateTranslationMotionPath(_motionPath.path, dx,dy, false);
+			KPathProcessor.interpolateTranslationTransitionPath(_transitionPath.points, dx, dy);
+		}
+		
+		public function setLine(time:Number):void
+		{
+			_motionPath.addPoint(0,0,0);
+			_motionPath.addPoint(0,0,time);
+			_transitionPath.push(0,0,0);
+			_transitionPath.push(0,0,time);
 		}
 		
 		public function addInstantTransform(dx:Number, dy:Number, time:Number):void

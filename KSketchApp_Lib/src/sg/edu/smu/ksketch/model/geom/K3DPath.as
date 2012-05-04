@@ -107,10 +107,10 @@ package sg.edu.smu.ksketch.model.geom
 		
 		
 		/**
-		 * Returns the index of a point before or at the given time
-		 * If there is no path, returns -1
-		 * If time < path start time, returns first point
-		 * If path end time < time, returns last point
+		 * Returns the index of a point before or at the given time.
+		 * If there is no path, returns -1.
+		 * If time < path start time, returns first point.
+		 * If path end time < time, returns last point.
 		 */
 		public function getIndexAtOrBeforeTime(time:Number):int
 		{
@@ -167,7 +167,7 @@ package sg.edu.smu.ksketch.model.geom
 				}
 			}
 			
-			return i;
+			return i-1;
 		}
 		
 		public function getNextIndexAtSameTime(startIndex:int, time:Number):int

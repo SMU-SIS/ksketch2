@@ -241,10 +241,10 @@ package sg.edu.smu.ksketch.model.implementations
 		 * Splits the keyframe and returns the front portion.
 		 */
 		public function splitKey(time:Number, operation:KCompositeOperation, 
-								 currentCenter:Point, startTimeOffset:Number=0):Vector.<IKeyFrame>
+								 currentCenter:Point):Vector.<IKeyFrame>
 		{
 			//Find the proportion
-			var proportion:Number = _findProportion(time, startTimeOffset);
+			var proportion:Number = _findProportion(time);
 			
 			//Create a new key frame and clone the transforms
 			var newKey:KSpatialKeyFrame = new KSpatialKeyFrame(time, center);
@@ -317,13 +317,19 @@ package sg.edu.smu.ksketch.model.implementations
 				_rotateTransform.hasTransform||_scaleTransform.hasTransform;	
 		}
 		
-		public function interpolateTranslate(dx:Number, dy:Number, bigToSmall:Boolean=false):void
+		public function interpolateTranslate(dx:Number, dy:Number, instant:Boolean = false, time:Number = 0):void
 		{
-			_translateTransform.addInterpolation(dx,dy,bigToSmall);
+			if(!instant)
+				_translateTransform.addInterpolatedTransform(dx,dy);
+			else
+			{
+				_translateTransform.addInstantTransform(dx,dy,0);
+			}
 		}
 		
-		private function _findProportion(time:Number, startTimeOffset:Number = 0):Number
+		private function _findProportion(time:Number):Number
 		{
+			var startTimeOffset:Number = 0;
 			var startTime:Number = startTime() + startTimeOffset;
 			var time:Number = (time-startTime);
 			var duration:Number = _endTime - startTime;

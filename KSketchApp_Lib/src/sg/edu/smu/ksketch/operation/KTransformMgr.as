@@ -521,7 +521,7 @@ package sg.edu.smu.ksketch.operation
 			{
 				case TRANSLATION_REF:
 					(lastOverWrittenKey as KSpatialKeyFrame).interpolateTranslate(
-						compensation.tx,compensation.ty,false);
+						compensation.tx,compensation.ty);
 					break;
 				case ROTATION_REF:
 					break;

@@ -111,7 +111,7 @@ package sg.edu.smu.ksketch.model
 		 * Takes in the elapsed time of the keyframe and splits the key into 2
 		 * Returning the front portion
 		 */
-		function splitKey(time:Number, operation:KCompositeOperation, currentCenter:Point, startTimeOffset:Number = 0):Vector.<IKeyFrame>;
+		function splitKey(time:Number, operation:KCompositeOperation, currentCenter:Point):Vector.<IKeyFrame>;
 
 		/**
 		 * Merges the transition path with that of the given key, 

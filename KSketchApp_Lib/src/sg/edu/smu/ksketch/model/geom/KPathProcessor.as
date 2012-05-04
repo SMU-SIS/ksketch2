@@ -107,35 +107,18 @@ package sg.edu.smu.ksketch.model.geom
 			var currentPoint:K3DVector;
 			var proportion:Number;
 			
-			if(bigToSmall)
+		
+			for(i = 0; i<pathLength; i++)
 			{
-				for(i = 0; i<pathLength; i++)
-				{
-					currentPoint = targetPath[i];
-					
-					if(duration == 0)
-						proportion = 1 - (i/(pathLength-1));
-					else
-						proportion  = 1 - (currentPoint.z/duration);
-					
-					currentPoint.x += proportion*dx;
-					currentPoint.y += proportion*dy
-				}
-			}
-			else
-			{
-				for(i = 0; i<pathLength; i++)
-				{
-					currentPoint = targetPath[i];
-					
-					if(duration == 0)
-						proportion = i/(pathLength-1);
-					else
-						proportion  = currentPoint.z/duration;
-					
-					currentPoint.x += proportion*dx;
-					currentPoint.y += proportion*dy;
-				}
+				currentPoint = targetPath[i];
+				
+				if(duration == 0)
+					proportion = i/(pathLength-1);
+				else
+					proportion  = currentPoint.z/duration;
+				
+				currentPoint.x += proportion*dx;
+				currentPoint.y += proportion*dy;
 			}
 		}
 		

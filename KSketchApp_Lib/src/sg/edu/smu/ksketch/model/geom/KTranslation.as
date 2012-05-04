@@ -210,11 +210,27 @@ package sg.edu.smu.ksketch.model.geom
 			return endPoint.subtract(startPoint);
 		}
 		
-		public function addInterpolation(dx:Number, dy:Number, bigToSmall:Boolean = false):void
+		public function addInterpolatedTransform(dx:Number, dy:Number, bigToSmall:Boolean = false):void
 		{
 			//Perform Interpolation on current Path
 			KPathProcessor.interpolateTranslationMotionPath(_motionPath.path, dx,dy, bigToSmall);
 			KPathProcessor.interpolateTranslationTransitionPath(_transitionPath.points, dx, dy, bigToSmall);
+		}
+		
+		public function addInstantTransform(dx:Number, dy:Number, time:Number):void
+		{
+			if(_transitionPath.length < 2)
+			{
+				_transitionPath.push(0, 0, 0);
+				_transitionPath.push(dx, dy, 0);
+			}
+			else
+			{	
+				var targetIndex:int = _transitionPath.getIndexAtOrAfterTime(time);
+				var targetPoint:K3DVector = _transitionPath.points[targetIndex];
+				targetPoint.x += dx;
+				targetPoint.y += dy;
+			}
 		}
 	}
 }

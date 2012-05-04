@@ -218,6 +218,8 @@ package sg.edu.smu.ksketch.operation
 		
 		public function endScale(time:Number):IModelOperation
 		{
+			if(_overWrittenKeys)
+				_futureMode();
 			if(_object is KGroup)
 				_updateFuturePositionMatrices(_object, time);
 			_key.endScale(_transitionType);

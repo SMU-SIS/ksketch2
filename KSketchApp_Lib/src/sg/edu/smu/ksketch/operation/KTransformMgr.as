@@ -142,18 +142,17 @@ package sg.edu.smu.ksketch.operation
 		
 		public function beginRotation(center:Point, time:Number, transitionType:String):void
 		{
-			//Initialise and prepare the variables required for translation
-			var startMatrix:Matrix = _object.getFullPathMatrix(time);
-			startMatrix.invert();
+			var inverse:Matrix = _object.getFullPathMatrix(time);
+			inverse.invert();
 			
 			//The center for a rotation should be in object coordinates
-			var keyCenter:Point = startMatrix.transformPoint(center);
+			var keyCenter:Point = inverse.transformPoint(center);
 			
 			_inputCenter = center.clone();
 			_initOperation();
 			_initTransitionTypes(transitionType);
 			_prepareKeyframe(ROTATION_REF, time, keyCenter);
-			_key.center = keyCenter.clone();
+			_updateCenter(_key, keyCenter,time);
 		}
 		
 		public function addToRotation(angle:Number, cursorPoint:Point, 
@@ -179,21 +178,25 @@ package sg.edu.smu.ksketch.operation
 		
 		public function beginScale(center:Point, time:Number, transitionType:String):void
 		{
-			// Initialise and prepare the variables required for translation
-			var startMatrix:Matrix = _object.getFullPathMatrix(time);
-			var transformedCenter:Point = startMatrix.transformPoint(_object.defaultCenter);
-			var myOffset:Point = center.subtract(transformedCenter);
+			var parentMatrix:Matrix = _object.getParent(time).getFullPathMatrix(time);
 			
 			// Normalise the center offset because scale matrix 
 			// computation are still reliant on previous scales
+			var translateRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
+			var transMat:Matrix = translateRef.getMatrix(time);
 			var scaleRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(SCALE_REF);
-			var scaleMatrix:Matrix = scaleRef.getMatrix(time);
-			scaleMatrix.translate(-scaleMatrix.tx, -scaleMatrix.ty)
-			scaleMatrix.invert();
-			myOffset = scaleMatrix.transformPoint(myOffset);
+			var scaleMat:Matrix = scaleRef.getMatrix(time);
 			
+			var composite:Matrix = _object.getPositionMatrix(time);
+			//Assume Rotate Component = I;
+			
+			var objectFullMat:Matrix = new Matrix();
+			composite.concat(scaleMat);
+			composite.concat(transMat);
+			composite.concat(parentMatrix);
+
 			// The center for a rotation should be in object coordinates
-			var keyCenter:Point = _object.defaultCenter.add(myOffset);
+			var keyCenter:Point = composite.transformPoint(center);
 			
 			_inputCenter = center.clone();
 			_initOperation();
@@ -593,9 +596,9 @@ package sg.edu.smu.ksketch.operation
 			if(Math.abs(newCenter.x-oldCenter.x) > 0.05 || Math.abs(newCenter.y - oldCenter.y) > 0.05)
 			{
 				var prevCenter:Point = _key.center.clone();
-				var prevMatrix:Matrix = _key.getFullMatrix(time, new Matrix());
+				var prevMatrix:Matrix = _object.getFullMatrix(time);//_key.getFullMatrix(time, new Matrix());
 				_key.center = newCenter.clone();
-				var currentMatrix:Matrix = _key.getFullMatrix(time, new Matrix());
+				var currentMatrix:Matrix = _object.getFullMatrix(time);//_key.getFullMatrix(time, new Matrix());
 				prevMatrix.invert();
 				prevMatrix.concat(currentMatrix);
 				

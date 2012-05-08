@@ -505,7 +505,7 @@ package sg.edu.smu.ksketch.operation
 			{
 				case TRANSLATION_REF:
 					(lastOverWrittenKey as KSpatialKeyFrame).interpolateTranslate(
-						compensation.tx,compensation.ty);
+						compensation.tx,compensation.ty, _currentOperation);
 					break;
 				case ROTATION_REF:
 					break;
@@ -600,12 +600,18 @@ package sg.edu.smu.ksketch.operation
 					{
 						transKey = new KSpatialKeyFrame(time,_object.defaultCenter) as ISpatialKeyframe;
 						translationFrame.append(transKey);
+						
+						var newKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+						newKeys.push(transKey);
+						
+						var insertOp:IModelOperation = new KReplaceKeyframeOperation(_object,translationFrame,null,newKeys);
+						_currentOperation.addOperation(insertOp);
 					}
 				}
 				
 				//Current Interpolation only interpolates the last key frame in the range,
 				//Not all translation keys in the time range.
-				transKey.interpolateTranslate(-prevMatrix.tx, -prevMatrix.ty);
+				transKey.interpolateTranslate(-prevMatrix.tx, -prevMatrix.ty, _currentOperation);
 			}
 		}
 	}

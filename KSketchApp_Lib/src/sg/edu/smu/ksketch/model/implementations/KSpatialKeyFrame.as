@@ -142,11 +142,15 @@ package sg.edu.smu.ksketch.model.implementations
 			var theta:Number = getRotation(proportion);
 			var sigma:Number = getScale(proportion);
 			var dxdy:Point = getTranslation(proportion);
-			matrix.translate(-newCenter.x, -newCenter.y);
-			matrix.rotate(theta);
-			matrix.scale(sigma, sigma);
+			
+			var transform:Matrix = new Matrix();
+			transform.translate(-newCenter.x, -newCenter.y);
+			transform.rotate(theta);
+			transform.scale(sigma, sigma);
+			transform.translate(newCenter.x, newCenter.y);
+			
+			matrix.concat(transform);
 			matrix.translate(dxdy.x, dxdy.y);
-			matrix.translate(newCenter.x, newCenter.y);
 			
 			return matrix;
 		}

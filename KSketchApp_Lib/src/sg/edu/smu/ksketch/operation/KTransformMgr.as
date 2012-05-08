@@ -142,12 +142,10 @@ package sg.edu.smu.ksketch.operation
 		
 		public function beginRotation(center:Point, time:Number, transitionType:String):void
 		{
+			//Find the center of rotation in object coordinates
 			var inverse:Matrix = _object.getFullPathMatrix(time);
 			inverse.invert();
-			
-			//The center for a rotation should be in object coordinates
 			var keyCenter:Point = inverse.transformPoint(center);
-			
 			_inputCenter = center.clone();
 			_initOperation();
 			_initTransitionTypes(transitionType);
@@ -178,26 +176,11 @@ package sg.edu.smu.ksketch.operation
 		
 		public function beginScale(center:Point, time:Number, transitionType:String):void
 		{
-			var parentMatrix:Matrix = _object.getParent(time).getFullPathMatrix(time);
-			
-			// Normalise the center offset because scale matrix 
-			// computation are still reliant on previous scales
-			var translateRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
-			var transMat:Matrix = translateRef.getMatrix(time);
-			var scaleRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(SCALE_REF);
-			var scaleMat:Matrix = scaleRef.getMatrix(time);
-			
-			var composite:Matrix = _object.getPositionMatrix(time);
-			//Assume Rotate Component = I;
-			
-			var objectFullMat:Matrix = new Matrix();
-			composite.concat(scaleMat);
-			composite.concat(transMat);
-			composite.concat(parentMatrix);
+			//Find the center of scale in object coordinates
+			var inverse:Matrix = _object.getFullPathMatrix(time);
+			inverse.invert();
+			var keyCenter:Point = inverse.transformPoint(center);
 
-			// The center for a rotation should be in object coordinates
-			var keyCenter:Point = composite.transformPoint(center);
-			
 			_inputCenter = center.clone();
 			_initOperation();
 			_initTransitionTypes(transitionType);

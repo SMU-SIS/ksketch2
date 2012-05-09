@@ -111,7 +111,7 @@ package sg.edu.smu.ksketch.model
 		 * Takes in the elapsed time of the keyframe and splits the key into 2
 		 * Returning the front portion
 		 */
-		function splitKey(time:Number, operation:KCompositeOperation, currentCenter:Point):Vector.<IKeyFrame>;
+		function splitKey(time:Number, operation:KCompositeOperation, currentCenter:Point=null):Vector.<IKeyFrame>;
 
 		/**
 		 * Merges the transition path with that of the given key, 
@@ -126,8 +126,7 @@ package sg.edu.smu.ksketch.model
 		
 		/**
 		 * Adds an interpolated translation to the keyframe
-		 * if instant, please provide the time for the offset to occur.
 		 */
-		function interpolateTranslate(dx:Number, dy:Number, instant:Boolean = false, time:Number = 0):void
+		function interpolateTranslate(dx:Number, dy:Number, operation:KCompositeOperation):void
 	}
 }

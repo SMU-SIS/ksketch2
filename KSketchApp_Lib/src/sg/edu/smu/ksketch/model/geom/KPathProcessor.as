@@ -92,7 +92,7 @@ package sg.edu.smu.ksketch.model.geom
 		}
 		
 		public static function interpolateTranslationTransitionPath(
-			targetPath:Vector.<K3DVector>, dx:Number, dy:Number, bigToSmall:Boolean=false):void
+			targetPath:Vector.<K3DVector>, dx:Number, dy:Number):void
 		{
 			var pathLength:int = targetPath.length;
 			

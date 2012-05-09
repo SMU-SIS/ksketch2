@@ -49,6 +49,7 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	appCanvas.initialize();
 	appCanvas.initKCanvas(_facade, appState);
 	appCanvas.drawingRegion = drawingArea;
+	slider_key_index.init(appState);
 	
 	//Add the content container to the main container grouping
 	drawingArea_stage.addElement(appCanvas.contentContainer);

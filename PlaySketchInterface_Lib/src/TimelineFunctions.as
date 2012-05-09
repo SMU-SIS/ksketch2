@@ -92,8 +92,6 @@ public function _handleTimeSlider(event:Event):void
 		KLogger.log(KLogger.CHANGE_TIME, KLogger.CHANGE_TIME_TO, slider_key_index.value);
 	
 	appState.time = KAppState.kskTime(slider_key_index.value);
-	//	if(_playButton != null && _appState.time == _appState.maxTime)
-	//		_playButton.label = "Play";
 }
 
 public function slider_time_mouseDownHandler(event:MouseEvent):void
@@ -167,6 +165,7 @@ private function updateTimeWidgets(event:Event):void
 	var translateMarkers:Vector.<Marker> = new Vector.<Marker>();
 	var rotateMarkers:Vector.<Marker> = new Vector.<Marker>();
 	var scaleMarkers:Vector.<Marker> = new Vector.<Marker>();
+	var timeList:Vector.<Number> = new Vector.<Number>();
 	
 	var clusterTime:Number;
 	var translateCluster:Vector.<Object>;
@@ -176,6 +175,7 @@ private function updateTimeWidgets(event:Event):void
 	for each (var cluster:Object in clusterList)
 	{
 		clusterTime = cluster.time;
+		timeList.push(clusterTime);
 		newMarker = _generateMarker(cluster.keyList, TimeWidget.OVERVIEW, clusterTime, cluster.selected);
 		
 		translateCluster = new Vector.<Object>();
@@ -241,6 +241,7 @@ private function updateTimeWidgets(event:Event):void
 	}
 	rescaleTimeWidgets();
 	labelSlider();
+	slider_key_index.timeList = timeList;
 }
 
 private function _generateMarker(keyInfoList:Vector.<Object>, type:int, time:Number, selected:Boolean):Marker

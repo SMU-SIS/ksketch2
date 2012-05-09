@@ -142,18 +142,15 @@ package sg.edu.smu.ksketch.operation
 		
 		public function beginRotation(center:Point, time:Number, transitionType:String):void
 		{
-			//Initialise and prepare the variables required for translation
-			var startMatrix:Matrix = _object.getFullPathMatrix(time);
-			startMatrix.invert();
-			
-			//The center for a rotation should be in object coordinates
-			var keyCenter:Point = startMatrix.transformPoint(center);
-			
+			//Find the center of rotation in object coordinates
+			var inverse:Matrix = _object.getFullPathMatrix(time);
+			inverse.invert();
+			var keyCenter:Point = inverse.transformPoint(center);
 			_inputCenter = center.clone();
 			_initOperation();
 			_initTransitionTypes(transitionType);
 			_prepareKeyframe(ROTATION_REF, time, keyCenter);
-			_key.center = keyCenter.clone();
+			_updateCenter(_key, keyCenter,time);
 		}
 		
 		public function addToRotation(angle:Number, cursorPoint:Point, 
@@ -179,27 +176,17 @@ package sg.edu.smu.ksketch.operation
 		
 		public function beginScale(center:Point, time:Number, transitionType:String):void
 		{
-			// Initialise and prepare the variables required for translation
-			var startMatrix:Matrix = _object.getFullPathMatrix(time);
-			var transformedCenter:Point = startMatrix.transformPoint(_object.defaultCenter);
-			var myOffset:Point = center.subtract(transformedCenter);
-			
-			// Normalise the center offset because scale matrix 
-			// computation are still reliant on previous scales
-			var scaleRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(SCALE_REF);
-			var scaleMatrix:Matrix = scaleRef.getMatrix(time);
-			scaleMatrix.translate(-scaleMatrix.tx, -scaleMatrix.ty)
-			scaleMatrix.invert();
-			myOffset = scaleMatrix.transformPoint(myOffset);
-			
-			// The center for a rotation should be in object coordinates
-			var keyCenter:Point = _object.defaultCenter.add(myOffset);
-			
+			//Find the center of scale in object coordinates
+			var inverse:Matrix = _object.getFullPathMatrix(time);
+			inverse.invert();
+			var keyCenter:Point = inverse.transformPoint(center);
+
 			_inputCenter = center.clone();
 			_initOperation();
 			_initTransitionTypes(transitionType);
 			_prepareKeyframe(SCALE_REF, time, keyCenter);
-			_key.center = keyCenter.clone();	
+			
+			_updateCenter(_key,keyCenter,time);
 		}
 		
 		public function addToScale(scale:Number, cursorPoint:Point, time:Number):void//setScale
@@ -217,6 +204,8 @@ package sg.edu.smu.ksketch.operation
 		
 		public function endScale(time:Number):IModelOperation
 		{
+			if(_overWrittenKeys)
+				_futureMode();
 			if(_object is KGroup)
 				_updateFuturePositionMatrices(_object, time);
 			_key.endScale(_transitionType);
@@ -317,12 +306,6 @@ package sg.edu.smu.ksketch.operation
 						
 						_key = splitKeys[0] as ISpatialKeyframe;
 						
-						//Visualise the timeline
-						// if interpolation/instant, we are looking at modifying the front key
-						// if real time, we are looking at preserving the front key
-						if(_transitionType != REALTIME)
-							_key.center = center;
-	
 						var splitOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
 							_object, ref, oldKeys, splitKeys);
 						_currentOperation.addOperation(splitOp);
@@ -522,7 +505,7 @@ package sg.edu.smu.ksketch.operation
 			{
 				case TRANSLATION_REF:
 					(lastOverWrittenKey as KSpatialKeyFrame).interpolateTranslate(
-						compensation.tx,compensation.ty);
+						compensation.tx,compensation.ty, _currentOperation);
 					break;
 				case ROTATION_REF:
 					break;
@@ -586,6 +569,49 @@ package sg.edu.smu.ksketch.operation
 					throw new Error("KTransformMgr - beginTranslation: " +
 						"Transition type is not specified, Please specify either " +
 						"REALTIME, INTERPOLATED OR INSTANT for the transition type");
+			}
+		}
+		
+		private function _updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number):void
+		{
+			var oldCenter:Point = targetKey.center;
+			
+			if(Math.abs(newCenter.x-oldCenter.x) > 0.05 || Math.abs(newCenter.y - oldCenter.y) > 0.05)
+			{
+				var prevCenter:Point = _key.center.clone();
+				var prevMatrix:Matrix = _object.getFullMatrix(time);//_key.getFullMatrix(time, new Matrix());
+				_key.center = newCenter.clone();
+				var currentMatrix:Matrix = _object.getFullMatrix(time);//_key.getFullMatrix(time, new Matrix());
+				prevMatrix.invert();
+				prevMatrix.concat(currentMatrix);
+				
+				//Add an interpolated translation over the key's time range
+				var translationFrame:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
+				var transKey:ISpatialKeyframe = translationFrame.getAtOrAfter(time) as ISpatialKeyframe;
+				
+				if(!transKey)
+					transKey = translationFrame.getAtOrBeforeTime(time) as ISpatialKeyframe;
+				
+				if(transKey.endTime != time)
+				{
+					if(time < transKey.endTime)
+						transKey = transKey.splitKey(time,_currentOperation)[0] as ISpatialKeyframe;
+					else
+					{
+						transKey = new KSpatialKeyFrame(time,_object.defaultCenter) as ISpatialKeyframe;
+						translationFrame.append(transKey);
+						
+						var newKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+						newKeys.push(transKey);
+						
+						var insertOp:IModelOperation = new KReplaceKeyframeOperation(_object,translationFrame,null,newKeys);
+						_currentOperation.addOperation(insertOp);
+					}
+				}
+				
+				//Current Interpolation only interpolates the last key frame in the range,
+				//Not all translation keys in the time range.
+				transKey.interpolateTranslate(-prevMatrix.tx, -prevMatrix.ty, _currentOperation);
 			}
 		}
 	}

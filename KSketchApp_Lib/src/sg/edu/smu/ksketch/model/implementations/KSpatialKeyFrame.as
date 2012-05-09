@@ -142,11 +142,15 @@ package sg.edu.smu.ksketch.model.implementations
 			var theta:Number = getRotation(proportion);
 			var sigma:Number = getScale(proportion);
 			var dxdy:Point = getTranslation(proportion);
-			matrix.translate(-newCenter.x, -newCenter.y);
-			matrix.rotate(theta);
-			matrix.scale(sigma, sigma);
+			
+			var transform:Matrix = new Matrix();
+			transform.translate(-newCenter.x, -newCenter.y);
+			transform.rotate(theta);
+			transform.scale(sigma, sigma);
+			transform.translate(newCenter.x, newCenter.y);
+			
+			matrix.concat(transform);
 			matrix.translate(dxdy.x, dxdy.y);
-			matrix.translate(newCenter.x, newCenter.y);
 			
 			return matrix;
 		}
@@ -241,7 +245,7 @@ package sg.edu.smu.ksketch.model.implementations
 		 * Splits the keyframe and returns the front portion.
 		 */
 		public function splitKey(time:Number, operation:KCompositeOperation, 
-								 currentCenter:Point):Vector.<IKeyFrame>
+								 currentCenter:Point = null):Vector.<IKeyFrame>
 		{
 			//Find the proportion
 			var proportion:Number = _findProportion(time);
@@ -317,17 +321,25 @@ package sg.edu.smu.ksketch.model.implementations
 				_rotateTransform.hasTransform||_scaleTransform.hasTransform;	
 		}
 		
-		public function interpolateTranslate(dx:Number, dy:Number, instant:Boolean = false, time:Number = 0):void
+		public function interpolateTranslate(dx:Number, dy:Number, operation:KCompositeOperation):void
 		{
-			if(!instant)
-				_translateTransform.addInterpolatedTransform(dx,dy);
-			else
-			{
-				if(time < startTime())
-					time = startTime();
-				
-				_translateTransform.addInstantTransform(dx,dy,time-startTime());
-			}
+			//Create a new key frame and clone the transforms
+			var oldTranslate:KTranslation = _translateTransform.clone();
+			var oldRotate:KRotation = _rotateTransform.clone();
+			var oldScale:KScale = _scaleTransform.clone();
+			
+			//Create a new operation for the split
+			if(_translateTransform.transitionPath.length<2)
+				_translateTransform.setLine(_endTime-startTime());
+			
+			_translateTransform.addInterpolatedTransform(dx,dy);			
+			
+			var interpolateOp:KReplaceTransformOperation = new KReplaceTransformOperation(
+				this, oldTranslate, _translateTransform.clone(),
+				oldRotate, _rotateTransform.clone(),
+				oldScale, _scaleTransform.clone());
+			operation.addOperation(interpolateOp);
+			
 		}
 		
 		private function _findProportion(time:Number):Number

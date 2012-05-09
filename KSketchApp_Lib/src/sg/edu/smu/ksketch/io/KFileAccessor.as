@@ -34,10 +34,11 @@ package sg.edu.smu.ksketch.io
 		}
 		
 		// Generate time string in YYYY-MM-DD-HH-MN format
-		protected function _generateTimeString():String
+		protected function _generateTimeString(second:Boolean=false):String
 		{
 			var date:Date = new Date();
-			return date.fullYear+"-"+(date.month+1)+"-"+date.date+"-"+date.hours+"-"+date.minutes;
+			var str:String = date.fullYear+"-"+(date.month+1)+"-"+date.date+"-"+date.hours+"-"+date.minutes;
+			return second ? str + "-" + date.seconds : str;
 		}
 	}
 }

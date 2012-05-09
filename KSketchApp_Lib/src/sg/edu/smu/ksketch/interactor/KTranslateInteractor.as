@@ -9,8 +9,6 @@ package sg.edu.smu.ksketch.interactor
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
-	import org.hamcrest.mxml.collection.InArray;
-	
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.KStroke;

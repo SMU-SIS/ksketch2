@@ -110,7 +110,11 @@ package sg.edu.smu.ksketch.operation
 		{
 			var ops:KCompositeOperation = new KCompositeOperation();
 			for (var i:int = 0; i < objects.length(); i++)
-				ops.addOperation(_editor.toggleVisibility(objects.getObjectAt(i),time));
+			{
+				var obj:KObject = objects.getObjectAt(i);
+				ops.addOperation(_editor.toggleVisibility(obj,time));
+				dispatchEvent(new KObjectEvent(obj,KObjectEvent.EVENT_VISIBILITY_CHANGED));
+			}
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			return ops.length>0 ? new KInteractionOperation(_appState,time,time,null,null,ops):null;
 		}
@@ -311,7 +315,6 @@ package sg.edu.smu.ksketch.operation
 			_appState.dispatchEvent(new KTimeChangedEvent(-1, _appState.time));
 			return op;
 		}
-		
 		public function getMarkerInfo():Vector.<Object>
 		{
 			return _keyTimeOperator.getTimeLineInformation();

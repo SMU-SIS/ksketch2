@@ -19,7 +19,9 @@
 	</s:layout>
 	<s:HGroup>
 		<s:Button id="_loadButton" label="Load" click="_openLoadWindow(event)" />
+<!--
 		<s:Button id="_saveButton" label="Save" click="_openSaveWindow(event)" />
+-->
 	</s:HGroup>
 	<s:DataGrid id="_actionTable" width="410" height="200" />
 	<s:TextArea id="_actionText" width="410" height="100" />

@@ -1,7 +1,6 @@
 /**------------------------------------------------
 *Copyright 2010-2012 Singapore Management University
 *Developed under a grant from the Singapore-MIT GAMBIT Game Lab
- 
 *-------------------------------------------------*/
 import flash.events.MouseEvent;
 import flash.events.TimerEvent;
@@ -59,11 +58,12 @@ public function load(xml:XML):void
 	_actionSlider.maximum = KLogger.timeOf(list[list.length-1][KLogger.LOG_TIME]).valueOf();
 	_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
 }
-
+/*
 private function _openSaveWindow(event:MouseEvent):void
 {
 	new KFileSaver().saveLog(KLogger.logFile);
 }
+*/
 
 private function _openLoadWindow(event:MouseEvent):void
 {
@@ -93,7 +93,7 @@ private function _tableLoaded(e:FlexEvent):void
 	_actionTable.removeEventListener(FlexEvent.UPDATE_COMPLETE,_tableLoaded);
 	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
 	_buttons.visible = true;
-	_saveButton.enabled = false;
+//	_saveButton.enabled = false;
 }
 
 private function _selectedRowChanged(e:GridCaretEvent):void

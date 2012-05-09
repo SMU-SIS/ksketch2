@@ -2,7 +2,6 @@
 <flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="3">
   <includeClasses>
     <classEntry path="PlaySketchCanvas"/>
-    <classEntry path="sg.edu.smu.playsketch.exportTools.SimpleFlvWriter"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

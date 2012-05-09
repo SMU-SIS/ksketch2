@@ -13,7 +13,6 @@
 			import mx.controls.sliderClasses.Slider;
 			import mx.utils.OnDemandEventDispatcher;
 			
-			import sg.edu.smu.ksketch.components.KHSlider;
 			import sg.edu.smu.ksketch.event.KModelEvent;
 			import sg.edu.smu.ksketch.model.IKeyFrame;
 			import sg.edu.smu.ksketch.model.ISpatialKeyframe;
@@ -33,7 +32,7 @@
 			private var _appState:KAppState;
 			private var _facade:KModelFacade;
 			private var _pixelPerFrame:Number;
-			private var _slider:KHSlider;
+			private var _slider:TimeSlider;
 			private var _type:int;
 			
 			//Variables associated with dragging.
@@ -50,7 +49,7 @@
 			private const _MAXTIME_ALLOWANCE_FACTOR:Number = 1.2;
 			private const KEY_SNAPPING_TOLERANCE:Number = 7;
 			
-			public function initTimeWidget(facade:KModelFacade, appState:KAppState, slider:KHSlider, type:int = -1):void
+			public function initTimeWidget(facade:KModelFacade, appState:KAppState, slider:TimeSlider, type:int = -1):void
 			{
 				_facade = facade;
 				_appState = appState;

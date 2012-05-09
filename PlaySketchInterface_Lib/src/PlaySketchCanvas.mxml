@@ -346,7 +346,7 @@
 						<s:Group includeInLayout="false" width="100%" height="100%" 
 								 id="sliderIndicator" mouseEnabled="false" mouseChildren="false"/>
 						<s:Group width="100%" height="20">
-							<ksketchcomponents:KHSlider width="100%" updateComplete="sliderUpdated()" 
+							<timebar:TimeSlider width="100%" updateComplete="sliderUpdated()" 
 														id="slider_key_index" height="40" scaleY="0.5"/>
 							<s:Group id="sliderLabels" width="100%" height="20" 
 									 mouseEnabled="false" mouseChildren="false"/>

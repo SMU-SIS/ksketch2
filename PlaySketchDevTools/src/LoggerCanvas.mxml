@@ -7,7 +7,7 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:comp="sg.edu.smu.ksketch.components.*">
+		 xmlns:comp="sg.edu.smu.ksketch.components.*" xmlns:timebar="sg.edu.smu.playsketch.components.timebar.*">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -30,6 +30,6 @@
 		<s:Button id="_nextButton" label=">" click="_nextCommand(event)" />
 		<s:Button id="_lastButton" label=">>" click="_lastCommand(event)" />	
 	</s:HGroup>
-	<comp:KHSlider id="_actionSlider" width="100%" />
+	<timebar:TimeSlider id="_actionSlider" width="100%" />
 	<s:BorderContainer id="_markerBar" width="100%" height="10" />
 </s:Group>

@@ -65,8 +65,6 @@ package sg.edu.smu.playsketch.components.timebar
 			}
 			else
 			{
-				trace(currentIndex, _timeList.length);
-				
 				if(currentIndex < _timeList.length)
 				{
 					var checkTime:Number = _timeList[currentIndex];

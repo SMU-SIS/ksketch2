@@ -327,7 +327,6 @@ package sg.edu.smu.ksketch.model.implementations
 			var oldRotate:KRotation = _rotateTransform.clone();
 			var oldScale:KScale = _scaleTransform.clone();
 			
-			//Create a new operation for the split
 			if(_translateTransform.transitionPath.length<2)
 				_translateTransform.setLine(_endTime-startTime());
 			
@@ -341,7 +340,7 @@ package sg.edu.smu.ksketch.model.implementations
 			
 		}
 		
-		public function interpolateRotate(dThetha:Number, operation:KCompositeOperation):void
+		public function interpolateRotate(dTheta:Number, operation:KCompositeOperation):void
 		{
 			//Create a new key frame and clone the transforms
 			var oldTranslate:KTranslation = _translateTransform.clone();
@@ -349,15 +348,16 @@ package sg.edu.smu.ksketch.model.implementations
 			var oldScale:KScale = _scaleTransform.clone();
 			
 			//Create a new operation for the split
-			//if(_translateTransform.transitionPath.length<2)
-				//_translateTransform.setLine(_endTime-startTime());
+			if(_translateTransform.transitionPath.length<2)
+				_translateTransform.setLine(_endTime-startTime());
 			
-			//_rotateTransform.(dx,dy);			
+			_rotateTransform.addInterpolatedTransform(dTheta);
 			
 			var interpolateOp:KReplaceTransformOperation = new KReplaceTransformOperation(
 				this, oldTranslate, _translateTransform.clone(),
 				oldRotate, _rotateTransform.clone(),
 				oldScale, _scaleTransform.clone());
+			
 			operation.addOperation(interpolateOp);
 			
 		}

@@ -128,5 +128,7 @@ package sg.edu.smu.ksketch.model
 		 * Adds an interpolated translation to the keyframe
 		 */
 		function interpolateTranslate(dx:Number, dy:Number, operation:KCompositeOperation):void
+		function interpolateRotate(dTheta:Number, operation:KCompositeOperation):void
+		function interpolateScale(dScale:Number, operation:KCompositeOperation):void
 	}
 }

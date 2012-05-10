@@ -131,15 +131,13 @@ package sg.edu.smu.ksketch.operation
 		 */
 		public function endTranslation(time:Number):IModelOperation
 		{
-			if(_overWrittenKeys)
-				_futureMode();
-	
-			if(_object is KGroup)
-				_updateFuturePositionMatrices(_object, time);
+			var lastOverWrittenKey:ISpatialKeyframe = _findLastOverWrittenKey();
+			
+			if(lastOverWrittenKey)
+				_futureMode(lastOverWrittenKey);
 			
 			_key.endTranslation(_transitionType);
-			
-			
+
 			return _endOperation();
 		}
 		
@@ -171,11 +169,13 @@ package sg.edu.smu.ksketch.operation
 		
 		public function endRotation(time:Number):IModelOperation
 		{
-			if(_overWrittenKeys)
-				_futureMode();
-			if(_object is KGroup)
-				_updateFuturePositionMatrices(_object, time);
+			var lastOverWrittenKey:ISpatialKeyframe = _findLastOverWrittenKey();
+			
+			if(lastOverWrittenKey)
+				_futureMode(lastOverWrittenKey);
+			
 			_key.endRotation(_transitionType);
+			
 			return _endOperation();
 		}
 		
@@ -209,11 +209,13 @@ package sg.edu.smu.ksketch.operation
 		
 		public function endScale(time:Number):IModelOperation
 		{
-			if(_overWrittenKeys)
-				_futureMode();
-			if(_object is KGroup)
-				_updateFuturePositionMatrices(_object, time);
+			var lastOverWrittenKey:ISpatialKeyframe = _findLastOverWrittenKey();
+			
+			if(lastOverWrittenKey)
+				_futureMode(lastOverWrittenKey);
+			
 			_key.endScale(_transitionType);
+
 			return _endOperation();
 		}
 		
@@ -459,20 +461,13 @@ package sg.edu.smu.ksketch.operation
 			return _currentOperation;
 		}
 		
-		private function _futureMode():void
+		private function _futureMode(lastOverWrittenKey:ISpatialKeyframe):void
 		{
 			var snapToActivity:Boolean = true;
 			
 			if(snapToActivity)
 				_snapToActivityKey();
 				
-			var lastOverWrittenKey:ISpatialKeyframe = _overWrittenKeys.getAtOrAfter(_key.endTime) as ISpatialKeyframe;
-			
-			if(!lastOverWrittenKey)
-				return;
-			if(lastOverWrittenKey.endTime == _key.endTime)
-				return;
-			
 			if(_key.endTime != lastOverWrittenKey.startTime() || _key.endTime != lastOverWrittenKey.endTime)
 			{
 				lastOverWrittenKey.splitKey(_key.endTime, new KCompositeOperation(),lastOverWrittenKey.center);	
@@ -485,27 +480,19 @@ package sg.edu.smu.ksketch.operation
 			var compensation:Matrix = new Matrix();
 			var currentFullTransform:Matrix = _object.getFullPathMatrix(_prevLatestTime);
 			
+			var oldPosition:Point = _prevFullTransform.transformPoint(_object.defaultCenter);
+			var newPosition:Point = currentFullTransform.transformPoint(_object.defaultCenter);
+			var positionCompensation:Point = oldPosition.subtract(newPosition);
+			
 			var interpreter:Shape = new Shape();
-			
-			interpreter.transform.matrix = _prevFullTransform;
-			var oldX:Number = interpreter.x;
-			var oldY:Number = interpreter.y;
-			var oldRotation:Number = interpreter.rotation;
-			var oldScale:Number = interpreter.scaleX;
-			
+			currentFullTransform.invert();
+			currentFullTransform.concat(_prevFullTransform);
 			interpreter.transform.matrix = currentFullTransform;
-			var newX:Number = interpreter.x;
-			var newY:Number = interpreter.y;
-			var newRotation:Number = interpreter.rotation;
-			var newScale:Number = interpreter.scaleX;
-			
-			var compensateX:Number = oldX - newX;
-			var compensateY:Number = oldY - newY;
-			var compensateRotate:Number = oldRotation - newRotation;
-			var compensateScale:Number = oldScale - newScale;
-			
+			var compensateX:Number = positionCompensation.x;
+			var compensateY:Number = positionCompensation.y;
+			var compensateRotate:Number = interpreter.rotation;
+			var compensateScale:Number = interpreter.scaleX;
 			var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
-			
 			var myKey:IKeyFrame = lastOverWrittenKey as IKeyFrame;
 			
 			while(myKey)
@@ -518,14 +505,31 @@ package sg.edu.smu.ksketch.operation
 			
 			var startInterpolateTime:Number = lastOverWrittenKey.startTime();
 			var endInterpolateTime:Number = lastOverWrittenKey.endTime;
-			
+			var epsilon:Number = 0;
 			//Fix time range for all 3 transform
-			if(compensateX > 0.5 || compensateY > 0.5)
+			if(Math.abs(compensateX) > epsilon || Math.abs(compensateY) > epsilon)
 			{
 				var transRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
 				_forceKeyAtTime(startInterpolateTime, transRef);
 				_forceKeyAtTime(endInterpolateTime, transRef);
 				_interpolateTranslateOverTime(compensateX, compensateY, startInterpolateTime, endInterpolateTime, transRef);
+			}
+			
+			//Compensate is in degrees
+			if(Math.abs(compensateRotate) > epsilon)
+			{
+				var rotateRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(ROTATION_REF);
+				_forceKeyAtTime(startInterpolateTime, rotateRef);
+				_forceKeyAtTime(endInterpolateTime, rotateRef);
+				_interpolateRotateOverTime(compensateRotate, startInterpolateTime, endInterpolateTime, rotateRef);
+			}
+			
+			if(Math.abs(compensateScale) > epsilon)
+			{
+				var scaleRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(SCALE_REF);
+				_forceKeyAtTime(startInterpolateTime, scaleRef);
+				_forceKeyAtTime(endInterpolateTime, scaleRef);
+				//_interpolateRotateOverTime(compensateScale, startInterpolateTime, endInterpolateTime, scaleRef);
 			}
 			
 			_prevFullTransform = new Matrix();			
@@ -675,6 +679,72 @@ package sg.edu.smu.ksketch.operation
 			}
 		}
 		
+		private function _interpolateRotateOverTime(dTheta:Number, startTime:Number, endTime:Number, refFrame:IReferenceFrame):void
+		{
+			var targetKey:ISpatialKeyframe = refFrame.getAtTime(startTime) as ISpatialKeyframe;
+			targetKey = targetKey.next as ISpatialKeyframe;
+			
+			dTheta = dTheta/180*Math.PI;
 		
+			var currentProportion:Number;
+			var keyTheta:Number;
+			var clearedTheta:Number = 0;
+			while(targetKey)
+			{
+				if(endTime < targetKey.endTime)
+					break;
+				
+				currentProportion = (targetKey.endTime-startTime)/(endTime-startTime);
+				keyTheta = (currentProportion * dTheta) - clearedTheta;
+		
+				clearedTheta = (currentProportion * dTheta);
+				
+				targetKey.interpolateRotate(keyTheta,_currentOperation);
+				
+				targetKey = targetKey.next as ISpatialKeyframe;
+			}
+		}
+		
+		private function _interpolateScaleOverTime(dScale:Number, startTime:Number, endTime:Number, refFrame:IReferenceFrame):void
+		{
+			var targetKey:ISpatialKeyframe = refFrame.getAtTime(startTime) as ISpatialKeyframe;
+			targetKey = targetKey.next as ISpatialKeyframe;
+			
+			var currentProportion:Number;
+			var keyScale:Number;
+			var clearedScale:Number = 0;
+			
+			while(targetKey)
+			{
+				if(endTime < targetKey.endTime)
+					break;
+				
+				currentProportion = (targetKey.endTime-startTime)/(endTime-startTime);
+				keyScale = (currentProportion * dScale) - clearedScale;
+				clearedScale = (currentProportion * dScale);
+				
+				targetKey.interpolateRotate(keyScale,_currentOperation);
+				
+				targetKey = targetKey.next as ISpatialKeyframe;
+			}
+		}
+		
+		private function _findLastOverWrittenKey():ISpatialKeyframe
+		{
+			if(_overWrittenKeys)
+			{
+				var lastOverWrittenKey:ISpatialKeyframe = _overWrittenKeys.getAtOrAfter(_key.endTime) as ISpatialKeyframe;
+				
+				if(lastOverWrittenKey)
+				{
+					if(lastOverWrittenKey.endTime == _key.endTime)
+						return lastOverWrittenKey.next as ISpatialKeyframe;
+					else
+						return lastOverWrittenKey;
+				}
+			}
+			
+			return null;
+		}
 	}
 }

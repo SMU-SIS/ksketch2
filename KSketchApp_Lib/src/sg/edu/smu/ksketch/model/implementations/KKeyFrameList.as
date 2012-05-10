@@ -6,6 +6,8 @@
 
 package sg.edu.smu.ksketch.model.implementations
 {
+	import org.hamcrest.object.nullValue;
+	
 	import sg.edu.smu.ksketch.model.IActivityKeyFrame;
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.IKeyFrameList;
@@ -25,6 +27,16 @@ package sg.edu.smu.ksketch.model.implementations
 		{
 			if(_keys)
 				return _keys.endTime;
+			else
+				return NaN;
+		}
+		
+		public function latestTime():Number
+		{
+			var lastKey:IKeyFrame = getLastKey();
+			
+			if(lastKey)
+				return lastKey.endTime;
 			else
 				return NaN;
 		}
@@ -142,7 +154,6 @@ package sg.edu.smu.ksketch.model.implementations
 		/**
 		 * Inserts a new key frame at the given time if none exists
 		 * Returns the key frame at that time
-		 * Throws an error if key exists at time
 		 */
 		public function insert(time:Number):IKeyFrame
 		{
@@ -254,7 +265,6 @@ package sg.edu.smu.ksketch.model.implementations
 		 * Adds a key frame to the end of this list.
 		 * Throws an error if the key frame has an earlier end time than the last key
 		 */
-		//remove append, just use insert.
 		public function append(keyFrame:IKeyFrame):void
 		{
 			//CHECK IF
@@ -377,6 +387,22 @@ package sg.edu.smu.ksketch.model.implementations
 			
 			returnVector.reverse();
 			return returnVector;
+		}
+		
+		public function removeSegmentAfter(keyframe:IKeyFrame):void
+		{
+			//If the given key does not exist in the list, throw an error
+			var existingKey:KKeyFrame = getAtTime(keyframe.endTime) as KKeyFrame;
+			
+			if(!existingKey)
+				throw new Error("KKeyFrameList.remove: The given key frame does not exist in this list");
+			
+			if(keyframe.previous)
+			{
+				(keyframe.previous as KKeyFrame).next = null;
+				(keyframe.previous as KKeyFrame).next = null;
+			}
+			
 		}
 		
 		/**

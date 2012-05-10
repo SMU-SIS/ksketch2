@@ -282,7 +282,6 @@ package sg.edu.smu.ksketch.model.implementations
 			//Dirty the key frame
 			if(newKey.previous)
 				(newKey.previous as KSpatialKeyFrame).dirtyKey();
-			
 			return returnVector;
 		}
 		
@@ -333,6 +332,48 @@ package sg.edu.smu.ksketch.model.implementations
 				_translateTransform.setLine(_endTime-startTime());
 			
 			_translateTransform.addInterpolatedTransform(dx,dy);			
+			
+			var interpolateOp:KReplaceTransformOperation = new KReplaceTransformOperation(
+				this, oldTranslate, _translateTransform.clone(),
+				oldRotate, _rotateTransform.clone(),
+				oldScale, _scaleTransform.clone());
+			operation.addOperation(interpolateOp);
+			
+		}
+		
+		public function interpolateRotate(dThetha:Number, operation:KCompositeOperation):void
+		{
+			//Create a new key frame and clone the transforms
+			var oldTranslate:KTranslation = _translateTransform.clone();
+			var oldRotate:KRotation = _rotateTransform.clone();
+			var oldScale:KScale = _scaleTransform.clone();
+			
+			//Create a new operation for the split
+			//if(_translateTransform.transitionPath.length<2)
+				//_translateTransform.setLine(_endTime-startTime());
+			
+			//_rotateTransform.(dx,dy);			
+			
+			var interpolateOp:KReplaceTransformOperation = new KReplaceTransformOperation(
+				this, oldTranslate, _translateTransform.clone(),
+				oldRotate, _rotateTransform.clone(),
+				oldScale, _scaleTransform.clone());
+			operation.addOperation(interpolateOp);
+			
+		}
+		
+		public function interpolateScale(dScale:Number, operation:KCompositeOperation):void
+		{
+			//Create a new key frame and clone the transforms
+			var oldTranslate:KTranslation = _translateTransform.clone();
+			var oldRotate:KRotation = _rotateTransform.clone();
+			var oldScale:KScale = _scaleTransform.clone();
+			
+			//Create a new operation for the split
+			//if(_translateTransform.transitionPath.length<2)
+				//_translateTransform.setLine(_endTime-startTime());
+			
+			//_translateTransform.addInterpolatedTransform(dx,dy);			
 			
 			var interpolateOp:KReplaceTransformOperation = new KReplaceTransformOperation(
 				this, oldTranslate, _translateTransform.clone(),

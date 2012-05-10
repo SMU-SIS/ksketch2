@@ -51,6 +51,28 @@ package sg.edu.smu.ksketch.model.implementations
 			return minTime;		
 		}
 		
+		public function latestTime():Number
+		{
+			var ref:KReferenceFrame = _referenceFrames;
+			var maxTime:Number = NaN;
+
+			while(ref)
+			{
+				if(!isNaN(ref.latestTime()))
+				{	
+					if(isNaN(maxTime))
+						maxTime = ref.latestTime();
+					else if(ref.latestTime() > maxTime)
+					{
+						maxTime = ref.latestTime();
+					}
+				}
+				ref = ref.next as KReferenceFrame;
+			}
+			
+			return maxTime;
+		}
+		
 		/**
 		 * Returns the number of reference frames in this reference frame list
 		 */

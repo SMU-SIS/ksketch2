@@ -89,8 +89,10 @@ package sg.edu.smu.ksketch.model
 		function remove(keyframe:IKeyFrame,shiftTime:Boolean = false):IKeyFrame;
 		
 		/**
-		 * Removes the key frame at the given index from the l
+		 * Removes all keys after the given key
 		 */
+		function removeSegmentAfter(keyframe:IKeyFrame):void;
+		
 		
 		/**
 		 * Removes all key frames with end time < kskTime

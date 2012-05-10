@@ -6,6 +6,7 @@
 
 package sg.edu.smu.ksketch.operation
 {
+	import flash.display.Shape;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
@@ -52,6 +53,8 @@ package sg.edu.smu.ksketch.operation
 		private var _currentTransformType:int;
 		private var _oldKeys:Vector.<KKeyFrame>;
 		private var _overWrittenKeys:KReferenceFrame;
+		private var _prevFullTransform:Matrix;
+		private var _prevLatestTime:Number;
 		
 		private var _startObjectCenter:Point;
 		
@@ -168,6 +171,8 @@ package sg.edu.smu.ksketch.operation
 		
 		public function endRotation(time:Number):IModelOperation
 		{
+			if(_overWrittenKeys)
+				_futureMode();
 			if(_object is KGroup)
 				_updateFuturePositionMatrices(_object, time);
 			_key.endRotation(_transitionType);
@@ -272,6 +277,8 @@ package sg.edu.smu.ksketch.operation
 			var ref:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(transformType);
 			var keyHead:IKeyFrame = ref.getAtTime(_object.createdTime);
 			_currentTransformType = transformType;
+			_prevLatestTime = _referenceFrameList.latestTime()
+			_prevFullTransform = _object.getFullPathMatrix(_prevLatestTime);
 			
 			if(!keyHead)
 				_addKeyFrame(transformType, _object.createdTime, 
@@ -454,68 +461,48 @@ package sg.edu.smu.ksketch.operation
 		
 		private function _futureMode():void
 		{
-			var snapToActivity:Boolean = true;			
+			var snapToActivity:Boolean = true;
 			
 			if(snapToActivity)
 				_snapToActivityKey();
 				
 			var lastOverWrittenKey:ISpatialKeyframe = _overWrittenKeys.getAtOrAfter(_key.endTime) as ISpatialKeyframe;
+			
 			if(!lastOverWrittenKey)
 				return;
 			if(lastOverWrittenKey.endTime == _key.endTime)
 				return;
 			
-			var compensation:Matrix;
-			
-			//Find the compensation matrix to be used for the computation
-			if(_transitionType == REALTIME)
+			if(_key.endTime != lastOverWrittenKey.startTime() || _key.endTime != lastOverWrittenKey.endTime)
 			{
-				var prevKey:ISpatialKeyframe = _key.previous as ISpatialKeyframe;
-
-				if(prevKey)
-					compensation = prevKey.getFullMatrix(_key.endTime,new Matrix());
-				else
-					compensation = new Matrix();
-				
-				var overWrittenTransform:Matrix = _overWrittenKeys.getMatrix(_key.endTime);
-				var currentTransform:Matrix = _key.getFullMatrix(_key.endTime, new Matrix());
-				compensation.concat(overWrittenTransform);
-				compensation.invert();
-				compensation.concat(currentTransform);
-				
-				if(_key.endTime != lastOverWrittenKey.startTime() || 
-					_key.endTime != lastOverWrittenKey.endTime)
-					lastOverWrittenKey.splitKey(_key.endTime, 
-						new KCompositeOperation(),lastOverWrittenKey.center);	
-			}
-			else
-			{
-				compensation = new Matrix();
-				var displacementChange:Point = _key.translate.currentTransform;
-				compensation.translate(displacementChange.x, displacementChange.y);
-				
-				//Handle rotate and scale changes here also
-			}
-			
-			compensation.invert();
-			
-			var tRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
-			
-			switch(_currentTransformType)
-			{
-				case TRANSLATION_REF:
-					(lastOverWrittenKey as KSpatialKeyFrame).interpolateTranslate(
-						compensation.tx,compensation.ty, _currentOperation);
-					break;
-				case ROTATION_REF:
-					break;
-				case SCALE_REF:
-					break;
+				lastOverWrittenKey.splitKey(_key.endTime, new KCompositeOperation(),lastOverWrittenKey.center);	
 			}
 			
 			var ref:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(
 				_currentTransformType) as KReferenceFrame;
 			ref.append(lastOverWrittenKey);
+			
+			var compensation:Matrix = new Matrix();
+			var currentFullTransform:Matrix = _object.getFullPathMatrix(_prevLatestTime);
+			
+			var interpreter:Shape = new Shape();
+			
+			interpreter.transform.matrix = _prevFullTransform;
+			var oldX:Number = interpreter.x;
+			var oldY:Number = interpreter.y;
+			var oldRotation:Number = interpreter.rotation;
+			var oldScale:Number = interpreter.scaleX;
+			
+			interpreter.transform.matrix = currentFullTransform;
+			var newX:Number = interpreter.x;
+			var newY:Number = interpreter.y;
+			var newRotation:Number = interpreter.rotation;
+			var newScale:Number = interpreter.scaleX;
+			
+			var compensateX:Number = oldX - newX;
+			var compensateY:Number = oldY - newY;
+			var compensateRotate:Number = oldRotation - newRotation;
+			var compensateScale:Number = oldScale - newScale;
 			
 			var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			
@@ -527,8 +514,21 @@ package sg.edu.smu.ksketch.operation
 				myKey = myKey.next;
 			}
 			
-			_currentOperation.addOperation(
-				new KReplaceKeyframeOperation(_object, ref,null,addedKeys));
+			_currentOperation.addOperation(new KReplaceKeyframeOperation(_object, ref,null,addedKeys));
+			
+			var startInterpolateTime:Number = lastOverWrittenKey.startTime();
+			var endInterpolateTime:Number = lastOverWrittenKey.endTime;
+			
+			//Fix time range for all 3 transform
+			if(compensateX > 0.5 || compensateY > 0.5)
+			{
+				var transRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
+				_forceKeyAtTime(startInterpolateTime, transRef);
+				_forceKeyAtTime(endInterpolateTime, transRef);
+				_interpolateTranslateOverTime(compensateX, compensateY, startInterpolateTime, endInterpolateTime, transRef);
+			}
+			
+			_prevFullTransform = new Matrix();			
 		}
 
 		private function _snapToActivityKey():void
@@ -614,5 +614,67 @@ package sg.edu.smu.ksketch.operation
 				transKey.interpolateTranslate(-prevMatrix.tx, -prevMatrix.ty, _currentOperation);
 			}
 		}
+		
+		private function _forceKeyAtTime(time:Number, refFrame:IReferenceFrame):void
+		{
+			var prepareOp:KCompositeOperation = new KCompositeOperation();
+			var targetKey:ISpatialKeyframe = refFrame.getAtOrAfter(time) as ISpatialKeyframe;
+			var newKey:ISpatialKeyframe;
+			var keyBefore:ISpatialKeyframe;
+			var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+			var insertOp:IModelOperation;
+			
+			if(targetKey)
+			{
+				//Case there is an active key with end time later than start time
+				if(time < targetKey.endTime)
+				{
+					var postSplit:Vector.<IKeyFrame> = targetKey.splitKey(time, prepareOp);
+					targetKey = postSplit[0] as ISpatialKeyframe;
+					addedKeys.push(targetKey);
+					insertOp = new KReplaceKeyframeOperation(_object,refFrame,null,addedKeys);
+				}
+				//else case there is an active key at time, no need to do anything
+			}
+			else
+			{
+				//case there are no keys after at or after the start time.
+				keyBefore = refFrame.getAtOrBeforeTime(time) as ISpatialKeyframe;
+				targetKey = refFrame.createSpatialKey(time,keyBefore.center.x, keyBefore.center.y);
+				refFrame.insertKey(targetKey);
+				addedKeys.push(targetKey);
+				insertOp = new KReplaceKeyframeOperation(_object,refFrame,null,addedKeys);
+			}
+		}
+		
+		private function _interpolateTranslateOverTime(dx:Number, dy:Number, startTime:Number, endTime:Number, refFrame:IReferenceFrame):void
+		{
+			var targetKey:ISpatialKeyframe = refFrame.getAtTime(startTime) as ISpatialKeyframe;
+			targetKey = targetKey.next as ISpatialKeyframe;
+			
+			var currentProportion:Number;
+			var keyX:Number;
+			var keyY:Number;
+			var clearedX:Number = 0;
+			var clearedY:Number = 0;
+			
+			while(targetKey)
+			{
+				if(endTime < targetKey.endTime)
+					break;
+				
+				currentProportion = (targetKey.endTime-startTime)/(endTime-startTime);
+				keyX = (currentProportion * dx) - clearedX;
+				keyY = (currentProportion * dy) - clearedY;
+				clearedX = (currentProportion * dx);
+				clearedY = (currentProportion * dy);
+				
+				targetKey.interpolateTranslate(keyX,keyY,_currentOperation);
+				
+				targetKey = targetKey.next as ISpatialKeyframe;
+			}
+		}
+		
+		
 	}
 }

@@ -235,5 +235,20 @@ package sg.edu.smu.ksketch.model.geom
 			clone.transitionPath = _transitionPath.clone();
 			return clone;
 		}
+		
+		public function addInterpolatedTransform(dThetha:Number):void
+		{
+			//Perform Interpolation on current Path
+			//KPathProcessor.interpolateScaleMotionPath(_path.path,dScale,);
+			KPathProcessor.interpolateRotationTransitionPath(_transitionPath.points,dThetha);
+		}
+		
+		public function setLine(time:Number):void
+		{
+			//_path.addPoint(0,0);
+			//_path.addPoint(0,time);
+			_transitionPath.push(0,0);
+			_transitionPath.push(0,time);
+		}
 	}
 }

@@ -348,8 +348,8 @@ package sg.edu.smu.ksketch.model.implementations
 			var oldScale:KScale = _scaleTransform.clone();
 			
 			//Create a new operation for the split
-			if(_translateTransform.transitionPath.length<2)
-				_translateTransform.setLine(_endTime-startTime());
+			if(_rotateTransform.transitionPath.length<2)
+				_rotateTransform.setLine(_endTime-startTime());
 			
 			_rotateTransform.addInterpolatedTransform(dTheta);
 			
@@ -370,10 +370,10 @@ package sg.edu.smu.ksketch.model.implementations
 			var oldScale:KScale = _scaleTransform.clone();
 			
 			//Create a new operation for the split
-			//if(_translateTransform.transitionPath.length<2)
-				//_translateTransform.setLine(_endTime-startTime());
+			if(_rotateTransform.transitionPath.length<2)
+				_rotateTransform.setLine(_endTime-startTime());
 			
-			//_translateTransform.addInterpolatedTransform(dx,dy);			
+			_scaleTransform.addInterpolatedTransform(dScale);
 			
 			var interpolateOp:KReplaceTransformOperation = new KReplaceTransformOperation(
 				this, oldTranslate, _translateTransform.clone(),

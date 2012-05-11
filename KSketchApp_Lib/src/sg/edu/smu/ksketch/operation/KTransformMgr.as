@@ -529,7 +529,7 @@ package sg.edu.smu.ksketch.operation
 				var scaleRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(SCALE_REF);
 				_forceKeyAtTime(startInterpolateTime, scaleRef);
 				_forceKeyAtTime(endInterpolateTime, scaleRef);
-				//_interpolateRotateOverTime(compensateScale, startInterpolateTime, endInterpolateTime, scaleRef);
+				_interpolateScaleOverTime(compensateScale, startInterpolateTime, endInterpolateTime, scaleRef);
 			}
 			
 			_prevFullTransform = new Matrix();			
@@ -723,7 +723,7 @@ package sg.edu.smu.ksketch.operation
 				keyScale = (currentProportion * dScale) - clearedScale;
 				clearedScale = (currentProportion * dScale);
 				
-				targetKey.interpolateRotate(keyScale,_currentOperation);
+				targetKey.interpolateScale(keyScale,_currentOperation);
 				
 				targetKey = targetKey.next as ISpatialKeyframe;
 			}

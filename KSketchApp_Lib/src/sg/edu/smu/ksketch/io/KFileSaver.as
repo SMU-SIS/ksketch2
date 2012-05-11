@@ -8,7 +8,10 @@ package sg.edu.smu.ksketch.io
 {
 	import flash.events.Event;
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	import flash.net.FileReference;
+	
 	import sg.edu.smu.ksketch.event.KFileSavedEvent;
 	
 	public class KFileSaver extends KFileAccessor
@@ -17,45 +20,36 @@ package sg.edu.smu.ksketch.io
 		 * Will dispatch an event when KMV file is loaded.
 		 * Event type is KFileSavedEvent.EVENT_FILE_SAVED.
 		 */		
-		public function saveKMV(content:XML, originalName:String = null):void
+		public function save(content:XML, originalName:String = null):void
 		{
-			var defaultName:String;
-			if(originalName != null)
-				defaultName = originalName;
-			else
-				defaultName = _generateTimeString()+"-K-Movie.kmv";
-			
+			var defaultName:String = originalName ? originalName : 
+				_generateTimeString() + "-K-Movie.kmv";			
 			_save(content, [_getKMVTypeFilter()], defaultName);
 		}
 		
-		/**
-		 * Will dispatch an event when log file is loaded.
-		 * Event type is KFileSavedEvent.EVENT_FILE_SAVED.
-		 */		
-		public function saveLog(content:XML, originalName:String = null):void
+		public function saveToDir(content:XML, path:String = null):void
 		{
-			var defaultName:String;
-			if(originalName != null)
-				defaultName = originalName;
-			else
-				defaultName = _generateTimeString()+"-K-Log.klg";
-			
-			_save(content, [_getLogTypeFilter()], defaultName);
+			var dir:File = File.documentsDirectory.resolvePath(path);
+			if (!dir.exists)
+				dir.createDirectory();
+				
+			var fileName:String = _generateTimeString() + "-K-Movie.kmv";
+			var file:File = File.documentsDirectory.resolvePath(path+"/"+fileName);
+			if (file.exists)
+			{
+				fileName = _generateTimeString(true) + "-K-Movie.kmv";
+				file = File.documentsDirectory.resolvePath(path+"/"+fileName);
+			}
+			var fileStream:FileStream = new FileStream();
+			fileStream.open(file, FileMode.WRITE);
+			fileStream.writeUTFBytes(content.toXMLString());
 		}
 		
 		private function _save(content:XML, typeFilter:Array = null, defaultFileName:String = null):void
 		{
-			var fileRef:FileReference;
-			if(_isRunningInAIR())
-			{
-				fileRef = new File();
-				fileRef.addEventListener(Event.COMPLETE, _fileSaved_AIR);
-			}
-			else
-			{
-				fileRef = new FileReference();
-				fileRef.addEventListener(Event.COMPLETE, _fileSaved_WEB);
-			}
+			var fileRef:FileReference = _isRunningInAIR() ? new File() : new FileReference();
+			var fileFunction:Function = _isRunningInAIR() ? _fileSaved_AIR : _fileSaved_WEB;
+			fileRef.addEventListener(Event.COMPLETE, fileFunction);
 			fileRef.save(content, defaultFileName);
 		}
 		

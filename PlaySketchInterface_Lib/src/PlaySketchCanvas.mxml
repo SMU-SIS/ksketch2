@@ -6,13 +6,13 @@
 -->
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
-		 updateComplete = "update_interface()"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:ksketchutilities="sg.edu.smu.ksketch.utilities.*"
 		 xmlns:ksketchcomponents="sg.edu.smu.ksketch.components.*"
 		 xmlns:playsketchskin="components.*"
 		 xmlns:playsketchcomponents="sg.edu.smu.playsketch.components.*"
-		 xmlns:timebar="sg.edu.smu.playsketch.components.timebar.*">
+		 xmlns:timebar="sg.edu.smu.playsketch.components.timebar.*"
+		 width="100%" height="100%" updateComplete = "update_interface()">
 	<fx:Declarations>
 	
 		<ksketchutilities:KAppState id="appState"/>
@@ -43,19 +43,19 @@
 			
 			//Cursor embedding
 			[Embed(source="assets/black_pen.png")]
-			private var _cursor_black_pen:Class;
-			
-			[Embed(source="assets/blue_pen.png")]
-			private var _cursor_blue_pen:Class;
-			
-			[Embed(source="assets/eraser.png")]
-			private var _cursor_eraser:Class;
-			
-			[Embed(source="assets/green_pen.png")]
-			private var _cursor_green_pen:Class;
+			private var _cursorBlackPen:Class;
 			
 			[Embed(source="assets/red_pen.png")]
-			private var _cursor_red_pen:Class;
+			private var _cursorRedPen:Class;
+
+			[Embed(source="assets/green_pen.png")]
+			private var _cursorGreenPen:Class;
+
+			[Embed(source="assets/blue_pen.png")]
+			private var _cursorBluePen:Class;
+			
+			[Embed(source="assets/eraser.png")]
+			private var _cursorEraser:Class;
 			
 			private static const _BLACK_PEN:String = KPenMenu.LABEL_BLACK;;
 			private static const _RED_PEN:String = KPenMenu.LABEL_RED;
@@ -81,59 +81,31 @@
 				appCanvas.setFocus();
 				
 				_facade = new KModelFacade(appState);
-				
-				for (var i:int; i < _PEN_COLORS.length; i++)
-					initialiseMouseCursors(_PEN_COLORS[i]);
-				
+				appState.penThickness = KPenMenu.THICKNESS_MEDIUM;					
+				initialiseMouseCursors(_BLACK_PEN,new _cursorBlackPen());
+				initialiseMouseCursors(_RED_PEN,new _cursorRedPen());
+				initialiseMouseCursors(_GREEN_PEN,new _cursorGreenPen());
+				initialiseMouseCursors(_BLUE_PEN,new _cursorBluePen());
+				initialiseMouseCursors(_ERASER,new _cursorEraser());
+				Mouse.cursor = _BLACK_PEN;
 				init_canvas(fullAppWidth, fullAppHeight, widthOffset, heightOffset);
 				initButtonFunctions();
 				initTimebar();
 			
-				Mouse.cursor = _BLACK_PEN;
-				
 				appCanvas.addEventListener(MenuEvent.ITEM_CLICK, function(event:MenuEvent):void
 					{
 						var label:String = event.item.@label;
 						var index:int = _PEN_COLORS.indexOf(label);
 						if (0 <= index && index <= 4)
-						{
-							list_pen_selection.selectedIndex = index;
-							_switchPen(index);
-						}
+							_switchPen(list_pen_selection.selectedIndex = index);
 					});
 			}
 			
-			private function _getIndex(array:Array,key:String):int
-			{
-				return array.indexOf(key);
-			}
-			
-			public function initialiseMouseCursors(pen:String):void
+			public function initialiseMouseCursors(pen:String,bitmap:Bitmap):void
 			{
 				var cursorData:MouseCursorData = new MouseCursorData();
 				cursorData.hotSpot = new Point(2.5,2.5);
-				var bitmapDatas:Vector.<BitmapData> = new Vector.<BitmapData>(1, true);
-				var bitmap:Bitmap; 
-				switch(pen)
-				{
-					case _BLACK_PEN:
-						bitmap = new _cursor_black_pen();
-						break;
-					case _RED_PEN:
-						bitmap = new _cursor_red_pen();
-						break;
-					case _GREEN_PEN:
-						bitmap = new _cursor_green_pen();
-						break;
-					case _BLUE_PEN:
-						bitmap = new _cursor_blue_pen();
-						break;
-					case _ERASER:
-						bitmap = new _cursor_eraser();
-						break;
-				}				
-				bitmapDatas[0] = bitmap.bitmapData;
-				cursorData.data = bitmapDatas;
+				cursorData.data = Vector.<BitmapData>([ bitmap.bitmapData]);
 				Mouse.registerCursor(pen, cursorData);
 			}
 
@@ -159,27 +131,20 @@
 					case 67: //c key
 						if(event.ctrlKey)
 							_facade.copy();
-						break;
-					
+						break;					
 					case 70: //f key
 						if(event.ctrlKey)
-						{
 							handleFullScreen();																				
-						}
 						break;
 					
 					case 86: //v key
 						if(event.ctrlKey)
 							_facade.paste();
 						break;
-					
 					case 89: //y key
 						if(event.ctrlKey)
-						{
 							appState.redo();
-						}
 						break;
-					
 					case 90: //z key
 						if(event.ctrlKey)
 						{
@@ -272,14 +237,14 @@
 						<s:Button id="btn_IMG" width="35" height="24" styleName="buttonWebcam_style_toggle"
 								  toolTip="WebCam/IMG Import" click="imgWizardWindow()"/>	
 						<s:Button id="btn_SOUND" styleName="buttonMicrophone_style_toggle" width="29" height="24" label="S"
-								  toolTip="Sound Record" click="soundRecord()"/>	
-						
+								  toolTip="Sound Record" click="soundRecord()"/>
 					</s:Group>
 					
 					<!--Stretchable part of the top bar-->
 					<s:Group id = "topBar_resizableContainer" width="100%"/>
 					
-					<s:Button id="btn_log" width="44" height="24" label="Log"/>	
+					<s:Button id="btn_log" width="44" height="24" label="Log" 
+							  visible="false"/>
 					
 					<playsketchskin:Group_Config id="group_configOps"/>
 					

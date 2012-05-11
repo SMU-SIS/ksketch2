@@ -21,14 +21,13 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 	import sg.edu.smu.ksketch.event.KFileSavedEvent;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
+	import sg.edu.smu.ksketch.io.KFileLoader;
+	import sg.edu.smu.ksketch.io.KFileSaver;
 	import sg.edu.smu.ksketch.logger.KLogger;
-	import sg.edu.smu.ksketch.io.KFileParser;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.KAppState;
-	import sg.edu.smu.ksketch.io.KFileLoader;
-	import sg.edu.smu.ksketch.io.KFileSaver;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
 	public class KCommandExecutor extends EventDispatcher
@@ -67,7 +66,7 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case KLogger.BTN_SAVE:
 					KLogger.log(command);
-					_save();
+					_save(null);
 					break;
 				case KLogger.BTN_CUT:
 					KLogger.log(command);
@@ -219,13 +218,14 @@ package sg.edu.smu.ksketch.interactor
 			menu.show(_canvas.mouseX+40,_canvas.mouseY+20);
 		}
 		
-		public function save():void
+		public function save(path:String=null):void
 		{
-			_save();
+			_save(path);
 		}
 		
 		public function newFile():void
 		{
+			KLogger.flush();
 			_canvas.newFile();
 			_facade.clearClipBoard();
 			_appState.fireEditEnabledChangedEvent();
@@ -239,12 +239,17 @@ package sg.edu.smu.ksketch.interactor
 			loader.loadKMV();		
 		}		
 		
-		protected function _save():void
-		{
+		protected function _save(path:String):void
+		{			
+			var content:XML = _facade.saveFile().appendChild(KLogger.logFile);
 			var saver:KFileSaver = new KFileSaver();
-			var xml:XML = _facade.saveFile();
-			saver.addEventListener(KFileSavedEvent.EVENT_FILE_SAVED, _fileSaved);
-			saver.saveKMV(xml);
+			if (path)
+				saver.saveToDir(content,path);
+			else
+			{
+				saver.addEventListener(KFileSavedEvent.EVENT_FILE_SAVED, _fileSaved);
+				saver.save(content);
+			}
 		}		
 		
 		protected function _redo():void
@@ -371,8 +376,10 @@ package sg.edu.smu.ksketch.interactor
 			if(e.filePath == null)
 				KLogger.log(KLogger.BTN_LOAD);
 			else
+			{
 				KLogger.log(KLogger.BTN_LOAD, KLogger.FILE_PATH, e.filePath);
-			_canvas.loadFile(new XML(e.content));
+				_canvas.loadFile(new XML(e.content));
+			}
 		}
 		
 		private function _fileSaved(e:KFileSavedEvent):void

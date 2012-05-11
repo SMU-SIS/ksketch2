@@ -5,9 +5,8 @@
 *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.io
-{
-	import flash.geom.Point;
-		
+{		
+	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	
@@ -22,6 +21,7 @@ package sg.edu.smu.ksketch.io
 		public static const THICKNESS:String = "thickness";
 		public static const COLOR:String = "color";
 		public static const TIMELINE:String = "timeline";
+		public static const COMMANDS:String = KLogger.COMMANDS;
 		
 		public static const KEYFRAME:String = "keyframe";
 		public static const KEYFRAME_LIST:String = "keyframeList";		
@@ -53,9 +53,6 @@ package sg.edu.smu.ksketch.io
 		public static const IMAGE_HEIGHT:String = "height";
 		public static const IMAGE_DATA:String = "data";
 		public static const IMAGE_FORMAT:String = "format";
-		
-		
-
 		
 		public static function generatePathPoints(pntsString:String):Vector.<KPathPoint>
 		{

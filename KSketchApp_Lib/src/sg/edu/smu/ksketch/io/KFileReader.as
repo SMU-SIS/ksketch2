@@ -26,7 +26,6 @@ package sg.edu.smu.ksketch.io
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
-	import sg.edu.smu.ksketch.utilities.KMathUtil;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
 	public class KFileReader extends KFileParser
@@ -46,12 +45,14 @@ package sg.edu.smu.ksketch.io
 			
 			_generateEmptyGroups(objectNodes, objectList);
 			_generateSimpleObjects(objectNodes, objectList);
-			
+
 			var result:KModelObjectList = new KModelObjectList();
 			for each(var node:XML in objectNodes)
 			{
+				if (node.name().toString() == COMMANDS)
+					break;
 				var object:KObject = _getObjectByID(objectList, node.@[ID]);
-				if(object is KGroup)
+				if(object && object is KGroup)
 					_setGroupChildrenAndTimeline(objectList, object as KGroup, node);
 				result.add(object);
 			}
@@ -96,6 +97,8 @@ package sg.edu.smu.ksketch.io
 						_generateSimpleObjects(node.children(), objectList);
 						break;
 					case KEYFRAME_LIST:
+						break;
+					case COMMANDS:
 						break;
 					default:
 						throw new Error("unsupported tag: " + node.name());

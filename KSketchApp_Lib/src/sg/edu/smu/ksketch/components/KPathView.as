@@ -103,7 +103,7 @@ package sg.edu.smu.ksketch.components
 		
 		public function redraw(kskTime:Number):void
 		{
-			if(_object == null || _object.getVisibility(kskTime) == 0)
+			/*if(_object == null || _object.getVisibility(kskTime) == 0)
 			{
 				this.visible = false;
 				return;
@@ -159,7 +159,7 @@ package sg.edu.smu.ksketch.components
 					_drawCursorPath(key.scale.path.path,m.transformPoint(key.center),_pathS);
 			}
 			
-			this.visible = true;
+			this.visible = true;*/
 		}
 	
 		private function _drawCursorPath(points:Vector.<KPathPoint>, 

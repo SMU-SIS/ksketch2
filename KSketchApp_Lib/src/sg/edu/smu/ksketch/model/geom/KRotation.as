@@ -94,7 +94,7 @@ package sg.edu.smu.ksketch.model.geom
 		{
 			if(_transitionPath.length == 0)
 			{
-				if(transitionType == KTransformMgr.INTERPOLATED)
+				if(transitionType == KAppState.TRANSITION_INTERPOLATED)
 				{
 					if(_currentRotationPoints.length == 0)
 						return;

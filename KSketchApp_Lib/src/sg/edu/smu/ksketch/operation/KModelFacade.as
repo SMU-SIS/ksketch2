@@ -123,9 +123,8 @@ package sg.edu.smu.ksketch.operation
 		public function group(objs:KModelObjectList):IModelOperation
 		{	
 			var time:Number = _appState.time;
-			var type:String = _appState.transitionType;
 			var mode:String = _appState.groupingMode;
-			var interpMode:Boolean = type == KAppState.TRANSITION_INTERPOLATED;
+			var interpMode:Boolean = _appState.transitionType == KAppState.TRANSITION_INTERPOLATED;
 			var staticMode:Boolean = mode == KAppState.GROUPING_EXPLICIT_STATIC;
 			var implicitMode:Boolean = mode == KAppState.GROUPING_IMPLICIT_DYNAMIC;
 			var centerOffset:Point = _appState.userSetCenterOffset;
@@ -183,7 +182,7 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Transform Operation ------------------- //		
-		public function beginTranslation(object:KObject, kskTime:int, transitionType:String):void
+		public function beginTranslation(object:KObject, kskTime:int, transitionType:int):void
 		{
 			object.transformMgr.beginTranslation(kskTime, transitionType);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));
@@ -203,7 +202,7 @@ package sg.edu.smu.ksketch.operation
 			return op;
 		}
 		public function beginRotation(object:KObject, canvasCenter:Point, 
-									  kskTime:Number, transitionType:String):void
+									  kskTime:Number, transitionType:int):void
 		{
 			object.transformMgr.beginRotation(canvasCenter, kskTime, transitionType);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));
@@ -223,7 +222,7 @@ package sg.edu.smu.ksketch.operation
 			return op;
 		}
 		public function beginScale(object:KObject, canvasCenter:Point, 
-								   kskTime:Number, transitionType:String):void
+								   kskTime:Number, transitionType:int):void
 		{
 			object.transformMgr.beginScale(canvasCenter,kskTime, transitionType);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));

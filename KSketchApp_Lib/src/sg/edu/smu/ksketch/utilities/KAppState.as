@@ -47,10 +47,10 @@ package sg.edu.smu.ksketch.utilities
 		public static const GROUPING_EXPLICIT_DYNAMIC:String = "Explicit-Dynamic-Grouping";
 		public static const GROUPING_IMPLICIT_DYNAMIC:String = "Implicit-Dynamic-Grouping";
 		
-		public static const TRANSITION_INSTANT:String = "INSTANT";
-		public static const TRANSITION_INTERPOLATED:String = "INTERPOLATED";
-		public static const TRANSITION_REALTIME:String = "REALTIME";
-		public static const TRANSITION_DEFAULT:String = TRANSITION_INTERPOLATED;
+		public static const TRANSITION_INSTANT:int = 2;
+		public static const TRANSITION_INTERPOLATED:int = 1;
+		public static const TRANSITION_REALTIME:int = 0;
+		public static const TRANSITION_DEFAULT:int = TRANSITION_INTERPOLATED;
 		
 		public static const EVENT_EDIT_ENABLED_CHANGED:String = 'editEnabledChanged';
 		public static const EVENT_GROUPING_ENABLED_CHANGED:String = 'groupingEnabledChanged';
@@ -109,7 +109,7 @@ package sg.edu.smu.ksketch.utilities
 		private var _implicitUngroup:Boolean;
 		
 		private var _creationMode:String;		
-		private var _transitionType:String;
+		private var _transitionType:int;
 		private var _selectMode:String;
 		
 		private var _prevSelection:KSelection;
@@ -228,12 +228,12 @@ package sg.edu.smu.ksketch.utilities
 			this.dispatchEvent(new Event(EVENT_SELECT_MODE_CHANGED));
 		}
 		
-		public function get transitionType():String
+		public function get transitionType():int
 		{
 			return _transitionType;
 		}
 		
-		public function set transitionType(value:String):void
+		public function set transitionType(value:int):void
 		{
 			_transitionType = value;
 		}

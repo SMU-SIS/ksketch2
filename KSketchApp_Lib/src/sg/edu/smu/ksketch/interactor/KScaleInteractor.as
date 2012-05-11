@@ -67,7 +67,7 @@ package sg.edu.smu.ksketch.interactor
 		}
 		
 		protected override function transitionStart(canvasPoint:Point, 
-													transitionType:String):IModelOperation
+													transitionType:int):IModelOperation
 		{
 			var obj:KObject;
 			var time:Number = _appState.time;
@@ -118,7 +118,7 @@ package sg.edu.smu.ksketch.interactor
 		}
 		
 		private function _beginScale(object:KObject, center:Point, time:Number,
-									 transitionType:String, canvasPoint:Point):void
+									 transitionType:int, canvasPoint:Point):void
 		{
 			_ghost.add(object, center, time);
 			_facade.beginScale(object, center, time, transitionType);

@@ -53,7 +53,7 @@ package sg.edu.smu.ksketch.interactor
 		 * transitionStart initiates the transition operation.
 		 */
 		protected override function transitionStart(canvasPoint:Point, 
-													transitionType:String):IModelOperation
+													transitionType:int):IModelOperation
 		{
 			var op:IModelOperation = performGroupingOp(selection().objects);
 			var it:IIterator = selection().objects.iterator;

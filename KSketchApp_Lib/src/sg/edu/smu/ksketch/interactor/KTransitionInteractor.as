@@ -12,8 +12,8 @@ package sg.edu.smu.ksketch.interactor
 	
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KTransitionLog;
-	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.model.KObject;
+	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
@@ -31,7 +31,7 @@ package sg.edu.smu.ksketch.interactor
 	{
 		protected var _facade:KModelFacade;
 		protected var _appState:KAppState;
-		protected var _transitionType:String;
+		protected var _transitionType:int;
 		private var _startTime:Number;
 		private var _oldSelection:KSelection;
 		private var _currentOperation:KCompositeOperation;
@@ -119,7 +119,7 @@ package sg.edu.smu.ksketch.interactor
 				_appState.addOperation(new KInteractionOperation(_appState,_startTime,
 					_appState.time,_oldSelection,_appState.selection,_currentOperation));
 
-			_transitionType = null;
+			_transitionType = KAppState.TRANSITION_DEFAULT;
 			
 			if(_log != null)
 			{
@@ -147,7 +147,7 @@ package sg.edu.smu.ksketch.interactor
 		}
 
 		// ----- functions for subclasses to implement ----- //
-		protected function transitionStart(canvasPoint:Point, transitionType:String):IModelOperation
+		protected function transitionStart(canvasPoint:Point, transitionType:int):IModelOperation
 		{
 			throw new IllegalOperationError(ErrorMessage.ABSTRACT_METHODS_NOT_IMPLEMENTED);
 		}

@@ -25,24 +25,11 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	
-	//Prepare to turn this thing into an ioperableinterface class.
-	/*
-	IOperable class
-		beginOperation();
-		endOperation();
-	
-	The class should just have to think about what changes to make and when.
-	The demoArbiter sould be able to think like the tranform mgr but does grouping predictions instead?
-	*/
 	public class KTransformMgr
 	{
 		public static const TRANSLATION_REF:int = 0;
 		public static const ROTATION_REF:int = 2;
 		public static const SCALE_REF:int = 1;
-		
-		public static const REALTIME:int = 0;
-		public static const INTERPOLATED:int = 1;
-		public static const INSTANT:int = 2;
 		
 		private var _object:KObject;
 		private var _key:ISpatialKeyframe;
@@ -88,19 +75,13 @@ package sg.edu.smu.ksketch.operation
 		 * 2. Splitting of keys if any
 		 * 3. Addition of keys required for the transition into the timeline if needed.
 		 */
-		public function beginTranslation(time:Number, transitionType:String):void
+		public function beginTranslation(time:Number, transitionType:int):void
 		{
 			//Initialise and prepare the variables required for translation
-			var startMatrix:Matrix = _object.getFullPathMatrix(time);
-			var startPoint:Point = startMatrix.transformPoint(_object.defaultCenter).clone();
-			
 			_initOperation();
-			_initTransitionTypes(transitionType);
-			
-			//start point of a translate is the object's center
-			_prepareKeyframe(TRANSLATION_REF, time, startPoint); 
-			
-			_key.center = startPoint;
+			_transitionType = transitionType;
+			_prepareKeyframe(TRANSLATION_REF, time, _object.defaultCenter); 
+			_key.center = _object.defaultCenter;
 		}
 		
 		/**
@@ -110,7 +91,7 @@ package sg.edu.smu.ksketch.operation
 		public function addToTranslation(translateX:Number, translateY:Number, time:Number, 
 										 cursorPoint:Point = null):void//call it setTranslation
 		{
-			_updateChildrenPositionMatrix(_object, time);
+			//_updateChildrenPositionMatrix(_object, time);
 			
 			// Add the translate factor to _key's translation
 			// All path points should be in object coordinates 
@@ -141,7 +122,7 @@ package sg.edu.smu.ksketch.operation
 			return _endOperation();
 		}
 		
-		public function beginRotation(center:Point, time:Number, transitionType:String):void
+		public function beginRotation(center:Point, time:Number, transitionType:int):void
 		{
 			//Find the center of rotation in object coordinates
 			var inverse:Matrix = _object.getFullPathMatrix(time);
@@ -149,7 +130,7 @@ package sg.edu.smu.ksketch.operation
 			var keyCenter:Point = inverse.transformPoint(center);
 			_inputCenter = center.clone();
 			_initOperation();
-			_initTransitionTypes(transitionType);
+			_transitionType = transitionType;
 			_prepareKeyframe(ROTATION_REF, time, keyCenter);
 			_updateCenter(_key, keyCenter,time);
 		}
@@ -162,7 +143,6 @@ package sg.edu.smu.ksketch.operation
 			
 			//Add the rotate to _key's rotation path
 			//Path points should be in object coordinates 
-			_updateChildrenPositionMatrix(_object, time);
 			_key.addToRotation(currentPoint.x, currentPoint.y, angle, time);
 			_key.endTime = time;
 		}
@@ -179,7 +159,7 @@ package sg.edu.smu.ksketch.operation
 			return _endOperation();
 		}
 		
-		public function beginScale(center:Point, time:Number, transitionType:String):void
+		public function beginScale(center:Point, time:Number, transitionType:int):void
 		{
 			//Find the center of scale in object coordinates
 			var inverse:Matrix = _object.getFullPathMatrix(time);
@@ -188,7 +168,7 @@ package sg.edu.smu.ksketch.operation
 
 			_inputCenter = center.clone();
 			_initOperation();
-			_initTransitionTypes(transitionType);
+			_transitionType = transitionType;
 			_prepareKeyframe(SCALE_REF, time, keyCenter);
 			
 			_updateCenter(_key,keyCenter,time);
@@ -201,7 +181,7 @@ package sg.edu.smu.ksketch.operation
 			
 			//Add the rotate to _key's rotation path
 			//Path points should be in object coordinates 
-			_updateChildrenPositionMatrix(_object, time);
+			//_updateChildrenPositionMatrix(_object, time);
 			_key.addToScale(currentPoint.x, currentPoint.y, scale, time);
 			_key.endTime = time;
 			
@@ -354,8 +334,8 @@ package sg.edu.smu.ksketch.operation
 				_key = _addKeyFrame(transformType,time,center.x,center.y) as ISpatialKeyframe;
 				_key.endTime = time;			
 			}
-			
-			if(_transitionType == REALTIME)
+
+			if(_transitionType == KAppState.TRANSITION_REALTIME)
 			{
 				//Add a key after the given time, This will be the key frame that is used for
 				//Storing the data of the upcoming transition for real time transitions
@@ -396,8 +376,8 @@ package sg.edu.smu.ksketch.operation
 					nextParentKey.positionMatrix = KGroupUtil.computePositionMatrix(
 						matrices[0],matrices[1],matrices[2],matrices[3], currentObject.id);
 					
-					_correctObjectFuture(currentObject,nextParentKey.endTime,
-						previousPositionMatrix, nextParentKey.positionMatrix);
+					//_correctObjectFuture(currentObject,nextParentKey.endTime,
+						//previousPositionMatrix, nextParentKey.positionMatrix);
 					_updateFuturePositionMatrices(nextParentKey.parent, nextParentKey.endTime);
 					
 					if(currentObject is KGroup)
@@ -428,29 +408,14 @@ package sg.edu.smu.ksketch.operation
 						currentObject, nextParentKey.parent, nextParentKey.endTime, true);
 					nextParentKey.positionMatrix = KGroupUtil.computePositionMatrix(
 						matrices[0],matrices[1],matrices[2],matrices[3], currentObject.id);
-					_correctObjectFuture(currentObject,nextParentKey.endTime,
-						previousPositionMatrix, nextParentKey.positionMatrix);
+					//_correctObjectFuture(currentObject,nextParentKey.endTime,
+						//previousPositionMatrix, nextParentKey.positionMatrix);
 					_updateFuturePositionMatrices(nextParentKey.parent, nextParentKey.endTime);
 					
 					if(currentObject is KGroup)
 						(currentObject as KGroup).updateCenter();
 				}
 			}
-		}
-		
-		//Only called when the position matrix of the object at positionMatrixTime is changed
-		private function _correctObjectFuture(targetObject:KObject, positionMatrixTime:Number, 
-											  prevPositionMatrix:Matrix, currentPositionMatrix:Matrix):void
-		{
-			/*prevPositionMatrix.invert();
-			currentPositionMatrix.concat(prevPositionMatrix);
-			var myShape:Shape = new Shape();
-			myShape.transform.matrix = currentPositionMatrix;
-			
-			var dx:Number = myShape.x;
-			var dy:Number = myShape.y;
-			var theta:Number = myShape.rotation;
-			var sigma:Number = myShape.scaleX;*/
 		}
 		
 		// Performs operation updating when the transition ends
@@ -550,29 +515,6 @@ package sg.edu.smu.ksketch.operation
 						if(timeDifference < keySnapThreshold)
 							_key.endTime = activityKeyBefore.endTime;
 				}
-			}
-		}
-		
-		
-		// Initialises the transition types and records the initial 
-		// data required for interpolation and instant transitions.
-		private function _initTransitionTypes(transitionType:String):void
-		{
-			switch(transitionType)
-			{
-				case "REALTIME":
-					_transitionType = REALTIME;
-					break;
-				case "INTERPOLATED":
-					_transitionType = INTERPOLATED;
-					break;
-				case "INSTANT":
-					_transitionType = INSTANT;
-					break;
-				default:
-					throw new Error("KTransformMgr - beginTranslation: " +
-						"Transition type is not specified, Please specify either " +
-						"REALTIME, INTERPOLATED OR INSTANT for the transition type");
 			}
 		}
 		

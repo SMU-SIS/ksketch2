@@ -7,6 +7,7 @@
 package sg.edu.smu.ksketch.io
 {		
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import flash.geom.Point;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	
@@ -36,9 +37,9 @@ package sg.edu.smu.ksketch.io
 		public static const KEYFRAME_CENTER_Y:String = "cx";
 		public static const KEYFRAME_CURSOR_PATH:String = "cursorPath";
 		public static const KEYFRAME_TRANSITION_TYPE:String = "transitionType";
-		public static const KEYFRAME_TRANSITION_TYPE_INSTANT:String = KAppState.TRANSITION_INSTANT;
-		public static const KEYFRAME_TRANSITION_TYPE_INTERPOLATED:String = KAppState.TRANSITION_INTERPOLATED;
-		public static const KEYFRAME_TRANSITION_TYPE_REALTIME:String = KAppState.TRANSITION_REALTIME;
+		public static const KEYFRAME_TRANSITION_TYPE_INSTANT:int = KAppState.TRANSITION_INSTANT;
+		public static const KEYFRAME_TRANSITION_TYPE_INTERPOLATED:int = KAppState.TRANSITION_INTERPOLATED;
+		public static const KEYFRAME_TRANSITION_TYPE_REALTIME:int= KAppState.TRANSITION_REALTIME;
 		
 		public static const POSITION_KEYFAME_INSTANT_OFFSET:String = "instantOffset";
 		public static const ROTATION_KEYFAME_INSTANT_ANGLE:String = "instantAngle";

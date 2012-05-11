@@ -9,6 +9,7 @@ package sg.edu.smu.ksketch.model.geom
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
+	import sg.edu.smu.ksketch.utilities.KAppState;
 
 	public class KTranslation
 	{
@@ -109,7 +110,7 @@ package sg.edu.smu.ksketch.model.geom
 			
 			if(_transitionPath.length == 0)
 			{
-				if(transitionType == KTransformMgr.INTERPOLATED)
+				if(transitionType == KAppState.TRANSITION_INTERPOLATED)
 				{
 					var startPoint:K3DVector = _currentTranslationPoints.points[0];
 					var endPoint:K3DVector = _currentTranslationPoints.points[_currentTranslationPoints.length-1];

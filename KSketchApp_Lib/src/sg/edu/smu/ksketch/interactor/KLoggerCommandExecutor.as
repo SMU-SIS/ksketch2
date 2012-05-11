@@ -13,12 +13,12 @@ package sg.edu.smu.ksketch.interactor
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
 	import sg.edu.smu.ksketch.components.KWidget;
-	import sg.edu.smu.ksketch.event.KWidgetEvent;
 	import sg.edu.smu.ksketch.event.KCommandEvent;
+	import sg.edu.smu.ksketch.event.KWidgetEvent;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
 	import sg.edu.smu.ksketch.gestures.Recognizer;
-	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.io.KFileParser;
+	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
@@ -271,8 +271,8 @@ package sg.edu.smu.ksketch.interactor
 		protected function _transform(widgetEventType:String,commandNode:XML):void
 		{
 			var path:Vector.<KPathPoint> = _getPath(commandNode);		
-			var type:String = commandNode.attribute(KLogger.TRANSITION_TYPE);
-			_appState.transitionType = type.length > 0 ? type : _appState.transitionType;
+			var type:int = commandNode.attribute(KLogger.TRANSITION_TYPE);
+			_appState.transitionType = isNaN(type) ? type : _appState.transitionType;
 			_appState.time = path[0].time;
 			var p:Point = KInteractorManager.getInverseCoordinate(
 				_canvas.localToGlobal(path[0]),_canvas);

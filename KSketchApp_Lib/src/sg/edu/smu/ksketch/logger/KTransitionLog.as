@@ -10,21 +10,21 @@ package sg.edu.smu.ksketch.logger
 
 	public class KTransitionLog extends KInteractiveLog
 	{
-		private var _transitionType:String;
+		private var _transitionType:int;
 		
-		public function KTransitionLog(transition:String, transitionType:String, 
+		public function KTransitionLog(transition:String, transitionType:int, 
 									   cursorPath:Vector.<KPathPoint>)
 		{
 			super(cursorPath, transition);
 			_transitionType = transitionType;
 		}
 		
-		public function get transitionType():String
+		public function get transitionType():int
 		{
 			return _transitionType;
 		}
 
-		public function set transitionType(value:String):void
+		public function set transitionType(value:int):void
 		{
 			_transitionType = value;
 		}

@@ -8,9 +8,11 @@ package sg.edu.smu.ksketch.interactor
 {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.display.Sprite;
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
+	import sg.edu.smu.ksketch.components.KGroupView;
 	import sg.edu.smu.ksketch.components.KImageView;
 	import sg.edu.smu.ksketch.components.KObjectView;
 	import sg.edu.smu.ksketch.components.KPathView;
@@ -50,34 +52,34 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		public function detect(p:Point):KObject
 		{	
-			var view:KObjectView = _detect(_canvas.objectRoot,_x,_y,p.x,p.y);
+			var view:KObjectView = _detect(_canvas.objectRoot,_x,_y,p.x,p.y) as KObjectView;
 			_x = p.x;
 			_y = p.y;
 			return view ? view.object : null;
 		}
 		
-		private function _detect(displayObject:DisplayObject,
-								 x1:Number,y1:Number,x2:Number,y2:Number):KObjectView
+		private function _detect(displayObject:DisplayObject,x1:Number,y1:Number,
+								 x2:Number,y2:Number):DisplayObjectContainer
 		{
 	//		var x:Number =  Math.min(x1,x2);
 	//		var y:Number =  Math.min(y1,y2);
 	//		var rect:Rectangle = new Rectangle(x,y,Math.abs(x2-x1),Math.abs(y2-y1));
 	//		if (!rect.intersects(displayObject.getBounds(canvas)))
 	//			return null;
-			
-			var view:KObjectView;
-			if (displayObject is KObjectView)
+			var detectedView:DisplayObjectContainer;
+			var view:DisplayObjectContainer = displayObject as DisplayObjectContainer;
+			if (displayObject is KGroupView || !(displayObject is KObjectView))
+			{
+				view = displayObject is KGroupView ? displayObject as KGroupView : view;				
+				for(var i:int = 0; i < view.numChildren; i++)
+					if ((detectedView = _detect(view.getChildAt(i),x1,y1,x2,y2)))
+						return detectedView;
+			}
+			else if (displayObject is KObjectView)
 			{ 
 				view = displayObject as KObjectView;
 				return view.alpha > KObjectView.GHOST_ALPHA && _hit(view,x1,y1,x2,y2) && 
 					(view is KStrokeView || view is KImageView) ? view : null;
-			}
-			else if (displayObject is DisplayObjectContainer)
-			{
-				var container:DisplayObjectContainer = displayObject as DisplayObjectContainer;
-				for(var i:int = 0; i < container.numChildren; i++)
-					if ((view = _detect(container.getChildAt(i),x1,y1,x2,y2)))
-						return view;
 			}
 			return null;
 		}

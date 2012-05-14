@@ -6,8 +6,6 @@
 
 package sg.edu.smu.ksketch.model.implementations
 {
-	import org.hamcrest.object.nullValue;
-	
 	import sg.edu.smu.ksketch.model.IActivityKeyFrame;
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.IKeyFrameList;

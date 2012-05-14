@@ -142,7 +142,7 @@ package sg.edu.smu.ksketch.operation
 				KGroupUtil.groupStatic(_model,objs):KGroupUtil.groupDynamic(_model,objs,time);
 			ops.addOperation(gpOp);
 			
-			var rmOp:IModelOperation = KUngroupUtil.removeSingletonGroups(_model,_model.root,time);
+			var rmOp:IModelOperation = KUngroupUtil.removeAllSingletonGroups(_model,time);
 			if (rmOp != null)
 				ops.addOperation(rmOp);
 			
@@ -170,7 +170,7 @@ package sg.edu.smu.ksketch.operation
 			if (ungpOp != null)
 				ops.addOperation(ungpOp);
 			
-			var rmOp:IModelOperation = KUngroupUtil.removeSingletonGroups(_model,_model.root,time);
+			var rmOp:IModelOperation = KUngroupUtil.removeAllSingletonGroups(_model,time);
 			if (rmOp != null)
 				ops.addOperation(rmOp);
 			

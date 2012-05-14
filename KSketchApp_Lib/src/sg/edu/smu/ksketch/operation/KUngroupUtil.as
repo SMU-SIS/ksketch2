@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.event.KModelEvent;
 	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.model.IKeyFrame;
+	import sg.edu.smu.ksketch.model.IParentKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KModel;
 	import sg.edu.smu.ksketch.model.KObject;
@@ -63,6 +64,29 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		/**
+		 * Remove all KGroup object in the model with only one child from given time 
+		 * onwards, and put the child to the parent of the removed KGroup object.
+		 */
+		public static function removeAllSingletonGroups(model:KModel,time:Number):IModelOperation
+		{
+			var ops:KCompositeOperation = new KCompositeOperation();
+			var it:IIterator = model.iterator;
+			while (it.hasNext())
+			{
+				var keys:Vector.<IKeyFrame> = it.next().getParentKeys();
+				for (var i:int=0; i < keys.length; i++)
+				{
+					var gp:KGroup = (keys[i] as IParentKeyFrame).parent;
+					var rmOp:IModelOperation = time <= keys[i].endTime ?  
+						removeSingletonGroups(model,gp,keys[i].endTime) : null;
+					if (rmOp != null)
+						ops.addOperation(rmOp);
+				}
+			}
+			return ops.length > 0 ? ops : null;
+		}
+		
+		/**
 		 * Remove all KGroup object under group with only one child at time, 
 		 * and put the child to the parent of the removed KGroup object.
 		 */
@@ -87,14 +111,18 @@ package sg.edu.smu.ksketch.operation
 					var ctMaxTime:Number = _getLastKeyTime(child.getSpatialKeys(_TRANSLATION_REF));
 					var maxTime:Number = Math.max(tMaxTime,rMaxTime,sMaxTime,ctMaxTime);
 					var matrix1:Matrix = child.getFullPathMatrix(maxTime);
-								
-					gp.addActivityKey(time,0);
+					
+	//				gp.addActivityKey(time,0);
 					
 					if (!group.children.contains(child))
 						group.add(child);
 				
 					group.addActivityKey(time,1);
 					KGroupUtil.setParentKey(time,child,group);
+					
+					// Need consider undo!!
+					_removeRedundantParentKeys(child);
+					
 					dispatchUngroupOperationEvent(model, gp, child);
 					dispatchUngroupOperationEvent(model, group, gp);					
 					ops.addOperation(new KUngroupOperation(model,child,time,gp,group));		
@@ -110,10 +138,10 @@ package sg.edu.smu.ksketch.operation
 					
 					group.updateCenter();
 
-					var matrix2:Matrix = child.getFullPathMatrix(maxTime); 					
+					var matrix2:Matrix = child.getFullPathMatrix(maxTime);
 					var p1:Point = matrix1.transformPoint(child.defaultCenter);
 					var p2:Point = matrix2.transformPoint(child.defaultCenter);
-					if (p1.x != p2.x && p1.y != p2.y && time < maxTime)
+					if ((p1.x != p2.x || p1.y != p2.y) && time < maxTime)
 					{
 						var op:IModelOperation = KMergerUtil.addInterpolatedTranslation(
 							child,p2,p1,time,maxTime);
@@ -123,7 +151,7 @@ package sg.edu.smu.ksketch.operation
 				}
 				var rmOp:IModelOperation = gp ? removeSingletonGroups(model,gp,time) : null;
 				if (rmOp != null)
-					ops.addOperation(rmOp);				
+					ops.addOperation(rmOp);
 			}
 			return ops.length > 0 ? ops : null;
 		}
@@ -197,6 +225,9 @@ package sg.edu.smu.ksketch.operation
 			if (!_hasChildren(oldParent, ungroupTime))
 				oldParent.addActivityKey(ungroupTime,0);
 			
+			// Need to consider undo !!
+			_removeRedundantParentKeys(object);
+			
 			dispatchUngroupOperationEvent(model, oldParent, object);
 			
 			ops.addOperation(new KUngroupOperation(model,object,ungroupTime,oldParent,newParent));
@@ -219,6 +250,19 @@ package sg.edu.smu.ksketch.operation
 						(object as KGroup).directChildIterator(time),time));
 			}
 			return strokes;
+		}
+		
+		// Select KStroke from it iterator and return a list of KStroke. 
+		private static function _removeRedundantParentKeys(object:KObject):void
+		{
+			var keys:Vector.<IKeyFrame> = object.getParentKeys();
+			for (var i:int=1; i < keys.length; i++)
+			{
+				var key1:IParentKeyFrame = keys[i-1] as IParentKeyFrame; 
+				var key2:IParentKeyFrame = keys[i] as IParentKeyFrame;
+				if (key1.parent.id == key2.parent.id)
+					object.removeParentKey(key2.endTime);
+			}
 		}
 		
 		// Obtain the end time of the last key in keys list. 

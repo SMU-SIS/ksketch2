@@ -135,7 +135,7 @@ package sg.edu.smu.ksketch.interactor
 				default:
 					break;
 			}	
-		}		
+		}
 		
 		public function doGestureCommand(command:String, canvasPoint:Point):void
 		{
@@ -177,7 +177,7 @@ package sg.edu.smu.ksketch.interactor
 				case GestureDesign.NAME_PRE_SHOW_CONTEXT_MENU:
 					if(_contextMenu == null)
 					{
-						_contextMenu = KContextMenu.createMenu(_canvas, _appState, _facade);
+						_contextMenu = KContextMenu.createMenu(_canvas, _appState, this);
 						_contextMenu.addEventListener(MenuEvent.ITEM_CLICK, 
 							function(event:MenuEvent):void
 							{
@@ -192,7 +192,7 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case PIGTAIL_CONTEXT_MENU:
 					if(_contextMenu == null)
-						_contextMenu = KContextMenu.createMenu(_canvas, _appState, _facade);
+						_contextMenu = KContextMenu.createMenu(_canvas, _appState, this);
 					_contextMenu.withSelection = _appState.selection != null && 
 					_appState.selection.objects.length() != 0;
 					popupMenu(_contextMenu, canvasPoint);
@@ -200,7 +200,47 @@ package sg.edu.smu.ksketch.interactor
 					break;				
 			}
 		}
-				
+		
+		public function doMenuCommand(command:String):void
+		{
+			switch(command)
+			{
+				case KLogger.MENU_CONTEXT_MENU_COPY:
+					_copy();									
+					break;
+				case KLogger.MENU_CONTEXT_MENU_CUT:
+					_cut();
+					break;
+				case KLogger.MENU_CONTEXT_MENU_PASTE:
+					_paste();
+					break;
+			}
+			KLogger.log(command);
+		}
+		
+		public function doShortcutCommand(command:String):void
+		{
+			switch(command)
+			{
+				case KLogger.SHORTCUT_COPY:
+					_copy();									
+					break;
+				case KLogger.SHORTCUT_CUT:
+					_cut();
+					break;
+				case KLogger.SHORTCUT_PASTE:
+					_paste();
+					break;
+				case KLogger.SHORTCUT_UNDO:
+					_undo();
+					break;
+				case KLogger.SHORTCUT_REDO:
+					_redo();
+					break;
+			}
+			KLogger.log(command);
+		}
+		
 		public function get hasPopup():Boolean
 		{
 			return _hasPopup;
@@ -213,9 +253,7 @@ package sg.edu.smu.ksketch.interactor
 		
 		public function popupMenu(menu:Menu, canvasPoint:Point):void
 		{
-			//		var rootPoint:Point = _canvas.localToGlobal(canvasPoint);
-			//		menu.show(rootPoint.x+220, rootPoint.y+50);
-			menu.show(_canvas.mouseX+40,_canvas.mouseY+20);
+			menu.show(_canvas.mouseX,_canvas.mouseY);
 		}
 		
 		public function save(path:String=null):void

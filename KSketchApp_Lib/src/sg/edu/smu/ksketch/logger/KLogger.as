@@ -105,8 +105,17 @@ package sg.edu.smu.ksketch.logger
 		// menu command
 		public static const MENU_PEN_MENU:String = "pmenu";
 		public static const MENU_CONTEXT_MENU:String = "cmenu";
+		public static const MENU_CONTEXT_MENU_CUT:String = "cmenu-cut";
+		public static const MENU_CONTEXT_MENU_COPY:String = "cmenu-copy";
+		public static const MENU_CONTEXT_MENU_PASTE:String = "cmenu-paste";
+		public static const MENU_SELECTED:String = "cmenu-select";
 		
-		public static const MENU_SELECTED:String = "command";
+		// shortcut command
+		public static const SHORTCUT_CUT:String = "shortcut-cut";
+		public static const SHORTCUT_COPY:String = "shortcut-copy";
+		public static const SHORTCUT_PASTE:String = "shortcut-paste";
+		public static const SHORTCUT_UNDO:String = "shortcut-undo";
+		public static const SHORTCUT_REDO:String = "shortcut-redo";
 		
 		// interaction (widget)
 		public static const INTERACTION_DRAW:String = "draw";

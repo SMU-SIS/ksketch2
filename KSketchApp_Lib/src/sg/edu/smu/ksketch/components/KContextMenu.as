@@ -15,13 +15,12 @@ package sg.edu.smu.ksketch.components
 	import mx.events.MenuEvent;
 	
 	import sg.edu.smu.ksketch.event.KModelEvent;
-	import sg.edu.smu.ksketch.interactor.KSelection;
 	import sg.edu.smu.ksketch.interactor.KCommandExecutor;
+	import sg.edu.smu.ksketch.interactor.KSelection;
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
-	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
@@ -47,16 +46,16 @@ package sg.edu.smu.ksketch.components
 			</root>;
 		
 		private var _appState:KAppState;
-		private var _facade:KModelFacade;
+		private var _executor:KCommandExecutor;
 		private var _objectsTotal:KModelObjectList;
 		private var _cursorKey:ISpatialKeyframe
 		private var _cursorObject:KObject
 		
-		public function KContextMenu(appState:KAppState,facade:KModelFacade)
+		public function KContextMenu(appState:KAppState,executor:KCommandExecutor)
 		{
 			super();
 			_appState = appState;
-			_facade = facade;
+			_executor = executor;
 			labelField = "@label";
 			this.addEventListener(MenuEvent.ITEM_CLICK, execute);
 		}
@@ -69,17 +68,17 @@ package sg.edu.smu.ksketch.components
 			switch(selected)
 			{
 				case "Copy(Ctr+C)":
-					_facade.copy();
+					_executor.doMenuCommand(KLogger.MENU_CONTEXT_MENU_COPY);
 					break;
 				case "Paste Object(Ctrl+V)":
-			//		KCommandExecutor.paste(_appState,_facade);
+					_executor.doMenuCommand(KLogger.MENU_CONTEXT_MENU_PASTE);
 					break;
-				case "Insert KeyFrame":
-					_insertKeyFrames();
-					break;
+			//	case "Insert KeyFrame":
+			//		_insertKeyFrames();
+			//		break;
 			}
 						   
-		   _facade.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));	
+		   _executor.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));	
 		   _appState._fireFacadeUndoRedoModelChangedEvent();
 		   _appState._fireUndoEvent();
 		   _appState._fireRedoEvent();
@@ -183,9 +182,9 @@ package sg.edu.smu.ksketch.components
 		}
 			
 		public static function createMenu(parent:DisplayObjectContainer, appState:KAppState, 
-										  facade:KModelFacade):KContextMenu
+										 executor:KCommandExecutor):KContextMenu
 		{
-			var menu:KContextMenu = new KContextMenu(appState,facade);
+			var menu:KContextMenu = new KContextMenu(appState,executor);
 			menu.tabEnabled = false;    
 			menu.owner = parent;
 			menu.showRoot = false;

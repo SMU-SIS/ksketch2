@@ -130,7 +130,7 @@
 				{
 					case 67: //c key
 						if(event.ctrlKey)
-							_facade.copy();
+							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_COPY)
 						break;					
 					case 70: //f key
 						if(event.ctrlKey)
@@ -138,19 +138,19 @@
 						break;
 					case 86: //v key
 						if(event.ctrlKey)
-							_facade.paste();
+							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_PASTE)
 						break;
 					case 89: //y key
 						if(event.ctrlKey)
-							appState.redo();
+							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_REDO)
 						break;
 					case 90: //z key
 						if(event.ctrlKey)
 						{
 							if(event.shiftKey)
-								appState.redo()
+								_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_REDO)
 							else
-								appState.undo();
+								_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_UNDO)
 						}
 						break;
 				}

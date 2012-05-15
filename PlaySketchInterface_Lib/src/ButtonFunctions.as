@@ -151,13 +151,7 @@ private function _initLoggableButtons():void
 	BindingUtils.bindProperty(group_groupOps.btn_group, "enabled", appState, "groupEnabled");
 	BindingUtils.bindProperty(group_groupOps.btn_ungroup, "enabled", appState, "ungroupEnabled");
 	
-	//btn_black_pen.addEventListener(MouseEvent.CLICK, _handleButton);
-	//btn_red_pen.addEventListener(MouseEvent.CLICK, _handleButton);
-	//btn_green_pen.addEventListener(MouseEvent.CLICK, _handleButton);
-	//btn_blue_pen.addEventListener(MouseEvent.CLICK, _handleButton);	
-	//btn_eraser.addEventListener(MouseEvent.CLICK, _handleButton);
-
-	btn_toggleVisibility.addEventListener(MouseEvent.CLICK, _handleButton);	
+	//btn_toggleVisibility.addEventListener(MouseEvent.CLICK, _handleButton);	
 	btn_firstFrame.addEventListener(MouseEvent.CLICK, _handleButton);
 	btn_previous.addEventListener(MouseEvent.CLICK, _handleButton);
 	btn_next.addEventListener(MouseEvent.CLICK, _handleButton);
@@ -182,13 +176,7 @@ private function _getButtonMappings():Dictionary
 	mapping[group_groupOps.btn_group] = KLogger.BTN_GROUP;
 	mapping[group_groupOps.btn_ungroup] = KLogger.BTN_UNGROUP;
 
-	//mapping[btn_black_pen] = KLogger.BTN_BLACK_PEN;
-	//mapping[btn_red_pen] = KLogger.BTN_RED_PEN;
-	//mapping[btn_green_pen] = KLogger.BTN_GREEN_PEN;
-	//mapping[btn_blue_pen] = KLogger.BTN_BLUE_PEN;
-	//mapping[btn_eraser] = KLogger.BTN_ERASER;
-
-	mapping[btn_toggleVisibility] = KLogger.BTN_TOGGLE_VISIBILITY;
+	//mapping[btn_toggleVisibility] = KLogger.BTN_TOGGLE_VISIBILITY;
 	mapping[group_configOps.btn_settings] = KLogger.BTN_SETTING;
 	mapping[group_configOps.btn_debug] = KLogger.BTN_DEBUG;
 	mapping[btn_firstFrame] = KLogger.BTN_FIRST;

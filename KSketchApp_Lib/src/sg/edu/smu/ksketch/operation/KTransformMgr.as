@@ -43,6 +43,9 @@ package sg.edu.smu.ksketch.operation
 		private var _prevFullTransform:Matrix;
 		private var _prevLatestTime:Number;
 		
+		private var _startObjectCenter:Point;
+		
+		private var _currentTranslate:Point;
 		private var _currentAngle:Number;
 		private var _inputCenter:Point;
 		
@@ -60,9 +63,9 @@ package sg.edu.smu.ksketch.operation
 			var center:Point = _object.defaultCenter;
 			if(!center)
 				center = new Point();
-			addKeyFrame(TRANSLATION_REF, time, center.x,center.y);
-			addKeyFrame(ROTATION_REF, time, center.x,center.y);
-			addKeyFrame(SCALE_REF, time, center.x,center.y);
+			_addKeyFrame(TRANSLATION_REF, time, center.x,center.y);
+			_addKeyFrame(ROTATION_REF, time, center.x,center.y);
+			_addKeyFrame(SCALE_REF, time, center.x,center.y);
 		}
 		
 		/**
@@ -75,7 +78,8 @@ package sg.edu.smu.ksketch.operation
 		public function beginTranslation(time:Number, transitionType:int):void
 		{
 			//Initialise and prepare the variables required for translation
-			_initOperation(_object.defaultCenter, _transitionType);
+			_initOperation();
+			_transitionType = transitionType;
 			_prepareKeyframe(TRANSLATION_REF, time, _object.defaultCenter); 
 			_key.center = _object.defaultCenter;
 		}
@@ -123,9 +127,10 @@ package sg.edu.smu.ksketch.operation
 			//Find the center of rotation in object coordinates
 			var inverse:Matrix = _object.getFullPathMatrix(time);
 			inverse.invert();
-			
 			var keyCenter:Point = inverse.transformPoint(center);
-			_initOperation(center,transitionType);
+			_inputCenter = center.clone();
+			_initOperation();
+			_transitionType = transitionType;
 			_prepareKeyframe(ROTATION_REF, time, keyCenter);
 			_updateCenter(_key, keyCenter,time);
 		}
@@ -160,7 +165,10 @@ package sg.edu.smu.ksketch.operation
 			var inverse:Matrix = _object.getFullPathMatrix(time);
 			inverse.invert();
 			var keyCenter:Point = inverse.transformPoint(center);
-			_initOperation(center, transitionType);
+
+			_inputCenter = center.clone();
+			_initOperation();
+			_transitionType = transitionType;
 			_prepareKeyframe(SCALE_REF, time, keyCenter);
 			
 			_updateCenter(_key,keyCenter,time);
@@ -191,11 +199,25 @@ package sg.edu.smu.ksketch.operation
 			return _endOperation();
 		}
 		
+		public function getKeyFrame(refFrameNumber:int,time:Number):KSpatialKeyFrame
+		{
+			var ref:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(
+				refFrameNumber) as KReferenceFrame;
+			var key:KSpatialKeyFrame = ref.lookUp(time) as KSpatialKeyFrame;
+			return key;
+		}
+		
 		/**
 		 * Adds a spatial key frame to a specified reference frame at kskTime
 		 */
-		//Adds a spatial key frame to a specified reference frame at kskTime
 		public function addKeyFrame(refFrameNumber:int,kskTime:Number,centerX:Number,
+									centerY:Number,ops:KCompositeOperation):IKeyFrame
+		{
+			return _addKeyFrame(refFrameNumber,kskTime,centerX,centerY,ops);
+		}
+		
+		//Adds a spatial key frame to a specified reference frame at kskTime
+		private function _addKeyFrame(refFrameNumber:int,kskTime:Number,centerX:Number,
 									  centerY:Number,ops:KCompositeOperation=null):IKeyFrame
 		{
 			var ref:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(
@@ -219,6 +241,14 @@ package sg.edu.smu.ksketch.operation
 			
 			return ref.insertKey(key);
 		}
+				
+		// Transforms a point based on the inverse of the given matrix
+		private function _invert(m:Matrix,p:Point):Point
+		{
+			var invert:Matrix = m.clone();
+			invert.invert();
+			return invert.transformPoint(p);
+		}
 		
 		// Function invoked to prepare for a real time transition
 		// Puts in place the _key variable that has the correct properties required for the transition
@@ -227,18 +257,17 @@ package sg.edu.smu.ksketch.operation
 		{			
 			//Perform consistency check on the ref frame, make sure there is a key at created time
 			var ref:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(transformType);
+			var keyHead:IKeyFrame = ref.getAtTime(_object.createdTime);
 			_currentTransformType = transformType;
 			_prevLatestTime = _referenceFrameList.latestTime()
 			_prevFullTransform = _object.getFullPathMatrix(_prevLatestTime);
 			
-			//Check if there is a key present at created time
-			var keyHead:IKeyFrame = ref.getAtTime(_object.createdTime);
 			if(!keyHead)
-				addKeyFrame(transformType, _object.createdTime, 
+				_addKeyFrame(transformType, _object.createdTime, 
 					_object.defaultCenter.x, _object.defaultCenter.y) as ISpatialKeyframe;
 			
 			//Look up at the keyframe at time first
-			_key = ref.lookUp(time) as ISpatialKeyframe;
+			_key = getKeyFrame(transformType, time);
 			if(_key)
 			{
 				//If a key is found, we need to prepare it for the upcoming transition
@@ -249,7 +278,7 @@ package sg.edu.smu.ksketch.operation
 					//before the given time. We can safely perform an append operation from now onwards.
 					//First, we need a key at the given time first.
 					//This key will represent the start time of _key, required for the transition.
-					_key = addKeyFrame(transformType, time, center.x, center.y) as ISpatialKeyframe;
+					_key = _addKeyFrame(transformType, time, center.x, center.y) as ISpatialKeyframe;
 				}
 				else
 				{
@@ -271,7 +300,9 @@ package sg.edu.smu.ksketch.operation
 						_currentOperation.addOperation(splitOp);
 					}
 					
-					//Remove the future of the reference frame in use.
+					//Remove the future for demonstrated transitions
+					//Need an operation for removed frames here
+					//Should keep the 
 					var removedKeys:Vector.<IKeyFrame> =  ref.removeAllAfter(time);
 					
 					if(removedKeys.length > 0)
@@ -279,9 +310,6 @@ package sg.edu.smu.ksketch.operation
 						var replaceKeyOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
 							_object, ref, removedKeys, null);
 						_currentOperation.addOperation(replaceKeyOp);
-						
-						//Create a new reference frame.
-						//This new reference frames will be used during future correction at the end of the transform
 						_overWrittenKeys = new KReferenceFrame();
 						var computeTime:Number = time-KAppState.ANIMATION_INTERVAL;
 	
@@ -296,13 +324,14 @@ package sg.edu.smu.ksketch.operation
 							currentRemovedKey = removedKeys[i].clone();
 							_overWrittenKeys.append(currentRemovedKey);
 						}
-					}				
+					}
+				
 				}
 			}
 			else
 			{
 				//There are no keys in the reference frame, create one and put it in.
-				_key = addKeyFrame(transformType,time,center.x,center.y) as ISpatialKeyframe;
+				_key = _addKeyFrame(transformType,time,center.x,center.y) as ISpatialKeyframe;
 				_key.endTime = time;			
 			}
 
@@ -311,19 +340,82 @@ package sg.edu.smu.ksketch.operation
 				//Add a key after the given time, This will be the key frame that is used for
 				//Storing the data of the upcoming transition for real time transitions
 				var T1:Number = KAppState.nextKey(time);
-				_key =  addKeyFrame(transformType,T1,center.x,center.y) as ISpatialKeyframe;
+				_key =  _addKeyFrame(transformType,T1,center.x,center.y) as ISpatialKeyframe;
 			}
 			
 			(_key as ISpatialKeyframe).beginTransform();
 		}
 		
 		// Initiates an operation for transition
-		private function _initOperation(center:Point, transitionType:int):void
+		private function _initOperation():void
 		{
 			_oldKeys = new Vector.<KKeyFrame>();
 			_currentOperation = new KCompositeOperation();
-			_inputCenter = center.clone();
-			_transitionType = transitionType;
+		}
+		
+		private function _updateChildrenPositionMatrix(targetObject:KObject, time:Number):void
+		{
+			if(!(targetObject is KGroup))
+				return;
+			
+			var it:IIterator = (targetObject as KGroup).directChildIterator(time);
+			
+			while(it.hasNext())
+			{
+				var currentObject:KObject = it.next();
+				var currentParentKey:IParentKeyFrame = currentObject.getParentKeyAtOrBefore(time);
+				var nextParentKey:IParentKeyFrame = currentObject.getParentKeyAtOrBefore(
+					time+KAppState.ANIMATION_INTERVAL);
+				
+				if(currentParentKey.parent.id != nextParentKey.parent.id)
+				{
+					var previousPositionMatrix:Matrix = nextParentKey.positionMatrix;
+					nextParentKey.positionMatrix = new Matrix();
+					var matrices:Vector.<Matrix> = KGroupUtil.getParentChangeMatrices(
+						currentObject, nextParentKey.parent, time, true);
+					nextParentKey.positionMatrix = KGroupUtil.computePositionMatrix(
+						matrices[0],matrices[1],matrices[2],matrices[3], currentObject.id);
+					
+					//_correctObjectFuture(currentObject,nextParentKey.endTime,
+						//previousPositionMatrix, nextParentKey.positionMatrix);
+					_updateFuturePositionMatrices(nextParentKey.parent, nextParentKey.endTime);
+					
+					if(currentObject is KGroup)
+						(currentObject as KGroup).updateCenter();
+				}
+			}
+		}
+		
+		private function _updateFuturePositionMatrices(targetObject:KObject, time:Number):void
+		{
+			if(!(targetObject is KGroup))
+				return;
+			
+			var it:IIterator = (targetObject as KGroup).directChildIterator(time);
+			
+			while(it.hasNext())
+			{
+				var currentObject:KObject = it.next();
+				
+				var nextParentKey:IParentKeyFrame = currentObject.getParentKeyAtOrAfter(
+					time+KAppState.ANIMATION_INTERVAL);
+				
+				if(nextParentKey)
+				{
+					var previousPositionMatrix:Matrix = nextParentKey.positionMatrix;
+					nextParentKey.positionMatrix = new Matrix();
+					var matrices:Vector.<Matrix> = KGroupUtil.getParentChangeMatrices(
+						currentObject, nextParentKey.parent, nextParentKey.endTime, true);
+					nextParentKey.positionMatrix = KGroupUtil.computePositionMatrix(
+						matrices[0],matrices[1],matrices[2],matrices[3], currentObject.id);
+					//_correctObjectFuture(currentObject,nextParentKey.endTime,
+						//previousPositionMatrix, nextParentKey.positionMatrix);
+					_updateFuturePositionMatrices(nextParentKey.parent, nextParentKey.endTime);
+					
+					if(currentObject is KGroup)
+						(currentObject as KGroup).updateCenter();
+				}
+			}
 		}
 		
 		// Performs operation updating when the transition ends
@@ -334,37 +426,37 @@ package sg.edu.smu.ksketch.operation
 			return _currentOperation;
 		}
 		
-		private function _findLastOverWrittenKey():ISpatialKeyframe
-		{
-			if(_overWrittenKeys)
-			{
-				var lastOverWrittenKey:ISpatialKeyframe = _overWrittenKeys.getAtOrAfter(_key.endTime) as ISpatialKeyframe;
-				if(lastOverWrittenKey)
-				{
-					if(lastOverWrittenKey.endTime == _key.endTime)
-						return lastOverWrittenKey.next as ISpatialKeyframe;
-					else
-						return lastOverWrittenKey;
-				}
-			}
-			return null;
-		}
-		
 		private function _futureMode(lastOverWrittenKey:ISpatialKeyframe):void
 		{
-			//Snap the active transform key to the closest activity key
-			//held by the object
-			_snapToActivityKey();
+			var snapToActivity:Boolean = true;
 			
-			//Find portion of the overwritten keys to be corrected
+			if(snapToActivity)
+				_snapToActivityKey();
+				
 			if(_key.endTime != lastOverWrittenKey.startTime() || _key.endTime != lastOverWrittenKey.endTime)
+			{
 				lastOverWrittenKey.splitKey(_key.endTime, new KCompositeOperation(),lastOverWrittenKey.center);	
+			}
 			
-			var ref:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(_currentTransformType) as KReferenceFrame;
+			var ref:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(
+				_currentTransformType) as KReferenceFrame;
 			ref.append(lastOverWrittenKey);
-			var interpreter:Shape = _computeCompensation();
 			
-			//Set up the undo for the keys there have been appended to the reference frame
+			var compensation:Matrix = new Matrix();
+			var currentFullTransform:Matrix = _object.getFullPathMatrix(_prevLatestTime);
+			
+			var oldPosition:Point = _prevFullTransform.transformPoint(_object.defaultCenter);
+			var newPosition:Point = currentFullTransform.transformPoint(_object.defaultCenter);
+			var positionCompensation:Point = oldPosition.subtract(newPosition);
+			
+			var interpreter:Shape = new Shape();
+			currentFullTransform.invert();
+			currentFullTransform.concat(_prevFullTransform);
+			interpreter.transform.matrix = currentFullTransform;
+			var compensateX:Number = positionCompensation.x;
+			var compensateY:Number = positionCompensation.y;
+			var compensateRotate:Number = interpreter.rotation;
+			var compensateScale:Number = interpreter.scaleX;
 			var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			var myKey:IKeyFrame = lastOverWrittenKey as IKeyFrame;
 			
@@ -378,32 +470,31 @@ package sg.edu.smu.ksketch.operation
 			
 			var startInterpolateTime:Number = lastOverWrittenKey.startTime();
 			var endInterpolateTime:Number = lastOverWrittenKey.endTime;
-			var epsilon:Number = 0.5;
-			
-			//Correct the object if the changes exceed a small number
-			if(Math.abs(interpreter.x) > epsilon || Math.abs(interpreter.y) > epsilon)
+			var epsilon:Number = 0;
+			//Fix time range for all 3 transform
+			if(Math.abs(compensateX) > epsilon || Math.abs(compensateY) > epsilon)
 			{
 				var transRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
 				_forceKeyAtTime(startInterpolateTime, transRef);
 				_forceKeyAtTime(endInterpolateTime, transRef);
-				_interpolateTranslateOverTime(interpreter.x, interpreter.y, startInterpolateTime, endInterpolateTime, transRef);
+				_interpolateTranslateOverTime(compensateX, compensateY, startInterpolateTime, endInterpolateTime, transRef);
 			}
 			
-			//Rotation compensation is in degrees. Will get converted to radians inside the processing methods
-			if(Math.abs(interpreter.rotation) > epsilon)
+			//Compensate is in degrees
+			if(Math.abs(compensateRotate) > epsilon)
 			{
 				var rotateRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(ROTATION_REF);
 				_forceKeyAtTime(startInterpolateTime, rotateRef);
 				_forceKeyAtTime(endInterpolateTime, rotateRef);
-				_interpolateRotateOverTime(interpreter.rotation, startInterpolateTime, endInterpolateTime, rotateRef);
+				_interpolateRotateOverTime(compensateRotate, startInterpolateTime, endInterpolateTime, rotateRef);
 			}
 			
-			if(Math.abs(interpreter.scaleX) > (epsilon/50))
+			if(Math.abs(compensateScale) > epsilon)
 			{
 				var scaleRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(SCALE_REF);
 				_forceKeyAtTime(startInterpolateTime, scaleRef);
 				_forceKeyAtTime(endInterpolateTime, scaleRef);
-				_interpolateScaleOverTime(interpreter.scaleX, startInterpolateTime, endInterpolateTime, scaleRef);
+				_interpolateScaleOverTime(compensateScale, startInterpolateTime, endInterpolateTime, scaleRef);
 			}
 			
 			_prevFullTransform = new Matrix();			
@@ -427,41 +518,46 @@ package sg.edu.smu.ksketch.operation
 			}
 		}
 		
-		private function _computeCompensation():Shape
-		{
-			var currentFullTransform:Matrix = _object.getFullPathMatrix(_prevLatestTime);
-			var oldPosition:Point = _prevFullTransform.transformPoint(_object.defaultCenter);
-			var newPosition:Point = currentFullTransform.transformPoint(_object.defaultCenter);
-			var positionCompensation:Point = oldPosition.subtract(newPosition);
-			
-			currentFullTransform.invert();
-			currentFullTransform.concat(_prevFullTransform);
-			
-			var interpreter:Shape = new Shape();
-			interpreter.transform.matrix = currentFullTransform;
-			
-			interpreter.x = positionCompensation.x;
-			interpreter.y = positionCompensation.y;
-			
-			return interpreter;
-		}
-		
 		private function _updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number):void
 		{
 			var oldCenter:Point = targetKey.center;
-	
+			
 			if(Math.abs(newCenter.x-oldCenter.x) > 0.05 || Math.abs(newCenter.y - oldCenter.y) > 0.05)
 			{
-				var prevMatrix:Matrix = _object.getFullMatrix(time);
-				targetKey.center = newCenter.clone();
-				var currentMatrix:Matrix = _object.getFullMatrix(time);
-				currentMatrix.invert();
-				currentMatrix.concat(prevMatrix);
+				var prevCenter:Point = _key.center.clone();
+				var prevMatrix:Matrix = _object.getFullMatrix(time);//_key.getFullMatrix(time, new Matrix());
+				_key.center = newCenter.clone();
+				var currentMatrix:Matrix = _object.getFullMatrix(time);//_key.getFullMatrix(time, new Matrix());
+				prevMatrix.invert();
+				prevMatrix.concat(currentMatrix);
 				
-				var transRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
-				_forceKeyAtTime(targetKey.startTime(), transRef);
-				_forceKeyAtTime(targetKey.endTime, transRef);
-				_interpolateTranslateOverTime(-prevMatrix.tx, -prevMatrix.ty, targetKey.startTime(), targetKey.endTime, transRef);
+				//Add an interpolated translation over the key's time range
+				var translationFrame:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
+				var transKey:ISpatialKeyframe = translationFrame.getAtOrAfter(time) as ISpatialKeyframe;
+				
+				if(!transKey)
+					transKey = translationFrame.getAtOrBeforeTime(time) as ISpatialKeyframe;
+				
+				if(transKey.endTime != time)
+				{
+					if(time < transKey.endTime)
+						transKey = transKey.splitKey(time,_currentOperation)[0] as ISpatialKeyframe;
+					else
+					{
+						transKey = new KSpatialKeyFrame(time,_object.defaultCenter) as ISpatialKeyframe;
+						translationFrame.append(transKey);
+						
+						var newKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+						newKeys.push(transKey);
+						
+						var insertOp:IModelOperation = new KReplaceKeyframeOperation(_object,translationFrame,null,newKeys);
+						_currentOperation.addOperation(insertOp);
+					}
+				}
+				
+				//Current Interpolation only interpolates the last key frame in the range,
+				//Not all translation keys in the time range.
+				transKey.interpolateTranslate(-prevMatrix.tx, -prevMatrix.ty, _currentOperation);
 			}
 		}
 		
@@ -495,9 +591,6 @@ package sg.edu.smu.ksketch.operation
 				addedKeys.push(targetKey);
 				insertOp = new KReplaceKeyframeOperation(_object,refFrame,null,addedKeys);
 			}
-			
-			if(insertOp)
-				_currentOperation.addOperation(insertOp);
 		}
 		
 		private function _interpolateTranslateOverTime(dx:Number, dy:Number, startTime:Number, endTime:Number, refFrame:IReferenceFrame):void
@@ -578,70 +671,22 @@ package sg.edu.smu.ksketch.operation
 			}
 		}
 		
-		/*
-		private function _updateChildrenPositionMatrix(targetObject:KObject, time:Number):void
+		private function _findLastOverWrittenKey():ISpatialKeyframe
 		{
-			if(!(targetObject is KGroup))
-				return;
-			
-			var it:IIterator = (targetObject as KGroup).directChildIterator(time);
-			
-			while(it.hasNext())
+			if(_overWrittenKeys)
 			{
-				var currentObject:KObject = it.next();
-				var currentParentKey:IParentKeyFrame = currentObject.getParentKeyAtOrBefore(time);
-				var nextParentKey:IParentKeyFrame = currentObject.getParentKeyAtOrBefore(
-					time+KAppState.ANIMATION_INTERVAL);
+				var lastOverWrittenKey:ISpatialKeyframe = _overWrittenKeys.getAtOrAfter(_key.endTime) as ISpatialKeyframe;
 				
-				if(currentParentKey.parent.id != nextParentKey.parent.id)
+				if(lastOverWrittenKey)
 				{
-					var previousPositionMatrix:Matrix = nextParentKey.positionMatrix;
-					nextParentKey.positionMatrix = new Matrix();
-					var matrices:Vector.<Matrix> = KGroupUtil.getParentChangeMatrices(
-						currentObject, nextParentKey.parent, time, true);
-					nextParentKey.positionMatrix = KGroupUtil.computePositionMatrix(
-						matrices[0],matrices[1],matrices[2],matrices[3], currentObject.id);
-					
-					//_correctObjectFuture(currentObject,nextParentKey.endTime,
-					//previousPositionMatrix, nextParentKey.positionMatrix);
-					_updateFuturePositionMatrices(nextParentKey.parent, nextParentKey.endTime);
-					
-					if(currentObject is KGroup)
-						(currentObject as KGroup).updateCenter();
+					if(lastOverWrittenKey.endTime == _key.endTime)
+						return lastOverWrittenKey.next as ISpatialKeyframe;
+					else
+						return lastOverWrittenKey;
 				}
 			}
+			
+			return null;
 		}
-		
-		private function _updateFuturePositionMatrices(targetObject:KObject, time:Number):void
-		{
-			if(!(targetObject is KGroup))
-				return;
-			
-			var it:IIterator = (targetObject as KGroup).directChildIterator(time);
-			
-			while(it.hasNext())
-			{
-				var currentObject:KObject = it.next();
-				
-				var nextParentKey:IParentKeyFrame = currentObject.getParentKeyAtOrAfter(
-					time+KAppState.ANIMATION_INTERVAL);
-				
-				if(nextParentKey)
-				{
-					var previousPositionMatrix:Matrix = nextParentKey.positionMatrix;
-					nextParentKey.positionMatrix = new Matrix();
-					var matrices:Vector.<Matrix> = KGroupUtil.getParentChangeMatrices(
-						currentObject, nextParentKey.parent, nextParentKey.endTime, true);
-					nextParentKey.positionMatrix = KGroupUtil.computePositionMatrix(
-						matrices[0],matrices[1],matrices[2],matrices[3], currentObject.id);
-					//_correctObjectFuture(currentObject,nextParentKey.endTime,
-					//previousPositionMatrix, nextParentKey.positionMatrix);
-					_updateFuturePositionMatrices(nextParentKey.parent, nextParentKey.endTime);
-					
-					if(currentObject is KGroup)
-						(currentObject as KGroup).updateCenter();
-				}
-			}
-		}*/
 	}
 }

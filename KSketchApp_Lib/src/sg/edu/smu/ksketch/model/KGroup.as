@@ -193,7 +193,14 @@ package sg.edu.smu.ksketch.model
 				if(currentObject is KGroup)
 				{
 					var visibleChildParts:Vector.<KObject> = (currentObject as KGroup).partsVisible(time);
-					visibleParts = visibleParts.concat(visibleChildParts);
+					
+					if(visibleChildParts[0] !== currentObject)
+					{
+						visibleParts = visibleParts.concat(visibleChildParts);
+						allVisible = false;
+					}
+					else
+						visibleParts.push(visibleChildParts[0]);
 				}
 				else
 				{
@@ -204,7 +211,7 @@ package sg.edu.smu.ksketch.model
 				}
 			}
 			
-			if(allVisible)
+			if(allVisible && (getVisibility(time) > 0))
 			{
 				visibleParts = new Vector.<KObject>();
 				visibleParts.push(this);				

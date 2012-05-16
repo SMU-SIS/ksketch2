@@ -97,7 +97,6 @@ package sg.edu.smu.ksketch.interactor
 				if(_userSetHandleOffset != null)
 					c = c.add(_userSetHandleOffset);
 			}
-			trace(c);
 			return c;
 		}
 
@@ -142,7 +141,6 @@ package sg.edu.smu.ksketch.interactor
 				
 				if(currentObject is KGroup)
 				{
-					trace("checking group",currentObject.id,"components");
 					var visibleChildParts:Vector.<KObject> = (currentObject as KGroup).partsVisible(time);
 					visibleObjects = visibleObjects.concat(visibleChildParts);
 				}
@@ -154,6 +152,7 @@ package sg.edu.smu.ksketch.interactor
 			}
 			
 			var newList:KModelObjectList = new KModelObjectList();
+			
 			for(var i:int = 0; i<visibleObjects.length; i++)
 			{
 				newList.add(visibleObjects[i]);

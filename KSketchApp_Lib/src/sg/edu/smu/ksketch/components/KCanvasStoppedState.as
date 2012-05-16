@@ -124,11 +124,7 @@ package sg.edu.smu.ksketch.components
 		private function updateSelection(event:KObjectEvent = null):void
 		{
 			if(_appState.selection)
-			{
 				_appState.selection.tuneSelection(_appState.time);
-				trace("my selection", _appState.selection.objects);
-
-			}
 
 			_widget.highlightSelection();
 		}

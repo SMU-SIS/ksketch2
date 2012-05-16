@@ -133,7 +133,10 @@ public function timeSlider_thumbPressHandler(event:TrackBaseEvent):void
 	if(event.target is HSlider)
 	{
 		if (appState.selection != null)
-			appState.interactingSelection = new KSelection(appState.selection.objects, appState.time);
+		{
+			if(appState.selection.objects.length() != 0)
+				appState.interactingSelection = new KSelection(appState.selection.objects, appState.time);
+		}
 		_isKSKTimeThumbDragging = true;
 		_startKSKTimeValue = (event.target as HSlider).value;
 	}	

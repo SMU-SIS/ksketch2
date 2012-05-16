@@ -61,7 +61,7 @@ package sg.edu.smu.ksketch.components
 			else
 				updatePath();
 			
-			updateWidget();
+			updateSelection();
 			
 			addEventListeners();
 		}
@@ -100,7 +100,7 @@ package sg.edu.smu.ksketch.components
 			updatePath(event);
 			listenTo(event.oldSelection, false);
 			listenTo(event.newSelection, true);
-			updateWidget();
+			updateSelection();
 		}
 		
 		private function listenTo(selection:KSelection, listen:Boolean):void
@@ -114,43 +114,30 @@ package sg.edu.smu.ksketch.components
 				var i:int = 0;
 				if(listen)
 					while(it.hasNext())
-						it.next().addEventListener(KObjectEvent.EVENT_TRANSFORM_CHANGED, updateWidget);
+						it.next().addEventListener(KObjectEvent.EVENT_TRANSFORM_CHANGED, updateSelection);
 				else
 					while(it.hasNext())
-						it.next().removeEventListener(KObjectEvent.EVENT_TRANSFORM_CHANGED, updateWidget);
-//					for(;i<length;i++)
-//						list.getObjectAt(i).addEventListener(KObjectEvent.EVENT_TRANSFORM_CHANGED, updateWidget);
-//				else
-//					for(;i<length;i++)
-//						list.getObjectAt(i).removeEventListener(KObjectEvent.EVENT_TRANSFORM_CHANGED, updateWidget);
+						it.next().removeEventListener(KObjectEvent.EVENT_TRANSFORM_CHANGED, updateSelection);
 			}
 		}
 		
-		private function updateWidget(event:KObjectEvent = null):void
+		private function updateSelection(event:KObjectEvent = null):void
 		{
+			if(_appState.selection)
+			{
+				_appState.selection.tuneSelection(_appState.time);
+				trace("my selection", _appState.selection.objects);
+
+			}
+
 			_widget.highlightSelection();
 		}
 		
 		private function timeChangedEventHandler(event:KTimeChangedEvent):void
 		{
 			if(_appState.selection != null)
-			{
-				if(!canSelect(_appState.selection.objects))
-				{
-					_lastSelection = _appState.selection;
-					_appState.selection = null;
-				}
-				else
-				{
-					if(_isVisible(_appState.selection.objects))
-					{
-						updateWidget();
-					}
-					else
-					{
-						_widget.visible = false;
-					}
-				}
+			{	
+				updateSelection();
 			}
 			else
 			{
@@ -174,34 +161,10 @@ package sg.edu.smu.ksketch.components
 			while(it.hasNext())
 			{
 				object = it.next();
-				if(_facade.getObjectByID(object.id) == null)// || object.getVisibility(kskTime) <= 0)
+				if(_facade.getObjectByID(object.id) == null || object.getVisibility(kskTime) <= 0)
 					return false;
 			}
-//			for(var i:int=0; i<length; i++)
-//			{
-//				object = objects.getObjectAt(i);
-//				if(_facade.getObjectByID(object.id) == null || object.getVisibility(kskTime) <= 0)
-//					return false;
-//			}
-			return true;
-		}
-		
-		private function _isVisible(objects:KModelObjectList):Boolean
-		{
-			if(objects.length() == 0)
-				return false;
-			
-			var kskTime:Number = _appState.time;
-			var length:int = objects.length();
-			var object:KObject;
-			var it:IIterator = objects.iterator;
-			while(it.hasNext())
-			{
-				object = it.next();
-				if(object.getVisibility(kskTime) <= 0)
-					return false;
-			}
-			
+
 			return true;
 		}
 		

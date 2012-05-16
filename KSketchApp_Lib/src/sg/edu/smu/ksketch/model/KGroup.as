@@ -170,5 +170,47 @@ package sg.edu.smu.ksketch.model
 			
 			return returnList;
 		}
+		
+		/**
+		 * Returns a vector containing the parts of this KGroup that are visible
+		 * If the whole of this KGroup is visible at given time, returns vector contains this group only
+		 * If part of this group is not visible, returns vector containing all visible children, grandChildren and so on
+		 * Calls recursively.
+		 */
+		public function partsVisible(time:Number):Vector.<KObject>
+		{
+			var allVisible:Boolean = true;
+			
+			var visibleParts:Vector.<KObject> = new Vector.<KObject>();
+			var currentObject:KObject;
+			var i:int = 0;
+			var numChildren:int = _children.length();
+			
+			for(i = 0; i<numChildren; i++)
+			{
+				currentObject = _children.getObjectAt(i);
+	
+				if(currentObject is KGroup)
+				{
+					var visibleChildParts:Vector.<KObject> = (currentObject as KGroup).partsVisible(time);
+					visibleParts = visibleParts.concat(visibleChildParts);
+				}
+				else
+				{
+					if(currentObject.getVisibility(time) > 0)
+						visibleParts.push(currentObject)
+					else
+						allVisible = false;
+				}
+			}
+			
+			if(allVisible)
+			{
+				visibleParts = new Vector.<KObject>();
+				visibleParts.push(this);				
+			}
+			
+			return visibleParts;
+		}
 	}
 }

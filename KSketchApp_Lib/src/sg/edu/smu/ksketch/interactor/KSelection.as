@@ -27,9 +27,11 @@ package sg.edu.smu.ksketch.interactor
 		
 		private var _interactionCenter:Point;
 		private var _userSetHandleOffset:Point;
+		private var _fullObjectSet:KModelObjectList;
 		
 		public function KSelection(selection:KModelObjectList, selectedTime:Number)
 		{
+			_fullObjectSet = selection;
 			_objects = selection;
 			_selectedTime = selectedTime;
 			if(selection == null || selection.length() == 0)
@@ -95,7 +97,7 @@ package sg.edu.smu.ksketch.interactor
 				if(_userSetHandleOffset != null)
 					c = c.add(_userSetHandleOffset);
 			}
-			
+			trace(c);
 			return c;
 		}
 
@@ -126,6 +128,38 @@ package sg.edu.smu.ksketch.interactor
 			}
 			
 			return false;
+		}
+		
+		public function tuneSelection(time:Number):void
+		{
+			var it:IIterator = _fullObjectSet.iterator;
+			var currentObject:KObject;
+			var visibleObjects:Vector.<KObject> = new Vector.<KObject>();
+			
+			while(it.hasNext())
+			{
+				currentObject = it.next();
+				
+				if(currentObject is KGroup)
+				{
+					trace("checking group",currentObject.id,"components");
+					var visibleChildParts:Vector.<KObject> = (currentObject as KGroup).partsVisible(time);
+					visibleObjects = visibleObjects.concat(visibleChildParts);
+				}
+				else
+				{
+					if(currentObject.getVisibility(time) > 0)
+						visibleObjects.push(currentObject)
+				}
+			}
+			
+			var newList:KModelObjectList = new KModelObjectList();
+			for(var i:int = 0; i<visibleObjects.length; i++)
+			{
+				newList.add(visibleObjects[i]);
+			}
+			
+			_objects = newList;
 		}
 	}
 }

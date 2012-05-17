@@ -9,10 +9,12 @@ package sg.edu.smu.ksketch.interactor
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.geom.Point;
+	import flash.net.FileReference;
 	import flash.ui.Mouse;
 	
 	import mx.controls.Menu;
 	import mx.events.CloseEvent;
+	import mx.events.FileEvent;
 	import mx.events.MenuEvent;
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
@@ -21,6 +23,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 	import sg.edu.smu.ksketch.event.KFileSavedEvent;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
+	import sg.edu.smu.ksketch.io.KFileAccessor;
 	import sg.edu.smu.ksketch.io.KFileLoader;
 	import sg.edu.smu.ksketch.io.KFileSaver;
 	import sg.edu.smu.ksketch.logger.KLogger;
@@ -52,21 +55,32 @@ package sg.edu.smu.ksketch.interactor
 
 		public function doButtonCommand(command:String):void
 		{
+			var filename:String;
 			switch (command)
 			{
+				case KLogger.BTN_EXIT:
+					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					KLogger.log(command,KLogger.FILE_NAME,filename);
+					_saveToDir(KLogger.FILE_APP_DIR,filename);
+					break;
 				case KLogger.BTN_NEW:
-					KLogger.log(command);
+					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					KLogger.log(command,KLogger.FILE_NAME,filename);
+					_saveToDir(KLogger.FILE_APP_DIR,filename);
 					KLogger.flush();
 					newFile();
 					break;
 				case KLogger.BTN_LOAD:
-					KLogger.log(command);
+					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					KLogger.log(command,KLogger.FILE_NAME,filename);
+					_saveToDir(KLogger.FILE_APP_DIR,filename);
 					KLogger.flush();
 					_load();
 					break;
 				case KLogger.BTN_SAVE:
-					KLogger.log(command);
-					_save(null);
+					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					KLogger.log(command,KLogger.FILE_NAME,filename);
+					_save(filename);
 					break;
 				case KLogger.BTN_CUT:
 					KLogger.log(command);
@@ -256,11 +270,6 @@ package sg.edu.smu.ksketch.interactor
 			menu.show(_canvas.mouseX,_canvas.mouseY);
 		}
 		
-		public function save(path:String=null):void
-		{
-			_save(path);
-		}
-		
 		public function newFile():void
 		{
 			KLogger.flush();
@@ -277,17 +286,18 @@ package sg.edu.smu.ksketch.interactor
 			loader.loadKMV();		
 		}		
 		
-		protected function _save(path:String):void
+		protected function _saveToDir(dir:String,filename:String):void
 		{			
 			var content:XML = _facade.saveFile().appendChild(KLogger.logFile);
 			var saver:KFileSaver = new KFileSaver();
-			if (path)
-				saver.saveToDir(content,path);
-			else
-			{
-				saver.addEventListener(KFileSavedEvent.EVENT_FILE_SAVED, _fileSaved);
-				saver.save(content);
-			}
+			saver.saveToDir(content,dir,filename);
+		}		
+		
+		protected function _save(name:String):void
+		{			
+			var content:XML = _facade.saveFile().appendChild(KLogger.logFile);
+			var saver:KFileSaver = new KFileSaver();
+			saver.save(content, name);
 		}		
 		
 		protected function _redo():void
@@ -420,12 +430,5 @@ package sg.edu.smu.ksketch.interactor
 			}
 		}
 		
-		private function _fileSaved(e:KFileSavedEvent):void
-		{
-			if(e.filePath == null)
-				KLogger.log(KLogger.BTN_SAVE);
-			else
-				KLogger.log(KLogger.BTN_SAVE, KLogger.FILE_PATH, e.filePath);
-		}		
 	}
 }

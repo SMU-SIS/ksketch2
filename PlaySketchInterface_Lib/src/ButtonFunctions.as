@@ -188,11 +188,7 @@ private function _getButtonMappings():Dictionary
 private function _handleButton(event:MouseEvent):void
 {	
 	if (event.target is UIComponent)
-	{	
-		if (_buttonMapping[event.target] == KLogger.BTN_NEW)
-			_commandExecutor.save("playsketch");
 		_commandExecutor.doButtonCommand(_buttonMapping[event.target]);
-	}
 }
 
 

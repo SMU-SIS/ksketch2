@@ -9,16 +9,20 @@ package sg.edu.smu.ksketch.logger
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	public class KLogger
 	{
+		public static const LOG_TIME:String = "logtime";
+
 		// command names, same as xml node name
 		public static const COMMANDS:String = "commands";
-		
-		public static const LOG_TIME:String = "logtime";
-		
+
+		public static const FILE_PATH:String = "file-path";
+		public static const FILE_NAME:String = "filename";
+		public static const FILE_APP_DIR:String = "playsketch";
+
 		// toolbar operation
+		public static const BTN_EXIT:String = "btn-exit";
 		public static const BTN_NEW:String = "btn-new";
 		public static const BTN_LOAD:String = "btn-load";
 		public static const BTN_SAVE:String = "btn-save";
-		public static const FILE_PATH:String = "file-path";
 
 		public static const BTN_CUT:String = "btn-cut";
 		public static const BTN_COPY:String = "btn-copy";

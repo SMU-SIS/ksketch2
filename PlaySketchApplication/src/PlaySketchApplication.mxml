@@ -9,7 +9,8 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   xmlns:local="*" showStatusBar = "false"
 					   minWidth ="900" minHeight = "600" width = "900" height = "600"
-					   initialize="_init()" invoke="_loadInitHandler(event)">
+					   initialize="_init()" invoke="_loadInitHandler(event)" 
+					   close="main.commandExecutor.doButtonCommand(KLogger.BTN_EXIT)">
 	
 	<fx:Style source="PlaySketchApplication.css" />
 
@@ -94,6 +95,7 @@
 				window.addEventListener(Event.CLOSE,closeHandler);
 				window.open();	
 			}
+			
 			private function _init():void
 			{
 				nativeWindow.x = (Capabilities.screenResolutionX - nativeWindow.bounds.width)/2;
@@ -104,32 +106,6 @@
 				main.appInit(nativeWindow.bounds.width, nativeWindow.bounds.height, 
 					bounds.width-width, bounds.height-height);
 				nativeWindow.activate();
-			}
-			
-			private function _checkForSave(event:Event):void
-			{
-				event.preventDefault();
-				if (main.appState.undoEnabled)
-					Alert.show("Save data before exit?","",
-						Alert.YES|Alert.NO,this,_saveData);
-				else
-					nativeWindow.close();
-			}
-			
-			private function _saveData(event:CloseEvent):void
-			{
-				if (event.detail==Alert.YES)
-				{
-					main.addEventListener(KDataSavedEvent.EVENT_DATA_SAVED,_exit);
-					main.commandExecutor.save();
-				}
-				else
-					nativeWindow.close();
-			}
-			
-			private function _exit(event:Event):void
-			{
-				nativeWindow.close();
 			}
 			
 			private function _loadInitHandler(event:InvokeEvent):void

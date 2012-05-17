@@ -12,55 +12,49 @@ package sg.edu.smu.ksketch.io
 	import flash.filesystem.FileStream;
 	import flash.net.FileReference;
 	
-	import sg.edu.smu.ksketch.event.KFileSavedEvent;
-	
+	import sg.edu.smu.ksketch.logger.KLogger;
+		
 	public class KFileSaver extends KFileAccessor
 	{		
 		/**
 		 * Will dispatch an event when KMV file is loaded.
 		 * Event type is KFileSavedEvent.EVENT_FILE_SAVED.
 		 */		
-		public function save(content:XML, originalName:String = null):void
+		public function save(content:XML, name:String):void
 		{
-			var defaultName:String = originalName ? originalName : 
-				_generateTimeString() + "-K-Movie.kmv";			
-			_save(content, [_getKMVTypeFilter()], defaultName);
+			var fileRef:FileReference = _isRunningInAIR() ? new File() : new FileReference();
+			var selected:Function = function (e:Event):void
+			{
+				var name2:String = (e.target as FileReference).name;
+				if (name != name2)
+				{
+					var lastNode:XML;
+					var list:XMLList = content.elements(KLogger.COMMANDS).elements(KLogger.BTN_SAVE);
+					for each (var node:XML in list)
+						lastNode = node;
+					lastNode.@filename = name2;
+				}
+			};
+			fileRef.addEventListener(Event.SELECT, selected);
+			fileRef.save(content, name);
 		}
 		
-		public function saveToDir(content:XML, path:String = null):void
+		public function saveToDir(content:XML, folder:String, name:String):void
 		{
-			var dir:File = File.applicationStorageDirectory.resolvePath(path);
+			var dir:File = File.applicationStorageDirectory.resolvePath(folder);
 			if (!dir.exists)
 				dir.createDirectory();
 			
-			var fileName:String = _generateTimeString() + "-K-Movie.kmv";
-			var file:File = File.applicationStorageDirectory.resolvePath(path+"/"+fileName);
+			var file:File = File.applicationStorageDirectory.resolvePath(folder+"/"+name);
 			if (file.exists)
 			{
-				fileName = _generateTimeString(true) + "-K-Movie.kmv";
-				file = File.applicationStorageDirectory.resolvePath(path+"/"+fileName);
+				var name2:String = name.split("-K-Movie.kmv")[0]+new Date().seconds+"-K-Movie.kmv";
+				file = File.applicationStorageDirectory.resolvePath(folder+"/"+name2);
 			}
 			var fileStream:FileStream = new FileStream();
 			fileStream.open(file, FileMode.WRITE);
 			fileStream.writeUTFBytes(content.toXMLString());
 		}
-		
-		private function _save(content:XML, typeFilter:Array = null, defaultFileName:String = null):void
-		{
-			var fileRef:FileReference = _isRunningInAIR() ? new File() : new FileReference();
-			var fileFunction:Function = _isRunningInAIR() ? _fileSaved_AIR : _fileSaved_WEB;
-			fileRef.addEventListener(Event.COMPLETE, fileFunction);
-			fileRef.save(content, defaultFileName);
-		}
-		
-		private function _fileSaved_AIR(e:Event):void
-		{
-			this.dispatchEvent(new KFileSavedEvent((e.target as File).nativePath));
-		}
-		
-		private function _fileSaved_WEB(e:Event):void
-		{
-			this.dispatchEvent(new KFileSavedEvent(null));
-		}		
+			
 	}
 }

@@ -1,8 +1,8 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.operation
 {
@@ -96,6 +96,29 @@ package sg.edu.smu.ksketch.operation
 			}
 		}
 		
+		/**
+		 * Obtain the lastest consistant time of the objects before given time.
+		 * If there exist an inconsistant parent among the objects , return -1. 
+		 */	
+		public static function lastestConsistantParentKeyTime(objects:KModelObjectList,
+															  time:Number):Number
+		{
+			var keys:Vector.<IParentKeyFrame> = new Vector.<IParentKeyFrame>();
+			var firstKey:IParentKeyFrame = objects.getObjectAt(0).getParentKeyAtOrBefore(time);
+			var maxTime:Number = firstKey.endTime;
+			var it:IIterator = objects.iterator;
+			while (it.hasNext())
+			{
+				var obj:KObject = it.next();
+				var key:IParentKeyFrame = obj.getParentKeyAtOrBefore(time);
+				if (key.parent != firstKey.parent)
+					return -1;
+				else
+					maxTime = Math.max(maxTime,key.endTime);
+			}
+			return maxTime;
+		}
+		
 		public static function computePositionMatrix(objFullMat:Matrix, prevParentFPM:Matrix, 
 													 newParentFPM:Matrix, prevPositionMat:Matrix, 
 													 debugID:int=-1):Matrix
@@ -116,7 +139,7 @@ package sg.edu.smu.ksketch.operation
 			newPosMat.concat(inverseFullMat);
 			return newPosMat;
 		}
-
+		
 		// Create a group of objects at groupTime with center. 
 		private static function _group(model:KModel, objs:KModelObjectList, 
 									   groupTime:Number):IModelOperation
@@ -193,9 +216,9 @@ package sg.edu.smu.ksketch.operation
 				return prevKey;
 			}
 			
-
+			
 		}
-				
+		
 		// Dispatch group event and transform change event after grouping operation.
 		private static function _dispatchGroupOperationEvent(model:KModel ,group:KGroup, 
 															 objs:KModelObjectList):void

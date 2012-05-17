@@ -1,8 +1,8 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.operation
 {
@@ -25,7 +25,6 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KGroupOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
-	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
@@ -120,38 +119,50 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Grouping Operation ------------------- //
-		public function group(objs:KModelObjectList):IModelOperation
+		public function regroup(objs:KModelObjectList):IModelOperation
 		{	
-			var time:Number = _appState.time;
+			var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
+			var unOp:IModelOperation = ungroup(objs);
+			var gpOp:IModelOperation = group(objs,time);
+			var ops:KCompositeOperation = new KCompositeOperation();
+			if (unOp)
+				ops.addOperation(unOp);
+			if (gpOp)
+				ops.addOperation(gpOp);
+			return ops;
+		}
+		public function group(objs:KModelObjectList,groupTime:Number=-2):IModelOperation
+		{	
+			var time:Number = groupTime;
+			time = time != -2 ? time:KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
+			time = time >= 0 ? time : _appState.time;
+			
 			var mode:String = _appState.groupingMode;
 			var interpMode:Boolean = _appState.transitionType == KAppState.TRANSITION_INTERPOLATED;
 			var staticMode:Boolean = mode == KAppState.GROUPING_EXPLICIT_STATIC;
 			var implicitMode:Boolean = mode == KAppState.GROUPING_IMPLICIT_DYNAMIC;
-			var centerOffset:Point = _appState.userSetCenterOffset;
 			var ops:KCompositeOperation = new KCompositeOperation();
+			var rmOp:IModelOperation;
 			
-			var it:IIterator = objs.iterator;
-			while (it.hasNext())
-			{
-				var rmKeyOp:IModelOperation = KUngroupUtil.removeFutureParentKeys(it.next(),time);
-				if (rmKeyOp != null)
-					ops.addOperation(rmKeyOp);
-			}
+			if ((rmOp = KUngroupUtil.removeAllFutureParentKeys(objs,time)))
+				ops.addOperation(rmOp);
 			
 			var gpOp:IModelOperation = staticMode || (interpMode && implicitMode) ? 
 				KGroupUtil.groupStatic(_model,objs):KGroupUtil.groupDynamic(_model,objs,time);
 			ops.addOperation(gpOp);
 			
-			var rmOp:IModelOperation = KUngroupUtil.removeAllSingletonGroups(_model,time);
-			if (rmOp != null)
+			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
+				ops.addOperation(rmOp);
+			
+			if ((rmOp = KUngroupUtil.removeAllDuplicateParentKeys(_model)))
 				ops.addOperation(rmOp);
 			
 			var list:KModelObjectList = new KModelObjectList();
 			list.add((gpOp as KGroupOperation).group);
 			_appState.selection = new KSelection(list,time);
 			
-			if(centerOffset)
-				_appState.userSetCenterOffset = centerOffset.clone();
+			if(_appState.userSetCenterOffset)
+				_appState.userSetCenterOffset = _appState.userSetCenterOffset.clone();
 			_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
 			_appState.fireGroupingEnabledChangedEvent();
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
@@ -170,8 +181,11 @@ package sg.edu.smu.ksketch.operation
 			if (ungpOp != null)
 				ops.addOperation(ungpOp);
 			
-			var rmOp:IModelOperation = KUngroupUtil.removeAllSingletonGroups(_model,time);
+			var rmOp:IModelOperation = KUngroupUtil.removeAllSingletonGroups(_model);
 			if (rmOp != null)
+				ops.addOperation(rmOp);
+			
+			if ((rmOp = KUngroupUtil.removeAllDuplicateParentKeys(_model)))
 				ops.addOperation(rmOp);
 			
 			_appState.selection = strokes.length()>0 ? new KSelection(strokes,time):_appState.selection;

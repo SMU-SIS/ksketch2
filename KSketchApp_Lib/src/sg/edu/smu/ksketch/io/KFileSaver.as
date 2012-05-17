@@ -29,16 +29,16 @@ package sg.edu.smu.ksketch.io
 		
 		public function saveToDir(content:XML, path:String = null):void
 		{
-			var dir:File = File.documentsDirectory.resolvePath(path);
+			var dir:File = File.applicationStorageDirectory.resolvePath(path);
 			if (!dir.exists)
 				dir.createDirectory();
-				
+			
 			var fileName:String = _generateTimeString() + "-K-Movie.kmv";
-			var file:File = File.documentsDirectory.resolvePath(path+"/"+fileName);
+			var file:File = File.applicationStorageDirectory.resolvePath(path+"/"+fileName);
 			if (file.exists)
 			{
 				fileName = _generateTimeString(true) + "-K-Movie.kmv";
-				file = File.documentsDirectory.resolvePath(path+"/"+fileName);
+				file = File.applicationStorageDirectory.resolvePath(path+"/"+fileName);
 			}
 			var fileStream:FileStream = new FileStream();
 			fileStream.open(file, FileMode.WRITE);

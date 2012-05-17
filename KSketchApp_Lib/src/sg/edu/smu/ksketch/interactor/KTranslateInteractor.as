@@ -1,8 +1,8 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.interactor
 {
@@ -109,21 +109,12 @@ package sg.edu.smu.ksketch.interactor
 			var needGroup:Boolean = isImplicitGrouping() && length > 1;
 			var needUngroup:Boolean = isImplicitGrouping() && length == 1 && 
 				zerothObj is KStroke && zerothObj.getParent(_appState.time) != _facade.root;
-			var ops:KCompositeOperation = new KCompositeOperation();
-			var unGpOp:IModelOperation;
-			var gpOp:IModelOperation;
 			if (needUngroup)
-				unGpOp = _facade.ungroup(objects);
+				return _facade.ungroup(objects);
 			else if (needGroup)
-			{
-				unGpOp = _facade.ungroup(objects);
-				gpOp = _facade.group(objects);
-			}
-			if (unGpOp != null)		
-				ops.addOperation(unGpOp);
-			if (gpOp != null)		
-				ops.addOperation(gpOp);
-			return ops.length == 0 ? null : ops;
+				return _facade.regroup(objects);
+			else
+				return null;
 		}
 	}
 }

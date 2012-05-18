@@ -47,23 +47,7 @@ package sg.edu.smu.ksketch.operation
 		{	
 			return _ungroupObjects(model, root, objs, kskTime);
 		}
-		
-		/**
-		 * Remove duplicate parent key frames for all objects in the model.
-		 */
-		public static function removeAllDuplicateParentKeys(model:KModel):IModelOperation
-		{
-			var ops:KCompositeOperation = new KCompositeOperation();
-			var it:IIterator = model.iterator;
-			while (it.hasNext())
-			{
-				var rmKeyOp:IModelOperation = _removeDuplicateParentKeys(it.next());
-				if (rmKeyOp != null)
-					ops.addOperation(rmKeyOp);
-			}
-			return ops.length > 0 ? ops : null;
-		}
-		
+				
 		/**
 		 * Remove the parent key frames for all objects with endTime greater that time.
 		 */
@@ -218,7 +202,7 @@ package sg.edu.smu.ksketch.operation
 				var key1:IParentKeyFrame = keys[i-1] as IParentKeyFrame; 
 				var key2:IParentKeyFrame = keys[i] as IParentKeyFrame;
 				if (key1.parent.id == key2.parent.id)
-					rmKeys.push(object,object.removeParentKey(key2.endTime));
+					rmKeys.push(object.removeParentKey(key2.endTime));
 			}
 			return rmKeys.length > 0 ? new KRemoveParentKeyFrameOperation(object,rmKeys):null;
 		}
@@ -259,43 +243,54 @@ package sg.edu.smu.ksketch.operation
 					var maxTime:Number = Math.max(tMaxTime,rMaxTime,sMaxTime,ctMaxTime);
 					var matrix1:Matrix = child.getFullPathMatrix(maxTime);
 					
-					//				gp.addActivityKey(time,0);
+					var list:KModelObjectList = new KModelObjectList();
+					list.add(child);
+					var groupTime:Number = KGroupUtil.lastestConsistantParentKeyTime(list,time);
+					
+	//				gp.addActivityKey(time,0);
 					
 					if (!group.children.contains(child))
 						group.add(child);
 					
-					group.addActivityKey(time,1);
-					KGroupUtil.setParentKey(time,child,group);
+	//				group.addActivityKey(time,1);
+					KGroupUtil.setParentKey(groupTime,child,group);
+					
+					var rmOp:IModelOperation = _removeDuplicateParentKeys(child);
+					if (rmOp)
+						ops.addOperation(rmOp);
 					
 					dispatchUngroupOperationEvent(model, gp, child);
 					dispatchUngroupOperationEvent(model, group, gp);					
-					ops.addOperation(new KUngroupOperation(model,child,time,gp,group));		
+					ops.addOperation(new KUngroupOperation(model,child,groupTime,gp,group));		
 					
-					if (time < tMaxTime)
-						KMergerUtil.mergeKeys(child,gp,time,ops,_TRANSLATION_REF);
+					if (groupTime < tMaxTime)
+						KMergerUtil.mergeKeys(child,gp,groupTime,ops,_TRANSLATION_REF);
 					
-					if (time < rMaxTime)
-						KMergerUtil.mergeKeys(child,gp,time,ops,_ROTATION_REF);
+					if (groupTime < rMaxTime)
+						KMergerUtil.mergeKeys(child,gp,groupTime,ops,_ROTATION_REF);
 					
-					if (time < sMaxTime)
-						KMergerUtil.mergeKeys(child,gp,time,ops,_SCALE_REF);
+					if (groupTime < sMaxTime)
+						KMergerUtil.mergeKeys(child,gp,groupTime,ops,_SCALE_REF);
 					
 					group.updateCenter();
 					
 					var matrix2:Matrix = child.getFullPathMatrix(maxTime);
 					var p1:Point = matrix1.transformPoint(child.defaultCenter);
 					var p2:Point = matrix2.transformPoint(child.defaultCenter);
-					if ((p1.x != p2.x || p1.y != p2.y) && time < maxTime)
+					if ((p1.x != p2.x || p1.y != p2.y) && groupTime < maxTime)
 					{
-						var op:IModelOperation = KMergerUtil.addInterpolatedTranslation(
-							child,p2,p1,time,maxTime);
-						if (op != null)
-							ops.addOperation(op);
+						var ipOp:IModelOperation = KMergerUtil.addInterpolatedTranslation(
+							child,p2,p1,groupTime,maxTime);
+						if (ipOp != null)
+							ops.addOperation(ipOp);
 					}
+					if ((rmOp = _removeSingletonGroups(model,group,groupTime)))
+						ops.addOperation(rmOp);
+					
 				}
-				var rmOp:IModelOperation = gp ? _removeSingletonGroups(model,gp,time) : null;
-				if (rmOp)
-					ops.addOperation(rmOp);
+				var op:IModelOperation = gp ? _removeSingletonGroups(model,gp,time) : null;
+				if (op)
+					ops.addOperation(op);
 			}
 			return ops.length > 0 ? ops : null;
 		}

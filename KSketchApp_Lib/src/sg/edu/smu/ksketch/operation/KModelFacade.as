@@ -153,10 +153,7 @@ package sg.edu.smu.ksketch.operation
 			
 			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
 				ops.addOperation(rmOp);
-			
-			if ((rmOp = KUngroupUtil.removeAllDuplicateParentKeys(_model)))
-				ops.addOperation(rmOp);
-			
+						
 			var list:KModelObjectList = new KModelObjectList();
 			list.add((gpOp as KGroupOperation).group);
 			_appState.selection = new KSelection(list,time);
@@ -184,10 +181,7 @@ package sg.edu.smu.ksketch.operation
 			var rmOp:IModelOperation = KUngroupUtil.removeAllSingletonGroups(_model);
 			if (rmOp != null)
 				ops.addOperation(rmOp);
-			
-			if ((rmOp = KUngroupUtil.removeAllDuplicateParentKeys(_model)))
-				ops.addOperation(rmOp);
-			
+						
 			_appState.selection = strokes.length()>0 ? new KSelection(strokes,time):_appState.selection;
 			_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
 			_appState.fireGroupingEnabledChangedEvent();

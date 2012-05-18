@@ -18,6 +18,7 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.model.KModel;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.KStroke;
+	import sg.edu.smu.ksketch.operation.implementations.KActivityOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KRemoveParentKeyFrameOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KUngroupOperation;
@@ -247,17 +248,18 @@ package sg.edu.smu.ksketch.operation
 					list.add(child);
 					var groupTime:Number = KGroupUtil.lastestConsistantParentKeyTime(list,time);
 					
-	//				gp.addActivityKey(time,0);
-					
+					gp.addActivityKey(time,0);
+					ops.addOperation(new KActivityOperation(gp,0,time));
+
 					if (!group.children.contains(child))
 						group.add(child);
 					
 	//				group.addActivityKey(time,1);
 					KGroupUtil.setParentKey(groupTime,child,group);
 					
-					var rmOp:IModelOperation = _removeDuplicateParentKeys(child);
-					if (rmOp)
-						ops.addOperation(rmOp);
+					var op:IModelOperation = _removeDuplicateParentKeys(child);
+					if (op)
+						ops.addOperation(op);
 					
 					dispatchUngroupOperationEvent(model, gp, child);
 					dispatchUngroupOperationEvent(model, group, gp);					
@@ -284,13 +286,13 @@ package sg.edu.smu.ksketch.operation
 						if (ipOp != null)
 							ops.addOperation(ipOp);
 					}
-					if ((rmOp = _removeSingletonGroups(model,group,groupTime)))
-						ops.addOperation(rmOp);
+					if ((op = _removeSingletonGroups(model,group,groupTime)))
+						ops.addOperation(op);
 					
 				}
-				var op:IModelOperation = gp ? _removeSingletonGroups(model,gp,time) : null;
-				if (op)
-					ops.addOperation(op);
+				var rmOp:IModelOperation = gp ? _removeSingletonGroups(model,gp,time) : null;
+				if (rmOp)
+					ops.addOperation(rmOp);
 			}
 			return ops.length > 0 ? ops : null;
 		}

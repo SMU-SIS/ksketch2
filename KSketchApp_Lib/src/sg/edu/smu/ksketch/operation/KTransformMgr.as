@@ -132,7 +132,6 @@ package sg.edu.smu.ksketch.operation
 			_initOperation();
 			_transitionType = transitionType;
 			_prepareKeyframe(ROTATION_REF, time, keyCenter);
-			_updateCenter(_key, keyCenter,time);
 		}
 		
 		public function addToRotation(angle:Number, cursorPoint:Point, 
@@ -242,14 +241,6 @@ package sg.edu.smu.ksketch.operation
 			return ref.insertKey(key);
 		}
 				
-		// Transforms a point based on the inverse of the given matrix
-		private function _invert(m:Matrix,p:Point):Point
-		{
-			var invert:Matrix = m.clone();
-			invert.invert();
-			return invert.transformPoint(p);
-		}
-		
 		// Function invoked to prepare for a real time transition
 		// Puts in place the _key variable that has the correct properties required for the transition
 		// Prepares the reference frame
@@ -341,6 +332,11 @@ package sg.edu.smu.ksketch.operation
 				//Storing the data of the upcoming transition for real time transitions
 				var T1:Number = KAppState.nextKey(time);
 				_key =  _addKeyFrame(transformType,T1,center.x,center.y) as ISpatialKeyframe;
+			}
+			else
+			{
+				if(transformType != TRANSLATION_REF)
+					_updateCenter(_key,center, time);
 			}
 			
 			(_key as ISpatialKeyframe).beginTransform();
@@ -443,18 +439,12 @@ package sg.edu.smu.ksketch.operation
 			ref.append(lastOverWrittenKey);
 			
 			var compensation:Matrix = new Matrix();
+			
 			var currentFullTransform:Matrix = _object.getFullPathMatrix(_prevLatestTime);
-			
-			var oldPosition:Point = _prevFullTransform.transformPoint(_object.defaultCenter);
-			var newPosition:Point = currentFullTransform.transformPoint(_object.defaultCenter);
-			var positionCompensation:Point = oldPosition.subtract(newPosition);
-			
 			var interpreter:Shape = new Shape();
 			currentFullTransform.invert();
 			currentFullTransform.concat(_prevFullTransform);
 			interpreter.transform.matrix = currentFullTransform;
-			var compensateX:Number = positionCompensation.x;
-			var compensateY:Number = positionCompensation.y;
 			var compensateRotate:Number = interpreter.rotation;
 			var compensateScale:Number = interpreter.scaleX;
 			var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
@@ -471,14 +461,6 @@ package sg.edu.smu.ksketch.operation
 			var startInterpolateTime:Number = lastOverWrittenKey.startTime();
 			var endInterpolateTime:Number = lastOverWrittenKey.endTime;
 			var epsilon:Number = 0;
-			//Fix time range for all 3 transform
-			if(Math.abs(compensateX) > epsilon || Math.abs(compensateY) > epsilon)
-			{
-				var transRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
-				_forceKeyAtTime(startInterpolateTime, transRef);
-				_forceKeyAtTime(endInterpolateTime, transRef);
-				_interpolateTranslateOverTime(compensateX, compensateY, startInterpolateTime, endInterpolateTime, transRef);
-			}
 			
 			//Compensate is in degrees
 			if(Math.abs(compensateRotate) > epsilon)
@@ -495,6 +477,21 @@ package sg.edu.smu.ksketch.operation
 				_forceKeyAtTime(startInterpolateTime, scaleRef);
 				_forceKeyAtTime(endInterpolateTime, scaleRef);
 				_interpolateScaleOverTime(compensateScale, startInterpolateTime, endInterpolateTime, scaleRef);
+			}
+			
+			currentFullTransform = _object.getFullPathMatrix(_prevLatestTime);
+			var oldPosition:Point = _prevFullTransform.transformPoint(_object.defaultCenter);
+			var newPosition:Point = currentFullTransform.transformPoint(_object.defaultCenter);
+			var positionCompensation:Point = oldPosition.subtract(newPosition);
+			var compensateX:Number = positionCompensation.x;
+			var compensateY:Number = positionCompensation.y;
+			
+			if(Math.abs(compensateX) > epsilon || Math.abs(compensateY) > epsilon)
+			{
+				var transRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
+				_forceKeyAtTime(startInterpolateTime, transRef);
+				_forceKeyAtTime(endInterpolateTime, transRef);
+				_interpolateTranslateOverTime(compensateX, compensateY, startInterpolateTime, endInterpolateTime, transRef);
 			}
 			
 			_prevFullTransform = new Matrix();			
@@ -520,8 +517,10 @@ package sg.edu.smu.ksketch.operation
 		
 		private function _updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number):void
 		{
-			var oldCenter:Point = targetKey.center;
+			//target key is key. so the center to be updated is actually 
 			
+			var oldCenter:Point = targetKey.center;
+
 			if(Math.abs(newCenter.x-oldCenter.x) > 0.05 || Math.abs(newCenter.y - oldCenter.y) > 0.05)
 			{
 				var prevCenter:Point = _key.center.clone();

@@ -590,6 +590,9 @@ package sg.edu.smu.ksketch.operation
 				addedKeys.push(targetKey);
 				insertOp = new KReplaceKeyframeOperation(_object,refFrame,null,addedKeys);
 			}
+			
+			if(insertOp)
+				_currentOperation.addOperation(insertOp);
 		}
 		
 		private function _interpolateTranslateOverTime(dx:Number, dy:Number, startTime:Number, endTime:Number, refFrame:IReferenceFrame):void

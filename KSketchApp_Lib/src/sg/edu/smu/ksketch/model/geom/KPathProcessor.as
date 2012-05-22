@@ -8,11 +8,14 @@ package sg.edu.smu.ksketch.model.geom
 {
 	import flash.geom.Point;
 	
-	import sg.edu.smu.ksketch.utilities.KMathUtil;
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
+	import sg.edu.smu.ksketch.utilities.KMathUtil;
 
 	public class KPathProcessor
-	{		
+	{	
+		private static const PATH_RADIUS:Number = 100;
+		private static const PATH_DIRECTION:Number = 0.392699; //pi/8
+		
 		public static function mergeTranslationMotionPath(path1:KPath,path2:KPath):KPath
 		{
 			return _mergeXYPath(path1,path2,KTransformMgr.TRANSLATION_REF);		
@@ -305,6 +308,56 @@ package sg.edu.smu.ksketch.model.geom
 				resultPath.addPoint(p1.x+p2.x,p1.y+p2.y,p1.time,type);
 			}
 			return resultPath;				
-		}		
+		}
+		
+		public static function generateTranslationMotionPath(transitionPath:K3DPath):KPath
+		{
+			var motionPath:KPath = new KPath();
+			var currentTransitionPoint:K3DVector;
+			var currentMotionPoint:KPathPoint;
+			var cartesianPoint:Point;
+			
+			for(var i:int = 0; i<transitionPath.length; i++)
+			{
+				currentTransitionPoint = transitionPath[i];
+				motionPath.addPoint(currentTransitionPoint.x,currentTransitionPoint.y,currentTransitionPoint.z);
+			}
+			
+			return motionPath;
+		}
+		
+		public static function generateRotationMotionpath(transitionPath:K2DPath):KPath
+		{
+			var motionPath:KPath = new KPath();
+			var currentTransitionPoint:K2DVector;
+			var currentMotionPoint:KPathPoint;
+			var cartesianPoint:Point;
+			
+			for(var i:int = 0; i<transitionPath.length; i++)
+			{
+				currentTransitionPoint = transitionPath[i];
+				cartesianPoint = Point.polar(PATH_RADIUS,currentTransitionPoint.x);
+				motionPath.addPoint(cartesianPoint.x, cartesianPoint.y, currentTransitionPoint.y);
+			}
+			
+			return motionPath;
+		}
+		
+		public static function generateScaleMotionpath(transitionPath:K2DPath):KPath
+		{
+			var motionPath:KPath = new KPath();
+			var currentTransitionPoint:K2DVector;
+			var currentMotionPoint:KPathPoint;
+			var cartesianPoint:Point;
+			
+			for(var i:int = 0; i<transitionPath.length; i++)
+			{
+				currentTransitionPoint = transitionPath[i];
+				cartesianPoint = Point.polar((1+currentTransitionPoint.x)*PATH_RADIUS,PATH_DIRECTION);
+				motionPath.addPoint(cartesianPoint.x, cartesianPoint.y, currentTransitionPoint.y);
+			}
+			
+			return motionPath;
+		}
 	}
 }

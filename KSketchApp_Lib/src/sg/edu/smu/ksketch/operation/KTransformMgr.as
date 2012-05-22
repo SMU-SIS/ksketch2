@@ -334,7 +334,17 @@ package sg.edu.smu.ksketch.operation
 			else
 			{
 				if(transformType != TRANSLATION_REF)
+				{
+					var oldCenterKey:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+					oldCenterKey.push(_key.clone());
+					var newCenterKey:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+					newCenterKey.push(_key);
+					var changeCenterOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
+						_object, ref, oldCenterKey, newCenterKey);
+					_currentOperation.addOperation(changeCenterOp);
+					
 					_updateCenter(_key,center, time, transformType);
+				}
 			}
 			
 			(_key as ISpatialKeyframe).beginTransform();
@@ -513,7 +523,7 @@ package sg.edu.smu.ksketch.operation
 			}
 		}
 		
-		private function _updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number, transformType:int):void
+		private function _updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number, transformType:int):ISpatialKeyframe
 		{
 			//target key is key. so the center to be updated is actually 
 			
@@ -522,21 +532,12 @@ package sg.edu.smu.ksketch.operation
 			if(Math.abs(newCenter.x-oldCenter.x) > 0.05 || Math.abs(newCenter.y - oldCenter.y) > 0.05)
 			{
 				//Instantiate vectors for operation object
-				var oldKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
-				var newKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
-				
-				oldKeys.push(targetKey.clone());
-				newKeys.push(targetKey);
-				
 				var prevCenter:Point = oldCenter;
 				var prevMatrix:Matrix = _object.getFullMatrix(time);
 				targetKey.center = newCenter.clone();
 				var currentMatrix:Matrix = _object.getFullMatrix(time);
 				prevMatrix.invert();
 				prevMatrix.concat(currentMatrix);
-				var targetRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(transformType);
-				var changeCenterOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(_object, targetRef, oldKeys, newKeys);
-				_currentOperation.addOperation(changeCenterOp);
 				
 				//Add an interpolated translation over the key's time range
 				var transRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
@@ -553,10 +554,10 @@ package sg.edu.smu.ksketch.operation
 						transKey = new KSpatialKeyFrame(time,_object.defaultCenter) as ISpatialKeyframe;
 						transRef.append(transKey);
 						
-						newKeys = new Vector.<IKeyFrame>();
+						var newKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 						newKeys.push(transKey);
 						
-						var insertOp:IModelOperation = new KReplaceKeyframeOperation(_object,transRef,oldKeys,newKeys);
+						var insertOp:IModelOperation = new KReplaceKeyframeOperation(_object,transRef,null,newKeys);
 						_currentOperation.addOperation(insertOp);
 					}
 				}
@@ -565,6 +566,8 @@ package sg.edu.smu.ksketch.operation
 				//Not all translation keys in the time range.
 				transKey.interpolateTranslate(-prevMatrix.tx, -prevMatrix.ty, _currentOperation);
 			}
+			
+			return targetKey;
 		}
 		
 		private function _forceKeyAtTime(time:Number, refFrame:IReferenceFrame):void

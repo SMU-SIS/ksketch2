@@ -112,12 +112,14 @@ package sg.edu.smu.ksketch.operation
 		 */
 		public function endTranslation(time:Number):IModelOperation
 		{
+			_key.endTranslation(_transitionType);
+			
 			var lastOverWrittenKey:ISpatialKeyframe = _findLastOverWrittenKey();
 			
 			if(lastOverWrittenKey)
 				_futureMode(lastOverWrittenKey);
 			
-			_key.endTranslation(_transitionType);
+			
 
 			return _endOperation();
 		}
@@ -246,90 +248,68 @@ package sg.edu.smu.ksketch.operation
 		{			
 			//Perform consistency check on the ref frame, make sure there is a key at created time
 			var ref:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(transformType);
-			var keyHead:IKeyFrame = ref.getAtTime(_object.createdTime);
+			var keyHead:IKeyFrame = ref.earliestKey();
 			_currentTransformType = transformType;
 			_prevLatestTime = _referenceFrameList.latestTime()
 			_prevFullTransform = _object.getFullPathMatrix(_prevLatestTime);
 			
-			if(!keyHead)
-				_addKeyFrame(transformType, _object.createdTime, 
-					_object.defaultCenter.x, _object.defaultCenter.y) as ISpatialKeyframe;
+			_key = ref.lookUp(time) as ISpatialKeyframe;
 			
-			//Look up at the keyframe at time first
-			_key = getKeyFrame(transformType, time);
 			if(_key)
 			{
-				//If a key is found, we need to prepare it for the upcoming transition
-				//First we determine if _key is before or after given time
 				if(_key.endTime < time)
 				{
-					//This case only happens if the last key in the reference frame is
-					//before the given time. We can safely perform an append operation from now onwards.
-					//First, we need a key at the given time first.
-					//This key will represent the start time of _key, required for the transition.
 					_key = _addKeyFrame(transformType, time, center.x, center.y) as ISpatialKeyframe;
 				}
-				else
+				else if(_key.endTime > time)
 				{
-					//A few things to do here
-					if(time < _key.endTime)
-					{
-						// Split the existing key into 2 pieces. The first piece must end at the 
-						// given time while the second piece ends at the original keys' end time.
-						// Need an operation for split keys step.
-						var oldKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
-						oldKeys.push(_key);
-						
-						var splitKeys:Vector.<IKeyFrame> = _key.splitKey(time,_currentOperation,center);
-						
-						_key = splitKeys[0] as ISpatialKeyframe;
-						
-						var splitOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
-							_object, ref, oldKeys, splitKeys);
-						_currentOperation.addOperation(splitOp);
-					}
+					var preSplit:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+					preSplit.push(_key);
 					
-					//Remove the future for demonstrated transitions
-					//Need an operation for removed frames here
-					//Should keep the 
-					var removedKeys:Vector.<IKeyFrame> =  ref.removeAllAfter(time);
+					var splitKeys:Vector.<IKeyFrame> = _key.splitKey(time, new KCompositeOperation(),center);
 					
-					if(removedKeys.length > 0)
-					{
-						var replaceKeyOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
-							_object, ref, removedKeys, null);
-						_currentOperation.addOperation(replaceKeyOp);
-						_overWrittenKeys = new KReferenceFrame();
-						var computeTime:Number = time-KAppState.ANIMATION_INTERVAL;
-	
-						if(computeTime >= 0)
-							_overWrittenKeys.append(_overWrittenKeys.createSpatialKey(
-								computeTime, _key.center.x, _key.center.y));
-						
-						var currentRemovedKey:IKeyFrame;
-						
-						for(var i:int = 0; i< removedKeys.length; i++)
-						{
-							currentRemovedKey = removedKeys[i].clone();
-							_overWrittenKeys.append(currentRemovedKey);
-						}
-					}
-				
-				}
+					_key = splitKeys[0] as ISpatialKeyframe;
+					
+					var splitOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
+						_object, ref, preSplit, splitKeys);
+					_currentOperation.addOperation(splitOp);
+				}				
 			}
 			else
 			{
-				//There are no keys in the reference frame, create one and put it in.
 				_key = _addKeyFrame(transformType,time,center.x,center.y) as ISpatialKeyframe;
-				_key.endTime = time;			
 			}
+			
+			var futureKey:IKeyFrame = _key.next;
+			
+			if(futureKey)
+			{
+				ref.removeSegmentFrom(futureKey);	
+				var removedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+				_overWrittenKeys = new KReferenceFrame();
+				var computeTime:Number = time-KAppState.ANIMATION_INTERVAL;
+	
+				if(computeTime >= 0)
+					_overWrittenKeys.append(_overWrittenKeys.createSpatialKey(
+						computeTime, _key.center.x, _key.center.y));
 
+				while(futureKey)
+				{	
+					_overWrittenKeys.append(futureKey.clone())
+					removedKeys.push(futureKey);
+					futureKey = futureKey.next;
+				}
+				
+				var removeFutureOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(_object, ref, removedKeys, null);
+				_currentOperation.addOperation(removeFutureOp);
+			}
+			
 			if(_transitionType == KAppState.TRANSITION_REALTIME)
 			{
 				//Add a key after the given time, This will be the key frame that is used for
 				//Storing the data of the upcoming transition for real time transitions
-				var T1:Number = KAppState.nextKey(time);
-				_key =  _addKeyFrame(transformType,T1,center.x,center.y) as ISpatialKeyframe;
+				var rtTime:Number = KAppState.nextKey(time);
+				_key =  _addKeyFrame(transformType,rtTime,center.x,center.y) as ISpatialKeyframe;
 			}
 			else
 			{
@@ -436,18 +416,26 @@ package sg.edu.smu.ksketch.operation
 			
 			if(snapToActivity)
 				_snapToActivityKey();
-				
-			if(_key.endTime != lastOverWrittenKey.startTime() || _key.endTime != lastOverWrittenKey.endTime)
-			{
-				lastOverWrittenKey.splitKey(_key.endTime, new KCompositeOperation(),lastOverWrittenKey.center);	
-			}
+			
+			if(lastOverWrittenKey.startTime() < _key.endTime && _key.endTime <= lastOverWrittenKey.startTime())
+				lastOverWrittenKey.splitKey(_key.endTime, _currentOperation,lastOverWrittenKey.center);	
 			
 			var ref:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(
 				_currentTransformType) as KReferenceFrame;
 			ref.append(lastOverWrittenKey);
 			
-			var compensation:Matrix = new Matrix();
+			var addedFutureKey:IKeyFrame = lastOverWrittenKey;
+			var addedFutureKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+			while(addedFutureKey)
+			{
+				addedFutureKeys.push(addedFutureKey);
+				addedFutureKey = addedFutureKey.next;
+			}
 			
+			var appendFutureOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(_object, ref, addedFutureKeys, null);
+			_currentOperation.addOperation(appendFutureOp);
+			
+			var compensation:Matrix = new Matrix();
 			var currentFullTransform:Matrix = _object.getFullPathMatrix(_prevLatestTime);
 			var interpreter:Shape = new Shape();
 			currentFullTransform.invert();
@@ -457,14 +445,6 @@ package sg.edu.smu.ksketch.operation
 			var compensateScale:Number = interpreter.scaleX;
 			var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			var myKey:IKeyFrame = lastOverWrittenKey as IKeyFrame;
-			
-			while(myKey)
-			{
-				addedKeys.push(myKey);
-				myKey = myKey.next;
-			}
-			
-			_currentOperation.addOperation(new KReplaceKeyframeOperation(_object, ref,null,addedKeys));
 			
 			var startInterpolateTime:Number = lastOverWrittenKey.startTime();
 			var endInterpolateTime:Number = lastOverWrittenKey.endTime;
@@ -576,6 +556,7 @@ package sg.edu.smu.ksketch.operation
 			var targetKey:ISpatialKeyframe = refFrame.getAtOrAfter(time) as ISpatialKeyframe;
 			var newKey:ISpatialKeyframe;
 			var keyBefore:ISpatialKeyframe;
+			var preSplit:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			var insertOp:IModelOperation;
 			
@@ -584,10 +565,11 @@ package sg.edu.smu.ksketch.operation
 				//Case there is an active key with end time later than start time
 				if(time < targetKey.endTime)
 				{
+					preSplit.push(targetKey.clone());
 					var postSplit:Vector.<IKeyFrame> = targetKey.splitKey(time, prepareOp);
 					targetKey = postSplit[0] as ISpatialKeyframe;
 					addedKeys.push(targetKey);
-					insertOp = new KReplaceKeyframeOperation(_object,refFrame,null,addedKeys);
+					insertOp = new KReplaceKeyframeOperation(_object,refFrame,preSplit,addedKeys);
 				}
 				//else case there is an active key at time, no need to do anything
 			}
@@ -615,7 +597,7 @@ package sg.edu.smu.ksketch.operation
 			var keyY:Number;
 			var clearedX:Number = 0;
 			var clearedY:Number = 0;
-			
+
 			while(targetKey)
 			{
 				if(endTime < targetKey.endTime)

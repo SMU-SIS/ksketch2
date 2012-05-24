@@ -309,9 +309,9 @@ package sg.edu.smu.ksketch.model.implementations
 		public function getTransformOperation():IModelOperation
 		{
 			return new KReplaceTransformOperation(this,
-				_translateTransform.oldTransform, _translateTransform,
-				_rotateTransform.oldTransform, _rotateTransform,
-				_scaleTransform.oldTransform, _scaleTransform);
+				_translateTransform.oldTransform, translate,
+				_rotateTransform.oldTransform, rotate,
+				_scaleTransform.oldTransform, scale);
 		}
 		
 		public function hasTransform():Boolean

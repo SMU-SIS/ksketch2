@@ -15,7 +15,9 @@ package sg.edu.smu.ksketch.model
 		 * Returns number of keys in this key frame list
 		 */
 		function get numKeys():int;
-
+		
+		function earliestKey():IKeyFrame;
+		
 		/**
 		 * Returns the key frame that should be used to access properties at the give time.
 		 */
@@ -91,7 +93,7 @@ package sg.edu.smu.ksketch.model
 		/**
 		 * Removes all keys after the given key
 		 */
-		function removeSegmentAfter(keyframe:IKeyFrame):void;
+		function removeSegmentFrom(keyframe:IKeyFrame):void;
 		
 		
 		/**

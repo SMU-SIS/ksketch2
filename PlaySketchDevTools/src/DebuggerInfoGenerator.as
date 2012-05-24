@@ -74,7 +74,7 @@ private function _setMatrixTexts(time:Number):void
 	fullPathMatrixText.text = _activeObject.getFullPathMatrix(time).toString();
 	if(_activeObject.getParentKey(time))
 		positionMatrixText.text = (_activeObject.getParentKey(time) as KParentKeyframe).positionMatrix.toString();
-	//positionMatrixText.text = _activeObject.toString();
+	positionMatrixText.text = _activeObject.getPositionMatrix(time).toString()
 	
 	var parentID:int = _activeObject.getParent(time).id;
 	currentParentIDText.text = parentID.toString();

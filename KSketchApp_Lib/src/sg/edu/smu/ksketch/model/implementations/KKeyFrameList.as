@@ -29,6 +29,11 @@ package sg.edu.smu.ksketch.model.implementations
 				return NaN;
 		}
 		
+		public function earliestKey():IKeyFrame
+		{
+			return _keys;
+		}
+		
 		public function latestTime():Number
 		{
 			var lastKey:IKeyFrame = getLastKey();
@@ -387,20 +392,12 @@ package sg.edu.smu.ksketch.model.implementations
 			return returnVector;
 		}
 		
-		public function removeSegmentAfter(keyframe:IKeyFrame):void
+		public function removeSegmentFrom(keyframe:IKeyFrame):void
 		{
-			//If the given key does not exist in the list, throw an error
-			var existingKey:KKeyFrame = getAtTime(keyframe.endTime) as KKeyFrame;
+			var prevKey:KKeyFrame = keyframe.previous as KKeyFrame;
 			
-			if(!existingKey)
-				throw new Error("KKeyFrameList.remove: The given key frame does not exist in this list");
-			
-			if(keyframe.previous)
-			{
-				(keyframe.previous as KKeyFrame).next = null;
-				(keyframe.previous as KKeyFrame).next = null;
-			}
-			
+			prevKey.next = null;
+			(keyframe as KKeyFrame).previous = null;
 		}
 		
 		/**

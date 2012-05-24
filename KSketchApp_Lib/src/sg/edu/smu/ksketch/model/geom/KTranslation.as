@@ -98,7 +98,6 @@ package sg.edu.smu.ksketch.model.geom
 			_currentTranslation = new Point();
 			_currentTranslationPoints = new K3DPath();
 			_oldTransformClone = clone();
-
 		}
 		
 		/**
@@ -114,9 +113,7 @@ package sg.edu.smu.ksketch.model.geom
 				{
 					var startPoint:K3DVector = _currentTranslationPoints.points[0];
 					var endPoint:K3DVector = _currentTranslationPoints.points[_currentTranslationPoints.length-1];
-					var duration:Number = endPoint.z;
-					
-					if(duration != 0)
+					if(endPoint.z != 0)
 					{
 						//Need to change kPath to K3DPath
 						_motionPath.addPoint(startPoint.x, startPoint.y, 0);

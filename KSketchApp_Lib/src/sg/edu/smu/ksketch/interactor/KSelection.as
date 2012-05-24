@@ -139,34 +139,35 @@ package sg.edu.smu.ksketch.interactor
 			{
 				currentObject = it.next();
 				
-				if(currentObject.getVisibility(time) > 0)
-				{	
-					visibleObjects.push(currentObject)
+				
+				if(currentObject is KGroup)
+				{
+					var visibleChildParts:Vector.<KObject> = (currentObject as KGroup).partsVisible(time);
+					if(visibleChildParts.length > 0)
+						visibleObjects = visibleObjects.concat(visibleChildParts);
 				}
 				else
 				{
-					if(currentObject is KGroup)
-					{
-						var visibleChildParts:Vector.<KObject> = (currentObject as KGroup).partsVisible(time);
-						visibleObjects = visibleObjects.concat(visibleChildParts);
+					if(currentObject.getVisibility(time) > 0)
+					{	
+						visibleObjects.push(currentObject)
 					}
 				}
 			}
 			
 			var newList:KModelObjectList = new KModelObjectList();
 			var fullList:Boolean = true;
+
+			if(visibleObjects.length != _fullObjectSet.length())
+				fullList = false;
 			
 			for(var i:int = 0; i<visibleObjects.length; i++)
 			{
 				currentObject = visibleObjects[i];
-				
-				if(!_fullObjectSet.contains(currentObject))
-					fullList = false;
-				
 				if(!newList.contains(currentObject))
 					newList.add(currentObject);	
 			}
-			
+
 			if(fullList)
 				_objects = _fullObjectSet;
 			else

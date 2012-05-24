@@ -112,15 +112,13 @@ package sg.edu.smu.ksketch.operation
 		 */
 		public function endTranslation(time:Number):IModelOperation
 		{
-			_key.endTranslation(_transitionType);
-			
 			var lastOverWrittenKey:ISpatialKeyframe = _findLastOverWrittenKey();
 			
 			if(lastOverWrittenKey)
 				_futureMode(lastOverWrittenKey);
 			
+			_key.endTranslation(_transitionType);
 			
-
 			return _endOperation();
 		}
 		
@@ -264,7 +262,7 @@ package sg.edu.smu.ksketch.operation
 				else if(_key.endTime > time)
 				{
 					var preSplit:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
-					preSplit.push(_key);
+					preSplit.push(_key.clone());
 					
 					var splitKeys:Vector.<IKeyFrame> = _key.splitKey(time, new KCompositeOperation(),center);
 					
@@ -281,11 +279,10 @@ package sg.edu.smu.ksketch.operation
 			}
 			
 			var futureKey:IKeyFrame = _key.next;
-			
 			if(futureKey)
 			{
-				ref.removeSegmentFrom(futureKey);	
 				var removedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+				
 				_overWrittenKeys = new KReferenceFrame();
 				var computeTime:Number = time-KAppState.ANIMATION_INTERVAL;
 	
@@ -293,11 +290,14 @@ package sg.edu.smu.ksketch.operation
 					_overWrittenKeys.append(_overWrittenKeys.createSpatialKey(
 						computeTime, _key.center.x, _key.center.y));
 
+				var nextFuture:IKeyFrame;
+				
 				while(futureKey)
-				{	
-					_overWrittenKeys.append(futureKey.clone())
-					removedKeys.push(futureKey);
-					futureKey = futureKey.next;
+				{
+					_overWrittenKeys.append(futureKey.clone());
+					nextFuture = futureKey.next;
+					removedKeys.push(ref.remove(futureKey));
+					futureKey = nextFuture;
 				}
 				
 				var removeFutureOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(_object, ref, removedKeys, null);
@@ -322,7 +322,6 @@ package sg.edu.smu.ksketch.operation
 					var changeCenterOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
 						_object, ref, oldCenterKey, newCenterKey);
 					_currentOperation.addOperation(changeCenterOp);
-					
 					_updateCenter(_key,center, time, transformType);
 				}
 			}
@@ -418,7 +417,9 @@ package sg.edu.smu.ksketch.operation
 				_snapToActivityKey();
 			
 			if(lastOverWrittenKey.startTime() < _key.endTime && _key.endTime <= lastOverWrittenKey.startTime())
+			{
 				lastOverWrittenKey.splitKey(_key.endTime, _currentOperation,lastOverWrittenKey.center);	
+			}
 			
 			var ref:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(
 				_currentTransformType) as KReferenceFrame;
@@ -431,8 +432,8 @@ package sg.edu.smu.ksketch.operation
 				addedFutureKeys.push(addedFutureKey);
 				addedFutureKey = addedFutureKey.next;
 			}
-			
-			var appendFutureOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(_object, ref, addedFutureKeys, null);
+
+			var appendFutureOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(_object, ref,null, addedFutureKeys);
 			_currentOperation.addOperation(appendFutureOp);
 			
 			var compensation:Matrix = new Matrix();
@@ -458,8 +459,8 @@ package sg.edu.smu.ksketch.operation
 				_forceKeyAtTime(endInterpolateTime, rotateRef);
 				_interpolateRotateOverTime(compensateRotate, startInterpolateTime, endInterpolateTime, rotateRef);
 			}
-			
-			if(Math.abs(compensateScale) > epsilon)
+
+			if((Math.abs(compensateScale)-1) > epsilon)
 			{
 				var scaleRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(SCALE_REF);
 				_forceKeyAtTime(startInterpolateTime, scaleRef);
@@ -538,6 +539,7 @@ package sg.edu.smu.ksketch.operation
 						newKeys.push(transKey);
 						
 						var insertOp:IModelOperation = new KReplaceKeyframeOperation(_object,transRef,null,newKeys);
+						(insertOp as KReplaceKeyframeOperation).actionType = "update center";
 						_currentOperation.addOperation(insertOp);
 					}
 				}
@@ -559,7 +561,7 @@ package sg.edu.smu.ksketch.operation
 			var preSplit:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			var insertOp:IModelOperation;
-			
+	
 			if(targetKey)
 			{
 				//Case there is an active key with end time later than start time
@@ -584,7 +586,10 @@ package sg.edu.smu.ksketch.operation
 			}
 			
 			if(insertOp)
+			{
+				(insertOp as KReplaceKeyframeOperation).actionType = "force insert"
 				_currentOperation.addOperation(insertOp);
+			}
 		}
 		
 		private function _interpolateTranslateOverTime(dx:Number, dy:Number, startTime:Number, endTime:Number, refFrame:IReferenceFrame):void

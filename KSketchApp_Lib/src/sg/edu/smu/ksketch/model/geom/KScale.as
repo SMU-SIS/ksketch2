@@ -153,7 +153,6 @@ package sg.edu.smu.ksketch.model.geom
 				KPathProcessor.interpolateScaleTransitionPath(_transitionPath.points, _currentScale);
 			}
 			
-			
 			_currentScale = 0;
 			_currentScalePoints = new K3DPath();
 		}
@@ -164,10 +163,8 @@ package sg.edu.smu.ksketch.model.geom
 				return (1+_currentScale);
 			var pathPoint:K2DVector = _transitionPath.getPoint(proportion);
 			
-			var scaleChange:Number = _currentScale;
-			
-			var result:Number = 1 + pathPoint.x + scaleChange;
-			return result
+			var result:Number = 1 + pathPoint.x + _currentScale;
+			return absolute(result);
 		}
 		
 		/**
@@ -191,6 +188,7 @@ package sg.edu.smu.ksketch.model.geom
 			scale.path = KPathProcessor.mergeScaleMotionPath(_path, transform.path);
 			scale.transitionPath = KPathProcessor.mergeScaleTransitionPath(
 				_transitionPath, transform.transitionPath);
+			
 			return scale;		
 		}
 		
@@ -218,6 +216,14 @@ package sg.edu.smu.ksketch.model.geom
 			//_path.addPoint(0,time);
 			_transitionPath.push(1,0);
 			_transitionPath.push(1,time);
+		}
+		
+		private function absolute(value:Number):Number
+		{
+			if(value < 0)
+				value *= -1;
+			
+			return value;
 		}
 	}
 }

@@ -248,8 +248,8 @@ package sg.edu.smu.ksketch.operation
 					list.add(child);
 					var groupTime:Number = KGroupUtil.lastestConsistantParentKeyTime(list,time);
 					
-					gp.addActivityKey(time,0);
-					ops.addOperation(new KActivityOperation(gp,0,time));
+	//				gp.addActivityKey(groupTime,0);
+	//				ops.addOperation(new KActivityOperation(gp,0,groupTime));
 
 					if (!group.children.contains(child))
 						group.add(child);

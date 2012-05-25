@@ -34,6 +34,7 @@
 			private var _pixelPerFrame:Number;
 			private var _slider:TimeSlider;
 			private var _type:int;
+			private var _futureConstant:Boolean = true;
 			
 			//Variables associated with dragging.
 			private var _targetMarker:Marker;
@@ -237,6 +238,9 @@
 					currentMarker.updateX(_roundPosition(currentMarker.originalPosition+(_changeX-posFromTarget)));
 				}
 				
+				if(_futureConstant)
+					_moveUpcomingMarkers();
+	
 				_onMoveStackMarkers()
 				_onMoveUnstackMarkers();
 				
@@ -367,10 +371,10 @@
 							if(!currentMarker.selected)
 								continue;
 					
-					/*if(_targetMarker.originalPosition < currentMarker.originalPosition)
+					if(_targetMarker.originalPosition < currentMarker.originalPosition)
 					{
 						currentMarker.updateX(Math.ceil(currentMarker.originalPosition + _changeX));
-					}*/
+					}
 				}
 			}
 			

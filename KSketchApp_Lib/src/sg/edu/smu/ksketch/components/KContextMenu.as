@@ -34,9 +34,12 @@ package sg.edu.smu.ksketch.components
 			<root>
 				<menuitem label="Copy(Ctr+C)"/>
                 <menuitem label="Paste Object(Ctrl+V)"/>
-			<!--
-                <menuitem label="Insert KeyFrame"/>
-			-->
+			</root>;
+		
+		[Bindable]
+		public static var MENU_ITEMS_WITH_SEL_AND_ON_TRACK:XML = 
+			<root>
+				<menuitem label="Insert KeyFrame"/>
 			</root>;
 		
 		[Bindable]
@@ -73,9 +76,9 @@ package sg.edu.smu.ksketch.components
 				case "Paste Object(Ctrl+V)":
 					_executor.doMenuCommand(KLogger.MENU_CONTEXT_MENU_PASTE);
 					break;
-			//	case "Insert KeyFrame":
-			//		_insertKeyFrames();
-			//		break;
+				case "Insert KeyFrame":
+					_insertKeyFrames();
+					break;
 			}
 						   
 		   _executor.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));	
@@ -100,45 +103,7 @@ package sg.edu.smu.ksketch.components
 		//Function to insert blank key frames into the selected object's timeline
 		private function _insertKeyFrames():void
 		{
-			if(_appState.selection)
-			{			
-				var KMObjectList:KModelObjectList=new KModelObjectList();
-				var snapShotOperationComposite:KCompositeOperation = new KCompositeOperation;
-				_objectsTotal= _appState.selection.objects;
-				
-				var op:IModelOperation;
-/*				
-				//For each selected object
-				//Add a blank keyframe at appstate time.
-				for(var k:int=0; k<_objectsTotal.length(); k++)
-			  	{
-					//Perform the add blank keyframe operation.
-					//If a keyframe exists at the time, the function will return a null operation.
-					op = _kOperationMgr.addSnapShotKeyframe(_appState.selection.objects.getObjectAt(k),_appState.time, "POSITION");
-					
-					//Only add the operation to the operation list if it is not null
-					if(op)
-						snapShotOperationComposite.addOperation(op);
-					
-					op = _kOperationMgr.addSnapShotKeyframe(_appState.selection.objects.getObjectAt(k),_appState.time, "ROTATION");
-					
-					if(op)
-						snapShotOperationComposite.addOperation(op);
-					
-					op = _kOperationMgr.addSnapShotKeyframe(_appState.selection.objects.getObjectAt(k),_appState.time, "SCALE");
-					
-					if(op)
-						snapShotOperationComposite.addOperation(op);
-			  	}	 				  
-*/				
-				//If at least a frame is added, create an operation and add the operation to the undo stack.
-				if(snapShotOperationComposite.length > 0)
-				{
-			    	var myInteractiveOp:KInteractionOperation= new KInteractionOperation(_appState, _appState.time,
-					_appState.time, new KSelection(_objectsTotal, _appState.time), new KSelection(_objectsTotal, _appState.time), snapShotOperationComposite);
-				    _appState.addOperation(myInteractiveOp);			  			  	
-				}
-			}
+			trace("inserting keys");
 		}
 		
 		private function selectedObjects():String
@@ -178,7 +143,17 @@ package sg.edu.smu.ksketch.components
 		
 		public function set withSelection(value:Boolean):void
 		{
-			dataProvider = value ? MENU_ITEMS_WITH_SEL : MENU_ITEMS_NO_SEL;
+			if(value)
+			{
+				if(_appState.targetTrackBox >= 0)
+					dataProvider = MENU_ITEMS_WITH_SEL_AND_ON_TRACK;
+				else
+					dataProvider = MENU_ITEMS_WITH_SEL;
+			}
+			else
+			{
+				dataProvider = MENU_ITEMS_NO_SEL;
+			}
 		}
 			
 		public static function createMenu(parent:DisplayObjectContainer, appState:KAppState, 

@@ -30,6 +30,8 @@ package sg.edu.smu.ksketch.operation
 		public static const TRANSLATION_REF:int = 0;
 		public static const ROTATION_REF:int = 2;
 		public static const SCALE_REF:int = 1;
+		public static const ALL_REF:int = 3;
+		public static const NO_REF:int = -1;
 		
 		private var _object:KObject;
 		private var _key:ISpatialKeyframe;

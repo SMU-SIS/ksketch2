@@ -24,6 +24,7 @@ package sg.edu.smu.ksketch.components
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
+	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 		
@@ -103,7 +104,22 @@ package sg.edu.smu.ksketch.components
 		//Function to insert blank key frames into the selected object's timeline
 		private function _insertKeyFrames():void
 		{
-			trace("inserting keys");
+			if(_appState.targetTrackBox < 0)
+				return;
+			
+			if(_appState.selection)
+			{
+				var objects:IModelObjectList = _appState.selection.objects;
+				
+				if(objects && objects.length()>0)
+				{
+					var it:IIterator = objects.iterator;
+					var insertKeyOp:KCompositeOperation = new KCompositeOperation();
+					while(it.hasNext())
+						insertKeyOp.addOperation(it.next().insertBlankKey(_appState.targetTrackBox,_appState.time));
+					_appState.addOperation(insertKeyOp);
+				}
+			}
 		}
 		
 		private function selectedObjects():String

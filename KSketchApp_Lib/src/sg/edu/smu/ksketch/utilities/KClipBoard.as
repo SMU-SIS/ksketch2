@@ -79,7 +79,7 @@ package sg.edu.smu.ksketch.utilities
 			{	
 				var ctr:Point = (object as KGroup).defaultCenter.add(new Point(offset,offset)); 
 				var group:KGroup = new KGroup(id,kskTime,new KModelObjectList(),ctr);
-				var it:IIterator = (object as KGroup).directChildIterator(kskTime);
+				var it:IIterator = (object as KGroup).directChildIterator(object.createdTime);
 				while (it.hasNext())
 				{
 					var obj:KObject = copyObject(model,it.next(),kskTime,offset);

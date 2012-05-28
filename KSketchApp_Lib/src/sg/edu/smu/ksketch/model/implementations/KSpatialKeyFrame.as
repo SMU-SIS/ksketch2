@@ -25,6 +25,7 @@ package sg.edu.smu.ksketch.model.implementations
 		public static const INTERPOLATE_FULL:int = 1;
 		public static const INSTANT_TRANSFORM:int = 2;
 		public static const INTERPOLATION_RADIUS:Number = 100;
+		public static const EPSILON:Number = 0.05;
 		
 		private var _center:Point;
 		private var _translateTransform:KTranslation;
@@ -316,8 +317,21 @@ package sg.edu.smu.ksketch.model.implementations
 		
 		public function hasTransform():Boolean
 		{
-			return _translateTransform.hasTransform||
-				_rotateTransform.hasTransform||_scaleTransform.hasTransform;	
+			if(!_previous)
+				return false;
+			
+			var currentMatrix:Matrix = getFullMatrix(_endTime, new Matrix());
+			var previousMatrix:Matrix = (_previous as KSpatialKeyFrame).getFullMatrix(_previous.endTime, new Matrix());
+			
+			if(currentMatrix.a - previousMatrix.a > 0 ||
+				currentMatrix.b - previousMatrix.b > 0 ||
+				currentMatrix.c - previousMatrix.c > 0 ||
+				currentMatrix.d - previousMatrix.d > 0 ||
+				currentMatrix.tx - previousMatrix.tx > 0 ||
+				currentMatrix.ty - previousMatrix.ty > 0)
+				return true;
+			
+			return false;
 		}
 		
 		public function interpolateTranslate(dx:Number, dy:Number, operation:KCompositeOperation):void

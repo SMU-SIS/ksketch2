@@ -24,6 +24,18 @@
 			private var _clone:Marker;
 			private var _hasTransform:Boolean;
 			private var _activityBars:Vector.<ActivityBar>;
+			private var _color:uint;
+			private var _barThickness:Number;
+
+			public function get markerColor():uint
+			{
+				return _color;
+			}
+
+			public function set markerColor(value:uint):void
+			{
+				_color = value;
+			}
 
 			public function get activityBars():Vector.<ActivityBar>
 			{
@@ -76,11 +88,15 @@
 				_selected = value;
 				if(_selected)
 				{
-					markerOutline.color = 0xFF0000;
-					markerFill.color = 0xFF0000;
+					markerOutline.color = 0x0000;
+					markerOutline.weight = 2
+					markerFill.color = 0xFFFFFF;
+					markerRect.height = 13;
 				}
 				else
 				{
+					markerRect.height = 15;
+					markerOutline.weight = 0;
 					markerOutline.color = 0x000000;
 					markerFill.color = 0x000000;
 				}
@@ -94,6 +110,21 @@
 			public function set type(value:int):void
 			{
 				_type = value;
+				if(_type == TimeWidget.OVERVIEW)
+				{
+					_color = 0x000000;
+				}
+				else
+				{
+					alpha = 0;
+
+					if(_type == TimeWidget.TRANSLATE)
+						_color = 0x0000FF;
+					else if(_type == TimeWidget.ROTATE)
+						_color = 0x00FF00;
+					else if(_type == TimeWidget.SCALE)
+						_color = 0xFF0000;
+				}
 			}
 
 			public function get time():Number
@@ -176,7 +207,7 @@
 		]]>
 	</fx:Script>
 	
-	<s:Rect height="15" width="11">                              
+	<s:Rect height="15" width="11" id="markerRect">                              
 		<s:stroke>
 			<s:SolidColorStroke color="0x000000" weight="0" id="markerOutline"/>
 		</s:stroke>

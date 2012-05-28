@@ -480,11 +480,8 @@
 								
 								if(currentLeftKey == currentRightKey.previous)
 								{
-									if((currentRightKey as ISpatialKeyframe).hasTransform())
-									{
-										targetLeftMarker = currentLeftMarker;
-										break;
-									}
+									targetLeftMarker = currentLeftMarker;
+									break;
 								}
 							}
 						}
@@ -506,8 +503,8 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Group id="barContainer"/>
+	<s:Group id="barContainer" y="2.5"/>
 	<s:Group id="markerContainer" y="2.5"/>
-	<s:Group id="selectedBarContainer"/>
+	<s:Group id="selectedBarContainer" y="2.5" />
 	<s:Group id="selectedMarkerContainer" y="2.5"/>
 </s:BorderContainer>

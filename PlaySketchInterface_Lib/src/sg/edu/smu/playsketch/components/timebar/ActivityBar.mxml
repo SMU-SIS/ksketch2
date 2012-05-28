@@ -32,22 +32,41 @@
 			
 			public function renderBar():void
 			{
-				x = _leftMarker.x;
-				bar.width = _rightMarker.x - x;
-				if(_leftMarker.selected)
+				x = _leftMarker.x+_leftMarker.width*0.75;
+				bar.width = _rightMarker.x +_rightMarker.width*0.25 - x-1;
+				
+				if(_rightMarker.hasTransform)
 				{
-					barFill.color = 0xFF0000;
-					bar.height = 4;
-					bar.y = 8;
-					selected = true;
+					if(_leftMarker.type == TimeWidget.OVERVIEW)
+					{
+						bar.height = 8;
+						bar.y = 2.5;
+					}
+					else
+					{
+						bar.y = 1.5;
+						bar.height = 12;
+					}
+					
+					barFill.color = _leftMarker.markerColor;
 				}
 				else
 				{
-					barFill.color = 0x000000;
-					bar.height = 4;
-					bar.y = 8
-					selected = false;
+					if(_leftMarker.type == TimeWidget.OVERVIEW)
+					{
+						bar.height = 4;
+						bar.y = 4.5;
+					}
+					else
+					{
+						bar.y = 1.5;
+						bar.height = 12;
+					}
+					
+					barFill.color = 0xFFFFFF;
 				}
+				
+				barOutline.color = _leftMarker.markerColor;
 			}
 
 			public function get leftMarker():Marker
@@ -72,7 +91,10 @@
 		]]>
 	</fx:Script>
 	
-	<s:Rect height="4" id="bar" width="0" y="8">                              
+	<s:Rect height="4" id="bar" width="0" y="8">                           
+		<s:stroke>
+			<s:SolidColorStroke color="0x000000" weight="1" id="barOutline"/>
+		</s:stroke>
 		<s:fill>
 			<s:SolidColor color="0x000000" alpha="1" id="barFill"/>
 		</s:fill>

@@ -23,8 +23,10 @@ package sg.edu.smu.ksketch.model
 	import sg.edu.smu.ksketch.model.implementations.KReferenceFrame;
 	import sg.edu.smu.ksketch.model.implementations.KReferenceFrameList;
 	import sg.edu.smu.ksketch.model.implementations.KSpatialKeyFrame;
+	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KGroupUtil;
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
+	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.utilities.ErrorMessage;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	
@@ -363,6 +365,29 @@ package sg.edu.smu.ksketch.model
 				key = key.next;
 			}
 			return keys;
+		}
+		
+		public function insertBlankKey(type:int, time:Number):IModelOperation
+		{
+			var operation:KCompositeOperation = new KCompositeOperation();
+			var refFrame:IReferenceFrame;
+			
+			if(type == KTransformMgr.ALL_REF)
+			{
+				refFrame = _referenceFrameList.getReferenceFrameAt(KTransformMgr.TRANSLATION_REF);
+				_transformMgr.forceKeyAtTime(time, refFrame, operation);
+				refFrame = _referenceFrameList.getReferenceFrameAt(KTransformMgr.ROTATION_REF);
+				_transformMgr.forceKeyAtTime(time, refFrame, operation);
+				refFrame = _referenceFrameList.getReferenceFrameAt(KTransformMgr.SCALE_REF);
+				_transformMgr.forceKeyAtTime(time, refFrame, operation);
+			}
+			else
+			{
+				refFrame = _referenceFrameList.getReferenceFrameAt(type);
+				_transformMgr.forceKeyAtTime(time, refFrame, operation);
+			}
+
+			return operation;
 		}
 	}
 }

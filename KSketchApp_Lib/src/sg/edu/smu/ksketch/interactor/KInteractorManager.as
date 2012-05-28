@@ -27,6 +27,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
+	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.KUngroupUtil;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
@@ -309,7 +310,6 @@ package sg.edu.smu.ksketch.interactor
 					+_state+" state!");
 			
 			var sbRoot:DisplayObject = _canvas.systemManager.getSandboxRoot();
-			
 			// MouseUp event listener
 			if(event.type == MouseEvent.MOUSE_DOWN)
 				sbRoot.addEventListener(MouseEvent.MOUSE_UP, _onMouseUp_specialMode, true);
@@ -338,7 +338,6 @@ package sg.edu.smu.ksketch.interactor
 			var sbRoot:DisplayObject = _canvas.systemManager.getSandboxRoot();
 			sbRoot.removeEventListener(event.type, _onMouseUp_specialMode, true);
 			sbRoot.removeEventListener(MouseEvent.MOUSE_MOVE, _updateInteraction, true);
-			
 			_canvas.systemManager.deployMouseShields(false);
 			
 			// state transition
@@ -823,13 +822,27 @@ package sg.edu.smu.ksketch.interactor
 		private function _endInteraction(event:MouseEvent):void
 		{
 			var p:Point = getEventCoordinate(event,_canvas);
+			updateTargetTrack(event.stageX, event.stageY);
 			_currentInteractor.end(p);
-			
 			if(_log != null)
 			{
 				KLogger.logObject(_log);
 				_log = null;
 			}
+		}
+		
+		private function updateTargetTrack(x:Number, y:Number):void
+		{
+			if(_appState.overViewTrackBox.contains(x,y))
+				_appState.targetTrackBox = KTransformMgr.ALL_REF;
+			else if(_appState.translateTrackBox.contains(x,y))
+				_appState.targetTrackBox = KTransformMgr.TRANSLATION_REF;
+			else if(_appState.rotateTrackBox.contains(x,y))
+				_appState.targetTrackBox = KTransformMgr.ROTATION_REF;
+			else if(_appState.scaleTrackBox.contains(x,y))
+				_appState.targetTrackBox = KTransformMgr.SCALE_REF;
+			else
+				_appState.targetTrackBox = KTransformMgr.NO_REF;
 		}
 	}
 }

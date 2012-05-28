@@ -154,6 +154,8 @@ public function update_interface():void
 	    imgTitleWindow.x=(appCanvas.width/2)-150-(imgTitleWindow.width/4);
 	    imgTitleWindow.y=(appCanvas.height/2)-100-(imgTitleWindow.height/4);
     }
+	
+	computeTrackPositions();
 }
 
 
@@ -202,12 +204,10 @@ public function set stageAspectRatio(value:Boolean):void
 	update_interface();
 }
 
-/*
-Function to output the drawings as swf.The drawings will be scaled to a video resolution and output
-Assuming that playsketch drawings are done in the aspect ratios as set above (HD or Normal)
-Assume also that the contents are vectors and hence the effects of the scaling up and down are minimal.
-*/
-public function outputSWF():void
+public function computeTrackPositions():void
 {
-
+	appState.overViewTrackBox = timeWidget.getBounds(this.stage);
+	appState.translateTrackBox = expandedWidget1.getBounds(this.stage);
+	appState.rotateTrackBox = expandedWidget2.getBounds(this.stage);
+	appState.scaleTrackBox = expandedWidget3.getBounds(this.stage);
 }

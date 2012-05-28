@@ -10,6 +10,7 @@ package sg.edu.smu.ksketch.utilities
 	import flash.events.EventDispatcher;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
 	import flash.ui.Keyboard;
 	import flash.utils.Timer;
@@ -98,6 +99,12 @@ package sg.edu.smu.ksketch.utilities
 		public var updateFacadeCenterMode:Function;
 		public var updateFacadeRefactorMode:Function;
 		public var updateFacadeCreationMode:Function;
+		
+		public var overViewTrackBox:Rectangle;
+		public var translateTrackBox:Rectangle;
+		public var rotateTrackBox:Rectangle;
+		public var scaleTrackBox:Rectangle;
+		public var targetTrackBox:int;
 		
 		private static var _time:Number; 
 		

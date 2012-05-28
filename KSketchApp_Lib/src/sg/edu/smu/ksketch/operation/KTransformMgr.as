@@ -30,6 +30,8 @@ package sg.edu.smu.ksketch.operation
 		public static const TRANSLATION_REF:int = 0;
 		public static const ROTATION_REF:int = 2;
 		public static const SCALE_REF:int = 1;
+		public static const ALL_REF:int = 3;
+		public static const NO_REF:int = -1;
 		
 		private var _object:KObject;
 		private var _key:ISpatialKeyframe;
@@ -455,16 +457,16 @@ package sg.edu.smu.ksketch.operation
 			if(Math.abs(compensateRotate) > epsilon)
 			{
 				var rotateRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(ROTATION_REF);
-				_forceKeyAtTime(startInterpolateTime, rotateRef);
-				_forceKeyAtTime(endInterpolateTime, rotateRef);
+				forceKeyAtTime(startInterpolateTime, rotateRef,_currentOperation);
+				forceKeyAtTime(endInterpolateTime, rotateRef,_currentOperation);
 				_interpolateRotateOverTime(compensateRotate, startInterpolateTime, endInterpolateTime, rotateRef);
 			}
 
 			if((Math.abs(compensateScale)-1) > epsilon)
 			{
 				var scaleRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(SCALE_REF);
-				_forceKeyAtTime(startInterpolateTime, scaleRef);
-				_forceKeyAtTime(endInterpolateTime, scaleRef);
+				forceKeyAtTime(startInterpolateTime, scaleRef,_currentOperation);
+				forceKeyAtTime(endInterpolateTime, scaleRef,_currentOperation);
 				_interpolateScaleOverTime(compensateScale, startInterpolateTime, endInterpolateTime, scaleRef);
 			}
 			
@@ -478,8 +480,8 @@ package sg.edu.smu.ksketch.operation
 			if(Math.abs(compensateX) > epsilon || Math.abs(compensateY) > epsilon)
 			{
 				var transRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
-				_forceKeyAtTime(startInterpolateTime, transRef);
-				_forceKeyAtTime(endInterpolateTime, transRef);
+				forceKeyAtTime(startInterpolateTime, transRef,_currentOperation);
+				forceKeyAtTime(endInterpolateTime, transRef,_currentOperation);
 				_interpolateTranslateOverTime(compensateX, compensateY, startInterpolateTime, endInterpolateTime, transRef);
 			}
 			
@@ -552,14 +554,12 @@ package sg.edu.smu.ksketch.operation
 			return targetKey;
 		}
 		
-		private function _forceKeyAtTime(time:Number, refFrame:IReferenceFrame):void
+		public function forceKeyAtTime(time:Number, refFrame:IReferenceFrame, operation:KCompositeOperation):void
 		{
 			var prepareOp:KCompositeOperation = new KCompositeOperation();
 			var targetKey:ISpatialKeyframe = refFrame.getAtOrAfter(time) as ISpatialKeyframe;
 			var newKey:ISpatialKeyframe;
 			var keyBefore:ISpatialKeyframe;
-			var preSplit:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
-			var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			var insertOp:IModelOperation;
 	
 			if(targetKey)
@@ -567,11 +567,10 @@ package sg.edu.smu.ksketch.operation
 				//Case there is an active key with end time later than start time
 				if(time < targetKey.endTime)
 				{
+					var preSplit:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 					preSplit.push(targetKey.clone());
 					var postSplit:Vector.<IKeyFrame> = targetKey.splitKey(time, prepareOp);
-					targetKey = postSplit[0] as ISpatialKeyframe;
-					addedKeys.push(targetKey);
-					insertOp = new KReplaceKeyframeOperation(_object,refFrame,preSplit,addedKeys);
+					insertOp = new KReplaceKeyframeOperation(_object,refFrame,preSplit,postSplit);
 				}
 				//else case there is an active key at time, no need to do anything
 			}
@@ -581,15 +580,13 @@ package sg.edu.smu.ksketch.operation
 				keyBefore = refFrame.getAtOrBeforeTime(time) as ISpatialKeyframe;
 				targetKey = refFrame.createSpatialKey(time,keyBefore.center.x, keyBefore.center.y);
 				refFrame.insertKey(targetKey);
+				var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 				addedKeys.push(targetKey);
 				insertOp = new KReplaceKeyframeOperation(_object,refFrame,null,addedKeys);
 			}
 			
 			if(insertOp)
-			{
-				(insertOp as KReplaceKeyframeOperation).actionType = "force insert"
-				_currentOperation.addOperation(insertOp);
-			}
+				operation.addOperation(insertOp);
 		}
 		
 		private function _interpolateTranslateOverTime(dx:Number, dy:Number, startTime:Number, endTime:Number, refFrame:IReferenceFrame):void

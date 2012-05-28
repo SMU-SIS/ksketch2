@@ -63,9 +63,9 @@
 			private static const _GREEN_PEN:String = KPenMenu.LABEL_GREEN;
 			private static const _BLUE_PEN:String = KPenMenu.LABEL_BLUE;
 			private static const _ERASER:String = KPenMenu.LABEL_WHITE;
-			private static const _PEN_COLORS:Array = [_BLACK_PEN,_RED_PEN,_GREEN_PEN,_BLUE_PEN];
+			private static const _PEN_COLORS:Array = [_BLACK_PEN,_RED_PEN,_GREEN_PEN,_BLUE_PEN,_ERASER];
 			private static const _PEN_COMMANDS:Array = [KLogger.BTN_BLACK_PEN,
-				KLogger.BTN_RED_PEN,KLogger.BTN_GREEN_PEN,KLogger.BTN_BLUE_PEN];
+				KLogger.BTN_RED_PEN,KLogger.BTN_GREEN_PEN,KLogger.BTN_BLUE_PEN,KLogger.BTN_ERASER];
 			
 			public function get facade():KModelFacade
 			{
@@ -94,12 +94,14 @@
 				initTimebar();
 			
 				appCanvas.addEventListener(MenuEvent.ITEM_CLICK, function(event:MenuEvent):void
-					{
-						var label:String = event.item.@label;
-						var index:int = _PEN_COLORS.indexOf(label);
-						if (0 <= index && index <= 4)
-							_switchPen(list_pen_selection.selectedIndex = index);
-					});
+				{
+					var label:String = event.item.@label;
+					_switchPen(list_pen_selection.selectedIndex = _PEN_COLORS.indexOf(label));
+				});
+				appCanvas.addEventListener(KCommandEvent.EVENT_PEN_CHANGE, function(event:KCommandEvent):void
+				{
+					_switchPen(list_pen_selection.selectedIndex = _PEN_COLORS.indexOf(event.command));
+				});
 			}
 			
 			public function initialiseMouseCursors(pen:String,bitmap:Bitmap):void
@@ -170,20 +172,10 @@
 			
 			private function _switchPen(index:int):void
 			{
-				if (index >= 0)
-				{
-					var itemColors:Array =list_pen_selection.getStyle("alternatingItemColors");
-					list_pen_selection.setStyle("selectionColor",itemColors[index]);
-					list_pen_selection.setStyle("chromeColor",itemColors[index]);
-					_commandExecutor.doButtonCommand(_PEN_COMMANDS[index]);
-				}
-				else
-				{
-					list_pen_selection.selectedIndex = -1;
-					list_pen_selection.prompt = "Eraser";
-					list_pen_selection.setStyle("selectionColor","#666666");
-					list_pen_selection.setStyle("chromeColor","#666666");
-				}
+				var itemColors:Array =list_pen_selection.getStyle("alternatingItemColors");
+				list_pen_selection.setStyle("selectionColor",itemColors[index]);
+				list_pen_selection.setStyle("chromeColor",itemColors[index]);
+				_commandExecutor.doButtonCommand(_PEN_COMMANDS[index]);
 			}
 		]]>
 	</fx:Script>
@@ -240,12 +232,6 @@
 						<s:layout>
 							<s:HorizontalLayout/>
 						</s:layout>
-					<!--	
-						<s:Button id="btn_toggleVisibility" height="24" width="30" 
-								  styleName="buttonVisibility_style_toggle" toolTip="Toggle Visibility" />
-					-->
-						<s:Button id="btn_Eraser" styleName="buttonEraser_style" width="30" height="24"
-								  toolTip="Activate Eraser" click="_switchPen(-1)" visible="false" includeInLayout="false" />
 						<s:Button id="btn_FLV" styleName="buttonFlvExport_style_toggle" width="30" height="24"
 								  toolTip="FLV Export" click="flvWizardWindow()"/>	
 						<s:Button id="btn_IMG" width="35" height="24" styleName="buttonWebcam_style_toggle"

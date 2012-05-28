@@ -20,6 +20,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.components.KCanvas;
 	import sg.edu.smu.ksketch.components.KContextMenu;
 	import sg.edu.smu.ksketch.components.KPenMenu;
+	import sg.edu.smu.ksketch.event.KCommandEvent;
 	import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 	import sg.edu.smu.ksketch.event.KFileSavedEvent;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
@@ -44,6 +45,7 @@ package sg.edu.smu.ksketch.interactor
 		protected var _facade:KModelFacade;
 		protected var _canvas:KCanvas;
 		protected var _penSelectionMenu:KPenMenu;
+		protected var _prevPenColor:uint;		
 		
 		public function KCommandExecutor(appState:KAppState, canvas:KCanvas, facade:KModelFacade)
 		{
@@ -172,12 +174,21 @@ package sg.edu.smu.ksketch.interactor
 					_redo()
 					break;
 				case GestureDesign.NAME_PRE_UNDO:
-					_undo();			 
+					_undo();
 					break;
 				case GestureDesign.NAME_PRE_TOGGLE:
 					_appState.isPen = !_appState.isPen;					
 					if (_canvas.interactorManager is KInteractorManager)
-						(_canvas.interactorManager as KInteractorManager).setEraseMode(_appState.isPen);
+						(_canvas.interactorManager as KInteractorManager).setEraseMode(!_appState.isPen);
+					if (!_appState.isPen)
+					{
+						_prevPenColor = _appState.penColor;
+						_configurePen(KPenMenu.LABEL_WHITE);
+					}
+					else
+						_configurePen(KPenMenu.getLabel(_prevPenColor));
+					_canvas.dispatchEvent(new KCommandEvent(
+						KCommandEvent.EVENT_PEN_CHANGE,KPenMenu.getLabel(_appState.penColor)));
 					break;
 				case GestureDesign.NAME_PRE_SELECT_PEN:
 					if(_penSelectionMenu == null)

@@ -63,9 +63,9 @@
 			private static const _GREEN_PEN:String = KPenMenu.LABEL_GREEN;
 			private static const _BLUE_PEN:String = KPenMenu.LABEL_BLUE;
 			private static const _ERASER:String = KPenMenu.LABEL_WHITE;
-			private static const _PEN_COLORS:Array = [_BLACK_PEN,_RED_PEN,_GREEN_PEN,_BLUE_PEN];
+			private static const _PEN_COLORS:Array = [_BLACK_PEN,_RED_PEN,_GREEN_PEN,_BLUE_PEN,_ERASER];
 			private static const _PEN_COMMANDS:Array = [KLogger.BTN_BLACK_PEN,
-				KLogger.BTN_RED_PEN,KLogger.BTN_GREEN_PEN,KLogger.BTN_BLUE_PEN];
+				KLogger.BTN_RED_PEN,KLogger.BTN_GREEN_PEN,KLogger.BTN_BLUE_PEN,KLogger.BTN_ERASER];
 			
 			public function get facade():KModelFacade
 			{
@@ -240,12 +240,6 @@
 						<s:layout>
 							<s:HorizontalLayout/>
 						</s:layout>
-					<!--	
-						<s:Button id="btn_toggleVisibility" height="24" width="30" 
-								  styleName="buttonVisibility_style_toggle" toolTip="Toggle Visibility" />
-					-->
-						<s:Button id="btn_Eraser" styleName="buttonEraser_style" width="30" height="24"
-								  toolTip="Activate Eraser" click="_switchPen(-1)" />
 						<s:Button id="btn_FLV" styleName="buttonFlvExport_style_toggle" width="30" height="24"
 								  toolTip="FLV Export" click="flvWizardWindow()"/>	
 						<s:Button id="btn_IMG" width="35" height="24" styleName="buttonWebcam_style_toggle"

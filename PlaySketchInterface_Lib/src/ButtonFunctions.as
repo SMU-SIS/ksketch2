@@ -151,8 +151,6 @@ private function _initLoggableButtons():void
 	BindingUtils.bindProperty(group_groupOps.btn_group, "enabled", appState, "groupEnabled");
 	BindingUtils.bindProperty(group_groupOps.btn_ungroup, "enabled", appState, "ungroupEnabled");
 	
-	//btn_toggleVisibility.addEventListener(MouseEvent.CLICK, _handleButton);	
-	btn_Eraser.addEventListener(MouseEvent.CLICK, _handleButton);	
 	btn_firstFrame.addEventListener(MouseEvent.CLICK, _handleButton);
 	btn_previous.addEventListener(MouseEvent.CLICK, _handleButton);
 	btn_next.addEventListener(MouseEvent.CLICK, _handleButton);
@@ -177,8 +175,6 @@ private function _getButtonMappings():Dictionary
 	mapping[group_groupOps.btn_group] = KLogger.BTN_GROUP;
 	mapping[group_groupOps.btn_ungroup] = KLogger.BTN_UNGROUP;
 
-	//mapping[btn_toggleVisibility] = KLogger.BTN_TOGGLE_VISIBILITY;
-	mapping[btn_Eraser] = KLogger.BTN_ERASER;
 	mapping[group_configOps.btn_settings] = KLogger.BTN_SETTING;
 	mapping[group_configOps.btn_debug] = KLogger.BTN_DEBUG;
 	mapping[btn_firstFrame] = KLogger.BTN_FIRST;

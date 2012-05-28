@@ -184,7 +184,6 @@ package sg.edu.smu.ksketch.operation
 				while (it.hasNext())
 					op.addOperation(_paste(model,object as KGroup,it.next(),time));
 			}
-			object.transformMgr.addInitialKeys(time);
 			return op.length > 0 ? op : null;
 		}
 		

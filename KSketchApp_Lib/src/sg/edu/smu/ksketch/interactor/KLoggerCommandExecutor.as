@@ -37,7 +37,8 @@ package sg.edu.smu.ksketch.interactor
 			switch (command)
 			{
 				case KLogger.BTN_TOGGLE_TIMEBAR_EXPAND:
-					dispatchEvent(new KCommandEvent(KLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
+					dispatchEvent(new KCommandEvent(
+						KCommandEvent.EVENT_TIMEBAR_CHANGED,KLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
 					break;
 				case KLogger.CHANGE_TIME:
 					_appState.time = Number(commandNode.attribute(KLogger.CHANGE_TIME_TO));
@@ -79,7 +80,8 @@ package sg.edu.smu.ksketch.interactor
 			switch (command)
 			{
 				case KLogger.BTN_TOGGLE_TIMEBAR_EXPAND:
-					dispatchEvent(new KCommandEvent(KLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
+					dispatchEvent(new KCommandEvent(
+						KCommandEvent.EVENT_TIMEBAR_CHANGED,KLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
 					break;
 				case KLogger.CHANGE_TIME:
 					_appState.time = Number(commandNode.attribute(KLogger.CHANGE_TIME_TO));
@@ -125,7 +127,8 @@ package sg.edu.smu.ksketch.interactor
 			switch (command)
 			{
 				case KLogger.BTN_TOGGLE_TIMEBAR_EXPAND:
-					dispatchEvent(new KCommandEvent(KLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
+					dispatchEvent(new KCommandEvent(
+						KCommandEvent.EVENT_TIMEBAR_CHANGED,KLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
 					break;
 				case KLogger.CHANGE_TIME:
 					_appState.time = Number(commandNode.attribute(KLogger.CHANGE_TIME_FROM));

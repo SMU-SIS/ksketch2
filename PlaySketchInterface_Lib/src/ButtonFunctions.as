@@ -174,7 +174,6 @@ private function _getButtonMappings():Dictionary
 	mapping[group_viewOps.btn_redo] = KLogger.BTN_REDO;
 	mapping[group_groupOps.btn_group] = KLogger.BTN_GROUP;
 	mapping[group_groupOps.btn_ungroup] = KLogger.BTN_UNGROUP;
-
 	mapping[group_configOps.btn_settings] = KLogger.BTN_SETTING;
 	mapping[group_configOps.btn_debug] = KLogger.BTN_DEBUG;
 	mapping[btn_firstFrame] = KLogger.BTN_FIRST;

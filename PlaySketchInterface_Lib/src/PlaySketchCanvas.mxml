@@ -251,7 +251,7 @@
 						<s:Button id="btn_IMG" width="35" height="24" styleName="buttonWebcam_style_toggle"
 								  toolTip="WebCam/IMG Import" click="imgWizardWindow()"/>	
 						<s:Button id="btn_SOUND" styleName="buttonMicrophone_style_toggle" width="29" height="24" 
-								  label="S" toolTip="Sound Record" click="soundRecord()"/>
+								  label="S" toolTip="Sound Record" click="soundRecord()" visible="false" includeInLayout="false"/>
 					</s:Group>
 					
 					<!--Stretchable part of the top bar-->

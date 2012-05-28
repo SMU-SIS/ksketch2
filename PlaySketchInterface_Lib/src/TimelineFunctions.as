@@ -223,7 +223,7 @@ private function updateTimeWidgets(event:Event):void
 		
 		if(scaleCluster.length != 0)
 		{
-			newLinkedMarker = _generateMarker(translateCluster, TimeWidget.SCALE, clusterTime, cluster.selected);
+			newLinkedMarker = _generateMarker(scaleCluster, TimeWidget.SCALE, clusterTime, cluster.selected);
 			newLinkedMarker.linkedMarkers.push(newMarker);
 			newMarker.linkedMarkers.push(newLinkedMarker);
 			scaleMarkers.push(newLinkedMarker);

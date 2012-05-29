@@ -104,7 +104,9 @@
 				
 				_renderBars();
 				_appState.maxPlayTime = widget_max_time;
-				_computeAppMaxTime();
+				
+				if(_type == OVERVIEW)
+					_computeAppMaxTime();
 			}
 			
 			/**
@@ -128,6 +130,15 @@
 					currentMarker.x = frame * _pixelPerFrame;
 				}
 			
+				numMarkers = selectedMarkerContainer.numElements;
+				
+				for(i=0; i < numMarkers; i++)
+				{
+					currentMarker = selectedMarkerContainer.getElementAt(i) as Marker;
+					frame = currentMarker.x /prevPixelPerFrame;
+					currentMarker.x = frame * _pixelPerFrame;
+				}
+				
 				_renderBars();
 			}
 			
@@ -302,7 +313,7 @@
 				{
 					currentMarker = _freeMarkers[i];
 					
-					if(_type == -1)
+					if(_type == OVERVIEW)
 						if(_targetMarker.selected)
 							if(!currentMarker.selected)
 								continue;
@@ -383,7 +394,7 @@
 				{
 					currentMarker = _freeMarkers[i];
 					
-					if(_type == -1)
+					if(_type == OVERVIEW)
 						if(_targetMarker.selected)
 							if(!currentMarker.selected)
 								continue;

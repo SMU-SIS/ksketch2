@@ -12,6 +12,7 @@ import sg.edu.smu.ksketch.event.KSelectionChangedEvent;
 import sg.edu.smu.ksketch.event.KTimeChangedEvent;
 import sg.edu.smu.ksketch.operation.KTransformMgr;
 import sg.edu.smu.ksketch.utilities.KAppState;
+import sg.edu.smu.playsketch.components.timebar.TimeWidget;
 
 private const _thumbOffset:Number = 2.5;
 private const _dummyEvent:Event = new Event(Event.COMPLETE);
@@ -72,7 +73,7 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	timeBar.depth = 3;
 	
 	//Initialise keyframe marker operations	
-	timeWidget.initTimeWidget(_facade, appState, slider_key_index);
+	timeWidget.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.OVERVIEW);
 	expandedWidget1.initTimeWidget(_facade, appState, slider_key_index, KTransformMgr.TRANSLATION_REF);
 	expandedWidget2.initTimeWidget(_facade, appState, slider_key_index, KTransformMgr.ROTATION_REF);
 	expandedWidget3.initTimeWidget(_facade, appState, slider_key_index, KTransformMgr.SCALE_REF);

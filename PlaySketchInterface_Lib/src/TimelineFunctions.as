@@ -298,6 +298,8 @@ private function _toogle_TimebarExpand():void
 		expandedWidget3.visible = true;
 		_timeBar_toogled = true;
 	}
+	
+	updateTimeWidgets(null);
 }
 
 public function updateSliderIndicator():void

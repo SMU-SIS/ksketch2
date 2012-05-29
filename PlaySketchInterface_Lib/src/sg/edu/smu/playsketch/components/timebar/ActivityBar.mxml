@@ -32,23 +32,29 @@
 			
 			public function renderBar():void
 			{
-				x = _leftMarker.x+_leftMarker.width*0.75;
-				bar.width = _rightMarker.x +_rightMarker.width*0.25 - x-1;
+				x = _leftMarker.x+_leftMarker.width*0.75 - 2;
+				bar.width = _rightMarker.x +_rightMarker.width*0.25 - x;
 				
 				if(_rightMarker.hasTransform)
 				{
 					if(_leftMarker.type == TimeWidget.OVERVIEW)
 					{
+						barOutline.weight = 2;
+						barOutline.color = 0x000000;
 						bar.height = 8;
-						bar.y = 2.5;
+						bar.y = 3.5;
+						barFill.color = _leftMarker.markerFill.color;
 					}
 					else
 					{
 						bar.y = 1.5;
 						bar.height = 12;
+						barFill.alpha = 1.0;
+						barOutline.alpha = 0;
+						barFill.color = _leftMarker.markerColor;
 					}
 					
-					barFill.color = _leftMarker.markerColor;
+					
 				}
 				else
 				{
@@ -56,17 +62,19 @@
 					{
 						bar.height = 4;
 						bar.y = 4.5;
+						barFill.color = _leftMarker.markerFill.color;
 					}
 					else
 					{
 						bar.y = 1.5;
 						bar.height = 12;
+						barFill.alpha = 0.15;
+						barOutline.alpha = 0;
+						barFill.color = _leftMarker.markerColor;
 					}
 					
-					barFill.color = 0xFFFFFF;
+					
 				}
-				
-				barOutline.color = _leftMarker.markerColor;
 			}
 
 			public function get leftMarker():Marker

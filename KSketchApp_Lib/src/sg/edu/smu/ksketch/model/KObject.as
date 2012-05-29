@@ -37,7 +37,6 @@ package sg.edu.smu.ksketch.model
 		private const SCALE_REFERENCE_NUMBER:int = KTransformMgr.SCALE_REF;
 		private var _id:int;
 		private var _name:String;
-		public  var workingKey:ISpatialKeyframe;
 		private var _defaultBoundingBox:Rectangle;
 		private var _parentFrameList:IParentKeyFrameList;
 		private var _activityFrameList:KKeyFrameList;

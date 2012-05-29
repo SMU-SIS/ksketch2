@@ -18,6 +18,7 @@ package sg.edu.smu.ksketch.components
 		 */		
 		function set selected(selected:Boolean):void;
 		
+		function set showCursorPathMode(mode:Boolean):void;
 		function set showCursorPath(show:Boolean):void;
 		/**
 		 * A boolean value that indicates whether the object rendered by this view is selected for debug purpose.

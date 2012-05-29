@@ -13,6 +13,9 @@ package sg.edu.smu.ksketch.components
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
 	
+	import sg.edu.smu.ksketch.model.IKeyFrame;
+	import sg.edu.smu.ksketch.model.IReferenceFrame;
+	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KPath;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
@@ -72,13 +75,13 @@ package sg.edu.smu.ksketch.components
 		private function _handleMouseOver(e:MouseEvent):void
 		{	
 			_thickness[e.target] = _THICKNESS_THICK;
-			redraw(KAppState.getCurrentTime());
+//			redraw(KAppState.getCurrentTime(), _show);
 		}
 		
 		private function _handleMouseOut(e:MouseEvent):void
 		{
 			_thickness[e.target] = _THICKNESS_THIN;
-			redraw(KAppState.getCurrentTime());
+//			redraw(KAppState.getCurrentTime());
 		}
 		
 		public function get object():KObject
@@ -101,99 +104,76 @@ package sg.edu.smu.ksketch.components
 			return _pathS;
 		}
 		
-		public function redraw(kskTime:Number):void
+		public function redraw(time:Number, showAll:Boolean):void
 		{
-			if(_object == null || _object.getVisibility(kskTime) == 0)
-			{
-				this.visible = false;
-				return;
-			}
-			
 			_pathT.graphics.clear();
 			_pathR.graphics.clear();
 			_pathS.graphics.clear();
+			_pathT.graphics.lineStyle(_thickness[_pathT],_colors[_pathT]);
+			_pathR.graphics.lineStyle(_thickness[_pathR],_colors[_pathR]);
+			_pathS.graphics.lineStyle(_thickness[_pathS],_colors[_pathS]);
 			
-			var m:Matrix;			
-			var translationRef:int = KTransformMgr.TRANSLATION_REF;
-			var rotationRef:int = KTransformMgr.ROTATION_REF;
-			var scaleRef:int = KTransformMgr.SCALE_REF;
-			var key:KSpatialKeyFrame = _object.transformMgr.getKeyFrame(
-				translationRef, kskTime) as KSpatialKeyFrame;
+			_drawKeyPaths(_getKeyToDraw(KTransformMgr.TRANSLATION_REF,time,showAll), showAll, KTransformMgr.TRANSLATION_REF);
+			_drawKeyPaths(_getKeyToDraw(KTransformMgr.ROTATION_REF,time,showAll), showAll, KTransformMgr.ROTATION_REF);
+			_drawKeyPaths(_getKeyToDraw(KTransformMgr.SCALE_REF,time,showAll), showAll, KTransformMgr.SCALE_REF);
+		}
+		
+		private function _drawKeyPaths(targetKey:ISpatialKeyframe, showAll:Boolean, type:int):void
+		{
+			var position:Point;
+			var transformAtTime:Matrix;
 			
-			if(key)
+			while(targetKey)
 			{
-				var ctr:Point = _object.defaultCenter;
-				m = _object.getFullMatrix(key.startTime());
-				if(0 < (key.endTime-key.startTime()))
+				if(targetKey.hasTransform())
 				{
-					_drawCursorPath(key.translate.path.path, m.transformPoint(ctr),_pathT);
-				}	
-				
-				key = key.next as KSpatialKeyFrame;
+					transformAtTime = targetKey.getFullMatrix(targetKey.startTime(), new Matrix());
+					position = transformAtTime.transformPoint(targetKey.center);
 					
-				//Draw the next key if it exists
-				if(key)
-				{
-					if(0 < (key.endTime-key.startTime()))
-					{
-						m = _object.getFullMatrix(key.startTime());
-						_drawCursorPath(key.translate.path.path, m.transformPoint(ctr),_pathT);
-					}
+					if(type == KTransformMgr.TRANSLATION_REF)
+						_drawCursorPath(targetKey.translate.path.path, position,_pathT);
+					else if(type == KTransformMgr.ROTATION_REF)
+						_drawCursorPath(targetKey.rotate.path.path, position,_pathR);
+					else if(type == KTransformMgr.SCALE_REF)
+						_drawCursorPath(targetKey.scale.path.path, position,_pathS);
 				}
 				
+				if(showAll)
+					targetKey = targetKey.next as ISpatialKeyframe;
+				else
+					targetKey = null;				
 			}
-			
-			m = _object.getFullMatrix(kskTime);
-
-			key = _object.transformMgr.getKeyFrame(rotationRef,kskTime) as KSpatialKeyFrame;
-			if (key != null)
-			{
-				if(0 < (key.endTime-key.startTime()))
-					_drawCursorPath(key.rotate.path.path,m.transformPoint(key.center),_pathR);
-			}
-			
-			key = _object.transformMgr.getKeyFrame(scaleRef,kskTime) as KSpatialKeyFrame;
-			if (key != null)
-			{
-				if(0 < (key.endTime-key.startTime()))
-					_drawCursorPath(key.scale.path.path,m.transformPoint(key.center),_pathS);
-			}
-			
-			this.visible = true;
 		}
-	
-		private function _drawCursorPath(points:Vector.<KPathPoint>, 
-										 origin:Point, path:Sprite):void
+		
+		
+		private function _drawCursorPath(points:Vector.<KPathPoint>, origin:Point, path:Sprite):void
 		{
-			var min:Number = KPath.MINIMUM_DISPLAY_DURATION;
-			var length:uint = points.length;
-			if(length <= 0 || (length == 2 && Math.abs(points[0].time-points[1].time) <= min))
+			var length:int = points.length;
+			var drawLayer:Graphics = path.graphics;
+			if(length <= 0 || (length == 2 && Math.abs(points[0].time-points[1].time) <= 0))
 				return;
-			var color:uint = _colors[path];
-			var thickness:int = _thickness[path];
-			var grph:Graphics = _graphics[path];
-			var prevTime:Number = 0;
-			grph.lineStyle(thickness, color);			
-			if((path == _pathR || path == _pathS) && thickness == _THICKNESS_THICK)
+			
+			var currentPoint:Point = points[0].add(origin);
+			
+			drawLayer.moveTo(currentPoint.x, currentPoint.y);
+			
+			var i:int = 1;
+			for(i; i<length; i++)
 			{
-				grph.beginFill(color);
-				grph.drawCircle(origin.x, origin.y, 5);
-				grph.endFill();
+				currentPoint = points[i].add(origin);
+				drawLayer.lineTo(currentPoint.x, currentPoint.y);
 			}
-			grph.moveTo(origin.x+points[0].x, origin.y+points[0].y);
-			for(var i:int = 0; i<length; i++)
+		}
+		
+		private function _getKeyToDraw(type:int, time:Number, showAll:Boolean):ISpatialKeyframe
+		{
+			if(showAll)
 			{
-				var p:Point = points[i].add(origin);
-				grph.lineTo(p.x, p.y);
-			}	
-			if (length > 10)
+				return null;	
+			}
+			else
 			{
-				var n:uint = length - 1;
-				var startPoint:Point = points[n].add(origin);
-				var vector:Point = points[n-1].subtract(points[n-5]);
-				grph.beginFill(color);
-				grph.drawTriangles(_getTriangleVertices(vector,startPoint));
-				grph.endFill();
+				return _object.getSpatialKeyAtOfAfter(time, type);
 			}
 		}
 		

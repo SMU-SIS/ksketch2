@@ -30,6 +30,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
+	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
@@ -38,7 +39,9 @@ package sg.edu.smu.ksketch.interactor
 	{
 		public static const EVENT_COMMAND_COMPLETE:String = "EVENT_COMMAND_COMPLETE";
 		public static const PIGTAIL_CONTEXT_MENU:String = "pigtail";
-		public static const HIGHLITED_CURSOR_PATH_CLICKED:String = "HIGHLITED_CURSOR_PATH_CLICKED";		
+		public static const HIGHLITED_CURSOR_PATH_CLICKED:String = "HIGHLITED_CURSOR_PATH_CLICKED";
+		private static const _MENU_XPOSITION_OFFSET:Number = 150;
+		private static const _MENU_YPOSITION_OFFSET:Number = 25;
 		protected var _contextMenu:KContextMenu;
 		protected var _hasPopup:Boolean;		
 		protected var _appState:KAppState;
@@ -196,7 +199,7 @@ package sg.edu.smu.ksketch.interactor
 						_penSelectionMenu = KPenMenu.createMenu(_canvas);
 						_penSelectionMenu.addEventListener(MenuEvent.ITEM_CLICK, _penMenuListener);
 					}
-					popupMenu(_penSelectionMenu, canvasPoint);
+					popupMenu(_penSelectionMenu);
 					_hasPopup = true;
 					break;
 				case GestureDesign.NAME_PRE_SHOW_CONTEXT_MENU:
@@ -211,7 +214,7 @@ package sg.edu.smu.ksketch.interactor
 					}
 					_contextMenu.withSelection = _appState.selection != null && 
 					_appState.selection.objects.length() != 0;
-					popupMenu(_contextMenu, canvasPoint);
+					popupMenu(_contextMenu);
 					_contextMenu.hideWhenRelease = false;
 					_hasPopup = true;
 					break;
@@ -220,7 +223,7 @@ package sg.edu.smu.ksketch.interactor
 						_contextMenu = KContextMenu.createMenu(_canvas, _appState, this);
 					_contextMenu.withSelection = _appState.selection != null && 
 					_appState.selection.objects.length() != 0;
-					popupMenu(_contextMenu, canvasPoint);
+					popupMenu(_contextMenu);
 					_contextMenu.hideWhenRelease = true;
 					break;				
 			}
@@ -276,9 +279,18 @@ package sg.edu.smu.ksketch.interactor
 			_hasPopup = value;
 		}
 		
-		public function popupMenu(menu:Menu, canvasPoint:Point):void
+		public function popupMenu(menu:Menu):void
 		{
-			menu.show(_canvas.mouseX,_canvas.mouseY);
+			var mouseXVariable:Number = 0;
+			var mouseYVariable:Number = 0;
+			
+			if(_canvas.width - _canvas.mouseX < _MENU_XPOSITION_OFFSET)
+				mouseXVariable = _MENU_XPOSITION_OFFSET;
+			
+			if(_canvas.height - _canvas.mouseY < _MENU_YPOSITION_OFFSET)
+				mouseYVariable = _MENU_YPOSITION_OFFSET;
+			
+			menu.show(_canvas.mouseX - mouseXVariable,_canvas.mouseY-mouseYVariable);
 		}
 		
 		public function newFile():void

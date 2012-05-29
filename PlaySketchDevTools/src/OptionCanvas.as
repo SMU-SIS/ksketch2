@@ -187,8 +187,8 @@ package
 				appState.userOption.showPath = modes.selectedValue.toString();
 			});
 			var buttons:Array = new Array();
-			var labels:Array = ["Show cursor paths of all object",
-				"Show cursor paths of selected objects","Do not show cursor path"];
+			var labels:Array = ["Show all motion paths for this object",
+				"Show the active motion paths for this object","Do not show motion paths"];
 			var options:Array = [UserOption.SHOW_PATH_ALL,
 				UserOption.SHOW_PATH_SELECTED,UserOption.SHOW_PATH_NONE];
 			for (var i:int = 0; i < options.length; i++)

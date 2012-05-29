@@ -192,7 +192,7 @@ package sg.edu.smu.ksketch.components
 					while(it.hasNext())
 						showPath_Object(it.next(), true);
 					break;
-				case UserOption.SHOW_PATH_SELECTED:
+				case UserOption.SHOW_PATH_ACTIVE:
 					if(event != null)
 					{
 						showPath_List(event.oldSelection, false);

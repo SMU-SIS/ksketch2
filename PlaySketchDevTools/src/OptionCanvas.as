@@ -5,9 +5,12 @@
 *-------------------------------------------------*/
 package 
 {
+	import components.Group_Grouping;
+	
 	import flash.events.Event;
 	
 	import mx.containers.ViewStack;
+	import mx.controls.Button;
 	import mx.core.IVisualElement;
 	
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
@@ -18,6 +21,7 @@ package
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	
+	import spark.components.Button;
 	import spark.components.CheckBox;
 	import spark.components.Group;
 	import spark.components.Label;
@@ -36,7 +40,7 @@ package
 			super();
 			var appState:KAppState = mainCanvas.appState;
 			var stack:ViewStack = new ViewStack();
-			stack.addElement(_createNavigatorContent("Group",_createGroupingGroup(appState)));
+			stack.addElement(_createNavigatorContent("Group",_createGroupingGroup(mainCanvas)));
 			stack.addElement(_createNavigatorContent("Gesture",_createGestureGroup(appState)));
 			stack.addElement(_createNavigatorContent("Animation",_createAnimationGroup(mainCanvas)));
 			stack.addElement(_createNavigatorContent("Other",_createOtherGroup(mainCanvas)));
@@ -60,14 +64,14 @@ package
 			return content;
 		}
 		
-		private function _createGroupingGroup(appState:KAppState):VGroup
+		private function _createGroupingGroup(mainCanvas:PlaySketchCanvas):VGroup
 		{
 			var vg:VGroup = new VGroup();
 			vg.addElement(_createLabel("Selection Mode"));
-			vg.addElement(_addSelectionMode(appState));
+			vg.addElement(_addSelectionMode(mainCanvas.appState));
 			vg.addElement(_createLabel(""));
 			vg.addElement(_createLabel("Grouping Mode"));
-			vg.addElement(_addGroupingMode(appState));
+			vg.addElement(_addGroupingMode(mainCanvas));
 			return vg; 
 		}
 		
@@ -129,8 +133,12 @@ package
 			return _createVGroup(buttons);
 		}
 		
-		private function _addGroupingMode(appState:KAppState):IVisualElement
+		private function _addGroupingMode(mainCanvas:PlaySketchCanvas):IVisualElement
 		{
+			var impMode:String = KAppState.GROUPING_IMPLICIT_DYNAMIC;
+			var expMode:String = KAppState.GROUPING_EXPLICIT_DYNAMIC;
+			var staMode:String = KAppState.GROUPING_EXPLICIT_STATIC;
+			var appState:KAppState = mainCanvas.appState;
 			var modes:RadioButtonGroup = new RadioButtonGroup();
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
 			{
@@ -139,16 +147,16 @@ package
 					KLogger.CHANGE_GROUPING_MODE_TO, modes.selectedValue.toString());
 				appState.groupingMode = modes.selectedValue.toString();
 				appState.fireGroupingEnabledChangedEvent();
+				mainCanvas.group_groupOps.alpha = appState.groupingMode == impMode ? 0.1:1.0;
 			});
 			var buttons:Array = new Array();
-			var groupings:Array = [KAppState.GROUPING_IMPLICIT_DYNAMIC,
-				KAppState.GROUPING_EXPLICIT_DYNAMIC,KAppState.GROUPING_EXPLICIT_STATIC];
+			var groupings:Array = [impMode,expMode,staMode];
 			for (var i:int = 0; i < groupings.length; i++)
 				buttons.push(_createRadioButton(groupings[i],groupings[i],
 					appState.groupingMode == groupings[i], modes));
 			return _createVGroup(buttons);
 		}
-		
+				
 		private function _addCreationMode(appState:KAppState):IVisualElement
 		{
 			var modes:RadioButtonGroup = new RadioButtonGroup();

@@ -177,6 +177,11 @@
 				list_pen_selection.setStyle("chromeColor",itemColors[index]);
 				_commandExecutor.doButtonCommand(_PEN_COMMANDS[index]);
 			}
+			
+			private function _isImplicitGrouping():Boolean
+			{
+				return appState.groupingMode == KAppState.GROUPING_IMPLICIT_DYNAMIC;
+			}
 		]]>
 	</fx:Script>
 	
@@ -214,7 +219,7 @@
 					<playsketchskin:Group_FileHandling id="group_fileOps"/>
 					<playsketchskin:Group_Editing id="group_editOps"/>
 					<playsketchskin:Group_View id="group_viewOps"/>
-					<playsketchskin:Group_Grouping id="group_groupOps"/>
+					<playsketchskin:Group_Grouping id="group_groupOps" alpha="{_isImplicitGrouping()?0.1:1.0}"/>
 
 					<s:DropDownList id="list_pen_selection" width="100" selectedIndex="0" 
 									alternatingItemColors="[#000000,#FF0000,#00BB00,#0078FF,#999999]"

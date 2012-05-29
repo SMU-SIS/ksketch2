@@ -104,7 +104,9 @@
 				
 				_renderBars();
 				_appState.maxPlayTime = widget_max_time;
-				_computeAppMaxTime();
+				
+				if(_type == OVERVIEW)
+					_computeAppMaxTime();
 			}
 			
 			/**
@@ -127,6 +129,17 @@
 					frame = currentMarker.x /prevPixelPerFrame;
 					currentMarker.x = frame * _pixelPerFrame;
 				}
+			
+				numMarkers = selectedMarkerContainer.numElements;
+				
+				for(i=0; i < numMarkers; i++)
+				{
+					currentMarker = selectedMarkerContainer.getElementAt(i) as Marker;
+					frame = currentMarker.x /prevPixelPerFrame;
+					currentMarker.x = frame * _pixelPerFrame;
+				}
+				
+				_renderBars();
 			}
 			
 			/**
@@ -257,6 +270,7 @@
 				var keysToRetime:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 				var times:Vector.<Number> = new Vector.<Number>();
 				var stackedMarker:Marker;
+				var freeMarker:Marker;
 				var retimeTo:Number;
 				var keyInfo:Object;
 				for each(stackedMarker in _stackedMarkers)
@@ -269,8 +283,22 @@
 					}
 				}
 				
+				for each(freeMarker in _freeMarkers)
+				{
+					if(stackedMarker.x <= freeMarker.x)
+					{
+						retimeTo = _positionToTime(freeMarker.x);
+						for each(keyInfo in freeMarker.keyList)
+						{
+							keysToRetime.push(keyInfo.key);
+							times.push(retimeTo);
+						}
+					}
+				}
+				
 				var retimeOp:IModelOperation = _facade.retimeKeys(keysToRetime, times, _appState.time);
 				_appState.addOperation(retimeOp);
+				
 			}
 			
 			private function _onMoveStackMarkers():void
@@ -285,7 +313,7 @@
 				{
 					currentMarker = _freeMarkers[i];
 					
-					if(_type == -1)
+					if(_type == OVERVIEW)
 						if(_targetMarker.selected)
 							if(!currentMarker.selected)
 								continue;
@@ -293,7 +321,7 @@
 					//Compute distance from dragged marker
 					posDiffFromTarget = currentMarker.x - currentXPos;
 					
-					if(currentMarker.x < originalXPos)
+					if(currentMarker.originalPosition < originalXPos)
 					{
 						if(posDiffFromTarget >= 0)
 						{
@@ -366,7 +394,7 @@
 				{
 					currentMarker = _freeMarkers[i];
 					
-					if(_type == -1)
+					if(_type == OVERVIEW)
 						if(_targetMarker.selected)
 							if(!currentMarker.selected)
 								continue;
@@ -480,11 +508,8 @@
 								
 								if(currentLeftKey == currentRightKey.previous)
 								{
-									if((currentRightKey as ISpatialKeyframe).hasTransform())
-									{
-										targetLeftMarker = currentLeftMarker;
-										break;
-									}
+									targetLeftMarker = currentLeftMarker;
+									break;
 								}
 							}
 						}
@@ -506,8 +531,8 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Group id="barContainer"/>
+	<s:Group id="barContainer" y="2.5"/>
 	<s:Group id="markerContainer" y="2.5"/>
-	<s:Group id="selectedBarContainer"/>
+	<s:Group id="selectedBarContainer" y="2.5" />
 	<s:Group id="selectedMarkerContainer" y="2.5"/>
 </s:BorderContainer>

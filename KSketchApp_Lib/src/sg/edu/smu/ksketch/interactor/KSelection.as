@@ -48,6 +48,11 @@ package sg.edu.smu.ksketch.interactor
 			return _objects;
 		}
 		
+		public function get fullObjectSet():KModelObjectList
+		{
+			return _fullObjectSet;	
+		}
+		
 		public function set objects(value:KModelObjectList):void
 		{
 			_objects = value;
@@ -112,7 +117,7 @@ package sg.edu.smu.ksketch.interactor
 		
 		public function contains(obj:KObject):Boolean
 		{
-			var it:IIterator = _objects.iterator;
+			var it:IIterator = _fullObjectSet.iterator;
 			var currentObject:KObject;
 			
 			while(it.hasNext())

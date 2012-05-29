@@ -10,11 +10,14 @@ package sg.edu.smu.ksketch.event
 	
 	public class KCommandEvent extends Event
 	{		
+		public static const EVENT_PEN_CHANGE:String = "pen_change";
+		public static const EVENT_TIMEBAR_CHANGED:String = "timebar_change";
+		
 		private var _command:String;
 		
-		public function KCommandEvent(command:String)
+		public function KCommandEvent(type:String,command:String)
 		{
-			super(command);
+			super(type);
 			_command = command;
 		}
 		

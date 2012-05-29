@@ -34,6 +34,7 @@ package sg.edu.smu.ksketch.components
 		public static const THICKNESS_THICK:uint = 10;
 		
 		private static var _colorMapping:Dictionary; 
+		private static var _labelMapping:Dictionary; 
 		
 		[Bindable]
 		public static var PEN_OPTIONS:XML = 
@@ -72,6 +73,20 @@ package sg.edu.smu.ksketch.components
 				_colorMapping[LABEL_BLUE] = COLOR_BLUE;
 			}
 			return _colorMapping[label];
+		}
+
+		public static function getLabel(color:uint):String
+		{
+			if (_labelMapping == null)
+			{
+				_labelMapping = new Dictionary();
+				_labelMapping[COLOR_WHITE] = LABEL_WHITE;
+				_labelMapping[COLOR_BLACK] = LABEL_BLACK;
+				_labelMapping[COLOR_RED] = LABEL_RED;
+				_labelMapping[COLOR_GREEN] = LABEL_GREEN;
+				_labelMapping[COLOR_BLUE] = LABEL_BLUE;
+			}
+			return _labelMapping[color];
 		}
 	}
 }

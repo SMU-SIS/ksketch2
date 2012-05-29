@@ -3,6 +3,7 @@
 *Developed under a grant from the Singapore-MIT GAMBIT Game Lab
  
 *-------------------------------------------------*/
+import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.geom.Rectangle;
 
@@ -11,8 +12,10 @@ import sg.edu.smu.ksketch.event.KSelectionChangedEvent;
 import sg.edu.smu.ksketch.event.KTimeChangedEvent;
 import sg.edu.smu.ksketch.operation.KTransformMgr;
 import sg.edu.smu.ksketch.utilities.KAppState;
+import sg.edu.smu.playsketch.components.timebar.TimeWidget;
 
 private const _thumbOffset:Number = 2.5;
+private const _dummyEvent:Event = new Event(Event.COMPLETE);
 
 private var _initialAppWidth:Number;
 private var _initialAppHeight:Number;
@@ -22,6 +25,9 @@ private var _windowBoundsOffsetX:Number;
 private var _windowBoundsOffsetY:Number;
 private var _prevStageBounds:Rectangle;
 private var _highDef:Boolean = false;
+private var _prevWidth:Number;
+private var _prevHeight:Number;
+
 
 //Zooming variable
 private var _zoomIn:Boolean = true;
@@ -38,6 +44,8 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	_initialAppHeight = appHeight;
 	_windowBoundsOffsetX = windowBoundsOffsetX*2;
 	_windowBoundsOffsetY = windowBoundsOffsetY*2;
+	_prevWidth = 0;
+	_prevHeight = 0;
 	_initialCanvasWidth = appWidth - drawingArea_Layout.paddingLeft - drawingArea_Layout.paddingRight;
 	_initialCanvasHeight = appHeight - topBar.height - timeBar.height - appMainVerticalLayout.gap*2;
 	//Set the width, height and scale of the drawing area.
@@ -65,7 +73,7 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	timeBar.depth = 3;
 	
 	//Initialise keyframe marker operations	
-	timeWidget.initTimeWidget(_facade, appState, slider_key_index);
+	timeWidget.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.OVERVIEW);
 	expandedWidget1.initTimeWidget(_facade, appState, slider_key_index, KTransformMgr.TRANSLATION_REF);
 	expandedWidget2.initTimeWidget(_facade, appState, slider_key_index, KTransformMgr.ROTATION_REF);
 	expandedWidget3.initTimeWidget(_facade, appState, slider_key_index, KTransformMgr.SCALE_REF);
@@ -142,7 +150,15 @@ public function update_interface():void
 	
 	updateSliderIndicator();
 	sliderUpdated();
-	rescaleTimeWidgets();
+	if(Math.abs(appCanvas.width-_windowBoundsOffsetX -_prevWidth) > 0 ||
+		Math.abs(appCanvas.height-_windowBoundsOffsetY-_prevHeight) > 0)
+	{
+		rescaleTimeWidgets();
+		updateTimeWidgets(_dummyEvent);
+	}
+	
+	_prevWidth = appCanvas.width-_windowBoundsOffsetX;
+	_prevHeight = appCanvas.height-_windowBoundsOffsetY;
 	
 	if(flvTestWindow)
 	{

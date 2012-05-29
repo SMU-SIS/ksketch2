@@ -202,6 +202,11 @@ package sg.edu.smu.ksketch.components
 				case UserOption.SHOW_PATH_ACTIVE:
 					(_viewsTable[object] as IObjectView).showCursorPathMode = false;
 					break;
+				case UserOption.SHOW_PATH_NONE:
+					return;
+					break;
+				default:
+					(_viewsTable[object] as IObjectView).showCursorPathMode = false;
 			}
 			
 			(_viewsTable[object] as IObjectView).showCursorPath = true;

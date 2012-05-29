@@ -190,7 +190,7 @@ package
 			var labels:Array = ["Show all motion paths for this object",
 				"Show the active motion paths for this object","Do not show motion paths"];
 			var options:Array = [UserOption.SHOW_PATH_ALL,
-				UserOption.SHOW_PATH_SELECTED,UserOption.SHOW_PATH_NONE];
+				UserOption.SHOW_PATH_ACTIVE,UserOption.SHOW_PATH_NONE];
 			for (var i:int = 0; i < options.length; i++)
 				buttons.push(_createRadioButton(labels[i],options[i],
 					appState.userOption.showPath == options[i], modes));

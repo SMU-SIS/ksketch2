@@ -168,13 +168,9 @@ package sg.edu.smu.ksketch.components
 		private function _getKeyToDraw(type:int, time:Number, showAll:Boolean):ISpatialKeyframe
 		{
 			if(showAll)
-			{
-				return null;	
-			}
+				return _object.getSpatialKeyAtOfAfter(_object.createdTime, type);
 			else
-			{
 				return _object.getSpatialKeyAtOfAfter(time, type);
-			}
 		}
 		
 		//Construct a triangular arrow head.

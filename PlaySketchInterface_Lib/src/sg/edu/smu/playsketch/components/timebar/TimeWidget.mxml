@@ -127,6 +127,8 @@
 					frame = currentMarker.x /prevPixelPerFrame;
 					currentMarker.x = frame * _pixelPerFrame;
 				}
+			
+				_renderBars();
 			}
 			
 			/**
@@ -257,6 +259,7 @@
 				var keysToRetime:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 				var times:Vector.<Number> = new Vector.<Number>();
 				var stackedMarker:Marker;
+				var freeMarker:Marker;
 				var retimeTo:Number;
 				var keyInfo:Object;
 				for each(stackedMarker in _stackedMarkers)
@@ -269,8 +272,22 @@
 					}
 				}
 				
+				for each(freeMarker in _freeMarkers)
+				{
+					if(stackedMarker.x <= freeMarker.x)
+					{
+						retimeTo = _positionToTime(freeMarker.x);
+						for each(keyInfo in freeMarker.keyList)
+						{
+							keysToRetime.push(keyInfo.key);
+							times.push(retimeTo);
+						}
+					}
+				}
+				
 				var retimeOp:IModelOperation = _facade.retimeKeys(keysToRetime, times, _appState.time);
 				_appState.addOperation(retimeOp);
+				
 			}
 			
 			private function _onMoveStackMarkers():void
@@ -293,7 +310,7 @@
 					//Compute distance from dragged marker
 					posDiffFromTarget = currentMarker.x - currentXPos;
 					
-					if(currentMarker.x < originalXPos)
+					if(currentMarker.originalPosition < originalXPos)
 					{
 						if(posDiffFromTarget >= 0)
 						{

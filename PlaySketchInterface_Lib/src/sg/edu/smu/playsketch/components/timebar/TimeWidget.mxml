@@ -313,7 +313,7 @@
 				{
 					currentMarker = _freeMarkers[i];
 					
-					if(_type == -1)
+					if(_type == OVERVIEW)
 						if(_targetMarker.selected)
 							if(!currentMarker.selected)
 								continue;
@@ -394,7 +394,7 @@
 				{
 					currentMarker = _freeMarkers[i];
 					
-					if(_type == -1)
+					if(_type == OVERVIEW)
 						if(_targetMarker.selected)
 							if(!currentMarker.selected)
 								continue;

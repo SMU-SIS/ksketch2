@@ -590,12 +590,12 @@ public function imgWizardWindow():void
 	imgTitleWindow.x = (appCanvas.width/2)-100;
 	imgTitleWindow.y = (appCanvas.height/2)-100;
 	
-	imgTitleWindow.btnClose.label="Close";
+	imgTitleWindow.btnClose.label="Cancel";
 	imgTitleWindow.btnClose.x=imgTitleWindow.width-90;
 	imgTitleWindow.btnClose.y=imgTitleWindow.height-60;
 	imgTitleWindow.addElement(imgTitleWindow.btnClose);	
 	
-	imgTitleWindow.btnLoad.label="Load";
+	imgTitleWindow.btnLoad.label="Done";
 	imgTitleWindow.btnLoad.x=imgTitleWindow.width-165;
 	imgTitleWindow.btnLoad.y=imgTitleWindow.height-60;
 	imgTitleWindow.addElement(imgTitleWindow.btnLoad);
@@ -610,8 +610,8 @@ public function imgWizardWindow():void
 	imgTitleWindow.btnCameraSnap.y=imgTitleWindow.height-60;
 	imgTitleWindow.addElement(imgTitleWindow.btnCameraSnap);
 	
-	imgTitleWindow.btnSav.label="Img Disk";	
-	imgTitleWindow.btnSav.x=imgTitleWindow.width-390;
+	imgTitleWindow.btnSav.label="Load From Disk";	
+	imgTitleWindow.btnSav.x=imgTitleWindow.width-425;
 	imgTitleWindow.btnSav.y=imgTitleWindow.height-60;
 	imgTitleWindow.addElement(imgTitleWindow.btnSav);
 			
@@ -619,7 +619,9 @@ public function imgWizardWindow():void
 	
 	imgTitleWindow.btnClose.addEventListener("click", closeHandlerImg);
 	imgTitleWindow.btnLoad.addEventListener("click", onbtnSaveImage);
-	imgTitleWindow.btnCamera.addEventListener("click", onbtnLoadCamera);
+	imgTitleWindow.btnLoad.addEventListener("click", closeHandlerImg);
+	
+	imgTitleWindow.btnCamera.addEventListener("click",function():void{onbtnLoadCamera();});
 	imgTitleWindow.btnCameraSnap.addEventListener("click", onbtnLoadCameraSnap);
 	imgTitleWindow.btnSav.addEventListener("click", onSaveSelected);
 	
@@ -627,7 +629,9 @@ public function imgWizardWindow():void
 	imgTitleWindow.btnCameraSnap.enabled=false;
 	imgTitleWindow.btnLoad.enabled=false;
 	
-	PopUpManager.addPopUp(imgTitleWindow, this, true);			
+	PopUpManager.addPopUp(imgTitleWindow, this, true);	
+	
+	onbtnLoadCamera();
 }
 
 
@@ -637,6 +641,7 @@ private function onSaveSelected(event:Event):void
 	var imageTypesArray:Array = new Array(imageTypes);
 	_fileRef = new FileReference();
 	_fileRef.browse(imageTypesArray);
+	
 	_fileRef.addEventListener(Event.SELECT, selectImageHandler);
 	
 }
@@ -842,7 +847,7 @@ private function trimmingIrregularShape():void
 
 
 
-public function onbtnLoadCamera(event:Event):void
+public function onbtnLoadCamera():void
 {		
 	var snap:BitmapData = new BitmapData(imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth, imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight, true);
 	var snapBmp:Bitmap = new Bitmap(snap);	

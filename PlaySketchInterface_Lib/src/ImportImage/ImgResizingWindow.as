@@ -152,7 +152,7 @@ package ImportImage
 			btnCamera.y=height-60				
 			btnCameraSnap.x=width-315;
 			btnCameraSnap.y=height-60;
-			btnSav.x=width-390;
+			btnSav.x=width-425;
 			btnSav.y=height-60;
 		}
         

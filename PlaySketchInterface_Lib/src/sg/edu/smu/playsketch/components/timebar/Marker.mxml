@@ -121,9 +121,9 @@
 					if(_type == TimeWidget.TRANSLATE)
 						_color = 0x0000FF;
 					else if(_type == TimeWidget.ROTATE)
-						_color = 0x00FF00;
+						_color = 0x006600;
 					else if(_type == TimeWidget.SCALE)
-						_color = 0xFF0000;
+						_color = 0xCC0033;
 				}
 			}
 

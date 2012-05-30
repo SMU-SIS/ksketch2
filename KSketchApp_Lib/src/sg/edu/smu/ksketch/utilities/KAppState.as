@@ -100,6 +100,7 @@ package sg.edu.smu.ksketch.utilities
 		public var updateFacadeRefactorMode:Function;
 		public var updateFacadeCreationMode:Function;
 		
+		public var trackTapTime:Number;
 		public var overViewTrackBox:Rectangle;
 		public var translateTrackBox:Rectangle;
 		public var rotateTrackBox:Rectangle;

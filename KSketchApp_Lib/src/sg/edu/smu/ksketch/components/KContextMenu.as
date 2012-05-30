@@ -113,6 +113,7 @@ package sg.edu.smu.ksketch.components
 				
 				if(objects && objects.length()>0)
 				{
+					_appState.time = _appState.trackTapTime;
 					var it:IIterator = objects.iterator;
 					var insertKeyOp:KCompositeOperation = new KCompositeOperation();
 					while(it.hasNext())

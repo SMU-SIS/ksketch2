@@ -185,25 +185,34 @@ package sg.edu.smu.ksketch.components
 		
 		private function updatePath(event:KSelectionChangedEvent = null):void
 		{
+			clearPath();
+			
+			if(!_appState.selection)
+				return;
+			if(_appState.selection.objects.length() != 1)
+				return;
+
+			var object:KObject = _appState.selection.objects.getObjectAt(0);
+			
+			if(!_viewsTable[object])
+				return;
+				
 			switch(_showPathState)
 			{
 				case UserOption.SHOW_PATH_ALL:
-					var it:IIterator = _facade.root.directChildIterator(_appState.time);
-					while(it.hasNext())
-						showPath_Object(it.next(), true);
+					(_viewsTable[object] as IObjectView).showCursorPathMode = true;
 					break;
-				case UserOption.SHOW_PATH_SELECTED:
-					if(event != null)
-					{
-						showPath_List(event.oldSelection, false);
-						showPath_List(event.newSelection, true);
-					}
-					else
-						showPath_List(_appState.selection, true);
+				case UserOption.SHOW_PATH_ACTIVE:
+					(_viewsTable[object] as IObjectView).showCursorPathMode = false;
 					break;
 				case UserOption.SHOW_PATH_NONE:
+					return;
 					break;
+				default:
+					(_viewsTable[object] as IObjectView).showCursorPathMode = false;
 			}
+			
+			(_viewsTable[object] as IObjectView).showCursorPath = true;
 		}
 		
 		private function showPath_List(selection:KSelection, show:Boolean):void

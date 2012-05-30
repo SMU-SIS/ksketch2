@@ -25,16 +25,23 @@ package sg.edu.smu.ksketch.components
 		private var _appState:KAppState;
 		private var _object:KObject;
 		private var _showPath:Boolean;
+		private var _showAllPath:Boolean;
 		private var _path:KPathView;
 		
 		public function KObjectView(appState:KAppState,object:KObject)
 		{
 			super();
 			_appState = appState;
+			_showAllPath = false;
 			_object = object;
 			_object.addEventListener(KObjectEvent.EVENT_TRANSFORM_CHANGED, _objectChangedEventHandler);
 			_object.addEventListener(KObjectEvent.EVENT_VISIBILITY_CHANGED, _objectChangedEventHandler);
 			_path = new KPathView(_object);
+		}
+		
+		public function set showCursorPathMode(showAll:Boolean):void
+		{
+			_showAllPath = showAll;
 		}
 		
 		public function removeListeners():void
@@ -64,7 +71,7 @@ package sg.edu.smu.ksketch.components
 		{
 			transform.matrix = newTransform;
 			if(_showPath)
-				_path.redraw(_appState.time);
+				_path.redraw(_appState.time, _showAllPath);
 		}
 		
 		public function updateVisibility(newAlpha:Number):void
@@ -94,11 +101,8 @@ package sg.edu.smu.ksketch.components
 				_showPath = show;
 				if(_showPath)
 				{
-					_path.redraw(_appState.time);
+					_path.redraw(_appState.time, _showAllPath);
 					this.parent.addChild(_path);
-					for(var i:int =0; i<this.numChildren; i++)
-						if(this.getChildAt(i) is KObjectView)
-							(this.getChildAt(i) as KObjectView).showCursorPath = _showPath;
 				}
 				else
 					this.parent.removeChild(_path);

@@ -16,7 +16,7 @@ package sg.edu.smu.ksketch.interactor
 	public class UserOption
 	{
 		public static const SHOW_PATH_NONE:String = "NONE";
-		public static const SHOW_PATH_SELECTED:String = "SELECTED";
+		public static const SHOW_PATH_ACTIVE:String = "ACTIVE";
 		public static const SHOW_PATH_ALL:String = "ALL";
 		
 		private var _saveInfo:KSaveInfos;
@@ -42,7 +42,7 @@ package sg.edu.smu.ksketch.interactor
 			else
 			{
 				showConfirmWindow = true;
-				showPath = SHOW_PATH_SELECTED;
+				showPath = SHOW_PATH_ACTIVE;
 				rightMouseButtonEnabled = true;
 			}
 		}

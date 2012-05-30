@@ -10,6 +10,8 @@ package sg.edu.smu.ksketch.utilities
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch.model.IActivityKeyFrame;
+	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
 	import sg.edu.smu.ksketch.model.KModel;
@@ -24,6 +26,7 @@ package sg.edu.smu.ksketch.utilities
 		public static const OFFSET_INCREMENT:int = 20;
 		private var _template_objects:KModelObjectList;
 		private var _offset:int = 0;
+		private var _copyTime:Number = 0;
 
 		public function KClipBoard()
 		{
@@ -35,57 +38,82 @@ package sg.edu.smu.ksketch.utilities
 			_template_objects = new KModelObjectList();
 		}
 		
-		public function put(objects:KModelObjectList, kskTime:Number):void
+		public function put(objects:KModelObjectList, time:Number):void
 		{
 			_offset = 0;
-			_template_objects = _copyObjects(null,objects,kskTime,true);
+			_copyTime = time;
+			_template_objects = _copyObjects(null,objects,time,true);
 		}
 		
-		public function get(model:KModel, kskTime:Number, 
-							includeMotion:Boolean=true):KModelObjectList
+		public function get(model:KModel, time:Number, 
+							includeMotion:Boolean):KModelObjectList
 		{
 			_offset+=OFFSET_INCREMENT;
-			return _copyObjects(model,_template_objects,kskTime,includeMotion);
+			return _copyObjects(model,_template_objects, time, includeMotion);
 		}
 		
+		// Return a clone of the objects at time. 
+		// If model is null, it will store the object together with the motion from 
+		// time of copy to the local template, else it will return a clone from the 
+		// template (includeMotion will determine if keyframe is included).
 		private function _copyObjects(model:KModel,objects:KModelObjectList,
-									time:Number,includeMotion:Boolean):KModelObjectList
+									  time:Number, includeMotion:Boolean):KModelObjectList
 		{
 			var cloned:KModelObjectList = new KModelObjectList();
 			for (var i:int=0; i < objects.length(); i++)
 			{
 				var tempObj:KObject = objects.getObjectAt(i);
-				var cloneObj:KObject = _copyObject(model,tempObj,time,_offset);
-				if (includeMotion)
-					_cloneKeys(cloneObj,tempObj,time);
+				var cloneObj:KObject = _copyObject(model,tempObj,_offset);
+				if (model == null || includeMotion)
+				{
+					_copyMotion(cloneObj, tempObj);
+					_copyActivity(cloneObj, tempObj);
+					if (model && time-_copyTime != 0)
+						_shiftKeys(cloneObj,time-_copyTime);
+				}
+				else if (model && !includeMotion)
+					cloneObj = _copyInstant(tempObj,time);
+				if (model == null && tempObj.createdTime < time)
+				{
+					cloneObj.addActivityKey(tempObj.createdTime,0);
+					cloneObj.addActivityKey(time,1);
+				}
+				
 				cloned.add(cloneObj);
 			}
 			return cloned;
 		}
-
-		private function _copyObject(model:KModel, source:KObject, time:Number, offset:int):KObject
+		
+		private function _shiftKeys(obj:KObject,dt:Number):void
+		{
+			obj.shiftTransformKeys(dt);
+			obj.shiftActivityKeys(dt);
+			obj.shiftParentKeys(dt);
+		}
+				
+		private function _copyObject(model:KModel, source:KObject, offset:int):KObject
 		{
 			var id:int = model == null ? source.id : model.nextID;
 			var obj:KObject = null;
 			if (source is KGroup)
-				obj = _copyGroup(id, time, _offset, source as KGroup, model);
+				obj = _copyGroup(id, _offset, source as KGroup, model);
 			else if (source is KStroke)
-				obj = _copyStroke(id, time, _offset, source as KStroke);
+				obj = _copyStroke(id, _offset, source as KStroke);
 			else if(source is KImage)
-				obj = _copyImage(id, time, _offset, source as KImage);
-			obj.transformMgr.addInitialKeys(time);
+				obj = _copyImage(id, _offset, source as KImage);
+			obj.transformMgr.addInitialKeys(source.createdTime);
 			return obj;
 		}		
 
-		private function _copyGroup(id:int, time:Number, offset:int, 
-									source:KGroup, model:KModel):KGroup
+		private function _copyGroup(id:int, offset:int, source:KGroup, model:KModel):KGroup
 		{
-			var pt:Point = source.defaultCenter.add(new Point(offset,offset)); 
+			var pt:Point = source.defaultCenter.add(new Point(offset,offset));
+			var time:Number = source.createdTime;
 			var group:KGroup = new KGroup(id,time,new KModelObjectList(),pt);
 			var it:IIterator = source.directChildIterator(source.createdTime);
 			while (it.hasNext())
 			{
-				var obj:KObject = _copyObject(model,it.next(),time,offset);
+				var obj:KObject = _copyObject(model,it.next(),offset);
 				obj.addParentKey(time,group);
 				group.add(obj);
 			}
@@ -93,23 +121,76 @@ package sg.edu.smu.ksketch.utilities
 			return group;
 		}
 		
-		private function _copyStroke(id:int,time:Number,offset:int,source:KStroke):KStroke
+		private function _copyStroke(id:int,offset:int,source:KStroke):KStroke
 		{
-			var pts:Vector.<Point> = _clonePoints(source.points,_offset);
+			return _createStroke(id,source.createdTime,
+				_clonePoints(source.points,_offset),source.color,source.thickness);
+		}
+		
+		private function _createStroke(id:int,time:Number,pts:Vector.<Point>,
+									   color:uint,thickness:Number):KStroke
+		{
 			var stroke:KStroke = new KStroke(id,time,pts);
-			stroke.thickness = source.thickness;
-			stroke.color = source.color;
+			stroke.thickness = thickness;
+			stroke.color = color;
 			return stroke;
 		}
 		
-		private function _copyImage(id:int,time:Number,offset:int,source:KImage):KImage
+		private function _createImage(id:int,time:Number,center:Point,data:BitmapData):KImage
+		{
+			var image:KImage = new KImage(id,center.x,center.y,time);
+			image.imageData = data;
+			return image;
+		}
+		
+		private function _copyImage(id:int,offset:int,source:KImage):KImage
 		{
 			var pt:Point = source.imagePosition.add(new Point(offset,offset));
+			var time:Number = source.createdTime;
 			var image:KImage = new KImage(id,pt.x,pt.y,time);
 			image.imageData = source.imageData.clone();
 			return image;
 		}
-						
+		
+		private function _copyMotion(target:KObject, source:KObject):void
+		{
+			var time:Number = source.createdTime;
+			var op:KCompositeOperation = new KCompositeOperation();
+			KMergerUtil.mergeKeys(target,source,time,op,KTransformMgr.TRANSLATION_REF);
+			KMergerUtil.mergeKeys(target,source,time,op,KTransformMgr.ROTATION_REF);
+			KMergerUtil.mergeKeys(target,source,time,op,KTransformMgr.SCALE_REF);
+		}
+		
+		private function _copyActivity(target:KObject, source:KObject):void
+		{
+			var keys:Vector.<IKeyFrame> = source.getActivityKeys();
+			for (var i:int = 0; i < keys.length; i++)
+				target.addActivityKey(keys[i].endTime,
+					(keys[i] as IActivityKeyFrame).alpha);
+		}
+
+		private function _copyInstant(obj:KObject, time:Number):KObject
+		{
+			var clonedObj:KObject = obj;
+			var matrix:Matrix = obj.getFullPathMatrix(_copyTime);
+			if (obj is KStroke)
+			{
+				var stroke:KStroke = obj as KStroke;
+				var pts:Vector.<Point> = _transformPoints(stroke.points,matrix);
+				pts = _clonePoints(pts,_offset);
+				clonedObj = _createStroke(obj.id,time,pts,stroke.color,stroke.thickness);
+			}
+			else if (obj is KImage)
+			{	
+				var image:KImage = obj as KImage;
+				var pt:Point = matrix.transformPoint(image.imagePosition);
+				pt = pt.add(new Point(_offset,_offset));
+				clonedObj = _createImage(obj.id,time,pt,image.imageData);
+			}
+			clonedObj.transformMgr.addInitialKeys(time);
+			return clonedObj;
+		}
+		
 		private function _clonePoints(points:Vector.<Point>,offset:int):Vector.<Point>
 		{
 			var pts:Vector.<Point> = new Vector.<Point>();
@@ -118,19 +199,12 @@ package sg.edu.smu.ksketch.utilities
 			return pts;
 		}
 		
-		private function _cloneKeys(target:KObject, source:KObject, time:Number):void
+		private function _transformPoints(points:Vector.<Point>,matrix:Matrix):Vector.<Point>
 		{
-			KMergerUtil.mergeKeys(target,source,time,new KCompositeOperation(),KTransformMgr.TRANSLATION_REF);
-			KMergerUtil.mergeKeys(target,source,time,new KCompositeOperation(),KTransformMgr.ROTATION_REF);
-			KMergerUtil.mergeKeys(target,source,time,new KCompositeOperation(),KTransformMgr.SCALE_REF);
-		}
-/*
-		private function _cloneKeys(target:KObject, source:KObject, time:Number):void
-		{
-			KMergerUtil.mergeKeys(target,source,time,new KCompositeOperation(),KTransformMgr.TRANSLATION_REF);
-			KMergerUtil.mergeKeys(target,source,time,new KCompositeOperation(),KTransformMgr.ROTATION_REF);
-			KMergerUtil.mergeKeys(target,source,time,new KCompositeOperation(),KTransformMgr.SCALE_REF);
-		}
-*/
+			var pts:Vector.<Point> = new Vector.<Point>();
+			for (var i:int = 0; i < points.length; i++)
+				pts.push(matrix.transformPoint(points[i].clone()));
+			return pts;
+		}		
 	}
 }

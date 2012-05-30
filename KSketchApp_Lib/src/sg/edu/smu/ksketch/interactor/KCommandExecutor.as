@@ -97,7 +97,7 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case KLogger.BTN_PASTE:
 					KLogger.log(command);
-					_paste();
+					_paste(false);
 					break;				
 				case KLogger.BTN_UNDO:
 					KLogger.log(command);
@@ -163,11 +163,12 @@ package sg.edu.smu.ksketch.interactor
 				case GestureDesign.NAME_PRE_COPY:	
 					_copy();									
 					break;
-				case GestureDesign.NAME_PRE_CUT:				
+				case GestureDesign.NAME_PRE_CUT:
+					trace(GestureDesign.NAME_PRE_CUT);
 					_cut();					
 					break;
 				case GestureDesign.NAME_PRE_PASTE:
-					_paste();
+					_paste(false);
 					break;
 				case GestureDesign.NAME_PRE_CYCLE_NEXT:
 					break;
@@ -177,7 +178,12 @@ package sg.edu.smu.ksketch.interactor
 					_redo()
 					break;
 				case GestureDesign.NAME_PRE_UNDO:
+					trace(GestureDesign.NAME_PRE_UNDO);
 					_undo();
+					break;
+				case GestureDesign.NAME_PRE_PASTE_WITH_MOTIONS:
+					trace(GestureDesign.NAME_PRE_PASTE_WITH_MOTIONS);
+					_paste(true);
 					break;
 				case GestureDesign.NAME_PRE_TOGGLE:
 					_appState.isPen = !_appState.isPen;					
@@ -240,7 +246,10 @@ package sg.edu.smu.ksketch.interactor
 					_cut();
 					break;
 				case KLogger.MENU_CONTEXT_MENU_PASTE:
-					_paste();
+					_paste(false);
+					break;
+				case KLogger.MENU_CONTEXT_MENU_PASTE_WITH_MOTION:
+					_paste(true);
 					break;
 			}
 			KLogger.log(command);
@@ -257,7 +266,10 @@ package sg.edu.smu.ksketch.interactor
 					_cut();
 					break;
 				case KLogger.SHORTCUT_PASTE:
-					_paste();
+					_paste(false);
+					break;
+				case KLogger.SHORTCUT_PASTE_WITH_MOTION:
+					_paste(true);
 					break;
 				case KLogger.SHORTCUT_UNDO:
 					_undo();
@@ -348,11 +360,11 @@ package sg.edu.smu.ksketch.interactor
 			_facade.copy();
 		}
 		
-		protected function _paste():void
+		protected function _paste(includeMotion:Boolean):void
 		{
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
-			var op:IModelOperation = _facade.paste();
+			var op:IModelOperation = _facade.paste(includeMotion);
 			if (op != null)
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));

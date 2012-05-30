@@ -91,9 +91,10 @@ package sg.edu.smu.ksketch.operation
 			return _removeAll(facade,objs);
 		}
 
-		public function paste(model:KModel, appState:KAppState):IModelOperation
+		public function paste(model:KModel, appState:KAppState, 
+							  includeMotion:Boolean):IModelOperation
 		{
-			var objs:KModelObjectList = _clipboard.get(model,appState.time);
+			var objs:KModelObjectList = _clipboard.get(model,appState.time,includeMotion);
 			var op:IModelOperation = objs.length()>0 ? _pasteAll(model,objs,appState.time):null;
 			appState.selection = op ? new KSelection(objs,appState.time) : appState.selection;
 			return op;

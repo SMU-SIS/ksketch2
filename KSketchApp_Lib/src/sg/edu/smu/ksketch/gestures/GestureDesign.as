@@ -15,6 +15,9 @@ package sg.edu.smu.ksketch.gestures
 		public static const NAME_PRE_CUT:String = "Cut";
 		public static const NAME_PRE_COPY:String = "Copy";
 		public static const NAME_PRE_PASTE:String = "Paste";
+		//paste with motions
+		public static const NAME_PRE_PASTE_WITH_MOTIONS:String = "Paste With Motions";
+		
 	//	public static const NAME_PRE_TOGGLE:String = "Toggle-Pen-and-Erase";
 		public static const NAME_PRE_TOGGLE:String = "Switch-to-Eraser";
 		public static const NAME_PRE_SELECT_PEN:String = "Open-Pen-Selection-Menu";
@@ -64,6 +67,8 @@ package sg.edu.smu.ksketch.gestures
 				//new added gestures
 				_design1.mapping[NAME_PRE_CUT] = GestureDefs.instance.ALPHABET_Z;
 				_design1.mapping[NAME_PRE_PASTE] = GestureDefs.instance.ALPHABET_V;
+				//paste with motions
+				_design1.mapping[NAME_PRE_PASTE_WITH_MOTIONS] = GestureDefs.instance.ALPHABET_M;
 				
 				
 				_design1.mapping[NAME_POST_CYCLE_NEXT] = GestureDefs.instance.POLYLINE_RIGHT_LEFT;

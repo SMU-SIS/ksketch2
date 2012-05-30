@@ -413,8 +413,8 @@ package sg.edu.smu.ksketch.components
 			var changedTransform:Matrix = object.getFullMatrix(toKSKTime);
 			view.updateTransform(changedTransform);
 			
-			if (changedAlpha == 0 && object.createdTime < toKSKTime && !_isErased(object,toKSKTime))
-				_drawTracker((view as KObjectView).getRect(this));
+		//	if (changedAlpha == 0 && object.createdTime < toKSKTime && !_isErased(object,toKSKTime))
+		//		_drawTracker((view as KObjectView).getRect(this));
 		}
 		
 		private function _drawTracker(rect:Rectangle):void

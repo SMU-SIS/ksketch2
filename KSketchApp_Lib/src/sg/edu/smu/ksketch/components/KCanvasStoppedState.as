@@ -194,6 +194,9 @@ package sg.edu.smu.ksketch.components
 
 			var object:KObject = _appState.selection.objects.getObjectAt(0);
 			
+			if(!_viewsTable[object])
+				return;
+				
 			switch(_showPathState)
 			{
 				case UserOption.SHOW_PATH_ALL:

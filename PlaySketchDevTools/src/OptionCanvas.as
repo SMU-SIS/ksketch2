@@ -147,7 +147,17 @@ package
 					KLogger.CHANGE_GROUPING_MODE_TO, modes.selectedValue.toString());
 				appState.groupingMode = modes.selectedValue.toString();
 				appState.fireGroupingEnabledChangedEvent();
-				mainCanvas.group_groupOps.alpha = appState.groupingMode == impMode ? 0.1:1.0;
+				if(appState.groupingMode == impMode)
+				{
+					trace("false");
+					mainCanvas.group_groupOps.includeInLayout = false;
+					mainCanvas.group_groupOps.visible = false;
+				}
+				else
+				{
+					mainCanvas.group_groupOps.includeInLayout = true;
+					mainCanvas.group_groupOps.visible = true;
+				}
 			});
 			var buttons:Array = new Array();
 			var groupings:Array = [impMode,expMode,staMode];

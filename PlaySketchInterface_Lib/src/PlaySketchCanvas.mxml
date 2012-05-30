@@ -219,7 +219,8 @@
 					<playsketchskin:Group_FileHandling id="group_fileOps"/>
 					<playsketchskin:Group_Editing id="group_editOps"/>
 					<playsketchskin:Group_View id="group_viewOps"/>
-					<playsketchskin:Group_Grouping id="group_groupOps" alpha="{_isImplicitGrouping()?0.1:1.0}"/>
+					<playsketchskin:Group_Grouping id="group_groupOps" visible="{_isImplicitGrouping()?false:true}"
+												   includeInLayout="{_isImplicitGrouping()?false:true}"/>
 
 					<s:DropDownList id="list_pen_selection" width="100" selectedIndex="0" 
 									alternatingItemColors="[#000000,#FF0000,#00BB00,#0078FF,#999999]"

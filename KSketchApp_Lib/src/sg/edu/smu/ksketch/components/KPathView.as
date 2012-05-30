@@ -127,28 +127,49 @@ package sg.edu.smu.ksketch.components
 		{
 			var length:int = points.length;
 			var drawLayer:Graphics = path.graphics;
+			
 			if(length <= 0 || (length == 2 && Math.abs(points[0].time-points[1].time) <= 0))
 				return;
 			
-			var currentPoint:KPathPoint = points[0];
-			currentPoint.x += origin.x;
-			currentPoint.y += origin.y;
+			var currentPoint:KPathPoint;
 			
-			drawLayer.moveTo(currentPoint.x, currentPoint.y);
-			
-			var i:int = 1;
-			for(i; i<length; i++)
+			drawLayer.moveTo(points[0].x+origin.x, points[0].y+origin.y);
+		
+			if(length == 2)
 			{
-				currentPoint = points[i];
-				currentPoint.x += origin.x;
-				currentPoint.y += origin.y;
+				var startPoint:KPathPoint = points[0];
+				var endPoint:KPathPoint = points[1];
+				var duration:Number = Math.abs(points[0].time-points[1].time);
+				var proportionCovered:Number = time/duration;
 				
-				if(currentPoint.time < time)
-					drawLayer.lineStyle(_THICKNESS_THIN, lightColors[type]);
-				else
+				var dx:Number = (endPoint.x - startPoint.x)*proportionCovered + startPoint.x;
+				var dy:Number = (endPoint.y - startPoint.y)*proportionCovered + startPoint.y;
+				
+				drawLayer.lineStyle(_THICKNESS_THIN, lightColors[type]);
+				drawLayer.lineTo(dx+origin.x,dy+origin.y);
+				
+				if(proportionCovered < 1)
+				{
 					drawLayer.lineStyle(_THICKNESS_THIN, colors[type]);
-				
-				drawLayer.lineTo(currentPoint.x, currentPoint.y);
+					drawLayer.lineTo(endPoint.x+origin.x, endPoint.y+origin.y);
+				}
+			}
+			else
+			{
+				var i:int = 1;
+				for(i; i<length; i++)
+				{
+					currentPoint = points[i];
+					currentPoint.x += origin.x;
+					currentPoint.y += origin.y;
+					
+					if(currentPoint.time < time)
+						drawLayer.lineStyle(_THICKNESS_THIN, lightColors[type]);
+					else
+						drawLayer.lineStyle(_THICKNESS_THIN, colors[type]);
+					
+					drawLayer.lineTo(currentPoint.x, currentPoint.y);
+				}
 			}
 		}
 		

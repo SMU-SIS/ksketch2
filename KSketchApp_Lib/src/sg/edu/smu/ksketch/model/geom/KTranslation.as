@@ -30,22 +30,14 @@ package sg.edu.smu.ksketch.model.geom
 		}
 		
 		/**
-		 * Checks if the KTranslate has a translation
-		 */
-		public function get hasTransform():Boolean
-		{
-			return _hasTransform;
-		}
-		
-		/**
 		 * returns the motion path for this transform
 		 */
-		public function get path():KPath
+		public function get motionPath():KPath
 		{
 			return _motionPath;
 		}
 		
-		public function set path(value:KPath):void
+		public function set motionPath(value:KPath):void
 		{
 			_motionPath = value;
 		}
@@ -175,7 +167,7 @@ package sg.edu.smu.ksketch.model.geom
 			var frontMotionPath:KPath = _motionPath.split(proportion, shift);
 			var frontTransitionPath:K3DPath = _transitionPath.split(proportion, shift);
 			
-			frontTransform.path = frontMotionPath;
+			frontTransform.motionPath = frontMotionPath;
 			frontTransform.transitionPath = frontTransitionPath;
 			
 			return frontTransform;
@@ -184,8 +176,8 @@ package sg.edu.smu.ksketch.model.geom
 		public function mergeTransform(transform:KTranslation):KTranslation
 		{
 			var translate:KTranslation = new KTranslation();
-			translate.path = KPathProcessor.mergeTranslationMotionPath(
-				_motionPath, transform.path);
+			translate.motionPath = KPathProcessor.mergeTranslationMotionPath(
+				_motionPath, transform.motionPath);
 			translate.transitionPath = KPathProcessor.mergeTranslationTransitionPath(
 				_transitionPath, transform.transitionPath);
 			return translate;		
@@ -197,7 +189,7 @@ package sg.edu.smu.ksketch.model.geom
 		public function clone():KTranslation
 		{
 			var clone:KTranslation = new KTranslation();
-			clone.path = _motionPath.clone();
+			clone.motionPath = _motionPath.clone();
 			clone.transitionPath = _transitionPath.clone();
 			clone._currentTranslation = _currentTranslation.clone();
 			return clone;

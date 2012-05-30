@@ -38,8 +38,8 @@ package sg.edu.smu.ksketch.components
 		
 		colors[KTransformMgr.TRANSLATION_REF] = 0x0000FF;
 		lightColors[KTransformMgr.TRANSLATION_REF] = 0xBFBFFF;
-		colors[KTransformMgr.ROTATION_REF] = 0x006600;
-		lightColors[KTransformMgr.ROTATION_REF] = 0x6FD86F;
+		colors[KTransformMgr.ROTATION_REF] = 0x33CC00;
+		lightColors[KTransformMgr.ROTATION_REF] = 0x99FF99;
 		colors[KTransformMgr.SCALE_REF] = 0xCC0033;
 		lightColors[KTransformMgr.SCALE_REF] = 0xD27D92;
 		
@@ -53,15 +53,6 @@ package sg.edu.smu.ksketch.components
 			addChild(_pathS);
 			addChild(_pathT);
 			_object = object;
-			
-		
-						
-			/*_pathT.addEventListener(MouseEvent.MOUSE_OVER, _handleMouseOver);
-			_pathT.addEventListener(MouseEvent.MOUSE_OUT,_handleMouseOut);
-			_pathR.addEventListener(MouseEvent.MOUSE_OVER, _handleMouseOver);
-			_pathR.addEventListener(MouseEvent.MOUSE_OUT,_handleMouseOut);
-			_pathS.addEventListener(MouseEvent.MOUSE_OVER, _handleMouseOver);
-			_pathS.addEventListener(MouseEvent.MOUSE_OUT,_handleMouseOut);*/
 		}
 		
 		public function get object():KObject
@@ -90,10 +81,6 @@ package sg.edu.smu.ksketch.components
 			_pathR.graphics.clear();
 			_pathS.graphics.clear();
 			
-			//_pathT.graphics.lineStyle(_THICKNESS_THIN, 0x0000FF);
-			//_pathR.graphics.lineStyle(_THICKNESS_THIN, 0x00FF00);
-			//_pathS.graphics.lineStyle(_THICKNESS_THIN, 0xFF0000);
-			
 			_drawKeyPaths(_getKeyToDraw(KTransformMgr.TRANSLATION_REF,time,showAll), showAll, KTransformMgr.TRANSLATION_REF, time);
 			_drawKeyPaths(_getKeyToDraw(KTransformMgr.ROTATION_REF,time,showAll), showAll, KTransformMgr.ROTATION_REF, time);
 			_drawKeyPaths(_getKeyToDraw(KTransformMgr.SCALE_REF,time,showAll), showAll, KTransformMgr.SCALE_REF, time);
@@ -103,16 +90,19 @@ package sg.edu.smu.ksketch.components
 		{
 			var position:Point;
 			var transformAtTime:Matrix;
+			var elapsedTime:Number;
 			
 			while(targetKey)
 			{
 				if(targetKey.hasTransform())
 				{
+					elapsedTime = time - targetKey.startTime();
+					
 					if(type == KTransformMgr.TRANSLATION_REF)
 					{
 						transformAtTime = _object.getFullMatrix(targetKey.startTime());
 						position = transformAtTime.transformPoint(targetKey.center);
-						_drawCursorPath(targetKey.translate.path.path, position,_pathT, time, type);
+						_drawCursorPath(targetKey.translate.motionPath.path, position,_pathT, elapsedTime, type);
 					}
 					else
 					{
@@ -120,19 +110,18 @@ package sg.edu.smu.ksketch.components
 						position = transformAtTime.transformPoint(targetKey.center);
 						
 						if(type == KTransformMgr.ROTATION_REF)
-							_drawCursorPath(targetKey.rotate.path.path, position,_pathR, time, type);
+							_drawCursorPath(targetKey.rotate.motionPath.path, position,_pathR, elapsedTime, type);
 						else if(type == KTransformMgr.SCALE_REF)
-							_drawCursorPath(targetKey.scale.path.path, position,_pathS, time, type);
+							_drawCursorPath(targetKey.scale.motionPath.path, position,_pathS, elapsedTime, type);
 					}
 				}
 				
-				if(showAll)
+				if(showAll&& (type == KTransformMgr.TRANSLATION_REF))
 					targetKey = targetKey.next as ISpatialKeyframe;
 				else
 					targetKey = null;				
 			}
 		}
-		
 		
 		private function _drawCursorPath(points:Vector.<KPathPoint>, origin:Point, path:Sprite, time:Number, type:int):void
 		{
@@ -165,7 +154,7 @@ package sg.edu.smu.ksketch.components
 		
 		private function _getKeyToDraw(type:int, time:Number, showAll:Boolean):ISpatialKeyframe
 		{
-			if(showAll)
+			if(showAll&& (type == KTransformMgr.TRANSLATION_REF))
 				return _object.getSpatialKeyAtOfAfter(_object.createdTime, type);
 			else
 				return _object.getSpatialKeyAtOfAfter(time, type);

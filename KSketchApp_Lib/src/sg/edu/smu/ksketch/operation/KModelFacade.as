@@ -95,9 +95,9 @@ package sg.edu.smu.ksketch.operation
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
-		public function paste():IModelOperation
+		public function paste(includeMotion:Boolean):IModelOperation
 		{
-			return _editor.paste(_model, _appState);
+			return _editor.paste(_model, _appState, includeMotion);
 		}
 		public function clearClipBoard():void
 		{

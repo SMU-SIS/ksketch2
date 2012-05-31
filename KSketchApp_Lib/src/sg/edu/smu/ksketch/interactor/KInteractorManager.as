@@ -201,7 +201,10 @@ package sg.edu.smu.ksketch.interactor
 			if(keycode == Keyboard.CONTROL || keycode == Keyboard.COMMAND)
 			{	
 				if(_appState.ctrlEnabled)
+				{
 					_ctrlDown = bool;
+					_appState.gestureMode = bool;
+				}
 				else
 					_ctrlDown = false;					
 			}

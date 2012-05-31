@@ -192,6 +192,9 @@
 			 */
 			private function _marker_MouseDown(event:MouseEvent):void
 			{
+				if(_appState.gestureMode)
+					return;
+				
 				if(event.target is Marker)
 				{
 					stage.addEventListener(MouseEvent.MOUSE_MOVE,_widget_MouseMove,true, 0, true);

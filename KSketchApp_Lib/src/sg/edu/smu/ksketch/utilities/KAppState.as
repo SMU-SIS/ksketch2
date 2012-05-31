@@ -150,6 +150,8 @@ package sg.edu.smu.ksketch.utilities
 		
 		private var _zoomedOutProportion:Number = 0.45;
 		
+		public var gestureMode:Boolean = false;
+		
 		public function KAppState()
 		{
 			_time = 0;

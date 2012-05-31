@@ -245,9 +245,7 @@
 					
 					<!--Stretchable part of the top bar-->
 					<s:Group id = "topBar_resizableContainer" width="100%"/>
-					
-					<s:Button id="btn_log" width="44" height="24" label="Log" 
-							  visible="false"/>
+					<s:Button id="btn_log" width="44" height="24" label="Log" />
 					
 					<playsketchskin:Group_Config id="group_configOps"/>
 					

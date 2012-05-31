@@ -1,13 +1,13 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.gestures
 {
 	import flash.utils.Dictionary;
-
+	
 	public class GestureDesign extends Object
 	{
 		public static const NAME_PRE_UNDO:String = "Undo";
@@ -18,7 +18,7 @@ package sg.edu.smu.ksketch.gestures
 		//paste with motions
 		public static const NAME_PRE_PASTE_WITH_MOTIONS:String = "Paste With Motions";
 		
-	//	public static const NAME_PRE_TOGGLE:String = "Toggle-Pen-and-Erase";
+		//	public static const NAME_PRE_TOGGLE:String = "Toggle-Pen-and-Erase";
 		public static const NAME_PRE_TOGGLE:String = "Switch-to-Eraser";
 		public static const NAME_PRE_SELECT_PEN:String = "Open-Pen-Selection-Menu";
 		public static const NAME_PRE_SHOW_CONTEXT_MENU:String = "Open-Context-Menu";
@@ -47,7 +47,7 @@ package sg.edu.smu.ksketch.gestures
 		{
 			return _mapping;
 		}
-
+		
 		public static function get design1():GestureDesign
 		{
 			if(_design1 == null)
@@ -55,11 +55,9 @@ package sg.edu.smu.ksketch.gestures
 				_design1 = new GestureDesign("design1");
 				_design1.mapping[NAME_PRE_UNDO] = GestureDefs.instance.LINE_LEFT;
 				_design1.mapping[NAME_PRE_REDO] = GestureDefs.instance.LINE_RIGHT;
-			//	_design1.mapping[NAME_PRE_CUT] = GestureDefs.instance.ALPHABET_X;
 				_design1.mapping[NAME_PRE_COPY] = GestureDefs.instance.ALPHABET_C;
-			//	_design1.mapping[NAME_PRE_PASTE] = GestureDefs.instance.ALPHABET_V;
 				_design1.mapping[NAME_PRE_TOGGLE] = GestureDefs.instance.LINE_UP;
-		        _design1.mapping[NAME_PRE_SELECT_PEN] = GestureDefs.instance.PIGTAIL_BOTTOM_UP;
+				_design1.mapping[NAME_PRE_SELECT_PEN] = GestureDefs.instance.PIGTAIL_BOTTOM_UP;
 				_design1.mapping[NAME_PRE_SHOW_CONTEXT_MENU] = GestureDefs.instance.TAP;
 				_design1.mapping[NAME_PRE_CYCLE_NEXT] = GestureDefs.instance.POLYLINE_RIGHT_LEFT;
 				_design1.mapping[NAME_PRE_CYCLE_PREV] = GestureDefs.instance.POLYLINE_LEFT_RIGHT;
@@ -84,18 +82,18 @@ package sg.edu.smu.ksketch.gestures
 				_design2 = new GestureDesign("design2");
 				_design2.mapping[NAME_PRE_UNDO] = GestureDefs.instance.LINE_LEFT;
 				_design2.mapping[NAME_PRE_REDO] = GestureDefs.instance.LINE_RIGHT;
-			
-			    _design2.mapping[NAME_PRE_CUT] = GestureDefs.instance.ALPHABET_X;
-			  //  _design2.mapping[NAME_PRE_CUT] = GestureDefs.instance.ALPHABET_Z;
+				
+				_design2.mapping[NAME_PRE_CUT] = GestureDefs.instance.ALPHABET_X;
+				//  _design2.mapping[NAME_PRE_CUT] = GestureDefs.instance.ALPHABET_Z;
 				
 				_design2.mapping[NAME_PRE_COPY] = GestureDefs.instance.ALPHABET_C;
 				
 				_design2.mapping[NAME_PRE_PASTE] = GestureDefs.instance.ALPHABET_V;
-			  //  _design2.mapping[NAME_PRE_PASTE] = GestureDefs.instance.LINE_DOWN;
+				//  _design2.mapping[NAME_PRE_PASTE] = GestureDefs.instance.LINE_DOWN;
 				
-		        _design2.mapping[NAME_PRE_TOGGLE] = GestureDefs.instance.POLYLINE_UP_DOWN;   
+				_design2.mapping[NAME_PRE_TOGGLE] = GestureDefs.instance.POLYLINE_UP_DOWN;   
 				
-			    _design2.mapping[NAME_PRE_SELECT_PEN] = GestureDefs.instance.LINE_UP; 
+				_design2.mapping[NAME_PRE_SELECT_PEN] = GestureDefs.instance.LINE_UP; 
 				_design2.mapping[NAME_PRE_SHOW_CONTEXT_MENU] = GestureDefs.instance.TAP;
 				_design2.mapping[NAME_PRE_CYCLE_NEXT] = GestureDefs.instance.POLYLINE_RIGHT_LEFT;
 				_design2.mapping[NAME_PRE_CYCLE_PREV] = GestureDefs.instance.POLYLINE_LEFT_RIGHT;
@@ -123,7 +121,7 @@ package sg.edu.smu.ksketch.gestures
 				_design3.mapping[NAME_PRE_SHOW_CONTEXT_MENU] = GestureDefs.instance.TAP;
 				_design3.mapping[NAME_PRE_CYCLE_NEXT] = GestureDefs.instance.POLYLINE_RIGHT_LEFT;
 				_design3.mapping[NAME_PRE_CYCLE_PREV] = GestureDefs.instance.POLYLINE_LEFT_RIGHT;
-						
+				
 				
 				_design3.mapping[NAME_POST_CYCLE_NEXT] = GestureDefs.instance.POLYLINE_RIGHT_LEFT;
 				_design3.mapping[NAME_POST_CYCLE_PREV] = GestureDefs.instance.POLYLINE_LEFT_RIGHT;
@@ -165,8 +163,9 @@ package sg.edu.smu.ksketch.gestures
 				case NAME_PRE_CUT:
 				case NAME_PRE_COPY:
 				case NAME_PRE_PASTE:
+				case NAME_PRE_PASTE_WITH_MOTIONS:
 				case NAME_PRE_TOGGLE:
-			    case NAME_PRE_SELECT_PEN:
+				case NAME_PRE_SELECT_PEN:
 				case NAME_PRE_SHOW_CONTEXT_MENU:
 				case NAME_PRE_CYCLE_NEXT:
 				case NAME_PRE_CYCLE_PREV:

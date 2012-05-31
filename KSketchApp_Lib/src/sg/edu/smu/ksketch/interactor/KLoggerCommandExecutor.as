@@ -152,6 +152,7 @@ package sg.edu.smu.ksketch.interactor
 					_undo();
 					break;
 				case KLogger.INTERACTION_TRANSLATE:
+					trace("Undo KLogger.INTERACTION_TRANSLATE")
 					_undo();
 					break;
 				case KLogger.INTERACTION_ROTATE:

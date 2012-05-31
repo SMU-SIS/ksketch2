@@ -32,12 +32,6 @@ private var _playTimer:Timer;
 public function initLogger(commandExecutor:KLoggerCommandExecutor,xml:XML):void
 {
 	_commandExecutor = commandExecutor;
-	_buttons.visible = false;
-	load(xml);
-}
-
-public function load(xml:XML):void
-{
 	var commands:XMLList = xml.children();
 	if (commands.length() == 0)
 		return;
@@ -51,49 +45,22 @@ public function load(xml:XML):void
 		_commandNodes.push(command);
 		list.push(obj);
 	}
-	_actionTable.removeEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
 	_actionTable.dataProvider = new ArrayCollection(list);
-	_actionTable.selectionMode = GridSelectionMode.NONE;
+	_actionTable.selectionMode = GridSelectionMode.SINGLE_ROW;
+	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
 	_actionSlider.minimum = KLogger.timeOf(list[0][KLogger.LOG_TIME]).valueOf();
 	_actionSlider.maximum = KLogger.timeOf(list[list.length-1][KLogger.LOG_TIME]).valueOf();
 	_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
-}
-/*
-private function _openSaveWindow(event:MouseEvent):void
-{
-	new KFileSaver().saveLog(KLogger.logFile);
-}
-*/
-
-private function _openLoadWindow(event:MouseEvent):void
-{
-	var loader:KFileLoader = new KFileLoader();
-	loader.addEventListener(KFileLoadedEvent.EVENT_FILE_LOADED, _loadLog);
-	loader.loadLog();
-}
-
-private function _loadLog(e:KFileLoadedEvent):void
-{
-	_commandExecutor.newFile();
-	_actionTable.addEventListener(FlexEvent.UPDATE_COMPLETE,_tableLoaded);
-	_actionTable.removeEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
-	load(new XML(e.content));
-	_actionTable.selectionMode = GridSelectionMode.SINGLE_ROW;
-}
-
-private function _tableLoaded(e:FlexEvent):void
-{
+	
 	for (var i:int = 0; i < _actionTable.dataProvider.length; i++)
 		_commandExecutor.initCommand(
-			_actionTable.dataProvider[i][_COMMAND_NAME],_commandNodes[i]);	
+			_actionTable.dataProvider[i][_COMMAND_NAME],_commandNodes[i]);
+
 	for (var j:int = _actionTable.dataProvider.length-1; j >= 0 ; j--)
 		_commandExecutor.undoCommand(
 			_actionTable.dataProvider[j][_COMMAND_NAME],_commandNodes[j]);
-	_redoCommand(_actionTable.selectedIndex = 0);
-	_actionTable.removeEventListener(FlexEvent.UPDATE_COMPLETE,_tableLoaded);
-	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
-	_buttons.visible = true;
-//	_saveButton.enabled = false;
+	
+	_actionTable.selectedIndex = 0;
 }
 
 private function _selectedRowChanged(e:GridCaretEvent):void
@@ -104,6 +71,10 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	else if (e.oldRowIndex > e.newRowIndex)
 		for (var j:int=e.oldRowIndex; j > e.newRowIndex; j--)
 			_undoCommand(j);
+}
+
+private function _kmvLoaded(e:KFileLoadedEvent):void
+{
 }
 
 private function _redoCommand(index:int):void
@@ -136,7 +107,7 @@ private function _nextCommand(e:MouseEvent):void
 	_actionTable.selectedIndex++;
 }
 
-private function _lastCommand(e:MouseEvent):void
+public function lastCommand(e:MouseEvent):void
 {
 	_actionTable.selectedIndex = _actionTable.dataProviderLength - 1;
 }		
@@ -198,4 +169,4 @@ private function _createMarker(x:Number):Rect
 	rect.height = 7;
 	rect.fill = new SolidColor(0x000000);
 	return rect;
-}	
+}

@@ -275,7 +275,7 @@ package sg.edu.smu.ksketch.interactor
 		{
 			var path:Vector.<KPathPoint> = _getPath(commandNode);		
 			var type:int = commandNode.attribute(KLogger.TRANSITION_TYPE);
-			_appState.transitionType = isNaN(type) ? type : _appState.transitionType;
+			_appState.transitionType = isNaN(type) ? _appState.transitionType : type;
 			_appState.time = path[0].time;
 			var p:Point = KInteractorManager.getInverseCoordinate(
 				_canvas.localToGlobal(path[0]),_canvas);
@@ -307,7 +307,7 @@ package sg.edu.smu.ksketch.interactor
 				_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_MOVE, true, false, p.x, p.y));
 			}
 			_appState.time = cursorPath[length-1].time;
-			p = KInteractorManager.getInverseCoordinate(cursorPath[i],_canvas);
+			p = KInteractorManager.getInverseCoordinate(cursorPath[length-1],_canvas);
 			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP, true, false, p.x, p.y));
 		}		
 

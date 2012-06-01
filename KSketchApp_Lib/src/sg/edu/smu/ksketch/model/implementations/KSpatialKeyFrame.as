@@ -323,12 +323,12 @@ package sg.edu.smu.ksketch.model.implementations
 			var currentMatrix:Matrix = getFullMatrix(_endTime, new Matrix());
 			var previousMatrix:Matrix = (_previous as KSpatialKeyFrame).getFullMatrix(_previous.endTime, new Matrix());
 			
-			if(currentMatrix.a - previousMatrix.a > 0 ||
-				currentMatrix.b - previousMatrix.b > 0 ||
-				currentMatrix.c - previousMatrix.c > 0 ||
-				currentMatrix.d - previousMatrix.d > 0 ||
-				currentMatrix.tx - previousMatrix.tx > 0 ||
-				currentMatrix.ty - previousMatrix.ty > 0)
+			if( currentMatrix.a - previousMatrix.a != 0 ||
+				currentMatrix.b - previousMatrix.b != 0 ||
+				currentMatrix.c - previousMatrix.c != 0 ||
+				currentMatrix.d - previousMatrix.d != 0 ||
+				currentMatrix.tx - previousMatrix.tx != 0 ||
+				currentMatrix.ty - previousMatrix.ty != 0)
 				return true;
 			
 			return false;

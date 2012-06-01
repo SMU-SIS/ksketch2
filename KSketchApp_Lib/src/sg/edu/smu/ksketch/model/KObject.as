@@ -37,7 +37,6 @@ package sg.edu.smu.ksketch.model
 		private const SCALE_REFERENCE_NUMBER:int = KTransformMgr.SCALE_REF;
 		private var _id:int;
 		private var _name:String;
-		public  var workingKey:ISpatialKeyframe;
 		private var _defaultBoundingBox:Rectangle;
 		private var _parentFrameList:IParentKeyFrameList;
 		private var _activityFrameList:KKeyFrameList;
@@ -341,6 +340,23 @@ package sg.edu.smu.ksketch.model
 			return key;
 		}
 		
+		public function shiftTransformKeys(dt:Number):void
+		{
+			_referenceFrameList.getReferenceFrameAt(TRANSLATION_REFERENCE_NUMBER).shiftKeys(0,dt);
+			_referenceFrameList.getReferenceFrameAt(ROTATION_REFERENCE_NUMBER).shiftKeys(0,dt);
+			_referenceFrameList.getReferenceFrameAt(SCALE_REFERENCE_NUMBER).shiftKeys(0,dt);
+		}
+
+		public function shiftActivityKeys(dt:Number):void
+		{
+			_activityFrameList.shiftKeys(0,dt);
+		}
+		
+		public function shiftParentKeys(dt:Number):void
+		{
+			_parentFrameList.shiftKeys(0,dt);
+		}
+		
 		private function _getAtTime(time:Number, type:int):KSpatialKeyFrame
 		{
 			var refFrame:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(
@@ -374,11 +390,11 @@ package sg.edu.smu.ksketch.model
 			
 			if(type == KTransformMgr.ALL_REF)
 			{
-				refFrame = _referenceFrameList.getReferenceFrameAt(KTransformMgr.TRANSLATION_REF);
+				refFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REFERENCE_NUMBER);
 				_transformMgr.forceKeyAtTime(time, refFrame, operation);
-				refFrame = _referenceFrameList.getReferenceFrameAt(KTransformMgr.ROTATION_REF);
+				refFrame = _referenceFrameList.getReferenceFrameAt(ROTATION_REFERENCE_NUMBER);
 				_transformMgr.forceKeyAtTime(time, refFrame, operation);
-				refFrame = _referenceFrameList.getReferenceFrameAt(KTransformMgr.SCALE_REF);
+				refFrame = _referenceFrameList.getReferenceFrameAt(SCALE_REFERENCE_NUMBER);
 				_transformMgr.forceKeyAtTime(time, refFrame, operation);
 			}
 			else

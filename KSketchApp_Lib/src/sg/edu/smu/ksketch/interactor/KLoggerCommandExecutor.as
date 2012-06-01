@@ -350,6 +350,8 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case KLogger.CHANGE_ASPECT_RATIO:
 					break;
+				case KLogger.BTN_SAVE:
+					break;
 				default:
 					doButtonCommand(command);
 			}			

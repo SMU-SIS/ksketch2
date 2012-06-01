@@ -118,7 +118,7 @@ package sg.edu.smu.ksketch.operation
 				var xi:Number = i*offset.x/duration;
 				var yi:Number = i*offset.y/duration;
 				var point:Point = new Point(fromPoint.x+xi,fromPoint.y+yi);
-				result.path.addPoint(xi,yi,i);
+				result.motionPath.addPoint(xi,yi,i);
 				result.transitionPath.push(xi,yi,i);
 			}
 			return result;

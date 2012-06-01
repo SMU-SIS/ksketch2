@@ -6,15 +6,11 @@
 
 package sg.edu.smu.ksketch.interactor
 {
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.geom.Point;
-	import flash.net.FileReference;
 	import flash.ui.Mouse;
 	
 	import mx.controls.Menu;
-	import mx.events.CloseEvent;
-	import mx.events.FileEvent;
 	import mx.events.MenuEvent;
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
@@ -22,7 +18,6 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.components.KPenMenu;
 	import sg.edu.smu.ksketch.event.KCommandEvent;
 	import sg.edu.smu.ksketch.event.KFileLoadedEvent;
-	import sg.edu.smu.ksketch.event.KFileSavedEvent;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
 	import sg.edu.smu.ksketch.io.KFileAccessor;
 	import sg.edu.smu.ksketch.io.KFileLoader;
@@ -30,7 +25,6 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
-	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
@@ -97,7 +91,7 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case KLogger.BTN_PASTE:
 					KLogger.log(command);
-					_paste();
+					_paste(false);
 					break;				
 				case KLogger.BTN_UNDO:
 					KLogger.log(command);
@@ -163,11 +157,11 @@ package sg.edu.smu.ksketch.interactor
 				case GestureDesign.NAME_PRE_COPY:	
 					_copy();									
 					break;
-				case GestureDesign.NAME_PRE_CUT:				
+				case GestureDesign.NAME_PRE_CUT:
 					_cut();					
 					break;
 				case GestureDesign.NAME_PRE_PASTE:
-					_paste();
+					_paste(false);
 					break;
 				case GestureDesign.NAME_PRE_CYCLE_NEXT:
 					break;
@@ -178,6 +172,9 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case GestureDesign.NAME_PRE_UNDO:
 					_undo();
+					break;
+				case GestureDesign.NAME_PRE_PASTE_WITH_MOTIONS:
+					_paste(true);
 					break;
 				case GestureDesign.NAME_PRE_TOGGLE:
 					_appState.isPen = !_appState.isPen;					
@@ -240,7 +237,10 @@ package sg.edu.smu.ksketch.interactor
 					_cut();
 					break;
 				case KLogger.MENU_CONTEXT_MENU_PASTE:
-					_paste();
+					_paste(false);
+					break;
+				case KLogger.MENU_CONTEXT_MENU_PASTE_WITH_MOTION:
+					_paste(true);
 					break;
 			}
 			KLogger.log(command);
@@ -257,7 +257,10 @@ package sg.edu.smu.ksketch.interactor
 					_cut();
 					break;
 				case KLogger.SHORTCUT_PASTE:
-					_paste();
+					_paste(false);
+					break;
+				case KLogger.SHORTCUT_PASTE_WITH_MOTION:
+					_paste(true);
 					break;
 				case KLogger.SHORTCUT_UNDO:
 					_undo();
@@ -306,7 +309,7 @@ package sg.edu.smu.ksketch.interactor
 		{
 			var loader:KFileLoader = new KFileLoader();
 			loader.addEventListener(KFileLoadedEvent.EVENT_FILE_LOADED, _kmvLoaded);
-			loader.loadKMV();		
+			loader.loadKMV();
 		}		
 		
 		protected function _saveToDir(dir:String,filename:String):void
@@ -348,11 +351,11 @@ package sg.edu.smu.ksketch.interactor
 			_facade.copy();
 		}
 		
-		protected function _paste():void
+		protected function _paste(includeMotion:Boolean):void
 		{
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
-			var op:IModelOperation = _facade.paste();
+			var op:IModelOperation = _facade.paste(includeMotion);
 			if (op != null)
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
@@ -444,12 +447,11 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _kmvLoaded(e:KFileLoadedEvent):void
 		{
-			if(e.filePath == null)
-				KLogger.log(KLogger.BTN_LOAD);
-			else
+			if(e.filePath)
 			{
-				KLogger.log(KLogger.BTN_LOAD, KLogger.FILE_PATH, e.filePath);
-				_canvas.loadFile(new XML(e.content));
+				var xml:XML = new XML(e.content);
+				_canvas.loadFile(xml);
+				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS).toXMLString()));				
 			}
 		}
 		

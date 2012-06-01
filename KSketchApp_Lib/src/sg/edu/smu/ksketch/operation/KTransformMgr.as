@@ -263,6 +263,10 @@ package sg.edu.smu.ksketch.operation
 				}
 				else if(_key.endTime > time)
 				{
+					if(_key == ref.earliestKey())
+						if(_object.createdTime < _key.endTime)
+							forceKeyAtTime(_object.createdTime, ref, _currentOperation);
+					
 					var preSplit:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 					preSplit.push(_key.clone());
 					
@@ -561,11 +565,20 @@ package sg.edu.smu.ksketch.operation
 			var newKey:ISpatialKeyframe;
 			var keyBefore:ISpatialKeyframe;
 			var insertOp:IModelOperation;
-	
+			
 			if(targetKey)
 			{
-				//Case there is an active key with end time later than start time
-				if(time < targetKey.endTime)
+				if(time < refFrame.earliestKey().endTime)
+				{
+					var objectCenter:Point = _object.defaultCenter;
+					var newHeader:ISpatialKeyframe = refFrame.createSpatialKey(time, objectCenter.x, objectCenter.y);
+					refFrame.insertKey(newHeader);
+					
+					var newHeaderKey:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+					newHeaderKey.push(targetKey);
+					insertOp = new KReplaceKeyframeOperation(_object,refFrame,null,newHeaderKey);
+				}
+				else if(time < targetKey.endTime)
 				{
 					var preSplit:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 					preSplit.push(targetKey.clone());

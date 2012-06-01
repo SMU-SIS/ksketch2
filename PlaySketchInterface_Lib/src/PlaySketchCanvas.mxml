@@ -129,32 +129,29 @@
 			
 			public function handleKeyBoardPress(event:KeyboardEvent):void
 			{			
+				if (!event.ctrlKey) return;
 				switch(event.keyCode)
 				{
 					case 67: //c key
-						if(event.ctrlKey)
-							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_COPY)
-						break;					
+						_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_COPY);
+						break;
 					case 70: //f key
-						if(event.ctrlKey)
-							handleFullScreen();																				
+						handleFullScreen();																				
+						break;
+					case 77: //m key
+						_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_PASTE_WITH_MOTION);
 						break;
 					case 86: //v key
-						if(event.ctrlKey)
-							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_PASTE)
+						_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_PASTE);
 						break;
 					case 89: //y key
-						if(event.ctrlKey)
-							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_REDO)
+						_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_REDO);
 						break;
 					case 90: //z key
-						if(event.ctrlKey)
-						{
-							if(event.shiftKey)
-								_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_REDO)
-							else
-								_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_UNDO)
-						}
+						if(event.shiftKey)
+							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_REDO);
+						else
+							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_UNDO);
 						break;
 				}
 			}
@@ -219,8 +216,32 @@
 					<playsketchskin:Group_FileHandling id="group_fileOps"/>
 					<playsketchskin:Group_Editing id="group_editOps"/>
 					<playsketchskin:Group_View id="group_viewOps"/>
-					<playsketchskin:Group_Grouping id="group_groupOps" alpha="{_isImplicitGrouping()?0.1:1.0}"/>
-
+					<playsketchskin:Group_Grouping id="group_groupOps" visible="{_isImplicitGrouping()?false:true}"
+												   includeInLayout="{_isImplicitGrouping()?false:true}"/>
+					<s:Group>
+						<s:Group>
+							<s:Rect x="0" y="0" width="75" height="29" radiusX="13.1821" radiusY="13.1821">
+								<s:fill>
+									<s:LinearGradient x="79.4277" y="44.4336" scaleX="68" rotation="270">
+										<s:GradientEntry ratio="0.0181818" color="#B6C3C9"/>
+										<s:GradientEntry ratio="0.424242" color="#73A1BC"/>
+										<s:GradientEntry ratio="0.805791" color="#354571"/>
+									</s:LinearGradient>
+								</s:fill>
+							</s:Rect>
+						</s:Group>
+						<s:Group>
+							<s:layout>
+								<s:HorizontalLayout gap="3" paddingLeft="7" paddingTop="2.5"/>
+							</s:layout>
+							<s:Button id="btn_FLV" styleName="buttonFlvExport_style_toggle" width="30" height="24"
+									  toolTip="FLV Export" click="flvWizardWindow()"/>	
+							<playsketchskin:Button_WebCam id="btn_IMG" width="35" height="24"
+														  toolTip="WebCam/IMG Import" click="imgWizardWindow()"/>
+							<s:Button id="btn_SOUND" styleName="buttonMicrophone_style_toggle" width="29" height="24" 
+									  label="S" toolTip="Sound Record" click="soundRecord()" visible="false" includeInLayout="false"/>
+						</s:Group>
+					</s:Group>
 					<s:DropDownList id="list_pen_selection" width="100" selectedIndex="0" 
 									alternatingItemColors="[#000000,#FF0000,#00BB00,#0078FF,#999999]"
 									color="#DDDDDD" chromeColor="#000000"  rollOverColor="#777777" 
@@ -232,24 +253,10 @@
 
 					<!--<s:Button id="btn_toogle" width="27" height="24" chromeColor="#012345" 
 					click="this.changeStageAspect(_stageAspectRatioMode)"/>-->
-
-					<s:Group>
-						<s:layout>
-							<s:HorizontalLayout/>
-						</s:layout>
-						<s:Button id="btn_FLV" styleName="buttonFlvExport_style_toggle" width="30" height="24"
-								  toolTip="FLV Export" click="flvWizardWindow()"/>	
-						<s:Button id="btn_IMG" width="35" height="24" styleName="buttonWebcam_style_toggle"
-								  toolTip="WebCam/IMG Import" click="imgWizardWindow()"/>	
-						<s:Button id="btn_SOUND" styleName="buttonMicrophone_style_toggle" width="29" height="24" 
-								  label="S" toolTip="Sound Record" click="soundRecord()" visible="false" includeInLayout="false"/>
-					</s:Group>
 					
 					<!--Stretchable part of the top bar-->
 					<s:Group id = "topBar_resizableContainer" width="100%"/>
-					
-					<s:Button id="btn_log" width="44" height="24" label="Log" 
-							  visible="false"/>
+					<s:Button id="btn_log" width="44" height="24" label="Log" />
 					
 					<playsketchskin:Group_Config id="group_configOps"/>
 					

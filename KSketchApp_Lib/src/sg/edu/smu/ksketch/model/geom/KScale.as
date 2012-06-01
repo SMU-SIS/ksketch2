@@ -15,7 +15,7 @@ package sg.edu.smu.ksketch.model.geom
 
 	public class KScale
 	{
-		private var _path:KPath;
+		private var _motionPath:KPath;
 		private var _transitionPath:K2DPath;
 		private var _hasTransform:Boolean;
 	
@@ -25,25 +25,20 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public function KScale()
 		{
-			_path = new KPath();
+			_motionPath = new KPath();
 			_transitionPath = new K2DPath();
 			_currentScale = 0;
 			_hasTransform = false;
 		}
 		
-		public function get hasTransform():Boolean
+		public function get motionPath():KPath
 		{
-			return _hasTransform;
+			return _motionPath;
 		}
 		
-		public function get path():KPath
+		public function set motionPath(value:KPath):void
 		{
-			return _path;
-		}
-		
-		public function set path(value:KPath):void
-		{
-			_path = value;
+			_motionPath = value;
 		}
 		
 		public function get transitionPath():K2DPath
@@ -104,9 +99,9 @@ package sg.edu.smu.ksketch.model.geom
 					
 					if(duration != 0)
 					{
-						_path = new KPath();
-						_path.addPoint(KSpatialKeyFrame.INTERPOLATION_RADIUS, KSpatialKeyFrame.INTERPOLATION_RADIUS, 0);
-						_path.addPoint(KSpatialKeyFrame.INTERPOLATION_RADIUS*_currentScale, KSpatialKeyFrame.INTERPOLATION_RADIUS*_currentScale
+						_motionPath = new KPath();
+						_motionPath.addPoint(KSpatialKeyFrame.INTERPOLATION_RADIUS, KSpatialKeyFrame.INTERPOLATION_RADIUS, 0);
+						_motionPath.addPoint(KSpatialKeyFrame.INTERPOLATION_RADIUS*_currentScale, KSpatialKeyFrame.INTERPOLATION_RADIUS*_currentScale
 										,duration);	
 					}
 					
@@ -137,7 +132,7 @@ package sg.edu.smu.ksketch.model.geom
 						currentPoint = new Point(currentVector.x, currentVector.y);
 						
 						scale = KMathUtil.distanceOf(origin, currentPoint)/startDistance;
-						_path.addPoint(currentVector.x, currentVector.y, currentVector.z);
+						_motionPath.addPoint(currentVector.x, currentVector.y, currentVector.z);
 						_transitionPath.push(scale-1, currentVector.z);
 					}
 					
@@ -149,7 +144,7 @@ package sg.edu.smu.ksketch.model.geom
 				//or interpolation of existing paths
 				
 				//Need to do refactoring here
-				KPathProcessor.interpolateScaleMotionPath(_path.path, _currentScale, center);
+				KPathProcessor.interpolateScaleMotionPath(_motionPath.path, _currentScale, center);
 				KPathProcessor.interpolateScaleTransitionPath(_transitionPath.points, _currentScale);
 			}
 			
@@ -173,10 +168,10 @@ package sg.edu.smu.ksketch.model.geom
 		public function splitTransform(proportion:Number, shift:Boolean = false):KScale
 		{
 			var frontTransform:KScale = new KScale();
-			var frontMotionPath:KPath = _path.split(proportion, shift);
+			var frontMotionPath:KPath = _motionPath.split(proportion, shift);
 			var frontTransitionPath:K2DPath = _transitionPath.split(proportion, shift);
 			
-			frontTransform.path = frontMotionPath;
+			frontTransform.motionPath = frontMotionPath;
 			frontTransform.transitionPath = frontTransitionPath;
 			
 			return frontTransform;
@@ -185,7 +180,7 @@ package sg.edu.smu.ksketch.model.geom
 		public function mergeTransform(transform:KScale):KScale
 		{
 			var scale:KScale = new KScale();
-			scale.path = KPathProcessor.mergeScaleMotionPath(_path, transform.path);
+			scale.motionPath = KPathProcessor.mergeScaleMotionPath(_motionPath, transform.motionPath);
 			scale.transitionPath = KPathProcessor.mergeScaleTransitionPath(
 				_transitionPath, transform.transitionPath);
 			
@@ -198,7 +193,7 @@ package sg.edu.smu.ksketch.model.geom
 		public function clone():KScale
 		{
 			var clone:KScale = new KScale();
-			clone.path = _path.clone();
+			clone.motionPath = _motionPath.clone();
 			clone.transitionPath = _transitionPath.clone();
 			return clone;
 		}

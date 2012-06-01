@@ -20,9 +20,7 @@ package sg.edu.smu.ksketch.components
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KObject;
-	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
-	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
@@ -33,21 +31,26 @@ package sg.edu.smu.ksketch.components
 		[Bindable]
 		public static var MENU_ITEMS_WITH_SEL:XML = 
 			<root>
-				<menuitem label="Copy(Ctr+C)"/>
-                <menuitem label="Paste Object(Ctrl+V)"/>
+				<menuitem id="1" label="Copy(Ctrl+C)"/>
+                <menuitem id="2" label="Paste Object(Ctrl+V)"/>
+                <menuitem id="3" label="Paste Object with Motion(Ctrl+M)" />
 			</root>;
 		
 		[Bindable]
 		public static var MENU_ITEMS_WITH_SEL_AND_ON_TRACK:XML = 
 			<root>
-				<menuitem label="Insert KeyFrame"/>
+				<menuitem id="0" label="Insert KeyFrame"/>
 			</root>;
 		
 		[Bindable]
 		public static var MENU_ITEMS_NO_SEL:XML = 
 			<root>
-				<menuitem label="Paste Object(Ctrl+V)"/>
+				<menuitem id="2" label="Paste Object(Ctrl+V)"/>
+                <menuitem id="3" label="Paste Object with Motion(Ctrl+M)"/>
 			</root>;
+		
+		private static var _COMMANDS:Array = ["",KLogger.MENU_CONTEXT_MENU_COPY,
+			KLogger.MENU_CONTEXT_MENU_PASTE,KLogger.MENU_CONTEXT_MENU_PASTE_WITH_MOTION];
 		
 		private var _appState:KAppState;
 		private var _executor:KCommandExecutor;
@@ -58,6 +61,7 @@ package sg.edu.smu.ksketch.components
 		public function KContextMenu(appState:KAppState,executor:KCommandExecutor)
 		{
 			super();
+			
 			_appState = appState;
 			_executor = executor;
 			labelField = "@label";
@@ -67,20 +71,14 @@ package sg.edu.smu.ksketch.components
 		private function execute(event:MenuEvent):void
 		{			
 			var selected:String = event.item.@label;
-			_appState.selectedItem = selected;			
 			
-			switch(selected)
-			{
-				case "Copy(Ctr+C)":
-					_executor.doMenuCommand(KLogger.MENU_CONTEXT_MENU_COPY);
-					break;
-				case "Paste Object(Ctrl+V)":
-					_executor.doMenuCommand(KLogger.MENU_CONTEXT_MENU_PASTE);
-					break;
-				case "Insert KeyFrame":
-					_insertKeyFrames();
-					break;
-			}
+		//	_appState.selectedItem = selected;
+			
+			var itemNo:int = event.item.@id;
+			if (itemNo > 0)
+				_executor.doMenuCommand(_COMMANDS[itemNo]);
+			else
+				_insertKeyFrames();
 						   
 		   _executor.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));	
 		   _appState._fireFacadeUndoRedoModelChangedEvent();
@@ -113,6 +111,7 @@ package sg.edu.smu.ksketch.components
 				
 				if(objects && objects.length()>0)
 				{
+					_appState.time = _appState.trackTapTime;
 					var it:IIterator = objects.iterator;
 					var insertKeyOp:KCompositeOperation = new KCompositeOperation();
 					while(it.hasNext())

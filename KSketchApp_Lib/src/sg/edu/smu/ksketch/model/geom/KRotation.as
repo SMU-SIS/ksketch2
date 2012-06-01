@@ -15,7 +15,7 @@ package sg.edu.smu.ksketch.model.geom
 
 	public class KRotation
 	{
-		private var _path:KPath;
+		private var _motionPath:KPath;
 		private var _transitionPath:K2DPath;
 		private var _hasTransform:Boolean;
 		
@@ -25,25 +25,20 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public function KRotation()
 		{
-			_path = new KPath();
+			_motionPath = new KPath();
 			_transitionPath = new K2DPath();
 			_currentAngle = 0;
 			_hasTransform = false;
 		}
 		
-		public function get hasTransform():Boolean
+		public function get motionPath():KPath
 		{
-			return _hasTransform;
+			return _motionPath;
 		}
 		
-		public function get path():KPath
+		public function set motionPath(value:KPath):void
 		{
-			return _path;
-		}
-		
-		public function set path(value:KPath):void
-		{
-			_path = value;
+			_motionPath = value;
 		}
 		
 		public function get transitionPath():K2DPath
@@ -126,17 +121,11 @@ package sg.edu.smu.ksketch.model.geom
 						while(Math.abs(angleMoved) <  Math.abs(_currentAngle))
 						{
 							theta = angleMoved + startAngle;
-							_path.addPoint(KSpatialKeyFrame.INTERPOLATION_RADIUS*Math.cos(theta),
-								KSpatialKeyFrame.INTERPOLATION_RADIUS*Math.sin(theta),
-								timeMoved);
 							_transitionPath.push(angleMoved, timeMoved);
 							angleMoved += angleStep;
 							timeMoved += timeStep;
 						}
 						
-						_path.addPoint(KSpatialKeyFrame.INTERPOLATION_RADIUS*Math.cos(_currentAngle+startAngle),
-							KSpatialKeyFrame.INTERPOLATION_RADIUS*Math.sin(_currentAngle+startAngle),
-							timeMoved);
 						_transitionPath.push(_currentAngle, timeMoved);
 					}
 				}
@@ -156,8 +145,6 @@ package sg.edu.smu.ksketch.model.geom
 					for(i; i<length; i++)
 					{
 						currentVector = _currentRotationPoints.points[i];
-						
-						_path.addPoint(currentVector.x, currentVector.y, currentVector.z);
 						currentPoint = new Point(currentVector.x, currentVector.y);
 						
 						if(!previousPoint)
@@ -179,12 +166,10 @@ package sg.edu.smu.ksketch.model.geom
 			{
 				//Transformation exists, so have to deal with the existing transformation via refactoring
 				//or interpolation of existing paths
-				
-				//Need to do refactoring here
-				KPathProcessor.interpolateRotationMotionPath(_path.path, _currentAngle, center);
 				KPathProcessor.interpolateRotationTransitionPath(_transitionPath.points, _currentAngle);
 			}
 			
+			_motionPath = KPathProcessor.generateRotationMotionpath(_transitionPath);
 			_currentAngle = 0;
 			_currentRotationPoints = new K3DPath();
 		}
@@ -207,11 +192,12 @@ package sg.edu.smu.ksketch.model.geom
 		public function splitTransform(proportion:Number, shift:Boolean = false):KRotation
 		{
 			var frontTransform:KRotation = new KRotation();
-			var frontMotionPath:KPath = _path.split(proportion, shift);
 			var frontTransitionPath:K2DPath = _transitionPath.split(proportion, shift);
 			
-			frontTransform.path = frontMotionPath;
 			frontTransform.transitionPath = frontTransitionPath;
+			
+			_motionPath = KPathProcessor.generateRotationMotionpath(_transitionPath);
+			frontTransform.motionPath = KPathProcessor.generateRotationMotionpath(frontTransitionPath);
 			
 			return frontTransform;
 		}
@@ -219,9 +205,9 @@ package sg.edu.smu.ksketch.model.geom
 		public function mergeTransform(transform:KRotation):KRotation
 		{
 			var rotate:KRotation = new KRotation();
-			rotate.path = KPathProcessor.mergeRotationMotionPath(_path, transform.path);
 			rotate.transitionPath = KPathProcessor.mergeRotationTransitionPath(
 				_transitionPath, transform.transitionPath);
+			rotate.motionPath = KPathProcessor.generateRotationMotionpath(rotate.transitionPath);
 			return rotate;		
 		}
 		
@@ -231,7 +217,7 @@ package sg.edu.smu.ksketch.model.geom
 		public function clone():KRotation
 		{
 			var clone:KRotation = new KRotation();
-			clone.path = _path.clone();
+			clone.motionPath = _motionPath.clone();
 			clone.transitionPath = _transitionPath.clone();
 			return clone;
 		}
@@ -241,6 +227,7 @@ package sg.edu.smu.ksketch.model.geom
 			//Perform Interpolation on current Path
 			//KPathProcessor.interpolateScaleMotionPath(_path.path,dScale,);
 			KPathProcessor.interpolateRotationTransitionPath(_transitionPath.points,dThetha);
+			_motionPath = KPathProcessor.generateRotationMotionpath(_transitionPath);
 		}
 		
 		public function setLine(time:Number):void

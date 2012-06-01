@@ -11,6 +11,8 @@ package sg.edu.smu.ksketch.gestures
 		public const ALPHABET_C:String = "Alphabet_C";
 		
 		public const ALPHABET_V:String = "Alphabet_V";
+		//paste with motions
+		public const ALPHABET_M:String = "Alphabet_M";
 	   
 		//new added gesture
 		public const LINE_DOWN:String  = "Line_down";   

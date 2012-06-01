@@ -39,22 +39,18 @@
 				windowFreezer.width = 0;
 				windowFreezer.height = 0;
 				
-				var showConfirmWindow:Boolean = main.appState.userOption.showConfirmWindow;
 				var canvas:LoggerCanvas = new LoggerCanvas();
-				var modelXML:XML = main.facade.saveFile();
-				var logXML:XML = KLogger.logFile;
 				var executor:KLoggerCommandExecutor = new KLoggerCommandExecutor(
 					main.appState,main.appCanvas,main.facade);
-				canvas.initLogger(executor,logXML);	
 				KLogger.enabled = false;
-				main.appState.userOption.showConfirmWindow = false;
+				var modelXML:XML = main.facade.saveFile();
+				main.appCanvas.newFile();
+				canvas.initLogger(executor,KLogger.logFile);	
 				var close:Function = function (e:Event):void
 				{
-					KLogger.enabled = true;
 					main.appCanvas.loadFile(modelXML);
-					canvas.initLogger(executor,logXML);
+					KLogger.enabled = true;
 					windowFreezer.setVisible(false);
-					main.appState.userOption.showConfirmWindow = showConfirmWindow;
 				};
 				_showWindow("Logger",420,410,canvas,close);
 			}

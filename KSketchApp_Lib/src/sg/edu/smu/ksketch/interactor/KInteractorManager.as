@@ -201,7 +201,10 @@ package sg.edu.smu.ksketch.interactor
 			if(keycode == Keyboard.CONTROL || keycode == Keyboard.COMMAND)
 			{	
 				if(_appState.ctrlEnabled)
+				{
 					_ctrlDown = bool;
+					_appState.gestureMode = bool;
+				}
 				else
 					_ctrlDown = false;					
 			}
@@ -833,16 +836,28 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function updateTargetTrack(x:Number, y:Number):void
 		{
-			if(_appState.overViewTrackBox.contains(x,y))
+			if(boxContains(_appState.overViewTrackBox,x,y))
 				_appState.targetTrackBox = KTransformMgr.ALL_REF;
-			else if(_appState.translateTrackBox.contains(x,y))
+			else if(boxContains(_appState.translateTrackBox,x,y))
 				_appState.targetTrackBox = KTransformMgr.TRANSLATION_REF;
-			else if(_appState.rotateTrackBox.contains(x,y))
+			else if(boxContains(_appState.rotateTrackBox,x,y))
 				_appState.targetTrackBox = KTransformMgr.ROTATION_REF;
-			else if(_appState.scaleTrackBox.contains(x,y))
+			else if(boxContains(_appState.scaleTrackBox,x,y))
 				_appState.targetTrackBox = KTransformMgr.SCALE_REF;
 			else
 				_appState.targetTrackBox = KTransformMgr.NO_REF;
+		}
+		
+		private function boxContains(trackBox:Rectangle, x:Number, y:Number):Boolean
+		{
+			if(trackBox.contains(x,y))
+			{
+				var approximateTime:Number = (x-trackBox.x)/trackBox.width*_appState.maxTime;
+				_appState.trackTapTime =  approximateTime - KAppState.ANIMATION_INTERVAL - approximateTime%KAppState.ANIMATION_INTERVAL;
+				return true;
+			}
+			else
+				return false;
 		}
 	}
 }

@@ -7,6 +7,9 @@
 package sg.edu.smu.ksketch.logger
 {
 	import sg.edu.smu.ksketch.utilities.KAppState;
+	/**
+	 * A class which supports logging system. All methods in this class are static.
+	 */	
 	public class KLogger
 	{
 		public static const LOG_TIME:String = "logtime";
@@ -112,12 +115,14 @@ package sg.edu.smu.ksketch.logger
 		public static const MENU_CONTEXT_MENU_CUT:String = "cmenu-cut";
 		public static const MENU_CONTEXT_MENU_COPY:String = "cmenu-copy";
 		public static const MENU_CONTEXT_MENU_PASTE:String = "cmenu-paste";
+		public static const MENU_CONTEXT_MENU_PASTE_WITH_MOTION:String = "cmenu-paste-with-motion";
 		public static const MENU_SELECTED:String = "cmenu-select";
 		
 		// shortcut command
 		public static const SHORTCUT_CUT:String = "shortcut-cut";
 		public static const SHORTCUT_COPY:String = "shortcut-copy";
 		public static const SHORTCUT_PASTE:String = "shortcut-paste";
+		public static const SHORTCUT_PASTE_WITH_MOTION:String = "shortcut-paste-with-motion";
 		public static const SHORTCUT_UNDO:String = "shortcut-undo";
 		public static const SHORTCUT_REDO:String = "shortcut-redo";
 		
@@ -199,21 +204,12 @@ package sg.edu.smu.ksketch.logger
 		private static var _logFile:XML = new XML("<"+COMMANDS+"/>");
 		
 		/**
-		 * KLogger is a class which supports logging system. All methods in this class are static.
-		 * 
-		 */		
-		public function KLogger()
-		{
-		}
-		/**
 		 * If logger is enabled, add an item into the log file. The log file is XML formatted, and an 
 		 * item in log file contains tag name and attributes serials. The number of parameters should 
 		 * be odd, one tag name and several pairs(can be 0) of attribute names and values. For example, 
 		 * you can use log("addShape", "type", "circle", "x", 100, "y", 200, "r", 30) or log("newfile").
 		 * @param tagName the tag name, cannot be null
-		 * @param args the pairs of of attribute names and values, if there is no attribute, args can be
-		 * ignored
-		 * 
+		 * @param args the pairs of attribute names and values, if no attribute, args can be ignored
 		 */
 		public static function log(tagName:String, ...args):void
 		{
@@ -243,36 +239,42 @@ package sg.edu.smu.ksketch.logger
 		
 		/**
 		 * If logger is enabled, remove all items in the log file, or do nothing. 
-		 * 
 		 */
 		public static function flush():void
 		{
 			_logFile = new XML("<"+COMMANDS+"/>");
 		}
+		
+		public static function setLogFile(xml:XML):void
+		{
+			_logFile = xml;
+		}
+		
 		/**
 		 * Return the current log file which is XML formatted.
 		 * @return
-		 * 
 		 */
 		public static function get logFile():XML
 		{
 			return _logFile;
 		}
+		
 		/**
-		 * Whether logging system will work. If the value is true, logging system will run, if the value is 
-		 * false, logging system will stop.
+		 * Whether logging system will work. 
+		 * If the value is true, logging system will run, 
+		 * if the value is false, logging system will stop.
 		 * @return the boolean value
-		 * 
 		 */
 		public static function get enabled():Boolean
 		{
 			return _enabled;
 		}
+		
 		/**
-		 * Whether logging system will work. If the value is true, logging system will run, if the value is 
-		 * false, logging system will stop.
+		 * Whether logging system will work. 
+		 * If the value is true, logging system will run, 
+		 * if the value is false, logging system will stop.
 		 * @param value the new boolean value
-		 * 
 		 */
 		public static function set enabled(value:Boolean):void
 		{
@@ -280,7 +282,6 @@ package sg.edu.smu.ksketch.logger
 	//		if(!_enabled)
 	//			flush();
 		}
-
 		
 		public static function formartedTime(date:Date):String
 		{

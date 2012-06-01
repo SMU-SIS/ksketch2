@@ -152,7 +152,6 @@ package sg.edu.smu.ksketch.interactor
 					_undo();
 					break;
 				case KLogger.INTERACTION_TRANSLATE:
-					trace("Undo KLogger.INTERACTION_TRANSLATE")
 					_undo();
 					break;
 				case KLogger.INTERACTION_ROTATE:
@@ -350,6 +349,8 @@ package sg.edu.smu.ksketch.interactor
 					KLogger.enabled = commandNode.attribute(KLogger.CHANGE_APPLICATION_LOG_ENABLED_TO);
 					break;
 				case KLogger.CHANGE_ASPECT_RATIO:
+					break;
+				case KLogger.BTN_SAVE:
 					break;
 				default:
 					doButtonCommand(command);

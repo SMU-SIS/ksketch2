@@ -60,7 +60,7 @@ public function initLogger(commandExecutor:KLoggerCommandExecutor,xml:XML):void
 		_commandExecutor.undoCommand(
 			_actionTable.dataProvider[j][_COMMAND_NAME],_commandNodes[j]);
 	
-	_actionTable.selectedIndex = 0;
+	_actionTable.selectedIndex = _actionTable.dataProvider.length-1;
 }
 
 private function _selectedRowChanged(e:GridCaretEvent):void
@@ -71,10 +71,6 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	else if (e.oldRowIndex > e.newRowIndex)
 		for (var j:int=e.oldRowIndex; j > e.newRowIndex; j--)
 			_undoCommand(j);
-}
-
-private function _kmvLoaded(e:KFileLoadedEvent):void
-{
 }
 
 private function _redoCommand(index:int):void

@@ -45,7 +45,7 @@ package sg.edu.smu.ksketch.components
 		[Bindable]
 		public static var MENU_ITEMS_NO_SEL:XML = 
 			<root>
-				<menuitem id="2" abel="Paste Object(Ctrl+V)"/>
+				<menuitem id="2" label="Paste Object(Ctrl+V)"/>
                 <menuitem id="3" label="Paste Object with Motion(Ctrl+M)"/>
 			</root>;
 		

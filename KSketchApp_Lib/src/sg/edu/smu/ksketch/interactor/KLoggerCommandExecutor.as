@@ -47,6 +47,7 @@ package sg.edu.smu.ksketch.interactor
 					_tapCenter();
 					break;
 				case KLogger.INTERACTION_MOVE_CENTER:
+		//			_moveCenter(commandNode);
 					_interact(commandNode);
 					break;
 				case KLogger.INTERACTION_DESELECT:
@@ -137,8 +138,11 @@ package sg.edu.smu.ksketch.interactor
 					_undoGesture(commandNode);
 					break;
 				case KLogger.INTERACTION_DRAG_CENTER:
+					_undoTapCenter();
 					break;
 				case KLogger.INTERACTION_MOVE_CENTER:
+					_select(commandNode.attribute(KLogger.SELECTED_ITEMS));
+					_tapCenter();
 					break;
 				case KLogger.INTERACTION_DESELECT:
 					_select(commandNode.attribute(KLogger.SELECTED_ITEMS));
@@ -245,72 +249,6 @@ package sg.edu.smu.ksketch.interactor
 			}
 		}
 
-		protected function _interact(commandNode:XML):void
-		{
-			_dispatchMouseEvents(_getPath(commandNode));
-		}
-		
-		protected function _tapCenter():void
-		{
-			(_canvas.interactorManager.widget as KWidget).dispatchEvent(
-				new KWidgetEvent(KWidgetEvent.DOWN_CENTER, 0, 0));
-			var p:Point = _canvas.globalToLocal(new Point(0, 0));
-			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP, true, false, p.x, p.y));
-		}
-		
-		protected function _gesture(commandNode:XML):void
-		{
-			var event:KeyboardEvent = new KeyboardEvent(KeyboardEvent.KEY_DOWN);
-			event.keyCode = Keyboard.CONTROL;
-			_canvas.systemManager.stage.dispatchEvent(event);
-			_interact(commandNode);
-			event = new KeyboardEvent(KeyboardEvent.KEY_UP);
-			event.keyCode = Keyboard.CONTROL;
-			_canvas.systemManager.stage.dispatchEvent(event);
-			if (commandNode.attribute(KLogger.SELECTED_ITEMS).length() > 0)
-				_select(commandNode.attribute(KLogger.SELECTED_ITEMS));
-		}
-		
-		protected function _transform(widgetEventType:String,commandNode:XML):void
-		{
-			var path:Vector.<KPathPoint> = _getPath(commandNode);		
-			var type:int = commandNode.attribute(KLogger.TRANSITION_TYPE);
-			_appState.transitionType = isNaN(type) ? _appState.transitionType : type;
-			_appState.time = path[0].time;
-			var p:Point = KInteractorManager.getInverseCoordinate(
-				_canvas.localToGlobal(path[0]),_canvas);
-			var widget:KWidget = _canvas.interactorManager.widget as KWidget;
-			widget.dispatchEvent(new KWidgetEvent(widgetEventType, p.x, p.y));
-			_dispatchMouseMoveAndUpEvents(path);		
-		}
-		
-		private function _dispatchMouseEvents(cursorPath:Vector.<KPathPoint>):void
-		{
-			var length:uint = cursorPath.length;
-			if(length <= 1)
-				throw new Error("Interaction on canvas at least has 2 mouse events!");
-			
-			_appState.time = cursorPath[0].time;
-			var p:Point = KInteractorManager.getInverseCoordinate(cursorPath[0],_canvas);
-			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_DOWN, true, false, p.x, p.y));
-			_dispatchMouseMoveAndUpEvents(cursorPath);
-		}
-		
-		private function _dispatchMouseMoveAndUpEvents(cursorPath:Vector.<KPathPoint>):void
-		{
-			var p:Point;
-			var length:uint = cursorPath.length;
-			for(var i:uint = 1;i<length-1;i++)
-			{
-				_appState.time = cursorPath[i].time;
-				p = KInteractorManager.getInverseCoordinate(cursorPath[i],_canvas);
-				_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_MOVE, true, false, p.x, p.y));
-			}
-			_appState.time = cursorPath[length-1].time;
-			p = KInteractorManager.getInverseCoordinate(cursorPath[length-1],_canvas);
-			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP, true, false, p.x, p.y));
-		}		
-
 		private function _doOtherCommand(command:String,commandNode:XML):void
 		{
 			switch (command)
@@ -327,9 +265,9 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.CHANGE_PATH_VISIBILITY:
 					_appState.userOption.showPath = commandNode.attribute(KLogger.CHANGE_PATH_VISIBILITY_TO);
 					break;
-	//			case KLogger.CHANGE_DEMO_MERGE_MODE:
-	//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_TO));
-	//				break;
+				//			case KLogger.CHANGE_DEMO_MERGE_MODE:
+				//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_TO));
+				//				break;
 				case KLogger.CHANGE_GESTURE_DESIGN:
 					_appState.gestureDesignName = commandNode.attribute(KLogger.CHANGE_GESTURE_DESIGN_TO);
 					break;
@@ -356,7 +294,46 @@ package sg.edu.smu.ksketch.interactor
 					doButtonCommand(command);
 			}			
 		}
+				
+		private function _interact(commandNode:XML):void
+		{
+			_dispatchMouseEvents(_getPath(commandNode));
+		}
 		
+		private function _gesture(commandNode:XML):void
+		{
+			var event:KeyboardEvent = new KeyboardEvent(KeyboardEvent.KEY_DOWN);
+			event.keyCode = Keyboard.CONTROL;
+			_canvas.systemManager.stage.dispatchEvent(event);
+			_interact(commandNode);
+			event = new KeyboardEvent(KeyboardEvent.KEY_UP);
+			event.keyCode = Keyboard.CONTROL;
+			_canvas.systemManager.stage.dispatchEvent(event);
+			if (commandNode.attribute(KLogger.SELECTED_ITEMS).length() > 0)
+				_select(commandNode.attribute(KLogger.SELECTED_ITEMS));
+		}
+
+		private function _tapCenter():void
+		{
+			(_canvas.interactorManager.widget as KWidget).dispatchEvent(
+				new KWidgetEvent(KWidgetEvent.DOWN_CENTER, 0, 0));
+			var p:Point = _canvas.globalToLocal(new Point(0, 0));
+			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP, true, false, p.x, p.y));
+		}
+
+		private function _transform(widgetEventType:String,commandNode:XML):void
+		{
+			var path:Vector.<KPathPoint> = _getPath(commandNode);		
+			var type:int = commandNode.attribute(KLogger.TRANSITION_TYPE);
+			_appState.transitionType = isNaN(type) ? _appState.transitionType : type;
+			_appState.time = path[0].time;
+			var p:Point = KInteractorManager.getInverseCoordinate(
+				_canvas.localToGlobal(path[0]),_canvas);
+			var widget:KWidget = _canvas.interactorManager.widget as KWidget;
+			widget.dispatchEvent(new KWidgetEvent(widgetEventType, p.x, p.y));
+			_dispatchMouseMoveAndUpEvents(path);		
+		}
+
 		private function _undoGesture(commandNode:XML):void
 		{
 			var match:String = commandNode.attribute(KLogger.MATCH).toString();
@@ -379,6 +356,13 @@ package sg.edu.smu.ksketch.interactor
 			}	
 		}
 		
+		private function _undoTapCenter():void
+		{
+			var p:Point = _canvas.interactorManager.widget.center;
+			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_DOWN, true, false, p.x, p.y));
+			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP, true, false, p.x, p.y));
+		}
+		
 		private function _select(selectedItems:String):void
 		{
 			var ids:Array = selectedItems.split(" ");
@@ -391,6 +375,33 @@ package sg.edu.smu.ksketch.interactor
 			}
 			_appState.selection = objs.length()>0?new KSelection(objs,_appState.time):null;
 		}	
+		
+		private function _dispatchMouseEvents(cursorPath:Vector.<KPathPoint>):void
+		{
+			var length:uint = cursorPath.length;
+			if(length <= 1)
+				throw new Error("Interaction on canvas must at least has 2 points!");
+			
+			_appState.time = cursorPath[0].time;
+			var p:Point = KInteractorManager.getInverseCoordinate(cursorPath[0],_canvas);
+			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_DOWN, true, false, p.x, p.y));
+			_dispatchMouseMoveAndUpEvents(cursorPath);
+		}
+		
+		private function _dispatchMouseMoveAndUpEvents(cursorPath:Vector.<KPathPoint>):void
+		{
+			var p:Point;
+			var length:uint = cursorPath.length;
+			for(var i:uint = 1;i<length-1;i++)
+			{
+				_appState.time = cursorPath[i].time;
+				p = KInteractorManager.getInverseCoordinate(cursorPath[i],_canvas);
+				_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_MOVE, true, false, p.x, p.y));
+			}
+			_appState.time = cursorPath[length-1].time;
+			p = KInteractorManager.getInverseCoordinate(cursorPath[length-1],_canvas);
+			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP, true, false, p.x, p.y));
+		}		
 		
 		private function _getPath(commandNode:XML):Vector.<KPathPoint>
 		{

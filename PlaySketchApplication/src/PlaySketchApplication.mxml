@@ -35,10 +35,7 @@
 			
 			public function triggerLogger(event:MouseEvent):void
 			{
-				var windowFreezer:Alert = Alert.show("");
-				windowFreezer.width = 0;
-				windowFreezer.height = 0;
-				
+				var windowFreezer:Alert = _showFreezer();	
 				var canvas:LoggerCanvas = new LoggerCanvas();
 				var executor:KLoggerCommandExecutor = new KLoggerCommandExecutor(
 					main.appState,main.appCanvas,main.facade);
@@ -57,9 +54,7 @@
 			
 			public function triggerSettings(event:MouseEvent):void
 			{
-				var windowFreezer:Alert = Alert.show("");
-				windowFreezer.width = 0;
-				windowFreezer.height = 0;
+				var windowFreezer:Alert = _showFreezer();	
 				var close:Function = function (e:Event):void
 				{
 					windowFreezer.setVisible(false);
@@ -90,6 +85,14 @@
 				window.addElement(child);
 				window.addEventListener(Event.CLOSE,closeHandler);
 				window.open();	
+			}
+			
+			private function _showFreezer():Alert
+			{
+				var freezer:Alert = Alert.show("");
+				freezer.width = 0;
+				freezer.height = 0;
+				return freezer;
 			}
 			
 			private function _init():void

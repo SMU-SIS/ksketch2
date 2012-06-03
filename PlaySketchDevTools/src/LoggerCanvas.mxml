@@ -25,7 +25,7 @@
 		<s:Button id="_prevButton" label="&lt;" click="_prevCommand(event)" />
 		<s:Button id="_playButton" label="Play" click="_playCommand(event)" />
 		<s:Button id="_nextButton" label=">" click="_nextCommand(event)" />
-		<s:Button id="_lastButton" label=">>" click="lastCommand(event)" />	
+		<s:Button id="_lastButton" label=">>" click="_lastCommand(event)" />	
 	</s:HGroup>
 	<timebar:TimeSlider id="_actionSlider" width="100%" />
 	<s:BorderContainer id="_markerBar" width="100%" height="10" />

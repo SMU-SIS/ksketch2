@@ -12,9 +12,9 @@ import mx.graphics.SolidColor;
 
 import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 import sg.edu.smu.ksketch.interactor.KLoggerCommandExecutor;
-import sg.edu.smu.ksketch.logger.KLogger;
 import sg.edu.smu.ksketch.io.KFileLoader;
 import sg.edu.smu.ksketch.io.KFileSaver;
+import sg.edu.smu.ksketch.logger.KLogger;
 
 import spark.components.BorderContainer;
 import spark.components.gridClasses.GridSelectionMode;
@@ -47,45 +47,12 @@ public function initLogger(commandExecutor:KLoggerCommandExecutor,xml:XML):void
 	}
 	_actionTable.dataProvider = new ArrayCollection(list);
 	_actionTable.selectionMode = GridSelectionMode.SINGLE_ROW;
-	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
+	_actionTable.selectedIndex = -1;
 	_actionSlider.minimum = KLogger.timeOf(list[0][KLogger.LOG_TIME]).valueOf();
 	_actionSlider.maximum = KLogger.timeOf(list[list.length-1][KLogger.LOG_TIME]).valueOf();
 	_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
-	
-	for (var i:int = 0; i < _actionTable.dataProvider.length; i++)
-		_commandExecutor.initCommand(
-			_actionTable.dataProvider[i][_COMMAND_NAME],_commandNodes[i]);
-
-	for (var j:int = _actionTable.dataProvider.length-1; j >= 0 ; j--)
-		_commandExecutor.undoCommand(
-			_actionTable.dataProvider[j][_COMMAND_NAME],_commandNodes[j]);
-	
-	_actionTable.selectedIndex = _actionTable.dataProvider.length-1;
+	_enablePlayback(false);
 }
-
-private function _selectedRowChanged(e:GridCaretEvent):void
-{
-	if (e.oldRowIndex < e.newRowIndex)
-		for (var i:int=e.oldRowIndex+1; i <= e.newRowIndex; i++)
-			_redoCommand(i);
-	else if (e.oldRowIndex > e.newRowIndex)
-		for (var j:int=e.oldRowIndex; j > e.newRowIndex; j--)
-			_undoCommand(j);
-}
-
-private function _redoCommand(index:int):void
-{
-	_actionText.text = _commandNodes[index].toXMLString();
-	_commandExecutor.redoCommand(
-		_actionTable.dataProvider[index][_COMMAND_NAME],_commandNodes[index]);
-}
-
-private function _undoCommand(index:int):void
-{
-	_actionText.text = _commandNodes[index-1].toXMLString();
-	_commandExecutor.undoCommand(
-		_actionTable.dataProvider[index][_COMMAND_NAME],_commandNodes[index]);
-}		
 
 private function _firstCommand(e:MouseEvent):void
 {
@@ -94,16 +61,31 @@ private function _firstCommand(e:MouseEvent):void
 
 private function _prevCommand(e:MouseEvent):void
 {
-if (_actionTable.selectedIndex > 0)
-	_actionTable.selectedIndex--;
+	if (_actionTable.selectedIndex > 0)
+		_actionTable.selectedIndex--;
 }
 		
 private function _nextCommand(e:MouseEvent):void
 {
-	_actionTable.selectedIndex++;
+	var index:int = _actionTable.selectedIndex;
+	var length:uint = _actionTable.dataProviderLength;
+	if (index < length-1)
+	{
+		index = ++_actionTable.selectedIndex;
+		if (!_prevButton.enabled)
+			_commandExecutor.initCommand(
+				_actionTable.dataProvider[index][_COMMAND_NAME],_commandNodes[index]);
+	}
+	else if (index == length-1 && !_prevButton.enabled)
+	{
+		_actionTable.selectionMode = GridSelectionMode.SINGLE_ROW;
+		_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
+		_enablePlayback(true);
+	}
+	_actionTable.ensureCellIsVisible(index);
 }
 
-public function lastCommand(e:MouseEvent):void
+private function _lastCommand(e:MouseEvent):void
 {
 	_actionTable.selectedIndex = _actionTable.dataProviderLength - 1;
 }		
@@ -127,6 +109,30 @@ private function _playCommand(e:MouseEvent):void
 	}
 }
 
+private function _selectedRowChanged(e:GridCaretEvent):void
+{
+	if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
+		for (var i:int=e.oldRowIndex+1; i <= e.newRowIndex; i++)
+			_redoCommand(i);
+	else if (e.oldRowIndex > e.newRowIndex)
+		for (var j:int=e.oldRowIndex; j > e.newRowIndex; j--)
+			_undoCommand(j);
+}
+
+private function _redoCommand(index:int):void
+{
+	_actionText.text = _commandNodes[index].toXMLString();
+	_commandExecutor.redoCommand(
+		_actionTable.dataProvider[index][_COMMAND_NAME],_commandNodes[index]);
+}
+
+private function _undoCommand(index:int):void
+{
+	_actionText.text = _commandNodes[index-1].toXMLString();
+	_commandExecutor.undoCommand(
+		_actionTable.dataProvider[index][_COMMAND_NAME],_commandNodes[index]);
+}		
+
 private function _updateTimeLine(e:TimerEvent):void
 {
 	var value:Number = new Date().valueOf() - _startPlayTime + _actionSlider.minimum;
@@ -143,6 +149,15 @@ private function _updateTimeLine(e:TimerEvent):void
 	}
 }
 
+private function _enablePlayback(enable:Boolean):void
+{
+	_actionTable.enabled = enable;
+	_firstButton.enabled = enable;
+	_lastButton.enabled = enable;
+	_prevButton.enabled = enable;
+	_playButton.enabled = enable;
+}
+
 private function _setMarker(markerBar:BorderContainer,data:Array,min:Number,max:Number):void
 {
 	markerBar.removeAllElements();
@@ -155,7 +170,7 @@ private function _setMarker(markerBar:BorderContainer,data:Array,min:Number,max:
 		}
 	}
 }
-		
+	
 private function _createMarker(x:Number):Rect
 {
 	var rect:Rect = new Rect();

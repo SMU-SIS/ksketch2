@@ -872,11 +872,15 @@ public function onbtnLoadCamera():void
 		imgTitleWindow.height=imgTitleWindow.windowHeight;
 		imgTitleWindow.videoDisplay.width=imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth;
 		imgTitleWindow.videoDisplay.height=imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight;
+		imgTitleWindow.hBox.width=imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth;
+		imgTitleWindow.hBox.height=imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight;
+
 		imgTitleWindow.setButtons();
 		
 	} 
 	else{
 		imgTitleWindow.videoDisplay.visible=false;
+		imgTitleWindow.btnLoad.enabled=false;
 		Alert.show("Problem With Finding Your Web Camera !!!");
 	}					
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:lib="assets.graphics.interfaceDesign_v1_clean.*"
+		xmlns:flm="http://ns.adobe.com/flame/2008"
+		xmlns:d="http://ns.adobe.com/fxg/2008/dt"
+		width="27" height="25">
+	<fx:Metadata>[HostComponent("spark.components.Button")]</fx:Metadata>
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over"/>
+		<s:State name="down"/>
+		<s:State name="disabled"/>
+	</s:states>
+	<lib:buttonGrey_212 includeIn="over" x="0" y="0" width="27" height="25" flm:knockout="false"/>
+	<lib:buttonGrey12345 includeIn="disabled,down,up" x="0" y="0" width="27" height="25"
+						 flm:knockout="false"/>
+	<s:Group d:id="41" d:userLabel="skip button" x="3" y="6">
+		<s:filters>
+			<s:DropShadowFilter blurX="1.0918" blurY="1.0918" quality="2" color="#221F1F" alpha="0.25" distance="0.386222"/>
+		</s:filters>
+		<s:Path x="0.648" y="0.805"
+				data="M 3.372 7.56 L 11.823 12.186 L 11.823 7.564 L 20.284 12.318 L 20.284 0 L 11.823 4.63 L 11.823 0 L 3.369 4.625 L 3.372 0 L 0 0 L 0 12.186 L 3.372 12.186 L 3.372 7.56 Z"
+				winding="nonZero">
+			<s:fill>
+				<s:LinearGradient x="10.133" y="16.573" scaleX="22.8304" rotation="270.056">
+					<s:GradientEntry ratio="0.0181818" color="#B6C3C9"/>
+					<s:GradientEntry ratio="0.424242" color="#8A9499"/>
+					<s:GradientEntry ratio="0.805791" color="#17181A"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Path>
+		<s:Path x="1.156" y="1.229" winding="nonZero" data="M 2.414 0 L 0 0 L 0 11.171 L 2.414 11.171 L 2.414 6.279 L 10.815 10.847 L 10.815 6.269 L 19.205 10.836 L 19.205 0.611 L 10.819 5.208 L 10.815 0.437 L 2.401 5.013 L 2.414 0 Z">
+			<s:fill>
+				<s:LinearGradient x="9.602" y="-4.228" scaleX="20.7256" rotation="90">
+					<s:GradientEntry ratio="0" color="#D0D1D1"/>
+					<s:GradientEntry ratio="0.351515" color="#FFFFFF"/>
+					<s:GradientEntry ratio="1" color="#66747A"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Path>
+	</s:Group>
+</s:Skin>

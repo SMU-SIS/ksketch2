@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+* Copyright 2012 Singapore Management University
+* All Rights Reserved
+*
+-->
+
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="450" height="202" 
+			   title="Confirm Move Center" close="window_closeHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			
+			import sg.edu.smu.ksketch.interactor.KScaleInteractor;
+			import sg.edu.smu.ksketch.interactor.UserOption;
+			import sg.edu.smu.ksketch.utilities.KSaveInfos;
+			import sg.edu.smu.ksketch.utilities.KSavingUserPreferences;
+			
+			
+			public static const EVENT_YES_CLICKED:String = "yes";
+			public static const EVENT_NO_CLICKED:String = "no";
+								
+			public var userOption:UserOption;
+	
+			protected function checkbox_showDialog_clickHandler(event:MouseEvent):void
+			{		
+				userOption.showConfirmWindow = showAgain.selected;				
+			}
+						
+			protected function btn_yes_clickHandler(event:MouseEvent):void
+			{
+				this.dispatchEvent(new Event(EVENT_YES_CLICKED));
+				userOption.showConfirmWindow = showAgain.selected;
+			}
+
+
+			protected function btn_no_clickHandler(event:MouseEvent):void
+			{
+				this.dispatchEvent(new Event(EVENT_NO_CLICKED));
+				userOption.showConfirmWindow = showAgain.selected;
+			}
+
+
+			protected function window_closeHandler(event:CloseEvent):void
+			{
+				this.dispatchEvent(new Event(EVENT_NO_CLICKED));
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button x="49" y="124" label="Yes, I want to move the center." 
+			  click="btn_yes_clickHandler(event)"/>
+	<s:Button x="264" y="124" label="No, I don't." 
+			  click="btn_no_clickHandler(event)"/>
+	<s:TextArea x="27" y="31" width="400" height="45" fontSize="15" borderVisible="false" 
+				editable="false" text="Tapping on the handle center will start to move the center."/>
+	<s:CheckBox x="49" y="84" id = "showAgain" label="Always show this dialog." 
+				click="checkbox_showDialog_clickHandler(event)" selected="true"/>
+</s:TitleWindow>

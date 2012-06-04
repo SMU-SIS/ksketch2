@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Group xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:d="http://ns.adobe.com/fxg/2008/dt"
+		 xmlns:flm="http://ns.adobe.com/flame/2008"
+		 width="101" height="29">
+	<s:Group d:id="60" x="0" y="0" flm:knockout="false">
+		<s:Rect x="0" y="0" width="101" height="29" radiusX="13.0035"
+				radiusY="13.0035">
+			<s:fill>
+				<s:LinearGradient x="50.259" y="44.434" scaleX="44.22" rotation="270">
+					<s:GradientEntry ratio="0.0181818" color="#B6C3C9"/>
+					<s:GradientEntry ratio="0.424242" color="#73A1BC"/>
+					<s:GradientEntry ratio="0.805791" color="#354571"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+	</s:Group>
+	<s:Button id="btn_move" x="7" y="1" skinClass="components.Button_Translate"/>
+	<s:Button id="btn_scale" x="65" y="1" skinClass="components.Button_Scale"/>
+	<s:Button id="btn_rotate" x="37" y="1" skinClass="components.Button_Rotate"/>
+</s:Group>

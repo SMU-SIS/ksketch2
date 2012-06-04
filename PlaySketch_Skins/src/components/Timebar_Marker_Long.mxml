@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Group xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 width="1" height="12">
+	<s:Rect x="0" y="0" width="1" height="12">
+		<s:fill>
+			<s:SolidColor color="#354571"/>
+		</s:fill>
+	</s:Rect>
+</s:Group>

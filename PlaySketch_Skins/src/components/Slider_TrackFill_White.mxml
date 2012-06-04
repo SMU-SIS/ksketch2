@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Group xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:d="http://ns.adobe.com/fxg/2008/dt"
+		 xmlns:flm="http://ns.adobe.com/flame/2008"
+		 width="164" height="5">
+	<s:Group d:id="34" d:userLabel="timeLinePlayed" x="0" y="0" flm:knockout="false">
+		<s:Path x="0.907" y="0.502" winding="nonZero" data="M 162 3.095 C 162 3.64 161.554 4.085 161.009 4.085 L 0.991 4.091 C 0.446 4.091 0 3.646 0 3.101 L 0 0.996 C 0 0.451 0.446 0.006 0.991 0.006 L 161.009 0 C 161.554 0 162 0.445 162 0.99 L 162 3.095 Z">
+			<s:fill>
+				<s:LinearGradient x="80.999" y="-3.712" scaleX="12.0057" rotation="90">
+					<s:GradientEntry ratio="0.412121" color="#F9F5C2"/>
+					<s:GradientEntry ratio="0.551515" color="#CCAB70"/>
+					<s:GradientEntry ratio="0.721212" color="#312436"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Path>
+		<s:Rect x="1.5" y="0.5" width="162" height="4" radiusX="0.986668" radiusY="0.986668">
+			<s:stroke>
+				<s:SolidColorStroke weight="1" caps="none" joints="miter" miterLimit="4" color="#354571"/>
+			</s:stroke>
+		</s:Rect>
+	</s:Group>
+</s:Group>

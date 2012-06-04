@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:lib="assets.graphics.interfaceDesign_v1_clean.*"
+		xmlns:flm="http://ns.adobe.com/flame/2008"
+		xmlns:d="http://ns.adobe.com/fxg/2008/dt"
+		width="14" height="14">
+	<fx:Metadata>[HostComponent("spark.components.Button")]</fx:Metadata>
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over"/>
+		<s:State name="down"/>
+		<s:State name="disabled"/>
+	</s:states>
+	<lib:buttonGrey_212 includeIn="over" x="0" y="0" width="14" height="14" flm:knockout="false"/>
+	<lib:buttonGrey12345 includeIn="disabled,down,up" x="0" y="0" width="14" height="14"
+						 flm:knockout="false"/>
+	<s:Group d:userLabel="pointer tool" x="1" y="1">
+		<s:Path x="0.715" y="0.011" winding="nonZero" d:id="15" data="M 0 4.74 L 5.822 1.766 L 4.675 0 L 10.472 0.298 L 9.129 6.234 L 7.951 4.792 L 4.217 9.732 L 0 4.74 Z">
+			<s:fill>
+				<s:LinearGradient x="5.019" y="10.952" scaleX="11.181" rotation="271.479">
+					<s:GradientEntry ratio="0.0181818" color="#B6C3C9"/>
+					<s:GradientEntry ratio="0.424242" color="#8A9499"/>
+					<s:GradientEntry ratio="0.805791" color="#17181A"/>
+				</s:LinearGradient>
+			</s:fill>
+			<s:filters>
+				<s:DropShadowFilter blurX="0.7754" blurY="0.7754" quality="2" alpha="0.25" distance="0.548291"/>
+			</s:filters>
+		</s:Path>
+		<s:Path x="1.508" y="0.57" winding="nonZero" data="M 0 4.409 L 5.808 1.187 L 4.893 0 L 9.029 0.12 L 8.039 4.441 L 7.27 3.355 L 3.424 8.402 L 0 4.409 Z">
+			<s:fill>
+				<s:LinearGradient x="4.498" y="0.439" scaleX="8.62209" rotation="89.4894">
+					<s:GradientEntry ratio="0" color="#D0D1D1"/>
+					<s:GradientEntry ratio="0.351515" color="#FFFFFF"/>
+					<s:GradientEntry ratio="1" color="#66747A"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Path>
+	</s:Group>
+</s:Skin>

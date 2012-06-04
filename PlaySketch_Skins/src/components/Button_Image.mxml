@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:lib="assets.graphics.interfaceDesign_v1.*"
+		xmlns:flm="http://ns.adobe.com/flame/2008"
+		xmlns:d="http://ns.adobe.com/fxg/2008/dt"
+		xmlns:ai="http://ns.adobe.com/ai/2009"
+		width="27" height="29">
+	<fx:Metadata>[HostComponent("spark.components.Button")]</fx:Metadata>
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over"/>
+		<s:State name="down"/>
+		<s:State name="disabled"/>
+	</s:states>
+	<lib:ButtonGreyIndent_3 includeIn="over" x="0" y="0" width="27" height="26" flm:knockout="false"/>
+	<lib:buttonGrey includeIn="disabled,down,up" x="0" y="0" width="26" height="25"
+					flm:knockout="false"/>
+	<s:Group d:id="71" d:userLabel="Load image" x="1" y="2"
+			 x.over="2"
+			 x.up="2">
+		<s:Group d:userLabel="paper" x="2" y="0" flm:knockout="false">
+			<s:Rect x="0" y="0" width="19" height="21">
+				<s:fill>
+					<s:LinearGradient x="9.06738" y="20.4409" scaleX="20.6655" rotation="270.17">
+						<s:GradientEntry ratio="0.0181818" color="#B6C3C9"/>
+						<s:GradientEntry ratio="0.424242" color="#8A9499"/>
+						<s:GradientEntry ratio="0.805791" color="#17181A"/>
+					</s:LinearGradient>
+				</s:fill>
+				<s:filters>
+					<s:DropShadowFilter blurX="1.5152" blurY="1.5152" quality="2" alpha="0.25" distance="1.07141"/>
+				</s:filters>
+			</s:Rect>
+			<s:Rect x="1.5" y="0.5" width="16" height="19">
+				<s:fill>
+					<s:LinearGradient x="0" y="9.58154" scaleX="16.7295">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#5A4A42"/>
+					</s:LinearGradient>
+				</s:fill>
+				<s:stroke>
+					<s:SolidColorStroke weight="1" caps="none" joints="miter" miterLimit="4" color="#231F20"/>
+				</s:stroke>
+			</s:Rect>
+		</s:Group>
+		<s:Group x="0" y="0">
+			<s:mask>
+				<s:Group x="3.049" y="0.569" ai:spare="1">
+					<s:Rect width="16.7295" height="19.1631">
+						<s:fill>
+							<s:SolidColor color="#FFFFFF"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+			</s:mask>
+			<s:Rect x="1" y="8" width="21" height="19">
+				<s:fill>
+					<s:SolidColor color="#E6E7E8"/>
+				</s:fill>
+			</s:Rect>
+			<s:Path x="9.3" y="17.123" winding="nonZero" data="M 0.586 1.526 C 2.078 2.322 4.352 2.786 5.758 3.012 C 8.315 3.425 9.769 3.241 10.844 3.175 C 12.301 3.087 12.345 2.357 10.559 1.504 C 10.19 1.327 8.252 0.515 6.121 0.223 C 3.54 -0.13 1.072 0.015 0.702 0.127 C -0.224 0.41 -0.204 1.105 0.586 1.526 Z">
+				<s:fill>
+					<s:LinearGradient x="16.341" y="5.493" scaleX="11.9191" rotation="200.174">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Path>
+			<s:Path x="0.948" y="9.756"
+					data="M 13.493 8.026 C 13.491 8.027 11.449 2.824 10.431 0.575 C 8.665 0.428 6.129 -0.01 5.313 0 C 4.615 0.441 0.798 3.447 0 4.242 C 3.531 5.707 10.018 6.948 13.493 8.026 Z"
+					winding="nonZero">
+				<s:fill>
+					<s:LinearGradient x="18.538" y="8.384" scaleX="13.4936" rotation="204.16">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Path>
+			<s:Path x="12.008" y="9.798" winding="nonZero" data="M 4.041 0.273 C 5.017 0.63 10.963 3.054 12.111 3.716 C 12.397 3.882 12.961 5.359 12.303 6.302 C 11.634 7.259 10.23 7.572 9.442 7.572 C 8.83 7.572 0.863 3.085 0.18 2.563 C -0.254 2.233 0.139 1.201 0.863 0.658 C 2.077 -0.25 3.151 -0.052 4.041 0.273 Z">
+				<s:fill>
+					<s:LinearGradient x="16.844" y="8.717" scaleX="12.611" rotation="206.537">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Path>
+			<s:Group x="11" y="0" flm:knockout="false" d:userLabel="can">
+				<s:Path x="0.748" y="0.859"
+						data="M 0 1.587 C -0.004 3.149 0.029 8.583 0.006 10.517 C 0.005 10.76 0.157 10.839 0.228 11.049 C 0.355 11.415 1.529 12.042 3.324 11.99 C 5.008 11.941 6.298 11.286 6.458 10.981 C 6.52 10.866 6.767 10.41 6.767 10.154 C 6.767 8.272 6.767 3.407 6.767 1.718 C 6.767 1.441 6.461 1.456 6.445 1.17 C 6.407 0.49 5.556 0 3.384 0 C 2.18 0 0.222 0.13 0.222 1.17 C 0.222 1.379 0.002 1.357 0 1.587 Z"
+						winding="nonZero">
+					<s:fill>
+						<s:LinearGradient x="-1.125" y="5.997" scaleX="6.9025">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1" color="#EC1C24"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="1.273" y="1.103" winding="nonZero" data="M 0 0.775 C 0 1.395 1.811 1.549 2.709 1.551 C 4.349 1.552 5.402 1.328 5.413 0.844 C 5.425 0.228 4.15 0 2.858 0 C 2.263 0 0 0.038 0 0.775 Z">
+					<s:fill>
+						<s:LinearGradient x="0.168" y="0.775" scaleX="6.04008">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="3.9" y="0.86" winding="nonZero" data="M 2.684 0.385 C 1.83 -0.001 0.768 0.042 0.001 0 C -0.019 0.113 0.209 0.086 0.309 0.096 C 0.437 0.081 1.772 0.097 2.451 0.402 C 2.767 0.545 2.973 0.707 3.034 1.062 C 3.134 1.646 2.107 2.024 0.363 2.053 C 0.568 2.203 1.919 2.073 2.214 2.001 C 2.553 1.921 2.969 1.761 3.163 1.451 C 3.415 1.044 3.071 0.559 2.684 0.385 Z">
+					<s:fill>
+						<s:SolidColor color="#BE8389"/>
+					</s:fill>
+				</s:Path>
+				<s:Path x="3.839" y="2.729" winding="nonZero" data="M 0.039 0.713 C 0.039 2.912 -0.032 8.273 0.017 9.428 C 1.062 9.542 2.902 9.107 3.549 8.247 C 3.565 6.166 3.568 0.511 3.565 0 C 2.975 0.341 2.275 0.751 0.039 0.713 Z">
+					<s:fill>
+						<s:SolidColor color="#BE1E2D"/>
+					</s:fill>
+				</s:Path>
+				<s:Path x="1.42" y="1.371" winding="nonZero" data="M 0 0.753 C 0 1.001 1.664 1.275 2.562 1.283 C 3.976 1.294 5.099 1.14 5.099 0.667 C 5.099 0.058 3.117 0 2.661 0 C 1.979 0 0 0.138 0 0.753 Z">
+					<s:fill>
+						<s:LinearGradient x="0" y="0.642" scaleX="5.09912">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="3.391" y="1.373" winding="nonZero" data="M 0 1.256 C 0.591 1.281 3.128 1.375 3.128 0.665 C 3.128 0.153 1.704 -0.022 0.454 0.002 C 0.651 -0.018 1.078 0.902 0 1.256 Z">
+					<s:fill>
+						<s:SolidColor color="#404041"/>
+					</s:fill>
+				</s:Path>
+				<s:Path x="3.142" y="1.115" winding="nonZero" data="M 1.766 0.291 C 2.467 0.355 3.321 0.539 3.376 0.924 C 3.396 1.056 3.261 1.094 3.201 1.195 C 3.771 0.996 3.494 0.546 3.199 0.372 C 2.848 0.164 2.271 -0.012 1.522 0.001 C 1.263 0.006 0.345 0.003 0 0.045 C 0.091 0.084 0.175 0.161 0.167 0.293 C 0.363 0.28 1.337 0.252 1.766 0.291 Z">
+					<s:fill>
+						<s:LinearGradient x="-1.546" y="0.597" scaleX="5.52387">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="2.077" y="1.846" winding="nonZero" data="M 0.16 0.032 C 0.054 0.167 0.007 0.431 0 0.451 C 0.123 0.481 1.255 0.415 1.482 0.417 C 1.494 0.354 1.556 0.306 1.527 0.249 C 1.496 0.186 0.257 -0.09 0.16 0.032 Z">
+					<s:fill>
+						<s:SolidColor color="#231F20"/>
+					</s:fill>
+				</s:Path>
+				<s:Path x="0.817" y="11.215" winding="nonZero" data="M 3.178 1.203 C 4.341 1.19 5.65 0.906 6.661 0 C 6.58 0.112 6.567 0.572 6.176 0.817 C 5.654 1.146 4.814 1.592 3.314 1.651 C 2.423 1.686 0.976 1.534 0.404 0.975 C 0.289 0.859 0.038 0.561 0 0.404 C 0.495 0.826 2.196 1.214 3.178 1.203 Z">
+					<s:fill>
+						<s:LinearGradient x="0" y="0.828" scaleX="6.66113">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="3.955" y="11.215" winding="nonZero" data="M 0 1.637 C 0.947 1.655 2.025 1.381 2.597 1.107 C 2.9 0.962 3.08 0.865 3.25 0.625 C 3.301 0.552 3.513 0.085 3.523 0 C 2.73 0.873 0.788 1.272 0.12 1.202 C 0.158 1.307 0.17 1.601 0 1.637 Z">
+					<s:fill>
+						<s:LinearGradient x="-4.442" y="0.819" scaleX="8.81088">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Path>
+			</s:Group>
+			<s:Group d:userLabel="pyramid" x="0" y="4" flm:knockout="false">
+				<s:Path x="0.948" y="0.855"
+						data="M 5.289 0 C 5.579 0.931 8.02 9.544 8.478 10.607 C 6.978 10.368 1.23 9.342 0 9.143 C 0 9.143 4.411 1.638 5.289 0 Z"
+						winding="nonZero">
+					<s:fill>
+						<s:LinearGradient x="5.861" y="-1.488" scaleX="21.7106" rotation="98.1266">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1" color="#006838"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="6.237" y="0.855"
+						data="M 3.188 10.607 C 2.616 9.152 0.431 1.547 0 0 C 0.211 0.146 3.958 4.377 5.142 5.476 C 4.984 5.972 3.188 10.607 3.188 10.607 Z"
+						winding="nonZero">
+					<s:fill>
+						<s:LinearGradient x="-1.083" y="-0.633" scaleX="11.2706" rotation="58.8262">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1" color="#006838"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="0.948" y="0.855"
+						data="M 0 9.143 C 1.102 9.386 7.213 10.396 8.478 10.607 C 7.801 8.616 5.324 0.154 5.289 0 C 5.355 0.871 5.464 4.14 5.486 5.686 C 5.501 6.855 5.123 7.598 3.953 7.882 C 3.448 8.005 1.379 7.625 0.921 7.573 C 0.685 8.061 0.246 8.616 0 9.143 Z"
+						winding="nonZero">
+					<s:fill>
+						<s:LinearGradient x="2.929" y="3.394" scaleX="11.0417" rotation="78.5714">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="0.4756" color="#8BC53F"/>
+							<s:GradientEntry ratio="1" color="#006838"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="6.237" y="0.855"
+						data="M 3.072 4.312 C 3.387 4.837 3.42 5.86 3.041 6.776 C 2.88 7.161 2.769 7.25 2.403 8.111 C 2.652 8.848 2.945 9.957 3.188 10.607 C 3.668 9.441 4.774 6.296 5.142 5.476 C 4.078 4.494 1.052 1.039 0 0 C 0.553 0.699 2.646 3.601 3.072 4.312 Z"
+						winding="nonZero">
+					<s:fill>
+						<s:SolidColor color="#006838"/>
+					</s:fill>
+				</s:Path>
+			</s:Group>
+			<s:Group x="8" y="9" flm:knockout="false" d:userLabel="sphere">
+				<s:Path x="0.427" y="0.448" winding="nonZero" data="M 7.6 8.195 C 5.214 10.045 2.231 9.313 1.061 7.674 C -0.494 5.494 -0.483 2.341 2.066 0.765 C 4.366 -0.655 7.088 -0.025 8.514 2.026 C 9.763 3.822 9.497 6.725 7.6 8.195 Z">
+					<s:fill>
+						<s:RadialGradient x="3.765" y="3.646" scaleX="10.6783" scaleY="10.6783">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1" color="#716558"/>
+						</s:RadialGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="0.891" y="1.036" winding="nonZero" data="M 0.53 4.893 C -0.886 2.875 0.799 0.374 2.415 0.111 C 3.2 -0.017 4.846 -0.343 5.995 1.529 C 6.666 2.625 6.459 4.789 5.024 5.77 C 3.843 6.577 1.711 6.577 0.53 4.893 Z">
+					<s:fill>
+						<s:RadialGradient x="2.264" y="1.687" scaleX="13.0247" scaleY="13.0247">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1" color="#9A8479"/>
+						</s:RadialGradient>
+					</s:fill>
+				</s:Path>
+				<s:Path x="1.208" y="2.241" winding="nonZero" data="M 0.196 2.322 C -0.333 1.389 0.263 0.239 1.324 0.023 C 2.013 -0.117 2.712 0.42 2.864 1.062 C 3.008 1.671 2.746 2.37 2.013 2.786 C 1.394 3.137 0.581 2.999 0.196 2.322 Z">
+					<s:fill>
+						<s:RadialGradient x="1.034" y="0.688" scaleX="9.10097" scaleY="9.10097">
+							<s:GradientEntry ratio="0" color="#FFFFFF"/>
+							<s:GradientEntry ratio="1" color="#C1B49A"/>
+						</s:RadialGradient>
+					</s:fill>
+				</s:Path>
+			</s:Group>
+		</s:Group>
+		<s:Group x="2" y="12" d:userLabel="squares">
+			<s:Rect x="0" y="4" width="2" height="1" alpha="0.75">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="2" y="4" alpha="0.75" width="2" height="1">
+				<s:fill>
+					<s:LinearGradient x="0" y="0.510742" scaleX="1.84521">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="4" y="4" alpha="0.75" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="6" y="4" alpha="0.75" width="2" height="1">
+				<s:fill>
+					<s:LinearGradient x="0" y="0.510742" scaleX="1.82227">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="8" y="4" alpha="0.75" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="9" y="4" alpha="0.75" width="2" height="1">
+				<s:fill>
+					<s:LinearGradient x="0" y="0.510742" scaleX="1.81982">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="11" y="4" alpha="0.75" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="13" y="4" alpha="0.75" width="2" height="1">
+				<s:fill>
+					<s:LinearGradient x="0" y="0.510742" scaleX="1.81787">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="15" y="4" alpha="0.75" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="17" y="4" alpha="0.75" width="2" height="1">
+				<s:fill>
+					<s:LinearGradient x="0" y="0.510742" scaleX="1.82031">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="0" y="3" width="2" height="1" alpha="0.5">
+				<s:fill>
+					<s:LinearGradient x="0" y="0.509766" scaleX="1.82031">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="2" y="3" alpha="0.51" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#6D6E70"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="4" y="3" alpha="0.5" width="2" height="1">
+				<s:fill>
+					<s:LinearGradient x="0" y="0.509766" scaleX="1.81934">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="6" y="3" alpha="0.51" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="8" y="3" alpha="0.5" width="2" height="1">
+				<s:fill>
+					<s:LinearGradient x="0" y="0.509766" scaleX="1.81982">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="9" y="3" alpha="0.51" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="13" y="3" alpha="0.51" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="15" y="3" alpha="0.5" width="2" height="1">
+				<s:fill>
+					<s:LinearGradient x="0" y="0.509766" scaleX="1.82373">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="0" y="2" width="1" height="1" alpha="0.4">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="3" y="2" alpha="0.4" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="5" y="2" alpha="0.4" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="7" y="2" alpha="0.4" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="2" y="2" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="4" y="2" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="6" y="2" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="8" y="2" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="10" y="2" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="11" y="2" alpha="0.4" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="0" y="1" alpha="0.4" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#6D6E70"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="18" y="2" alpha="0.4" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="5" y="1" alpha="0.4" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="3" y="1" alpha="0.4" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#6D6E70"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="3" y="0" width="1" height="1" alpha="0.4">
+				<s:fill>
+					<s:SolidColor color="#6D6E70"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="12" y="2" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="14" y="2" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="2" y="0" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="4" y="0" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="6" y="0" alpha="0.1" width="1" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="17" y="3" alpha="0.51" width="2" height="1">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="0" y="5" width="4" height="2" alpha="0.75">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="4" y="5" alpha="0.75" width="4" height="2">
+				<s:fill>
+					<s:LinearGradient x="0" y="1.021" scaleX="3.68848">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="8" y="5" alpha="0.75" width="3" height="2">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="11" y="5" alpha="0.75" width="4" height="2">
+				<s:fill>
+					<s:LinearGradient x="0" y="1.021" scaleX="3.64404">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="15" y="5" alpha="0.75" width="4" height="2">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="0" y="7" width="4" height="2">
+				<s:fill>
+					<s:LinearGradient x="0" y="1.021" scaleX="3.64062">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="4" y="7" width="4" height="2">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="8" y="7" width="3" height="2">
+				<s:fill>
+					<s:LinearGradient x="0" y="1.021" scaleX="3.64062">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="11" y="7" width="4" height="2">
+				<s:fill>
+					<s:SolidColor color="#231F20"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect x="15" y="7" width="4" height="2">
+				<s:fill>
+					<s:LinearGradient x="0" y="1.021" scaleX="3.6416">
+						<s:GradientEntry ratio="0" color="#FFFFFF"/>
+						<s:GradientEntry ratio="1" color="#E6E6E6"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Path x="13.684" y="1.82" winding="nonZero" data="M 0.05 0.089 C 0.05 0.076 0.05 0.063 0.05 0.05">
+				<s:stroke>
+					<s:SolidColorStroke weight="0.1" caps="none" joints="miter" miterLimit="4" color="#231F20"/>
+				</s:stroke>
+			</s:Path>
+		</s:Group>
+	</s:Group>
+</s:Skin>

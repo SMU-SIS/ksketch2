@@ -98,7 +98,7 @@ private var bmpData:BitmapData;
 private var transformMartixFlv:Matrix;
 public var imgTitleWindow:ImgResizingWindow;
 private var ImageTr:ImportImage.ImageTrim;
-private var camera:Camera= Camera.getCamera();
+private var camera:Camera;
 private var liveOrSnapped:Boolean=false;	
 public var bitmapDataBeforeIrregular:BitmapData;
 private var fileref:FileReference;
@@ -586,6 +586,8 @@ private function onloadxml(event:Event):void
 
 public function imgWizardWindow():void
 {		
+	this.camera= Camera.getCamera();
+	
 	imgTitleWindow= new ImgResizingWindow(this);	
 	imgTitleWindow.title="Image Import";
 		
@@ -726,6 +728,7 @@ private function onPNG(loader:Loader, ev:Event):void
 
 private function closeHandlerImg(event:Event):void
 {
+	imgTitleWindow.videoDisplay.attachCamera(null);
 	event.target.removeEventListener("close", closeHandlerImg);
 	PopUpManager.removePopUp(imgTitleWindow);
 	isRegionDrawn=false;
@@ -850,7 +853,11 @@ private function trimmingIrregularShape():void
 
 
 public function onbtnLoadCamera():void
-{		
+{	
+	//
+	this.camera= Camera.getCamera();
+	//
+	
 	var snap:BitmapData = new BitmapData(imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth, imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight, true);
 	var snapBmp:Bitmap = new Bitmap(snap);	
 	
@@ -859,10 +866,10 @@ public function onbtnLoadCamera():void
 	if(imgTitleWindow.hBox.numChildren > 0)
 	   {imgTitleWindow.removeElement(imgTitleWindow.hBox);}
 			
-	if (camera){
+	if (this.camera){
 		bitmapDataBeforeIrregular=snap;
 		imgTitleWindow.videoDisplay.visible=true;
-		imgTitleWindow.videoDisplay.attachCamera(camera);
+		imgTitleWindow.videoDisplay.attachCamera(this.camera);
 		imgTitleWindow.btnCameraSnap.enabled=true;
 		imgTitleWindow.btnCamera.enabled=false;
 		imgTitleWindow.btnLoad.enabled=false;
@@ -879,8 +886,10 @@ public function onbtnLoadCamera():void
 		
 	} 
 	else{
+		imgTitleWindow.videoDisplay.attachCamera(null);
 		imgTitleWindow.videoDisplay.visible=false;
 		imgTitleWindow.btnLoad.enabled=false;
+		imgTitleWindow.btnCamera.enabled=false;
 		Alert.show("Problem With Finding Your Web Camera !!!");
 	}					
 }

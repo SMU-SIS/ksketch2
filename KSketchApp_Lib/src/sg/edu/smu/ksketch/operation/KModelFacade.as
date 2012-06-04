@@ -119,11 +119,11 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Grouping Operation ------------------- //
-		public function regroup(objs:KModelObjectList):IModelOperation
+		public function regroup(objs:KModelObjectList, isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
 			var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
 			var unOp:IModelOperation = ungroup(objs);
-			var gpOp:IModelOperation = group(objs,time);
+			var gpOp:IModelOperation = group(objs,time, isRealTimeTranslation);
 			var ops:KCompositeOperation = new KCompositeOperation();
 			if (unOp)
 				ops.addOperation(unOp);
@@ -131,7 +131,7 @@ package sg.edu.smu.ksketch.operation
 				ops.addOperation(gpOp);
 			return ops;
 		}
-		public function group(objs:KModelObjectList,groupTime:Number=-2):IModelOperation
+		public function group(objs:KModelObjectList,groupTime:Number=-2, isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
 			var time:Number = groupTime;
 			time = time != -2 ? time:KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
@@ -153,7 +153,26 @@ package sg.edu.smu.ksketch.operation
 			
 			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
 				ops.addOperation(rmOp);
-						
+			
+			if(isRealTimeTranslation)
+			{
+				var targetGroup:KGroup = (gpOp as KGroupOperation).group;
+				var oldParent:KGroup = targetGroup.getParent(groupTime);
+				
+				if(oldParent.id != 0)
+				{
+					var toUngroupList:KModelObjectList = new KModelObjectList();
+					toUngroupList.add(targetGroup);
+					KUngroupUtil.ungroupDynamic(_model, _model.root, toUngroupList, groupTime);
+					
+					KMergerUtil.mergeKeys(targetGroup,oldParent,groupTime,ops,KTransformMgr.TRANSLATION_REF);
+					KMergerUtil.mergeKeys(targetGroup,oldParent,groupTime,ops,KTransformMgr.ROTATION_REF);
+					KMergerUtil.mergeKeys(targetGroup,oldParent,groupTime,ops,KTransformMgr.SCALE_REF);
+				}
+			}
+			
+			
+			
 			var list:KModelObjectList = new KModelObjectList();
 			list.add((gpOp as KGroupOperation).group);
 			_appState.selection = new KSelection(list,time);

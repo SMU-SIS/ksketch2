@@ -49,7 +49,7 @@
 					KLogger.enabled = true;
 					windowFreezer.setVisible(false);
 				};
-				_showWindow("Logger",420,410,canvas,close);
+				_showWindow("Logger",425,410,canvas,close);
 			}
 			
 			public function triggerSettings(event:MouseEvent):void

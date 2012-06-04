@@ -7,13 +7,9 @@ import flash.events.TimerEvent;
 import flash.utils.Timer;
 
 import mx.collections.ArrayCollection;
-import mx.events.FlexEvent;
 import mx.graphics.SolidColor;
 
-import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 import sg.edu.smu.ksketch.interactor.KLoggerCommandExecutor;
-import sg.edu.smu.ksketch.io.KFileLoader;
-import sg.edu.smu.ksketch.io.KFileSaver;
 import sg.edu.smu.ksketch.logger.KLogger;
 
 import spark.components.BorderContainer;
@@ -33,8 +29,6 @@ public function initLogger(commandExecutor:KLoggerCommandExecutor,xml:XML):void
 {
 	_commandExecutor = commandExecutor;
 	var commands:XMLList = xml.children();
-	if (commands.length() == 0)
-		return;
 	_commandNodes = new Vector.<XML>();
 	var list:Array = new Array();
 	for each (var command:XML in commands)
@@ -47,11 +41,36 @@ public function initLogger(commandExecutor:KLoggerCommandExecutor,xml:XML):void
 	}
 	_actionTable.dataProvider = new ArrayCollection(list);
 	_actionTable.selectionMode = GridSelectionMode.SINGLE_ROW;
-	_actionTable.selectedIndex = -1;
-	_actionSlider.minimum = KLogger.timeOf(list[0][KLogger.LOG_TIME]).valueOf();
-	_actionSlider.maximum = KLogger.timeOf(list[list.length-1][KLogger.LOG_TIME]).valueOf();
-	_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
-	_enablePlayback(false);
+	_actionTable.ensureCellIsVisible(list.length-1);
+	if (list.length > 0)
+	{
+		_actionSlider.minimum = KLogger.timeOf(list[0][KLogger.LOG_TIME]).valueOf();
+		_actionSlider.maximum = KLogger.timeOf(list[list.length-1][KLogger.LOG_TIME]).valueOf();
+		_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
+	}
+}
+
+private function _initCommands(e:MouseEvent):void
+{
+	_actionText.removeEventListener(MouseEvent.CLICK,_initCommands);
+	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);	
+	var length:uint = _actionTable.dataProviderLength;
+	for (var i:int; i < length; i++)
+		_commandExecutor.initCommand(_getCommand(i),_commandNodes[i]);
+	_actionTable.selectedIndex = 0;
+	for (var j:int=length-1; j > 0; j--)
+		_undoCommand(j);
+	_enablePlayback();
+}
+
+private function _enablePlayback():void
+{
+	_firstButton.enabled = true;
+	_prevButton..enabled = true;
+	_playButton..enabled = true;
+	_nextButton..enabled = true;
+	_lastButton..enabled = true;
+	_actionTable..enabled = true;
 }
 
 private function _firstCommand(e:MouseEvent):void
@@ -61,28 +80,16 @@ private function _firstCommand(e:MouseEvent):void
 
 private function _prevCommand(e:MouseEvent):void
 {
+	if (_actionTable.selectedIndex == -1)
+		_actionTable.selectedIndex = 0;
 	if (_actionTable.selectedIndex > 0)
 		_actionTable.selectedIndex--;
 }
 		
 private function _nextCommand(e:MouseEvent):void
 {
-	var index:int = _actionTable.selectedIndex;
-	var length:uint = _actionTable.dataProviderLength;
-	if (index < length-1)
-	{
-		index = ++_actionTable.selectedIndex;
-		if (!_prevButton.enabled)
-			_commandExecutor.initCommand(
-				_actionTable.dataProvider[index][_COMMAND_NAME],_commandNodes[index]);
-	}
-	else if (index == length-1 && !_prevButton.enabled)
-	{
-		_actionTable.selectionMode = GridSelectionMode.SINGLE_ROW;
-		_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
-		_enablePlayback(true);
-	}
-	_actionTable.ensureCellIsVisible(index);
+	if (_actionTable.selectedIndex < _actionTable.dataProviderLength-1)
+		_actionTable.selectedIndex++;
 }
 
 private function _lastCommand(e:MouseEvent):void
@@ -95,7 +102,7 @@ private function _playCommand(e:MouseEvent):void
 	if (_playButton.label == _PLAY_COMMAND)
 	{
 		_playButton.label = _STOP_COMMAND;
-		_actionTable.selectedIndex = -1;
+		_actionTable.selectedIndex = 0;
 		_playTimer = new Timer(50,0);
 		_playTimer.addEventListener(TimerEvent.TIMER,_updateTimeLine);
 		_playTimer.start();
@@ -117,28 +124,31 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	else if (e.oldRowIndex > e.newRowIndex)
 		for (var j:int=e.oldRowIndex; j > e.newRowIndex; j--)
 			_undoCommand(j);
+	_actionSlider.value = _getLogTime(_actionTable.selectedIndex);
+	_actionTable.ensureCellIsVisible(_actionTable.selectedIndex);
 }
 
 private function _redoCommand(index:int):void
 {
 	_actionText.text = _commandNodes[index].toXMLString();
-	_commandExecutor.redoCommand(
-		_actionTable.dataProvider[index][_COMMAND_NAME],_commandNodes[index]);
+	_commandExecutor.redoCommand(_getCommand(index),_commandNodes[index]);
 }
 
 private function _undoCommand(index:int):void
 {
 	_actionText.text = _commandNodes[index-1].toXMLString();
-	_commandExecutor.undoCommand(
-		_actionTable.dataProvider[index][_COMMAND_NAME],_commandNodes[index]);
+	_commandExecutor.undoCommand(_getCommand(index),_commandNodes[index]);
 }		
+
+private function _getCommand(index:int):String
+{
+	return _actionTable.dataProvider[index][_COMMAND_NAME]
+}
 
 private function _updateTimeLine(e:TimerEvent):void
 {
 	var value:Number = new Date().valueOf() - _startPlayTime + _actionSlider.minimum;
-	var node:XML = _commandNodes[_actionTable.selectedIndex + 1];
-	var next:Number = KLogger.timeOf(node.attribute(KLogger.LOG_TIME)).valueOf(); 
-	_actionSlider.value = value < _actionSlider.maximum ? value : _actionSlider.maximum;
+	var next:Number = _getLogTime(_actionTable.selectedIndex + 1);
 	if (value > next)
 		_actionTable.selectedIndex++;
 	if (value >= _actionSlider.maximum)
@@ -149,25 +159,19 @@ private function _updateTimeLine(e:TimerEvent):void
 	}
 }
 
-private function _enablePlayback(enable:Boolean):void
+private function _getLogTime(index:int):Number
 {
-	_actionTable.enabled = enable;
-	_firstButton.enabled = enable;
-	_lastButton.enabled = enable;
-	_prevButton.enabled = enable;
-	_playButton.enabled = enable;
+	return KLogger.timeOf(_commandNodes[index].attribute(KLogger.LOG_TIME)).valueOf();
 }
 
 private function _setMarker(markerBar:BorderContainer,data:Array,min:Number,max:Number):void
 {
 	markerBar.removeAllElements();
-	if (min < max)
+	var range:Number = min < max ? max - min : 1;
+	for (var i:int = 0; i < data.length; i++)
 	{
-		for (var i:int = 0; i < data.length; i++)
-		{
-			var di:Number = KLogger.timeOf(data[i][KLogger.LOG_TIME]).valueOf();
-			markerBar.addElement(_createMarker((this.width-15)*(di-min)/(max-min)));
-		}
+		var di:Number = KLogger.timeOf(data[i][KLogger.LOG_TIME]).valueOf();
+		markerBar.addElement(_createMarker(_actionTable.width*(di-min)/range));
 	}
 }
 	

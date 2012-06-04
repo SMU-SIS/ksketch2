@@ -71,8 +71,8 @@ package sg.edu.smu.ksketch.interactor
 		{
 			var obj:KObject;
 			var time:Number = _appState.time;
-			var op:IModelOperation = performGroupingOp(selection().objects);
 			_activeCenter = center(_appState);
+			var op:IModelOperation = performGroupingOp(selection().objects);
 			_appState.userSetCenterOffset = null;
 			
 			if(selection().objects.length() < 2)

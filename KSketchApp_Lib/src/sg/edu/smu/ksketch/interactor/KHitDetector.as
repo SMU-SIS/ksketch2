@@ -88,7 +88,7 @@ package sg.edu.smu.ksketch.interactor
 		private function _hit(obj:DisplayObject,x1:Number,y1:Number,x2:Number,y2:Number):Boolean
 		{
 			obj.cacheAsBitmap = true;
-			if (x1 == x2 && y1 == y2)
+			if (x1 == x2 && y1 == y2 || Math.abs(x1 - x2) > 20 || Math.abs(y1 - y2) > 20)
 				return obj.hitTestPoint(x2,y2,true);
 			var distance:Number = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 			var number_of_points:Number = Math.floor(distance);

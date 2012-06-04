@@ -47,7 +47,6 @@ package sg.edu.smu.ksketch.interactor
 					_tapCenter();
 					break;
 				case KLogger.INTERACTION_MOVE_CENTER:
-		//			_moveCenter(commandNode);
 					_interact(commandNode);
 					break;
 				case KLogger.INTERACTION_DESELECT:
@@ -287,6 +286,10 @@ package sg.edu.smu.ksketch.interactor
 					KLogger.enabled = commandNode.attribute(KLogger.CHANGE_APPLICATION_LOG_ENABLED_TO);
 					break;
 				case KLogger.CHANGE_ASPECT_RATIO:
+					break;
+				case KLogger.BTN_NEW:
+					break;
+				case KLogger.BTN_LOAD:
 					break;
 				case KLogger.BTN_SAVE:
 					break;

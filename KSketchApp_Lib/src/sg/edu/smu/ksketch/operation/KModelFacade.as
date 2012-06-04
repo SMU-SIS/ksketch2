@@ -119,19 +119,11 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Grouping Operation ------------------- //
-<<<<<<< HEAD
-		public function regroup(objs:KModelObjectList):IModelOperation
-		{	
-			var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
-			var unOp:IModelOperation = ungroup(objs);
-			var gpOp:IModelOperation = group(objs,time);
-=======
 		public function regroup(objs:KModelObjectList, isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
 			var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
 			var unOp:IModelOperation = ungroup(objs);
 			var gpOp:IModelOperation = group(objs,time, isRealTimeTranslation);
->>>>>>> e30d221280fcfdce85354428b0ad8a2674ac909f
 			var ops:KCompositeOperation = new KCompositeOperation();
 			if (unOp)
 				ops.addOperation(unOp);
@@ -139,11 +131,7 @@ package sg.edu.smu.ksketch.operation
 				ops.addOperation(gpOp);
 			return ops;
 		}
-<<<<<<< HEAD
-		public function group(objs:KModelObjectList,groupTime:Number=-2):IModelOperation
-=======
 		public function group(objs:KModelObjectList,groupTime:Number=-2, isRealTimeTranslation:Boolean = false):IModelOperation
->>>>>>> e30d221280fcfdce85354428b0ad8a2674ac909f
 		{	
 			var time:Number = groupTime;
 			time = time != -2 ? time:KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
@@ -165,9 +153,6 @@ package sg.edu.smu.ksketch.operation
 			
 			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
 				ops.addOperation(rmOp);
-<<<<<<< HEAD
-						
-=======
 			
 			if(isRealTimeTranslation)
 			{
@@ -188,7 +173,6 @@ package sg.edu.smu.ksketch.operation
 			
 			
 			
->>>>>>> e30d221280fcfdce85354428b0ad8a2674ac909f
 			var list:KModelObjectList = new KModelObjectList();
 			list.add((gpOp as KGroupOperation).group);
 			_appState.selection = new KSelection(list,time);

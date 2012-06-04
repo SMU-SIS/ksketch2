@@ -47,8 +47,6 @@ package sg.edu.smu.ksketch.interactor
 					_tapCenter();
 					break;
 				case KLogger.INTERACTION_MOVE_CENTER:
-<<<<<<< HEAD
-		//			_moveCenter(commandNode);
 					_interact(commandNode);
 					break;
 				case KLogger.INTERACTION_DESELECT:
@@ -60,19 +58,6 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.INTERACTION_ERASE:
 					_interact(commandNode);
 					break;
-=======
-					_interact(commandNode);
-					break;
-				case KLogger.INTERACTION_DESELECT:
-					_interact(commandNode);
-					break;
-				case KLogger.INTERACTION_DRAW:
-					_interact(commandNode);
-					break;
-				case KLogger.INTERACTION_ERASE:
-					_interact(commandNode);
-					break;
->>>>>>> e30d221280fcfdce85354428b0ad8a2674ac909f
 				case KLogger.INTERACTION_TRANSLATE:
 					_transform(KWidgetEvent.DOWN_TRANSLATE,commandNode);
 					break;

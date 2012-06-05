@@ -127,6 +127,8 @@ package sg.edu.smu.ksketch.components
 		{
 			var length:int = points.length;
 			var drawLayer:Graphics = path.graphics;
+			var arrowHeadColor:uint;
+			var arrowPosition:Point;
 			
 			if(length <= 0 || (length == 2 && Math.abs(points[0].time-points[1].time) <= 0))
 				return;
@@ -142,6 +144,9 @@ package sg.edu.smu.ksketch.components
 				var duration:Number = Math.abs(points[0].time-points[1].time);
 				var proportionCovered:Number = time/duration;
 				
+				if(proportionCovered > 1)
+					proportionCovered = 1;
+				
 				var dx:Number = (endPoint.x - startPoint.x)*proportionCovered + startPoint.x;
 				var dy:Number = (endPoint.y - startPoint.y)*proportionCovered + startPoint.y;
 				
@@ -152,6 +157,13 @@ package sg.edu.smu.ksketch.components
 				{
 					drawLayer.lineStyle(_THICKNESS_THIN, colors[type]);
 					drawLayer.lineTo(endPoint.x+origin.x, endPoint.y+origin.y);
+					arrowHeadColor = colors[type];
+					arrowPosition = endPoint.add(origin);
+				}
+				else
+				{
+					arrowHeadColor = lightColors[type];
+					arrowPosition = new Point(dx+origin.x, dy+origin.y);
 				}
 			}
 			else
@@ -164,13 +176,23 @@ package sg.edu.smu.ksketch.components
 					currentPoint.y += origin.y;
 					
 					if(currentPoint.time < time)
+					{
 						drawLayer.lineStyle(_THICKNESS_THIN, lightColors[type]);
+						arrowHeadColor = lightColors[type];
+					}
 					else
+					{
 						drawLayer.lineStyle(_THICKNESS_THIN, colors[type]);
+						arrowHeadColor = colors[type];
+					}
 					
 					drawLayer.lineTo(currentPoint.x, currentPoint.y);
 				}
+				
+				arrowPosition = currentPoint.clone();
 			}
+			
+			_drawArrowHead(drawLayer, arrowHeadColor, points, arrowPosition);
 		}
 		
 		private function _getKeyToDraw(type:int, time:Number, showAll:Boolean):ISpatialKeyframe
@@ -179,6 +201,30 @@ package sg.edu.smu.ksketch.components
 				return _object.getSpatialKeyAtOfAfter(_object.createdTime, type);
 			else
 				return _object.getSpatialKeyAtOfAfter(time, type);
+		}
+		
+		private function _drawArrowHead(grph:Graphics, color:uint, points:Vector.<KPathPoint>, drawPoint:Point):void
+		{
+			var length:int = points.length;
+			var directionStart:int;
+			
+			if(length > 15)
+				directionStart = 15;
+			else if(length > 10)
+				directionStart = 10;
+			else if(length > 5)
+				directionStart = 5;
+			else if(length ==2)
+				directionStart = 2;
+			else
+				return;
+			
+			var direction:Point = points[length-1].subtract(points[length-directionStart]);
+			var triangleVertices:Vector.<Number> = _getTriangleVertices(direction, drawPoint);
+			
+			grph.beginFill(color);
+			grph.drawTriangles(triangleVertices);
+			grph.endFill();
 		}
 		
 		//Construct a triangular arrow head.

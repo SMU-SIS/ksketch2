@@ -287,12 +287,17 @@ package sg.edu.smu.ksketch.interactor
 			var mouseXVariable:Number = 0;
 			var mouseYVariable:Number = 0;
 			
-			if(_canvas.width - _canvas.mouseX < _MENU_XPOSITION_OFFSET)
-				mouseXVariable = _MENU_XPOSITION_OFFSET;
+			if(_canvas.width - _canvas.mouseX < menu.width)
+				mouseXVariable = menu.width;
 			
-			if(_canvas.height - _canvas.mouseY < _MENU_YPOSITION_OFFSET)
-				mouseYVariable = _MENU_YPOSITION_OFFSET;
+			if(_canvas.height - _canvas.mouseY < menu.height)
+				mouseYVariable = menu.height;
 			
+			if(menu.width == 0)
+				mouseXVariable = 225;
+			if(menu.height == 0)
+				mouseYVariable = 50;
+					
 			menu.show(_canvas.mouseX - mouseXVariable,_canvas.mouseY-mouseYVariable);
 		}
 		

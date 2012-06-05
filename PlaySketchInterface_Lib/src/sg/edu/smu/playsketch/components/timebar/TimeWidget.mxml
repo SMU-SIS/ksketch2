@@ -201,12 +201,11 @@
 					stage.addEventListener(MouseEvent.MOUSE_UP,_widget_MouseUp, true, 0, true);
 					
 					_targetMarker = event.target as Marker;
-					
+
 					if(_targetMarker == null)
 						throw new Error("there is no target marker!");
 					
 					_startX = event.stageX;
-					
 					_stackedMarkers = new Vector.<Marker>();
 					var currentMarker:Marker;
 					var i:int;
@@ -214,7 +213,7 @@
 					for(i=0; i<_freeMarkers.length; i++)
 					{
 						currentMarker = _freeMarkers[i];
-						
+						currentMarker.originalPosition = currentMarker.x;
 						if(currentMarker.x - _targetMarker.x == 0)
 						{
 							_freeMarkers.splice(i,1);
@@ -234,7 +233,6 @@
 			private function _widget_MouseMove(event:MouseEvent):void
 			{
 				_changeX = event.stageX - _startX;
-				
 				var xPos:Number = _targetMarker.originalPosition+_changeX;
 				var dragWidth:Number = width - _targetMarker.width;
 				

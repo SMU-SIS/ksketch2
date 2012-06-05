@@ -17,6 +17,9 @@ package sg.edu.smu.ksketch.io
 	import sg.edu.smu.ksketch.model.geom.K2DVector;
 	import sg.edu.smu.ksketch.model.geom.K3DPath;
 	import sg.edu.smu.ksketch.model.geom.K3DVector;
+	import sg.edu.smu.ksketch.model.geom.KPath;
+	import sg.edu.smu.ksketch.model.geom.KPathProcessor;
+	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.model.geom.KRotation;
 	import sg.edu.smu.ksketch.model.geom.KScale;
 	import sg.edu.smu.ksketch.model.geom.KTranslation;
@@ -227,37 +230,52 @@ package sg.edu.smu.ksketch.io
 		private static function _setTranslation(object:KObject, path:String, 
 												centerX:Number, centerY:Number, time:Number):void
 		{
-			var path3D:K3DPath = _gererate3DPath(_generate3DPoints(path));
 			var key:ISpatialKeyframe = object.transformMgr.addKeyFrame(
 				KTransformMgr.TRANSLATION_REF,time,centerX,centerY,
 				new KCompositeOperation()) as ISpatialKeyframe;
+			key.translate = _getTranslation(path);
+		}
+		
+		private static function _getTranslation(path:String):KTranslation
+		{
 			var translation:KTranslation = new KTranslation();
-			translation.transitionPath = path3D;
-			key.translate = translation;
+			translation.transitionPath = _gererate3DPath(_generate3DPoints(path));;
+			translation.motionPath = KPathProcessor.generateTranslationMotionPath(translation.transitionPath);
+			return translation;
 		}
 		
 		private static function _setRotation(object:KObject, path:String, 
 											 centerX:Number, centerY:Number, time:Number):void
 		{
-			var path2D:K2DPath = _gererate2DPath(_generate2DPoints(path));
 			var key:ISpatialKeyframe = object.transformMgr.addKeyFrame(
 				KTransformMgr.ROTATION_REF,time,centerX,centerY,
 				new KCompositeOperation()) as ISpatialKeyframe;
+			key.rotate = _getRotation(path);
+		}
+		
+		private static function _getRotation(path:String):KRotation
+		{
 			var rotation:KRotation = new KRotation();
-			rotation.transitionPath = path2D;
-			key.rotate = rotation;
+			rotation.transitionPath = _generate2DPath(_generate2DPoints(path));
+			rotation.motionPath = KPathProcessor.generateRotationMotionPath(rotation.transitionPath);
+			return rotation;
 		}
 		
 		private static function _setScale(object:KObject, path:String, 
 										  centerX:Number, centerY:Number, time:Number):void
 		{
-			var path2D:K2DPath = _gererate2DPath(_generate2DPoints(path));
 			var key:ISpatialKeyframe = object.transformMgr.addKeyFrame(
 				KTransformMgr.SCALE_REF,time,centerX,centerY,
 				new KCompositeOperation()) as ISpatialKeyframe;
+			key.scale = _getScale(path);
+		}
+
+		private static function _getScale(path:String):KScale
+		{
 			var scale:KScale = new KScale();
-			scale.transitionPath = path2D;
-			key.scale = scale;
+			scale.transitionPath = _generate2DPath(_generate2DPoints(path));
+			scale.motionPath = KPathProcessor.generateScaleMotionPath(scale.transitionPath);
+			return scale;
 		}
 		
 		private static function _getCreatedTime(node:XML):Number
@@ -326,7 +344,7 @@ package sg.edu.smu.ksketch.io
 			return new KActivityKeyFrame(kskTime, alpha);
 		}
 
-		private static function _gererate2DPath(points:Vector.<K2DVector>):K2DPath
+		private static function _generate2DPath(points:Vector.<K2DVector>):K2DPath
 		{
 			var path2D:K2DPath = new K2DPath();
 			for (var i:int=0; i < points.length; i++)
@@ -353,6 +371,14 @@ package sg.edu.smu.ksketch.io
 				}
 			}
 			return points;
+		}
+		
+		private static function _generateKPath(points:Vector.<KPathPoint>):KPath
+		{
+			var path:KPath = new KPath();
+			for (var i:int=0; i < points.length; i++)
+				path.addPoint(points[i].x,points[i].y,points[i].time);
+			return path;
 		}
 		
 		private static function _gererate3DPath(points:Vector.<K3DVector>):K3DPath

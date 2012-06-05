@@ -274,7 +274,16 @@ package sg.edu.smu.ksketch.model.geom
 			return resultPath;				
 		}
 		
-		public static function generateRotationMotionpath(transitionPath:K2DPath):KPath
+		public static function generateTranslationMotionPath(transitionPath:K3DPath):KPath
+		{
+			var motionPath:KPath = new KPath();
+			var points:Vector.<K3DVector> = transitionPath.points;
+			for (var i:int = 0; i < points.length; i++)
+				motionPath.addPoint(points[i].x,points[i].y,points[i].z);
+			return motionPath;
+		}
+		
+		public static function generateRotationMotionPath(transitionPath:K2DPath):KPath
 		{
 			var motionPath:KPath = new KPath();
 			
@@ -296,5 +305,38 @@ package sg.edu.smu.ksketch.model.geom
 			
 			return motionPath;
 		}
+
+		// ---> Need to add code to do this ...
+		public static function generateScaleMotionPath(transitionPath:K2DPath):KPath
+		{
+			var motionPath:KPath = new KPath();
+
+			// ...
+			
+			return motionPath;
+		}
+		
+		public static function generatePathPointsFromString(pntsString:String, timeIndex:int=0,
+															xIndex:int=1, yIndex:int=2):Vector.<KPathPoint>
+		{
+			if(pntsString == null)
+				return null;
+			var points:Vector.<KPathPoint> = new Vector.<KPathPoint>();
+			var coordinates:Array = pntsString.split(" ");
+			for each(var point:String in coordinates)
+			{
+				if(point != "")
+				{
+					var txy:Array = point.split(",");
+					if(txy.length==3)
+						points.push(new KPathPoint(txy[xIndex], txy[yIndex],txy[timeIndex]));
+					else
+						throw new Error("Stroke.points: expected 3 parameters " +
+							"for each path point, but found \""+point+"\"");
+				}
+			}
+			return points;
+		}						
+
 	}
 }

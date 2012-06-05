@@ -6,8 +6,9 @@
 
 package sg.edu.smu.ksketch.io
 {		
-	import sg.edu.smu.ksketch.logger.KLogger;
 	import flash.geom.Point;
+	
+	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	
@@ -53,27 +54,6 @@ package sg.edu.smu.ksketch.io
 		public static const IMAGE_WIDTH:String = "width";
 		public static const IMAGE_HEIGHT:String = "height";
 		public static const IMAGE_DATA:String = "data";
-		public static const IMAGE_FORMAT:String = "format";
-		
-		public static function generatePathPoints(pntsString:String):Vector.<KPathPoint>
-		{
-			if(pntsString == null)
-				return null;
-			var points:Vector.<KPathPoint> = new Vector.<KPathPoint>();
-			var coordinates:Array = pntsString.split(" ");
-			for each(var point:String in coordinates)
-			{
-				if(point != "")
-				{
-					var txy:Array = point.split(",");
-					if(txy.length==3)
-						points.push(new KPathPoint(txy[1], txy[2],txy[0]));
-					else
-						throw new Error("Stroke.points: expected 3 parameters " +
-							"for each path point, but found \""+point+"\"");
-				}
-			}
-			return points;
-		}						
+		public static const IMAGE_FORMAT:String = "format";		
 	}
 }

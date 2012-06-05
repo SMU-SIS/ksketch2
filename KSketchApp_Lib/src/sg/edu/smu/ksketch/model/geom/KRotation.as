@@ -169,7 +169,7 @@ package sg.edu.smu.ksketch.model.geom
 				KPathProcessor.interpolateRotationTransitionPath(_transitionPath.points, _currentAngle);
 			}
 			
-			_motionPath = KPathProcessor.generateRotationMotionpath(_transitionPath);
+			_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
 			_currentAngle = 0;
 			_currentRotationPoints = new K3DPath();
 		}
@@ -196,8 +196,8 @@ package sg.edu.smu.ksketch.model.geom
 			
 			frontTransform.transitionPath = frontTransitionPath;
 			
-			_motionPath = KPathProcessor.generateRotationMotionpath(_transitionPath);
-			frontTransform.motionPath = KPathProcessor.generateRotationMotionpath(frontTransitionPath);
+			_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
+			frontTransform.motionPath = KPathProcessor.generateRotationMotionPath(frontTransitionPath);
 			
 			return frontTransform;
 		}
@@ -207,7 +207,7 @@ package sg.edu.smu.ksketch.model.geom
 			var rotate:KRotation = new KRotation();
 			rotate.transitionPath = KPathProcessor.mergeRotationTransitionPath(
 				_transitionPath, transform.transitionPath);
-			rotate.motionPath = KPathProcessor.generateRotationMotionpath(rotate.transitionPath);
+			rotate.motionPath = KPathProcessor.generateRotationMotionPath(rotate.transitionPath);
 			return rotate;		
 		}
 		
@@ -227,7 +227,7 @@ package sg.edu.smu.ksketch.model.geom
 			//Perform Interpolation on current Path
 			//KPathProcessor.interpolateScaleMotionPath(_path.path,dScale,);
 			KPathProcessor.interpolateRotationTransitionPath(_transitionPath.points,dThetha);
-			_motionPath = KPathProcessor.generateRotationMotionpath(_transitionPath);
+			_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
 		}
 		
 		public function setLine(time:Number):void

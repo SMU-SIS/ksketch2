@@ -17,10 +17,10 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.event.KWidgetEvent;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
 	import sg.edu.smu.ksketch.gestures.Recognizer;
-	import sg.edu.smu.ksketch.io.KFileParser;
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
+	import sg.edu.smu.ksketch.model.geom.KPathProcessor;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
@@ -408,7 +408,8 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _getPath(commandNode:XML):Vector.<KPathPoint>
 		{
-			return KFileParser.generatePathPoints(commandNode.attribute(KLogger.CURSOR_PATH));			
+			return KPathProcessor.generatePathPointsFromString(
+				commandNode.attribute(KLogger.CURSOR_PATH));			
 			
 		}
 	}

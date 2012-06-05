@@ -33,6 +33,8 @@
 			//
 			//END OF TESTING LINES
 			
+			private var _debuggerWindow:Window;
+			
 			public function triggerLogger(event:MouseEvent):void
 			{
 				var windowFreezer:Alert = _showFreezer();	
@@ -70,11 +72,13 @@
 				{
 					canvas.removeAllEventListeners();
 				};	
-				_showWindow("Debugger",400,600,canvas,close);
+				if (_debuggerWindow)
+					_debuggerWindow.close();
+				_debuggerWindow = _showWindow("Debugger",400,600,canvas,close);
 			}
 			
 			private function _showWindow(title:String,width:Number,height:Number,
-										 child:IVisualElement,closeHandler:Function):void
+										 child:IVisualElement,closeHandler:Function):Window
 			{
 				var window:Window = new Window();
 				window.setStyle("backgroundColor","#EEEEFF");
@@ -84,7 +88,9 @@
 				window.height = height;
 				window.addElement(child);
 				window.addEventListener(Event.CLOSE,closeHandler);
+				window.alwaysInFront = true;
 				window.open();	
+				return window;
 			}
 			
 			private function _showFreezer():Alert

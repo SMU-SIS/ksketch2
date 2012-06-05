@@ -20,7 +20,11 @@ package sg.edu.smu.ksketch.model
 
 	public interface ISpatialKeyframe extends IKeyFrame
 	{
-		//ALl the paths will be here
+		/**
+		 * Set this key and all future keys to become dirty
+		 * forcing new matrix computations from this point onwards
+		 */
+		function dirtyKey():void;
 		
 		/**
 		 * Returns the complete matrix of this key frame,

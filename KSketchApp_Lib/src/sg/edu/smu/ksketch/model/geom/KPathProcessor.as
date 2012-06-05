@@ -274,32 +274,6 @@ package sg.edu.smu.ksketch.model.geom
 			return resultPath;				
 		}
 		
-		/*public static function generateTranslateMotionPath(transitionPath:K3DPath):KPath
-		{
-			var motionPath:KPath = new KPath();
-			
-			if(transitionPath.length <= 0)
-				return motionPath;
-			
-			var currentTransitionPoint:K3DVector;
-			var currentMotionPoint:KPathPoint;
-			
-			var duration:Number = transitionPath.points[transitionPath.length-1].y;
-			
-			var i:num
-			
-			while(
-			
-			
-			for(var i:int = 0; i<transitionPath.length; i+=62.5)
-			{
-				currentTransitionPoint = transitionPath.points[i];
-				motionPath.addPoint(cartesianPoint.x, cartesianPoint.y, currentTransitionPoint.y);
-			}
-			
-			return motionPath;
-		}*/
-		
 		public static function generateRotationMotionpath(transitionPath:K2DPath):KPath
 		{
 			var motionPath:KPath = new KPath();

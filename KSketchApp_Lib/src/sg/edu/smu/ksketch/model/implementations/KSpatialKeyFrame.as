@@ -43,7 +43,7 @@ package sg.edu.smu.ksketch.model.implementations
 			_translateTransform = new KTranslation();
 			_rotateTransform = new KRotation();
 			_scaleTransform = new KScale();
-			_isDirty = false;
+			_isDirty = true;
 			_cachedMatrix = new Matrix();
 		}
 		
@@ -120,16 +120,28 @@ package sg.edu.smu.ksketch.model.implementations
 		 */
 		public function getFullMatrix(kskTime:Number, matrix:Matrix):Matrix
 		{	
+			if(_cachedTime != kskTime)
+				dirtyKey();
+			
 			if(_previous)
 			{
 				(_previous as KSpatialKeyFrame).getFullMatrix(kskTime, matrix);
 			}
 			
-			getPartialMatrix(kskTime, matrix);
+			if(_isDirty)
+			{
+				getPartialMatrix(kskTime, matrix);
+				
+				_isDirty = false;
+				_cachedTime = kskTime;
+				_cachedMatrix = matrix.clone();
+			}
+			else
+			{
+				matrix.identity();
+				matrix.concat(_cachedMatrix.clone());
+			}
 			
-			_isDirty = false;
-			_cachedTime = kskTime;
-			_cachedMatrix = matrix.clone();
 			return matrix;
 		}
 		
@@ -161,9 +173,6 @@ package sg.edu.smu.ksketch.model.implementations
 		 */
 		public function dirtyKey():void
 		{
-			if(_isDirty)
-				return;
-				
 			_isDirty = true;
 			_cachedMatrix = new Matrix();
 			
@@ -179,6 +188,7 @@ package sg.edu.smu.ksketch.model.implementations
 			_translateTransform.setUpCurrentTransform();
 			_rotateTransform.setUpCurrentTransform();
 			_scaleTransform.setUpCurrentTransform();
+			dirtyKey();
 		}
 		
 		/**
@@ -198,6 +208,7 @@ package sg.edu.smu.ksketch.model.implementations
 		public function endTranslation(transitionType:int):void
 		{
 			_translateTransform.endCurrentTransform(transitionType);
+			dirtyKey();
 		}
 		
 		/**
@@ -212,6 +223,7 @@ package sg.edu.smu.ksketch.model.implementations
 		public function endRotation(transitionType:int):void
 		{
 			_rotateTransform.endCurrentTransform(transitionType, _center.clone());
+			dirtyKey();
 		}
 		
 		/**
@@ -226,6 +238,7 @@ package sg.edu.smu.ksketch.model.implementations
 		public function endScale(transitionType:int):void
 		{
 			_scaleTransform.endCurrentTransform(transitionType, _center.clone());
+			dirtyKey();
 		}
 		
 		/**
@@ -300,6 +313,7 @@ package sg.edu.smu.ksketch.model.implementations
 					scale = scale.mergeTransform(key.scale);
 					break;
 			}
+			dirtyKey();
 			return getTransformOperation();
 		}
 		
@@ -351,7 +365,7 @@ package sg.edu.smu.ksketch.model.implementations
 				oldRotate, _rotateTransform.clone(),
 				oldScale, _scaleTransform.clone());
 			operation.addOperation(interpolateOp);
-			
+			dirtyKey();
 		}
 		
 		public function interpolateRotate(dTheta:Number, operation:KCompositeOperation):void
@@ -373,7 +387,7 @@ package sg.edu.smu.ksketch.model.implementations
 				oldScale, _scaleTransform.clone());
 			
 			operation.addOperation(interpolateOp);
-			
+			dirtyKey();
 		}
 		
 		public function interpolateScale(dScale:Number, operation:KCompositeOperation):void
@@ -394,7 +408,7 @@ package sg.edu.smu.ksketch.model.implementations
 				oldRotate, _rotateTransform.clone(),
 				oldScale, _scaleTransform.clone());
 			operation.addOperation(interpolateOp);
-			
+			dirtyKey();
 		}
 		
 		private function _findProportion(time:Number):Number

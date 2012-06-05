@@ -576,6 +576,7 @@ package sg.edu.smu.ksketch.operation
 					
 					var newHeaderKey:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 					newHeaderKey.push(targetKey);
+					targetKey.dirtyKey();
 					insertOp = new KReplaceKeyframeOperation(_object,refFrame,null,newHeaderKey);
 				}
 				else if(time < targetKey.endTime)
@@ -595,6 +596,7 @@ package sg.edu.smu.ksketch.operation
 				refFrame.insertKey(targetKey);
 				var addedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 				addedKeys.push(targetKey);
+				targetKey.dirtyKey();
 				insertOp = new KReplaceKeyframeOperation(_object,refFrame,null,addedKeys);
 			}
 			

@@ -58,6 +58,7 @@ package sg.edu.smu.ksketch.model.implementations
 		public function set center(point:Point):void
 		{
 			_center = point.clone();
+			dirtyKey();
 		}
 		
 		public function get translate():KTranslation
@@ -68,6 +69,7 @@ package sg.edu.smu.ksketch.model.implementations
 		public function set translate(transform:KTranslation):void
 		{
 			_translateTransform = transform;
+			dirtyKey();
 		}
 		
 		public function get rotate():KRotation
@@ -78,6 +80,7 @@ package sg.edu.smu.ksketch.model.implementations
 		public function set rotate(transform:KRotation):void
 		{
 			_rotateTransform = transform;
+			dirtyKey();
 		}
 		
 		public function get scale():KScale
@@ -88,6 +91,7 @@ package sg.edu.smu.ksketch.model.implementations
 		public function set scale(transform:KScale):void
 		{
 			_scaleTransform = transform;
+			dirtyKey();
 		}
 		
 		/**

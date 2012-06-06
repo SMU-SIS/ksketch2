@@ -6,9 +6,9 @@
 
 package sg.edu.smu.playsketch.components.timebar
 {
-	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	
+	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	
 	import spark.components.HSlider;
@@ -86,8 +86,9 @@ package sg.edu.smu.playsketch.components.timebar
 				else
 					toTime = _appState.time;
 			}
-			
 			_appState.time = toTime;
+			KLogger.log(KLogger.CHANGE_TIME, KLogger.CHANGE_TIME_ACTION, KLogger.CHANGE_TIME_TAP,
+				KLogger.CHANGE_TIME_FROM, currentTime, KLogger.CHANGE_TIME_TO, toTime);
 		}
 	}
 }

@@ -132,6 +132,7 @@ private function _initLoggableButtons():void
 	btn_firstFrame.addEventListener(MouseEvent.CLICK, _handleButton);
 	btn_previous.addEventListener(MouseEvent.CLICK, _handleButton);
 	btn_next.addEventListener(MouseEvent.CLICK, _handleButton);
+	btn_play.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_fileOps.btn_new.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_fileOps.btn_load.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_fileOps.btn_save.addEventListener(MouseEvent.CLICK, _handleButton);
@@ -174,6 +175,7 @@ private function _getButtonMappings():Dictionary
 	mapping[btn_firstFrame] = KLogger.BTN_FIRST;
 	mapping[btn_previous] = KLogger.BTN_PREVIOUS;
 	mapping[btn_next] = KLogger.BTN_NEXT;
+	mapping[btn_play] = KLogger.BTN_PLAY;
 	return mapping;
 }
 

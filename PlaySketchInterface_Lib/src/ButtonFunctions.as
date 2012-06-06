@@ -42,6 +42,7 @@ import flash.utils.setTimeout;
 
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
+import mx.collections.ArrayList;
 import mx.containers.HBox;
 import mx.containers.TitleWindow;
 import mx.controls.Alert;
@@ -110,6 +111,7 @@ private var _buttonMapping:Dictionary;
 private var _commandExecutor:KCommandExecutor
 public var isRegionDrawn:Boolean=false;
 private var _fileRef : FileReference;
+private var arrListforCam:ArrayList;
 
 public function get commandExecutor():KCommandExecutor
 {
@@ -404,9 +406,9 @@ private function convertFlvToResolution(resBig:Number, resSmall:Number):void
 	var heightFinal:Number;
 	
 	if(!this.stageAspectRatio)		  
-	{propotionW = (drawingArea_stage.width/resBig);}
+	 {propotionW = (drawingArea_stage.width/resBig);}
 	else
-	{propotionW = (drawingArea_stage.width/(resBig*(4/3)));}
+	 {propotionW = (drawingArea_stage.width/(resBig*(4/3)));}
 	
 	propotionH= drawingArea_stage.height/resSmall;	
 	
@@ -588,8 +590,9 @@ private function onloadxml(event:Event):void
 
 public function imgWizardWindow():void
 {		
-	this.camera= Camera.getCamera();
-	
+			
+	arrListforCam=new ArrayList();	
+		
 	imgTitleWindow= new ImgResizingWindow(this);	
 	imgTitleWindow.title="Image Import";
 		
@@ -622,7 +625,18 @@ public function imgWizardWindow():void
 	imgTitleWindow.addElement(imgTitleWindow.btnSav);
 			
 	imgTitleWindow.setStyle("skinClass", ImgWindowSkin);
-	
+		
+	imgTitleWindow.chooseCamBox.x=imgTitleWindow.width-165;
+	imgTitleWindow.chooseCamBox.y=imgTitleWindow.height-83;
+	imgTitleWindow.chooseCamBox.width=145;
+	imgTitleWindow.addElement(imgTitleWindow.chooseCamBox);
+			
+	 for each(var camerasNames:String in Camera.names)
+	     {arrListforCam.addItem(camerasNames);}
+			 
+	imgTitleWindow.chooseCamBox.dataProvider=arrListforCam;
+	imgTitleWindow.chooseCamBox.selectedIndex=arrListforCam.length-1;
+			
 	imgTitleWindow.btnClose.addEventListener("click", closeHandlerImg);
 	imgTitleWindow.btnLoad.addEventListener("click", onbtnSaveImage);
 	imgTitleWindow.btnLoad.addEventListener("click", closeHandlerImg);
@@ -631,9 +645,12 @@ public function imgWizardWindow():void
 	imgTitleWindow.btnCameraSnap.addEventListener("click", onbtnLoadCameraSnap);
 	imgTitleWindow.btnSav.addEventListener("click", onSaveSelected);
 	
+	//imgTitleWindow.chooseCamBox.addEventListener(IndexChangeEvent.CHANGE, function():void{onbtnLoadCamera();});
+		
 	imgTitleWindow.btnLoad.enabled=true;
 	imgTitleWindow.btnCameraSnap.enabled=false;
 	imgTitleWindow.btnLoad.enabled=false;
+	imgTitleWindow.chooseCamBox.enabled=false;
 	
 	PopUpManager.addPopUp(imgTitleWindow, this, true);	
 	
@@ -688,7 +705,6 @@ private function loadBytesHandlerforFullImage(event:Event):void
 	var byteArr:ByteArray=new ByteArray();										
 	loader = new Loader();
 	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function mytest(event:Event):void{onPNG(loader,event)});				
-	
 	
 	loader.loadBytes(byteArray);							
 		
@@ -803,9 +819,7 @@ private function trimmingIrregularShape():void
 	maskPath.moveTo(ImageTr.poinsArray[0].x, ImageTr.poinsArray[0].y);
 	
 	for(var l:int=1; l<ImageTr.poinsArray.length; l++)
-	{
-		maskPath.lineTo(ImageTr.poinsArray[l].x,ImageTr.poinsArray[l].y);
-	}
+	  {maskPath.lineTo(ImageTr.poinsArray[l].x,ImageTr.poinsArray[l].y);}
 	
 	maskPath.lineTo(ImageTr.poinsArray[0].x, ImageTr.poinsArray[0].y);
 		
@@ -833,9 +847,9 @@ private function trimmingIrregularShape():void
 	for(var k:int=0; k<maskPath.data.length; k++)
 	{	 		 
 		if(k%2)
-		{coordArrayY.push(maskPath.data[k]);} 
+		 {coordArrayY.push(maskPath.data[k]);} 
 		else
-		{ coordArrayX.push(maskPath.data[k]);}
+		 {coordArrayX.push(maskPath.data[k]);}
 	}
 	maxValueX = Math.max.apply(null,coordArrayX);
 	maxValueY = Math.max.apply(null,coordArrayY);	 
@@ -853,28 +867,27 @@ private function trimmingIrregularShape():void
 }
 
 
-
 public function onbtnLoadCamera():void
-{	
-	//
-	this.camera= Camera.getCamera();
-	//
-	
+{		
+	this.camera= Camera.getCamera(imgTitleWindow.chooseCamBox.selectedIndex.toString());	
 	var snap:BitmapData = new BitmapData(imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth, imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight, true);
 	var snapBmp:Bitmap = new Bitmap(snap);	
 	
 	imgTitleWindow.addElement(imgTitleWindow.videoDisplay);	
 		
 	if(imgTitleWindow.hBox.numChildren > 0)
-	   {imgTitleWindow.removeElement(imgTitleWindow.hBox);}
+	  {
+		//imgTitleWindow.removeElement(imgTitleWindow.hBox);
+	  }
 			
 	if (this.camera){
 		bitmapDataBeforeIrregular=snap;
 		imgTitleWindow.videoDisplay.visible=true;
 		imgTitleWindow.videoDisplay.attachCamera(this.camera);
 		imgTitleWindow.btnCameraSnap.enabled=true;
-		imgTitleWindow.btnCamera.enabled=false;
+		imgTitleWindow.btnCamera.enabled=true;//
 		imgTitleWindow.btnLoad.enabled=false;
+		imgTitleWindow.chooseCamBox.enabled=true;
 		liveOrSnapped=true;	
 		
 		imgTitleWindow.width=imgTitleWindow.windowWidth;
@@ -883,9 +896,7 @@ public function onbtnLoadCamera():void
 		imgTitleWindow.videoDisplay.height=imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight;
 		imgTitleWindow.hBox.width=imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth;
 		imgTitleWindow.hBox.height=imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight;
-
-		imgTitleWindow.setButtons();
-		
+		imgTitleWindow.setButtons();		
 	} 
 	else{
 		imgTitleWindow.videoDisplay.attachCamera(null);
@@ -914,9 +925,7 @@ public function onbtnLoadCameraSnap(event:Event):void
 				
 	setUpForTheBox();
 	liveOrSnapped=false;
-	
-	bitmapDataBeforeIrregular=snap;	 
-	
+	bitmapDataBeforeIrregular=snap;	 	
 	imgTitleWindow.btnCameraSnap.enabled=false;
 	imgTitleWindow.btnLoad.enabled=true;
 	imgTitleWindow.btnCamera.enabled=true;
@@ -927,7 +936,6 @@ public function onbtnLoadCameraSnap(event:Event):void
 	imgTitleWindow.hBox.width=imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth;
 	imgTitleWindow.hBox.height=imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight;		
 	imgTitleWindow.setButtons();
-
 }
 
 

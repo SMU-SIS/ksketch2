@@ -8,12 +8,16 @@ package ImportImage
     import flash.display.DisplayObject;
     import flash.events.Event;
     import flash.events.MouseEvent;
-    import flash.geom.Point;   
+    import flash.geom.Point;
+    
     import mx.containers.HBox;
     import mx.controls.Button;
     import mx.controls.VideoDisplay;
     import mx.core.UIComponent;
-    import mx.events.SandboxMouseEvent;    
+    import mx.events.SandboxMouseEvent;
+    
+    import spark.components.ComboBox;
+    import spark.components.DropDownList;
     import spark.components.TitleWindow;
     import spark.components.VideoDisplay;
 
@@ -25,13 +29,14 @@ package ImportImage
 		public var btnLoad:Button=new Button();
 		public var btnCamera:Button=new Button();
 		public var btnCameraSnap:Button=new Button();
+		public var chooseCamBox:DropDownList=new DropDownList();
 		public var hBox:HBox=new HBox();
 		public var videoDisplay:mx.controls.VideoDisplay=new mx.controls.VideoDisplay();
 		public var clickOffset:Point;
 		public var windowWidth:int=430;
-		public var windowHeight:int=300;
+		public var windowHeight:int=330;
 		public var offsetForDisplayWidth:int=30;
-		public var offsetForDisplayHeight:int=75;
+		public var offsetForDisplayHeight:int=95;
 		public var XForDisplay:int=10;
 		public var YForDisplay:int=10;
 		public var playSketchCanv:PlaySketchCanvas;
@@ -154,6 +159,8 @@ package ImportImage
 			btnCameraSnap.y=height-60;
 			btnSav.x=width-425;
 			btnSav.y=height-60;
+			chooseCamBox.x=width-165;
+			chooseCamBox.y=height-83;
 		}
         
      

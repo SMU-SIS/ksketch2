@@ -203,7 +203,7 @@ package sg.edu.smu.ksketch.operation
 				var key1:IParentKeyFrame = keys[i-1] as IParentKeyFrame; 
 				var key2:IParentKeyFrame = keys[i] as IParentKeyFrame;
 				if (key1.parent.id == key2.parent.id)
-					rmKeys.push(object.removeParentKey(key1.endTime));
+					rmKeys.push(object.removeParentKey(key2.endTime));
 			}
 			return rmKeys.length > 0 ? new KRemoveParentKeyFrameOperation(object,rmKeys):null;
 		}
@@ -262,7 +262,7 @@ package sg.edu.smu.ksketch.operation
 						ops.addOperation(op);
 					
 					dispatchUngroupOperationEvent(model, gp, child);
-					dispatchUngroupOperationEvent(model, group, gp);
+					dispatchUngroupOperationEvent(model, group, gp);					
 					ops.addOperation(new KUngroupOperation(model,child,groupTime,gp,group));		
 					
 					if (groupTime < tMaxTime)

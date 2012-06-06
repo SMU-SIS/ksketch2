@@ -208,11 +208,7 @@ package sg.edu.smu.ksketch.components
 			var length:int = points.length;
 			var directionStart:int;
 			
-			if(length > 15)
-				directionStart = 15;
-			else if(length > 10)
-				directionStart = 10;
-			else if(length > 5)
+			if(length > 5)
 				directionStart = 5;
 			else if(length ==2)
 				directionStart = 2;

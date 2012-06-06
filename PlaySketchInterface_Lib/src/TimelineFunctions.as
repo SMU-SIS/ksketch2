@@ -51,14 +51,6 @@ private function initTimebar():void
 
 }
 
-public function play():void
-{
-	if(!appState.isAnimating)
-		appState.startPlaying();
-	else
-		appState.pause();
-}
-
 private function _bindKeyIndexSliderMaxTime(value:Number):void
 {
 	slider_key_index.maximum = KAppState.indexOf(value);
@@ -88,9 +80,6 @@ public function showSliderTip(value:Number):Object
  */		
 public function _handleTimeSlider(event:Event):void
 {
-	if(!_isKSKTimeThumbDragging)
-		KLogger.log(KLogger.CHANGE_TIME, KLogger.CHANGE_TIME_TO, slider_key_index.value);
-	
 	appState.time = KAppState.kskTime(slider_key_index.value);
 }
 
@@ -147,8 +136,12 @@ public function timeSlider_thumbReleaseHandler(event:TrackBaseEvent):void
 	if(!(event.target is HSlider))
 		return;
 	var keyIndexSlider:HSlider = event.target as HSlider;
-	if(keyIndexSlider.value != _startKSKTimeValue)
-		KLogger.log(KLogger.CHANGE_TIME, KLogger.CHANGE_TIME_TO, appState.time);
+	if(_startKSKTimeValue != keyIndexSlider.value)
+	{
+		KLogger.log(KLogger.CHANGE_TIME, KLogger.CHANGE_TIME_ACTION, KLogger.CHANGE_TIME_DRAG,
+			KLogger.CHANGE_TIME_FROM, KAppState.kskTime(_startKSKTimeValue), 
+			KLogger.CHANGE_TIME_TO, KAppState.kskTime(keyIndexSlider.value));
+	}
 	_isKSKTimeThumbDragging = false;
 	_startKSKTimeValue = -1;
 	if(appState.isAnimating)

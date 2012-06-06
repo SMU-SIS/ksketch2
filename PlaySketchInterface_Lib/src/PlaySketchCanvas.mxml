@@ -306,7 +306,7 @@
 							<s:layout>
 								<s:HorizontalLayout gap="0" horizontalAlign="right"/>
 							</s:layout>
-							<s:Button skinClass="components.Button_Play" id="_playButton" click="play()" scaleX="0.4651" scaleY="0.4651"/>
+							<s:Button skinClass="components.Button_Play" id="btn_play" scaleX="0.4651" scaleY="0.4651"/>
 							<s:Button skinClass="components.Button_BackToStart" id="btn_firstFrame" scaleX="0.75" scaleY="0.75"/>
 							<s:Button skinClass="components.Button_PrevFrame" id="btn_previous" scaleX="1.1" scaleY="1.1"/>
 						</s:Group>

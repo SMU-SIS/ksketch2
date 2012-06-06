@@ -58,6 +58,9 @@ package sg.edu.smu.ksketch.logger
 
 		public static const CHANGE_KEYFRAME:String = "changekeyframe";
 		public static const CHANGE_TIME:String = "changetime";
+		public static const CHANGE_TIME_ACTION:String = "changetime-action";
+		public static const CHANGE_TIME_TAP:String = "changetime-tap";
+		public static const CHANGE_TIME_DRAG:String = "changetime-drag";
 		public static const CHANGE_TIME_FROM:String = "fromtime";
 		public static const CHANGE_TIME_TO:String = "totime";
 		

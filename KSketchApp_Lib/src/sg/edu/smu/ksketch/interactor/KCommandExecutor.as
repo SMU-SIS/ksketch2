@@ -141,6 +141,10 @@ package sg.edu.smu.ksketch.interactor
 					KLogger.log(command);
 					_next();
 					break;
+				case KLogger.BTN_PLAY:
+					KLogger.log(command,KLogger.CHANGE_TIME_FROM,_appState.time);
+					_play();
+					break;
 				case KLogger.BTN_TOGGLE_VISIBILITY:
 					KLogger.log(command);
 					_toggleVisibility();
@@ -407,6 +411,14 @@ package sg.edu.smu.ksketch.interactor
 				return;
 			_moveFrame(KAppState.nextKey(_appState.time));
 		}		
+
+		protected function _play():void
+		{
+			if(!_appState.isAnimating)
+				_appState.startPlaying();
+			else
+				_appState.pause();
+		}
 		
 		protected function _moveFrame(time:Number):void
 		{

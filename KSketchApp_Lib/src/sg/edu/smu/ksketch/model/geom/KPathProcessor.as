@@ -311,7 +311,21 @@ package sg.edu.smu.ksketch.model.geom
 		{
 			var motionPath:KPath = new KPath();
 
-			// ...
+			if(transitionPath.length <= 0)
+				return motionPath;
+			
+			var currentTransitionPoint:K2DVector;
+			var currentMotionPoint:KPathPoint;
+			var cartesianPoint:Point;
+			
+			var duration:Number = transitionPath.points[transitionPath.length-1].y;
+			
+			for(var i:int = 0; i<transitionPath.length; i++)
+			{
+				currentTransitionPoint = transitionPath.points[i];
+				cartesianPoint = Point.polar((1+currentTransitionPoint.x)*PATH_RADIUS,PATH_DIRECTION);
+				motionPath.addPoint(cartesianPoint.x, cartesianPoint.y, currentTransitionPoint.y);
+			}
 			
 			return motionPath;
 		}

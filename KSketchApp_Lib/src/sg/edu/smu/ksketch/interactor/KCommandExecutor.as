@@ -301,8 +301,16 @@ package sg.edu.smu.ksketch.interactor
 				mouseXVariable = 225;
 			if(menu.height == 0)
 				mouseYVariable = 50;
-					
-			menu.show(_canvas.mouseX - mouseXVariable,_canvas.mouseY-mouseYVariable);
+			
+			var menuXPos:Number = _canvas.mouseX - mouseXVariable;
+			var menuYPos:Number = _canvas.mouseY - mouseYVariable;
+			
+			if(menuXPos < 0)
+				menuXPos = 0;
+			if(menuYPos < -0)
+				menuYPos = 0;
+			
+			menu.show(menuXPos, menuYPos);
 		}
 		
 		public function newFile():void

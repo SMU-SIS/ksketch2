@@ -146,6 +146,8 @@ package sg.edu.smu.ksketch.components
 				
 				if(proportionCovered > 1)
 					proportionCovered = 1;
+				else if(proportionCovered < 0)
+					proportionCovered = 0;
 				
 				var dx:Number = (endPoint.x - startPoint.x)*proportionCovered + startPoint.x;
 				var dy:Number = (endPoint.y - startPoint.y)*proportionCovered + startPoint.y;

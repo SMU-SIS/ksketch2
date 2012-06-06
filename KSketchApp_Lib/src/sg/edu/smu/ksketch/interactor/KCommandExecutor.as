@@ -202,7 +202,7 @@ package sg.edu.smu.ksketch.interactor
 				case GestureDesign.NAME_PRE_SHOW_CONTEXT_MENU:
 					if(_contextMenu == null)
 					{
-						_contextMenu = KContextMenu.createMenu(_canvas, _appState, this);
+						_contextMenu = KContextMenu.createMenu(_canvas, _appState, this, _facade);
 						_contextMenu.addEventListener(MenuEvent.ITEM_CLICK, 
 							function(event:MenuEvent):void
 							{
@@ -217,7 +217,7 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case PIGTAIL_CONTEXT_MENU:
 					if(_contextMenu == null)
-						_contextMenu = KContextMenu.createMenu(_canvas, _appState, this);
+						_contextMenu = KContextMenu.createMenu(_canvas, _appState, this, _facade);
 					_contextMenu.withSelection = _appState.selection != null && 
 					_appState.selection.objects.length() != 0;
 					popupMenu(_contextMenu);

@@ -20,6 +20,9 @@ package sg.edu.smu.ksketch.components
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KObject;
+	import sg.edu.smu.ksketch.operation.IModelOperation;
+	import sg.edu.smu.ksketch.operation.KModelFacade;
+	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.IModelObjectList;
@@ -43,6 +46,14 @@ package sg.edu.smu.ksketch.components
 			</root>;
 		
 		[Bindable]
+		public static var MENU_ITEMS_NO_SEL_AND_ON_OVERVIEW_TRACK:XML = 
+			<root>
+				<menuitem id="0" label="Insert KeyFrame"/>
+				<menuitem id="2" label="Paste Object(Ctrl+V)"/>
+                <menuitem id="3" label="Paste Object with Motion(Ctrl+M)"/>
+			</root>;
+		
+		[Bindable]
 		public static var MENU_ITEMS_NO_SEL:XML = 
 			<root>
 				<menuitem id="2" label="Paste Object(Ctrl+V)"/>
@@ -56,12 +67,14 @@ package sg.edu.smu.ksketch.components
 		private var _executor:KCommandExecutor;
 		private var _objectsTotal:KModelObjectList;
 		private var _cursorKey:ISpatialKeyframe
-		private var _cursorObject:KObject
+		private var _cursorObject:KObject;
+		private var _facade:KModelFacade
 		
-		public function KContextMenu(appState:KAppState,executor:KCommandExecutor)
+		public function KContextMenu(appState:KAppState,executor:KCommandExecutor, facade:KModelFacade)
 		{
 			super();
 			
+			_facade = facade;
 			_appState = appState;
 			_executor = executor;
 			labelField = "@label";
@@ -105,20 +118,20 @@ package sg.edu.smu.ksketch.components
 			if(_appState.targetTrackBox < 0)
 				return;
 			
+			var objects:IModelObjectList;
+			
 			if(_appState.selection)
 			{
-				var objects:IModelObjectList = _appState.selection.objects;
+				objects = _appState.selection.objects;
 				
-				if(objects && objects.length()>0)
-				{
-					_appState.time = _appState.trackTapTime;
-					var it:IIterator = objects.iterator;
-					var insertKeyOp:KCompositeOperation = new KCompositeOperation();
-					while(it.hasNext())
-						insertKeyOp.addOperation(it.next().insertBlankKey(_appState.targetTrackBox,_appState.time));
-					_appState.addOperation(insertKeyOp);
-				}
+				if(!objects || objects.length() <= 0)
+					objects = null;
 			}
+			
+			var insertKeyFrameOp:IModelOperation = _facade.insertKeyFrames(objects);
+			
+			if(insertKeyFrameOp)
+				_appState.addOperation(insertKeyFrameOp);
 		}
 		
 		private function selectedObjects():String
@@ -166,15 +179,18 @@ package sg.edu.smu.ksketch.components
 					dataProvider = MENU_ITEMS_WITH_SEL;
 			}
 			else
-			{
-				dataProvider = MENU_ITEMS_NO_SEL;
+			{				
+				if(_appState.targetTrackBox == KTransformMgr.ALL_REF)
+					dataProvider = MENU_ITEMS_NO_SEL_AND_ON_OVERVIEW_TRACK;
+				else
+					dataProvider = MENU_ITEMS_NO_SEL;
 			}
 		}
 			
 		public static function createMenu(parent:DisplayObjectContainer, appState:KAppState, 
-										 executor:KCommandExecutor):KContextMenu
+										 executor:KCommandExecutor, facade:KModelFacade):KContextMenu
 		{
-			var menu:KContextMenu = new KContextMenu(appState,executor);
+			var menu:KContextMenu = new KContextMenu(appState,executor, facade);
 			menu.tabEnabled = false;    
 			menu.owner = parent;
 			menu.showRoot = false;

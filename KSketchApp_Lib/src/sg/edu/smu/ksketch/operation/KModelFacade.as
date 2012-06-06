@@ -25,6 +25,8 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KGroupOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
+	import sg.edu.smu.ksketch.utilities.IIterator;
+	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
@@ -268,7 +270,40 @@ package sg.edu.smu.ksketch.operation
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
-		
+		public function insertKeyFrames(objects:IModelObjectList):IModelOperation
+		{
+			if(!objects)
+			{
+				if(_appState.targetTrackBox != KTransformMgr.ALL_REF)
+					return null;
+
+				objects = _model.allChildren();
+				
+				var allIt:IIterator = objects.iterator;
+				var currentObj:KObject;
+				
+				while(allIt.hasNext())
+				{
+					currentObj = allIt.next();
+					
+					if(currentObj.getVisibility(_appState.trackTapTime) <= 0)
+						objects.remove(currentObj);
+				}
+			}
+			
+			if(objects && objects.length()>0)
+			{
+				_appState.time = _appState.trackTapTime;
+				
+				var it:IIterator = objects.iterator;
+				var insertKeyOp:KCompositeOperation = new KCompositeOperation();
+				while(it.hasNext())
+					insertKeyOp.addOperation(it.next().insertBlankKey(_appState.targetTrackBox,_appState.time));
+				return insertKeyOp;
+			}
+			
+			return null;
+		}
 		// ------------------ IEventDispatcher Functions ------------------- //				
 		public function addEventListener(type:String, listener:Function,useCapture:Boolean=false,
 										 priority:int=0, useWeakReference:Boolean=false):void
@@ -331,7 +366,7 @@ package sg.edu.smu.ksketch.operation
 		public function setObjectName(object:KObject, name:String):void
 		{
 			_model.setObjectName(object, name);
-		}	
+		}
 		
 		// -------------- Time Widget Functions --------------- //						
 		public function retimeKeys(keys:Vector.<IKeyFrame>, times:Vector.<Number>, 

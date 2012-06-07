@@ -95,9 +95,12 @@ package
 			vg.addElement(_createLabel(""));
 			vg.addElement(_createLabel("Animation Creation Mode"));
 			vg.addElement(_addCreationMode(mainCanvas.appState));
+			vg.addElement(_createLabel(""));
+			vg.addElement(_createLabel("Correct Future Motion"));
+			vg.addElement(_addCorrectFutureMode());
 			// vg.addElement(_createLabel(""));
 			// vg.addElement(_createLabel("Demo Merge Mode"));
-			//		vg.addElement(_addDemoMergeMode(mainCanvas.facade));
+			// vg.addElement(_addDemoMergeMode(mainCanvas.facade));
 			return vg; 
 		}
 		
@@ -149,7 +152,6 @@ package
 				appState.fireGroupingEnabledChangedEvent();
 				if(appState.groupingMode == impMode)
 				{
-					trace("false");
 					mainCanvas.group_groupOps.includeInLayout = false;
 					mainCanvas.group_groupOps.visible = false;
 				}
@@ -206,6 +208,26 @@ package
 					appState.userOption.showPath == options[i], modes));
 			return _createVGroup(buttons);
 		}
+		
+		private function _addCorrectFutureMode():IVisualElement
+		{
+			var modes:RadioButtonGroup = new RadioButtonGroup();
+			modes.addEventListener(Event.CHANGE, function(event:Event):void
+			{
+				KLogger.log(KLogger.CHANGE_CORRECT_FUTURE_MOTION, 
+					KLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM, KAppState.correct_Real_Time_Future,
+					KLogger.CHANGE_CORRECT_FUTURE_MOTION_TO, modes.selectedValue);
+				KAppState.correct_Real_Time_Future = modes.selectedValue;
+			});
+			var buttons:Array = new Array();
+			var labels:Array = ["Keep Future Motion","Erase Future Motion"];
+			var options:Array = [false,true];
+			for (var i:int = 0; i < options.length; i++)
+				buttons.push(_createRadioButton(labels[i],options[i],
+					KAppState.correct_Real_Time_Future == options[i], modes));
+			return _createVGroup(buttons);
+		}
+		
 		/*	
 		private function _addDemoMergeMode(facade:KModelFacade):IVisualElement
 		{

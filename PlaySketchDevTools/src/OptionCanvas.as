@@ -216,7 +216,7 @@ package
 			{
 				KLogger.log(KLogger.CHANGE_CORRECT_FUTURE_MOTION, 
 					KLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM, KAppState.correct_Real_Time_Future,
-					KLogger.CHANGE_CORRECT_FUTURE_MOTION_TO, modes.selectedValue);
+					KLogger.CHANGE_CORRECT_FUTURE_MOTION_TO, modes.selectedValue.toString());
 				KAppState.correct_Real_Time_Future = modes.selectedValue;
 			});
 			var buttons:Array = new Array();

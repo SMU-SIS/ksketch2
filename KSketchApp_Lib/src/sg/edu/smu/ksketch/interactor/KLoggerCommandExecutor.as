@@ -216,15 +216,6 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.CHANGE_GROUPING_MODE:
 					_appState.groupingMode = commandNode.attribute(KLogger.CHANGE_GROUPING_MODE_FROM);
 					break;
-				case KLogger.CHANGE_CREATION_MODE:
-					_appState.creationMode = commandNode.attribute(KLogger.CHANGE_CREATION_MODE_FROM);
-					break;
-				case KLogger.CHANGE_PATH_VISIBILITY:
-					_appState.userOption.showPath = commandNode.attribute(KLogger.CHANGE_PATH_VISIBILITY_FROM);
-					break;
-	//			case KLogger.CHANGE_DEMO_MERGE_MODE:
-	//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_FROM));
-	//				break;
 				case KLogger.CHANGE_GESTURE_DESIGN:
 					_appState.gestureDesignName = commandNode.attribute(KLogger.CHANGE_GESTURE_DESIGN_FROM);
 					break;
@@ -234,6 +225,18 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT:
 					KGestureRecognizer.PEN_PAUSE_TIME = commandNode.attribute(KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_FROM);
 					break;
+				case KLogger.CHANGE_CREATION_MODE:
+					_appState.creationMode = commandNode.attribute(KLogger.CHANGE_CREATION_MODE_FROM);
+					break;
+				case KLogger.CHANGE_PATH_VISIBILITY:
+					_appState.userOption.showPath = commandNode.attribute(KLogger.CHANGE_PATH_VISIBILITY_FROM);
+					break;
+				case KLogger.CHANGE_CORRECT_FUTURE_MOTION:
+					KAppState.correct_Real_Time_Future = commandNode.attribute(KLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM);
+					break;
+	//			case KLogger.CHANGE_DEMO_MERGE_MODE:
+	//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_FROM));
+	//				break;
 				case KLogger.CHANGE_RIGHT_MOUSE_ENABLED:
 					_appState.userOption.rightMouseButtonEnabled = commandNode.attribute(KLogger.CHANGE_RIGHT_MOUSE_ENABLED_FROM);
 					break;
@@ -258,15 +261,6 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.CHANGE_GROUPING_MODE:
 					_appState.groupingMode = commandNode.attribute(KLogger.CHANGE_GROUPING_MODE_TO);
 					break;
-				case KLogger.CHANGE_CREATION_MODE:
-					_appState.creationMode = commandNode.attribute(KLogger.CHANGE_CREATION_MODE_TO);
-					break;
-				case KLogger.CHANGE_PATH_VISIBILITY:
-					_appState.userOption.showPath = commandNode.attribute(KLogger.CHANGE_PATH_VISIBILITY_TO);
-					break;
-				//			case KLogger.CHANGE_DEMO_MERGE_MODE:
-				//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_TO));
-				//				break;
 				case KLogger.CHANGE_GESTURE_DESIGN:
 					_appState.gestureDesignName = commandNode.attribute(KLogger.CHANGE_GESTURE_DESIGN_TO);
 					break;
@@ -276,6 +270,18 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT:
 					KGestureRecognizer.PEN_PAUSE_TIME = commandNode.attribute(KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_TO);
 					break;
+				case KLogger.CHANGE_CREATION_MODE:
+					_appState.creationMode = commandNode.attribute(KLogger.CHANGE_CREATION_MODE_TO);
+					break;
+				case KLogger.CHANGE_PATH_VISIBILITY:
+					_appState.userOption.showPath = commandNode.attribute(KLogger.CHANGE_PATH_VISIBILITY_TO);
+					break;
+				case KLogger.CHANGE_CORRECT_FUTURE_MOTION:
+					KAppState.correct_Real_Time_Future = commandNode.attribute(KLogger.CHANGE_CORRECT_FUTURE_MOTION_TO);
+					break;
+		//			case KLogger.CHANGE_DEMO_MERGE_MODE:
+		//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_TO));
+		//				break;
 				case KLogger.CHANGE_RIGHT_MOUSE_ENABLED:
 					_appState.userOption.rightMouseButtonEnabled = commandNode.attribute(KLogger.CHANGE_RIGHT_MOUSE_ENABLED_TO);
 					break;

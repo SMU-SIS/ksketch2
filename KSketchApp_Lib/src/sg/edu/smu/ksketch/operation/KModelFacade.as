@@ -156,7 +156,7 @@ package sg.edu.smu.ksketch.operation
 			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
 				ops.addOperation(rmOp);
 			
-			if(isRealTimeTranslation)
+			/*if(isRealTimeTranslation)
 			{
 				var targetGroup:KGroup = (gpOp as KGroupOperation).group;
 				var oldParent:KGroup = targetGroup.getParent(groupTime);
@@ -171,9 +171,7 @@ package sg.edu.smu.ksketch.operation
 					KMergerUtil.mergeKeys(targetGroup,oldParent,groupTime,ops,KTransformMgr.ROTATION_REF);
 					KMergerUtil.mergeKeys(targetGroup,oldParent,groupTime,ops,KTransformMgr.SCALE_REF);
 				}
-			}
-			
-			
+			}*/
 			
 			var list:KModelObjectList = new KModelObjectList();
 			list.add((gpOp as KGroupOperation).group);

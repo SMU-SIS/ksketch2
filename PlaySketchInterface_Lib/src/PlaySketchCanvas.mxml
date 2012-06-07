@@ -214,10 +214,7 @@
 					</s:layout>
 
 					<playsketchskin:Group_FileHandling id="group_fileOps"/>
-					<playsketchskin:Group_Editing id="group_editOps"/>
-					<playsketchskin:Group_View id="group_viewOps"/>
-					<playsketchskin:Group_Grouping id="group_groupOps" visible="{_isImplicitGrouping()?false:true}"
-												   includeInLayout="{_isImplicitGrouping()?false:true}"/>
+					
 					<s:Group>
 						<s:Group>
 							<s:Rect x="0" y="0" width="75" height="29" radiusX="13.1821" radiusY="13.1821">
@@ -242,6 +239,11 @@
 									  label="S" toolTip="Sound Record" click="soundRecord()" visible="false" includeInLayout="false"/>
 						</s:Group>
 					</s:Group>
+
+					<playsketchskin:Group_Editing id="group_editOps"/>
+					<playsketchskin:Group_View id="group_viewOps"/>
+					<playsketchskin:Group_Grouping id="group_groupOps" visible="{_isImplicitGrouping()?false:true}"
+												   includeInLayout="{_isImplicitGrouping()?false:true}"/>
 					<s:DropDownList id="list_pen_selection" width="100" selectedIndex="0" 
 									alternatingItemColors="[#000000,#FF0000,#00BB00,#0078FF,#999999]"
 									color="#DDDDDD" chromeColor="#000000"  rollOverColor="#777777" 

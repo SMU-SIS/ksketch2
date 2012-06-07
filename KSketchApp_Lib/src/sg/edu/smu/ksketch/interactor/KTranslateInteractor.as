@@ -107,11 +107,11 @@ package sg.edu.smu.ksketch.interactor
 			var length:int = objects.length();
 			var zerothObj:KObject = objects.getObjectAt(0);
 			var needGroup:Boolean = isImplicitGrouping() && length > 1;
-			var needUngroup:Boolean = isImplicitGrouping() && length == 1 && 
-				zerothObj is KStroke && zerothObj.getParent(_appState.time) != _facade.root;
-			
+			var needUngroup:Boolean = isImplicitGrouping() && length == 1 &&
+				zerothObj.getParent(_appState.time) != _facade.root;
+
 			if (needUngroup)
-				return _facade.ungroup(objects);
+				return _facade.ungroup(objects, _transitionType == KAppState.TRANSITION_REALTIME);
 			else if (needGroup)
 				return _facade.regroup(objects, _transitionType == KAppState.TRANSITION_REALTIME);
 			else

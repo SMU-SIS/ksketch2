@@ -305,15 +305,18 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _gesture(commandNode:XML):void
 		{
-			var event:KeyboardEvent = new KeyboardEvent(KeyboardEvent.KEY_DOWN);
-			event.keyCode = Keyboard.CONTROL;
-			_canvas.systemManager.stage.dispatchEvent(event);
-			_interact(commandNode);
-			event = new KeyboardEvent(KeyboardEvent.KEY_UP);
-			event.keyCode = Keyboard.CONTROL;
-			_canvas.systemManager.stage.dispatchEvent(event);
 			if (commandNode.attribute(KLogger.SELECTED_ITEMS).length() > 0)
 				_select(commandNode.attribute(KLogger.SELECTED_ITEMS));
+			else
+			{
+				var event:KeyboardEvent = new KeyboardEvent(KeyboardEvent.KEY_DOWN);
+				event.keyCode = Keyboard.CONTROL;
+				_canvas.systemManager.stage.dispatchEvent(event);
+				_interact(commandNode);
+				event = new KeyboardEvent(KeyboardEvent.KEY_UP);
+				event.keyCode = Keyboard.CONTROL;
+				_canvas.systemManager.stage.dispatchEvent(event);
+			}
 		}
 
 		private function _tapCenter():void

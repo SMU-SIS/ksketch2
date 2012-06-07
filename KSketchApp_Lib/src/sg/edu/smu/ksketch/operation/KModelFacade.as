@@ -194,8 +194,10 @@ package sg.edu.smu.ksketch.operation
 			var ops:KCompositeOperation = new KCompositeOperation();
 			
 			var ungpOp:IModelOperation = mode == KAppState.GROUPING_EXPLICIT_STATIC ? 
-				KUngroupUtil.ungroupStatic(_model,_model.root,objs):
-				KUngroupUtil.ungroupDynamic(_model,_model.root,objs, time);
+			//	KUngroupUtil.ungroupStatic(_model,_model.root,objs):
+			//	KUngroupUtil.ungroupDynamic(_model,_model.root,objs, time);
+				KUngroupUtil.ungroupStatic(_model,_model.root,strokes):
+				KUngroupUtil.ungroupDynamic(_model,_model.root,strokes, time);
 			if (ungpOp != null)
 				ops.addOperation(ungpOp);
 			

@@ -107,6 +107,7 @@ package sg.edu.smu.ksketch.utilities
 		public var scaleTrackBox:Rectangle;
 		public var targetTrackBox:int;
 		
+		public static var correct_Real_Time_Future:Boolean = false;
 		private static var _time:Number; 
 		
 		private var _savedTime:Number;

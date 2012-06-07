@@ -417,6 +417,9 @@ package sg.edu.smu.ksketch.operation
 		
 		private function _futureMode(lastOverWrittenKey:ISpatialKeyframe):void
 		{
+			if(_transitionType == KAppState.TRANSITION_REALTIME && KAppState.correct_Real_Time_Future)
+				return;
+			
 			var snapToActivity:Boolean = true;
 			
 			if(snapToActivity)

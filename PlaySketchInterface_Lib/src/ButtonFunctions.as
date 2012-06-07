@@ -644,15 +644,15 @@ public function imgWizardWindow():void
 	imgTitleWindow.btnCamera.addEventListener("click",function():void{onbtnLoadCamera();});
 	imgTitleWindow.btnCameraSnap.addEventListener("click", onbtnLoadCameraSnap);
 	imgTitleWindow.btnSav.addEventListener("click", onSaveSelected);
-	
-	//imgTitleWindow.chooseCamBox.addEventListener(IndexChangeEvent.CHANGE, function():void{onbtnLoadCamera();});
-		
+				
 	imgTitleWindow.btnLoad.enabled=true;
 	imgTitleWindow.btnCameraSnap.enabled=false;
 	imgTitleWindow.btnLoad.enabled=false;
 	imgTitleWindow.chooseCamBox.enabled=false;
 	
-	PopUpManager.addPopUp(imgTitleWindow, this, true);	
+	PopUpManager.addPopUp(imgTitleWindow, this, true);
+	
+	imgTitleWindow.chooseCamBox.addEventListener("close", function():void{onbtnLoadCamera();});
 	
 	onbtnLoadCamera();
 }

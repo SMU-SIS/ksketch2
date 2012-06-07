@@ -88,6 +88,10 @@ package sg.edu.smu.ksketch.logger
 		public static const CHANGE_PATH_VISIBILITY_FROM:String = "change-path-visibility-from";
 		public static const CHANGE_PATH_VISIBILITY_TO:String = "change-path-visibility-to";
 		
+		public static const CHANGE_CORRECT_FUTURE_MOTION:String = "change-correct-future-motion";
+		public static const CHANGE_CORRECT_FUTURE_MOTION_FROM:String = "change-correct-future-motion-from";
+		public static const CHANGE_CORRECT_FUTURE_MOTION_TO:String = "change-correct-future-motion-to";
+		
 		public static const CHANGE_CREATION_MODE:String = "change-creation-mode";
 		public static const CHANGE_CREATION_MODE_FROM:String = "change-creation-mode-from";
 		public static const CHANGE_CREATION_MODE_TO:String = "change-creation-mode-to";

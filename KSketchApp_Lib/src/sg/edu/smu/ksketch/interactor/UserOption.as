@@ -36,8 +36,10 @@ package sg.edu.smu.ksketch.interactor
 			if(savedData)
 			{
 				_showConfirmWindow = savedData.data["showMoveCenterDialog"];
-				_showPath = savedData.data["showPath"];
 				_rightMouseButtonEnabled = savedData.data["rightMouseButtonEnabled"];
+				_showPath = savedData.data["showPath"];
+				if (_showPath == null || _showPath.length < 2)
+					_showPath = SHOW_PATH_ACTIVE;
 			}
 			else
 			{

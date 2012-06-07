@@ -128,16 +128,7 @@ package ImportImage
 			if(height<=windowHeight)
 			 {height=windowHeight;}
 			
-			
-			/*if(width>playSketchCanv.bitmapDataBeforeIrregular.width)
-			  {width=windowWidth;}			
-			if(height>playSketchCanv.bitmapDataBeforeIrregular.height)
-			   {height=windowHeight;}		
-			if(playSketchCanv.bitmapDataBeforeIrregular.width<windowWidth)
-			  {width=windowWidth}			
-			if(playSketchCanv.bitmapDataBeforeIrregular.height<windowHeight)
-			  {height=windowHeight}*/
-			    	
+						    	
 			setButtons();			
 			videoDisplay.width=width-offsetForDisplayWidth;	
 			videoDisplay.height=height-offsetForDisplayHeight;				

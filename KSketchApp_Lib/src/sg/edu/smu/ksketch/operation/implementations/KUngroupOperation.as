@@ -51,6 +51,7 @@ package sg.edu.smu.ksketch.operation.implementations
 				parent.add(object);
 			parent.addActivityKey(time,1);
 			KGroupUtil.setParentKey(time,object,parent);
+			KUngroupUtil.removeDuplicateParentKeys(object);
 			parent.updateCenter();
 			KUngroupUtil.dispatchUngroupOperationEvent(model,parent,object);
 		}

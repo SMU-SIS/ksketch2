@@ -320,18 +320,17 @@ private function flvWizardWindow():void
 private  function flvDropDown_changeHandler(event:spark.events.IndexChangeEvent):void
 {		
 	if(dropDownFlvWnd.selectedIndex!=0)
-	{btnNextlFlvWnd.enabled=true;}	
+	 {btnNextlFlvWnd.enabled=true;}	
 	if(dropDownFlvWnd.selectedIndex==0)
-	{btnNextlFlvWnd.enabled=false;}	
+	 {btnNextlFlvWnd.enabled=false;}	
 }
 
 private function addListenersFlv():void
 {
-	var funcArray:Array=new Array(onFlv1,onFlv2,onFlv5,onFlv6,onFlv3);	
+	var funcArray:Array=new Array(onFlv1,onFlv2,onFlv5,onFlv6,onFlv3);
+	
 	for(var i:int=1; i<uiArrayforFlv.length-1; i++)
-	{
-		uiArrayforFlv[i].addEventListener(MouseEvent.CLICK,funcArray[i-1]);
-	}
+	  {uiArrayforFlv[i].addEventListener(MouseEvent.CLICK,funcArray[i-1]);}
 }
 
 private function onFlv1(event:MouseEvent):void
@@ -340,7 +339,6 @@ private function onFlv1(event:MouseEvent):void
 	flagForFLV=false;
 	PopUpManager.removePopUp(flvTestWindow);
 	flagForSaveFLV=false;	
-	trace("close");
 }
 
 private function initButtonsToFlv():void
@@ -350,16 +348,13 @@ private function initButtonsToFlv():void
 	btnNextlFlvWnd=new Button();
 	btnPrevFlvWnd=new Button();
 	btnNext2FlvWnd=new Button();		
-	dropDownFlvWnd=new DropDownList()
-	
+	dropDownFlvWnd=new DropDownList();	
 }	
 
 private function addButtonsToFlv():void
 {	
 	for(var i:int=0; i<uiArrayforFlv.length; i++)
-	{
-		flvTestWindow.addElement(uiArrayforFlv[i]); 
-	}			
+	  {flvTestWindow.addElement(uiArrayforFlv[i]);}			
 }
 
 private function onFlv3(event:MouseEvent):void
@@ -372,7 +367,6 @@ private function onFlv3(event:MouseEvent):void
 	FLVresolution=0.1;		
 	pbBar.setProgress(0,100);
 	flvWizardWindow();
-	trace("onFlv3");
 }
 
 
@@ -381,7 +375,6 @@ private function onSavePressedFlv(event:Event):void
 	PopUpManager.removePopUp(flvTestWindow);
 	stagePointerForFlv=1;
 	flagForSaveFLV=false;
-	trace("onSavePressedFlv");
 }
 
 private function onFlv5(event:MouseEvent):void
@@ -395,7 +388,6 @@ private function onFlv5(event:MouseEvent):void
 	pbBar.visible=true;
 	pbBar.setProgress(0,100);
 	btnPrevFlvWnd.enabled=false;	
-	trace("previous");
 }
 
 private function convertFlvToResolution(resBig:Number, resSmall:Number):void
@@ -428,19 +420,19 @@ private function onFlv2(event:MouseEvent):void
 	btnNextlFlvWnd.enabled=true;
 	
 	if(dropDownFlvWnd.selectedIndex==1)
-	{convertFlvToResolution(1280, 960);}
+	 {convertFlvToResolution(1280, 960);}
 	
 	if(dropDownFlvWnd.selectedIndex==2)
-	{convertFlvToResolution(960, 720);}
+	 {convertFlvToResolution(960, 720);}
 	
 	if(dropDownFlvWnd.selectedIndex==3)
-	{convertFlvToResolution(720, 540);} 
+	 {convertFlvToResolution(720, 540);} 
 	
 	if(dropDownFlvWnd.selectedIndex==4)
-	{convertFlvToResolution(640, 480);}
+	 {convertFlvToResolution(640, 480);}
 	
 	if(dropDownFlvWnd.selectedIndex==5)
-	{convertFlvToResolution(320, 240);}
+	 {convertFlvToResolution(320, 240);}
 	
 	stagePointerForFlv=3;
 	pbBar.visible=true;	
@@ -459,12 +451,10 @@ private function onFlv2(event:MouseEvent):void
 	btnNext2FlvWnd.move(190,100);
 	btnNext2FlvWnd.label="Save"; 
 	btnPrevFlvWnd.enabled=false;		
-	trace("next");
 }
 
 private function onFlv6(event:MouseEvent):void
 {
-	trace("save");
 	var myWriter1:SimpleFlvWriter = SimpleFlvWriter.getInstance();
 	var myBytes:ByteArray = myWriter1.getByteArray();				 
 	var myRef:FileReference=new FileReference();
@@ -484,7 +474,6 @@ private function flvFileError(error:IOErrorEvent):void
 
 private function onFlv7(event:MouseEvent):void
 {
-	trace("onFlv7");
 	btnNext2FlvWnd.visible=false;
 	btnNextlFlvWnd.visible=true;
 	btnNext2FlvWnd.enabled=true;
@@ -496,8 +485,9 @@ private var micr:MicrophoneFunctions;
 
 public function soundRecord():void
 {
-	micr=new MicrophoneFunctions();
+	///UNDER CONSTRUCTION- Ready to use window
 	
+	micr=new MicrophoneFunctions();	
     var btcl:Button=new Button();
 	var strec:Button=new Button();
 	var endrec:Button=new Button();
@@ -509,10 +499,6 @@ public function soundRecord():void
 	lab.text="UNDER CONSTRUCTION";
 	lab.x=100;
 	lab.y=100;
-	
-	//var combbox:ComboBox=new ComboBox();	
-	//combbox.dataProvider=aa.microphoneList;		
-	//<mx:ComboBox id="comboMicList" dataProvider="{microphoneList}" />
 	
 	imgTitleWindow= new ImgResizingWindow(this);	
 	imgTitleWindow.height = 270, imgTitleWindow.width = 360;
@@ -552,7 +538,6 @@ public function soundRecord():void
 	imgTitleWindow.addElement(loadxml);
 	
 	PopUpManager.addPopUp(imgTitleWindow, this, true)
-	//imgTitleWindow.addElement(combbox);	
 	btcl.addEventListener("click", closeHandlerImg);
 	strec.addEventListener("click", onstrec);
 	endrec.addEventListener("click", onendrec);
@@ -650,10 +635,8 @@ public function imgWizardWindow():void
 	imgTitleWindow.btnLoad.enabled=false;
 	imgTitleWindow.chooseCamBox.enabled=false;
 	
-	PopUpManager.addPopUp(imgTitleWindow, this, true);
-	
-	imgTitleWindow.chooseCamBox.addEventListener("close", function():void{onbtnLoadCamera();});
-	
+	PopUpManager.addPopUp(imgTitleWindow, this, true);	
+	imgTitleWindow.chooseCamBox.addEventListener("close", function():void{onbtnLoadCamera();});	
 	onbtnLoadCamera();
 }
 
@@ -663,17 +646,14 @@ private function onSaveSelected(event:Event):void
 	var imageTypes:FileFilter = new FileFilter("Images (*.jpg, *.jpeg, *.gif, *.png)", "*.jpg; *.jpeg; *.gif; *.png");
 	var imageTypesArray:Array = new Array(imageTypes);
 	_fileRef = new FileReference();
-	_fileRef.browse(imageTypesArray);
-	
-	_fileRef.addEventListener(Event.SELECT, selectImageHandler);
-	
+	_fileRef.browse(imageTypesArray);	
+	_fileRef.addEventListener(Event.SELECT, selectImageHandler);	
 }
 
 private function selectImageHandler( evt : Event ) : void
 {		
 	_fileRef.addEventListener(Event.COMPLETE, loadCompleteHandler);	
-	_fileRef.load();
-	
+	_fileRef.load();	
 }
 
 
@@ -682,13 +662,11 @@ private function loadCompleteHandler(event:Event):void
 	var loader:Loader = new Loader();
 	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadBytesHandlerforFullImage);
 	loader.contentLoaderInfo.addEventListener("ioError", ldrError); 
-	loader.loadBytes(_fileRef.data);
-	
+	loader.loadBytes(_fileRef.data);	
 }
 
 private function loadBytesHandlerforFullImage(event:Event):void
 {
-
 	var loaderInfo:LoaderInfo= (event.target as LoaderInfo);
 	var snapBmp:Bitmap =Bitmap(loaderInfo.content);		
 		
@@ -713,7 +691,6 @@ private function loadBytesHandlerforFullImage(event:Event):void
 	
 	if(imgTitleWindow.videoDisplay.parent)
 		(imgTitleWindow.videoDisplay.parent as Group).removeElement(imgTitleWindow.videoDisplay);
-
 	
 	ImageTr=new ImageTrim(imgTitleWindow,this);			
 	ImageTr.loadImageComplete1(snapBmp);
@@ -833,8 +810,7 @@ private function trimmingIrregularShape():void
 	
 	bitmapDataAfterIrregular= bitmapDataBeforeIrregular.clone();
 	bitmapDataAfterIrregular.draw(maskShape, null, null,BlendMode.ALPHA);
-	
-	
+		
 	for (var j:int = 0; j<bitmapDataAfterIrregular.height; j++) 
 	{
 		for (var i:int = 0; i<bitmapDataAfterIrregular.width; i++)
@@ -851,6 +827,7 @@ private function trimmingIrregularShape():void
 		else
 		 {coordArrayX.push(maskPath.data[k]);}
 	}
+	
 	maxValueX = Math.max.apply(null,coordArrayX);
 	maxValueY = Math.max.apply(null,coordArrayY);	 
 	minValueX = Math.min.apply(null,coordArrayX);
@@ -862,8 +839,7 @@ private function trimmingIrregularShape():void
 	bmd = new BitmapData(RegionWidth,RegionHeight,true,0);
 	region= new Rectangle(minValueX+2,minValueY,RegionWidth,RegionHeight);	
 	bmd.copyPixels(bitmapDataAfterIrregular,region,new Point());
-	bitmapDataAfterIrregular=bmd;	
-		
+	bitmapDataAfterIrregular=bmd;			
 }
 
 
@@ -946,7 +922,6 @@ private function setUpForTheBox():void
 
 private function loadImageComplete1(event:Event):void
 {
-	//imgTitleWindow.w11=ImageTr.imageLoader.width;
-	//imgTitleWindow.h11=ImageTr.imageLoader.height;	
+	
 }
 

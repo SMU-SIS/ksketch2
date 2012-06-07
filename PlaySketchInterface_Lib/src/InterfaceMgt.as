@@ -51,7 +51,7 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	//Set the width, height and scale of the drawing area.
 	drawingArea_stage.width = _initialCanvasWidth;
 	drawingArea_stage.height = _initialCanvasHeight;
-	changeStageAspect(_highDef);
+	changeStageAspect(true);
 
 	//Initialize the canvas, activating the interaction to it.
 	appCanvas.initialize();

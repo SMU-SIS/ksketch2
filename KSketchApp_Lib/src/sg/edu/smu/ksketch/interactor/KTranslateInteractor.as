@@ -111,7 +111,7 @@ package sg.edu.smu.ksketch.interactor
 				zerothObj.getParent(_appState.time) != _facade.root;
 
 			if (needUngroup)
-				return _facade.ungroup(objects, _transitionType == KAppState.TRANSITION_REALTIME);
+				return _facade.ungroup(objects);
 			else if (needGroup)
 				return _facade.regroup(objects, _transitionType == KAppState.TRANSITION_REALTIME);
 			else

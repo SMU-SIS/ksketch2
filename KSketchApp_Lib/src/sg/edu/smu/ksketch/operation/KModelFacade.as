@@ -173,8 +173,6 @@ package sg.edu.smu.ksketch.operation
 				}
 			}*/
 			
-			
-			
 			var list:KModelObjectList = new KModelObjectList();
 			list.add((gpOp as KGroupOperation).group);
 			_appState.selection = new KSelection(list,time);

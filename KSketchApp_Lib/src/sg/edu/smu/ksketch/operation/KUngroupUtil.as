@@ -261,8 +261,6 @@ package sg.edu.smu.ksketch.operation
 					if (op)
 						ops.addOperation(op);
 					
-					dispatchUngroupOperationEvent(model, gp, child);
-					dispatchUngroupOperationEvent(model, group, gp);					
 					ops.addOperation(new KUngroupOperation(model,child,groupTime,gp,group));		
 					
 					if (groupTime < tMaxTime)
@@ -275,6 +273,8 @@ package sg.edu.smu.ksketch.operation
 						KMergerUtil.mergeKeys(child,gp,groupTime,ops,_SCALE_REF);
 					
 					group.updateCenter();
+					dispatchUngroupOperationEvent(model, gp, child);
+					dispatchUngroupOperationEvent(model, group, gp);					
 					
 					var matrix2:Matrix = child.getFullPathMatrix(maxTime);
 					var p1:Point = matrix1.transformPoint(child.defaultCenter);

@@ -194,7 +194,7 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// Remove consecutive duplicate parent keys from the object parent key list.
-		private static function _removeDuplicateParentKeys(object:KObject):IModelOperation
+		public static function removeDuplicateParentKeys(object:KObject):IModelOperation
 		{
 			var keys:Vector.<IKeyFrame> = object.getParentKeys();
 			var rmKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>;
@@ -257,7 +257,7 @@ package sg.edu.smu.ksketch.operation
 	//				group.addActivityKey(time,1);
 					KGroupUtil.setParentKey(groupTime,child,group);
 					
-					var op:IModelOperation = _removeDuplicateParentKeys(child);
+					var op:IModelOperation = removeDuplicateParentKeys(child);
 					if (op)
 						ops.addOperation(op);
 					

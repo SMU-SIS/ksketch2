@@ -317,7 +317,7 @@ package
 			var aspects:Array = [false,true];
 			for (var i:int = 0; i < aspects.length; i++)
 				buttons.push(_createRadioButton(labels[i],aspects[i],
-					mainCanvas.stageAspectRatio == aspects[i], modes));
+					aspects[i], modes));
 			return _createVGroup(buttons);
 		}
 		

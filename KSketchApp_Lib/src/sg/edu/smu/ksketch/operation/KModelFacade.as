@@ -304,6 +304,26 @@ package sg.edu.smu.ksketch.operation
 			
 			return null;
 		}
+		
+		public function clearMotions(objects:IModelObjectList):void
+		{
+			if(objects && objects.length()>0)
+			{
+				var it:IIterator = objects.iterator;
+				var clearMotionsOp:KCompositeOperation = new KCompositeOperation();
+				var clearKeyOp:IModelOperation;
+				while(it.hasNext())
+				{
+					clearKeyOp = it.next().transformMgr.clearTransforms();
+					
+					if(clearKeyOp)
+						clearMotionsOp.addOperation(clearKeyOp);
+				}
+				
+				if(clearMotionsOp.length > 0)
+					_appState.addOperation(clearMotionsOp);
+			}
+		}
 		// ------------------ IEventDispatcher Functions ------------------- //				
 		public function addEventListener(type:String, listener:Function,useCapture:Boolean=false,
 										 priority:int=0, useWeakReference:Boolean=false):void

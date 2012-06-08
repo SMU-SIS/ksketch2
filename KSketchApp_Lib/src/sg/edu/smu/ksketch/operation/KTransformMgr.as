@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.IParentKeyFrame;
 	import sg.edu.smu.ksketch.model.IReferenceFrame;
+	import sg.edu.smu.ksketch.model.IReferenceFrameList;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KObject;
@@ -701,6 +702,44 @@ package sg.edu.smu.ksketch.operation
 			}
 			
 			return null;
+		}
+		
+		public function clearTransforms():IModelOperation
+		{
+			var returnOp:KCompositeOperation = new KCompositeOperation();
+			var earliestTime:Number = Number.MAX_VALUE;
+			var ref:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(0);
+			
+			while(ref)
+			{
+				if(ref.earliestKey().endTime < earliestTime)
+					earliestTime = ref.earliestKey().endTime;
+				
+				var clearedKeys:Vector.<IKeyFrame> = ref.removeAllAfter(ref.earliestKey().endTime-1);
+				var clearKeyOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(_object, ref, clearedKeys, null);
+				returnOp.addOperation(clearKeyOp);
+				
+				ref = ref.next;
+			}
+			
+			ref = _referenceFrameList.getReferenceFrameAt(0);
+			
+			while(ref)
+			{
+				var newHeadVector:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+				var newHeader:ISpatialKeyframe = ref.createSpatialKey(earliestTime, _object.defaultCenter.x, _object.defaultCenter.y);
+				ref.insertKey(newHeader);
+				newHeadVector.push(newHeader);
+				var addHeaderOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(_object, ref, null, newHeadVector);
+				returnOp.addOperation(addHeaderOp);
+				
+				ref = ref.next;
+			}
+			
+			if(returnOp.length > 0)
+				return returnOp;
+			else
+				return null;
 		}
 	}
 }

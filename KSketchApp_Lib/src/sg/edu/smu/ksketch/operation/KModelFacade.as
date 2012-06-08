@@ -296,14 +296,20 @@ package sg.edu.smu.ksketch.operation
 				var clearKeyOp:IModelOperation;
 				while(it.hasNext())
 				{
-					clearKeyOp = it.next().transformMgr.clearTransforms();
+					var object:KObject = it.next();
+					clearKeyOp = object.transformMgr.clearTransforms();
 					
 					if(clearKeyOp)
 						clearMotionsOp.addOperation(clearKeyOp);
 				}
 				
 				if(clearMotionsOp.length > 0)
+				{
 					_appState.addOperation(clearMotionsOp);
+					var myTime:Number = _appState.time;
+					_appState.time = -1;
+					_appState.time = myTime;
+				}
 			}
 		}
 		// ------------------ IEventDispatcher Functions ------------------- //				

@@ -75,12 +75,16 @@ package sg.edu.smu.ksketch.components
 			return _pathS;
 		}
 		
-		public function redraw(time:Number, showAll:Boolean):void
+		public function clear():void
 		{
 			_pathT.graphics.clear();
 			_pathR.graphics.clear();
 			_pathS.graphics.clear();
-			
+		}
+		
+		public function redraw(time:Number, showAll:Boolean):void
+		{
+			clear();
 			_drawKeyPaths(_getKeyToDraw(KTransformMgr.TRANSLATION_REF,time,showAll), showAll, KTransformMgr.TRANSLATION_REF, time);
 			_drawKeyPaths(_getKeyToDraw(KTransformMgr.ROTATION_REF,time,showAll), showAll, KTransformMgr.ROTATION_REF, time);
 			_drawKeyPaths(_getKeyToDraw(KTransformMgr.SCALE_REF,time,showAll), showAll, KTransformMgr.SCALE_REF, time);

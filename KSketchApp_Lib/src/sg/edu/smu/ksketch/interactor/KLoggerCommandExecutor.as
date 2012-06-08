@@ -232,7 +232,7 @@ package sg.edu.smu.ksketch.interactor
 					_appState.userOption.showPath = commandNode.attribute(KLogger.CHANGE_PATH_VISIBILITY_FROM);
 					break;
 				case KLogger.CHANGE_CORRECT_FUTURE_MOTION:
-					KAppState.correct_Real_Time_Future = commandNode.attribute(KLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM);
+					KAppState.erase_real_time_future = commandNode.attribute(KLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM);
 					break;
 	//			case KLogger.CHANGE_DEMO_MERGE_MODE:
 	//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_FROM));
@@ -277,7 +277,7 @@ package sg.edu.smu.ksketch.interactor
 					_appState.userOption.showPath = commandNode.attribute(KLogger.CHANGE_PATH_VISIBILITY_TO);
 					break;
 				case KLogger.CHANGE_CORRECT_FUTURE_MOTION:
-					KAppState.correct_Real_Time_Future = commandNode.attribute(KLogger.CHANGE_CORRECT_FUTURE_MOTION_TO);
+					KAppState.erase_real_time_future = commandNode.attribute(KLogger.CHANGE_CORRECT_FUTURE_MOTION_TO);
 					break;
 		//			case KLogger.CHANGE_DEMO_MERGE_MODE:
 		//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_TO));

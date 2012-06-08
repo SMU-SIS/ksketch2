@@ -215,16 +215,16 @@ package
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
 			{
 				KLogger.log(KLogger.CHANGE_CORRECT_FUTURE_MOTION, 
-					KLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM, KAppState.correct_Real_Time_Future,
+					KLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM, KAppState.erase_real_time_future,
 					KLogger.CHANGE_CORRECT_FUTURE_MOTION_TO, modes.selectedValue.toString());
-				KAppState.correct_Real_Time_Future = modes.selectedValue;
+				KAppState.erase_real_time_future = modes.selectedValue;
 			});
 			var buttons:Array = new Array();
 			var labels:Array = ["Keep Future Motion","Erase Future Motion"];
 			var options:Array = [false,true];
 			for (var i:int = 0; i < options.length; i++)
 				buttons.push(_createRadioButton(labels[i],options[i],
-					KAppState.correct_Real_Time_Future == options[i], modes));
+					KAppState.erase_real_time_future == options[i], modes));
 			return _createVGroup(buttons);
 		}
 		

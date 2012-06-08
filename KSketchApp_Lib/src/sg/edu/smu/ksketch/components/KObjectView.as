@@ -70,13 +70,19 @@ package sg.edu.smu.ksketch.components
 		public function updateTransform(newTransform:Matrix):void
 		{
 			transform.matrix = newTransform;
-			if(_showPath)
+			
+			if(_showPath && alpha != 0)
 				_path.redraw(_appState.time, _showAllPath);
 		}
 		
 		public function updateVisibility(newAlpha:Number):void
 		{
 			this.alpha = newAlpha;
+
+			if(alpha ==0)
+				_path.clear();
+			
+
 		}
 		
 		public function set debug(value:Boolean):void

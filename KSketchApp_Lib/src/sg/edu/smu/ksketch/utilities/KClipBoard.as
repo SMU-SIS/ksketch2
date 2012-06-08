@@ -20,6 +20,8 @@ package sg.edu.smu.ksketch.utilities
 	import sg.edu.smu.ksketch.operation.KMergerUtil;
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
+	
+	import spark.components.IItemRenderer;
 		
 	public class KClipBoard
 	{	
@@ -72,7 +74,7 @@ package sg.edu.smu.ksketch.utilities
 						_shiftKeys(cloneObj,time-_copyTime);
 				}
 				else if (model && !includeMotion)
-					cloneObj = _copyInstant(tempObj,time);
+					cloneObj = _copyInstant(model, tempObj,time);
 				if (model == null && tempObj.createdTime < time)
 				{
 					cloneObj.addActivityKey(tempObj.createdTime,0);
@@ -127,22 +129,6 @@ package sg.edu.smu.ksketch.utilities
 				_clonePoints(source.points,_offset),source.color,source.thickness);
 		}
 		
-		private function _createStroke(id:int,time:Number,pts:Vector.<Point>,
-									   color:uint,thickness:Number):KStroke
-		{
-			var stroke:KStroke = new KStroke(id,time,pts);
-			stroke.thickness = thickness;
-			stroke.color = color;
-			return stroke;
-		}
-		
-		private function _createImage(id:int,time:Number,center:Point,data:BitmapData):KImage
-		{
-			var image:KImage = new KImage(id,center.x,center.y,time);
-			image.imageData = data;
-			return image;
-		}
-		
 		private function _copyImage(id:int,offset:int,source:KImage):KImage
 		{
 			var pt:Point = source.imagePosition.add(new Point(offset,offset));
@@ -169,28 +155,57 @@ package sg.edu.smu.ksketch.utilities
 					(keys[i] as IActivityKeyFrame).alpha);
 		}
 
-		private function _copyInstant(obj:KObject, time:Number):KObject
+		private function _copyInstant(model:KModel, obj:KObject, time:Number):KObject
 		{
 			var clonedObj:KObject = obj;
 			var matrix:Matrix = obj.getFullPathMatrix(_copyTime);
-			if (obj is KStroke)
+			if (obj is KGroup)
+			{
+				var gp:KGroup = obj as KGroup;
+				var list:KModelObjectList = new KModelObjectList();
+				var it:IIterator = gp.directChildIterator(time);
+				while (it.hasNext())
+					list.add(_copyInstant(model, it.next(),time));
+				clonedObj = new KGroup(model.nextID,time,list,
+					gp.getFullPathMatrix(time).transformPoint(gp.defaultCenter));
+				for (var i:int; i < list.length(); i++)
+					list.getObjectAt(i).addParentKey(time,clonedObj as KGroup);
+				(clonedObj as KGroup).updateCenter();
+			}
+			else if (obj is KStroke)
 			{
 				var stroke:KStroke = obj as KStroke;
 				var pts:Vector.<Point> = _transformPoints(stroke.points,matrix);
 				pts = _clonePoints(pts,_offset);
-				clonedObj = _createStroke(obj.id,time,pts,stroke.color,stroke.thickness);
+				clonedObj = _createStroke(model.nextID,time,pts,stroke.color,stroke.thickness);
 			}
 			else if (obj is KImage)
 			{	
 				var image:KImage = obj as KImage;
 				var pt:Point = matrix.transformPoint(image.imagePosition);
 				pt = pt.add(new Point(_offset,_offset));
-				clonedObj = _createImage(obj.id,time,pt,image.imageData);
+				clonedObj = _createImage(model.nextID,time,pt,image.imageData);
 			}
 			clonedObj.transformMgr.addInitialKeys(time);
 			return clonedObj;
 		}
 		
+		private function _createStroke(id:int,time:Number,pts:Vector.<Point>,
+									   color:uint,thickness:Number):KStroke
+		{
+			var stroke:KStroke = new KStroke(id,time,pts);
+			stroke.thickness = thickness;
+			stroke.color = color;
+			return stroke;
+		}
+		
+		private function _createImage(id:int,time:Number,center:Point,data:BitmapData):KImage
+		{
+			var image:KImage = new KImage(id,center.x,center.y,time);
+			image.imageData = data;
+			return image;
+		}
+				
 		private function _clonePoints(points:Vector.<Point>,offset:int):Vector.<Point>
 		{
 			var pts:Vector.<Point> = new Vector.<Point>();

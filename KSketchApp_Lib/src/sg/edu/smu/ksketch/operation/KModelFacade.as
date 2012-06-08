@@ -155,24 +155,7 @@ package sg.edu.smu.ksketch.operation
 			
 			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
 				ops.addOperation(rmOp);
-			
-			/*if(isRealTimeTranslation)
-			{
-				var targetGroup:KGroup = (gpOp as KGroupOperation).group;
-				var oldParent:KGroup = targetGroup.getParent(groupTime);
-				
-				if(oldParent.id != 0)
-				{
-					var toUngroupList:KModelObjectList = new KModelObjectList();
-					toUngroupList.add(targetGroup);
-					KUngroupUtil.ungroupDynamic(_model, _model.root, toUngroupList, groupTime);
-					
-					KMergerUtil.mergeKeys(targetGroup,oldParent,groupTime,ops,KTransformMgr.TRANSLATION_REF);
-					KMergerUtil.mergeKeys(targetGroup,oldParent,groupTime,ops,KTransformMgr.ROTATION_REF);
-					KMergerUtil.mergeKeys(targetGroup,oldParent,groupTime,ops,KTransformMgr.SCALE_REF);
-				}
-			}*/
-			
+						
 			var list:KModelObjectList = new KModelObjectList();
 			list.add((gpOp as KGroupOperation).group);
 			_appState.selection = new KSelection(list,time);
@@ -192,10 +175,8 @@ package sg.edu.smu.ksketch.operation
 			var ops:KCompositeOperation = new KCompositeOperation();
 			
 			var ungpOp:IModelOperation = mode == KAppState.GROUPING_EXPLICIT_STATIC ? 
-			//	KUngroupUtil.ungroupStatic(_model,_model.root,objs):
-			//	KUngroupUtil.ungroupDynamic(_model,_model.root,objs, time);
-				KUngroupUtil.ungroupStatic(_model,_model.root,strokes):
-				KUngroupUtil.ungroupDynamic(_model,_model.root,strokes, time);
+				KUngroupUtil.ungroupStatic(_model,_model.root,objs):
+				KUngroupUtil.ungroupDynamic(_model,_model.root,objs, time);
 			if (ungpOp != null)
 				ops.addOperation(ungpOp);
 			

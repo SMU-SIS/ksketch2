@@ -123,7 +123,8 @@ package sg.edu.smu.ksketch.operation
 		// ------------------ Grouping Operation ------------------- //
 		public function regroup(objs:KModelObjectList, isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
-			var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
+	//		var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
+			var time:Number = _appState.time;
 			var unOp:IModelOperation = ungroup(objs);
 			var gpOp:IModelOperation = group(objs,time, isRealTimeTranslation);
 			var ops:KCompositeOperation = new KCompositeOperation();

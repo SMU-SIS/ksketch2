@@ -76,7 +76,7 @@ package sg.edu.smu.ksketch.io
 					{
 						var createdTime:Number = _getCreatedTime(node);
 						var group:KGroup = new KGroup(id, createdTime, null, new Point(0, 0));
-						group.transformMgr.addInitialKeys(createdTime);
+			//			group.transformMgr.addInitialKeys(createdTime);
 						objectList.add(group);
 					}
 					_generateEmptyGroups(node.children(), objectList);
@@ -152,7 +152,6 @@ package sg.edu.smu.ksketch.io
 				var data:String = node.attribute(IMAGE_DATA);			
 				var image:KImage = new KImage(id, xPos, yPos, createdTime);
 				image.data64 = data;
-				image.transformMgr.addInitialKeys(createdTime);
 				_setObjectFields(objectList, image, node);						
 				objectList.add(image);
 			}
@@ -168,7 +167,6 @@ package sg.edu.smu.ksketch.io
 				var stroke:KStroke = new KStroke(id, createdTime, points);
 				stroke.color = node.attribute(COLOR);
 				stroke.thickness = node.attribute(THICKNESS);
-				stroke.transformMgr.addInitialKeys(createdTime);
 				_setObjectFields(objectList, stroke, node);
 				objectList.add(stroke);
 				return stroke;
@@ -199,7 +197,7 @@ package sg.edu.smu.ksketch.io
 						object.addActivityKey(activityKey.endTime,
 							activityKey.alpha);
 					}
-					else if (path && path.length > 0)
+					else if (path != null)
 					{
 						var endTime:Number = keyNode.attribute(KEYFRAME_TIME);
 						var centerX:Number = keyNode.attribute(KEYFRAME_CENTER_X);

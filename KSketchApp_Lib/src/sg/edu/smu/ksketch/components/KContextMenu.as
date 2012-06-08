@@ -36,13 +36,15 @@ package sg.edu.smu.ksketch.components
 			<root>
 				<menuitem id="1" label="Copy(Ctrl+C)"/>
                 <menuitem id="2" label="Paste Object(Ctrl+V)"/>
-                <menuitem id="3" label="Paste Object with Motion(Ctrl+M)" />
+                <menuitem id="3" label="Paste Object with Motion(Ctrl+M)"/>
+				<menuitem id="4" label="Clear Motions"/>
 			</root>;
 		
 		[Bindable]
 		public static var MENU_ITEMS_WITH_SEL_AND_ON_TRACK:XML = 
 			<root>
 				<menuitem id="0" label="Insert KeyFrame"/>
+				<menuitem id="1" label="Clear Motions"/>
 			</root>;
 		
 		[Bindable]

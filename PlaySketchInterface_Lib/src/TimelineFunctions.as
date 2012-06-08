@@ -227,9 +227,20 @@ private function updateTimeWidgets(event:Event):void
 	
 	TimeWidget.widget_max_time = 0;
 	
+	timeWidget.clearTimeWidget();
+	expandedWidget1.clearTimeWidget();
+	expandedWidget2.clearTimeWidget();
+	expandedWidget3.clearTimeWidget();
+	
 	timeWidget.updateTimeWidget(overviewMarkers);
 	
-	if(_timeBar_toogled)
+	var renderAll:Boolean = true;
+	
+	if(appState.selection)
+		if(appState.selection.objects.length() > 1)
+			renderAll = false;
+	
+	if(_timeBar_toogled && renderAll)
 	{
 		expandedWidget1.updateTimeWidget(translateMarkers);
 		expandedWidget2.updateTimeWidget(rotateMarkers);

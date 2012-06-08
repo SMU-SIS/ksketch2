@@ -189,30 +189,37 @@ package sg.edu.smu.ksketch.components
 			
 			if(!_appState.selection)
 				return;
-			if(_appState.selection.objects.length() != 1)
-				return;
+			//if(_appState.selection.objects.length() != 1)
+				//return;
 
-			var object:KObject = _appState.selection.objects.getObjectAt(0);
+			var object:KObject;// = _appState.selection.objects.getObjectAt(0);
 			
-			if(!_viewsTable[object])
-				return;
-				
-			switch(_showPathState)
+			var objIt:IIterator = _appState.selection.objects.iterator;
+			
+			while(objIt.hasNext())
 			{
-				case UserOption.SHOW_PATH_ALL:
-					(_viewsTable[object] as IObjectView).showCursorPathMode = true;
-					break;
-				case UserOption.SHOW_PATH_ACTIVE:
-					(_viewsTable[object] as IObjectView).showCursorPathMode = false;
-					break;
-				case UserOption.SHOW_PATH_NONE:
+				object = objIt.next();
+				
+				if(!_viewsTable[object])
 					return;
-					break;
-				default:
-					(_viewsTable[object] as IObjectView).showCursorPathMode = false;
+					
+				switch(_showPathState)
+				{
+					case UserOption.SHOW_PATH_ALL:
+						(_viewsTable[object] as IObjectView).showCursorPathMode = true;
+						break;
+					case UserOption.SHOW_PATH_ACTIVE:
+						(_viewsTable[object] as IObjectView).showCursorPathMode = false;
+						break;
+					case UserOption.SHOW_PATH_NONE:
+						return;
+						break;
+					default:
+						(_viewsTable[object] as IObjectView).showCursorPathMode = false;
+				}
+				
+				(_viewsTable[object] as IObjectView).showCursorPath = true;
 			}
-			
-			(_viewsTable[object] as IObjectView).showCursorPath = true;
 		}
 		
 		private function showPath_List(selection:KSelection, show:Boolean):void

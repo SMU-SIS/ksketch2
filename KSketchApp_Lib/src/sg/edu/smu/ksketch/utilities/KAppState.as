@@ -32,8 +32,8 @@ package sg.edu.smu.ksketch.utilities
 		public static const DEFAULT_MAX_PLAY_TIME:Number = 1000;
 		
 		public static const KEYBOARD_INTERPOLATED:Array = [];
-		public static const KEYBOARD_REALTIME:Array = [Keyboard.CONTROL, Keyboard.PAGE_UP];
-		public static const KEYBOARD_INSTANT:Array = [Keyboard.ALTERNATE, Keyboard.PAGE_DOWN];
+		public static const KEYBOARD_REALTIME:Array = [Keyboard.CONTROL, Keyboard.PAGE_UP,Keyboard.ALTERNATE, Keyboard.PAGE_DOWN];
+		public static const KEYBOARD_INSTANT:Array = [];
 		public static const RIGHT_BUTTON_SAME_AS:uint = Keyboard.CONTROL;
 		
 		public static const SELECTION_GROUP:String = "Group-Selection";

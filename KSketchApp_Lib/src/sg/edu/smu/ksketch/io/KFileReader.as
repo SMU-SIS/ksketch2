@@ -76,7 +76,6 @@ package sg.edu.smu.ksketch.io
 					{
 						var createdTime:Number = _getCreatedTime(node);
 						var group:KGroup = new KGroup(id, createdTime, null, new Point(0, 0));
-			//			group.transformMgr.addInitialKeys(createdTime);
 						objectList.add(group);
 					}
 					_generateEmptyGroups(node.children(), objectList);

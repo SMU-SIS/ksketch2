@@ -123,6 +123,8 @@ package sg.edu.smu.ksketch.logger
 		public static const MENU_CONTEXT_MENU_COPY:String = "cmenu-copy";
 		public static const MENU_CONTEXT_MENU_PASTE:String = "cmenu-paste";
 		public static const MENU_CONTEXT_MENU_PASTE_WITH_MOTION:String = "cmenu-paste-with-motion";
+		public static const MENU_CONTEXT_MENU_CLEAR_MOTIONS:String = "cmenu-clear-motions";
+		public static const MENU_CONTEXT_MENU_INSERT_KEYS:String = "cmenu-insert-keys";
 		public static const MENU_SELECTED:String = "cmenu-select";
 		
 		// shortcut command

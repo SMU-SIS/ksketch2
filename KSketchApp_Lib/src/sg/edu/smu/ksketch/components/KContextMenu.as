@@ -43,14 +43,14 @@ package sg.edu.smu.ksketch.components
 		[Bindable]
 		public static var MENU_ITEMS_WITH_SEL_AND_ON_TRACK:XML = 
 			<root>
-				<menuitem id="0" label="Insert KeyFrame"/>
-				<menuitem id="1" label="Clear Motions"/>
+				<menuitem id="5" label="Insert KeyFrame"/>
+				<menuitem id="4" label="Clear Motions"/>
 			</root>;
 		
 		[Bindable]
 		public static var MENU_ITEMS_NO_SEL_AND_ON_OVERVIEW_TRACK:XML = 
 			<root>
-				<menuitem id="0" label="Insert KeyFrame"/>
+				<menuitem id="5" label="Insert KeyFrame"/>
 				<menuitem id="2" label="Paste Object(Ctrl+V)"/>
                 <menuitem id="3" label="Paste Object with Motion(Ctrl+M)"/>
 			</root>;
@@ -63,7 +63,8 @@ package sg.edu.smu.ksketch.components
 			</root>;
 		
 		private static var _COMMANDS:Array = ["",KLogger.MENU_CONTEXT_MENU_COPY,
-			KLogger.MENU_CONTEXT_MENU_PASTE,KLogger.MENU_CONTEXT_MENU_PASTE_WITH_MOTION];
+			KLogger.MENU_CONTEXT_MENU_PASTE,KLogger.MENU_CONTEXT_MENU_PASTE_WITH_MOTION,
+			KLogger.MENU_CONTEXT_MENU_CLEAR_MOTIONS,KLogger.MENU_CONTEXT_MENU_INSERT_KEYS];
 		
 		private var _appState:KAppState;
 		private var _executor:KCommandExecutor;
@@ -92,8 +93,6 @@ package sg.edu.smu.ksketch.components
 			var itemNo:int = event.item.@id;
 			if (itemNo > 0)
 				_executor.doMenuCommand(_COMMANDS[itemNo]);
-			else
-				_insertKeyFrames();
 						   
 		   _executor.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));	
 		   _appState._fireFacadeUndoRedoModelChangedEvent();
@@ -112,28 +111,6 @@ package sg.edu.smu.ksketch.components
 		{		
 			this._cursorKey=key;
 			this._cursorObject=_object;
-		}
-				
-		//Function to insert blank key frames into the selected object's timeline
-		private function _insertKeyFrames():void
-		{
-			if(_appState.targetTrackBox < 0)
-				return;
-			
-			var objects:IModelObjectList;
-			
-			if(_appState.selection)
-			{
-				objects = _appState.selection.objects;
-				
-				if(!objects || objects.length() <= 0)
-					objects = null;
-			}
-			
-			var insertKeyFrameOp:IModelOperation = _facade.insertKeyFrames(objects);
-			
-			if(insertKeyFrameOp)
-				_appState.addOperation(insertKeyFrameOp);
 		}
 		
 		private function selectedObjects():String

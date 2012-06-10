@@ -85,9 +85,23 @@ package sg.edu.smu.ksketch.components
 		public function redraw(time:Number, showAll:Boolean):void
 		{
 			clear();
-			_drawKeyPaths(_getKeyToDraw(KTransformMgr.TRANSLATION_REF,time,showAll), showAll, KTransformMgr.TRANSLATION_REF, time);
-			_drawKeyPaths(_getKeyToDraw(KTransformMgr.ROTATION_REF,time,showAll), showAll, KTransformMgr.ROTATION_REF, time);
-			_drawKeyPaths(_getKeyToDraw(KTransformMgr.SCALE_REF,time,showAll), showAll, KTransformMgr.SCALE_REF, time);
+			var toDrawKey:ISpatialKeyframe;
+			
+			toDrawKey = _getKeyToDraw(KTransformMgr.TRANSLATION_REF,time,showAll);
+			
+			_drawKeyPaths(toDrawKey, showAll, KTransformMgr.TRANSLATION_REF, time);
+			if(toDrawKey && time == toDrawKey.endTime && toDrawKey.next && !showAll)
+				_drawKeyPaths(toDrawKey.next as ISpatialKeyframe, showAll, KTransformMgr.TRANSLATION_REF, time);
+			
+			toDrawKey = _getKeyToDraw(KTransformMgr.ROTATION_REF,time,showAll);
+			_drawKeyPaths(toDrawKey, showAll, KTransformMgr.ROTATION_REF, time);
+			if(toDrawKey && time == toDrawKey.endTime && toDrawKey.next && !showAll)
+				_drawKeyPaths(toDrawKey.next as ISpatialKeyframe, showAll, KTransformMgr.ROTATION_REF, time);
+			
+			toDrawKey = _getKeyToDraw(KTransformMgr.SCALE_REF,time,showAll);
+			_drawKeyPaths(toDrawKey, showAll, KTransformMgr.SCALE_REF, time);
+			if(toDrawKey && time == toDrawKey.endTime && toDrawKey.next && !showAll)
+				_drawKeyPaths(toDrawKey.next as ISpatialKeyframe, showAll, KTransformMgr.SCALE_REF, time);
 		}
 		
 		private function _drawKeyPaths(targetKey:ISpatialKeyframe,showAll:Boolean, type:int, time:Number):void

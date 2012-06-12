@@ -75,6 +75,7 @@
 				if (_debuggerWindow)
 					_debuggerWindow.close();
 				_debuggerWindow = _showWindow("Debugger",400,600,canvas,close);
+				_debuggerWindow.title = "Version "+main.appState.appBuildNumber;
 			}
 			
 			private function _showWindow(title:String,width:Number,height:Number,

@@ -26,7 +26,7 @@ package sg.edu.smu.ksketch.utilities
 	
 	public class KAppState extends EventDispatcher
 	{
-		public static const APP_BUILD_SERIAL:String = "1.0";
+		public static const APP_BUILD_SERIAL:String = "1.0.a";
 		public static const TIMER_INTERVAL:Number = 15;
 		public static const ANIMATION_INTERVAL:Number = 62.5;
 		public static const DEFAULT_MAX_TIME:Number = 5000;
@@ -194,7 +194,7 @@ package sg.edu.smu.ksketch.utilities
 		public function get appBuildNumber():String
 		{
 			var dateNow:Date = new Date();
-			return APP_BUILD_SERIAL+" "+ dateNow.fullYearUTC+"-"+dateNow.month+"-"+dateNow.day;
+			return APP_BUILD_SERIAL+" "+dateNow.date+"-"+dateNow.month+"-"+dateNow.fullYearUTC;
 		}
 		
 		public function get zoomedOutProportion():Number

@@ -477,6 +477,10 @@ package sg.edu.smu.ksketch.utilities
 		public function set selection(value:KSelection):void
 		{	
 			_prevSelection = _selection;
+		
+			if(_prevSelection)
+				if(prevSelection.fullObjectSet)
+					_prevSelection.objects = _prevSelection.fullObjectSet;
 			_selection = value;			
 			
 			_fireSelectionChangedEvent(

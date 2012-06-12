@@ -59,26 +59,26 @@ package sg.edu.smu.ksketch.interactor
 			switch (command)
 			{
 				case KLogger.BTN_EXIT:
-					filename = "Version "+KAppState.APP_BUILD_SERIAL+" "+KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_saveToDir(KLogger.FILE_APP_DIR,filename);
 					break;
 				case KLogger.BTN_NEW:
-					filename = "Version "+KAppState.APP_BUILD_SERIAL+" "+KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_saveToDir(KLogger.FILE_APP_DIR,filename);
 					KLogger.flush();
 					newFile();
 					break;
 				case KLogger.BTN_LOAD:
-					filename = "Version "+KAppState.APP_BUILD_SERIAL+" "+KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_saveToDir(KLogger.FILE_APP_DIR,filename);
 					KLogger.flush();
 					_load();
 					break;
 				case KLogger.BTN_SAVE:
-					filename = "Version "+KAppState.APP_BUILD_SERIAL+" "+KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_save(filename);
 					break;

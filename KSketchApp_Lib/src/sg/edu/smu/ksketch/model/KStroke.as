@@ -81,18 +81,19 @@ package sg.edu.smu.ksketch.model
 		{
 			if(points.length == 0)
 				return new Rectangle(0,0,0,0);
-			
-			var maxX:Number = points[0].x;
-			var minX:Number = points[0].x;
-			var maxY:Number = points[0].y;
-			var minY:Number = points[0].y;
+			var pt:Point = this.getFullPathMatrix(kskTime).transformPoint(points[0]);
+			var maxX:Number = pt.x;
+			var minX:Number = pt.x;
+			var maxY:Number = pt.y;
+			var minY:Number = pt.y;
 			
 			for(var i:int = 1; i < points.length; i++)
 			{
-				maxX = Math.max(maxX,points[i].x);
-				maxY = Math.max(maxY,points[i].y);
-				minX = Math.min(minX,points[i].x);
-				minY = Math.min(minY,points[i].y);
+				pt = this.getFullPathMatrix(kskTime).transformPoint(points[i]);
+				maxX = Math.max(maxX,pt.x);
+				maxY = Math.max(maxY,pt.y);
+				minX = Math.min(minX,pt.x);
+				minY = Math.min(minY,pt.y);
 			}
 			return new Rectangle(minX,minY,maxX-minX,maxY-minY);
 		}

@@ -132,9 +132,10 @@ package sg.edu.smu.ksketch.model
 			return _defaultCenter;
 		}
 		
-		public function updateCenter():void
+		public function updateCenter(kskTime:Number = 0):void
 		{
-			var time:Number = createdTime;
+	//		var time:Number = createdTime;
+			var time:Number = Math.max(createdTime,kskTime);
 			var sum:Point = new Point();
 			var m:Matrix;
 			var object:KObject;
@@ -154,7 +155,7 @@ package sg.edu.smu.ksketch.model
 			
 			_defaultCenter =  new Point(sum.x/total, sum.y/total);
 		}
-		
+
 		public function getChildren(kskTime:Number):Vector.<KObject>
 		{
 			var child:KObject;

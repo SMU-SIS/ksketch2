@@ -121,7 +121,8 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Grouping Operation ------------------- //
-		public function regroup(objs:KModelObjectList, isRealTimeTranslation:Boolean = false):IModelOperation
+		public function regroup(objs:KModelObjectList, 
+								isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
 	//		var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
 			var time:Number = _appState.time;
@@ -134,7 +135,8 @@ package sg.edu.smu.ksketch.operation
 				ops.addOperation(gpOp);
 			return ops;
 		}
-		public function group(objs:KModelObjectList,groupTime:Number=-2, isRealTimeTranslation:Boolean = false):IModelOperation
+		public function group(objs:KModelObjectList,groupTime:Number=-2, 
+							  isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
 			var time:Number = groupTime;
 			time = time != -2 ? time:KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
@@ -154,12 +156,19 @@ package sg.edu.smu.ksketch.operation
 				KGroupUtil.groupStatic(_model,objs):KGroupUtil.groupDynamic(_model,objs,time);
 			ops.addOperation(gpOp);
 			
+			// -------------
+			var gp:KGroup = (gpOp as KGroupOperation).group; 
+			gp.updateCenter(_appState.time);
+			gp.dispatchEvent(new KObjectEvent(gp,KObjectEvent.EVENT_OBJECT_CENTER_CHANGED));
+			// -------------
+			
 			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
 				ops.addOperation(rmOp);
-						
+			
 			var list:KModelObjectList = new KModelObjectList();
 			list.add((gpOp as KGroupOperation).group);
-			_appState.selection = new KSelection(list,time);
+			_appState.selection = new KSelection(list,_appState.time);
+			
 			
 			if(_appState.userSetCenterOffset)
 				_appState.userSetCenterOffset = _appState.userSetCenterOffset.clone();
@@ -280,7 +289,8 @@ package sg.edu.smu.ksketch.operation
 				var it:IIterator = objects.iterator;
 				var insertKeyOp:KCompositeOperation = new KCompositeOperation();
 				while(it.hasNext())
-					insertKeyOp.addOperation(it.next().insertBlankKey(_appState.targetTrackBox,_appState.time));
+					insertKeyOp.addOperation(it.next().insertBlankKey(
+						_appState.targetTrackBox,_appState.time));
 				return insertKeyOp;
 			}
 			

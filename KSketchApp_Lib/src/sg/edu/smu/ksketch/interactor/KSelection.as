@@ -8,6 +8,7 @@ package sg.edu.smu.ksketch.interactor
 {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
 	import sg.edu.smu.ksketch.geom.KGeomUtil;
@@ -89,12 +90,19 @@ package sg.edu.smu.ksketch.interactor
 			if(_objects.length() == 1)
 			{
 				var obj:KObject = _objects.getObjectAt(0);
+				var rect:Rectangle = obj.getBoundingRect(time);
 				var m:Matrix = obj.getFullPathMatrix(time);
-				c = obj.handleCenter(time);
-				c = m.transformPoint(c);
-				if(_userSetHandleOffset != null)
-					c = c.add(_userSetHandleOffset);				
 				
+				if (obj is KGroup && rect != null && m.tx == 0 && m.ty == 0)
+					c = new Point(rect.x+rect.width/2,rect.y+rect.height/2);
+				else
+				{
+					c = obj.handleCenter(time);
+					c = m.transformPoint(c);					
+				}
+				
+				if(_userSetHandleOffset != null)
+					c = c.add(_userSetHandleOffset);					
 			}
 			else
 			{

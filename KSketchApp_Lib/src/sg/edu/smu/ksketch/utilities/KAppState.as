@@ -194,7 +194,13 @@ package sg.edu.smu.ksketch.utilities
 		public function get appBuildNumber():String
 		{
 			var dateNow:Date = new Date();
-			return APP_BUILD_SERIAL+" "+dateNow.date+"-"+dateNow.month+"-"+dateNow.fullYearUTC;
+			var day:String = dateNow.dateUTC.toString();
+			if(dateNow.dateUTC < 10)
+				day = "0"+dateNow.dateUTC;
+			var month:String = (dateNow.monthUTC+1).toString();
+			if((dateNow.monthUTC+1) < 10)
+				month = "0"+(dateNow.monthUTC+1);
+			return APP_BUILD_SERIAL+" "+day+"-"+month+"-"+dateNow.fullYearUTC;
 		}
 		
 		public function get zoomedOutProportion():Number

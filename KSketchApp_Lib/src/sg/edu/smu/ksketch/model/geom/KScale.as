@@ -97,14 +97,6 @@ package sg.edu.smu.ksketch.model.geom
 					//Generate a rotation circle from the final angle
 					var duration:Number = _currentScalePoints.points[_currentScalePoints.length-1].z;
 					
-					if(duration != 0)
-					{
-						_motionPath = new KPath();
-						_motionPath.addPoint(KSpatialKeyFrame.INTERPOLATION_RADIUS, KSpatialKeyFrame.INTERPOLATION_RADIUS, 0);
-						_motionPath.addPoint(KSpatialKeyFrame.INTERPOLATION_RADIUS*_currentScale, KSpatialKeyFrame.INTERPOLATION_RADIUS*_currentScale
-										,duration);	
-					}
-					
 					//If the rotation is an instant transformation
 					//Ignore motion paths and just set the angle.
 					_transitionPath.push(0,0);
@@ -132,7 +124,6 @@ package sg.edu.smu.ksketch.model.geom
 						currentPoint = new Point(currentVector.x, currentVector.y);
 						
 						scale = KMathUtil.distanceOf(origin, currentPoint)/startDistance;
-						_motionPath.addPoint(currentVector.x, currentVector.y, currentVector.z);
 						_transitionPath.push(scale-1, currentVector.z);
 					}
 					
@@ -144,10 +135,10 @@ package sg.edu.smu.ksketch.model.geom
 				//or interpolation of existing paths
 				
 				//Need to do refactoring here
-				KPathProcessor.interpolateScaleMotionPath(_motionPath.path, _currentScale, center);
 				KPathProcessor.interpolateScaleTransitionPath(_transitionPath.points, _currentScale);
 			}
 			
+			_motionPath = KPathProcessor.generateScaleMotionPath(_transitionPath);
 			_currentScale = 0;
 			_currentScalePoints = new K3DPath();
 		}
@@ -168,11 +159,12 @@ package sg.edu.smu.ksketch.model.geom
 		public function splitTransform(proportion:Number, shift:Boolean = false):KScale
 		{
 			var frontTransform:KScale = new KScale();
-			var frontMotionPath:KPath = _motionPath.split(proportion, shift);
 			var frontTransitionPath:K2DPath = _transitionPath.split(proportion, shift);
 			
-			frontTransform.motionPath = frontMotionPath;
 			frontTransform.transitionPath = frontTransitionPath;
+			frontTransform.motionPath = KPathProcessor.generateScaleMotionPath(frontTransitionPath);
+			
+			_motionPath = KPathProcessor.generateScaleMotionPath(_transitionPath);
 			
 			return frontTransform;
 		}
@@ -180,10 +172,9 @@ package sg.edu.smu.ksketch.model.geom
 		public function mergeTransform(transform:KScale):KScale
 		{
 			var scale:KScale = new KScale();
-			scale.motionPath = KPathProcessor.mergeScaleMotionPath(_motionPath, transform.motionPath);
 			scale.transitionPath = KPathProcessor.mergeScaleTransitionPath(
 				_transitionPath, transform.transitionPath);
-			
+			scale.motionPath = KPathProcessor.generateScaleMotionPath(scale.transitionPath);
 			return scale;		
 		}
 		
@@ -203,6 +194,7 @@ package sg.edu.smu.ksketch.model.geom
 			//Perform Interpolation on current Path
 			//KPathProcessor.interpolateScaleMotionPath(_path.path,dScale,);
 			KPathProcessor.interpolateScaleTransitionPath(_transitionPath.points,dScale);
+			_motionPath = KPathProcessor.generateScaleMotionPath(_transitionPath);
 		}
 		
 		public function setLine(time:Number):void

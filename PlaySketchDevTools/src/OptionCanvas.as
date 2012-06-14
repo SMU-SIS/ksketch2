@@ -107,9 +107,8 @@ package
 		private function _createOtherGroup(mainCanvas:PlaySketchCanvas):VGroup
 		{
 			var vg:VGroup = new VGroup();
-			vg.addElement(_createLabel("Canvas Aspect Ratios"));
-			vg.addElement(_addAspectRatio(mainCanvas));
-			vg.addElement(_createLabel(""));
+			//vg.addElement(_createLabel("Canvas Aspect Ratios"));
+			//vg.addElement(_addAspectRatio(mainCanvas));
 			vg.addElement(_createLabel("Other Options"));
 			vg.addElement(_addRightMouseEnabled(mainCanvas.appState));
 			vg.addElement(_addShowConfirmWindow(mainCanvas.appState));

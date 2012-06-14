@@ -18,7 +18,7 @@
 		<s:State name="disabled"/>
 	</s:states>
 	<lib:buttonGrey_212 includeIn="over" x="0" y="0" width="16" height="16" flm:knockout="false"/>
-	<lib:buttonGrey12345 includeIn="disabled,down,up" x="0" y="1" width="16" height="16"
+	<lib:buttonGrey12345 includeIn="disabled,down,up" x="0" y="0" width="16" height="16"
 						 flm:knockout="false"/>
 	<s:Group d:id="36" d:userLabel="fastForwardButton" x="1" y="2">
 		<s:filters>

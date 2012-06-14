@@ -8,7 +8,7 @@
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   xmlns:local="*" showStatusBar = "false"
-					   minWidth ="900" minHeight = "600" width = "900" height = "600"
+					   minWidth ="900" minHeight = "600" width = "1067" height = "600"
 					   initialize="_init()" invoke="_loadInitHandler(event)" 
 					   close="main.commandExecutor.doButtonCommand(KLogger.BTN_EXIT);">
 	
@@ -76,6 +76,7 @@
 				if (_debuggerWindow)
 					_debuggerWindow.close();
 				_debuggerWindow = _showWindow("Debugger",400,600,canvas,close);
+				_debuggerWindow.title = "Version "+main.appState.appBuildNumber;
 			}
 			
 			private function _showWindow(title:String,width:Number,height:Number,
@@ -104,6 +105,7 @@
 			
 			private function _init():void
 			{
+				nativeWindow.maximize();
 				nativeWindow.x = (Capabilities.screenResolutionX - nativeWindow.bounds.width)/2;
 				nativeWindow.y = (Capabilities.screenResolutionY - nativeWindow.bounds.height)/2;
 				main.setOptionTrigger(triggerSettings);

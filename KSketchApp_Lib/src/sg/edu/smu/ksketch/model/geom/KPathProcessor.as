@@ -13,6 +13,8 @@ package sg.edu.smu.ksketch.model.geom
 
 	public class KPathProcessor
 	{	
+		private static const QUARTER_CIRCLE:Number = 0.785398163;
+		private static const FULL_CIRCLE:Number = 6.28318531;
 		private static const PATH_RADIUS:Number = 100;
 		private static const PATH_DIRECTION:Number = 0.392699; //pi/8
 		
@@ -319,11 +321,25 @@ package sg.edu.smu.ksketch.model.geom
 			var cartesianPoint:Point;
 			
 			var duration:Number = transitionPath.points[transitionPath.length-1].y;
+			var maxScaleValue:Number = 0;
+			var i:int;
 			
-			for(var i:int = 0; i<transitionPath.length; i++)
+			for(i=0 ; i< transitionPath.length; i++)
+			{
+				if(Math.abs(transitionPath.points[i].x) > maxScaleValue)
+					maxScaleValue =  Math.abs(transitionPath.points[i].x);
+			}
+			
+
+			var dRadius:Number;
+			var currentAngle:Number;
+			
+			for(i=0 ; i< transitionPath.length; i++)
 			{
 				currentTransitionPoint = transitionPath.points[i];
-				cartesianPoint = Point.polar((1+currentTransitionPoint.x)*PATH_RADIUS,PATH_DIRECTION);
+				dRadius = PATH_RADIUS * (currentTransitionPoint.x / maxScaleValue);
+				currentAngle = currentTransitionPoint.y/duration*QUARTER_CIRCLE;
+				cartesianPoint = Point.polar(PATH_RADIUS+dRadius,currentAngle+Math.PI);
 				motionPath.addPoint(cartesianPoint.x, cartesianPoint.y, currentTransitionPoint.y);
 			}
 			

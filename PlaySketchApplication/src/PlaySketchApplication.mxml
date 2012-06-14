@@ -124,7 +124,7 @@
 			{
 				var timerFunction:Function = function(e:TimerEvent):void
 				{
-					new KFileSaver().saveToDir(KLogger.logFile, logDir, logFile, true);	
+					new KFileSaver().saveToDir(KLogger.logFile, logDir, logFile);	
 					var requestURL:URLRequest = new URLRequest(logURL+"/"+username);
 					requestURL.method = URLRequestMethod.POST;
 					var f:File = File.applicationStorageDirectory.resolvePath(logDir+"/"+logFile);

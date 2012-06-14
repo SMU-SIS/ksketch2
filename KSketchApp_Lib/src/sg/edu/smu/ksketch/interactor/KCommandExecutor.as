@@ -59,26 +59,26 @@ package sg.edu.smu.ksketch.interactor
 			switch (command)
 			{
 				case KLogger.BTN_EXIT:
-					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					filename = _generateFileName(); 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
-					_saveToDir(KLogger.FILE_APP_DIR,filename);
+					_save(filename,KLogger.FILE_APP_DIR);
 					break;
 				case KLogger.BTN_NEW:
-					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					filename = _generateFileName(); 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
-					_saveToDir(KLogger.FILE_APP_DIR,filename);
+					_save(filename,KLogger.FILE_APP_DIR);
 					KLogger.flush();
-					newFile();
+					_newFile();
 					break;
 				case KLogger.BTN_LOAD:
-					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					filename = _generateFileName(); 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
-					_saveToDir(KLogger.FILE_APP_DIR,filename);
+					_save(filename,KLogger.FILE_APP_DIR);
 					KLogger.flush();
 					_load();
 					break;
 				case KLogger.BTN_SAVE:
-					filename = KFileAccessor.generateTimeString()+"-K-Movie.kmv"; 
+					filename = _generateFileName(); 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_save(filename);
 					break;
@@ -201,7 +201,7 @@ package sg.edu.smu.ksketch.interactor
 						_penSelectionMenu = KPenMenu.createMenu(_canvas);
 						_penSelectionMenu.addEventListener(MenuEvent.ITEM_CLICK, _penMenuListener);
 					}
-					popupMenu(_penSelectionMenu);
+					_popupMenu(_penSelectionMenu);
 					_hasPopup = true;
 					break;
 				case GestureDesign.NAME_PRE_SHOW_CONTEXT_MENU:
@@ -216,7 +216,7 @@ package sg.edu.smu.ksketch.interactor
 					}
 					_contextMenu.withSelection = _appState.selection != null && 
 					_appState.selection.objects.length() != 0;
-					popupMenu(_contextMenu);
+					_popupMenu(_contextMenu);
 					_contextMenu.hideWhenRelease = false;
 					_hasPopup = true;
 					break;
@@ -225,7 +225,7 @@ package sg.edu.smu.ksketch.interactor
 						_contextMenu = KContextMenu.createMenu(_canvas, _appState, this, _facade);
 					_contextMenu.withSelection = _appState.selection != null && 
 					_appState.selection.objects.length() != 0;
-					popupMenu(_contextMenu);
+					_popupMenu(_contextMenu);
 					_contextMenu.hideWhenRelease = true;
 					break;				
 			}
@@ -293,7 +293,67 @@ package sg.edu.smu.ksketch.interactor
 			_hasPopup = value;
 		}
 		
-		public function popupMenu(menu:Menu):void
+		protected function _redo():void
+		{
+			_appState.redo();
+		}		
+		
+		protected function _undo():void
+		{
+			_appState.undo();
+		}		
+				
+		protected function _first():void
+		{
+			if(_appState.isAnimating)
+				_appState.timerReset(0);
+			else
+				_appState.time = 0;
+		}
+		
+		protected function _previous():void
+		{
+			if(_appState.time == 0)
+				return;
+			_moveFrame(KAppState.previousKey(_appState.time));
+		}
+		
+		protected function _next():void
+		{
+			if(_appState.time == _appState.maxTime)
+				return;
+			_moveFrame(KAppState.nextKey(_appState.time));
+		}		
+		
+		protected function _play():void
+		{
+			if(!_appState.isAnimating)
+				_appState.startPlaying();
+			else
+				_appState.pause();
+		}
+
+		protected function _configurePen(cursor_name:String):void
+		{
+			var eraserMode:Boolean = cursor_name == KPenMenu.LABEL_WHITE;
+			(_canvas.interactorManager as KInteractorManager).setEraseMode(eraserMode);
+			Mouse.cursor = cursor_name;
+			_appState.penColor = KPenMenu.getColor(cursor_name);
+			_appState.selection = eraserMode ? null : _appState.selection;
+		}
+		
+		protected function _toggleVisibility():void
+		{
+			var time:Number = _appState.time;
+			var oldSel:KSelection = _appState.prevSelection;
+			var selection:KSelection = oldSel == null ? _appState.selection : oldSel;
+			var objs:KModelObjectList = selection != null ? selection.objects : null;
+			var op:IModelOperation = objs != null ? _facade.toggleVisibility(objs,time) : null;
+			if (op != null)
+				_appState.addOperation(op);
+		}
+		
+		private function _popupMenu(menu:Menu):void
 		{
 			var mouseXVariable:Number = 0;
 			var mouseYVariable:Number = 0;
@@ -320,7 +380,7 @@ package sg.edu.smu.ksketch.interactor
 			menu.show(menuXPos, menuYPos);
 		}
 		
-		public function newFile():void
+		private function _newFile():void
 		{
 			KLogger.flush();
 			_canvas.newFile();
@@ -329,38 +389,14 @@ package sg.edu.smu.ksketch.interactor
 			_appState.fireGroupingEnabledChangedEvent();
 		}
 				
-		protected function _load():void
+		private function _load():void
 		{
 			var loader:KFileLoader = new KFileLoader();
 			loader.addEventListener(KFileLoadedEvent.EVENT_FILE_LOADED, _kmvLoaded);
 			loader.loadKMV();
-		}		
+		}			
 		
-		protected function _saveToDir(dir:String,filename:String):void
-		{			
-			var content:XML = _facade.saveFile().appendChild(KLogger.logFile);
-			var saver:KFileSaver = new KFileSaver();
-			saver.saveToDir(content,dir,filename);
-		}		
-		
-		protected function _save(name:String):void
-		{			
-			var content:XML = _facade.saveFile().appendChild(KLogger.logFile);
-			var saver:KFileSaver = new KFileSaver();
-			saver.save(content, name);
-		}		
-		
-		protected function _redo():void
-		{
-			_appState.redo();
-		}		
-		
-		protected function _undo():void
-		{
-			_appState.undo();
-		}		
-		
-		protected function _cut():void
+		private function _cut():void
 		{
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
@@ -370,12 +406,12 @@ package sg.edu.smu.ksketch.interactor
 					_appState,time,time,oldSel,_appState.selection,op));
 		}
 		
-		protected function _copy():void
+		private function _copy():void
 		{
 			_facade.copy();
 		}
 		
-		protected function _paste(includeMotion:Boolean):void
+		private function _paste(includeMotion:Boolean):void
 		{
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
@@ -385,7 +421,7 @@ package sg.edu.smu.ksketch.interactor
 					_appState,time,time,oldSel,_appState.selection,op));
 		}
 		
-		protected function _group():void
+		private function _group():void
 		{
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
@@ -395,7 +431,7 @@ package sg.edu.smu.ksketch.interactor
 					_appState,time,time,oldSel,_appState.selection,op));
 		}
 		
-		protected function _ungroup():void
+		private function _ungroup():void
 		{
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
@@ -404,63 +440,13 @@ package sg.edu.smu.ksketch.interactor
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
 		}		
-		
-		protected function _first():void
-		{
-			if(_appState.isAnimating)
-				_appState.timerReset(0);
-			else
-				_appState.time = 0;
-		}
-		
-		protected function _previous():void
-		{
-			if(_appState.time == 0)
-				return;
-			_moveFrame(KAppState.previousKey(_appState.time));
-		}
-		
-		protected function _next():void
-		{
-			if(_appState.time == _appState.maxTime)
-				return;
-			_moveFrame(KAppState.nextKey(_appState.time));
-		}		
-
-		protected function _play():void
-		{
-			if(!_appState.isAnimating)
-				_appState.startPlaying();
-			else
-				_appState.pause();
-		}
-		
-		protected function _moveFrame(time:Number):void
+				
+		private function _moveFrame(time:Number):void
 		{
 			if(_appState.isAnimating)
 				_appState.timerReset(time);
 			else
 				_appState.time = time;
-		}
-		
-		protected function _toggleVisibility():void
-		{
-			var time:Number = _appState.time;
-			var oldSel:KSelection = _appState.prevSelection;
-			var selection:KSelection = oldSel == null ? _appState.selection : oldSel;
-			var objs:KModelObjectList = selection != null ? selection.objects : null;
-			var op:IModelOperation = objs != null ? _facade.toggleVisibility(objs,time) : null;
-			if (op != null)
-				_appState.addOperation(op);
-		}
-		
-		protected function _configurePen(cursor_name:String):void
-		{
-			var eraserMode:Boolean = cursor_name == KPenMenu.LABEL_WHITE;
-			(_canvas.interactorManager as KInteractorManager).setEraseMode(eraserMode);
-			Mouse.cursor = cursor_name;
-			_appState.penColor = KPenMenu.getColor(cursor_name);
-			_appState.selection = eraserMode ? null : _appState.selection;
 		}
 		
 		private function _penMenuListener(event:MenuEvent):void
@@ -524,5 +510,27 @@ package sg.edu.smu.ksketch.interactor
 			if(objects)
 				_facade.clearMotions(objects);
 		}
+		
+		private function _save(filename:String,folder:String=null):void
+		{
+			var content:XML = _facade.saveFile().appendChild(KLogger.logFile);
+			content.@version = _appState.appBuildNumber;
+			var saver:KFileSaver = new KFileSaver();
+			if (folder == null || folder.length < 2)
+				saver.save(content,filename);
+			else
+				saver.saveToDir(content,folder,filename);
+		}
+		
+		private function _generateFileName():String
+		{
+			return _appState.appBuildNumber + "_" + _generateTimeStamp() + "_K-Movie.kmv";
+		}
+		
+		private function _generateTimeStamp():String
+		{
+			var date:Date = new Date();
+			return date.hours + "-" + date.minutes + "-" + date.seconds;
+		}		
 	}
 }

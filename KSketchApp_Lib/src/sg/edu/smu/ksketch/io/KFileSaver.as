@@ -11,6 +11,11 @@ package sg.edu.smu.ksketch.io
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.net.FileReference;
+	import flash.net.URLLoader;
+	import flash.net.URLRequest;
+	import flash.net.URLRequestMethod;
+	import flash.net.URLVariables;
+	import flash.utils.ByteArray;
 	
 	import sg.edu.smu.ksketch.logger.KLogger;
 		
@@ -39,14 +44,14 @@ package sg.edu.smu.ksketch.io
 			fileRef.save(content, name);
 		}
 		
-		public function saveToDir(content:XML, folder:String, name:String):void
+		public function saveToDir(content:XML, folder:String, name:String, 
+								  overWrite:Boolean=false):void
 		{
 			var dir:File = File.applicationStorageDirectory.resolvePath(folder);
 			if (!dir.exists)
 				dir.createDirectory();
-			
 			var file:File = File.applicationStorageDirectory.resolvePath(folder+"/"+name);
-			if (file.exists)
+			if (file.exists && !overWrite)
 			{
 				var name2:String = name.split("-K-Movie.kmv")[0]+new Date().seconds+"-K-Movie.kmv";
 				file = File.applicationStorageDirectory.resolvePath(folder+"/"+name2);
@@ -54,7 +59,7 @@ package sg.edu.smu.ksketch.io
 			var fileStream:FileStream = new FileStream();
 			fileStream.open(file, FileMode.WRITE);
 			fileStream.writeUTFBytes(content.toXMLString());
-		}
-			
+			fileStream.close();			
+		}		
 	}
 }

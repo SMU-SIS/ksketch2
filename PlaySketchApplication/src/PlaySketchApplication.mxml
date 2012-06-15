@@ -10,7 +10,7 @@
 					   xmlns:local="*" showStatusBar = "false"
 					   minWidth ="900" minHeight = "600" width = "1067" height = "600"
 					   initialize="_init()" invoke="_loadInitHandler(event)" 
-					   close="main.commandExecutor.doButtonCommand(KLogger.BTN_EXIT)">
+					   close="main.commandExecutor.doButtonCommand(KLogger.BTN_EXIT);">
 	
 	<fx:Style source="PlaySketchApplication.css" />
 
@@ -24,6 +24,7 @@
 			
 			import sg.edu.smu.ksketch.event.KDataSavedEvent;
 			import sg.edu.smu.ksketch.interactor.KLoggerCommandExecutor;
+			import sg.edu.smu.ksketch.io.KFileSaver;
 			import sg.edu.smu.ksketch.logger.KLogger;
 			
 			//ADDED THESE FEW LINES TO TEST IF UPSTREAM CHANGES WILL BE MERGED
@@ -113,6 +114,27 @@
 				main.appInit(nativeWindow.bounds.width, nativeWindow.bounds.height, 
 					bounds.width-width, bounds.height-height);
 				nativeWindow.activate();
+				
+				KLogger.log(KLogger.NEW_SESSION,KLogger.VERSION,main.appState.appBuildNumber); 
+				
+		//		_automateLogFileUpload(KLogger.FILE_APP_DIR, "log.txt", "Test-User-3",
+		//			KLogger.LOG_SERVER_URL, KLogger.LOG_INTERVAL);
+			}
+			
+			private function _automateLogFileUpload(logDir:String, logFile:String, username:String,
+													logURL:String, logInterval:Number):void
+			{
+				var timerFunction:Function = function(e:TimerEvent):void
+				{
+					new KFileSaver().saveToDir(KLogger.logFile, logDir, logFile);	
+					var requestURL:URLRequest = new URLRequest(logURL+"/"+username);
+					requestURL.method = URLRequestMethod.POST;
+					var f:File = File.applicationStorageDirectory.resolvePath(logDir+"/"+logFile);
+					f.upload(requestURL, "file");
+				};
+				var logTimer:Timer = new Timer(logInterval,0);
+				logTimer.addEventListener(TimerEvent.TIMER,timerFunction);
+				logTimer.start();				
 			}
 			
 			private function _loadInitHandler(event:InvokeEvent):void

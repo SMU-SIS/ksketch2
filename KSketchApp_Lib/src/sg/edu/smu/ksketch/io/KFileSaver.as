@@ -25,15 +25,11 @@ package sg.edu.smu.ksketch.io
 			var fileRef:FileReference = _isRunningInAIR() ? new File() : new FileReference();
 			var selected:Function = function (e:Event):void
 			{
-				var name2:String = (e.target as FileReference).name;
-				if (name != name2)
-				{
-					var lastNode:XML;
-					var list:XMLList = content.elements(KLogger.COMMANDS).elements(KLogger.BTN_SAVE);
-					for each (var node:XML in list)
-						lastNode = node;
-					lastNode.@filename = name2;
-				}
+				var lastNode:XML;
+				var list:XMLList = content.elements(KLogger.COMMANDS).elements(KLogger.BTN_SAVE);
+				for each (var node:XML in list)
+					lastNode = node;
+				lastNode.@filename = (e.target as FileReference).name;
 			};
 			fileRef.addEventListener(Event.SELECT, selected);
 			fileRef.save(content, name);
@@ -44,17 +40,11 @@ package sg.edu.smu.ksketch.io
 			var dir:File = File.applicationStorageDirectory.resolvePath(folder);
 			if (!dir.exists)
 				dir.createDirectory();
-			
 			var file:File = File.applicationStorageDirectory.resolvePath(folder+"/"+name);
-			if (file.exists)
-			{
-				var name2:String = name.split("-K-Movie.kmv")[0]+new Date().seconds+"-K-Movie.kmv";
-				file = File.applicationStorageDirectory.resolvePath(folder+"/"+name2);
-			}
 			var fileStream:FileStream = new FileStream();
 			fileStream.open(file, FileMode.WRITE);
 			fileStream.writeUTFBytes(content.toXMLString());
-		}
-			
+			fileStream.close();			
+		}		
 	}
 }

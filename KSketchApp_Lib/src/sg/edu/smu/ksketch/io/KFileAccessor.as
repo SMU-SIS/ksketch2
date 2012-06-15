@@ -12,16 +12,6 @@ package sg.edu.smu.ksketch.io
 
 	public class KFileAccessor extends EventDispatcher
 	{
-		/**
-		 * Generate time string in YYYY-MM-DD-HH-MN format
-		 */		
-		public static function generateTimeString(second:Boolean=false):String
-		{
-			var date:Date = new Date();
-			var str:String = date.fullYear+"-"+(date.month+1)+"-"+date.date+"-"+date.hours+"-"+date.minutes;
-			return second ? str + "-" + date.seconds : str;
-		}
-
 		protected static function _isRunningInAIR():Boolean
 		{
 			return Capabilities.playerType == "Desktop";

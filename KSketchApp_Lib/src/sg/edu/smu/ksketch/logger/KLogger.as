@@ -12,10 +12,15 @@ package sg.edu.smu.ksketch.logger
 	 */	
 	public class KLogger
 	{
+		public static const LOG_INTERVAL:Number = 10000;
+		public static const LOG_SERVER_URL:String = "http://coalescences.net/logtest/put";
+
 		public static const LOG_TIME:String = "logtime";
 
 		// command names, same as xml node name
 		public static const COMMANDS:String = "commands";
+		public static const NEW_SESSION:String = "newsession";
+		public static const VERSION:String = "version";
 
 		public static const FILE_PATH:String = "file-path";
 		public static const FILE_NAME:String = "filename";

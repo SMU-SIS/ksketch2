@@ -248,6 +248,8 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case KLogger.CHANGE_ASPECT_RATIO:
 					break;
+				case KLogger.NEW_SESSION:
+					break;
 			}
 		}
 
@@ -298,6 +300,8 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.BTN_LOAD:
 					break;
 				case KLogger.BTN_SAVE:
+					break;
+				case KLogger.NEW_SESSION:
 					break;
 				default:
 					doButtonCommand(command);

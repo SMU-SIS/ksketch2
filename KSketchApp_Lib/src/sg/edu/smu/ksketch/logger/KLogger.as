@@ -19,6 +19,8 @@ package sg.edu.smu.ksketch.logger
 
 		// command names, same as xml node name
 		public static const COMMANDS:String = "commands";
+		public static const NEW_SESSION:String = "newsession";
+		public static const VERSION:String = "version";
 
 		public static const FILE_PATH:String = "file-path";
 		public static const FILE_NAME:String = "filename";

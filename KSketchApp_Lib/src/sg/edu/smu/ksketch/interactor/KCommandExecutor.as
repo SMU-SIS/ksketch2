@@ -68,6 +68,7 @@ package sg.edu.smu.ksketch.interactor
 					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_save(filename,KLogger.FILE_APP_DIR);
 					KLogger.flush();
+					KLogger.log(KLogger.NEW_SESSION, KLogger.VERSION, _appState.appBuildNumber);
 					_newFile();
 					break;
 				case KLogger.BTN_LOAD:
@@ -469,7 +470,8 @@ package sg.edu.smu.ksketch.interactor
 			{
 				var xml:XML = new XML(e.content);
 				_canvas.loadFile(xml);
-				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS).toXMLString()));				
+				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS).toXMLString()));
+				KLogger.log(KLogger.NEW_SESSION, KLogger.VERSION, _appState.appBuildNumber);
 			}
 		}
 		

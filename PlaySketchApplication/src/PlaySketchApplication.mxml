@@ -115,6 +115,8 @@
 					bounds.width-width, bounds.height-height);
 				nativeWindow.activate();
 				
+				KLogger.log(KLogger.NEW_SESSION,KLogger.VERSION,main.appState.appBuildNumber); 
+				
 		//		_automateLogFileUpload(KLogger.FILE_APP_DIR, "log.txt", "Test-User-3",
 		//			KLogger.LOG_SERVER_URL, KLogger.LOG_INTERVAL);
 			}

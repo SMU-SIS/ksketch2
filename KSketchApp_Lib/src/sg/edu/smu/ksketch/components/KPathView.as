@@ -155,13 +155,13 @@ package sg.edu.smu.ksketch.components
 			
 			drawLayer.moveTo(points[0].x+origin.x, points[0].y+origin.y);
 		
+			var duration:Number = Math.abs(points[0].time-points[points.length-1].time);
+			var proportionCovered:Number = time/duration;
+			
 			if(length == 2)
 			{
 				var startPoint:KPathPoint = points[0];
 				var endPoint:KPathPoint = points[1];
-				var duration:Number = Math.abs(points[0].time-points[1].time);
-				var proportionCovered:Number = time/duration;
-				
 				if(proportionCovered > 1)
 					proportionCovered = 1;
 				else if(proportionCovered < 0)
@@ -188,6 +188,7 @@ package sg.edu.smu.ksketch.components
 			}
 			else
 			{
+				var proportionIndex:Number = proportionCovered * points.length-1;
 				var i:int = 1;
 				for(i; i<length; i++)
 				{
@@ -195,7 +196,7 @@ package sg.edu.smu.ksketch.components
 					currentPoint.x += origin.x;
 					currentPoint.y += origin.y;
 					
-					if(currentPoint.time < time)
+					if(i < proportionIndex)
 					{
 						drawLayer.lineStyle(_THICKNESS_THIN, lightColors[type]);
 						arrowHeadColor = lightColors[type];

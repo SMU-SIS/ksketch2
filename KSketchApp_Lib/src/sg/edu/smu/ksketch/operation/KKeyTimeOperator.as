@@ -51,7 +51,7 @@ package sg.edu.smu.ksketch.operation
 		 */
 		public function getTimeLineInformation():Vector.<Object>
 		{
-			var mergeThreshold:Number = KAppState.ANIMATION_INTERVAL*1;
+			var mergeThreshold:Number = KAppState.ANIMATION_INTERVAL*0.9;
 			
 			var frameHeaderInfo:Vector.<Object> = _getKeyFrameHeaderInformation();
 			var sortedFrameInfo:Vector.<Object> = _getSortedKeyFrameInfo(frameHeaderInfo);

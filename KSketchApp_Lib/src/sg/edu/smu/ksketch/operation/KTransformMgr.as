@@ -329,7 +329,7 @@ package sg.edu.smu.ksketch.operation
 					var changeCenterOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
 						_object, ref, oldCenterKey, newCenterKey);
 					_currentOperation.addOperation(changeCenterOp);
-					_updateCenter(_key,center, time, transformType);
+					updateCenter(_key,center, time, transformType);
 				}
 			}
 			
@@ -514,7 +514,7 @@ package sg.edu.smu.ksketch.operation
 			}
 		}
 		
-		private function _updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number, transformType:int):ISpatialKeyframe
+		public function updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number, transformType:int):ISpatialKeyframe
 		{
 			//target key is key. so the center to be updated is actually 
 			

@@ -9,8 +9,8 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   xmlns:local="*" showStatusBar = "false"
 					   minWidth ="900" minHeight = "600" width = "1067" height = "600"
-					   initialize="_init()" invoke="_loadInitHandler(event)" 
-					   close="main.commandExecutor.doButtonCommand(KLogger.BTN_EXIT);">
+					   initialize="_init()" invoke="_loadInitHandler(event)"  
+					   closing="_closingHandler(event)">
 	
 	<fx:Style source="PlaySketchApplication.css" />
 
@@ -79,6 +79,30 @@
 				_debuggerWindow.title = "Version "+main.appState.appBuildNumber;
 			}
 			
+			private function _closingHandler(e:Event):void
+			{
+				e.preventDefault();
+				var f:Function = function(e:CloseEvent):void
+				{
+					switch(e.detail)
+					{
+						case Alert.YES:
+							main.commandExecutor.saveOnExit(function(e:Event):void {_close();});
+							break;
+						case Alert.NO:
+							main.commandExecutor.doButtonCommand(KLogger.BTN_EXIT);
+							_close();
+							break;
+					}
+				};
+				Alert.show("Data Not Save.\nSave Before Exit?","Warning",Alert.YES|Alert.NO,this,f);
+			}
+			
+			private function _close():void
+			{
+				stage.nativeWindow.close();
+			}
+
 			private function _showWindow(title:String,width:Number,height:Number,
 										 child:IVisualElement,closeHandler:Function):Window
 			{
@@ -91,7 +115,7 @@
 				window.addElement(child);
 				window.addEventListener(Event.CLOSE,closeHandler);
 				window.alwaysInFront = true;
-				window.open();	
+				window.open();
 				return window;
 			}
 			

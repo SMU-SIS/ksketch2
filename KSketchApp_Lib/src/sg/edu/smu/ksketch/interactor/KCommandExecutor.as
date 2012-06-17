@@ -284,6 +284,15 @@ package sg.edu.smu.ksketch.interactor
 			KLogger.log(command);
 		}
 		
+		public function saveOnExit(listener:Function):void
+		{
+			var content:XML = _facade.saveFile().appendChild(KLogger.logFile);
+			content.@version = _appState.appBuildNumber;
+			trace(content.toXMLString());
+			var saver:KFileSaver = new KFileSaver();
+			saver.save(content,_generateFileName(),listener);
+		}
+				
 		public function get hasPopup():Boolean
 		{
 			return _hasPopup;

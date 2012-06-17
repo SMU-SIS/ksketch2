@@ -20,7 +20,7 @@ package sg.edu.smu.ksketch.io
 		 * Will dispatch an event when KMV file is loaded.
 		 * Event type is KFileSavedEvent.EVENT_FILE_SAVED.
 		 */		
-		public function save(content:XML, name:String):void
+		public function save(content:XML, name:String, completeListener:Function=null):void
 		{
 			var fileRef:FileReference = _isRunningInAIR() ? new File() : new FileReference();
 			var selected:Function = function (e:Event):void
@@ -29,8 +29,11 @@ package sg.edu.smu.ksketch.io
 				var list:XMLList = content.elements(KLogger.COMMANDS).elements(KLogger.BTN_SAVE);
 				for each (var node:XML in list)
 					lastNode = node;
-				lastNode.@filename = (e.target as FileReference).name;
+				if (lastNode != null)
+					lastNode.@filename = (e.target as FileReference).name;
 			};
+			if (completeListener != null)
+				fileRef.addEventListener(Event.COMPLETE, completeListener);
 			fileRef.addEventListener(Event.SELECT, selected);
 			fileRef.save(content, name);
 		}

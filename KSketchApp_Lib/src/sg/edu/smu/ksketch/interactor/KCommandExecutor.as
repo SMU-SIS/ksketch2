@@ -78,11 +78,11 @@ package sg.edu.smu.ksketch.interactor
 					KLogger.flush();
 					_load();
 					break;
-				case KLogger.BTN_SAVE:
-					filename = _generateFileName(); 
-					KLogger.log(command,KLogger.FILE_NAME,filename);
-					_save(filename);
-					break;
+		//		case KLogger.BTN_SAVE:
+		//			filename = _generateFileName(); 
+		//			KLogger.log(command,KLogger.FILE_NAME,filename);
+		//			_save(filename);
+		//			break;
 				case KLogger.BTN_CUT:
 					KLogger.log(command);
 					_cut();
@@ -284,13 +284,14 @@ package sg.edu.smu.ksketch.interactor
 			KLogger.log(command);
 		}
 		
-		public function saveOnExit(listener:Function):void
+		public function saveWithListener(listener:Function):void
 		{
+			var filename:String = _generateFileName(); 
+			KLogger.log(KLogger.BTN_SAVE,KLogger.FILE_NAME,filename);
 			var content:XML = _facade.saveFile().appendChild(KLogger.logFile);
 			content.@version = _appState.appBuildNumber;
-			trace(content.toXMLString());
 			var saver:KFileSaver = new KFileSaver();
-			saver.save(content,_generateFileName(),listener);
+			saver.save(content,filename,listener);
 		}
 				
 		public function get hasPopup():Boolean

@@ -51,6 +51,7 @@ import mx.controls.ProgressBar;
 import mx.core.BitmapAsset;
 import mx.core.IFlexDisplayObject;
 import mx.core.UIComponent;
+import mx.events.CloseEvent;
 import mx.events.IndexChangedEvent;
 import mx.graphics.codec.JPEGEncoder;
 import mx.graphics.codec.PNGEncoder;
@@ -108,7 +109,8 @@ private var onLoadBtn:Boolean=false;
 private var bytes1:ByteArray = new ByteArray();
 private var loader:Loader;
 private var _buttonMapping:Dictionary;
-private var _commandExecutor:KCommandExecutor
+private var _commandExecutor:KCommandExecutor;
+private var _savedModel:XML = null;
 public var isRegionDrawn:Boolean=false;
 private var _fileRef : FileReference;
 private var arrListforCam:ArrayList;
@@ -118,8 +120,35 @@ public function get commandExecutor():KCommandExecutor
 	return _commandExecutor;
 }
 
+public function needSave():Boolean
+{
+	return _savedModel != facade.saveFile();
+}
+
+public function promptForSave(postFunction:Function):void
+{
+	var f:Function = function(e:CloseEvent):void
+	{
+		switch(e.detail)
+		{
+			case Alert.YES:
+				_commandExecutor.saveWithListener(function(e:Event):void 
+				{
+					postFunction();
+				});
+				break;
+			case Alert.NO:
+				postFunction();
+				break;
+		}
+		_savedModel = facade.saveFile();
+	};
+	Alert.show("Data Not Save.\nSave Before Continue?","Warning",Alert.YES|Alert.NO,this,f);		
+}
+
 public function initButtonFunctions():void
 {
+	_savedModel = _facade.saveFile();
 	_initLoggableButtons();
 	_buttonMapping = _getButtonMappings();
 	_commandExecutor = new KCommandExecutor(appState,appCanvas,facade);
@@ -184,7 +213,20 @@ private function _getButtonMappings():Dictionary
 private function _handleButton(event:MouseEvent):void
 {	
 	if (event.target is UIComponent)
-		_commandExecutor.doButtonCommand(_buttonMapping[event.target]);
+	{
+		var command:String = _buttonMapping[event.target];
+		if (command == KLogger.BTN_SAVE)
+		{
+			_commandExecutor.saveWithListener(function(e:Event):void
+			{
+				_savedModel = facade.saveFile();
+			});
+		}
+		else if ((command == KLogger.BTN_NEW || command == KLogger.BTN_LOAD) && needSave())
+			promptForSave(function ():void{_commandExecutor.doButtonCommand(command);});
+		else
+			_commandExecutor.doButtonCommand(command);
+	}
 }
 
 private function _bindComponent(component:UIComponent,object:Object,property:String):void
@@ -258,7 +300,7 @@ private function onCompleteforFLV():void
 private function drawImageFlv():void
 {
 	bmpData = new BitmapData(imageSizeFlv.width, imageSizeFlv.height);		  
-	bmpData.draw(drawingArea_stage,transformMartixFlv,null,null,new Rectangle(0,0,imageSizeFlv.width, imageSizeFlv.height));		  
+	bmpData.draw(drawingArea_stage,transformMartixFlv,null,null,new Rectangle(0,0,imageSizeFlv.width, imageSizeFlv.height));
 	myWriter.saveFrame(bmpData);	
 }
 
@@ -298,7 +340,9 @@ private function flvWizardWindow():void
 		btnPrevFlvWnd.visible=true;
 		pbBar.y=50,pbBar.x=10;		
 		dropDownFlvWnd.y=5,dropDownFlvWnd.x=10;			
-		flvDropdownItems.addItem("Video Height"), flvDropdownItems.addItem("960 px"), flvDropdownItems.addItem("720 px"), flvDropdownItems.addItem("540 px"),flvDropdownItems.addItem("480 px"),flvDropdownItems.addItem("240 px");
+		flvDropdownItems.addItem("Video Height"), flvDropdownItems.addItem("960 px"), 
+			flvDropdownItems.addItem("720 px"), flvDropdownItems.addItem("540 px"),
+			flvDropdownItems.addItem("480 px"),flvDropdownItems.addItem("240 px");
 		dropDownFlvWnd.width=110;
 		dropDownFlvWnd.dataProvider=flvDropdownItems;			
 		dropDownFlvWnd.selectedIndex=0;		
@@ -643,7 +687,8 @@ public function imgWizardWindow():void
 
 private function onSaveSelected(event:Event):void
 {
-	var imageTypes:FileFilter = new FileFilter("Images (*.jpg, *.jpeg, *.gif, *.png)", "*.jpg; *.jpeg; *.gif; *.png");
+	var imageTypes:FileFilter = new FileFilter(
+		"Images (*.jpg, *.jpeg, *.gif, *.png)", "*.jpg; *.jpeg; *.gif; *.png");
 	var imageTypesArray:Array = new Array(imageTypes);
 	_fileRef = new FileReference();
 	_fileRef.browse(imageTypesArray);	
@@ -677,12 +722,14 @@ private function loadBytesHandlerforFullImage(event:Event):void
 	bytes.writeBytes(snapBmp.bitmapData.getPixels(snapBmp.bitmapData.rect));	
 		
 	var pngEncoder:PNGEncoder= new PNGEncoder();
-	var byteArray:ByteArray = pngEncoder.encodeByteArray(bytes, snapBmp.bitmapData.width, snapBmp.bitmapData.height, true);		
+	var byteArray:ByteArray = pngEncoder.encodeByteArray(bytes, 
+		snapBmp.bitmapData.width, snapBmp.bitmapData.height, true);
     var rect:Rectangle=new Rectangle();
    	
 	var byteArr:ByteArray=new ByteArray();										
 	loader = new Loader();
-	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function mytest(event:Event):void{onPNG(loader,event)});				
+	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, 
+		function mytest(event:Event):void{onPNG(loader,event)});				
 	
 	loader.loadBytes(byteArray);							
 		
@@ -742,7 +789,8 @@ public function onbtnSaveImage(event:Event):void
 	 bytes.writeUnsignedInt(bitmapDataAfterIrregular.width);
 	 bytes.writeBytes(bitmapDataAfterIrregular.getPixels(bitmapDataAfterIrregular.rect));		  	 
 	 var pngEncoder:PNGEncoder= new PNGEncoder();
-	 var byteArray:ByteArray = pngEncoder.encodeByteArray(bytes, bitmapDataAfterIrregular.width, bitmapDataAfterIrregular.height, true);
+	 var byteArray:ByteArray = pngEncoder.encodeByteArray(bytes, 
+		 bitmapDataAfterIrregular.width, bitmapDataAfterIrregular.height, true);
 	 bytes1=byteArray;		 
 	 loadBytesHandler();	 	 	 		 			
 }	
@@ -760,7 +808,8 @@ private function loadBytesHandler():void
 {
 	var byteArr:ByteArray=new ByteArray();										
 	loader = new Loader();
-	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function mytest(event:Event):void{onAddPNG(loader,event)});				
+	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, 
+		function mytest(event:Event):void{onAddPNG(loader,event)});				
     loader.loadBytes(bytes1);							
 }
 
@@ -846,7 +895,8 @@ private function trimmingIrregularShape():void
 public function onbtnLoadCamera():void
 {		
 	this.camera= Camera.getCamera(imgTitleWindow.chooseCamBox.selectedIndex.toString());	
-	var snap:BitmapData = new BitmapData(imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth, imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight, true);
+	var snap:BitmapData = new BitmapData(imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth, 
+		imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight, true);
 	var snapBmp:Bitmap = new Bitmap(snap);	
 	
 	imgTitleWindow.addElement(imgTitleWindow.videoDisplay);	
@@ -885,7 +935,8 @@ public function onbtnLoadCamera():void
 
 public function onbtnLoadCameraSnap(event:Event):void
 {							
-	var snap:BitmapData = new BitmapData(imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth, imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight, true);
+	var snap:BitmapData = new BitmapData(imgTitleWindow.windowWidth-imgTitleWindow.offsetForDisplayWidth, 
+		imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight, true);
 	var snapBmp:Bitmap = new Bitmap(snap);	
 	
 	if(imgTitleWindow.hBox.numChildren > 0)

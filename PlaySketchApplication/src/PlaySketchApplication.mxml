@@ -82,24 +82,15 @@
 			private function _closingHandler(e:Event):void
 			{
 				e.preventDefault();
-				var f:Function = function(e:CloseEvent):void
-				{
-					switch(e.detail)
-					{
-						case Alert.YES:
-							main.commandExecutor.saveOnExit(function(e:Event):void {_close();});
-							break;
-						case Alert.NO:
-							main.commandExecutor.doButtonCommand(KLogger.BTN_EXIT);
-							_close();
-							break;
-					}
-				};
-				Alert.show("Data Not Save.\nSave Before Exit?","Warning",Alert.YES|Alert.NO,this,f);
+				if (main.needSave())
+					main.promptForSave(_close);
+				else
+					_close();
 			}
 			
 			private function _close():void
 			{
+				main.commandExecutor.doButtonCommand(KLogger.BTN_EXIT);
 				stage.nativeWindow.close();
 			}
 

@@ -27,10 +27,10 @@ package sg.edu.smu.ksketch.io
 			{
 				var lastNode:XML;
 				var list:XMLList = content.elements(KLogger.COMMANDS).elements(KLogger.BTN_SAVE);
-				for each (var node:XML in list)
-					lastNode = node;
-				if (lastNode != null)
-					lastNode.@filename = (e.target as FileReference).name;
+				list.@filename = (e.target as FileReference).name;
+		//		trace(list.attribute("filename"));
+		//		trace(content.elements(KLogger.COMMANDS).elements(KLogger.BTN_SAVE).toXMLString());
+				
 			};
 			if (completeListener != null)
 				fileRef.addEventListener(Event.COMPLETE, completeListener);

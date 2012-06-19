@@ -536,24 +536,17 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _generateFileName():String
 		{
-			var date:Date = new Date();
-			
-			return  date.fullYear+"-"+(date.month+1)+"-"+date.day+"-"+date.hours.toString()+date.minutes.toString()+"_K-Movie.kmv";
+			var d:Date = new Date();
+			return  d.fullYear + "-" + (d.month+1) + "-" + d.date + "-" +
+				_getTimeStamp(d.hours,d.minutes,d.seconds) + "_K-Movie.kmv";
 		}
 		
-		private function getTimeStamp():String
+		private function _getTimeStamp(hr:Number,min:Number,sec:Number):String
 		{
-			var date:Date = new Date();
-			var returnString:String;
-			if(date.hours < 10)
-				returnString = "0"+date.hours.toString();
-			else
-				returnString = date.hours.toString();
-			
-			if(date.minutes < 10)
-				return returnString +"0"+date.minutes.toString();
-			else
-				return returnString+date.minutes.toString();
+			var hrStr:String  =  hr < 10 ? "0" + hr.toString()  : hr.toString();
+			var minStr:String = min < 10 ? "0" + min.toString() : min.toString();
+			var secStr:String = sec < 10 ? "0" + sec.toString() : sec.toString();;
+			return hrStr + minStr + secStr;
 		}
 	}
 }

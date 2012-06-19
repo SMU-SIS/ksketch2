@@ -135,15 +135,19 @@ public function promptForSave(postFunction:Function):void
 				_commandExecutor.saveWithListener(function(e:Event):void 
 				{
 					postFunction();
+					_savedModel = facade.saveFile();
 				});
 				break;
 			case Alert.NO:
 				postFunction();
+				_savedModel = facade.saveFile();
+				break;
+			case Alert.CANCEL:
 				break;
 		}
-		_savedModel = facade.saveFile();
 	};
-	Alert.show("Data Not Save.\nSave Before Continue?","Warning",Alert.YES|Alert.NO,this,f);		
+	Alert.show("Do you want to save the changes to this file?","Warning",
+		Alert.YES|Alert.NO|Alert.CANCEL,this,f);
 }
 
 public function initButtonFunctions():void
@@ -155,7 +159,8 @@ public function initButtonFunctions():void
 	
 	imageSizeFlv=drawingArea_Layout.getElementBounds(0);
 	initButtonsToFlv();
-	uiArrayforFlv=new Array(pbBar,btnCanclFlvWnd,btnNextlFlvWnd,btnPrevFlvWnd,btnNext2FlvWnd,dropDownFlvWnd); 			 	     	 	 			 		
+	uiArrayforFlv=new Array(pbBar,btnCanclFlvWnd,btnNextlFlvWnd,
+		btnPrevFlvWnd,btnNext2FlvWnd,dropDownFlvWnd);
 }
 
 private function _initLoggableButtons():void
@@ -300,7 +305,8 @@ private function onCompleteforFLV():void
 private function drawImageFlv():void
 {
 	bmpData = new BitmapData(imageSizeFlv.width, imageSizeFlv.height);		  
-	bmpData.draw(drawingArea_stage,transformMartixFlv,null,null,new Rectangle(0,0,imageSizeFlv.width, imageSizeFlv.height));
+	bmpData.draw(drawingArea_stage,transformMartixFlv,null,null,
+		new Rectangle(0,0,imageSizeFlv.width, imageSizeFlv.height));
 	myWriter.saveFrame(bmpData);	
 }
 
@@ -512,7 +518,8 @@ private function onFlv6(event:MouseEvent):void
 
 private function flvFileError(error:IOErrorEvent):void
 {
-	Alert.show("FLV Writing Error! The Exporting File Is Used By Other Applications, Please Close That Application");
+	Alert.show("FLV Writing Error! The Exporting File Is Used By Other Applications, " +
+		"Please Close That Application");
 	error.target.removeEventListener(IOErrorEvent.IO_ERROR, flvFileError);
 }
 

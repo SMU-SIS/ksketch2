@@ -546,7 +546,7 @@ package sg.edu.smu.ksketch.interactor
 			var hrStr:String  =  hr < 10 ? "0" + hr.toString()  : hr.toString();
 			var minStr:String = min < 10 ? "0" + min.toString() : min.toString();
 			var secStr:String = sec < 10 ? "0" + sec.toString() : sec.toString();;
-			return hrStr + minStr + secStr;
+			return hrStr +"."+ minStr+"."+ secStr;
 		}
 	}
 }

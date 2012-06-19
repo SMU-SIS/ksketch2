@@ -120,7 +120,6 @@
 			
 			private function _init():void
 			{
-				nativeWindow.maximize();
 				nativeWindow.x = (Capabilities.screenResolutionX - nativeWindow.bounds.width)/2;
 				nativeWindow.y = (Capabilities.screenResolutionY - nativeWindow.bounds.height)/2;
 				main.setOptionTrigger(triggerSettings);

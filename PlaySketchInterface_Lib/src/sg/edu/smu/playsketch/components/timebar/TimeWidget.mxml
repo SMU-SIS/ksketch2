@@ -81,6 +81,8 @@
 					if(widget_max_time < marker.time)
 						widget_max_time = marker.time;
 					marker.x  = _timeToPosition(marker.time);
+					if(marker.x < 0)
+						continue;
 					marker.addEventListener(MouseEvent.MOUSE_DOWN,_marker_MouseDown, false, 0, true);
 					if(marker.selected)
 					{

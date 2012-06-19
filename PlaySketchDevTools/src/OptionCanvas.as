@@ -112,7 +112,7 @@ package
 			vg.addElement(_createLabel("Other Options"));
 			vg.addElement(_addRightMouseEnabled(mainCanvas.appState));
 			vg.addElement(_addShowConfirmWindow(mainCanvas.appState));
-			vg.addElement(_addEnablelog());
+			//vg.addElement(_addEnablelog());
 			return vg; 
 		}
 		

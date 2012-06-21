@@ -180,14 +180,14 @@ private function _initLoggableButtons():void
 	group_viewOps.btn_redo.addEventListener(MouseEvent.CLICK, _handleButton);	
 	group_groupOps.btn_group.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_groupOps.btn_ungroup.addEventListener(MouseEvent.CLICK, _handleButton);
-	//_bindComponent(group_fileOps.btn_save, appState, "undoEnabled");	
-	//_bindComponent(group_editOps.btn_cut, appState, "copyEnabled");
-	//_bindComponent(group_editOps.btn_copy, appState, "copyEnabled");
-	//_bindComponent(group_editOps.btn_paste, appState, "pasteEnabled");
-	//_bindComponent(group_viewOps.btn_undo, appState, "undoEnabled");
-	//_bindComponent(group_viewOps.btn_redo, appState, "redoEnabled");
-	//_bindComponent(group_groupOps.btn_group, appState, "groupEnabled");
-	//_bindComponent(group_groupOps.btn_ungroup, appState, "ungroupEnabled");
+	_bindComponent(group_fileOps.btn_save, appState, "undoEnabled");	
+	_bindComponent(group_editOps.btn_cut, appState, "copyEnabled");
+	_bindComponent(group_editOps.btn_copy, appState, "copyEnabled");
+	_bindComponent(group_editOps.btn_paste, appState, "pasteEnabled");
+	_bindComponent(group_viewOps.btn_undo, appState, "undoEnabled");
+	_bindComponent(group_viewOps.btn_redo, appState, "redoEnabled");
+	_bindComponent(group_groupOps.btn_group, appState, "groupEnabled");
+	_bindComponent(group_groupOps.btn_ungroup, appState, "ungroupEnabled");
 	btn_toogle.addEventListener(MouseEvent.CLICK, function (event:MouseEvent):void
 	{
 		KLogger.log(KLogger.BTN_TOGGLE_TIMEBAR_EXPAND);
@@ -235,11 +235,11 @@ private function _handleButton(event:MouseEvent):void
 	}
 }
 
-private function _bindComponent(component:UIComponent,object:Object,property:String):void
+private function _bindComponent(component:UIMovieClip,object:Object,property:String):void
 {
 	var fn:Function = function(enable:Boolean):void
 	{
-		component.enabled = enable;
+		component.mouseChildren = enable;
 		component.alpha = enable ? 1.0 : 0.2;
 	}
 	BindingUtils.bindSetter(fn ,object, property);

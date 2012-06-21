@@ -86,6 +86,9 @@ package sg.edu.smu.ksketch.operation
 
 		public function cut(facade:KModelFacade,objs:KModelObjectList,time:Number):IModelOperation
 		{
+			if(objs.length() ==0)
+				return null;
+			
 			_clipboard.clear();
 			_clipboard.put(objs,time);
 			return _removeAll(facade,objs);

@@ -89,6 +89,9 @@ package sg.edu.smu.ksketch.operation
 		}
 		public function cut():IModelOperation
 		{
+			if(!_appState.selection)
+				return null;
+		
 			var op:IModelOperation = _editor.cut(this,_appState.selection.objects,_appState.time);
 			_appState.selection = null;
 			_appState.pasteEnabled = true;

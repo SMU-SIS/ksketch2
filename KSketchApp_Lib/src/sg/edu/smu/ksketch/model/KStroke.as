@@ -6,6 +6,7 @@
 
 package sg.edu.smu.ksketch.model
 {
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
@@ -81,7 +82,7 @@ package sg.edu.smu.ksketch.model
 		{
 			if(points.length == 0)
 				return new Rectangle(0,0,0,0);
-			var pt:Point = this.getFullPathMatrix(kskTime).transformPoint(points[0]);
+			var pt:Point = points[0];
 			var maxX:Number = pt.x;
 			var minX:Number = pt.x;
 			var maxY:Number = pt.y;
@@ -89,12 +90,21 @@ package sg.edu.smu.ksketch.model
 			
 			for(var i:int = 1; i < points.length; i++)
 			{
-				pt = this.getFullPathMatrix(kskTime).transformPoint(points[i]);
+				pt = points[i];
 				maxX = Math.max(maxX,pt.x);
 				maxY = Math.max(maxY,pt.y);
 				minX = Math.min(minX,pt.x);
 				minY = Math.min(minY,pt.y);
 			}
+			var matrix:Matrix = getFullPathMatrix(kskTime); 
+			var vertex1:Point = matrix.transformPoint(new Point(minX,minY));
+			var vertex2:Point = matrix.transformPoint(new Point(minX,maxY));
+			var vertex3:Point = matrix.transformPoint(new Point(maxX,minY));
+			var vertex4:Point = matrix.transformPoint(new Point(maxX,maxY));
+			minX = Math.min(vertex1.x,vertex2.x,vertex3.x,vertex4.x);
+			minY = Math.min(vertex1.y,vertex2.y,vertex3.y,vertex4.y);
+			maxX = Math.max(vertex1.x,vertex2.x,vertex3.x,vertex4.x);
+			maxY = Math.max(vertex1.y,vertex2.y,vertex3.y,vertex4.y);
 			return new Rectangle(minX,minY,maxX-minX,maxY-minY);
 		}
 		

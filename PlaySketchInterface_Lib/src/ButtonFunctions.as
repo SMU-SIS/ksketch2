@@ -239,6 +239,8 @@ private function _bindComponent(component:UIMovieClip,object:Object,property:Str
 {
 	var fn:Function = function(enable:Boolean):void
 	{
+		component.enabled = enable;
+		component.mouseEnabled = enable;
 		component.mouseChildren = enable;
 		component.alpha = enable ? 1.0 : 0.2;
 	}

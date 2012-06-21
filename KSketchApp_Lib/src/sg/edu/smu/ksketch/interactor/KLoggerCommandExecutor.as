@@ -313,11 +313,12 @@ package sg.edu.smu.ksketch.interactor
 			_dispatchMouseEvents(_getPath(commandNode));
 		}
 		
+		// Ignore toggle pen/eraser gesture, as it is also log as a Pen/Eraser button command
 		private function _gesture(commandNode:XML):void
 		{
 			if (commandNode.attribute(KLogger.SELECTED_ITEMS).length() > 0)
 				_select(commandNode.attribute(KLogger.SELECTED_ITEMS));
-			else
+			else if (commandNode.attribute(KLogger.MATCH) != GestureDesign.NAME_PRE_TOGGLE)
 			{
 				var event:KeyboardEvent = new KeyboardEvent(KeyboardEvent.KEY_DOWN);
 				event.keyCode = Keyboard.CONTROL;

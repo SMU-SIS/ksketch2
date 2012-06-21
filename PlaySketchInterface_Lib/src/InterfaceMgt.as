@@ -82,8 +82,8 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, updateTimeWidgets);
 	
 	//Add functions for zooming operations
-	group_viewOps.btn_zoomIn.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(true);});
-	group_viewOps.btn_zoomOut.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(false);});
+	group_zoom.btn_zoomIn.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(true);});
+	group_zoom.btn_zoomOut.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(false);});
 	
 	_toogle_TimebarExpand();
 }	
@@ -148,8 +148,6 @@ public function update_interface():void
 	//var positioningRect:Rectangle = appCanvas.getBounds(slider_key_index);
 	//extension_layout.paddingLeft = -positioningRect.x + markerPadding.paddingLeft-1;
 	
-	updateSliderIndicator();
-	sliderUpdated();
 	if(Math.abs(appCanvas.width-_windowBoundsOffsetX -_prevWidth) > 0 ||
 		Math.abs(appCanvas.height-_windowBoundsOffsetY-_prevHeight) > 0)
 	{

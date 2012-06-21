@@ -10,6 +10,7 @@ package sg.edu.smu.playsketch.components.timebar
 	
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.utilities.KAppState;
+	import sg.edu.smu.playsketch.components.skins.TimeSliderSkin;
 	
 	import spark.components.HSlider;
 	
@@ -27,6 +28,14 @@ package sg.edu.smu.playsketch.components.timebar
 		{
 			_appState = appState;
 			_timeList = new Vector.<Number>();
+		}
+		
+		override public function set maximum(value:Number):void
+		{
+			super.maximum = value;
+			trace(skin);
+			if(skin)
+				(skin as TimeSliderSkin).drawTickMarks();
 		}
 		
 		/**

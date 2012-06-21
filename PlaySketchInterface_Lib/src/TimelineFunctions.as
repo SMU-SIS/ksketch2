@@ -58,7 +58,6 @@ private function _bindKeyIndexSliderMaxTime(value:Number):void
 
 private function _bindKeyIndexSliderTime(value:Number):void
 {
-//	trace(appState.time);
 	slider_key_index.value = KAppState.indexOf(value);
 }
 
@@ -247,7 +246,6 @@ private function updateTimeWidgets(event:Event):void
 		expandedWidget3.updateTimeWidget(scaleMarkers);
 	}
 	rescaleTimeWidgets();
-	labelSlider();
 	slider_key_index.timeList = timeList;
 }
 
@@ -281,98 +279,30 @@ private function rescaleTimeWidgets():void
 		expandedWidget2.rescaleTimeWidget();
 		expandedWidget3.rescaleTimeWidget();
 	}
-	labelSlider();
 }
 
 private function _toogle_TimebarExpand():void
 {	
 	if(_timeBar_toogled)
 	{
-		timeBar.height = 50;
 		expandedWidget1.visible = false;
 		expandedWidget2.visible = false;
 		expandedWidget3.visible = false;
+		expandedWidget1.includeInLayout = false;
+		expandedWidget2.includeInLayout = false;
+		expandedWidget3.includeInLayout = false;
 		_timeBar_toogled = false;
 	}
 	else
 	{
-		timeBar.height = 113;
 		expandedWidget1.visible = true;
 		expandedWidget2.visible = true;
 		expandedWidget3.visible = true;
+		expandedWidget1.includeInLayout = true;
+		expandedWidget2.includeInLayout = true;
+		expandedWidget3.includeInLayout = true;
 		_timeBar_toogled = true;
 	}
 	
 	updateTimeWidgets(null);
-}
-
-public function updateSliderIndicator():void
-{
-	sliderIndicator.graphics.clear();
-	sliderIndicator.graphics.lineStyle(1, 0xFF0000);
-	sliderIndicator.graphics.moveTo(_thumbOffset, 20);
-	sliderIndicator.graphics.lineTo(_thumbOffset, timeWidgetGroups.height);
-	sliderIndicator.depth = 10;
-}
-
-public function sliderUpdated():void
-{
-	sliderIndicator.x = slider_key_index.thumb.x+_thumbOffset;
-}
-
-public function labelSlider():void
-{
-	sliderLabels.removeAllElements();
-	
-	var fullSecond:Boolean = true;
-	var position:Number;
-	var modulus:int;
-	
-	sliderLabels.graphics.clear();
-	sliderLabels.graphics.lineStyle(1,0x000000);
-	
-	var pixelPerInterval:Number = (slider_key_index.width-slider_key_index.thumb.width)/slider_key_index.maximum;
-	var stepSize:int = 2;
-	var fullSectionSteps:int = 1000/KAppState.ANIMATION_INTERVAL;
-	var maxKeys:Number = slider_key_index.maximum;
-	
-	if(160 < maxKeys)
-	{
-		stepSize = maxKeys/80;
-		fullSectionSteps = stepSize * fullSectionSteps;
-	}
-	
-	for(var i:int = 0; i <= slider_key_index.maximum; i+=stepSize)
-	{
-		position = i*pixelPerInterval;
-		modulus = i%fullSectionSteps;
-		sliderLabels.graphics.moveTo(position, sliderLabels.height);
-		
-		switch(modulus)
-		{
-			case 0:
-				sliderLabels.graphics.lineTo(position, sliderLabels.height*0.2);
-				if(i < slider_key_index.maximum)
-				{
-					var text:Text = new Text();
-					text.mouseEnabled = false;
-					text.selectable = false;
-					text.scaleX = 0.75;
-					text.scaleY = 0.75;
-					text.text = (i*KAppState.ANIMATION_INTERVAL/1000).toString();
-					text.x = position;
-					
-					if(text.x < slider_key_index.width*0.95)
-						sliderLabels.addElement(text);
-				}
-				break;
-
-			case fullSectionSteps/2:
-				sliderLabels.graphics.lineTo(position, sliderLabels.height*0.5);
-				break;
-			
-			default:
-				//sliderLabels.graphics.lineTo(position, sliderLabels.height*0.8);
-		}
-	}
 }

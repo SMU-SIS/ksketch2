@@ -12,7 +12,7 @@
 		 xmlns:playsketchskin="components.*"
 		 xmlns:playsketchcomponents="sg.edu.smu.playsketch.components.*"
 		 xmlns:timebar="sg.edu.smu.playsketch.components.timebar.*"
-		 width="100%" height="100%" updateComplete = "update_interface()">
+		 width="100%" height="100%" updateComplete = "update_interface()" xmlns:group="sg.edu.smu.playsketch.components.group.*" xmlns:local="*">
 	<fx:Declarations>
 	
 		<ksketchutilities:KAppState id="appState"/>
@@ -93,7 +93,7 @@
 				initButtonFunctions();
 				initTimebar();
 			
-				appCanvas.addEventListener(MenuEvent.ITEM_CLICK, function(event:MenuEvent):void
+				/*appCanvas.addEventListener(MenuEvent.ITEM_CLICK, function(event:MenuEvent):void
 				{
 					var label:String = event.item.@label;
 					_switchPen(list_pen_selection.selectedIndex = _PEN_COLORS.indexOf(label));
@@ -101,7 +101,7 @@
 				appCanvas.addEventListener(KCommandEvent.EVENT_PEN_CHANGE, function(event:KCommandEvent):void
 				{
 					_switchPen(list_pen_selection.selectedIndex = _PEN_COLORS.indexOf(event.command));
-				});
+				});*/
 			}
 			
 			public function initialiseMouseCursors(pen:String,bitmap:Bitmap):void
@@ -162,17 +162,17 @@
 				_fullScreen = true;					
 			}
 			
-			private function _changePen(e:IndexChangeEvent):void
+			private function _changePen(penIndex:int):void
 			{
-				_switchPen(e.newIndex);
+				_switchPen(penIndex);
 			}
 			
 			private function _switchPen(index:int):void
 			{
-				var itemColors:Array =list_pen_selection.getStyle("alternatingItemColors");
+				/*var itemColors:Array =list_pen_selection.getStyle("alternatingItemColors");
 				list_pen_selection.setStyle("selectionColor",itemColors[index]);
 				list_pen_selection.setStyle("chromeColor",itemColors[index]);
-				_commandExecutor.doButtonCommand(_PEN_COMMANDS[index]);
+				_commandExecutor.doButtonCommand(_PEN_COMMANDS[index]);*/
 			}
 			
 			private function _isImplicitGrouping():Boolean
@@ -194,14 +194,13 @@
 			</s:layout>
 			
 			<!--Top bar-->
-			<s:Group id="topBar" width="100%" height="35">
+			<s:Group id="topBar" width="100%">
 				
-				<s:Rect id="topBar_BG" x="0" y="0" width="100%" height="100%">
+				<s:Rect id="topBar_BG" width="100%" height="100%">
 					<s:fill>
-						<s:LinearGradient x="600.447" y="-17.125" scaleX="91.077" rotation="90">
-							<s:GradientEntry ratio="0.111378" color="#E6E7E8"/>
-							<s:GradientEntry ratio="0.334811" color="#73A1BC"/>
-							<s:GradientEntry ratio="0.615401" color="#30619E"/>
+						<s:LinearGradient rotation="90">
+							<s:GradientEntry ratio="0.011378" color="#BCD4EB"/>
+							<s:GradientEntry ratio="0.988622" color="#476584"/>
 						</s:LinearGradient>
 					</s:fill>
 				</s:Rect>
@@ -209,58 +208,22 @@
 				<s:Group id="topBar_buttonContainer" width="100%" height="100%">
 					
 					<s:layout>
-						<s:HorizontalLayout id="topBar_layout" paddingLeft="5" paddingRight="5"
-											verticalAlign="middle" horizontalAlign="left" />
+						<s:HorizontalLayout gap="5" paddingLeft="5" paddingRight="2" paddingTop="2" paddingBottom="2"/>
 					</s:layout>
+					<group:Group_IO id="group_fileOps"/>
+					<group:Group_Edit id="group_editOps"/>
+					<group:Group_Operation id="group_viewOps"/>
+					<group:Group_Grouping id="group_groupOps" visible="{_isImplicitGrouping()?false:true}"
+										  includeInLayout="{_isImplicitGrouping()?false:true}"/>
+					<group:Group_Pen id="group_pen"/>
+					<!--black red green blue white-->
+					<group:Group_Zoom id="group_zoom"/>
 
-					<playsketchskin:Group_FileHandling id="group_fileOps"/>
-					
-					<s:Group>
-						<s:Group>
-							<s:Rect x="0" y="0" width="75" height="29" radiusX="13.1821" radiusY="13.1821">
-								<s:fill>
-									<s:LinearGradient x="79.4277" y="44.4336" scaleX="68" rotation="270">
-										<s:GradientEntry ratio="0.0181818" color="#B6C3C9"/>
-										<s:GradientEntry ratio="0.424242" color="#73A1BC"/>
-										<s:GradientEntry ratio="0.805791" color="#354571"/>
-									</s:LinearGradient>
-								</s:fill>
-							</s:Rect>
-						</s:Group>
-						<s:Group>
-							<s:layout>
-								<s:HorizontalLayout gap="3" paddingLeft="7" paddingTop="2.5"/>
-							</s:layout>
-							<s:Button id="btn_FLV" styleName="buttonFlvExport_style_toggle" width="30" height="24"
-									  toolTip="FLV Export" click="flvWizardWindow()"/>	
-							<playsketchskin:Button_WebCam id="btn_IMG" width="35" height="24"
-														  toolTip="WebCam/IMG Import" click="imgWizardWindow()"/>
-							<s:Button id="btn_SOUND" styleName="buttonMicrophone_style_toggle" width="29" height="24" 
-									  label="S" toolTip="Sound Record" click="soundRecord()" visible="false" includeInLayout="false"/>
-						</s:Group>
-					</s:Group>
-
-					<playsketchskin:Group_Editing id="group_editOps"/>
-					<playsketchskin:Group_View id="group_viewOps"/>
-					<playsketchskin:Group_Grouping id="group_groupOps" visible="{_isImplicitGrouping()?false:true}"
-												   includeInLayout="{_isImplicitGrouping()?false:true}"/>
-					<s:DropDownList id="list_pen_selection" width="100" selectedIndex="0" 
-									alternatingItemColors="[#000000,#FF0000,#00BB00,#0078FF,#999999]"
-									color="#DDDDDD" chromeColor="#000000"  rollOverColor="#777777" 
-									selectionColor="#000000" change="_changePen(event)" >
-						<s:dataProvider>
-							<s:ArrayList source="{_PEN_COLORS}" />
-						</s:dataProvider>
-					</s:DropDownList>
-
-					<!--<s:Button id="btn_toogle" width="27" height="24" chromeColor="#012345" 
-					click="this.changeStageAspect(_stageAspectRatioMode)"/>-->
-					
 					<!--Stretchable part of the top bar-->
 					<s:Group id = "topBar_resizableContainer" width="100%"/>
 					<s:Button id="btn_log" width="44" height="24" label="Log" />
-					
-					<playsketchskin:Group_Config id="group_configOps"/>
+					<group:Group_Settings id="group_configOps"/>
+						
 					
 				</s:Group>
 				
@@ -284,66 +247,69 @@
 			<!--End of Drawing Area-->
 			
 			<!-- Time bar-->
-			<s:Group id="timeBar" width="100%" height="72">
-				
-				<s:Rect id="timeBar_BG" x="0" y="0" width="100%" height="100%">
-					<s:fill>
-						<s:LinearGradient x="600.447" y="-17.125" scaleX="91.077" rotation="90">
-							<s:GradientEntry ratio="0.111378" color="#E6E7E8"/>
-							<s:GradientEntry ratio="0.334811" color="#73A1BC"/>
-							<s:GradientEntry ratio="0.615401" color="#30619E"/>
-						</s:LinearGradient>
-					</s:fill>
-				</s:Rect>
+			<s:Group id="timeBar" width="100%">
 				
 				<s:Group width="100%" id="timeBarMainGroup">
-					<s:layout>
-						<s:HorizontalLayout gap="0" paddingTop="2" paddingLeft="2" paddingRight="2"/>
-					</s:layout>
-					<s:Group height="100%">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:LinearGradient rotation="90">
+								<s:GradientEntry ratio="0.011378" color="#BCD4EB"/>
+								<s:GradientEntry ratio="0.988622" color="#476584"/>
+							</s:LinearGradient>
+						</s:fill>
+					</s:Rect>
+					<s:Group width="100%" height="100%">
 						<s:layout>
-							<s:VerticalLayout gap="3" horizontalAlign="right"/>
+							<s:HorizontalLayout gap="3" paddingLeft="3" paddingTop="3" paddingBottom="3"/>
 						</s:layout>
+						
+						<s:Group>
+							<s:layout>
+								<s:VerticalLayout/>
+							</s:layout>
+							<local:Button_Play id="btn_play"/>
+							<s:Group height="5"/>
+						</s:Group>
+						<local:Button_Rewind id="btn_firstFrame"/>
+						<local:Button_PrevFrame id="btn_previous"/>
 						<s:Group width="100%">
 							<s:layout>
-								<s:HorizontalLayout gap="1" horizontalAlign="right"/>
+								<s:VerticalLayout horizontalAlign="center"/>
 							</s:layout>
-							<s:Button skinClass="components.Button_Play" id="btn_play" scaleX="1.2" scaleY="1.2"/>
-							<s:Button skinClass="components.Button_BackToStart" id="btn_firstFrame"/>
-							<s:Button skinClass="components.Button_PrevFrame" id="btn_previous" scaleX="1.45" scaleY="1.45"/>
+							<s:Group width="100%" depth="1">
+								<s:Group width="100%">
+									<s:Rect width="100%" height="100%" radiusX="10">
+										<s:fill>
+											<s:LinearGradient rotation="90">
+												<s:GradientEntry ratio="0.011378" color="#5D82A8"/>
+												<s:GradientEntry ratio="0.988622" color="#476584"/>
+											</s:LinearGradient>
+										</s:fill>
+									</s:Rect>
+									<s:Group width="100%">
+										<s:layout>
+											<s:VerticalLayout horizontalAlign="center"/>
+										</s:layout>
+										<timebar:TimeSlider width="98%" id="slider_key_index"
+															skinClass="sg.edu.smu.playsketch.components.skins.TimeSliderSkin" height="30"/>
+									</s:Group>
+								</s:Group>
+							</s:Group>
+							
+							<s:Group width="98%" visible="true" depth="0">
+								<s:layout>
+									<s:VerticalLayout gap="2"/>
+								</s:layout>
+								<timebar:TimeWidget id="timeWidget"/>
+								<timebar:TimeWidget id="expandedWidget1" visible="false"/>
+								<timebar:TimeWidget id="expandedWidget2" visible="false"/>
+								<timebar:TimeWidget id="expandedWidget3" visible="false"/>
+							</s:Group>
 						</s:Group>
-						<!--<mx:Text text="Overview" height="20"/>-->
-						<mx:Text text="Translation" height="20"/>
-						<mx:Text text="Rotation" height="20"/>
-						<mx:Text text="Scale" height="20"/>
+						
+						<local:Button_NextFrame id="btn_next"/>
+						<group:Button_TimeBarControl id="btn_toogle"/>
 					</s:Group>
-					<s:Group height="100%" width="100%" id="timeWidgetGroups">
-						<s:layout>
-							<s:VerticalLayout id="timeWidgetLayout" gap="3" 
-											  horizontalAlign="left" paddingBottom="3"/>
-						</s:layout>
-						<s:Group includeInLayout="false" width="100%" height="100%" 
-								 id="sliderIndicator" mouseEnabled="false" mouseChildren="false"/>
-						<s:Group width="100%" height="25">
-							<timebar:TimeSlider width="100%" updateComplete="sliderUpdated()" 
-														id="slider_key_index" height="25"/>
-							<s:Group id="sliderLabels" width="100%" height="22" 
-									 mouseEnabled="false" mouseChildren="false"/>
-						</s:Group>
-						<timebar:TimeWidget id="timeWidget"/>
-						<timebar:TimeWidget id="expandedWidget1" visible="false"/>
-						<timebar:TimeWidget id="expandedWidget2" visible="false"/>
-						<timebar:TimeWidget id="expandedWidget3" visible="false"/>
-					</s:Group>
-					<s:Button skinClass="components.Button_NextFrame" id="btn_next" scaleX="1.45" scaleY="1.45"/>
-					<s:Group>
-						<s:layout>
-							<s:HorizontalLayout horizontalAlign="right"/>
-						</s:layout>	
-						<s:Group width="100%"/>
-						<s:Button skinClass="components.Button_ExpandTimeBar" id="btn_toogle" scaleX="1.2" scaleY="1.2"/>
-					</s:Group>
-
 				</s:Group>
 				
 			</s:Group>

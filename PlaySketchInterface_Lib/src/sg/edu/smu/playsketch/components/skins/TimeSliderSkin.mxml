@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin name="TimeSliderSkin"
+			 xmlns:fx="http://ns.adobe.com/mxml/2009"
+			 xmlns:s="library://ns.adobe.com/flex/spark"
+			 xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+			 minHeight="11"
+			 alpha.disabled="0.5">
+	<!-- states -->
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="disabled" />
+	</s:states>
+	
+	<fx:Metadata>
+		[HostComponent("spark.components.HSlider")]
+	</fx:Metadata>
+	
+	<fx:Script fb:purpose="styling">
+		<![CDATA[
+			
+			/* Define the skin elements that should not be colorized.
+			For slider, the skin itself is colorized but the individual parts are not. */
+			static private const exclusions:Array = ["track", "thumb"];
+			
+			override public function get colorizeExclusions():Array {
+				return exclusions;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Text;
+			
+			import sg.edu.smu.ksketch.utilities.KAppState;
+			
+			import spark.components.HSlider;
+			
+			public static const TICK_MAX_LENGTH:Number = 20;
+			public static const TEXTPOOL_SIZE:int = 50;
+			private var textPool:Vector.<Text>;
+			private var sliderMax:Number = 0;
+			
+			override protected function initializationComplete():void {
+				useChromeColor = true;
+				super.initializationComplete();
+				textPool = new Vector.<Text>();
+				
+				while(textPool.length < TEXTPOOL_SIZE)
+				{
+					var newText:Text = new Text();
+					newText.selectable = false;
+					newText.mouseEnabled = false;
+					newText.scaleX = 0.8;
+					newText.scaleY = 0.8;
+					textPool.push(newText);
+				}
+			}
+			
+			override protected function measure():void {
+				// Temporarily move the thumb to the left of the Slider so measurement
+				// doesn't factor in its x position. This allows resizing the
+				// HSlider to less than 100px in width.
+				var thumbPos:Number = thumb.getLayoutBoundsX();
+				thumb.setLayoutBoundsPosition(0, thumb.getLayoutBoundsY());
+				super.measure();
+				thumb.setLayoutBoundsPosition(thumbPos, thumb.getLayoutBoundsY());
+			}
+			
+			/**
+			 * Probably a better way of doing this
+			 */
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+				drawTickMarks();
+			}
+			
+			public function drawTickMarks():void {
+
+				var slider:spark.components.HSlider = hostComponent;
+
+				//Find the maximum time (in seconds to be drawn)
+				sliderMax = slider.maximum*KAppState.ANIMATION_INTERVAL;
+				
+				var drawLayer:Graphics = ticks.graphics;
+				drawLayer.clear();
+				ticks.removeAllElements();
+				
+				var maxNum:int = sliderMax/1000;
+				if(maxNum <= 10)
+					drawQuarters(drawLayer, slider, maxNum);
+				else if(maxNum <= 20)
+					drawSeconds(drawLayer, slider, maxNum);
+				else if(maxNum <= 100)
+					drawFiveSeconds(drawLayer, slider, maxNum);
+				else if(maxNum > 100)
+					drawTenSeconds(drawLayer, slider, maxNum);
+				
+				
+			}
+			
+			public function drawQuarters(drawLayer:Graphics, slider:HSlider, maxNum:int):void
+			{
+				//Find the drawable width, flash keeps a space at the end of the slider == width of thumb.
+				var drawableWidth:Number = slider.width - (slider.thumb.width);
+				
+				var prevProportion:Number = 0;
+				var quarterProportion:Number = (1/maxNum)*0.25;
+				var proportion:Number;
+				
+				var timeText:Text;
+				
+				var tickX:Number;
+				drawLayer.lineStyle(2, 0x5E6873);	
+				
+				var i:int;
+				var textIndex:int = 0;
+				for(i=0; i<= maxNum; i++)
+				{
+					proportion = (i*1000)/sliderMax;
+					
+					//Draw the long ticks at the seconds
+					tickX = proportion*drawableWidth;
+					drawLayer.moveTo(tickX, slider.height-3);
+					drawLayer.lineTo(tickX, slider.height-TICK_MAX_LENGTH);
+					
+					//Add the texts at the significant values
+					addText(textIndex, tickX, slider.width, i);
+					textIndex++;
+					
+					//Draw the quarter tick at the first quarter second mark
+					tickX = (prevProportion + quarterProportion)*drawableWidth;
+					drawLayer.moveTo(tickX, slider.height-3);
+					drawLayer.lineTo(tickX, slider.height-(TICK_MAX_LENGTH*0.5));
+					
+					//Draw the half tick at the half second mark
+					tickX = (prevProportion + (2*quarterProportion))*drawableWidth;
+					drawLayer.moveTo(tickX, slider.height-3);
+					drawLayer.lineTo(tickX, slider.height-(TICK_MAX_LENGTH*0.75));
+					
+					//Draw the quarter tick at the third quarter second mark
+					tickX = (prevProportion + (3*quarterProportion))*drawableWidth;
+					drawLayer.moveTo(tickX, slider.height-3);
+					drawLayer.lineTo(tickX, slider.height-(TICK_MAX_LENGTH*0.5));
+					
+					prevProportion = proportion;
+				}
+			}
+			
+			public function drawSeconds(drawLayer:Graphics, slider:HSlider, maxNum:int):void
+			{
+				//Find the drawable width, flash keeps a space at the end of the slider == width of thumb.
+				var drawableWidth:Number = slider.width - (slider.thumb.width);
+				
+				var prevProportion:Number = 0;
+				var quarterProportion:Number = (1/maxNum)*0.25;
+				var proportion:Number;
+				
+				var timeText:Text;
+				
+				var tickX:Number;
+				drawLayer.lineStyle(2, 0x5E6873);	
+				
+				var i:int;
+				var textIndex:int = 0;
+				for(i=0; i<= maxNum; i++)
+				{
+					proportion = (i*1000)/sliderMax;
+					
+					//Draw the long ticks at the seconds
+					tickX = proportion*drawableWidth;
+					drawLayer.moveTo(tickX, slider.height-3);
+					drawLayer.lineTo(tickX, slider.height-TICK_MAX_LENGTH);
+					
+					//Add the texts at the significant values
+					addText(textIndex, tickX, slider.width, i);
+					textIndex++;
+					
+					//Draw the half tick at the half second mark
+					tickX = (prevProportion + (2*quarterProportion))*drawableWidth;
+					drawLayer.moveTo(tickX, slider.height-3);
+					drawLayer.lineTo(tickX, slider.height-(TICK_MAX_LENGTH*0.75));
+					
+					prevProportion = proportion;
+				}
+			}
+			
+			public function drawFiveSeconds(drawLayer:Graphics, slider:HSlider, maxNum:int):void
+			{
+				//Find the drawable width, flash keeps a space at the end of the slider == width of thumb.
+				var drawableWidth:Number = slider.width - (slider.thumb.width);
+				
+				var prevProportion:Number = 0;
+				var proportion:Number;
+				var timeText:Text;
+				
+				var tickX:Number;
+				drawLayer.lineStyle(2, 0x5E6873);	
+				
+				var i:int;
+				var textIndex:int = 0;
+				for(i=0; i<= maxNum; i+=5)
+				{
+					proportion = (i*1000)/sliderMax;
+					
+					//Draw the long ticks at the seconds
+					tickX = proportion*drawableWidth;
+					drawLayer.moveTo(tickX, slider.height-3);
+					drawLayer.lineTo(tickX, slider.height-TICK_MAX_LENGTH);
+					
+					//Add the texts at the significant values
+					addText(textIndex, tickX, slider.width, i);
+					textIndex++;
+					
+					prevProportion = proportion;
+				}
+			}
+			
+			public function drawTenSeconds(drawLayer:Graphics, slider:HSlider, maxNum:int):void
+			{
+				//Find the drawable width, flash keeps a space at the end of the slider == width of thumb.
+				var drawableWidth:Number = slider.width - (slider.thumb.width);
+				
+				var prevProportion:Number = 0;
+				var halfProportion:Number = (10/maxNum)*0.5;
+				var proportion:Number;
+				
+				var timeText:Text;
+				
+				var tickX:Number;
+				drawLayer.lineStyle(2, 0x5E6873);	
+				
+				var i:int;
+				var textIndex:int = 0;
+				for(i=0; i<= maxNum; i+=10)
+				{
+					proportion = (i*1000)/sliderMax;
+					
+					//Draw the long ticks at the seconds
+					tickX = proportion*drawableWidth;
+					drawLayer.moveTo(tickX, slider.height-3);
+					drawLayer.lineTo(tickX, slider.height-TICK_MAX_LENGTH);
+					addText(textIndex, tickX, slider.width, i);
+					textIndex++;
+					
+					//Draw the half tick at the half second mark
+					tickX = (prevProportion + halfProportion)*drawableWidth;
+					drawLayer.moveTo(tickX, slider.height-3);
+					drawLayer.lineTo(tickX, slider.height-(TICK_MAX_LENGTH*0.75));
+					
+					prevProportion = proportion;
+				}
+			}
+			
+			//Adds a text to given position
+			public function addText(textIndex:int, textPos:Number, maxWidth:Number, textNumber:int):void
+			{
+				var timeText:Text;
+				
+				//Calls pre-instantialised text else make new one
+				if(textIndex < textPool.length)
+				{
+					timeText = textPool[textIndex];
+				}
+				else
+				{
+					timeText = new Text();
+					timeText.selectable = false;
+					timeText.mouseEnabled = false;
+					timeText.scaleX = 0.8;
+					timeText.scaleY = 0.8;
+				}
+
+				timeText.x = textPos;
+				if((timeText.x+timeText.width) > maxWidth)
+					timeText.x = maxWidth - timeText.width;
+				timeText.y = 5;
+				timeText.text = textNumber.toString();
+				ticks.addElement(timeText);
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!--- The tooltip used in the mx.controls.Slider control. To customize the DataTip's appearance, create a custom HSliderSkin class.-->
+		<fx:Component id="dataTip">
+			<s:DataRenderer minHeight="24" minWidth="40" y="-34">
+				<s:Rect top="0" left="0" right="0" bottom="0">
+					<s:fill>
+						<s:SolidColor color="0x000000" alpha="0.9"/>
+					</s:fill>
+					<s:filters>
+						<s:DropShadowFilter angle="90" color="0x999999" distance="3"/>
+					</s:filters>
+				</s:Rect>
+				<s:Label id="labelDisplay" text="{data}"
+						 horizontalCenter="0" verticalCenter="1"
+						 left="5" right="5" top="5" bottom="5"
+						 textAlign="center" verticalAlign="middle"
+						 fontWeight="normal" color="white" fontSize="11">
+				</s:Label>
+			</s:DataRenderer>
+		</fx:Component>
+	</fx:Declarations>
+	
+	<!--- The default skin class is HSliderTrackSkin. -->
+	<s:Button id="track" left="0" right="0" top="0" bottom="0" minWidth="33" width="100" skinClass="sg.edu.smu.playsketch.components.skins.TimeSliderTrackSkin"/>
+	
+	<!--- The default skin class is HSliderThumbSkin. -->
+	<s:Button id="thumb" top="0" bottom="0" width="11" height="11" skinClass="sg.edu.smu.playsketch.components.skins.TimeSliderThumbSkin"/>
+	<s:Group id="ticks" mouseChildren="false" mouseEnabled="false"/>
+</s:SparkSkin>

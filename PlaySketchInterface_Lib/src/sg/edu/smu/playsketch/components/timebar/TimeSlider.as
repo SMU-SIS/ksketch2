@@ -33,7 +33,6 @@ package sg.edu.smu.playsketch.components.timebar
 		override public function set maximum(value:Number):void
 		{
 			super.maximum = value;
-			trace(skin);
 			if(skin)
 				(skin as TimeSliderSkin).drawTickMarks();
 		}

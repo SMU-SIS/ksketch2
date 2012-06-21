@@ -260,7 +260,7 @@
 					</s:Rect>
 					<s:Group width="100%" height="100%">
 						<s:layout>
-							<s:HorizontalLayout gap="3" paddingLeft="3" paddingTop="3" paddingBottom="3"/>
+							<s:HorizontalLayout gap="3" paddingLeft="3" paddingTop="3"/>
 						</s:layout>
 						
 						<s:Group>
@@ -268,7 +268,7 @@
 								<s:VerticalLayout/>
 							</s:layout>
 							<local:Button_Play id="btn_play"/>
-							<s:Group height="5"/>
+							<s:Group height="3"/>
 						</s:Group>
 						<local:Button_Rewind id="btn_firstFrame"/>
 						<local:Button_PrevFrame id="btn_previous"/>

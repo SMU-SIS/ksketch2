@@ -53,6 +53,7 @@ import mx.core.IFlexDisplayObject;
 import mx.core.UIComponent;
 import mx.events.CloseEvent;
 import mx.events.IndexChangedEvent;
+import mx.flash.UIMovieClip;
 import mx.graphics.codec.JPEGEncoder;
 import mx.graphics.codec.PNGEncoder;
 import mx.managers.PopUpManager;
@@ -172,9 +173,9 @@ private function _initLoggableButtons():void
 	group_fileOps.btn_new.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_fileOps.btn_load.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_fileOps.btn_save.addEventListener(MouseEvent.CLICK, _handleButton);
-	//group_editOps.btn_cut.addEventListener(MouseEvent.CLICK, _handleButton);
-	//group_editOps.btn_copy.addEventListener(MouseEvent.CLICK, _handleButton);
-	//group_editOps.btn_paste.addEventListener(MouseEvent.CLICK, _handleButton);
+	group_editOps.btn_cut.addEventListener(MouseEvent.CLICK, _handleButton);
+	group_editOps.btn_copy.addEventListener(MouseEvent.CLICK, _handleButton);
+	group_editOps.btn_paste.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_viewOps.btn_undo.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_viewOps.btn_redo.addEventListener(MouseEvent.CLICK, _handleButton);	
 	group_groupOps.btn_group.addEventListener(MouseEvent.CLICK, _handleButton);
@@ -217,9 +218,9 @@ private function _getButtonMappings():Dictionary
 
 private function _handleButton(event:MouseEvent):void
 {	
-	if (event.target is UIComponent)
+	if (event.currentTarget is UIComponent || event.currentTarget is UIMovieClip)
 	{
-		var command:String = _buttonMapping[event.target];
+		var command:String = _buttonMapping[event.currentTarget];
 		if (command == KLogger.BTN_SAVE)
 		{
 			_commandExecutor.saveWithListener(function(e:Event):void

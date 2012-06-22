@@ -50,7 +50,8 @@ package sg.edu.smu.ksketch.interactor
 					_interact(commandNode);
 					break;
 				case KLogger.INTERACTION_DESELECT:
-					_interact(commandNode);
+			//		_interact(commandNode);
+					_appState.selection = null;
 					break;
 				case KLogger.INTERACTION_DRAW:
 					_interact(commandNode);
@@ -115,7 +116,7 @@ package sg.edu.smu.ksketch.interactor
 					_appState.redo();
 					break;
 				case KLogger.INTERACTION_GESTURE:
-					_gesture(commandNode);
+					_redoGesture(commandNode);
 					break;
 				default:
 					_doOtherCommand(command,commandNode);
@@ -351,6 +352,29 @@ package sg.edu.smu.ksketch.interactor
 			_dispatchMouseMoveAndUpEvents(path);		
 		}
 
+		// Ignore toggle pen/eraser gesture, as it is also log as a Pen/Eraser button command
+		private function _redoGesture(commandNode:XML):void
+		{
+			var match:String = commandNode.attribute(KLogger.MATCH).toString();
+			switch (match)
+			{
+				case GestureDesign.NAME_PRE_CUT:				
+					_redo();					
+					break;
+				case GestureDesign.NAME_PRE_PASTE:
+					_redo();
+					break;
+				case GestureDesign.NAME_PRE_REDO:					
+					_redo();
+					break;
+				case GestureDesign.NAME_PRE_UNDO:
+					_undo();
+					break;
+				default:
+					_gesture(commandNode);
+			}	
+		}
+		
 		private function _undoGesture(commandNode:XML):void
 		{
 			var match:String = commandNode.attribute(KLogger.MATCH).toString();

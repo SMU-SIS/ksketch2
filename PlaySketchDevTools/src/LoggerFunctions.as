@@ -48,15 +48,19 @@ public function initLogger(commandExecutor:KLoggerCommandExecutor,xml:XML):void
 		_actionSlider.maximum = KLogger.timeOf(list[list.length-1][KLogger.LOG_TIME]).valueOf();
 		_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
 	}
+	_actionText.addEventListener(MouseEvent.CLICK,_initCommands);
 }
 
 private function _initCommands(e:MouseEvent):void
-{
+{	
 	_actionText.removeEventListener(MouseEvent.CLICK,_initCommands);
 	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);	
 	var length:uint = _actionTable.dataProviderLength;
 	for (var i:int; i < length; i++)
+	{
+		trace(i,_getCommand(i));
 		_commandExecutor.initCommand(_getCommand(i),_commandNodes[i]);
+	}
 	_actionTable.selectedIndex = 0;
 	for (var j:int=length-1; j > 0; j--)
 		_undoCommand(j);

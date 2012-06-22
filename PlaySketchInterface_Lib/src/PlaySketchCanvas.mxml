@@ -266,7 +266,7 @@
 									<s:layout>
 										<s:VerticalLayout gap="0"/>
 									</s:layout>
-									<local:Button_Play id="btn_play"/>
+									<group:Button_PlayPause id="btn_play"/>
 								</s:Group>
 								<local:Button_Rewind id="btn_firstFrame"/>
 								<local:Button_PrevFrame id="btn_previous"/>	

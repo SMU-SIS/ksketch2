@@ -254,6 +254,16 @@ private function _bindComponent(component:UIMovieClip,object:Object,property:Str
 	BindingUtils.bindSetter(fn ,object, property);
 }
 
+private function _playToPause(event:Event):void
+{
+	btn_play.clickPlay();
+}
+
+private function _pauseToPlay(event:Event):void
+{
+	btn_play.clickPause();
+}
+
 private function onCompleteforFLV():void
 {							
 	timeInSeconds=(this.appState.maxPlayTime/62.5)/16;

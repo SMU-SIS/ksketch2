@@ -85,6 +85,11 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	group_zoom.btn_zoomIn.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(true);});
 	group_zoom.btn_zoomOut.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(false);});
 	
+	//Play button state listener
+	appState.addEventListener(KAppState.EVENT_ANIMATION_START, _playToPause);
+	appState.addEventListener(KAppState.EVENT_ANIMATION_STOP, _pauseToPlay);
+	
+	
 	_toogle_TimebarExpand();
 }	
 

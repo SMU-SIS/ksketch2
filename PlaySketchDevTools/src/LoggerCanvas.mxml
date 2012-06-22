@@ -19,7 +19,7 @@
 		<s:VerticalLayout paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 	</s:layout>
 	<s:DataGrid id="_actionTable" width="410" height="200" enabled="false"/>
-	<s:TextArea id="_actionText" width="410" height="100" click="_initCommands(event)" 
+	<s:TextArea id="_actionText" width="410" height="100" 
 				text=">>> Click here to start logger." />
 	<s:HGroup paddingLeft="15">
 		<s:Button id="_firstButton" label="&lt;&lt;" enabled="false" click="_firstCommand(event)" />

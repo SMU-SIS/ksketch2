@@ -30,31 +30,37 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import mx.controls.Text;
-			
 			import sg.edu.smu.ksketch.utilities.KAppState;
 			
 			import spark.components.HSlider;
+			import spark.components.Label;
 			
 			public static const TICK_MAX_LENGTH:Number = 20;
 			public static const TEXTPOOL_SIZE:int = 50;
-			private var textPool:Vector.<Text>;
+			private var textPool:Vector.<Label>;
 			private var sliderMax:Number = 0;
+			private var host:HSlider;
+			private var oldMax:Number;
 			
 			override protected function initializationComplete():void {
 				useChromeColor = true;
 				super.initializationComplete();
-				textPool = new Vector.<Text>();
+				textPool = new Vector.<Label>
 				
 				while(textPool.length < TEXTPOOL_SIZE)
 				{
-					var newText:Text = new Text();
-					newText.selectable = false;
+					var newText:Label = new Label();
 					newText.mouseEnabled = false;
 					newText.scaleX = 0.8;
 					newText.scaleY = 0.8;
 					textPool.push(newText);
+					ticks.addElement(newText);
+					newText.visible = false;
+					newText.includeInLayout = false;
 				}
+				
+				host = hostComponent;
+				oldMax = 0;
 			}
 			
 			override protected function measure():void {
@@ -75,28 +81,42 @@
 				drawTickMarks();
 			}
 			
+			private var drawnProperly:Boolean = false;
+			
 			public function drawTickMarks():void {
-
-				var slider:spark.components.HSlider = hostComponent;
-
+				//trace("drawing ticks");
 				//Find the maximum time (in seconds to be drawn)
-				sliderMax = slider.maximum*KAppState.ANIMATION_INTERVAL;
+				sliderMax = host.maximum*KAppState.ANIMATION_INTERVAL;
 				
 				var drawLayer:Graphics = ticks.graphics;
 				drawLayer.clear();
-				ticks.removeAllElements();
+				
+				if(sliderMax == oldMax)
+					clearText();
+				
+				oldMax = sliderMax;
 				
 				var maxNum:int = sliderMax/1000;
 				if(maxNum <= 10)
-					drawQuarters(drawLayer, slider, maxNum);
+					drawQuarters(drawLayer, host, maxNum);
 				else if(maxNum <= 20)
-					drawSeconds(drawLayer, slider, maxNum);
+					drawSeconds(drawLayer, host, maxNum);
 				else if(maxNum <= 100)
-					drawFiveSeconds(drawLayer, slider, maxNum);
+					drawFiveSeconds(drawLayer, host, maxNum);
 				else if(maxNum > 100)
-					drawTenSeconds(drawLayer, slider, maxNum);
-				
-				
+					drawTenSeconds(drawLayer, host, maxNum);
+			}
+			
+			public function clearText():void
+			{
+				var i:int;
+				var myText:Label;
+				for(i = 0; i<ticks.numElements; i++)
+				{
+					myText = ticks.getElementAt(i) as Label;
+					myText.visible = false;
+					myText.includeInLayout = false;
+				}
 			}
 			
 			public function drawQuarters(drawLayer:Graphics, slider:HSlider, maxNum:int):void
@@ -107,8 +127,6 @@
 				var prevProportion:Number = 0;
 				var quarterProportion:Number = (1/maxNum)*0.25;
 				var proportion:Number;
-				
-				var timeText:Text;
 				
 				var tickX:Number;
 				drawLayer.lineStyle(2, 0x5E6873);	
@@ -156,8 +174,6 @@
 				var quarterProportion:Number = (1/maxNum)*0.25;
 				var proportion:Number;
 				
-				var timeText:Text;
-				
 				var tickX:Number;
 				drawLayer.lineStyle(2, 0x5E6873);	
 				
@@ -192,8 +208,6 @@
 				
 				var prevProportion:Number = 0;
 				var proportion:Number;
-				var timeText:Text;
-				
 				var tickX:Number;
 				drawLayer.lineStyle(2, 0x5E6873);	
 				
@@ -225,8 +239,6 @@
 				var halfProportion:Number = (10/maxNum)*0.5;
 				var proportion:Number;
 				
-				var timeText:Text;
-				
 				var tickX:Number;
 				drawLayer.lineStyle(2, 0x5E6873);	
 				
@@ -255,28 +267,31 @@
 			//Adds a text to given position
 			public function addText(textIndex:int, textPos:Number, maxWidth:Number, textNumber:int):void
 			{
-				var timeText:Text;
+//				return;
+				var timeText:Label;
 				
 				//Calls pre-instantialised text else make new one
-				if(textIndex < textPool.length)
+				if(textIndex >= textPool.length)
 				{
-					timeText = textPool[textIndex];
+					var newText:Label = new Label();
+					newText.mouseEnabled = false;
+					newText.scaleX = 0.8;
+					newText.scaleY = 0.8;
+					textPool.push(newText);
+					ticks.addElement(newText);
+					newText.visible = false;
+					newText.includeInLayout = false;
 				}
-				else
-				{
-					timeText = new Text();
-					timeText.selectable = false;
-					timeText.mouseEnabled = false;
-					timeText.scaleX = 0.8;
-					timeText.scaleY = 0.8;
-				}
+				
+				timeText = textPool[textIndex];
+				timeText.visible = true;
+				//timeText.includeInLayout = true;
 
 				timeText.x = textPos;
 				if((timeText.x+timeText.width) > maxWidth)
 					timeText.x = maxWidth - timeText.width;
 				timeText.y = 5;
 				timeText.text = textNumber.toString();
-				ticks.addElement(timeText);
 			}
 		]]>
 	</fx:Script>

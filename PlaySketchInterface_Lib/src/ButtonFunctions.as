@@ -173,6 +173,8 @@ private function _initLoggableButtons():void
 	group_fileOps.btn_new.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_fileOps.btn_load.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_fileOps.btn_save.addEventListener(MouseEvent.CLICK, _handleButton);
+	group_fileOps.btn_FLV.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{flvWizardWindow()});
+	group_fileOps.btn_IMG.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{imgWizardWindow()});
 	group_editOps.btn_cut.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_editOps.btn_copy.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_editOps.btn_paste.addEventListener(MouseEvent.CLICK, _handleButton);
@@ -180,6 +182,11 @@ private function _initLoggableButtons():void
 	group_viewOps.btn_redo.addEventListener(MouseEvent.CLICK, _handleButton);	
 	group_groupOps.btn_group.addEventListener(MouseEvent.CLICK, _handleButton);
 	group_groupOps.btn_ungroup.addEventListener(MouseEvent.CLICK, _handleButton);
+	group_pen.black.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{_switchPen(0)});
+	group_pen.blue.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{_switchPen(3)});
+	group_pen.red.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{_switchPen(1)});
+	group_pen.green.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{_switchPen(2)});
+	group_pen.eraser.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{_switchPen(4)});
 	_bindComponent(group_fileOps.btn_save, appState, "undoEnabled");	
 	_bindComponent(group_editOps.btn_cut, appState, "copyEnabled");
 	_bindComponent(group_editOps.btn_copy, appState, "copyEnabled");

@@ -18,10 +18,12 @@ package sg.edu.smu.playsketch.components.timebar
 	{
 		private var _timeList:Vector.<Number>;
 		private var _appState:KAppState;
+		private var _skinDrawn:Boolean;
 		
 		public function TimeSlider()
 		{
-			super();
+				super();
+				_skinDrawn = false;
 		}
 		
 		public function init(appState:KAppState):void
@@ -32,9 +34,15 @@ package sg.edu.smu.playsketch.components.timebar
 		
 		override public function set maximum(value:Number):void
 		{
+			if(super.maximum == value && _skinDrawn)
+				return;
+			
 			super.maximum = value;
+			
 			if(skin)
 				(skin as TimeSliderSkin).drawTickMarks();
+			
+			_skinDrawn = true;
 		}
 		
 		/**

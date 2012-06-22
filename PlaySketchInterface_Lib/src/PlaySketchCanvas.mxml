@@ -161,18 +161,10 @@
 				stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 				_fullScreen = true;					
 			}
-			
-			private function _changePen(penIndex:int):void
-			{
-				_switchPen(penIndex);
-			}
-			
+
 			private function _switchPen(index:int):void
 			{
-				/*var itemColors:Array =list_pen_selection.getStyle("alternatingItemColors");
-				list_pen_selection.setStyle("selectionColor",itemColors[index]);
-				list_pen_selection.setStyle("chromeColor",itemColors[index]);
-				_commandExecutor.doButtonCommand(_PEN_COMMANDS[index]);*/
+				_commandExecutor.doButtonCommand(_PEN_COMMANDS[index]);
 			}
 			
 			private function _isImplicitGrouping():Boolean
@@ -277,22 +269,20 @@
 								<s:VerticalLayout horizontalAlign="center"/>
 							</s:layout>
 							<s:Group width="100%" depth="1">
+								<s:Rect width="100%" height="100%" radiusX="10">
+									<s:fill>
+										<s:LinearGradient rotation="90">
+											<s:GradientEntry ratio="0.011378" color="#5D82A8"/>
+											<s:GradientEntry ratio="0.988622" color="#476584"/>
+										</s:LinearGradient>
+									</s:fill>
+								</s:Rect>
 								<s:Group width="100%">
-									<s:Rect width="100%" height="100%" radiusX="10">
-										<s:fill>
-											<s:LinearGradient rotation="90">
-												<s:GradientEntry ratio="0.011378" color="#5D82A8"/>
-												<s:GradientEntry ratio="0.988622" color="#476584"/>
-											</s:LinearGradient>
-										</s:fill>
-									</s:Rect>
-									<s:Group width="100%">
-										<s:layout>
-											<s:VerticalLayout horizontalAlign="center"/>
-										</s:layout>
-										<timebar:TimeSlider width="98%" id="slider_key_index"
-															skinClass="sg.edu.smu.playsketch.components.skins.TimeSliderSkin" height="30"/>
-									</s:Group>
+									<s:layout>
+										<s:VerticalLayout horizontalAlign="center"/>
+									</s:layout>
+									<timebar:TimeSlider width="98%" id="slider_key_index"
+														skinClass="sg.edu.smu.playsketch.components.skins.TimeSliderSkin" height="30"/>
 								</s:Group>
 							</s:Group>
 							
@@ -317,5 +307,4 @@
 			
 		</s:Group>
 	</ksketchcomponents:KCanvas>	
-	
 </s:Group>

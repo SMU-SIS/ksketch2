@@ -25,7 +25,7 @@
 	</fx:Metadata> 
 
 	<local:Button_Thumb id="myThumb"/>
-	<s:Line x="0" xFrom="0" yFrom="0" xTo="0" yTo="100" id="myStroke">
+	<s:Line x="0" xFrom="0" yFrom="0" xTo="0" yTo="200" id="myStroke">
 		<s:stroke>
 			<s:SolidColorStroke color="0x5E6873" weight="2"/>
 		</s:stroke>

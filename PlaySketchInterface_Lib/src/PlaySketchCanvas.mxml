@@ -254,16 +254,33 @@
 						<s:layout>
 							<s:HorizontalLayout gap="3" paddingLeft="3" paddingTop="3"/>
 						</s:layout>
-						
 						<s:Group>
 							<s:layout>
-								<s:VerticalLayout/>
+								<s:VerticalLayout gap="2" horizontalAlign="right"/>
 							</s:layout>
-							<local:Button_Play id="btn_play"/>
-							<s:Group height="3"/>
+							<s:Group>
+								<s:layout>
+									<s:HorizontalLayout gap="1"/>
+								</s:layout>
+								<s:Group>
+									<s:layout>
+										<s:VerticalLayout gap="0"/>
+									</s:layout>
+									<local:Button_Play id="btn_play"/>
+								</s:Group>
+								<local:Button_Rewind id="btn_firstFrame"/>
+								<local:Button_PrevFrame id="btn_previous"/>	
+							</s:Group>
+							<s:Group id="symbols">
+								<s:layout>
+									<s:VerticalLayout gap="5" paddingTop="5"/>
+								</s:layout>
+								<local:Symbol_Translate/>
+								<local:Symbol_Rotate scaleX="0.9" scaleY="0.9"/>
+								<local:Symbol_Scale scaleX="0.9" scaleY="0.9"/>
+							</s:Group>
 						</s:Group>
-						<local:Button_Rewind id="btn_firstFrame"/>
-						<local:Button_PrevFrame id="btn_previous"/>
+
 						<s:Group width="100%">
 							<s:layout>
 								<s:VerticalLayout horizontalAlign="center"/>

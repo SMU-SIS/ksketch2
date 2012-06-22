@@ -6,17 +6,26 @@
 -->
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="0" height="15">
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
 	<fx:Script>
 		<![CDATA[
+			import sg.edu.smu.ksketch.operation.KTransformMgr;
+			
+			public static const SELECTED_OVERVIEW_COLORS:Array = [0x000000, 0xE6E8ED];
+			public static const UNSELECTED_OVERVIEW_COLORS:Array = [0x8D9095,0x6D6E70];
+			public static const ROTATE_COLORS:Array = [0xFFFFFF,0x00FF00];
+			public static const SCALE_COLORS:Array = [0xFFFFFF, 0xFF0000];
+			public static const TRANSLATE_COLORS:Array = [0xFFFFFF,0x0000FF];
 			
 			private var _leftMarker:Marker;
 			private var _rightMarker:Marker;
 			public var selected:Boolean;
+			public var colorSet:Array;
+			public var type:int;
 			
 			public function initBar(left:Marker, right:Marker):void
 			{
@@ -28,53 +37,47 @@
 					selected = true;
 				_leftMarker.activityBars.push(this);
 				_rightMarker.activityBars.push(this);
+				
+				switch(leftMarker.type)
+				{
+					case TimeWidget.OVERVIEW:
+						colorSet = [];
+						bar.height = 7;
+						break;
+					case TimeWidget.TRANSLATE:
+						colorSet = TRANSLATE_COLORS
+						break;
+					case TimeWidget.ROTATE:
+						colorSet = ROTATE_COLORS
+						break;
+					case TimeWidget.SCALE:
+						colorSet = SCALE_COLORS
+						break;
+				}
 			}
 			
 			public function renderBar():void
 			{
+				//Compute xpos of this bar and its width
 				x = _leftMarker.x+_leftMarker.width*0.75 - 2;
-				bar.width = _rightMarker.x +_rightMarker.width*0.25 - x;
+				width = _rightMarker.x +_rightMarker.width*0.25 - x;
 				
-				if(_rightMarker.hasTransform)
+				if(_leftMarker.type == TimeWidget.OVERVIEW)
 				{
-					if(_leftMarker.type == TimeWidget.OVERVIEW)
-					{
-						barOutline.weight = 2;
-						barOutline.color = 0x000000;
-						bar.height = 8;
-						bar.y = 3.5;
-						barFill.color = _leftMarker.markerFill.color;
-					}
+					if(_leftMarker.selected)
+						colorSet = SELECTED_OVERVIEW_COLORS;
 					else
-					{
-						bar.y = 1.5;
-						bar.height = 12;
-						barFill.alpha = 1.0;
-						barOutline.alpha = 0;
-						barFill.color = _leftMarker.markerColor;
-					}
-					
-					
+						colorSet = UNSELECTED_OVERVIEW_COLORS;
 				}
 				else
 				{
-					if(_leftMarker.type == TimeWidget.OVERVIEW)
-					{
-						bar.height = 4;
-						bar.y = 4.5;
-						barFill.color = _leftMarker.markerFill.color;
-					}
+					if(!_rightMarker.hasTransform)
+						bar.alpha = 0.3;
 					else
-					{
-						bar.y = 1.5;
-						bar.height = 12;
-						barFill.alpha = 0.15;
-						barOutline.alpha = 0;
-						barFill.color = _leftMarker.markerColor;
-					}
-					
-					
+						bar.alpha = 1.0;
 				}
+				barOutline.color = colorSet[0];
+				barFill.color = colorSet[1];
 			}
 
 			public function get leftMarker():Marker
@@ -99,9 +102,9 @@
 		]]>
 	</fx:Script>
 	
-	<s:Rect height="4" id="bar" width="0" y="8">                           
+	<s:Rect height="19" width="100%" id="bar">                           
 		<s:stroke>
-			<s:SolidColorStroke color="0x000000" weight="1" id="barOutline"/>
+			<s:SolidColorStroke color="0x000000" weight="0.5" id="barOutline"/>
 		</s:stroke>
 		<s:fill>
 			<s:SolidColor color="0x000000" alpha="1" id="barFill"/>

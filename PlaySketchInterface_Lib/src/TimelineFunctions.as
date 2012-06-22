@@ -291,6 +291,8 @@ private function _toogle_TimebarExpand():void
 		expandedWidget1.includeInLayout = false;
 		expandedWidget2.includeInLayout = false;
 		expandedWidget3.includeInLayout = false;
+		symbols.visible = false;
+		symbols.includeInLayout = false;
 		_timeBar_toogled = false;
 	}
 	else
@@ -301,6 +303,8 @@ private function _toogle_TimebarExpand():void
 		expandedWidget1.includeInLayout = true;
 		expandedWidget2.includeInLayout = true;
 		expandedWidget3.includeInLayout = true;
+		symbols.visible = true;
+		symbols.includeInLayout = true;
 		_timeBar_toogled = true;
 	}
 	

@@ -6,7 +6,7 @@
 -->
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="20" borderWeight="0" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="25" borderWeight="0" 
 		 xmlns:timebar="sg.edu.smu.playsketch.components.timebar.*">
 	<fx:Script>
 		<![CDATA[
@@ -533,8 +533,36 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Group id="barContainer" y="2.5"/>
-	<s:Group id="markerContainer" y="2.5"/>
-	<s:Group id="selectedBarContainer" y="2.5" />
-	<s:Group id="selectedMarkerContainer" y="2.5"/>
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="0x36466E"/>
+				<s:GradientEntry color="0x557695"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="barContainer"/>
+	</s:Group>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="markerContainer"/>
+	</s:Group>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="selectedBarContainer"/>
+	</s:Group>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="selectedMarkerContainer"/>
+	</s:Group>
 </s:BorderContainer>

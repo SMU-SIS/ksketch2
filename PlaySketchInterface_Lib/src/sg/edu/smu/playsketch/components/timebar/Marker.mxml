@@ -6,7 +6,7 @@
 -->
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="11" height="15">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="12" height="21">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -27,16 +27,6 @@
 			private var _color:uint;
 			private var _barThickness:Number;
 
-			public function get markerColor():uint
-			{
-				return _color;
-			}
-
-			public function set markerColor(value:uint):void
-			{
-				_color = value;
-			}
-
 			public function get activityBars():Vector.<ActivityBar>
 			{
 				if(!_activityBars)
@@ -50,7 +40,6 @@
 					_activityBars = new Vector.<ActivityBar>();
 				_activityBars = value;
 			}
-
 
 			public function init():void
 			{
@@ -87,19 +76,9 @@
 			{
 				_selected = value;
 				if(_selected)
-				{
-					markerOutline.color = 0x0000;
-					markerOutline.weight = 2
-					markerFill.color = 0xFFFFFF;
-					markerRect.height = 13;
-				}
+					currentState = "SELECTED"
 				else
-				{
-					markerRect.height = 15;
-					markerOutline.weight = 0;
-					markerOutline.color = 0x000000;
-					markerFill.color = 0x000000;
-				}
+					currentState = "UNSELECTED"
 			}
 
 			public function get type():int
@@ -206,13 +185,24 @@
 			
 		]]>
 	</fx:Script>
-	
-	<s:Rect height="15" width="11" id="markerRect">                              
+	<s:states>
+		<s:State name="SELECTED"/>
+		<s:State name="UNSELECTED"/>
+	</s:states>
+	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="UNSELECTED">                              
 		<s:stroke>
-			<s:SolidColorStroke color="0x000000" weight="0" id="markerOutline"/>
+			<s:SolidColorStroke color="0x8D9095" weight="1"/>
 		</s:stroke>
 		<s:fill>
-			<s:SolidColor color="0x000000" alpha="1" id="markerFill"/>
+			<s:SolidColor color="0x6d6e70" alpha="1"/>
+		</s:fill>
+	</s:Rect>
+	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="SELECTED">                              
+		<s:stroke>
+			<s:SolidColorStroke color="0x000000" weight="0"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="0xE6E8ED" alpha="1"/>
 		</s:fill>
 	</s:Rect>
 </s:Group>

@@ -41,6 +41,7 @@
 			
 			private var _fullScreen:Boolean = false;
 			private var _facade:KModelFacade;
+			private var _logTrigger:Function;
 			
 			//Cursor embedding
 			[Embed(source="assets/black_pen.png")]
@@ -114,7 +115,7 @@
 
 			public function setLogTrigger(trigger:Function):void
 			{
-				btn_log.addEventListener(MouseEvent.CLICK, trigger);
+				_logTrigger = trigger;
 			}
 			
 			public function setDebugTrigger(trigger:Function):void
@@ -138,6 +139,9 @@
 					case 70: //f key
 						handleFullScreen();																				
 						break;
+					case 76: //l key
+						_logTrigger(new MouseEvent(MouseEvent.CLICK));													
+						break;
 					case 77: //m key
 						_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_PASTE_WITH_MOTION);
 						break;
@@ -154,6 +158,11 @@
 							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_UNDO);
 						break;
 				}
+			}
+			
+			public function showLogScreen():void
+			{
+			
 			}
 			
 			public function handleFullScreen():void
@@ -213,7 +222,6 @@
 
 					<!--Stretchable part of the top bar-->
 					<s:Group id = "topBar_resizableContainer" width="100%"/>
-					<s:Button id="btn_log" width="44" height="24" label="Log" />
 					<group:Group_Settings id="group_configOps"/>
 						
 					

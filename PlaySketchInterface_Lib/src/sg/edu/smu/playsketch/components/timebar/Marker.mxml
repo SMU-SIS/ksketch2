@@ -191,10 +191,10 @@
 	</s:states>
 	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="UNSELECTED">                              
 		<s:stroke>
-			<s:SolidColorStroke color="0x8D9095" weight="1"/>
+			<s:SolidColorStroke color="0x6d6e70" weight="1"/>
 		</s:stroke>
 		<s:fill>
-			<s:SolidColor color="0x6d6e70" alpha="1"/>
+			<s:SolidColor color="0xadb2bb" alpha="1"/>
 		</s:fill>
 	</s:Rect>
 	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="SELECTED">                              

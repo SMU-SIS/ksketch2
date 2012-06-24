@@ -16,10 +16,10 @@
 			import sg.edu.smu.ksketch.operation.KTransformMgr;
 			
 			public static const SELECTED_OVERVIEW_COLORS:Array = [0x000000, 0xE6E8ED];
-			public static const UNSELECTED_OVERVIEW_COLORS:Array = [0x8D9095,0x6D6E70];
-			public static const ROTATE_COLORS:Array = [0xFFFFFF,0x45ac7e];
-			public static const SCALE_COLORS:Array = [0xFFFFFF, 0xce4451];
-			public static const TRANSLATE_COLORS:Array = [0xFFFFFF,0x2689b2];
+			public static const UNSELECTED_OVERVIEW_COLORS:Array = [0x7e7f82,0x8f9094];
+			public static const ROTATE_COLORS:Array = [0xFFFFFF,[0x52af86,0X5ad9a0]];
+			public static const SCALE_COLORS:Array = [0xFFFFFF, [0xc6394a,0xe44759]];
+			public static const TRANSLATE_COLORS:Array = [0xFFFFFF,[0x1c87b1,0x2599c7]];
 			
 			private var _leftMarker:Marker;
 			private var _rightMarker:Marker;
@@ -65,9 +65,21 @@
 				if(_leftMarker.type == TimeWidget.OVERVIEW)
 				{
 					if(_leftMarker.selected)
+					{
 						colorSet = SELECTED_OVERVIEW_COLORS;
+						barOutline.color = colorSet[0];
+						entry1.color = colorSet[1];
+						entry2.color = colorSet[1];
+					}
 					else
+					{
 						colorSet = UNSELECTED_OVERVIEW_COLORS;
+						barOutline.color = colorSet[0];
+						entry1.color = colorSet[0];
+						entry2.color = colorSet[1];
+
+					}
+					
 				}
 				else
 				{
@@ -75,9 +87,11 @@
 						bar.alpha = 0.3;
 					else
 						bar.alpha = 1.0;
+					
+					barOutline.color = colorSet[0];
+					entry1.color = colorSet[1][0];
+					entry2.color = colorSet[1][1];
 				}
-				barOutline.color = colorSet[0];
-				barFill.color = colorSet[1];
 			}
 
 			public function get leftMarker():Marker
@@ -107,7 +121,10 @@
 			<s:SolidColorStroke color="0x000000" weight="0.5" id="barOutline"/>
 		</s:stroke>
 		<s:fill>
-			<s:SolidColor color="0x000000" alpha="1" id="barFill"/>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry id="entry1" ratio="0.44"/>
+				<s:GradientEntry id="entry2" ratio="0.77"/>
+			</s:LinearGradient>
 		</s:fill>
 	</s:Rect>
 </s:Group>

@@ -413,12 +413,11 @@
 			 */
 			private function _computeAppMaxTime():void
 			{
-				if(widget_max_time <= 4000)
-					_appState.maxTime = 5000;
+				if(widget_max_time <= 0.8*KAppState.DEFAULT_MAX_TIME)
+					_appState.maxTime = KAppState.DEFAULT_MAX_TIME;
 				else
 				{
-					var currentRoundedTime:Number = Math.ceil(widget_max_time/1000)*1000;
-					_appState.maxTime = currentRoundedTime*_MAXTIME_ALLOWANCE_FACTOR;
+					_appState.maxTime = (widget_max_time/KAppState.DEFAULT_MAX_TIME)*KAppState.DEFAULT_MAX_TIME+KAppState.DEFAULT_MAX_TIME;
 				}
 			}
 			

@@ -17,9 +17,9 @@
 			
 			public static const SELECTED_OVERVIEW_COLORS:Array = [0x000000, 0xE6E8ED];
 			public static const UNSELECTED_OVERVIEW_COLORS:Array = [0x8D9095,0x6D6E70];
-			public static const ROTATE_COLORS:Array = [0xFFFFFF,0x00FF00];
-			public static const SCALE_COLORS:Array = [0xFFFFFF, 0xFF0000];
-			public static const TRANSLATE_COLORS:Array = [0xFFFFFF,0x0000FF];
+			public static const ROTATE_COLORS:Array = [0xFFFFFF,0x45ac7e];
+			public static const SCALE_COLORS:Array = [0xFFFFFF, 0xce4451];
+			public static const TRANSLATE_COLORS:Array = [0xFFFFFF,0x2689b2];
 			
 			private var _leftMarker:Marker;
 			private var _rightMarker:Marker;

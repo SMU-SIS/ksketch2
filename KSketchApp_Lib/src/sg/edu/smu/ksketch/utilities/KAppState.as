@@ -156,11 +156,11 @@ package sg.edu.smu.ksketch.utilities
 		
 		public function KAppState()
 		{
-			_undoEnabled = false;
+			_undoEnabled = true;
 			if(_undoEnabled)
 				_undoStack = new Vector.<IModelOperation>();
 			
-			_redoEnabled = false;
+			_redoEnabled = true;
 			if(_redoEnabled)
 				_redoStack = new Vector.<IModelOperation>();
 			

@@ -54,6 +54,7 @@
 				upState = simpleButton.upState;
 				downState = simpleButton.downState;
 				simpleButton.upState = downState;	
+			//	[_BLACK_PEN,_RED_PEN,_GREEN_PEN,_BLUE_PEN,_ERASER];
 			}
 			
 			public function setButtonUp(button:MovieClip):void

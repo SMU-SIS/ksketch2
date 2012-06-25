@@ -189,7 +189,7 @@
 		<s:State name="SELECTED"/>
 		<s:State name="UNSELECTED"/>
 	</s:states>
-	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="UNSELECTED">                              
+	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="UNSELECTED" x="-6">                              
 		<s:stroke>
 			<s:SolidColorStroke color="0x6d6e70" weight="1"/>
 		</s:stroke>
@@ -197,7 +197,7 @@
 			<s:SolidColor color="0xadb2bb" alpha="1"/>
 		</s:fill>
 	</s:Rect>
-	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="SELECTED">                              
+	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="SELECTED" x="-6">                              
 		<s:stroke>
 			<s:SolidColorStroke color="0x000000" weight="0"/>
 		</s:stroke>

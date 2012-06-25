@@ -114,8 +114,7 @@ package sg.edu.smu.ksketch.components
 			_initStatesMachine(_widget);
 			_startStateMachine();
 			
-			_initiated = true;
-			createChildren();
+			_interactorManager.activateOn(_facade, _appState, this, _widget);
 			
 		}
 		
@@ -223,16 +222,6 @@ package sg.edu.smu.ksketch.components
 		public function get contentScale():Number
 		{
 			return _contentScale;
-		}
-		
-		protected override function createChildren():void
-		{	
-			super.createChildren();
-			
-			if(_initiated)
-			{
-				_interactorManager.activateOn(_facade, _appState, this, _widget);
-			}
 		}
 		
 		private function _initStatesMachine(widget:IWidget):void

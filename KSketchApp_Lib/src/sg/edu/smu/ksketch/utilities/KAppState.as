@@ -156,18 +156,22 @@ package sg.edu.smu.ksketch.utilities
 		
 		public function KAppState()
 		{
+			_undoEnabled = false;
+			if(_undoEnabled)
+				_undoStack = new Vector.<IModelOperation>();
+			
+			_redoEnabled = false;
+			if(_redoEnabled)
+				_redoStack = new Vector.<IModelOperation>();
+			
 			_time = 0;
 			_selection = null;
-			_undoStack = new Vector.<IModelOperation>();
-			_redoStack = new Vector.<IModelOperation>();
 			_ctrlEnabled = true;
 			_altEnabled = true;
 			_pgUpEnabled = true;
 			_pgDownEnabled = true;
 			_groupSelectMode = SELECTION_GROUP_AND_STROKE;
 			_groupingMode = GROUPING_IMPLICIT_DYNAMIC;
-			_undoEnabled = true;
-			_redoEnabled = true;
 			_pasteEnabled = false;
 			_ungroupEnabled = false;
 			
@@ -387,6 +391,8 @@ package sg.edu.smu.ksketch.utilities
 		
 		public function undo():void
 		{ 
+			if(!_undoEnabled)
+				return;
 			
 			var undoOperation:IModelOperation = _undoStack.pop();
 			if(undoOperation != null)
@@ -402,7 +408,9 @@ package sg.edu.smu.ksketch.utilities
 		
 		public function redo():void
 		{
-			
+			if(!_redoEnabled)
+				return;
+
 			var redoOperation:IModelOperation = _redoStack.pop();
 			if(redoOperation != null)
 			{			
@@ -419,6 +427,9 @@ package sg.edu.smu.ksketch.utilities
 		
 		public function addOperation(operation:IModelOperation):void
 		{
+			if(!_undoEnabled || !_redoEnabled)
+				return;
+			
 			_undoStack.push(operation);
 			_redoStack.length = 0;
 			_fireUndoRedoEvent();

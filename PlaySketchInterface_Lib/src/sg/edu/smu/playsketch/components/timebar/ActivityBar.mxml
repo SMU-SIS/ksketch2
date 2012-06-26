@@ -15,6 +15,7 @@
 		<![CDATA[
 			import sg.edu.smu.ksketch.operation.KTransformMgr;
 			
+			public static const BAR_GAP:Number = 2.5;
 			public static const SELECTED_OVERVIEW_COLORS:Array = [0x000000, 0xE6E8ED];
 			public static const UNSELECTED_OVERVIEW_COLORS:Array = [0x7e7f82,0x8f9094];
 			public static const ROTATE_COLORS:Array = [0xFFFFFF,[0x52af86,0X5ad9a0]];
@@ -59,8 +60,8 @@
 			public function renderBar():void
 			{
 				//Compute xpos of this bar and its width
-				x = _leftMarker.x+_leftMarker.width*0.75 - 2;
-				width = _rightMarker.x +_rightMarker.width*0.25 - x;
+				x = _leftMarker.x+BAR_GAP;
+				width = _rightMarker.x - _leftMarker.x - BAR_GAP;
 				
 				if(_leftMarker.type == TimeWidget.OVERVIEW)
 				{

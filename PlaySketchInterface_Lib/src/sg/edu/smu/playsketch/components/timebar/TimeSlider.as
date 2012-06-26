@@ -1,9 +1,7 @@
-/**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
-
+/**
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+*/
 package sg.edu.smu.playsketch.components.timebar
 {
 	import flash.events.MouseEvent;
@@ -40,9 +38,7 @@ package sg.edu.smu.playsketch.components.timebar
 			super.maximum = value;
 			
 			if(skin)
-				(skin as TimeSliderSkin).drawTickMarks();
-			
-			_skinDrawn = true;
+				(skin as TimeSliderSkin).drawTrackScale();
 		}
 		
 		/**

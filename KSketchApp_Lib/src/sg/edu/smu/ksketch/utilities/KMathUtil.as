@@ -294,5 +294,13 @@ package sg.edu.smu.ksketch.utilities
 			
 			return new Point(r, theta);
 		}
+		
+		/**
+		 *Rounds given number to the nearest frame boundary
+		 */
+		public static function nearestFrameBoundary(value:Number):Number
+		{
+			return Math.round(value/KAppState.ANIMATION_INTERVAL)*KAppState.ANIMATION_INTERVAL;
+		}
 	}
 }

@@ -30,6 +30,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.KUngroupUtil;
 	import sg.edu.smu.ksketch.utilities.KAppState;
+	import sg.edu.smu.ksketch.utilities.KMathUtil;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KSaveInfos;
 	import sg.edu.smu.ksketch.utilities.KSavingUserPreferences;
@@ -852,8 +853,8 @@ package sg.edu.smu.ksketch.interactor
 		{
 			if(trackBox.contains(x,y))
 			{
-				var approximateTime:Number = (x-trackBox.x)/trackBox.width*_appState.maxTime;
-				_appState.trackTapTime =  approximateTime - KAppState.ANIMATION_INTERVAL - approximateTime%KAppState.ANIMATION_INTERVAL;
+				var approximateTime:Number = (x-trackBox.x+10)/trackBox.width*_appState.maxTime;
+				_appState.trackTapTime =  KMathUtil.nearestFrameBoundary(approximateTime);
 				return true;
 			}
 			else

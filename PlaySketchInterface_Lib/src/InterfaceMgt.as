@@ -221,7 +221,10 @@ public function set stageAspectRatio(value:Boolean):void
 
 public function computeTrackPositions():void
 {
-	appState.overViewTrackBox = timeWidget.getBounds(this.stage);
+	var sliderTrackBox:Rectangle = slider_key_index.getBounds(this.stage);
+	var overViewTrackBox:Rectangle =  timeWidget.getBounds(this.stage);
+	appState.overViewTrackBox = new Rectangle(overViewTrackBox.x, sliderTrackBox.y,
+											sliderTrackBox.width, overViewTrackBox.bottom - sliderTrackBox.y);
 	appState.translateTrackBox = expandedWidget1.getBounds(this.stage);
 	appState.rotateTrackBox = expandedWidget2.getBounds(this.stage);
 	appState.scaleTrackBox = expandedWidget3.getBounds(this.stage);

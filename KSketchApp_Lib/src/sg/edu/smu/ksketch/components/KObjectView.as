@@ -71,7 +71,7 @@ package sg.edu.smu.ksketch.components
 		{
 			transform.matrix = newTransform;
 			
-			if(_showPath && alpha != 0)
+			if(_showPath && alpha != 0 && _selected)
 				_path.redraw(_appState.time, _showAllPath);
 		}
 		
@@ -94,6 +94,8 @@ package sg.edu.smu.ksketch.components
 		
 		public function set selected(selected:Boolean):void
 		{
+			_selected = selected
+			
 			this.graphics.clear();				
 			if (selected && object != null && object.getParent(time) != null &&
 				object.getParent(time).getParent(time) == null)

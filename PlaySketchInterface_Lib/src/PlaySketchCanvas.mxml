@@ -94,15 +94,17 @@
 				initButtonFunctions();
 				initTimebar();
 			
-				/*appCanvas.addEventListener(MenuEvent.ITEM_CLICK, function(event:MenuEvent):void
+				appCanvas.addEventListener(MenuEvent.ITEM_CLICK, function(event:MenuEvent):void
 				{
 					var label:String = event.item.@label;
-					_switchPen(list_pen_selection.selectedIndex = _PEN_COLORS.indexOf(label));
+					_switchPen(_PEN_COLORS.indexOf(label));
+					group_pen.switchPen(label);
 				});
 				appCanvas.addEventListener(KCommandEvent.EVENT_PEN_CHANGE, function(event:KCommandEvent):void
 				{
-					_switchPen(list_pen_selection.selectedIndex = _PEN_COLORS.indexOf(event.command));
-				});*/
+					_switchPen(_PEN_COLORS.indexOf(event.command));
+					group_pen.switchPen(event.command);
+				});
 			}
 			
 			public function initialiseMouseCursors(pen:String,bitmap:Bitmap):void

@@ -31,6 +31,9 @@
 		<![CDATA[
 			import mx.core.UIComponent;
 			
+			import sg.edu.smu.ksketch.components.KPenMenu;
+			
+			private var buttonList:Array;
 			private var selectedButton:MovieClip;
 			private var upState:DisplayObject;
 			private var downState:DisplayObject;
@@ -38,14 +41,43 @@
 			public function init():void
 			{
 				selectedButton = black;
-				setButtonDown(black);	
+				setButtonDown(black);
+				
 			}
 			
 			public function setSelectedButton(event:MouseEvent):void
 			{
+				setButton(event.currentTarget as MovieClip);
+			}
+			
+			public function switchPen(pen:String):void
+			{
+				
+				switch(pen)
+				{
+					case KPenMenu.LABEL_BLACK:
+						setButton(black);
+						break;
+					case KPenMenu.LABEL_RED:
+						setButton(red);
+						break;
+					case KPenMenu.LABEL_GREEN:
+						setButton(green);
+						break;
+					case KPenMenu.LABEL_BLUE:
+						setButton(blue);
+						break;
+					case KPenMenu.LABEL_WHITE:
+						setButton(eraser);
+						break;
+				}
+			}
+			
+			public function setButton(button:MovieClip):void
+			{
 				setButtonUp(selectedButton);
-				selectedButton = event.currentTarget as MovieClip;	
-				setButtonDown(selectedButton);				
+				selectedButton = button;	
+				setButtonDown(selectedButton);			
 			}
 			
 			public function setButtonDown(button:MovieClip):void
@@ -54,7 +86,6 @@
 				upState = simpleButton.upState;
 				downState = simpleButton.downState;
 				simpleButton.upState = downState;	
-			//	[_BLACK_PEN,_RED_PEN,_GREEN_PEN,_BLUE_PEN,_ERASER];
 			}
 			
 			public function setButtonUp(button:MovieClip):void

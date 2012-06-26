@@ -853,7 +853,8 @@ package sg.edu.smu.ksketch.interactor
 		{
 			if(trackBox.contains(x,y))
 			{
-				var approximateTime:Number = (x-trackBox.x+10)/trackBox.width*_appState.maxTime;
+				var approximateTime:Number = (x-trackBox.x+6)/trackBox.width*_appState.maxTime;
+				trace(approximateTime);
 				_appState.trackTapTime =  KMathUtil.nearestFrameBoundary(approximateTime);
 				return true;
 			}

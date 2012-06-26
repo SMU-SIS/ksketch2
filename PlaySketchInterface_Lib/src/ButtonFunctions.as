@@ -187,6 +187,9 @@ private function _initLoggableButtons():void
 	group_pen.red.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{_switchPen(1)});
 	group_pen.green.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{_switchPen(2)});
 	group_pen.eraser.addEventListener(MouseEvent.CLICK, function fx(event:MouseEvent):void{_switchPen(4)});
+	group_zoom.btn_zoomIn.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(true);});
+	group_zoom.btn_zoomOut.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(false);});
+
 	_bindComponent(group_fileOps.btn_save, appState, "undoEnabled");	
 	_bindComponent(group_editOps.btn_cut, appState, "copyEnabled");
 	_bindComponent(group_editOps.btn_copy, appState, "copyEnabled");

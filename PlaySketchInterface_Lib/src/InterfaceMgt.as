@@ -81,10 +81,6 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	appState.addEventListener(KAppState.EVENT_UNDO_REDO_ENABLED_CHANGED, updateTimeWidgets);
 	appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, updateTimeWidgets);
 	
-	//Add functions for zooming operations
-	group_zoom.btn_zoomIn.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(true);});
-	group_zoom.btn_zoomOut.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{setZoomMode(false);});
-	
 	//Play button state listener
 	appState.addEventListener(KAppState.EVENT_ANIMATION_START, _playToPause);
 	appState.addEventListener(KAppState.EVENT_ANIMATION_STOP, _pauseToPlay);
@@ -121,7 +117,7 @@ public function update_interface():void
 		
 		toScaleX = 1-((drawingArea_stage.width*xScale)/maxCanvasWidth);
 		toScaleY = 1-((drawingArea_stage.height*yScale)/maxCanvasHeight);
-		
+		group_zoom.setButton(group_zoom.btn_zoomIn);
 	}
 	else
 	{
@@ -134,7 +130,7 @@ public function update_interface():void
 		
 		toScaleX = (idealContentWidth/widthConcerned)-xScale;
 		toScaleY = (idealContentHeight/heightConcerned)-yScale;
-		
+		group_zoom.setButton(group_zoom.btn_zoomOut);
 	}
 	
 	finalScale = Math.min(xScale+toScaleX, yScale+toScaleY);

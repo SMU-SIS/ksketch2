@@ -161,6 +161,7 @@ private function updateTimeWidgets(event:Event):void
 	var rotateMarkers:Vector.<Marker> = new Vector.<Marker>();
 	var scaleMarkers:Vector.<Marker> = new Vector.<Marker>();
 	var timeList:Vector.<Number> = new Vector.<Number>();
+	var selectedTimeList:Vector.<Number> = new Vector.<Number>();
 	
 	var clusterTime:Number;
 	var translateCluster:Vector.<Object>;
@@ -171,6 +172,10 @@ private function updateTimeWidgets(event:Event):void
 	{
 		clusterTime = cluster.time;
 		timeList.push(clusterTime);
+		
+		if(cluster.selected)
+			selectedTimeList.push(clusterTime);
+		
 		newMarker = _generateMarker(cluster.keyList, TimeWidget.OVERVIEW, clusterTime, cluster.selected);
 		
 		translateCluster = new Vector.<Object>();
@@ -246,7 +251,11 @@ private function updateTimeWidgets(event:Event):void
 		expandedWidget3.updateTimeWidget(scaleMarkers);
 	}
 	rescaleTimeWidgets();
-	slider_key_index.timeList = timeList;
+	if(selectedTimeList.length == 0)
+		slider_key_index.timeList = timeList;
+	else
+		slider_key_index.timeList = selectedTimeList;
+	
 }
 
 private function _generateMarker(keyInfoList:Vector.<Object>, type:int, time:Number, selected:Boolean):Marker

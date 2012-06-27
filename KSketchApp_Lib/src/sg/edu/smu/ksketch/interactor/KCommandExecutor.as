@@ -183,14 +183,8 @@ package sg.edu.smu.ksketch.interactor
 					_paste(true);
 					break;
 				case GestureDesign.NAME_PRE_TOGGLE:
-					_appState.isPen = !_appState.isPen;					
-					if (_canvas.interactorManager is KInteractorManager)
-						(_canvas.interactorManager as KInteractorManager).setEraseMode(!_appState.isPen);
-					if (!_appState.isPen)
-					{
-						_prevPenColor = _appState.penColor;
+					if (_appState.isPen)
 						_configurePen(KPenMenu.LABEL_WHITE);
-					}
 					else
 						_configurePen(KPenMenu.getLabel(_prevPenColor));
 					_canvas.dispatchEvent(new KCommandEvent(
@@ -346,11 +340,18 @@ package sg.edu.smu.ksketch.interactor
 
 		protected function _configurePen(cursor_name:String):void
 		{
-			var eraserMode:Boolean = cursor_name == KPenMenu.LABEL_WHITE;
-			(_canvas.interactorManager as KInteractorManager).setEraseMode(eraserMode);
+			var goToEraserMode:Boolean = cursor_name == KPenMenu.LABEL_WHITE;
+			_appState.isPen = !goToEraserMode;
+			
+			if (_canvas.interactorManager is KInteractorManager)
+				(_canvas.interactorManager as KInteractorManager).setEraseMode(!_appState.isPen);
+			
 			Mouse.cursor = cursor_name;
+			
+			if(_prevPenColor != _appState.penColor)
+				_prevPenColor = _appState.penColor;
 			_appState.penColor = KPenMenu.getColor(cursor_name);
-			_appState.selection = eraserMode ? null : _appState.selection;
+			_appState.selection = goToEraserMode ? null : _appState.selection;
 		}
 		
 		protected function _toggleVisibility():void

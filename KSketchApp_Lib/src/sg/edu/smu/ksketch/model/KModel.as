@@ -20,7 +20,7 @@ package sg.edu.smu.ksketch.model
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
-		
+	
 	/**
 	 * KModel class models the hierarchical relationship (parent and child) using KGroup. 
 	 */		
@@ -37,6 +37,18 @@ package sg.edu.smu.ksketch.model
 			_root = new KGroup(0, 0, new KModelObjectList(), new Point(0, 0));
 			_root.updateCenter();
 			_highestID = 0;
+		}
+		
+		/**
+		 * Swaps the base group of this model for another group.
+		 * The given group will become the new root for this model.
+		 */
+		public function switchContent(newContent:KModelObjectList):KModelObjectList
+		{
+			var oldContent:KModelObjectList = _root.children;
+			_root.children = newContent;
+			_highestID = _dispatchAdded(_root,new Dictionary());
+			return oldContent
 		}
 
 		/**

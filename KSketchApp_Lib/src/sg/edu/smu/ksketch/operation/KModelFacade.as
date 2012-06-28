@@ -7,6 +7,7 @@
 package sg.edu.smu.ksketch.operation
 {
 	import flash.display.BitmapData;
+	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
@@ -52,13 +53,33 @@ package sg.edu.smu.ksketch.operation
 			_keyTimeOperator = new KKeyTimeOperator(_appState, _model);
 		}
 		
+		/**
+		 * Switches the old object root of the model with the new object root of the model.
+		 */
+		public function switchContent(newContent:KModelObjectList):KModelObjectList
+		{
+			var oldContent:KModelObjectList = _model.switchContent(newContent);
+			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+			
+			return oldContent;
+		}
+		
 		// ------------------ Edit Operation ------------------- //	
 		public function addKImage(imageData:BitmapData, time:Number, xPos:Number, yPos:Number):void
 		{			
 			_appState.addOperation(_editor.addImage(_model,imageData,xPos,yPos,time));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
-		}		
+		}
+		
+		public function addKMovieClip(movieClip:MovieClip, time:Number, xPos:Number, yPos:Number):void
+		{			
+			_appState.addOperation(_editor.addMovieClip(_model,movieClip ,xPos,yPos,time));
+			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+		}
+		
 		public function beginKStrokePoint():void
 		{			
 			_editor.beginStroke(_model, _appState.penColor, 
@@ -372,6 +393,7 @@ package sg.edu.smu.ksketch.operation
 		{	
 			return _model.root;
 		}
+		
 		public function length():int
 		{
 			return _model.length();

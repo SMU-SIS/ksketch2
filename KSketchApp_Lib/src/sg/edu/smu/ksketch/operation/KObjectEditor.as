@@ -7,6 +7,7 @@
 package sg.edu.smu.ksketch.operation
 {
 	import flash.display.BitmapData;
+	import flash.display.MovieClip;
 	
 	import sg.edu.smu.ksketch.components.KObjectView;
 	import sg.edu.smu.ksketch.event.KObjectEvent;
@@ -14,6 +15,7 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
 	import sg.edu.smu.ksketch.model.KModel;
+	import sg.edu.smu.ksketch.model.KMovieClip;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.KStroke;
 	import sg.edu.smu.ksketch.operation.implementations.KActivityOperation;
@@ -33,6 +35,13 @@ package sg.edu.smu.ksketch.operation
 		public function KObjectEditor()
 		{
 			_clipboard = new KClipBoard();
+		}
+		
+		public function addMovieClip(model:KModel, movieClip:MovieClip, xPos:Number, yPos:Number, time:Number):IModelOperation
+		{
+			var kMovieClip:KMovieClip = new KMovieClip(model.nextID, movieClip, xPos, yPos, time);
+			model.add(kMovieClip);
+			return _addObject(kMovieClip,model);
 		}
 				
 		public function addImage(model:KModel,imageData:BitmapData,xPos:Number,yPos:Number,time:Number):IModelOperation

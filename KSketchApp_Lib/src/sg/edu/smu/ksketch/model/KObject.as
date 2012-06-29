@@ -43,6 +43,7 @@ package sg.edu.smu.ksketch.model
 		private var _referenceFrameList:KReferenceFrameList;
 		private var _transformMgr:KTransformMgr;
 		private var _positionMatrix:Matrix;
+		private var _metaProperties:Array;
 		
 		public function KObject(id:int,createdTime:Number=0)
 		{
@@ -80,6 +81,31 @@ package sg.edu.smu.ksketch.model
 		public function set name(value:String):void
 		{
 			_name = value;
+		}
+		
+		public function setMetaPropertyList(metaProperties:Array):void
+		{
+			_metaProperties = metaProperties;
+		}
+		
+		public function getMetaPropertyList(metaProperties:Array):Array
+		{
+			return _metaProperties;
+		}
+		
+		public function setMetaProperty(propertyName:String, value:String):void
+		{
+			if(!_metaProperties)
+				_metaProperties= [];
+			_metaProperties[propertyName] = value;
+		}
+		
+		public function getMetaProperty(propertyName:String):String
+		{
+			if(!_metaProperties)
+				return null;
+			
+			return _metaProperties[propertyName] as String;
 		}
 		
 		public function get createdTime():Number

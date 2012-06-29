@@ -16,10 +16,36 @@ package sg.edu.smu.ksketch.utilities
 	public class KModelObjectList implements IModelObjectList
 	{
 		private var _objectList:Vector.<KObject>;
+		private var _metaProperties:Array;
 		
 		public function KModelObjectList()
 		{
 			_objectList = new Vector.<KObject>();
+		}
+		
+		public function setMetaPropertyList(metaProperties:Array):void
+		{
+			_metaProperties = metaProperties;
+		}
+		
+		public function getMetaPropertyList(metaProperties:Array):Array
+		{
+			return _metaProperties;
+		}
+		
+		public function setMetaProperty(propertyName:String, value:String):void
+		{
+			if(!_metaProperties)
+				_metaProperties= [];
+			_metaProperties[propertyName] = value;
+		}
+		
+		public function getMetaProperty(propertyName:String):String
+		{
+			if(!_metaProperties)
+				return null;
+			
+			return _metaProperties[propertyName] as String;
 		}
 		
 		public function intersect(list:KModelObjectList):void

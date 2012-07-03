@@ -31,6 +31,7 @@ package sg.edu.smu.ksketch.interactor
 		protected var _startPoint:Point;
 		protected var _currentScale:Number;
 		protected var _activeCenter:Point;
+		protected var _scaleDenominator:Number;
 		
 		/**
 		 * Subclass constructor to initialise KModelFacade and KAppState for KTransitionInteractor.
@@ -124,6 +125,7 @@ package sg.edu.smu.ksketch.interactor
 			_facade.beginScale(object, center, time, transitionType);
 			_startPoint = canvasPoint.clone();
 			_currentScale = 1;
+			_scaleDenominator = KMathUtil.distanceOf(_activeCenter, _startPoint);
 		}
 		
 		protected function _addToScale(canvasPoint:Point):void
@@ -131,11 +133,9 @@ package sg.edu.smu.ksketch.interactor
 			var defaultOffset:Point = new Point();
 			var length:int = selection().objects.length();
 			var it:IIterator = selection().objects.iterator;
-			var currentPoint:Point = canvasPoint.subtract(_activeCenter.clone());
 		
-			var scaleNumerator:Number = KMathUtil.distanceOf(_activeCenter.clone(), canvasPoint);
-			var scaleDenominator:Number = KMathUtil.distanceOf(_activeCenter.clone(), _startPoint);
-			var scale:Number = (scaleNumerator/scaleDenominator) - 1;
+			var scaleNumerator:Number = KMathUtil.distanceOf(_activeCenter, canvasPoint);
+			var scale:Number = (scaleNumerator/_scaleDenominator) - 1;
 			
 			while (it.hasNext())
 			{

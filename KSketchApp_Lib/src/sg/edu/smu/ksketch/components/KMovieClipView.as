@@ -17,8 +17,8 @@ package sg.edu.smu.ksketch.components
 	
 	public class KMovieClipView extends KObjectView
 	{
-		private var _movieClip:MovieClip;
-		private var _glowFilter:GlowFilter;
+		protected var _movieClip:MovieClip;
+		protected var _glowFilter:GlowFilter;
 		
 		public function KMovieClipView(appState:KAppState, object:KMovieClip)
 		{

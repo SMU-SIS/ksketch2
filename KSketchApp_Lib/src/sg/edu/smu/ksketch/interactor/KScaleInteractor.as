@@ -27,10 +27,10 @@ package sg.edu.smu.ksketch.interactor
 	 */
 	public class KScaleInteractor extends KTransitionInteractor
 	{
-		private var _ghost:KGhostMarker;
-		private var _startPoint:Point;
-		private var _currentScale:Number;
-		private var _activeCenter:Point;
+		protected var _ghost:KGhostMarker;
+		protected var _startPoint:Point;
+		protected var _currentScale:Number;
+		protected var _activeCenter:Point;
 		
 		/**
 		 * Subclass constructor to initialise KModelFacade and KAppState for KTransitionInteractor.
@@ -117,7 +117,7 @@ package sg.edu.smu.ksketch.interactor
 			return op.length > 0 ? op : null;
 		}
 		
-		private function _beginScale(object:KObject, center:Point, time:Number,
+		protected function _beginScale(object:KObject, center:Point, time:Number,
 									 transitionType:int, canvasPoint:Point):void
 		{
 			_ghost.add(object, center, time);
@@ -126,7 +126,7 @@ package sg.edu.smu.ksketch.interactor
 			_currentScale = 1;
 		}
 		
-		private function _addToScale(canvasPoint:Point):void
+		protected function _addToScale(canvasPoint:Point):void
 		{
 			var defaultOffset:Point = new Point();
 			var length:int = selection().objects.length();

@@ -25,13 +25,13 @@ package sg.edu.smu.ksketch.components
 	
 	public class KPathView extends Sprite
 	{
-		private static const _THICKNESS_THIN:int = 2;
-		private static const _THICKNESS_THICK:int = 4;
+		protected static const _THICKNESS_THIN:int = 2;
+		protected static const _THICKNESS_THICK:int = 4;
 				
-		private var _object:KObject;
-		private var _pathR:Sprite;
-		private var _pathS:Sprite;
-		private var _pathT:Sprite;
+		protected var _object:KObject;
+		protected var _pathR:Sprite;
+		protected var _pathS:Sprite;
+		protected var _pathT:Sprite;
 		
 		public static var lightColors:Dictionary = new Dictionary();
 		public static var colors:Dictionary = new Dictionary();
@@ -104,7 +104,7 @@ package sg.edu.smu.ksketch.components
 				_drawKeyPaths(toDrawKey.next as ISpatialKeyframe, showAll, KTransformMgr.SCALE_REF, time);
 		}
 		
-		private function _drawKeyPaths(targetKey:ISpatialKeyframe,showAll:Boolean, type:int, time:Number):void
+		protected function _drawKeyPaths(targetKey:ISpatialKeyframe,showAll:Boolean, type:int, time:Number):void
 		{
 			var position:Point;
 			var transformAtTime:Matrix;
@@ -141,7 +141,7 @@ package sg.edu.smu.ksketch.components
 			}
 		}
 		
-		private function _drawCursorPath(points:Vector.<KPathPoint>, origin:Point, path:Sprite, time:Number, type:int):void
+		protected function _drawCursorPath(points:Vector.<KPathPoint>, origin:Point, path:Sprite, time:Number, type:int):void
 		{
 			var length:int = points.length;
 			var drawLayer:Graphics = path.graphics;
@@ -216,7 +216,7 @@ package sg.edu.smu.ksketch.components
 			_drawArrowHead(drawLayer, arrowHeadColor, points, arrowPosition);
 		}
 		
-		private function _getKeyToDraw(type:int, time:Number, showAll:Boolean):ISpatialKeyframe
+		protected function _getKeyToDraw(type:int, time:Number, showAll:Boolean):ISpatialKeyframe
 		{
 			if(showAll&& (type == KTransformMgr.TRANSLATION_REF))
 				return _object.getSpatialKeyAtOfAfter(_object.createdTime, type);
@@ -224,7 +224,7 @@ package sg.edu.smu.ksketch.components
 				return _object.getSpatialKeyAtOfAfter(time, type);
 		}
 		
-		private function _drawArrowHead(grph:Graphics, color:uint, points:Vector.<KPathPoint>, drawPoint:Point):void
+		protected function _drawArrowHead(grph:Graphics, color:uint, points:Vector.<KPathPoint>, drawPoint:Point):void
 		{
 			var length:int = points.length;
 			var directionStart:int;
@@ -245,7 +245,7 @@ package sg.edu.smu.ksketch.components
 		}
 		
 		//Construct a triangular arrow head.
-		private function _getTriangleVertices(vector:Point,start:Point):Vector.<Number>
+		protected function _getTriangleVertices(vector:Point,start:Point):Vector.<Number>
 		{
 			//Find the vector's unit vector
 			var magnitude:Number = Math.sqrt(vector.x*vector.x + vector.y*vector.y);

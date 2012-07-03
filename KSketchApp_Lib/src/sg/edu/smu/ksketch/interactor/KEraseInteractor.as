@@ -29,12 +29,12 @@ package sg.edu.smu.ksketch.interactor
 	 */
 	public class KEraseInteractor implements IInteractor
 	{
-		private var _currentOperation:KCompositeOperation;
-		private var _hit_detector:KHitDetector;
-		private var _facade:KModelFacade;
-		private var _appState:KAppState;
-		private var _canvas:KCanvas;
-		private var _log:KInteractiveLog;
+		protected var _currentOperation:KCompositeOperation;
+		protected var _hit_detector:KHitDetector;
+		protected var _facade:KModelFacade;
+		protected var _appState:KAppState;
+		protected var _canvas:KCanvas;
+		protected var _log:KInteractiveLog;
 		
 		/**
 		 * Constructor to initialise KModelFacade and KAppState.
@@ -117,7 +117,7 @@ package sg.edu.smu.ksketch.interactor
 			return _log;
 		}
 		
-		private function _inverseEventCoordinate(p:Point):Point
+		protected function _inverseEventCoordinate(p:Point):Point
 		{			
 			var pt:Point = new Point();
 			pt.x = p.x*_canvas.contentScale + _canvas.mouseOffsetX;

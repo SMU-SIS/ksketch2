@@ -395,7 +395,7 @@ package sg.edu.smu.ksketch.interactor
 		private function _newFile():void
 		{
 			KLogger.flush();
-			_canvas.newFile();
+			_canvas.resetCanvas();
 			_facade.clearClipBoard();
 			_appState.fireEditEnabledChangedEvent();
 			_appState.fireGroupingEnabledChangedEvent();

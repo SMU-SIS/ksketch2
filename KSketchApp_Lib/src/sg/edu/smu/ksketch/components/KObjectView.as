@@ -22,11 +22,11 @@ package sg.edu.smu.ksketch.components
 		public static const GHOST_ALPHA:Number = 0.3;
 		protected var _debug:Boolean;
 		protected var _selected:Boolean;
-		private var _appState:KAppState;
-		private var _object:KObject;
-		private var _showPath:Boolean;
-		private var _showAllPath:Boolean;
-		private var _path:KPathView;
+		protected var _appState:KAppState;
+		protected var _object:KObject;
+		protected var _showPath:Boolean;
+		protected var _showAllPath:Boolean;
+		protected var _path:KPathView;
 		
 		public function KObjectView(appState:KAppState,object:KObject)
 		{
@@ -81,8 +81,6 @@ package sg.edu.smu.ksketch.components
 
 			if(alpha ==0)
 				_path.clear();
-			
-
 		}
 		
 		public function set debug(value:Boolean):void
@@ -158,7 +156,7 @@ package sg.edu.smu.ksketch.components
 			_drawDottedLine(new Point(rect.left, rect.bottom), new Point(rect.left, rect.top));*/
 		}
 		
-		private function _drawDottedLine(startPoint:Point, endPoint:Point):void
+		protected function _drawDottedLine(startPoint:Point, endPoint:Point):void
 		{
 			var vectorX:Number = endPoint.x - startPoint.x;
 			var vectorY:Number = endPoint.y - startPoint.y;

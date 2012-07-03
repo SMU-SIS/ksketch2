@@ -31,6 +31,7 @@ package sg.edu.smu.ksketch.components
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.KAppState;
+	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
 	import spark.components.BorderContainer;
 	
@@ -39,53 +40,45 @@ package sg.edu.smu.ksketch.components
 		public static const EVENT_INTERACTION_START:String = "EVENT_INTERACTION_START";
 		public static const EVENT_INTERACTION_STOP:String = "EVENT_INTERACTION_STOP";
 		
-		private var _facade:KModelFacade;
-		private var _appState:KAppState;
+		protected var _facade:KModelFacade;
+		protected var _appState:KAppState;
 		
-		private var _contentContainer:UIComponent;
-		private var _visibleGestureLayer:UIComponent;
-		private var _drawingRegion:UIComponent;
-		private var _alphaTracker:UIComponent;
-		private var _objectRoot:MovieClip;
-		private var _viewsTable:Dictionary;
+		protected var _contentContainer:UIComponent;
+		protected var _visibleGestureLayer:UIComponent;
+		protected var _drawingRegion:UIComponent;
+		protected var _alphaTracker:UIComponent;
+		protected var _objectRoot:MovieClip;
+		protected var _viewsTable:Dictionary;
 		
-		private var _mouseOffsetX:Number;
-		private var _mouseOffsetY:Number;
-		private var _contentScale:Number;
+		protected var _mouseOffsetX:Number;
+		protected var _mouseOffsetY:Number;
+		protected var _contentScale:Number;
 		
-		private var _clockState:ICanvasClockState;
+		protected var _clockState:ICanvasClockState;
 		
-		private var _playingState:KCanvasPlayingState;
-		private var _stoppedState:KCanvasStoppedState;
-		private var _interactingState:KCanvasInteractingState;
-		private var _recordingState:KCanvasRecordingState;
+		protected var _playingState:KCanvasPlayingState;
+		protected var _stoppedState:KCanvasStoppedState;
+		protected var _interactingState:KCanvasInteractingState;
+		protected var _recordingState:KCanvasRecordingState;
 		
-		private var _widget:IWidget;
-		private var _interactorManager:IInteractorManager;
-		private var _initiated:Boolean;
+		protected var _widget:IWidget;
+		protected var _interactorManager:IInteractorManager;
+		protected var _initiated:Boolean;
 				
 		public function KCanvas()
 		{
 			super();
-			_alphaTracker = new UIComponent();
 		}
 		
 		public function initKCanvas(facade:KModelFacade, appState:KAppState, 
-									widget:IWidget = null, interactorManagerRef:Class = null):void
+									widget:IWidget, interactorManager:IInteractorManager):void
 		{
 			_facade = facade;
 			_appState = appState;
-			
-			_mouseOffsetX = 0;
-			_mouseOffsetY = 0;
-			_contentScale = 1;
-			
 			_viewsTable = new Dictionary();
+			
 			_contentContainer = new UIComponent();
-			_visibleGestureLayer = new UIComponent;
 			addElement(contentContainer);
-			addElement(_visibleGestureLayer);
-			addElement(_alphaTracker);
 			
 			_objectRoot = new MovieClip();
 			_contentContainer.addChild(_objectRoot);
@@ -94,9 +87,34 @@ package sg.edu.smu.ksketch.components
 			_initKAppStateEventsHandler();
 			
 			_widget = widget;
-			if(_widget == null)
-				_widget = new KWidget(_appState);
+			_initWidget();
 			_widget.visible = false;
+
+			_interactorManager = interactorManager;
+			_interactorManager.activateOn(_facade, _appState, this, _widget);
+			
+			_initStatesMachine(_widget);
+			_startStateMachine();
+			
+			//Extra stuffs that should be refactored and placed somewhere else
+			_visibleGestureLayer = new UIComponent;
+			_alphaTracker = new UIComponent();
+			addElement(_visibleGestureLayer);
+			addElement(_alphaTracker);
+			
+			_mouseOffsetX = 0;
+			_mouseOffsetY = 0;
+			_contentScale = 1;
+		}
+		
+		//Interactor Related Functions
+		public function get interactorManager():IInteractorManager
+		{
+			return _interactorManager;
+		}
+		
+		protected function _initWidget():void
+		{
 			if(_widget is DisplayObject)
 			{
 				var widgetContainer:MovieClip = new MovieClip();
@@ -105,39 +123,17 @@ package sg.edu.smu.ksketch.components
 			}
 			else
 				throw new Error("Widget "+_widget+" is not a DisplayObject!");
-			
-			if(interactorManagerRef == null)
-				_interactorManager = new KInteractorManager();
-			else
-				_interactorManager = new interactorManagerRef() as IInteractorManager;
-			
-			_initStatesMachine(_widget);
-			_startStateMachine();
-			
-			_interactorManager.activateOn(_facade, _appState, this, _widget);
-			
 		}
 		
 		public function get widget():IWidget
 		{
 			return _interactorManager.widget;
 		}
+				
 		
-		public function get interactorManager():IInteractorManager
-		{
-			return _interactorManager;
-		}
+
 		
-		public function set clockState(value:ICanvasClockState):void
-		{
-			if(_clockState == value)
-				return;
-			_clockState.exit();
-			_clockState = value;
-			_clockState.entry();
-		}
-		
-		public function newFile():void
+		public function resetCanvas():void
 		{
 			_interactorManager.reset();
 			_appState.selection = null;
@@ -152,9 +148,35 @@ package sg.edu.smu.ksketch.components
 			_startStateMachine();
 		}
 		
+		/**
+		 * Resets the canvas to its original state and
+		 * adds in the contents from the given group.
+		 * Expects an override for this function
+		 */
+		public function switchContents(newContents:KModelObjectList):KModelObjectList
+		{
+			//Resetting interactors and data
+			_interactorManager.reset();
+			_appState.selection = null;
+			_appState.time = 0;
+			_appState.maxTime = KAppState.DEFAULT_MAX_TIME;
+			
+			//Clearing the current view/scene
+			_viewsTable = new Dictionary();
+			_contentContainer.removeChild(_objectRoot);
+			_objectRoot = new MovieClip();
+			_contentContainer.addChild(_objectRoot);
+			
+			//Changing the model
+			return _facade.switchContent(newContents);
+			
+			//Please remember that a scene and an object list
+			//ARE ALWAYS PAIRED. do not change one withu
+		}
+		
 		public function loadFile(xml:XML):void
 		{
-			newFile();
+			resetCanvas();
 			_facade.loadFile(xml);
 		}
 		
@@ -224,7 +246,24 @@ package sg.edu.smu.ksketch.components
 			return _contentScale;
 		}
 		
-		private function _initStatesMachine(widget:IWidget):void
+		//State machine functions
+		public function set clockState(value:ICanvasClockState):void
+		{
+			if(_clockState == value)
+				return;
+			_clockState.exit();
+			_clockState = value;
+			_clockState.entry();
+		}
+		
+		protected function _startStateMachine():void
+		{
+			_stoppedState.init();
+			_clockState = _stoppedState;
+			_clockState.entry();
+		}
+		
+		protected function _initStatesMachine(widget:IWidget):void
 		{
 			_playingState = new KCanvasPlayingState(_appState, widget);
 			_stoppedState = new KCanvasStoppedState(_appState, _viewsTable, _facade, widget);
@@ -241,14 +280,8 @@ package sg.edu.smu.ksketch.components
 			this.addEventListener(EVENT_INTERACTION_STOP, function(event:Event):void{clockState = _stoppedState});
 		}
 		
-		private function _startStateMachine():void
-		{
-			_stoppedState.init();
-			_clockState = _stoppedState;
-			_clockState.entry();
-		}
-		
-		private function _initModelEventsHandler():void
+		//Listener Management
+		protected function _initModelEventsHandler():void
 		{
 			_facade.addEventListener(KObjectEvent.EVENT_VISIBILITY_CHANGED, _objectAlphaEventHandler);
 			_facade.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED, _objectAddedEventHandler);
@@ -257,7 +290,7 @@ package sg.edu.smu.ksketch.components
 			_facade.addEventListener(KGroupUngroupEvent.EVENT_UNGROUP, _ungroupEventHandler);
 		}
 		
-		private function _initKAppStateEventsHandler():void
+		protected function _initKAppStateEventsHandler():void
 		{
 			_appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGING, _selectionChangedEventHandler);
 			_appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, _selectionChangedEventHandler);
@@ -265,17 +298,8 @@ package sg.edu.smu.ksketch.components
 			_appState.addEventListener(KTimeChangedEvent.TIME_CHANGED, _updateViews);
 		}
 		
-		private function _objectAlphaEventHandler(event:KObjectEvent):void
-		{
-			var time:Number =  _appState.time;
-			var obj:KObject = event.object;
-			var view:IObjectView = _viewsTable[obj];
-			if (view && obj.getVisibility(time) == 0 && 
-				obj.createdTime < time && !_isErased(obj,time))
-				_drawTracker((view as KObjectView).getRect(this));
-		}
-		
-		private function _objectAddedEventHandler(event:KObjectEvent):void
+		//View Functions
+		protected function _objectAddedEventHandler(event:KObjectEvent):void
 		{
 			var object:KObject = event.object;
 			
@@ -296,7 +320,7 @@ package sg.edu.smu.ksketch.components
 			_viewsTable[object] = view;
 		}
 		
-		private function _objectRemovedEventHandler(event:KObjectEvent):void
+		protected function _objectRemovedEventHandler(event:KObjectEvent):void
 		{
 			var view:IObjectView = _viewsTable[event.object];
 			view.removeListeners();
@@ -304,7 +328,7 @@ package sg.edu.smu.ksketch.components
 			delete _viewsTable[event.object];
 		}
 		
-		private function _groupEventHandler(event:KGroupUngroupEvent):void
+		protected function _groupEventHandler(event:KGroupUngroupEvent):void
 		{
 			var g:KGroup = event.group;
 			var obj:KObject;
@@ -313,7 +337,7 @@ package sg.edu.smu.ksketch.components
 				_updateParentView(_viewsTable[i.next()] as IObjectView, g);
 		}
 		
-		private function _ungroupEventHandler(event:KGroupUngroupEvent):void
+		protected function _ungroupEventHandler(event:KGroupUngroupEvent):void
 		{
 			var g:KGroup = event.group;
 			var obj:KObject;
@@ -325,7 +349,7 @@ package sg.edu.smu.ksketch.components
 			}
 		}
 		
-		private function _selectionChangedEventHandler(event:KSelectionChangedEvent):void
+		protected function _selectionChangedEventHandler(event:KSelectionChangedEvent):void
 		{
 			var i:IIterator;
 			if(event.oldSelection != null)
@@ -333,13 +357,13 @@ package sg.edu.smu.ksketch.components
 			if(event.newSelection != null)
 				_selectOnObjectIterate(event.newSelection.objects.iterator,event.newSelection.selectedTime,true);
 		}
-		private function _selectOnObjectIterate(i:IIterator,selectedTime:Number,selected:Boolean):void
+		protected function _selectOnObjectIterate(i:IIterator,selectedTime:Number,selected:Boolean):void
 		{
 			while(i.hasNext())
 				_selectOnObject(i.next(), selectedTime, selected);			
 		}
 		
-		private function _selectOnObject(object:KObject, time:Number, selected:Boolean):void
+		protected function _selectOnObject(object:KObject, time:Number, selected:Boolean):void
 		{
 			if(object is KGroup)
 			{
@@ -352,14 +376,14 @@ package sg.edu.smu.ksketch.components
 				_setObjectSelect(object, selected);			
 		}
 		
-		private function _setObjectSelect(object:KObject,selected:Boolean):void
+		protected function _setObjectSelect(object:KObject,selected:Boolean):void
 		{
 			var view:IObjectView = _viewsTable[object];
 			if (view != null)
 				view.selected = selected;			
 		}
 		
-		private function _debugSelectionChangedEventHandler(event:KDebugHighlightChanged):void
+		protected function _debugSelectionChangedEventHandler(event:KDebugHighlightChanged):void
 		{
 			if(event.oldSelection != null)
 				_toggleViewDebug(event.oldSelection.iterator,false);
@@ -367,7 +391,7 @@ package sg.edu.smu.ksketch.components
 				_toggleViewDebug(event.newSelection.iterator,true);
 		}
 		
-		private function _toggleViewDebug(i:IIterator,bool:Boolean):void
+		protected function _toggleViewDebug(i:IIterator,bool:Boolean):void
 		{
 			var view:IObjectView;
 			while(i.hasNext())
@@ -377,7 +401,7 @@ package sg.edu.smu.ksketch.components
 			}			
 		}
 		
-		private function _updateViews(event:KTimeChangedEvent):void
+		protected function _updateViews(event:KTimeChangedEvent):void
 		{
 			_alphaTracker.graphics.clear();
 			_alphaTracker.graphics.lineStyle(1, 0, 0.3);
@@ -386,7 +410,7 @@ package sg.edu.smu.ksketch.components
 					_updateObjectView(obj as KObject, event.oldTime, event.newTime);
 		}
 		
-		private function _updateObjectView(object:KObject, fromKSKTime:Number, toKSKTime:Number):void
+		protected function _updateObjectView(object:KObject, fromKSKTime:Number, toKSKTime:Number):void
 		{
 			var view:IObjectView = _viewsTable[object];
 			if(view == null)
@@ -406,7 +430,27 @@ package sg.edu.smu.ksketch.components
 		//		_drawTracker((view as KObjectView).getRect(this));
 		}
 		
-		private function _drawTracker(rect:Rectangle):void
+		protected function _updateParentView(view:IObjectView, parent:KGroup):void
+		{
+			var newParentView:Sprite = _viewsTable[parent];
+			if(newParentView == null)
+				newParentView = _objectRoot;
+			view.updateParent(newParentView);
+		}
+		
+		
+		//Alpha Functions
+		protected function _objectAlphaEventHandler(event:KObjectEvent):void
+		{
+			var time:Number =  _appState.time;
+			var obj:KObject = event.object;
+			var view:IObjectView = _viewsTable[obj];
+			if (view && obj.getVisibility(time) == 0 && 
+				obj.createdTime < time && !_isErased(obj,time))
+				_drawTracker((view as KObjectView).getRect(this));
+		}
+		
+		protected function _drawTracker(rect:Rectangle):void
 		{
 			var centerX:Number = (2*rect.x + rect.width)/2;
 			var centerY:Number = (2*rect.y + rect.height)/2;
@@ -417,15 +461,7 @@ package sg.edu.smu.ksketch.components
 			_alphaTracker.graphics.lineTo(centerX,centerY + 5);
 		}
 		
-		private function _updateParentView(view:IObjectView, parent:KGroup):void
-		{
-			var newParentView:Sprite = _viewsTable[parent];
-			if(newParentView == null)
-				newParentView = _objectRoot;
-			view.updateParent(newParentView);
-		}
-		
-		private function _isErased(object:KObject,time:Number):Boolean
+		protected function _isErased(object:KObject,time:Number):Boolean
 		{
 			var key:IActivityKeyFrame = object.getActivityKeyBeforeAt(time) as IActivityKeyFrame;
 			while (key != null)

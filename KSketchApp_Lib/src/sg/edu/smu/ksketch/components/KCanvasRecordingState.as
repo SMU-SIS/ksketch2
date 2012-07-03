@@ -17,9 +17,9 @@ package sg.edu.smu.ksketch.components
 
 	public class KCanvasRecordingState implements ICanvasClockState
 	{
-		private var _appState:KAppState;
-		private var _canvas:KCanvas;
-		private var _widget:IWidget;
+		protected var _appState:KAppState;
+		protected var _canvas:KCanvas;
+		protected var _widget:IWidget;
 		
 		public function KCanvasRecordingState(canvas:KCanvas, appState:KAppState, widget:IWidget)
 		{
@@ -44,7 +44,7 @@ package sg.edu.smu.ksketch.components
 			showWidget(true);
 		}
 		
-		private function showWidget(show:Boolean):void
+		protected function showWidget(show:Boolean):void
 		{
 			if(show)
 			{

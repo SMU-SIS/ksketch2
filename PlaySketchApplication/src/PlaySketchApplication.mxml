@@ -44,7 +44,7 @@
 					main.appState,main.appCanvas,main.facade);
 				KLogger.enabled = false;
 				var modelXML:XML = main.facade.saveFile();
-				main.appCanvas.newFile();
+				main.appCanvas.resetCanvas();
 				canvas.initLogger(executor,KLogger.logFile);	
 				var close:Function = function (e:Event):void
 				{

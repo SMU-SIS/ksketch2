@@ -15,8 +15,8 @@ package sg.edu.smu.ksketch.components
 	
 	public class KImageView extends KObjectView
 	{
-		private var _image:Bitmap;
-		private var _glowFilter:GlowFilter;
+		protected var _image:Bitmap;
+		protected var _glowFilter:GlowFilter;
 		
 		public function KImageView(appState:KAppState, object:KImage)
 		{

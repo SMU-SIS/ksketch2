@@ -19,10 +19,10 @@ package sg.edu.smu.ksketch.components
 	
 	public class KWidget extends KWidgetAsset_v1 implements IWidget
 	{
-		private var _center:Point;
-		private var _isMovingCenter:Boolean;
+		protected var _center:Point;
+		protected var _isMovingCenter:Boolean;
 		
-		private var _appState:KAppState;
+		protected var _appState:KAppState;
 		
 		public function KWidget(appState:KAppState)
 		{
@@ -53,7 +53,7 @@ package sg.edu.smu.ksketch.components
 			_center = new Point();
 		}
 		
-		private function onRightDown(event:MouseEvent):void
+		protected function onRightDown(event:MouseEvent):void
 		{
 			if(!enabled)
 				return;
@@ -78,7 +78,7 @@ package sg.edu.smu.ksketch.components
 			}
 		}
 		
-		private function onUp(event:MouseEvent):void
+		protected function onUp(event:MouseEvent):void
 		{
 			if(!enabled)
 				return;

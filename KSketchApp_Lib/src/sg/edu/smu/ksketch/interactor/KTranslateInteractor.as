@@ -28,8 +28,8 @@ package sg.edu.smu.ksketch.interactor
 	 */
 	public class KTranslateInteractor extends KTransitionInteractor
 	{
-		private var _startPoint:Point;
-		private var _dxdy:Point;
+		protected var _startPoint:Point;
+		protected var _dxdy:Point;
 		
 		/**
 		 * Subclass constructor to initialise KModelFacade and KAppState for KTransitionInteractor.
@@ -83,12 +83,12 @@ package sg.edu.smu.ksketch.interactor
 			return op.length > 0 ? op : null;
 		}
 		
-		private function _beginTranslation(canvasPoint:Point):void
+		protected function _beginTranslation(canvasPoint:Point):void
 		{
 			_startPoint = canvasPoint.clone();
 		}
 		
-		private function _addToTranslation(canvasPoint:Point):void
+		protected function _addToTranslation(canvasPoint:Point):void
 		{
 			_dxdy = KTranslation.computeTranslate(_startPoint, canvasPoint)
 			

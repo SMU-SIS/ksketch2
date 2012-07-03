@@ -13,11 +13,11 @@ package sg.edu.smu.ksketch.components
 
 	public class KCanvasPlayingState implements ICanvasClockState
 	{
-		private var _appState:KAppState;
-		private var _widget:IWidget;
+		protected var _appState:KAppState;
+		protected var _widget:IWidget;
 		
-		private var _savedSelection:KSelection;
-		private var _savedVisibility:Boolean;
+		protected var _savedSelection:KSelection;
+		protected var _savedVisibility:Boolean;
 		
 		public function KCanvasPlayingState(appState:KAppState, widget:IWidget)
 		{

@@ -24,13 +24,13 @@ package sg.edu.smu.ksketch.components
 
 	public class KCanvasStoppedState implements ICanvasClockState
 	{
-		private var _facade:KModelFacade;
-		private var _viewsTable:Dictionary;
-		private var _appState:KAppState;
-		private var _widget:IWidget;
-		private var _lastSelection:KSelection;
+		protected var _facade:KModelFacade;
+		protected var _viewsTable:Dictionary;
+		protected var _appState:KAppState;
+		protected var _widget:IWidget;
+		protected var _lastSelection:KSelection;
 		
-		private var _showPathState:String;
+		protected var _showPathState:String;
 		
 		public function KCanvasStoppedState(appState:KAppState, viewsTable:Dictionary, facade:KModelFacade, widget:IWidget)
 		{
@@ -75,14 +75,14 @@ package sg.edu.smu.ksketch.components
 		
 		// ----------
 		
-		private function addEventListeners():void
+		protected function addEventListeners():void
 		{
 			_appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, selectionChangedEventHandler);
 			_appState.addEventListener(KTimeChangedEvent.TIME_CHANGED, timeChangedEventHandler);
 			_appState.addEventListener(KAppState.EVENT_OBJECT_PATH, showPathChangedEventHandler);
 			listenTo(_appState.selection, true);
 		}
-		private function removeEventListeners():void
+		protected function removeEventListeners():void
 		{
 			listenTo(_appState.selection, false);
 			_appState.removeEventListener(KAppState.EVENT_OBJECT_PATH, showPathChangedEventHandler);
@@ -90,12 +90,12 @@ package sg.edu.smu.ksketch.components
 			_appState.removeEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, selectionChangedEventHandler);
 		}
 		
-		private function showPathChangedEventHandler(event:Event):void
+		protected function showPathChangedEventHandler(event:Event):void
 		{
 			showPathState = _appState.userOption.showPath;
 		}
 		
-		private function selectionChangedEventHandler(event:KSelectionChangedEvent):void
+		protected function selectionChangedEventHandler(event:KSelectionChangedEvent):void
 		{
 			updatePath(event);
 			listenTo(event.oldSelection, false);
@@ -103,7 +103,7 @@ package sg.edu.smu.ksketch.components
 			updateSelection();
 		}
 		
-		private function listenTo(selection:KSelection, listen:Boolean):void
+		protected function listenTo(selection:KSelection, listen:Boolean):void
 		{
 			if(selection == null)
 				return;
@@ -121,7 +121,7 @@ package sg.edu.smu.ksketch.components
 			}
 		}
 		
-		private function updateSelection(event:KObjectEvent = null):void
+		protected function updateSelection(event:KObjectEvent = null):void
 		{
 			if(_appState.selection)
 				_appState.selection.tuneSelection(_appState.time);
@@ -129,7 +129,7 @@ package sg.edu.smu.ksketch.components
 			_widget.highlightSelection();
 		}
 		
-		private function timeChangedEventHandler(event:KTimeChangedEvent):void
+		protected function timeChangedEventHandler(event:KTimeChangedEvent):void
 		{
 			if(_appState.selection != null)
 			{	
@@ -145,7 +145,7 @@ package sg.edu.smu.ksketch.components
 			}
 		}
 		
-		private function canSelect(objects:KModelObjectList):Boolean
+		protected function canSelect(objects:KModelObjectList):Boolean
 		{
 			if(objects.length() == 0)
 				return false;
@@ -164,7 +164,7 @@ package sg.edu.smu.ksketch.components
 			return true;
 		}
 		
-		private function set showPathState(value:String):void
+		protected function set showPathState(value:String):void
 		{
 			if(_showPathState == value)
 				return;
@@ -176,14 +176,14 @@ package sg.edu.smu.ksketch.components
 			updatePath();
 		}
 		
-		private function clearPath():void
+		protected function clearPath():void
 		{
 			var it:IIterator = _facade.root.directChildIterator(_appState.time);
 			while(it.hasNext())
 				showPath_Object(it.next(), false);
 		}
 		
-		private function updatePath(event:KSelectionChangedEvent = null):void
+		protected function updatePath(event:KSelectionChangedEvent = null):void
 		{
 			clearPath();
 			
@@ -222,7 +222,7 @@ package sg.edu.smu.ksketch.components
 			}
 		}
 		
-		private function showPath_List(selection:KSelection, show:Boolean):void
+		protected function showPath_List(selection:KSelection, show:Boolean):void
 		{
 			if(selection == null)
 				return;
@@ -232,7 +232,7 @@ package sg.edu.smu.ksketch.components
 			while(it.hasNext())
 				showPath_Object(it.next(), show);
 		}
-		private function showPath_Object(object:KObject, show:Boolean):void
+		protected function showPath_Object(object:KObject, show:Boolean):void
 		{
 			if (_viewsTable[object] != null)
 			{

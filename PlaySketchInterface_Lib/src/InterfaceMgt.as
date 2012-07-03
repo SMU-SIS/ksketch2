@@ -7,9 +7,11 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.geom.Rectangle;
 
+import sg.edu.smu.ksketch.components.KWidget;
 import sg.edu.smu.ksketch.event.KModelEvent;
 import sg.edu.smu.ksketch.event.KSelectionChangedEvent;
 import sg.edu.smu.ksketch.event.KTimeChangedEvent;
+import sg.edu.smu.ksketch.interactor.KInteractorManager;
 import sg.edu.smu.ksketch.operation.KTransformMgr;
 import sg.edu.smu.ksketch.utilities.KAppState;
 import sg.edu.smu.playsketch.components.timebar.TimeWidget;
@@ -55,7 +57,7 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 
 	//Initialize the canvas, activating the interaction to it.
 	appCanvas.initialize();
-	appCanvas.initKCanvas(_facade, appState);
+	appCanvas.initKCanvas(_facade, appState, new KWidget(appState), new KInteractorManager());
 	appCanvas.drawingRegion = drawingArea;
 	slider_key_index.init(appState);
 	

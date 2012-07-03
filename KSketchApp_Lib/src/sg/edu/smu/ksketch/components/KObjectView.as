@@ -26,6 +26,7 @@ package sg.edu.smu.ksketch.components
 		protected var _object:KObject;
 		protected var _showPath:Boolean;
 		protected var _showAllPath:Boolean;
+		protected var _alwaysShowPath:Boolean;
 		protected var _path:KPathView;
 		
 		public function KObjectView(appState:KAppState,object:KObject)
@@ -37,8 +38,25 @@ package sg.edu.smu.ksketch.components
 			_object.addEventListener(KObjectEvent.EVENT_TRANSFORM_CHANGED, _objectChangedEventHandler);
 			_object.addEventListener(KObjectEvent.EVENT_VISIBILITY_CHANGED, _objectChangedEventHandler);
 			_path = new KPathView(_object);
+			alwaysShowPath = false;
 		}
 		
+		/**
+		 * Forces this view object to always show its motion path
+		 */
+		public function set alwaysShowPath(value:Boolean):void
+		{
+			_alwaysShowPath = value;
+		}
+		
+		public function get alwaysShowPath():Boolean
+		{
+			return _alwaysShowPath;
+		}
+		
+		/**
+		 * Forces this view object to either show its active keys or it's entire timeline
+		 */
 		public function set showCursorPathMode(showAll:Boolean):void
 		{
 			_showAllPath = showAll;
@@ -70,8 +88,7 @@ package sg.edu.smu.ksketch.components
 		public function updateTransform(newTransform:Matrix):void
 		{
 			transform.matrix = newTransform;
-			
-			if(_showPath && alpha != 0 && _selected)
+			if(_alwaysShowPath || (_showPath && alpha != 0 && _selected))
 				_path.redraw(_appState.time, _showAllPath);
 		}
 		
@@ -100,6 +117,11 @@ package sg.edu.smu.ksketch.components
 				_drawDottedLines(this.getBounds(this),2,0X0000FF,1);
 		}
 		
+		/**
+		 * Toogles on/off for this object's motion paths.
+		 * alwaysShowPath takes precedence.
+		 * showCursorPath = false will not work if alwaysShowPath is true.
+		 */
 		public function set showCursorPath(show:Boolean):void
 		{
 			if(_showPath != show)
@@ -110,7 +132,7 @@ package sg.edu.smu.ksketch.components
 					_path.redraw(_appState.time, _showAllPath);
 					this.parent.addChild(_path);
 				}
-				else
+				else if(!alwaysShowPath)
 					this.parent.removeChild(_path);
 			}
 		}		

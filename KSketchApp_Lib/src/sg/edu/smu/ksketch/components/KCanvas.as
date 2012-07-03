@@ -129,10 +129,7 @@ package sg.edu.smu.ksketch.components
 		{
 			return _interactorManager.widget;
 		}
-				
-		
-
-		
+						
 		public function resetCanvas():void
 		{
 			_interactorManager.reset();
@@ -203,7 +200,8 @@ package sg.edu.smu.ksketch.components
 		
 		public function get drawingRegion():UIComponent
 		{
-			
+			if(!_drawingRegion)
+				_drawingRegion = new UIComponent();
 			return _drawingRegion;
 		}
 		

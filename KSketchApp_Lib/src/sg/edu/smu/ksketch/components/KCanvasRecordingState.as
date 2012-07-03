@@ -30,17 +30,23 @@ package sg.edu.smu.ksketch.components
 		
 		public function entry():void
 		{
-			var drawingStage:BorderContainer = _canvas.drawingRegion.getChildAt(0) as BorderContainer;
+			if(_canvas.drawingRegion.numChildren > 0)
+			{
+				var drawingStage:BorderContainer = _canvas.drawingRegion.getChildAt(0) as BorderContainer;
+				drawingStage.graphics.lineStyle(10,0xff0000);
+				drawingStage.graphics.drawRect(0,0,drawingStage.width,drawingStage.height);			
+			}
 			showWidget(false);
-			drawingStage.graphics.lineStyle(10,0xff0000);
-			drawingStage.graphics.drawRect(0,0,drawingStage.width,drawingStage.height);			
 		}
 		
 		public function exit():void
 		{
-			var drawingStage:BorderContainer = _canvas.drawingRegion.getChildAt(0) as BorderContainer;			
-			drawingStage.graphics.lineStyle(10,0x748893);
-			drawingStage.graphics.drawRect(0,0,drawingStage.width,drawingStage.height);			
+			if(_canvas.drawingRegion.numChildren > 0)
+			{
+				var drawingStage:BorderContainer = _canvas.drawingRegion.getChildAt(0) as BorderContainer;			
+				drawingStage.graphics.lineStyle(10,0x748893);
+				drawingStage.graphics.drawRect(0,0,drawingStage.width,drawingStage.height);			
+			}
 			showWidget(true);
 		}
 		

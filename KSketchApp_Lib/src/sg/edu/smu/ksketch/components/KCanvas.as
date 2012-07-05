@@ -163,6 +163,7 @@ package sg.edu.smu.ksketch.components
 			_contentContainer.removeChild(_objectRoot);
 			_objectRoot = new MovieClip();
 			_contentContainer.addChild(_objectRoot);
+			_contentContainer.swapChildren(_objectRoot, _widget as KWidget);
 			
 			//Changing the model
 			return _facade.switchContent(newContents);

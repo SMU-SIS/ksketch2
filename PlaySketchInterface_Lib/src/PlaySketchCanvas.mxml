@@ -79,10 +79,6 @@
 			public function appInit(fullAppWidth:Number, fullAppHeight:Number, 
 									widthOffset:Number, heightOffset:Number):void
 			{
-				addEventListener(KeyboardEvent.KEY_UP, handleKeyBoardPress);
-				setFocus();
-				appCanvas.setFocus();
-				
 				_facade = new KModelFacade(appState);
 				appState.penThickness = KPenMenu.THICKNESS_MEDIUM;					
 				initialiseMouseCursors(_BLACK_PEN,new _cursorBlackPen());

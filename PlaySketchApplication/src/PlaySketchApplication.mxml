@@ -9,8 +9,8 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   xmlns:local="*" showStatusBar = "false"
 					   minWidth ="900" minHeight = "600" width = "1067" height = "600"
-					   initialize="_init()" invoke="_loadInitHandler(event)"  
-					   closing="_closingHandler(event)">
+					   initialize="_init()" invoke="_loadInitHandler(event)" closing="_closingHandler(event)" 
+					   applicationComplete="stage.addEventListener(KeyboardEvent.KEY_UP,main.handleKeyBoardPress)">
 	
 	<fx:Style source="PlaySketchApplication.css" />
 

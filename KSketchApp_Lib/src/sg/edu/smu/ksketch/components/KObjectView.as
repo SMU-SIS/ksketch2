@@ -26,7 +26,7 @@ package sg.edu.smu.ksketch.components
 		protected var _object:KObject;
 		protected var _showPath:Boolean;
 		protected var _showAllPath:Boolean;
-		protected var _alwaysShowPath:Boolean;
+		protected var _pathVisible:Boolean;
 		protected var _path:KPathView;
 		
 		public function KObjectView(appState:KAppState,object:KObject)
@@ -38,20 +38,37 @@ package sg.edu.smu.ksketch.components
 			_object.addEventListener(KObjectEvent.EVENT_TRANSFORM_CHANGED, _objectChangedEventHandler);
 			_object.addEventListener(KObjectEvent.EVENT_VISIBILITY_CHANGED, _objectChangedEventHandler);
 			_path = new KPathView(_object);
-			alwaysShowPath = false;
+			pathVisible = true;
 		}
 		
 		/**
 		 * Forces this view object to always show its motion path
+		 * Default is true.
 		 */
-		public function set alwaysShowPath(value:Boolean):void
+		public function set pathVisible(value:Boolean):void
 		{
-			_alwaysShowPath = value;
+			_pathVisible = value;
+			
+			if(!parent)
+				return;
+			
+			if(pathVisible)
+			{
+				parent.addChild(_path);
+			}
+			else
+			{
+				if(_path.parent == parent)
+				{
+					parent.removeChild(_path);
+				}
+			}
+			
 		}
 		
-		public function get alwaysShowPath():Boolean
+		public function get pathVisible():Boolean
 		{
-			return _alwaysShowPath;
+			return _pathVisible;
 		}
 		
 		/**
@@ -88,8 +105,17 @@ package sg.edu.smu.ksketch.components
 		public function updateTransform(newTransform:Matrix):void
 		{
 			transform.matrix = newTransform;
-			if(_alwaysShowPath || (_showPath && alpha != 0 && _selected))
+		
+			if(_showPath && alpha != 0 && _selected)
+			{
+				if(!_path.parent)
+					parent.addChild(_path);
 				_path.redraw(_appState.time, _showAllPath);
+			}
+			else
+			{
+				_path.clear();
+			}
 		}
 		
 		public function updateVisibility(newAlpha:Number):void
@@ -119,8 +145,8 @@ package sg.edu.smu.ksketch.components
 		
 		/**
 		 * Toogles on/off for this object's motion paths.
-		 * alwaysShowPath takes precedence.
-		 * showCursorPath = false will not work if alwaysShowPath is true.
+		 * pathVisible takes precedence.
+		 * showCursorPath = false will not work if pathVisible is true.
 		 */
 		public function set showCursorPath(show:Boolean):void
 		{
@@ -128,12 +154,9 @@ package sg.edu.smu.ksketch.components
 			{
 				_showPath = show;
 				if(_showPath)
-				{
 					_path.redraw(_appState.time, _showAllPath);
-					this.parent.addChild(_path);
-				}
-				else if(!alwaysShowPath)
-					this.parent.removeChild(_path);
+				else
+					_path.clear();
 			}
 		}		
 

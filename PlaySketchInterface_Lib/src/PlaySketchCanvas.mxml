@@ -65,8 +65,9 @@
 			private static const _BLUE_PEN:String = KPenMenu.LABEL_BLUE;
 			private static const _ERASER:String = KPenMenu.LABEL_WHITE;
 			private static const _PEN_COLORS:Array = [_BLACK_PEN,_RED_PEN,_GREEN_PEN,_BLUE_PEN,_ERASER];
-			private static const _PEN_COMMANDS:Array = [KLogger.BTN_BLACK_PEN,
-				KLogger.BTN_RED_PEN,KLogger.BTN_GREEN_PEN,KLogger.BTN_BLUE_PEN,KLogger.BTN_ERASER];
+			private static const _PEN_COMMANDS:Array = [KPlaySketchLogger.BTN_BLACK_PEN,
+				KPlaySketchLogger.BTN_RED_PEN,KPlaySketchLogger.BTN_GREEN_PEN,
+				KPlaySketchLogger.BTN_BLUE_PEN,KPlaySketchLogger.BTN_ERASER];
 			
 			public function get facade():KModelFacade
 			{
@@ -136,7 +137,7 @@
 				switch(event.keyCode)
 				{
 					case 67: //c key
-						_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_COPY);
+						_commandExecutor.doShortcutCommand(KPlaySketchLogger.SHORTCUT_COPY);
 						break;
 					case 70: //f key
 						handleFullScreen();																				
@@ -145,19 +146,19 @@
 						_logTrigger(new MouseEvent(MouseEvent.CLICK));													
 						break;
 					case 77: //m key
-						_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_PASTE_WITH_MOTION);
+						_commandExecutor.doShortcutCommand(KPlaySketchLogger.SHORTCUT_PASTE_WITH_MOTION);
 						break;
 					case 86: //v key
-						_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_PASTE);
+						_commandExecutor.doShortcutCommand(KPlaySketchLogger.SHORTCUT_PASTE);
 						break;
 					case 89: //y key
-						_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_REDO);
+						_commandExecutor.doShortcutCommand(KPlaySketchLogger.SHORTCUT_REDO);
 						break;
 					case 90: //z key
 						if(event.shiftKey)
-							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_REDO);
+							_commandExecutor.doShortcutCommand(KPlaySketchLogger.SHORTCUT_REDO);
 						else
-							_commandExecutor.doShortcutCommand(KLogger.SHORTCUT_UNDO);
+							_commandExecutor.doShortcutCommand(KPlaySketchLogger.SHORTCUT_UNDO);
 						break;
 				}
 			}

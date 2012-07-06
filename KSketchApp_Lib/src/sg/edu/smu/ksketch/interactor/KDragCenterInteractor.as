@@ -18,7 +18,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KDragCenterLog;
 	import sg.edu.smu.ksketch.logger.KInteractiveLog;
-	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 
@@ -111,7 +111,7 @@ package sg.edu.smu.ksketch.interactor
 		
 		public function get name():String
 		{
-			return KLogger.INTERACTION_DRAG_CENTER;
+			return KPlaySketchLogger.INTERACTION_DRAG_CENTER;
 		}
 		public function enableLog():ILoggable
 		{

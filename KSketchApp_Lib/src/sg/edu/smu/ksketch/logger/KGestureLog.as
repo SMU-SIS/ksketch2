@@ -1,8 +1,8 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.logger
 {
@@ -18,7 +18,7 @@ package sg.edu.smu.ksketch.logger
 		public function KGestureLog(cursorPath:Vector.<KPathPoint>,
 									prevSelected:KModelObjectList=null)
 		{
-			super(cursorPath, KLogger.INTERACTION_GESTURE,prevSelected);
+			super(cursorPath, KPlaySketchLogger.INTERACTION_GESTURE,prevSelected);
 		}
 		
 		public function set preGestureRecognized(result:RecognizeResult):void
@@ -38,19 +38,19 @@ package sg.edu.smu.ksketch.logger
 			var node:XML = super.toXML();
 			if(_preGesture != null)
 			{
-				delete node.@[KLogger.SELECTED_ITEMS];
+				delete node.@[KPlaySketchLogger.SELECTED_ITEMS];
 				if(_preGesture == RecognizeResult.UNDEFINED)
-					node.@[KLogger.MATCH] = _preGesture.type;
+					node.@[KPlaySketchLogger.MATCH] = _preGesture.type;
 				else
 				{
-					node.@[KLogger.MATCH] = _preGesture.type;
-					node.@[KLogger.CONFIDENCE] = _preGesture.score;
+					node.@[KPlaySketchLogger.MATCH] = _preGesture.type;
+					node.@[KPlaySketchLogger.CONFIDENCE] = _preGesture.score;
 				}
 			}
 			else if(_subLogs != null)
 			{
 				for each(var subNode:KGestureSubLog in _subLogs)
-					node.appendChild(subNode.toXML());
+				node.appendChild(subNode.toXML());
 			}
 			return node;
 		}

@@ -16,6 +16,7 @@ package
 	import sg.edu.smu.ksketch.interactor.KGestureRecognizer;
 	import sg.edu.smu.ksketch.interactor.UserOption;
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	
@@ -119,9 +120,9 @@ package
 			var modes:RadioButtonGroup = new RadioButtonGroup();
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_SELECTION_MODE,
-					KLogger.CHANGE_SELECTION_MODE_FROM,appState.groupSelectMode,
-					KLogger.CHANGE_SELECTION_MODE_TO,modes.selectedValue.toString());
+				KLogger.log(KPlaySketchLogger.CHANGE_SELECTION_MODE,
+					KPlaySketchLogger.CHANGE_SELECTION_MODE_FROM,appState.groupSelectMode,
+					KPlaySketchLogger.CHANGE_SELECTION_MODE_TO,modes.selectedValue.toString());
 				appState.groupSelectMode = modes.selectedValue.toString();
 			});
 			var buttons:Array = new Array();
@@ -142,9 +143,9 @@ package
 			var modes:RadioButtonGroup = new RadioButtonGroup();
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_GROUPING_MODE, 
-					KLogger.CHANGE_GROUPING_MODE_FROM, appState.groupingMode,
-					KLogger.CHANGE_GROUPING_MODE_TO, modes.selectedValue.toString());
+				KLogger.log(KPlaySketchLogger.CHANGE_GROUPING_MODE, 
+					KPlaySketchLogger.CHANGE_GROUPING_MODE_FROM, appState.groupingMode,
+					KPlaySketchLogger.CHANGE_GROUPING_MODE_TO, modes.selectedValue.toString());
 				appState.groupingMode = modes.selectedValue.toString();
 				appState.fireGroupingEnabledChangedEvent();
 				if(appState.groupingMode == impMode)
@@ -171,9 +172,9 @@ package
 			var modes:RadioButtonGroup = new RadioButtonGroup();
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_CREATION_MODE, 
-					KLogger.CHANGE_CREATION_MODE_FROM, appState.creationMode,
-					KLogger.CHANGE_CREATION_MODE_TO, modes.selectedValue.toString());
+				KLogger.log(KPlaySketchLogger.CHANGE_CREATION_MODE, 
+					KPlaySketchLogger.CHANGE_CREATION_MODE_FROM, appState.creationMode,
+					KPlaySketchLogger.CHANGE_CREATION_MODE_TO, modes.selectedValue.toString());
 				appState.creationMode = modes.selectedValue.toString();
 			});
 			var buttons:Array = new Array();
@@ -190,9 +191,9 @@ package
 			var modes:RadioButtonGroup = new RadioButtonGroup();
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_PATH_VISIBILITY, 
-					KLogger.CHANGE_PATH_VISIBILITY_FROM, appState.userOption.showPath,
-					KLogger.CHANGE_PATH_VISIBILITY_TO, modes.selectedValue.toString());
+				KLogger.log(KPlaySketchLogger.CHANGE_PATH_VISIBILITY, 
+					KPlaySketchLogger.CHANGE_PATH_VISIBILITY_FROM, appState.userOption.showPath,
+					KPlaySketchLogger.CHANGE_PATH_VISIBILITY_TO, modes.selectedValue.toString());
 				appState.userOption.showPath = modes.selectedValue.toString();
 			});
 			var buttons:Array = new Array();
@@ -211,9 +212,9 @@ package
 			var modes:RadioButtonGroup = new RadioButtonGroup();
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_CORRECT_FUTURE_MOTION, 
-					KLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM, KAppState.erase_real_time_future,
-					KLogger.CHANGE_CORRECT_FUTURE_MOTION_TO, modes.selectedValue.toString());
+				KLogger.log(KPlaySketchLogger.CHANGE_CORRECT_FUTURE_MOTION, 
+					KPlaySketchLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM, KAppState.erase_real_time_future,
+					KPlaySketchLogger.CHANGE_CORRECT_FUTURE_MOTION_TO, modes.selectedValue.toString());
 				KAppState.erase_real_time_future = modes.selectedValue;
 			});
 			var buttons:Array = new Array();
@@ -249,9 +250,9 @@ package
 			var modes:RadioButtonGroup = new RadioButtonGroup();
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_GESTURE_DESIGN,
-					KLogger.CHANGE_GESTURE_DESIGN_FROM, appState.gestureDesignName,
-					KLogger.CHANGE_GESTURE_DESIGN_TO, modes.selectedValue.toString());
+				KLogger.log(KPlaySketchLogger.CHANGE_GESTURE_DESIGN,
+					KPlaySketchLogger.CHANGE_GESTURE_DESIGN_FROM, appState.gestureDesignName,
+					KPlaySketchLogger.CHANGE_GESTURE_DESIGN_TO, modes.selectedValue.toString());
 				appState.gestureDesignName = modes.selectedValue.toString();
 			});
 			var buttons:Array = new Array();
@@ -272,10 +273,10 @@ package
 			ipt_timeout.restrict = "0-9";
 			ipt_timeout.addEventListener(TextOperationEvent.CHANGE,function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT,
-					KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_FROM, 
+				KLogger.log(KPlaySketchLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT,
+					KPlaySketchLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_FROM, 
 					KGestureRecognizer.PEN_PAUSE_TIME,
-					KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_TO, ipt_timeout.text);
+					KPlaySketchLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_TO, ipt_timeout.text);
 				KGestureRecognizer.PEN_PAUSE_TIME = Number(ipt_timeout.text);
 			});
 			return _createVGroup([lbl_timeout,ipt_timeout]);
@@ -290,10 +291,10 @@ package
 			ipt_accepted.restrict = ".0-9";
 			ipt_accepted.addEventListener(TextOperationEvent.CHANGE,function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE,
-					KLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE_FROM, 
+				KLogger.log(KPlaySketchLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE,
+					KPlaySketchLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE_FROM, 
 					Recognizer.ACCEPT_SCORE.toString(),
-					KLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE_TO, ipt_accepted.text);
+					KPlaySketchLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE_TO, ipt_accepted.text);
 				Recognizer.ACCEPT_SCORE = Number(ipt_accepted.text);
 			});
 			return _createVGroup([lbl_score,ipt_accepted]);
@@ -304,9 +305,9 @@ package
 			var modes:RadioButtonGroup = new RadioButtonGroup();
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_ASPECT_RATIO,
-					KLogger.CHANGE_ASPECT_RATIO_FROM, mainCanvas.stageAspectRatio,
-					KLogger.CHANGE_ASPECT_RATIO_TO, modes.selectedValue);
+				KLogger.log(KPlaySketchLogger.CHANGE_ASPECT_RATIO,
+					KPlaySketchLogger.CHANGE_ASPECT_RATIO_FROM, mainCanvas.stageAspectRatio,
+					KPlaySketchLogger.CHANGE_ASPECT_RATIO_TO, modes.selectedValue);
 				mainCanvas.stageAspectRatio = modes.selectedValue;
 			});
 			var buttons:Array = new Array();
@@ -326,10 +327,10 @@ package
 			rightMouseEnabled.selected = appState.userOption.rightMouseButtonEnabled;
 			rightMouseEnabled.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_RIGHT_MOUSE_ENABLED,
-					KLogger.CHANGE_RIGHT_MOUSE_ENABLED_FROM, 
+				KLogger.log(KPlaySketchLogger.CHANGE_RIGHT_MOUSE_ENABLED,
+					KPlaySketchLogger.CHANGE_RIGHT_MOUSE_ENABLED_FROM, 
 					appState.userOption.rightMouseButtonEnabled,
-					KLogger.CHANGE_RIGHT_MOUSE_ENABLED_TO, rightMouseEnabled.selected);
+					KPlaySketchLogger.CHANGE_RIGHT_MOUSE_ENABLED_TO, rightMouseEnabled.selected);
 				appState.userOption.rightMouseButtonEnabled = rightMouseEnabled.selected;
 			});
 			return rightMouseEnabled;
@@ -342,10 +343,10 @@ package
 			showConfirmWindow.selected = appState.userOption.showConfirmWindow;
 			showConfirmWindow.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_CONFIRM_DIALOG_ENABLED,
-					KLogger.CHANGE_CONFIRM_DIALOG_ENABLED_FROM, 
+				KLogger.log(KPlaySketchLogger.CHANGE_CONFIRM_DIALOG_ENABLED,
+					KPlaySketchLogger.CHANGE_CONFIRM_DIALOG_ENABLED_FROM, 
 					appState.userOption.showConfirmWindow,
-					KLogger.CHANGE_CONFIRM_DIALOG_ENABLED_TO, showConfirmWindow.selected);		
+					KPlaySketchLogger.CHANGE_CONFIRM_DIALOG_ENABLED_TO, showConfirmWindow.selected);		
 				appState.userOption.showConfirmWindow = showConfirmWindow.selected;
 			});
 			return showConfirmWindow;
@@ -358,9 +359,9 @@ package
 			enableLog.selected = KLogger.enabled;
 			enableLog.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KLogger.CHANGE_APPLICATION_LOG_ENABLED,
-					KLogger.CHANGE_APPLICATION_LOG_ENABLED_FROM, KLogger.enabled,
-					KLogger.CHANGE_APPLICATION_LOG_ENABLED_TO, enableLog.selected);				
+				KLogger.log(KPlaySketchLogger.CHANGE_APPLICATION_LOG_ENABLED,
+					KPlaySketchLogger.CHANGE_APPLICATION_LOG_ENABLED_FROM, KLogger.enabled,
+					KPlaySketchLogger.CHANGE_APPLICATION_LOG_ENABLED_TO, enableLog.selected);				
 				KLogger.enabled = enableLog.selected;
 			});
 			return enableLog;			

@@ -1,8 +1,8 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.operation
 {
@@ -31,7 +31,7 @@ package sg.edu.smu.ksketch.operation
 	{	
 		private var _stroke:KStroke;
 		private var _clipboard:KClipBoard;
-
+		
 		public function KObjectEditor()
 		{
 			_clipboard = new KClipBoard();
@@ -43,21 +43,23 @@ package sg.edu.smu.ksketch.operation
 			model.add(kMovieClip);
 			return _addObject(kMovieClip,model);
 		}
-				
+		
 		public function addImage(model:KModel,imageData:BitmapData,xPos:Number,yPos:Number,time:Number):IModelOperation
 		{
 			var image:KImage = new KImage(model.nextID, xPos, yPos, time);
-			image.imageData = imageData;
+			if (imageData)
+				image.imageData = imageData;
 			model.add(image);
 			return _addObject(image,model);
 		}
-			
-		public function beginStroke(model:KModel,color:uint,thickness:uint,time:Number):void
+		
+		public function beginStroke(model:KModel,color:uint,thickness:uint,time:Number):int
 		{
 			_stroke = new KStroke(model.nextID,time);
 			_stroke.color = color; 
 			_stroke.thickness = thickness;
 			model.add(_stroke);
+			return _stroke.id;
 		}
 		
 		public function addToStroke(x:Number,y:Number):void
@@ -86,13 +88,13 @@ package sg.edu.smu.ksketch.operation
 		{
 			_clipboard.clear();
 		}
-
+		
 		public function copy(objs:KModelObjectList,time:Number):void
 		{
 			_clipboard.clear();
 			_clipboard.put(objs,time);
 		}
-
+		
 		public function cut(facade:KModelFacade,objs:KModelObjectList,time:Number):IModelOperation
 		{
 			if(objs.length() ==0)
@@ -102,16 +104,16 @@ package sg.edu.smu.ksketch.operation
 			_clipboard.put(objs,time);
 			return _removeAll(facade,objs);
 		}
-
-		public function paste(model:KModel, appState:KAppState, 
+		
+		public function paste(model:KModel, appState:KAppState, time:Number,  
 							  includeMotion:Boolean):IModelOperation
 		{
-			var objs:KModelObjectList = _clipboard.get(model,appState.time,includeMotion);
-			var op:IModelOperation = objs.length()>0 ? _pasteAll(model,objs,appState.time):null;
-			appState.selection = op ? new KSelection(objs,appState.time) : appState.selection;
+			var objs:KModelObjectList = _clipboard.get(model,time,includeMotion);
+			var op:IModelOperation = objs.length()>0 ? _pasteAll(model,objs,time):null;
+			appState.selection = op ? new KSelection(objs,time) : appState.selection;
 			return op;
 		}
-
+		
 		public function erase(facade:KModelFacade, model:KModel,
 							  object:KObject,kskTime:Number):IModelOperation
 		{
@@ -125,7 +127,7 @@ package sg.edu.smu.ksketch.operation
 				ops.addOperation(_remove(facade,parent,kskTime));
 			return ops.length > 0 ? ops : null;
 		}	
-
+		
 		public function toggleVisibility(object:KObject,time:Number):IModelOperation
 		{
 			var alpha:Number = object.getVisibility(time) == 1 ? 0 : 1;
@@ -133,7 +135,7 @@ package sg.edu.smu.ksketch.operation
 			return new KActivityOperation(object,alpha,time);
 			
 		}
-
+		
 		// Erase obj from the model by adding a GHOST_ALPHA alpha at time,
 		// 0 alpha at the next keyframe time, and return the erase operation.
 		private function _erase(model:KModel,obj:KObject,time:Number):IModelOperation
@@ -163,11 +165,11 @@ package sg.edu.smu.ksketch.operation
 			}
 			return op.length > 0 ? op : null;
 		}		
-
-		 // Remove the object obj from its parent at time, and return a KRemoveOperation.
-		 // A EVENT_OBJECT_REMOVED is also dispatched by the facade after the removal.
+		
+		// Remove the object obj from its parent at time, and return a KRemoveOperation.
+		// A EVENT_OBJECT_REMOVED is also dispatched by the facade after the removal.
 		private function _remove(facade:KModelFacade,obj:KObject,
-									  time:Number):IModelOperation
+								 time:Number):IModelOperation
 		{
 			obj.getParent(time).remove(obj);
 			facade.dispatchEvent(new KObjectEvent(obj,KObjectEvent.EVENT_OBJECT_REMOVED));

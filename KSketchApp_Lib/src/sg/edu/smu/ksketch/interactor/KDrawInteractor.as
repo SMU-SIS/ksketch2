@@ -1,8 +1,8 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.interactor
 {
@@ -12,11 +12,12 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KInteractiveLog;
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.KAppState;
-
+	
 	/**
 	 * Class that handles drawing stroke function invocation in KModelFacade.
 	 */
@@ -36,7 +37,7 @@ package sg.edu.smu.ksketch.interactor
 			_facade = facade;
 			_appState = appState;
 		}
-
+		
 		/**
 		 * Do nothing.
 		 */
@@ -62,8 +63,11 @@ package sg.edu.smu.ksketch.interactor
 			if(_log != null)
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 			
-			_facade.beginKStrokePoint();
+			_facade.beginKStrokePoint(_appState.penColor,_appState.penThickness,_appState.time);
+			KLogger.logBeginKStrokePoint(_appState.penColor,_appState.penThickness,_appState.time);
+			
 			_facade.addKStrokePoint(point.x, point.y);
+			KLogger.logAddKStrokePoint(point);
 		}
 		
 		/**
@@ -77,6 +81,7 @@ package sg.edu.smu.ksketch.interactor
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 			
 			_facade.addKStrokePoint(point.x, point.y);
+			KLogger.logAddKStrokePoint(point);
 		}
 		
 		/**
@@ -92,9 +97,13 @@ package sg.edu.smu.ksketch.interactor
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 				_log = null;
 			}
+			
 			_facade.addKStrokePoint(point.x, point.y);
+			KLogger.logAddKStrokePoint(point);
+			
 			_appState.addOperation(new KInteractionOperation(
 				_appState,_appState.time,_appState.time,null,null,_facade.endKStrokePoint()));
+			KLogger.logEndKStrokePoint();
 		}
 		
 		/**
@@ -103,7 +112,7 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		public function enableLog():ILoggable
 		{
-			_log = new KInteractiveLog(new Vector.<KPathPoint>(), KLogger.INTERACTION_DRAW);
+			_log = new KInteractiveLog(new Vector.<KPathPoint>(), KPlaySketchLogger.INTERACTION_DRAW);
 			return _log;
 		}
 	}

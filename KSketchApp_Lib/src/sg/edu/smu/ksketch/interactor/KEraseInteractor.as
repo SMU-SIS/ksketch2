@@ -1,40 +1,37 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.interactor
 {
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
-	import sg.edu.smu.ksketch.components.KObjectView;
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KInteractiveLog;
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.model.KObject;
-	import sg.edu.smu.ksketch.model.KStroke;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.KAppState;
-
+	
 	/**
 	 * Class that handles Erasing stroke (detectKStroke) operation in KModelFacade.
 	 */
 	public class KEraseInteractor implements IInteractor
 	{
-		protected var _currentOperation:KCompositeOperation;
-		protected var _hit_detector:KHitDetector;
-		protected var _facade:KModelFacade;
-		protected var _appState:KAppState;
-		protected var _canvas:KCanvas;
-		protected var _log:KInteractiveLog;
+		private var _currentOperation:KCompositeOperation;
+		private var _hit_detector:KHitDetector;
+		private var _facade:KModelFacade;
+		private var _appState:KAppState;
+		private var _canvas:KCanvas;
+		private var _log:KInteractiveLog;
 		
 		/**
 		 * Constructor to initialise KModelFacade and KAppState.
@@ -49,7 +46,7 @@ package sg.edu.smu.ksketch.interactor
 			_appState = appState;			
 			_canvas = canvas;
 		}
-
+		
 		/**
 		 * Do nothing.
 		 */
@@ -88,7 +85,7 @@ package sg.edu.smu.ksketch.interactor
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 			var pt:Point = KInteractorManager.getInverseCoordinate(point,_canvas);
 			var object:KObject = _hit_detector.detect(pt);
-			var op:IModelOperation = object ? _facade.erase(object,time) : null;
+			var op:IModelOperation = object ? _erase(object,time) : null;
 			if (op != null)
 				_currentOperation.addOperation(
 					new KInteractionOperation(_appState,time,time,null,null,op));
@@ -113,16 +110,23 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		public function enableLog():ILoggable
 		{
-			_log = new KInteractiveLog(new Vector.<KPathPoint>(), KLogger.INTERACTION_ERASE);
+			_log = new KInteractiveLog(new Vector.<KPathPoint>(), 
+				KPlaySketchLogger.INTERACTION_ERASE);
 			return _log;
 		}
 		
-		protected function _inverseEventCoordinate(p:Point):Point
+		private function _inverseEventCoordinate(p:Point):Point
 		{			
 			var pt:Point = new Point();
 			pt.x = p.x*_canvas.contentScale + _canvas.mouseOffsetX;
 			pt.y = p.y*_canvas.contentScale + _canvas.mouseOffsetY;
 			return pt;
-		}	
+		}
+		
+		private function _erase(object:KObject,time:Number):IModelOperation
+		{
+			KLogger.logErase(object.id,time);
+			return _facade.erase(object,time);
+		}
 	}
 }

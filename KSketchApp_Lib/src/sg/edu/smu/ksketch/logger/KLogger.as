@@ -6,7 +6,14 @@
 
 package sg.edu.smu.ksketch.logger
 {
+	import flash.display.BitmapData;
+	import flash.geom.Point;
+	
+	import sg.edu.smu.ksketch.io.KFileParser;
+	import sg.edu.smu.ksketch.model.KObject;
+	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.utilities.KAppState;
+
 	/**
 	 * A class which supports logging system. All methods in this class are static.
 	 */	
@@ -16,7 +23,10 @@ package sg.edu.smu.ksketch.logger
 		public static const LOG_SERVER_URL:String = "http://coalescences.net/logtest/put";
 
 		public static const LOG_TIME:String = "logtime";
+		public static const TIME:String = "time";
 
+		public static const OBJECTS:String = "objects";
+		
 		// command names, same as xml node name
 		public static const COMMANDS:String = "commands";
 		public static const NEW_SESSION:String = "newsession";
@@ -26,42 +36,6 @@ package sg.edu.smu.ksketch.logger
 		public static const FILE_NAME:String = "filename";
 		public static const FILE_APP_DIR:String = "playsketch";
 
-		// toolbar operation
-		public static const BTN_EXIT:String = "btn-exit";
-		public static const BTN_NEW:String = "btn-new";
-		public static const BTN_LOAD:String = "btn-load";
-		public static const BTN_SAVE:String = "btn-save";
-
-		public static const BTN_CUT:String = "btn-cut";
-		public static const BTN_COPY:String = "btn-copy";
-		public static const BTN_PASTE:String = "btn-paste";
-
-		public static const BTN_UNDO:String = "btn-undo";
-		public static const BTN_REDO:String = "btn-redo";
-		
-		public static const BTN_GROUP:String = "btn-group";
-		public static const BTN_UNGROUP:String = "btn-ungroup";
-
-		public static const BTN_ERASER:String = "btn-eraser";
-		public static const BTN_RED_PEN:String = "btn-redpen";
-		public static const BTN_BLUE_PEN:String = "btn-bluepen";
-		public static const BTN_GREEN_PEN:String = "btn-greenpen";
-		public static const BTN_BLACK_PEN:String = "btn-blackpen";
-		public static const BTN_PEN_PREVIOUS_STATE:String = "btn-previous";
-		
-		public static const BTN_NEXT:String = "btn-next";
-		public static const BTN_PREVIOUS:String = "btn-previous";
-		public static const BTN_FIRST:String = "btn-first";
-		public static const BTN_PLAY:String = "btn-play";
-
-		public static const BTN_TOGGLE_VISIBILITY:String = "btn-toggle-visibility";
-		
-		public static const BTN_SETTING:String = "btn-setting";
-		public static const BTN_DEBUG:String = "btn-debug";
-
-		public static const BTN_TOGGLE_TIMEBAR_EXPAND:String = "btn-toggle-timebar-expand";
-
-		public static const CHANGE_KEYFRAME:String = "changekeyframe";
 		public static const CHANGE_TIME:String = "changetime";
 		public static const CHANGE_TIME_ACTION:String = "changetime-action";
 		public static const CHANGE_TIME_TAP:String = "changetime-tap";
@@ -69,153 +43,56 @@ package sg.edu.smu.ksketch.logger
 		public static const CHANGE_TIME_FROM:String = "fromtime";
 		public static const CHANGE_TIME_TO:String = "totime";
 		
-		public static const CHANGE_SELECTION_MODE:String = "change-selection-mode";		
-		public static const CHANGE_SELECTION_MODE_FROM:String = "change-selection-mode-from";		
-		public static const CHANGE_SELECTION_MODE_TO:String = "change-selection-mode-to";
-		
-		public static const CHANGE_GROUPING_MODE:String = "change-grouping-mode";		
-		public static const CHANGE_GROUPING_MODE_FROM:String = "change-grouping-mode-from";		
-		public static const CHANGE_GROUPING_MODE_TO:String = "change-grouping-mode-to";
-		
-		public static const CHANGE_GESTURE_DESIGN:String = "change-gesture-design";
-		public static const CHANGE_GESTURE_DESIGN_FROM:String = "change-gesture-design-from";
-		public static const CHANGE_GESTURE_DESIGN_TO:String = "change-gesture-design-to";
-		
-		public static const CHANGE_GESTURE_RECOGNITION_TIMEOUT:String = "change-gesture-recognition-timeout";
-		public static const CHANGE_GESTURE_RECOGNITION_TIMEOUT_FROM:String = "change-gesture-recognition-timeout-from";
-		public static const CHANGE_GESTURE_RECOGNITION_TIMEOUT_TO:String = "change-gesture-recognition-timeout-to";
+		// System command
+		public static const SYSTEM_UNDO:String = "sys-undo";
+		public static const SYSTEM_REDO:String = "sys-redo";
+		public static const SYSTEM_IMAGE:String = "sys-image";
+		public static const SYSTEM_STROKE:String = "sys-stroke";
+		public static const SYSTEM_ERASE:String = "sys-erase";
+		public static const SYSTEM_COPY:String = "sys-copy";
+		public static const SYSTEM_CUT:String = "sys-cut";
+		public static const SYSTEM_PASTE:String = "sys-paste";
+		public static const SYSTEM_CLEARCLIPBOARD:String = "sys-clearclipboard";
+		public static const SYSTEM_TOGGLEVISIBILITY:String = "sys-togglevisibility";
+		public static const SYSTEM_TRANSLATE:String = "sys-translate";
+		public static const SYSTEM_ROTATE:String = "sys-rotate";
+		public static const SYSTEM_SCALE:String = "sys-scale";
+		public static const SYSTEM_GROUP:String = "sys-group";
+		public static const SYSTEM_UNGROUP:String = "sys-ungroup";
+		public static const SYSTEM_REGROUP:String = "sys-regroup";
+		public static const PASTEINCLUDEMOTION:String = "paste-include-motion";
 
-		public static const CHANGE_GESTURE_ACCEPTANCE_SCORE:String = "change-gesture-acceptance-score";
-		public static const CHANGE_GESTURE_ACCEPTANCE_SCORE_FROM:String = "change-gesture-acceptance-score-from";
-		public static const CHANGE_GESTURE_ACCEPTANCE_SCORE_TO:String = "change-gesture-acceptance-score-to";
+		public static const GROUPING_MODE:String = "mode";
+		public static const GROUPING_MODE_EXPLICIT_STATIC:String = KAppState.GROUPING_EXPLICIT_STATIC;
+		public static const GROUPING_MODE_EXPLICIT_DYNAMIC:String = KAppState.GROUPING_EXPLICIT_DYNAMIC;
+		public static const GROUPING_MODE_IMPLICIT_DYNAMIC:String = KAppState.GROUPING_IMPLICIT_DYNAMIC;
+		public static const GROUPING_ISREALTIMETRANSLATION:String = "is-realtime-translation";
 		
-		public static const CHANGE_PATH_VISIBILITY:String = "change-path-visibility";
-		public static const CHANGE_PATH_VISIBILITY_FROM:String = "change-path-visibility-from";
-		public static const CHANGE_PATH_VISIBILITY_TO:String = "change-path-visibility-to";
-		
-		public static const CHANGE_CORRECT_FUTURE_MOTION:String = "change-correct-future-motion";
-		public static const CHANGE_CORRECT_FUTURE_MOTION_FROM:String = "change-correct-future-motion-from";
-		public static const CHANGE_CORRECT_FUTURE_MOTION_TO:String = "change-correct-future-motion-to";
-		
-		public static const CHANGE_CREATION_MODE:String = "change-creation-mode";
-		public static const CHANGE_CREATION_MODE_FROM:String = "change-creation-mode-from";
-		public static const CHANGE_CREATION_MODE_TO:String = "change-creation-mode-to";
-		
-		public static const CHANGE_DEMO_MERGE_MODE:String = "change-demo-merge-mode";
-		public static const CHANGE_DEMO_MERGE_MODE_FROM:String = "change-demo-merge-mode-from";
-		public static const CHANGE_DEMO_MERGE_MODE_TO:String = "change-demo-merge-mode-to";
+		public static const TRANSITION_START_TIME:String = "start-time";
+		public static const TRANSITION_END_TIME:String = "end-time";
+		public static const TRANSITION_TYPE:String = "transitionType";
+		public static const TRANSITION_TYPE_INSTANT:int = KAppState.TRANSITION_INSTANT;
+		public static const TRANSITION_TYPE_INTERPOLATED:int = KAppState.TRANSITION_INTERPOLATED;
+		public static const TRANSITION_TYPE_REALTIME:int= KAppState.TRANSITION_REALTIME;
+		public static const TRANSITION_CENTER_X:String = "cy";
+		public static const TRANSITION_CENTER_Y:String = "cx";
+		public static const TRANSITION_PATH:String = "transition-path";
+		public static const MOTION_PATH:String = "motion-path";
 
-		public static const CHANGE_ASPECT_RATIO:String = "change-aspect-ratio";
-		public static const CHANGE_ASPECT_RATIO_FROM:String = "change-aspect-ratio-from";
-		public static const CHANGE_ASPECT_RATIO_TO:String = "change-aspect-ratio-to";
-		
-		public static const CHANGE_RIGHT_MOUSE_ENABLED:String = "change-right-mouse-enabled";
-		public static const CHANGE_RIGHT_MOUSE_ENABLED_FROM:String = "change-right-mouse-enabled-from";
-		public static const CHANGE_RIGHT_MOUSE_ENABLED_TO:String = "change-right-mouse-enabled-to";
-		
-		public static const CHANGE_CONFIRM_DIALOG_ENABLED:String = "change-confirm-dialog-enabled";
-		public static const CHANGE_CONFIRM_DIALOG_ENABLED_FROM:String = "change-confirm-dialog-enabled-from";
-		public static const CHANGE_CONFIRM_DIALOG_ENABLED_TO:String = "change-confirm-dialog-enabled-to";
-		
-		public static const CHANGE_APPLICATION_LOG_ENABLED:String = "change-application-log-enabled";
-		public static const CHANGE_APPLICATION_LOG_ENABLED_FROM:String = "change-application-log-enabled-from";
-		public static const CHANGE_APPLICATION_LOG_ENABLED_TO:String = "change-application-log-enabled-to";
-		
-		// menu command
-		public static const MENU_PEN_MENU:String = "pmenu";
-		public static const MENU_CONTEXT_MENU:String = "cmenu";
-		public static const MENU_CONTEXT_MENU_CUT:String = "cmenu-cut";
-		public static const MENU_CONTEXT_MENU_COPY:String = "cmenu-copy";
-		public static const MENU_CONTEXT_MENU_PASTE:String = "cmenu-paste";
-		public static const MENU_CONTEXT_MENU_PASTE_WITH_MOTION:String = "cmenu-paste-with-motion";
-		public static const MENU_CONTEXT_MENU_CLEAR_MOTIONS:String = "cmenu-clear-motions";
-		public static const MENU_CONTEXT_MENU_INSERT_KEYS:String = "cmenu-insert-keys";
-		public static const MENU_SELECTED:String = "cmenu-select";
-		
-		// shortcut command
-		public static const SHORTCUT_CUT:String = "shortcut-cut";
-		public static const SHORTCUT_COPY:String = "shortcut-copy";
-		public static const SHORTCUT_PASTE:String = "shortcut-paste";
-		public static const SHORTCUT_PASTE_WITH_MOTION:String = "shortcut-paste-with-motion";
-		public static const SHORTCUT_UNDO:String = "shortcut-undo";
-		public static const SHORTCUT_REDO:String = "shortcut-redo";
-		
-		// interaction (widget)
-		public static const INTERACTION_DRAW:String = "draw";
-		public static const INTERACTION_ERASE:String = "erase";
-		public static const INTERACTION_HIDE_POPUP:String = "hidepopup";
-		public static const INTERACTION_DESELECT:String = "deselect";
-		public static const INTERACTION_SELECT_LOOP:String = "loopselect";
-		public static const INTERACTION_TRANSLATE:String = "translate";
-		public static const INTERACTION_ROTATE:String = "rotate";
-		public static const INTERACTION_SCALE:String = "scale";
-		public static const INTERACTION_MOVE_CENTER:String = "movecenter";
-		public static const INTERACTION_DRAG_CENTER:String = "dragcenter";
-		public static const INTERACTION_GESTURE:String = "gesture";
-		
+		public static const IMAGE_DATA:String = "image-data";
+		public static const IMAGE_X:String = "x";
+		public static const IMAGE_Y:String = "y";
+
+		public static const STROKE_POINTS:String = "points";
+		public static const STROKE_THICKNESS:String = "thickness";
+		public static const STROKE_COLOR:String = "color";
 		public static const CURSOR_PATH:String = "cursorpath";
-		
-		public static const TRANSITION_TYPE:String = "transitiontype";
-		public static const TRANSITION_TYPE_INSTANT:String = "INSTANT";
-		public static const TRANSITION_TYPE_INTERPOLATED:String = "INTERPOLATED";
-		public static const TRANSITION_TYPE_REALTIME:String = "REALTIME";
-		
-		public static const IS_TAP:String = "isTap";
-		
-		public static const PREV_SELECTED_ITEMS:String = "previousSelectedItems";
-		public static const SELECTED_ITEMS:String = "selectedItems";
-		
-		public static const MATCH:String = "match";
-		public static const CONFIDENCE:String = "matchConfidence";
-		
-		public static const PIGTAIL:String = "pigtail";
-		public static const CYCLE_NEXT:String = "cycleNext";
-		public static const CYCLE_PREV:String = "cyclePrev";
-		public static const UNDEFINED:String = "null";
-		
 		public static const CURSOR_PATH_PART:String = "pathPart";
-		
-		// test control commands
-		public static const DELAY:String = "delay";
-		public static const DELAY_TIME:String = "time";
-		
-		public static const BREAK:String = "break";
-		public static const BREAK_VERIFY:String = "verify";
-		
-		public static const PAUSE:String = "pause";
-		
-		public static const PAUSEALL:String = "pauseall";
-		
-		public static const DELAYALL:String = "delayall";
-		public static const DELAYALL_TIME:String = "time";
-		
-		// Assertion tag name
-		public static const ASSERT_MATRIX:String = "assert-matrix";
-		public static const ASSERT_KEYFRAME:String = "assert-keyframe";
-		
-		// Assertion attribute
-		public static const ASSERTION_TIME:String = "time";
-		public static const ASSERTION_OBJECT_NAME:String = "name";
-		
-		public static const MATRIX_A:String = "a";
-		public static const MATRIX_B:String = "b";
-		public static const MATRIX_C:String = "c";
-		public static const MATRIX_D:String = "d";
-		public static const MATRIX_TX:String = "tx";
-		public static const MATRIX_TY:String = "ty";
-		public static const MATRIX_TRANSLATE:String = "translate";
-		public static const MATRIX_ROTATE:String = "rotate";
-		public static const MATRIX_SCALE:String = "scale";
-		public static const MATRIX_TOLERANCE_TRANSLATE:String = "ttol";
-		public static const MATRIX_TOLERANCE_ROTATE:String = "rtol";
-		public static const MATRIX_TOLERANCE_SCALE:String = "stol";
-		
-		public static const KEYFRAME_IS_NULL:String = "isnull";
-		public static const KEYFRAME_TYPE:String = "type";
-		public static const KEYFRAME_CENTER:String = "center";
 		
 		private static var _enabled:Boolean = true;
 		private static var _logFile:XML = new XML("<"+COMMANDS+"/>");
+		
+		private static var _systemLog:KSystemLog = new KSystemLog();
 		
 		/**
 		 * If logger is enabled, add an item into the log file. The log file is XML formatted, and an 
@@ -240,15 +117,136 @@ package sg.edu.smu.ksketch.logger
 				_logFile.appendChild(node);
 			}
 		}
+
+		public static function logUndo():void
+		{
+			_logObject(_systemLog.undo());
+		}		
 		
+		public static function logRedo():void
+		{
+			_logObject(_systemLog.redo());
+		}		
+		
+		public static function logAddKImage(imageData:BitmapData, time:Number, xPos:Number, yPos:Number):void
+		{
+			_logObject(_systemLog.addImage(imageData, time, xPos, yPos));
+		}		
+		
+		public static function logBeginKStrokePoint(color:uint, thickness:Number, time:Number):void
+		{
+			_systemLog.beginStroke(color,thickness,time);
+		}
+		
+		public static function logAddKStrokePoint(point:Point):void
+		{
+			_systemLog.addToStroke(point.x,point.y);
+		}
+		
+		public static function logEndKStrokePoint():void
+		{
+			_logObject(_systemLog.endStroke());
+		}
+		
+		public static function logErase(objectID:int, kskTime:Number):void
+		{
+			_logObject(_systemLog.erase(objectID,kskTime));
+		}
+		
+		public static function logCopy(objectIDs:Vector.<int>, kskTime:Number):void
+		{
+			_logObject(_systemLog.copy(objectIDs,kskTime));
+		}
+		
+		public static function logCut(objectIDs:Vector.<int>, kskTime:Number):void
+		{
+			_logObject(_systemLog.cut(objectIDs,kskTime));
+		}
+		
+		public static function logPaste(includeMotion:Boolean,time:Number):void
+		{
+			_logObject(_systemLog.paste(includeMotion,time));
+		}
+
+		public static function logClearClipBoard():void
+		{
+			_logObject(_systemLog.clearClipBoard());
+		}
+
+		public static function logToggleVisibility(objectIDs:Vector.<int>,time:Number):void
+		{
+			_logObject(_systemLog.toggleVisibility(objectIDs,time));
+		}
+
+		public static function logRegroup(objectIDs:Vector.<int>, mode:String, transitionType:int,
+										  time:Number,isRealTimeTranslation:Boolean = false):void
+		{
+			_logObject(_systemLog.regroup(objectIDs, mode, transitionType, time, isRealTimeTranslation));
+		}
+
+		public static function logGroup(objectIDs:Vector.<int>, mode:String, transitionType:int,
+										time:Number=-2,  isRealTimeTranslation:Boolean = false):void
+		{	
+			_logObject(_systemLog.group(objectIDs, mode, transitionType, time, isRealTimeTranslation));
+		}
+		
+		public static function logUngroup(objectIDs:Vector.<int>, mode:String, time:Number):void
+		{
+			_logObject(_systemLog.ungroup(objectIDs, mode, time));
+		}
+		
+		public static function logBeginTranslation(objectID:int, kskTime:int, transitionType:int):void
+		{
+			_systemLog.beginTranslation(objectID, kskTime, transitionType);
+		}	
+		
+		public static function logAddToTranslation(translateX:Number, translateY:Number, 
+											kskTime:Number,cursorPoint:Point = null):void
+		{
+			_systemLog.addToTranslation(translateX, translateY, kskTime, cursorPoint);
+		}
+		
+		public static function logEndTranslation(kskTime:Number):void
+		{	
+			_logObject(_systemLog.endTranslation(kskTime));
+		}
+		
+		public static function logBeginRotation(objectID:int, canvasCenter:Point, 
+										 kskTime:Number, transitionType:int):void
+		{
+			_systemLog.beginRotation(objectID, canvasCenter, kskTime, transitionType);
+		}
+		
+		public static function logAddToRotation(angle:Number, cursorPoint:Point, kskTime:Number):void
+		{
+			_systemLog.addToRotation(angle, cursorPoint, kskTime);
+		}
+		
+		public static function logEndRotation(kskTime:Number):void
+		{
+			_logObject(_systemLog.endRotation(kskTime));
+		}
+		
+		public static function logBeginScale(objectID:int, canvasCenter:Point, 
+											 kskTime:Number, transitionType:int):void
+		{
+			_systemLog.beginScale(objectID, canvasCenter, kskTime, transitionType);
+		}
+		
+		public static function logAddToScale(scale:Number, cursorPoint:Point, kskTime:Number):void
+		{
+			_systemLog.addToScale(scale, cursorPoint, kskTime);
+		}
+		
+		public static function logEndScale(kskTime:Number):void
+		{		
+			_logObject(_systemLog.endScale(kskTime));
+		}
+
 		public static function logObject(log:ILoggable):void
 		{
 			if(_enabled)
-			{
-				var node:XML = log.toXML();
-				node.@[LOG_TIME] = formartedTime(new Date());
-				_logFile.appendChild(node);
-			}
+				_logObject(log.toXML());
 		}
 		
 		/**
@@ -318,5 +316,15 @@ package sg.edu.smu.ksketch.logger
 			date.setTime(seconds + milli);
 			return date;
 		}
+		
+		private static function _logObject(node:XML):void
+		{
+			if(_enabled)
+			{
+				node.@[LOG_TIME] = formartedTime(new Date());
+				_logFile.appendChild(node);
+			}
+		}
+				
 	}
 }

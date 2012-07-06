@@ -11,7 +11,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KInteractiveLog;
-	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.logger.KWithSelectionLog;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.utilities.KAppState;
@@ -52,10 +52,10 @@ package sg.edu.smu.ksketch.interactor
 			{
 				case MODE_DESELECT:
 					_log = new KWithSelectionLog(new Vector.<KPathPoint>(), 
-						KLogger.INTERACTION_DESELECT, _appState.selection.objects);
+						KPlaySketchLogger.INTERACTION_DESELECT, _appState.selection.objects);
 					break;
 				case MODE_HIDE_POPUP:
-					_log = new KInteractiveLog(new Vector.<KPathPoint>(), KLogger.INTERACTION_HIDE_POPUP);
+					_log = new KInteractiveLog(new Vector.<KPathPoint>(), KPlaySketchLogger.INTERACTION_HIDE_POPUP);
 					break;
 				default:
 					throw new Error("invalid mode: "+_mode);

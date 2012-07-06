@@ -51,6 +51,8 @@ package sg.edu.smu.ksketch.operation
 			_model = new KModel();
 			_editor = new KObjectEditor();
 			_keyTimeOperator = new KKeyTimeOperator(_appState, _model);
+			
+			_model.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED,_refreshObjectTime);
 		}
 		
 		/**
@@ -66,24 +68,22 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Edit Operation ------------------- //	
-		public function addKImage(imageData:BitmapData, time:Number, xPos:Number, yPos:Number):void
-		{			
-			_appState.addOperation(_editor.addImage(_model,imageData,xPos,yPos,time));
+		public function addKImage(data:BitmapData,time:Number,x:Number,y:Number):IModelOperation
+		{
+			var op:IModelOperation = _editor.addImage(_model,data,x,y,time);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+			return op;
 		}
-		
 		public function addKMovieClip(movieClip:MovieClip, time:Number, xPos:Number, yPos:Number):void
 		{			
 			_appState.addOperation(_editor.addMovieClip(_model,movieClip ,xPos,yPos,time));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 		}
-		
-		public function beginKStrokePoint():void
+		public function beginKStrokePoint(color:uint,thickness:Number,time:Number):int
 		{			
-			_editor.beginStroke(_model, _appState.penColor, 
-				_appState.penThickness, _appState.time);
+			return _editor.beginStroke(_model, color, thickness, time);
 		}
 		public function addKStrokePoint(x:Number, y:Number):void
 		{			
@@ -100,20 +100,15 @@ package sg.edu.smu.ksketch.operation
 		{
 			return _editor.erase(this,_model,object,kskTime);
 		}
-		public function copy():void
+		public function copy(objects:KModelObjectList,time:Number):void
 		{
-			if (_appState.selection == null) 
-				return;
-			_editor.copy(_appState.selection.objects,_appState.time);
+			_editor.copy(objects,time);
 			_appState.pasteEnabled = true;
 			_appState.fireEditEnabledChangedEvent();
 		}
-		public function cut():IModelOperation
+		public function cut(objects:KModelObjectList,time:Number):IModelOperation
 		{
-			if(!_appState.selection)
-				return null;
-		
-			var op:IModelOperation = _editor.cut(this,_appState.selection.objects,_appState.time);
+			var op:IModelOperation = _editor.cut(this,objects,time);
 			_appState.selection = null;
 			_appState.pasteEnabled = true;
 			_appState.fireEditEnabledChangedEvent();
@@ -121,9 +116,9 @@ package sg.edu.smu.ksketch.operation
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
-		public function paste(includeMotion:Boolean):IModelOperation
+		public function paste(includeMotion:Boolean,time:Number):IModelOperation
 		{
-			return _editor.paste(_model, _appState, includeMotion);
+			return _editor.paste(_model, _appState, time, includeMotion);
 		}
 		public function clearClipBoard():void
 		{
@@ -145,13 +140,12 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Grouping Operation ------------------- //
-		public function regroup(objs:KModelObjectList, 
-								isRealTimeTranslation:Boolean = false):IModelOperation
+		public function regroup(objs:KModelObjectList, mode:String, transitionType:int, 
+								appTime:Number, isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
-	//		var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
-			var time:Number = _appState.time;
-			var unOp:IModelOperation = ungroup(objs);
-			var gpOp:IModelOperation = group(objs,time, isRealTimeTranslation);
+			//		var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,appTime);
+			var unOp:IModelOperation = ungroup(objs, mode, appTime);
+			var gpOp:IModelOperation = group(objs,mode,transitionType,appTime,isRealTimeTranslation);
 			var ops:KCompositeOperation = new KCompositeOperation();
 			if (unOp)
 				ops.addOperation(unOp);
@@ -159,15 +153,14 @@ package sg.edu.smu.ksketch.operation
 				ops.addOperation(gpOp);
 			return ops;
 		}
-		public function group(objs:KModelObjectList,groupTime:Number=-2, 
-							  isRealTimeTranslation:Boolean = false):IModelOperation
+		public function group(objs:KModelObjectList, mode:String, transitionType:int, 
+							  groupTime:Number=-2, isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
 			var time:Number = groupTime;
 			time = time != -2 ? time:KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
 			time = time >= 0 ? time : _appState.time;
 			
-			var mode:String = _appState.groupingMode;
-			var interpMode:Boolean = _appState.transitionType == KAppState.TRANSITION_INTERPOLATED;
+			var interpMode:Boolean = transitionType == KAppState.TRANSITION_INTERPOLATED;
 			var staticMode:Boolean = mode == KAppState.GROUPING_EXPLICIT_STATIC;
 			var implicitMode:Boolean = mode == KAppState.GROUPING_IMPLICIT_DYNAMIC;
 			var ops:KCompositeOperation = new KCompositeOperation();
@@ -201,24 +194,24 @@ package sg.edu.smu.ksketch.operation
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return ops.length > 0 ? ops : null;
 		}
-		public function ungroup(objs:KModelObjectList):IModelOperation
+		public function ungroup(objs:KModelObjectList,mode:String,appTime:Number):IModelOperation
 		{	
-			var time:Number = _appState.time;
-			var strokes:KModelObjectList = KUngroupUtil.selectedStrokes(_model.root,objs,time);
+			var strokes:KModelObjectList = KUngroupUtil.selectedStrokes(_model.root,objs,appTime);
 			var mode:String = _appState.groupingMode;
 			var ops:KCompositeOperation = new KCompositeOperation();
 			
 			var ungpOp:IModelOperation = mode == KAppState.GROUPING_EXPLICIT_STATIC ? 
 				KUngroupUtil.ungroupStatic(_model,_model.root,objs):
-				KUngroupUtil.ungroupDynamic(_model,_model.root,objs, time);
+				KUngroupUtil.ungroupDynamic(_model,_model.root,objs, appTime);
 			if (ungpOp != null)
 				ops.addOperation(ungpOp);
 			
 			var rmOp:IModelOperation = KUngroupUtil.removeAllSingletonGroups(_model);
 			if (rmOp != null)
 				ops.addOperation(rmOp);
-						
-			_appState.selection = strokes.length()>0 ? new KSelection(strokes,time):_appState.selection;
+			
+			_appState.selection = strokes.length() > 0 ? 
+				new KSelection(strokes, appTime) : _appState.selection;
 			_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
 			_appState.fireGroupingEnabledChangedEvent();
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
@@ -226,7 +219,7 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Transform Operation ------------------- //		
-		public function beginTranslation(object:KObject, kskTime:int, transitionType:int):void
+		public function beginTranslation(object:KObject, kskTime:Number, transitionType:int):void
 		{
 			object.transformMgr.beginTranslation(kskTime, transitionType);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));
@@ -291,7 +284,7 @@ package sg.edu.smu.ksketch.operation
 			{
 				if(_appState.targetTrackBox != KTransformMgr.ALL_REF)
 					return null;
-
+				
 				objects = _model.allChildren();
 				
 				var allIt:IIterator = objects.iterator;
@@ -422,6 +415,13 @@ package sg.edu.smu.ksketch.operation
 		public function getMarkerInfo():Vector.<Object>
 		{
 			return _keyTimeOperator.getTimeLineInformation();
+		}
+		
+		// A function to refresh KImage as the data may be loaded asyn
+		private function _refreshObjectTime(event:KObjectEvent):void
+		{
+			
+			//		_appState.dispatchEvent(new KTimeChangedEvent(1000,0));
 		}
 	}
 }

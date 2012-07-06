@@ -138,17 +138,7 @@ package sg.edu.smu.ksketch.io
 		{
 			node.@[COLOR] = stroke.color;
 			node.@[THICKNESS] = stroke.thickness;
-			var points:Vector.<Point> = stroke.points;
-			var pntsString:String = "";
-			if(points.length>0)
-				pntsString = points[0].x+","+points[0].y;
-			for(var i:int = 1;i<points.length;i++)
-			{
-				var x:Number = points[i].x;
-				var y:Number = points[i].y;
-				pntsString += " "+x+","+y;
-			}
-			node.@[STROKE_POINTS] = pntsString;
+			node.@[STROKE_POINTS] = pointsToString(stroke.points);
 		}
 		
 		private static function _setObjectAttr(node:XML, object:KObject, showDefault:Boolean):void

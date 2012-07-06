@@ -11,6 +11,7 @@ package sg.edu.smu.ksketch.interactor
 	import flash.geom.Rectangle;
 	
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
@@ -64,7 +65,7 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		public override function get name():String
 		{
-			return KLogger.INTERACTION_ROTATE;
+			return KPlaySketchLogger.INTERACTION_ROTATE;
 		}            
 		
 		protected override function transitionStart(canvasPoint:Point, 
@@ -119,6 +120,7 @@ package sg.edu.smu.ksketch.interactor
 			{
 				var obj:KObject = it.next();
 				op.addOperation(_facade.endRotation(obj, _appState.time));
+				KLogger.logEndRotation(_appState.time);
 				_ghost.remove(obj);
 			}		
 			
@@ -129,7 +131,10 @@ package sg.edu.smu.ksketch.interactor
 										transitionType:int, canvasPoint:Point):void
 		{
 			_ghost.add(object, center, time);
+
 			_facade.beginRotation(object, center, time, transitionType);
+			KLogger.logBeginRotation(object.id,center,time,transitionType);
+
 			_previousPoint = canvasPoint.clone().subtract(center);
 			_currentAngle = 0;
 		}
@@ -156,7 +161,11 @@ package sg.edu.smu.ksketch.interactor
 				var m:Matrix = obj.getFullPathMatrix(_appState.time);
 				var objCenter:Point = m.transformPoint(obj.defaultCenter);
 				var dydx:Point = length == 1 ? defaultOffset : objCenter.subtract(_activeCenter.clone());
-				_facade.addToRotation(obj, _currentAngle, canvasPoint.add(dydx), _appState.time);
+				var cursorPoint:Point = canvasPoint.add(dydx);
+
+				_facade.addToRotation(obj, _currentAngle, cursorPoint, _appState.time);
+				KLogger.logAddToRotation(_currentAngle,cursorPoint,_appState.time);
+
 				_ghost.update(obj,_appState.time);
 			}
 			

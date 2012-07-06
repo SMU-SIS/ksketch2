@@ -63,6 +63,7 @@ import mx.utils.Base64Encoder;
 
 import sg.edu.smu.ksketch.interactor.KCommandExecutor;
 import sg.edu.smu.ksketch.logger.KLogger;
+import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 import sg.edu.smu.playsketch.components.timebar.Marker;
 import sg.edu.smu.playsketch.exportTools.SimpleFlvWriter;
 
@@ -153,7 +154,7 @@ public function promptForSave(postFunction:Function):void
 
 public function initButtonFunctions():void
 {
-	_savedModel = _facade.saveFile();
+	_savedModel = facade.saveFile();
 	_initLoggableButtons();
 	_buttonMapping = _getButtonMappings();
 	_commandExecutor = new KCommandExecutor(appState,appCanvas,facade);
@@ -200,29 +201,29 @@ private function _initLoggableButtons():void
 	_bindComponent(group_groupOps.btn_ungroup, appState, "ungroupEnabled");
 	btn_toogle.addEventListener(MouseEvent.CLICK, function (event:MouseEvent):void
 	{
-		KLogger.log(KLogger.BTN_TOGGLE_TIMEBAR_EXPAND);
+		KLogger.log(KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND);
 		_toogle_TimebarExpand();
 	});
 }
 private function _getButtonMappings():Dictionary
 {
 	var mapping:Dictionary = new Dictionary();
-	mapping[group_fileOps.btn_new] = KLogger.BTN_NEW;
-	mapping[group_fileOps.btn_load] = KLogger.BTN_LOAD;
-	mapping[group_fileOps.btn_save] = KLogger.BTN_SAVE;
-	mapping[group_editOps.btn_cut] = KLogger.BTN_CUT;
-	mapping[group_editOps.btn_copy] = KLogger.BTN_COPY;
-	mapping[group_editOps.btn_paste] = KLogger.BTN_PASTE;
-	mapping[group_viewOps.btn_undo] = KLogger.BTN_UNDO;
-	mapping[group_viewOps.btn_redo] = KLogger.BTN_REDO;
-	mapping[group_groupOps.btn_group] = KLogger.BTN_GROUP;
-	mapping[group_groupOps.btn_ungroup] = KLogger.BTN_UNGROUP;
-	mapping[group_configOps.btn_settings] = KLogger.BTN_SETTING;
-	mapping[group_configOps.btn_debug] = KLogger.BTN_DEBUG;
-	mapping[btn_firstFrame] = KLogger.BTN_FIRST;
-	mapping[btn_previous] = KLogger.BTN_PREVIOUS;
-	mapping[btn_next] = KLogger.BTN_NEXT;
-	mapping[btn_play] = KLogger.BTN_PLAY;
+	mapping[group_fileOps.btn_new] = KPlaySketchLogger.BTN_NEW;
+	mapping[group_fileOps.btn_load] = KPlaySketchLogger.BTN_LOAD;
+	mapping[group_fileOps.btn_save] = KPlaySketchLogger.BTN_SAVE;
+	mapping[group_editOps.btn_cut] = KPlaySketchLogger.BTN_CUT;
+	mapping[group_editOps.btn_copy] = KPlaySketchLogger.BTN_COPY;
+	mapping[group_editOps.btn_paste] = KPlaySketchLogger.BTN_PASTE;
+	mapping[group_viewOps.btn_undo] = KPlaySketchLogger.BTN_UNDO;
+	mapping[group_viewOps.btn_redo] = KPlaySketchLogger.BTN_REDO;
+	mapping[group_groupOps.btn_group] = KPlaySketchLogger.BTN_GROUP;
+	mapping[group_groupOps.btn_ungroup] = KPlaySketchLogger.BTN_UNGROUP;
+	mapping[group_configOps.btn_settings] = KPlaySketchLogger.BTN_SETTING;
+	mapping[group_configOps.btn_debug] = KPlaySketchLogger.BTN_DEBUG;
+	mapping[btn_firstFrame] = KPlaySketchLogger.BTN_FIRST;
+	mapping[btn_previous] = KPlaySketchLogger.BTN_PREVIOUS;
+	mapping[btn_next] = KPlaySketchLogger.BTN_NEXT;
+	mapping[btn_play] = KPlaySketchLogger.BTN_PLAY;
 	return mapping;
 }
 
@@ -231,14 +232,14 @@ private function _handleButton(event:MouseEvent):void
 	if (event.currentTarget is UIComponent || event.currentTarget is UIMovieClip)
 	{
 		var command:String = _buttonMapping[event.currentTarget];
-		if (command == KLogger.BTN_SAVE)
+		if (command == KPlaySketchLogger.BTN_SAVE)
 		{
 			_commandExecutor.saveWithListener(function(e:Event):void
 			{
 				_savedModel = facade.saveFile();
 			});
 		}
-		else if ((command == KLogger.BTN_NEW || command == KLogger.BTN_LOAD) && needSave())
+		else if ((command == KPlaySketchLogger.BTN_NEW || command == KPlaySketchLogger.BTN_LOAD) && needSave())
 			promptForSave(function ():void{_commandExecutor.doButtonCommand(command);});
 		else
 			_commandExecutor.doButtonCommand(command);
@@ -850,8 +851,9 @@ private function onAddPNG(loader:Loader, ev:Event):void
 	bitmapData.draw(loader);
 	var bitmap:Bitmap = new Bitmap(bitmapData);	
 	var image:Image = new Image();
-	image.source = bitmap;			
-	facade.addKImage(bitmapData,this.appState.time,100,100);	
+	image.source = bitmap;
+	KLogger.logAddKImage(bitmapData,appState.time,100,100);
+	appState.addOperation(facade.addKImage(bitmapData,appState.time,100,100));	
 }
 
 

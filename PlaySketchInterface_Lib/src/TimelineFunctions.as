@@ -15,6 +15,7 @@ import sg.edu.smu.ksketch.event.KModelEvent;
 import sg.edu.smu.ksketch.event.KTimeChangedEvent;
 import sg.edu.smu.ksketch.interactor.KSelection;
 import sg.edu.smu.ksketch.logger.KLogger;
+import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 import sg.edu.smu.ksketch.operation.KKeyTimeOperator;
 import sg.edu.smu.ksketch.operation.KTransformMgr;
 import sg.edu.smu.ksketch.utilities.KAppState;
@@ -43,7 +44,7 @@ private function initTimebar():void
 	slider_key_index.addEventListener(TrackBaseEvent.THUMB_RELEASE,timeSlider_thumbReleaseHandler);
 	slider_key_index.addEventListener(MouseEvent.MOUSE_DOWN,slider_time_mouseDownHandler);
 	
-	_commandExecutor.addEventListener(KLogger.BTN_TOGGLE_TIMEBAR_EXPAND,
+	_commandExecutor.addEventListener(KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND,
 		function (e:KCommandEvent):void
 		{
 			_toogle_TimebarExpand();

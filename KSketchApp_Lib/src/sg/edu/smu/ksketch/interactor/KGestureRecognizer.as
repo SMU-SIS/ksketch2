@@ -29,7 +29,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KGestureLog;
 	import sg.edu.smu.ksketch.logger.KGestureSubLog;
-	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.logger.KPostGestureLog;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.utilities.KAppState;
@@ -290,7 +290,7 @@ package sg.edu.smu.ksketch.interactor
 		{
 			if(_log != null)
 			{
-				var subLog:KGestureSubLog = new KGestureSubLog(loop, KLogger.PIGTAIL, new Date());
+				var subLog:KGestureSubLog = new KGestureSubLog(loop, KPlaySketchLogger.PIGTAIL, new Date());
 				_log.addSubLog(subLog);
 			}
 			
@@ -754,7 +754,7 @@ package sg.edu.smu.ksketch.interactor
 						subLog = new KPostGestureLog(result, new Date(), 
 							_postGesture, _appState.selection.objects);
 					else
-						subLog = new KGestureSubLog(_postGesture, KLogger.UNDEFINED, new Date());
+						subLog = new KGestureSubLog(_postGesture, KPlaySketchLogger.UNDEFINED, new Date());
 					_log.addSubLog(subLog);
 				}
 			}

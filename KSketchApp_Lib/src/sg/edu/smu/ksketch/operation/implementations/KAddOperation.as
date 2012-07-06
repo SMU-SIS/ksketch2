@@ -36,7 +36,7 @@ package sg.edu.smu.ksketch.operation.implementations
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 		}
 		
-		internal function get object():KObject
+		public function get object():KObject
 		{
 			return _object;
 		}		

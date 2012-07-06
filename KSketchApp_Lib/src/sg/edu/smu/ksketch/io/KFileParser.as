@@ -1,12 +1,18 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.io
 {		
+	import flash.display.BitmapData;
 	import flash.geom.Point;
+	import flash.utils.ByteArray;
+	
+	import mx.graphics.codec.PNGEncoder;
+	import mx.utils.Base64Decoder;
+	import mx.utils.Base64Encoder;
 	
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.geom.K2DVector;
@@ -47,17 +53,32 @@ package sg.edu.smu.ksketch.io
 		public static const POSITION_KEYFAME_INSTANT_OFFSET:String = "instantOffset";
 		public static const ROTATION_KEYFAME_INSTANT_ANGLE:String = "instantAngle";
 		public static const SCALE_KEYFAME_INSTANT_FACTOR:String = "instantFactor";
-				
+		
 		public static const ACTIVITY_ALPHA:String = "alpha";
-
+		
 		public static const IMAGE:String = "image";
 		public static const IMAGE_X:String = KLogger.IMAGE_X;
 		public static const IMAGE_Y:String = KLogger.IMAGE_Y;
-		public static const IMAGE_WIDTH:String = "width";
-		public static const IMAGE_HEIGHT:String = "height";
+		public static const IMAGE_WIDTH:String = KLogger.IMAGE_WIDTH;
+		public static const IMAGE_HEIGHT:String = KLogger.IMAGE_HEIGHT;
 		public static const IMAGE_DATA:String = KLogger.IMAGE_DATA;
-		public static const IMAGE_FORMAT:String = "format";		
-
+		public static const IMAGE_FORMAT:String = KLogger.IMAGE_FORMAT;	
+		public static const IMAGE_FORMAT_PNG:String = KLogger.IMAGE_FORMAT_PNG;
+		
+		public static function pngToString(data:BitmapData):String
+		{	
+			var base64Enc:Base64Encoder = new Base64Encoder();  
+			base64Enc.encodeBytes(_pngToByteArray(data),0,0);
+			return base64Enc.toString();  				
+		}
+		
+		public static function stringToByteArray(data:String):ByteArray
+		{
+			var base64Dec:Base64Decoder = new Base64Decoder();
+			base64Dec.decode(data);
+			return base64Dec.toByteArray();
+		}
+		
 		public static function intsToString(ints:Vector.<int>):String
 		{
 			var intsString:String = "";
@@ -86,7 +107,7 @@ package sg.edu.smu.ksketch.io
 				pntsString += " "+points[i].x+","+points[i].y;
 			return pntsString;
 		}
-
+		
 		public static function stringToPoints(pntsString:String):Vector.<Point>
 		{
 			var points:Vector.<Point> = new Vector.<Point>();
@@ -153,6 +174,20 @@ package sg.edu.smu.ksketch.io
 				points.push(new K3DVector(Number(pointArrays[i][0]),
 					Number(pointArrays[i][1]),Number(pointArrays[i][2])));
 			return points;
+		}
+		
+		private static function _pngToByteArray(data:BitmapData):ByteArray
+		{
+			return (new PNGEncoder()).encodeByteArray(
+				_bitMapDataToBytes(data), data.width, data.height, true);		
+		}
+		
+		private static function _bitMapDataToBytes(data:BitmapData):ByteArray
+		{
+			var bytes:ByteArray = new ByteArray();
+			bytes.writeUnsignedInt(data.width);
+			bytes.writeBytes(data.getPixels(data.rect));
+			return bytes;
 		}
 		
 		private static function _stringToVectors(pntsString:String):Vector.<Array>

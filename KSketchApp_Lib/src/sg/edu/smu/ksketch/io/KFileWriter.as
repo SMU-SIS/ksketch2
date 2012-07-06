@@ -1,17 +1,11 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.io
-{
-	import flash.geom.Point;
-	import flash.utils.ByteArray;
-	
-	import mx.graphics.codec.PNGEncoder;
-	import mx.utils.Base64Encoder;
-	
+{		
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
@@ -75,7 +69,6 @@ package sg.edu.smu.ksketch.io
 				node = new XML(groupNode);
 			else if(object is KImage)
 				node = new XML(imageNode);
-				
 			else
 				throw new Error("unsupported kobject!");
 			_parseIDAttr(node, object.id);
@@ -119,19 +112,8 @@ package sg.edu.smu.ksketch.io
 			node.@[IMAGE_Y] = image.imagePosition.y;
 			node.@[IMAGE_WIDTH] = image.imageData.width;
 			node.@[IMAGE_HEIGHT] = image.imageData.height;
-			node.@[IMAGE_FORMAT]="PNG";
-
-			var base64Enc:Base64Encoder = new Base64Encoder();  
-			var finalEncodedString:String;					
-			var bytes:ByteArray = new ByteArray();
-			bytes.writeUnsignedInt(image.imageData.width);
-			bytes.writeBytes(image.imageData.getPixels(image.imageData.rect)); 			
-			var pngEncoder:PNGEncoder= new PNGEncoder();
-			var byteArray:ByteArray = pngEncoder.encodeByteArray(bytes, 
-				image.imageData.width, image.imageData.height, true);			
-			base64Enc.encodeBytes(byteArray,0,0);
-			finalEncodedString=base64Enc.toString();  				
-			node.@[IMAGE_DATA] = finalEncodedString;
+			node.@[IMAGE_FORMAT]= IMAGE_FORMAT_PNG;
+			node.@[IMAGE_DATA] = pngToString(image.imageData);
 		}
 		
 		private static function _setStrokeAttr(node:XML, stroke:KStroke):void
@@ -217,7 +199,7 @@ package sg.edu.smu.ksketch.io
 					key.endTime,path,skey.center.x,skey.center.y));
 			}
 		}
-				
+		
 		private static function _createSpatialNode(type:String, endTime:Number, path:String,
 												   centerX:Number=NaN, centerY:Number=NaN):XML
 		{
@@ -247,7 +229,7 @@ package sg.edu.smu.ksketch.io
 				path += " "+points[i].x+","+points[i].y;
 			return path;
 		}				
-				
+		
 		private static function _parseIDAttr(node:XML, id:int):void
 		{
 			node.@[ID] = id;

@@ -82,6 +82,10 @@ package sg.edu.smu.ksketch.logger
 		public static const IMAGE_DATA:String = "image-data";
 		public static const IMAGE_X:String = "x";
 		public static const IMAGE_Y:String = "y";
+		public static const IMAGE_WIDTH:String = "width";
+		public static const IMAGE_HEIGHT:String = "height";
+		public static const IMAGE_FORMAT:String = "format";		
+		public static const IMAGE_FORMAT_PNG:String = "PNG";		
 
 		public static const STROKE_POINTS:String = "points";
 		public static const STROKE_THICKNESS:String = "thickness";

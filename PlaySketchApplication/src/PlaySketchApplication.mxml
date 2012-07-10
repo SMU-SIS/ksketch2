@@ -22,6 +22,7 @@
 			import mx.core.Window;
 			import mx.events.CloseEvent;
 			
+			import sg.edu.smu.ksketch.event.KDataSavedEvent;
 			import sg.edu.smu.ksketch.interactor.KSystemCommandExecutor;
 			import sg.edu.smu.ksketch.io.KFileSaver;
 			import sg.edu.smu.ksketch.logger.KLogger;

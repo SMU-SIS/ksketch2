@@ -8,6 +8,8 @@ package sg.edu.smu.ksketch.io
 {
 	import flash.events.Event;
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	import flash.net.FileReference;
 	
 	import sg.edu.smu.ksketch.event.KFileLoadedEvent;
@@ -39,6 +41,15 @@ package sg.edu.smu.ksketch.io
 		public function loadLog():void
 		{
 			_load([_getLogTypeFilter()]);
+		}
+		
+		public function loadKMVFromFile(file:File):XML
+		{
+			var fileStream:FileStream = new FileStream();
+			fileStream.open(file, FileMode.READ);
+			var xml:XML = new XML(fileStream.readUTFBytes(file.size));
+			fileStream.close();
+			return xml;
 		}
 		
 		private function _load(typeFilter:Array = null):void

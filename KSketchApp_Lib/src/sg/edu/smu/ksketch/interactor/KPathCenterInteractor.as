@@ -14,7 +14,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KInteractiveLog;
-	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 //	import sg.edu.smu.ksketch.model.KKeyframe;
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KObject;
@@ -120,7 +120,7 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		public function enableLog():ILoggable
 		{
-			_log = new KInteractiveLog(new Vector.<KPathPoint>(), KLogger.INTERACTION_DRAW);
+			_log = new KInteractiveLog(new Vector.<KPathPoint>(), KPlaySketchLogger.INTERACTION_DRAW);
 			return _log;
 		}		
 

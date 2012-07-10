@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch.io
 	import flash.net.FileReference;
 	
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 		
 	public class KFileSaver extends KFileAccessor
 	{		
@@ -26,7 +27,8 @@ package sg.edu.smu.ksketch.io
 			var selected:Function = function (e:Event):void
 			{
 				var lastNode:XML;
-				var list:XMLList = content.elements(KLogger.COMMANDS).elements(KLogger.BTN_SAVE);
+				var list:XMLList = content.elements(KLogger.COMMANDS).elements(
+					KPlaySketchLogger.BTN_SAVE);
 				list.@filename = (e.target as FileReference).name;
 		//		trace(list.attribute("filename"));
 		//		trace(content.elements(KLogger.COMMANDS).elements(KLogger.BTN_SAVE).toXMLString());

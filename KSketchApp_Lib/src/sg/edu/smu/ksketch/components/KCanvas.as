@@ -23,6 +23,7 @@ package sg.edu.smu.ksketch.components
 	import sg.edu.smu.ksketch.event.KTimeChangedEvent;
 	import sg.edu.smu.ksketch.interactor.IInteractorManager;
 	import sg.edu.smu.ksketch.interactor.KInteractorManager;
+	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.IActivityKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
@@ -138,6 +139,7 @@ package sg.edu.smu.ksketch.components
 			_startStateMachine();
 			_appState.time = 0;
 			_appState.maxTime = KAppState.DEFAULT_MAX_TIME;
+			KLogger.logNewFile();
 			_facade.newFile();
 			
 			_viewsTable = new Dictionary();

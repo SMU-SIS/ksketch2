@@ -1,8 +1,8 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.interactor
 {
@@ -19,16 +19,15 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.event.KCommandEvent;
 	import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
-	import sg.edu.smu.ksketch.io.KFileAccessor;
 	import sg.edu.smu.ksketch.io.KFileLoader;
 	import sg.edu.smu.ksketch.io.KFileSaver;
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
-	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
 	public class KCommandExecutor extends EventDispatcher
 	{
@@ -52,18 +51,18 @@ package sg.edu.smu.ksketch.interactor
 			_facade = facade
 			_hasPopup = false;
 		}
-
+		
 		public function doButtonCommand(command:String):void
 		{
 			var filename:String;
 			switch (command)
 			{
-				case KLogger.BTN_EXIT:
+				case KPlaySketchLogger.BTN_EXIT:
 					filename = _generateFileName(); 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_save(filename,KLogger.FILE_APP_DIR);
 					break;
-				case KLogger.BTN_NEW:
+				case KPlaySketchLogger.BTN_NEW:
 					filename = _generateFileName(); 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_save(filename,KLogger.FILE_APP_DIR);
@@ -71,83 +70,83 @@ package sg.edu.smu.ksketch.interactor
 					KLogger.log(KLogger.NEW_SESSION, KLogger.VERSION, _appState.appBuildNumber);
 					_newFile();
 					break;
-				case KLogger.BTN_LOAD:
-					filename = _generateFileName(); 
-					KLogger.log(command,KLogger.FILE_NAME,filename);
+				case KPlaySketchLogger.BTN_LOAD:
+					filename = _generateFileName();
+					KLogger.log(command);
 					_save(filename,KLogger.FILE_APP_DIR);
 					KLogger.flush();
 					_load();
 					break;
-		//		case KLogger.BTN_SAVE:
-		//			filename = _generateFileName(); 
-		//			KLogger.log(command,KLogger.FILE_NAME,filename);
-		//			_save(filename);
-		//			break;
-				case KLogger.BTN_CUT:
+				case KPlaySketchLogger.BTN_SAVE:
+					filename = _generateFileName(); 
+					KLogger.log(command,KLogger.FILE_NAME,filename);
+					_save(filename);
+					break;
+				case KPlaySketchLogger.BTN_CUT:
 					KLogger.log(command);
 					_cut();
 					break;
-				case KLogger.BTN_COPY:
+				case KPlaySketchLogger.BTN_COPY:
 					KLogger.log(command);
 					_copy();
 					break;
-				case KLogger.BTN_PASTE:
+				case KPlaySketchLogger.BTN_PASTE:
 					KLogger.log(command);
 					_paste(false);
 					break;				
-				case KLogger.BTN_UNDO:
+				case KPlaySketchLogger.BTN_UNDO:
 					KLogger.log(command);
 					_undo();	
 					break;
-				case KLogger.BTN_REDO:
+				case KPlaySketchLogger.BTN_REDO:
 					KLogger.log(command);
 					_redo();					
 					break;
-				case KLogger.BTN_GROUP:
+				case KPlaySketchLogger.BTN_GROUP:
 					KLogger.log(command);
 					_group();
 					break;
-				case KLogger.BTN_UNGROUP:
+				case KPlaySketchLogger.BTN_UNGROUP:
 					KLogger.log(command);
 					_ungroup();
 					break;
-				case KLogger.BTN_ERASER:
-					KLogger.log(command,KLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
+				case KPlaySketchLogger.BTN_ERASER:
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_WHITE);
 					break;
-				case KLogger.BTN_BLACK_PEN:
-					KLogger.log(command,KLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
+				case KPlaySketchLogger.BTN_BLACK_PEN:
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_BLACK);
 					break;
-				case KLogger.BTN_RED_PEN:					
-					KLogger.log(command,KLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
+				case KPlaySketchLogger.BTN_RED_PEN:					
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_RED);
 					break;
-				case KLogger.BTN_GREEN_PEN:					
-					KLogger.log(command,KLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
+				case KPlaySketchLogger.BTN_GREEN_PEN:					
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_GREEN);
 					break;
-				case KLogger.BTN_BLUE_PEN:					
-					KLogger.log(command,KLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
+				case KPlaySketchLogger.BTN_BLUE_PEN:					
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_BLUE);
 					break;
-				case KLogger.BTN_FIRST:
+				case KPlaySketchLogger.BTN_FIRST:
 					KLogger.log(command,KLogger.CHANGE_TIME_FROM,_appState.time);
 					_first();
 					break;
-				case KLogger.BTN_PREVIOUS:
+				case KPlaySketchLogger.BTN_PREVIOUS:
 					KLogger.log(command);
 					_previous();
 					break;
-				case KLogger.BTN_NEXT:
+				case KPlaySketchLogger.BTN_NEXT:
 					KLogger.log(command);
 					_next();
 					break;
-				case KLogger.BTN_PLAY:
+				case KPlaySketchLogger.BTN_PLAY:
 					KLogger.log(command,KLogger.CHANGE_TIME_FROM,_appState.time);
 					_play();
 					break;
-				case KLogger.BTN_TOGGLE_VISIBILITY:
+				case KPlaySketchLogger.BTN_TOGGLE_VISIBILITY:
 					KLogger.log(command);
 					_toggleVisibility();
 					break;
@@ -158,6 +157,7 @@ package sg.edu.smu.ksketch.interactor
 		
 		public function doGestureCommand(command:String, canvasPoint:Point):void
 		{
+			// 
 			switch(command)
 			{
 				case GestureDesign.NAME_PRE_COPY:	
@@ -183,8 +183,14 @@ package sg.edu.smu.ksketch.interactor
 					_paste(true);
 					break;
 				case GestureDesign.NAME_PRE_TOGGLE:
-					if (_appState.isPen)
+					_appState.isPen = !_appState.isPen;					
+					if (_canvas.interactorManager is KInteractorManager)
+						(_canvas.interactorManager as KInteractorManager).setEraseMode(!_appState.isPen);
+					if (!_appState.isPen)
+					{
+						_prevPenColor = _appState.penColor;
 						_configurePen(KPenMenu.LABEL_WHITE);
+					}
 					else
 						_configurePen(KPenMenu.getLabel(_prevPenColor));
 					_canvas.dispatchEvent(new KCommandEvent(
@@ -230,22 +236,22 @@ package sg.edu.smu.ksketch.interactor
 		{
 			switch(command)
 			{
-				case KLogger.MENU_CONTEXT_MENU_COPY:
+				case KPlaySketchLogger.MENU_CONTEXT_MENU_COPY:
 					_copy();									
 					break;
-				case KLogger.MENU_CONTEXT_MENU_CUT:
+				case KPlaySketchLogger.MENU_CONTEXT_MENU_CUT:
 					_cut();
 					break;
-				case KLogger.MENU_CONTEXT_MENU_PASTE:
+				case KPlaySketchLogger.MENU_CONTEXT_MENU_PASTE:
 					_paste(false);
 					break;
-				case KLogger.MENU_CONTEXT_MENU_PASTE_WITH_MOTION:
+				case KPlaySketchLogger.MENU_CONTEXT_MENU_PASTE_WITH_MOTION:
 					_paste(true);
 					break;
-				case KLogger.MENU_CONTEXT_MENU_INSERT_KEYS:
+				case KPlaySketchLogger.MENU_CONTEXT_MENU_INSERT_KEYS:
 					_insertKeyFrames();
 					break;
-				case KLogger.MENU_CONTEXT_MENU_CLEAR_MOTIONS:
+				case KPlaySketchLogger.MENU_CONTEXT_MENU_CLEAR_MOTIONS:
 					_clearMotions();
 					break;
 			}
@@ -256,22 +262,22 @@ package sg.edu.smu.ksketch.interactor
 		{
 			switch(command)
 			{
-				case KLogger.SHORTCUT_COPY:
+				case KPlaySketchLogger.SHORTCUT_COPY:
 					_copy();									
 					break;
-				case KLogger.SHORTCUT_CUT:
+				case KPlaySketchLogger.SHORTCUT_CUT:
 					_cut();
 					break;
-				case KLogger.SHORTCUT_PASTE:
+				case KPlaySketchLogger.SHORTCUT_PASTE:
 					_paste(false);
 					break;
-				case KLogger.SHORTCUT_PASTE_WITH_MOTION:
+				case KPlaySketchLogger.SHORTCUT_PASTE_WITH_MOTION:
 					_paste(true);
 					break;
-				case KLogger.SHORTCUT_UNDO:
+				case KPlaySketchLogger.SHORTCUT_UNDO:
 					_undo();
 					break;
-				case KLogger.SHORTCUT_REDO:
+				case KPlaySketchLogger.SHORTCUT_REDO:
 					_redo();
 					break;
 			}
@@ -281,13 +287,13 @@ package sg.edu.smu.ksketch.interactor
 		public function saveWithListener(listener:Function):void
 		{
 			var filename:String = _generateFileName(); 
-			KLogger.log(KLogger.BTN_SAVE,KLogger.FILE_NAME,filename);
+			KLogger.log(KPlaySketchLogger.BTN_SAVE,KLogger.FILE_NAME,filename);
 			var content:XML = _facade.saveFile().appendChild(KLogger.logFile);
 			content.@version = _appState.appBuildNumber;
 			var saver:KFileSaver = new KFileSaver();
 			saver.save(content,filename,listener);
 		}
-				
+		
 		public function get hasPopup():Boolean
 		{
 			return _hasPopup;
@@ -300,14 +306,16 @@ package sg.edu.smu.ksketch.interactor
 		
 		protected function _redo():void
 		{
+			KLogger.logRedo();
 			_appState.redo();
 		}		
 		
 		protected function _undo():void
 		{
+			KLogger.logUndo();
 			_appState.undo();
 		}		
-				
+		
 		protected function _first():void
 		{
 			if(_appState.isAnimating)
@@ -337,32 +345,27 @@ package sg.edu.smu.ksketch.interactor
 			else
 				_appState.pause();
 		}
-
+		
 		protected function _configurePen(cursor_name:String):void
 		{
-			var goToEraserMode:Boolean = cursor_name == KPenMenu.LABEL_WHITE;
-			_appState.isPen = !goToEraserMode;
-			
-			if (_canvas.interactorManager is KInteractorManager)
-				(_canvas.interactorManager as KInteractorManager).setEraseMode(!_appState.isPen);
-			
+			var eraserMode:Boolean = cursor_name == KPenMenu.LABEL_WHITE;
+			(_canvas.interactorManager as KInteractorManager).setEraseMode(eraserMode);
 			Mouse.cursor = cursor_name;
-			
-			if(_prevPenColor != _appState.penColor)
-				_prevPenColor = _appState.penColor;
 			_appState.penColor = KPenMenu.getColor(cursor_name);
-			_appState.selection = goToEraserMode ? null : _appState.selection;
+			_appState.selection = eraserMode ? null : _appState.selection;
 		}
 		
-		protected function _toggleVisibility():void
+		private function _toggleVisibility():void
 		{
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.prevSelection;
 			var selection:KSelection = oldSel == null ? _appState.selection : oldSel;
-			var objs:KModelObjectList = selection != null ? selection.objects : null;
-			var op:IModelOperation = objs != null ? _facade.toggleVisibility(objs,time) : null;
-			if (op != null)
+			if (selection != null)
+			{
+				var op:IModelOperation = _facade.toggleVisibility(selection.objects, time);
+				KLogger.logToggleVisibility(selection.objects.toIDs(),time);
 				_appState.addOperation(op);
+			}
 		}
 		
 		private function _popupMenu(menu:Menu):void
@@ -397,10 +400,11 @@ package sg.edu.smu.ksketch.interactor
 			KLogger.flush();
 			_canvas.resetCanvas();
 			_facade.clearClipBoard();
+			KLogger.logClearClipBoard();
 			_appState.fireEditEnabledChangedEvent();
 			_appState.fireGroupingEnabledChangedEvent();
 		}
-				
+		
 		private function _load():void
 		{
 			var loader:KFileLoader = new KFileLoader();
@@ -412,47 +416,67 @@ package sg.edu.smu.ksketch.interactor
 		{
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
-			var op:IModelOperation = _facade.cut();
-			if (op != null)
+			if (oldSel != null)
+			{
+				KLogger.logCut(oldSel.objects.toIDs(),time);
+				var op:IModelOperation = _facade.cut(oldSel.objects,time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
+			}
 		}
 		
 		private function _copy():void
 		{
-			_facade.copy();
+			if(_appState.selection)
+			{
+				_facade.copy(_appState.selection.objects,_appState.time);
+				KLogger.logCopy(_appState.selection.objects.toIDs(),_appState.time);
+			}
 		}
 		
 		private function _paste(includeMotion:Boolean):void
 		{
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
-			var op:IModelOperation = _facade.paste(includeMotion);
+			var op:IModelOperation = _facade.paste(includeMotion,time);
 			if (op != null)
+			{
+				KLogger.logPaste(includeMotion,time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
+			}
 		}
 		
 		private function _group():void
 		{
+			var mode:String = _appState.groupingMode;
+			var type:int = _appState.transitionType;
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
-			var op:IModelOperation = _facade.group(oldSel.objects);
+			var op:IModelOperation = _facade.group(oldSel.objects, mode, type, time);
 			if (op != null)
+			{
+				KLogger.logGroup(oldSel.objects.toIDs(), mode, type, time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
+			}
 		}
 		
 		private function _ungroup():void
 		{
+			var mode:String = _appState.groupingMode;
+			var type:int = _appState.transitionType;
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
-			var op:IModelOperation = _facade.ungroup(oldSel.objects);
+			var op:IModelOperation = _facade.ungroup(oldSel.objects, mode, time);
 			if (op != null)
+			{
+				KLogger.logUngroup(oldSel.objects.toIDs(),mode, time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
+			}
 		}		
-				
+		
 		private function _moveFrame(time:Number):void
 		{
 			if(_appState.isAnimating)
@@ -471,7 +495,7 @@ package sg.edu.smu.ksketch.interactor
 				_appState.penThickness = event.item.@value;
 			else 
 				_configurePen(label);			
-			KLogger.log(KLogger.MENU_PEN_MENU, KLogger.MENU_SELECTED, label);
+			KLogger.log(KPlaySketchLogger.MENU_PEN_MENU, KPlaySketchLogger.MENU_SELECTED, label);
 			_canvas.dispatchEvent(event);
 		}
 		
@@ -531,7 +555,7 @@ package sg.edu.smu.ksketch.interactor
 			var saver:KFileSaver = new KFileSaver();
 			if (folder == null || folder.length < 2)
 				saver.save(content,filename);
-			else
+			else if (KAppState.IS_AIR)
 				saver.saveToDir(content,folder,filename);
 		}
 		

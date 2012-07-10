@@ -12,22 +12,28 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-
+	
 	<fx:Script source="LoggerFunctions.as"/>
 	
 	<s:layout>
 		<s:VerticalLayout paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 	</s:layout>
-	<s:DataGrid id="_actionTable" width="410" height="200" enabled="false"/>
-	<s:TextArea id="_actionText" width="410" height="100" 
-				text=">>> Click here to start logger." />
+	<s:DataGrid id="_actionTable" width="410" height="200" selectionMode="singleRow" 
+				variableRowHeight="true" minHeight="0" />
+	<s:TextArea id="_actionText" width="410" height="100" />
 	<s:HGroup paddingLeft="15">
-		<s:Button id="_firstButton" label="&lt;&lt;" enabled="false" click="_firstCommand(event)" />
-		<s:Button id="_prevButton" label="&lt;" enabled="false" click="_prevCommand(event)" />
-		<s:Button id="_playButton" label="Play" enabled="false" click="_playCommand(event)" />
-		<s:Button id="_nextButton" label=">" enabled="false" click="_nextCommand(event)" />
-		<s:Button id="_lastButton" label=">>" enabled="false" click="_lastCommand(event)" />	
+		<s:CheckBox id="_systemEvent" label="Show System Event" selected="true" 
+					change="_filterEvent(event)" />
+		<s:CheckBox id="_userEvent" label="Show User Event" selected="true" 
+					change="_filterEvent(event)" />
 	</s:HGroup>
-	<timebar:TimeSlider id="_actionSlider" width="100%" />
+	<s:HGroup paddingLeft="15" >
+		<s:Button label="&lt;&lt;" click="_firstCommand(event)" />
+		<s:Button label="&lt;" click="_prevCommand(event)" />
+		<s:Button id="_playButton" label="Play" click="_playCommand(event)" />
+		<s:Button label=">" click="_nextCommand(event)" />
+		<s:Button label=">>" click="_lastCommand(event)" />	
+	</s:HGroup>
+	<s:HSlider id="_actionSlider" width="100%" />
 	<s:BorderContainer id="_markerBar" width="100%" height="10" />
 </s:Group>

@@ -18,7 +18,7 @@ package sg.edu.smu.ksketch.interactor
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
 	import sg.edu.smu.ksketch.components.KFilteredLoopView;
-	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
 	import sg.edu.smu.ksketch.model.KObject;
@@ -251,7 +251,7 @@ package sg.edu.smu.ksketch.interactor
 		}
 		public override function get name():String
 		{
-			return KLogger.INTERACTION_SELECT_LOOP;
+			return KPlaySketchLogger.INTERACTION_SELECT_LOOP;
 		}
 		
 	}

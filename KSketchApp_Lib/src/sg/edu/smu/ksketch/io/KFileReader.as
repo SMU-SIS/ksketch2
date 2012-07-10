@@ -1,8 +1,8 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.io
 {
@@ -48,7 +48,7 @@ package sg.edu.smu.ksketch.io
 			
 			_generateEmptyGroups(objectNodes, objectList);
 			_generateSimpleObjects(objectNodes, objectList);
-
+			
 			var result:KModelObjectList = new KModelObjectList();
 			for each(var node:XML in objectNodes)
 			{
@@ -139,7 +139,7 @@ package sg.edu.smu.ksketch.io
 			group.updateCenter();
 			_setObjectFields(objectList, group, groupNode);
 		}
-
+		
 		private static function _generateImage(node:XML, objectList:KModelObjectList):void
 		{
 			var id:int = node.attribute(ID);
@@ -147,15 +147,14 @@ package sg.edu.smu.ksketch.io
 			{
 				var createdTime:Number = _getCreatedTime(node);
 				var xPos:Number = node.attribute(IMAGE_X);
-				var yPos:Number = node.attribute(IMAGE_Y);
-				var data:String = node.attribute(IMAGE_DATA);			
+				var yPos:Number = node.attribute(IMAGE_Y);	
 				var image:KImage = new KImage(id, xPos, yPos, createdTime);
-				image.data64 = data;
+				image.data64 = node.attribute(IMAGE_DATA);
 				_setObjectFields(objectList, image, node);						
 				objectList.add(image);
 			}
 		}		
-
+		
 		private static function _generateStroke(node:XML, objectList:KModelObjectList):KStroke
 		{
 			var id:int = node.attribute(ID);
@@ -202,7 +201,7 @@ package sg.edu.smu.ksketch.io
 						var centerX:Number = keyNode.attribute(KEYFRAME_CENTER_X);
 						var centerY:Number = keyNode.attribute(KEYFRAME_CENTER_Y);
 						var center:Point = new Point(centerX,centerY);
-			//			var transitionType:String = KEYFRAME_TRANSITION_TYPE_REALTIME;
+						//			var transitionType:String = KEYFRAME_TRANSITION_TYPE_REALTIME;
 						switch (keyframeType)
 						{
 							case KEYFRAME_TYPE_TRANSLATE:
@@ -266,7 +265,7 @@ package sg.edu.smu.ksketch.io
 				new KCompositeOperation()) as ISpatialKeyframe;
 			key.scale = _getScale(path);
 		}
-
+		
 		private static function _getScale(path:String):KScale
 		{
 			var scale:KScale = new KScale();
@@ -340,7 +339,7 @@ package sg.edu.smu.ksketch.io
 				alpha = new Number(str);
 			return new KActivityKeyFrame(kskTime, alpha);
 		}
-
+		
 		private static function _generate2DPath(points:Vector.<K2DVector>):K2DPath
 		{
 			var path2D:K2DPath = new K2DPath();

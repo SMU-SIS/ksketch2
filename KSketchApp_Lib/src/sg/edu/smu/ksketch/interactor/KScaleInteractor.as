@@ -11,6 +11,7 @@ package sg.edu.smu.ksketch.interactor
 	import flash.geom.Rectangle;
 	
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
@@ -64,7 +65,7 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		public override function get name():String
 		{
-			return KLogger.INTERACTION_SCALE;
+			return KPlaySketchLogger.INTERACTION_SCALE;
 		}
 		
 		protected override function transitionStart(canvasPoint:Point, 
@@ -111,7 +112,10 @@ package sg.edu.smu.ksketch.interactor
 			while (it.hasNext())
 			{
 				var obj:KObject = it.next();
+
 				op.addOperation(_facade.endScale(obj, _appState.time));
+				KLogger.logEndScale(_appState.time);
+
 				_ghost.remove(obj);
 			}
 			_appState.userSetCenterOffset = null;
@@ -122,7 +126,10 @@ package sg.edu.smu.ksketch.interactor
 									 transitionType:int, canvasPoint:Point):void
 		{
 			_ghost.add(object, center, time);
+
 			_facade.beginScale(object, center, time, transitionType);
+			KLogger.logBeginScale(object.id,center,time,transitionType);
+
 			_startPoint = canvasPoint.clone();
 			_currentScale = 1;
 			_scaleDenominator = KMathUtil.distanceOf(_activeCenter, _startPoint);
@@ -143,7 +150,11 @@ package sg.edu.smu.ksketch.interactor
 				var m:Matrix = obj.getFullPathMatrix(_appState.time);
 				var objCenter:Point = m.transformPoint(obj.defaultCenter);
 				var dydx:Point = length == 1 ? defaultOffset : objCenter.subtract(_activeCenter.clone());
-				_facade.addToScale(obj, scale, canvasPoint.add(dydx), _appState.time);
+				var cursorPoint:Point = canvasPoint.add(dydx);
+				
+				_facade.addToScale(obj, scale, cursorPoint, _appState.time);
+				KLogger.logAddToScale(scale, cursorPoint, _appState.time);
+
 				_ghost.update(obj,_appState.time);
 			}
 		}

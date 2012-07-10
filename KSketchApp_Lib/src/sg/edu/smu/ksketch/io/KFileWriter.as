@@ -1,8 +1,8 @@
 /**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
+ * Copyright 2012 Singapore Management University
+ * All Rights Reserved
+ *
+ *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.io
 {
@@ -14,7 +14,6 @@ package sg.edu.smu.ksketch.io
 	
 	import mx.graphics.codec.PNGEncoder;
 	import mx.utils.Base64Encoder;
-	
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
@@ -135,36 +134,15 @@ package sg.edu.smu.ksketch.io
 			node.@[IMAGE_Y] = image.imagePosition.y;
 			node.@[IMAGE_WIDTH] = image.imageData.width;
 			node.@[IMAGE_HEIGHT] = image.imageData.height;
-			node.@[IMAGE_FORMAT]="PNG";
-
-			var base64Enc:Base64Encoder = new Base64Encoder();  
-			var finalEncodedString:String;					
-			var bytes:ByteArray = new ByteArray();
-			bytes.writeUnsignedInt(image.imageData.width);
-			bytes.writeBytes(image.imageData.getPixels(image.imageData.rect)); 			
-			var pngEncoder:PNGEncoder= new PNGEncoder();
-			var byteArray:ByteArray = pngEncoder.encodeByteArray(bytes, 
-				image.imageData.width, image.imageData.height, true);			
-			base64Enc.encodeBytes(byteArray,0,0);
-			finalEncodedString=base64Enc.toString();  				
-			node.@[IMAGE_DATA] = finalEncodedString;
+			node.@[IMAGE_FORMAT]= IMAGE_FORMAT_PNG;
+			node.@[IMAGE_DATA] = pngToString(image.imageData);
 		}
 		
 		private static function _setStrokeAttr(node:XML, stroke:KStroke):void
 		{
 			node.@[COLOR] = stroke.color;
 			node.@[THICKNESS] = stroke.thickness;
-			var points:Vector.<Point> = stroke.points;
-			var pntsString:String = "";
-			if(points.length>0)
-				pntsString = points[0].x+","+points[0].y;
-			for(var i:int = 1;i<points.length;i++)
-			{
-				var x:Number = points[i].x;
-				var y:Number = points[i].y;
-				pntsString += " "+x+","+y;
-			}
-			node.@[STROKE_POINTS] = pntsString;
+			node.@[STROKE_POINTS] = pointsToString(stroke.points);
 		}
 		
 		private static function _setObjectAttr(node:XML, object:KObject, showDefault:Boolean):void
@@ -243,7 +221,7 @@ package sg.edu.smu.ksketch.io
 					key.endTime,path,skey.center.x,skey.center.y));
 			}
 		}
-				
+		
 		private static function _createSpatialNode(type:String, endTime:Number, path:String,
 												   centerX:Number=NaN, centerY:Number=NaN):XML
 		{
@@ -273,7 +251,7 @@ package sg.edu.smu.ksketch.io
 				path += " "+points[i].x+","+points[i].y;
 			return path;
 		}				
-				
+		
 		private static function _parseIDAttr(node:XML, id:int):void
 		{
 			node.@[ID] = id;

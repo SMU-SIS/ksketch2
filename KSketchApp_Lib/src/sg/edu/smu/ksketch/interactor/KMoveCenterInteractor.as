@@ -18,7 +18,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.components.IWidget;
 	import sg.edu.smu.ksketch.components.KCanvas;
 	import sg.edu.smu.ksketch.logger.ILoggable;
-	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.logger.KWithSelectionLog;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KObject;
@@ -373,7 +373,7 @@ package sg.edu.smu.ksketch.interactor
 		public function enableLog():ILoggable
 		{
 			_log = new KWithSelectionLog(new Vector.<KPathPoint>(), 
-				KLogger.INTERACTION_MOVE_CENTER, _appState.selection.objects);
+				KPlaySketchLogger.INTERACTION_MOVE_CENTER, _appState.selection.objects);
 			return _log;
 		}
 	}

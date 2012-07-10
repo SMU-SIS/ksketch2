@@ -17,7 +17,9 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.event.KWidgetEvent;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
 	import sg.edu.smu.ksketch.gestures.Recognizer;
+	import sg.edu.smu.ksketch.io.KFileParser;
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.model.geom.KPathProcessor;
@@ -32,44 +34,44 @@ package sg.edu.smu.ksketch.interactor
 			super(appState, canvas, facade);
 		}
 		
-		public function initCommand(command:String,commandNode:XML):void
+		public function initCommand(commandNode:XML):void
 		{
+			var command:String = commandNode.name();			
 			switch (command)
 			{
-				case KLogger.BTN_TOGGLE_TIMEBAR_EXPAND:
+				case KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND:
 					dispatchEvent(new KCommandEvent(
-						KCommandEvent.EVENT_TIMEBAR_CHANGED,KLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
+						KCommandEvent.EVENT_TIMEBAR_CHANGED,KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
 					break;
 				case KLogger.CHANGE_TIME:
 					_appState.time = Number(commandNode.attribute(KLogger.CHANGE_TIME_TO));
 					break;
-				case KLogger.INTERACTION_DRAG_CENTER:
-					_tapCenter();
+				case KPlaySketchLogger.INTERACTION_DRAG_CENTER:
+					_showInteraction(KPlaySketchLogger.INTERACTION_DRAG_CENTER,commandNode);
 					break;
-				case KLogger.INTERACTION_MOVE_CENTER:
-					_interact(commandNode);
+				case KPlaySketchLogger.INTERACTION_MOVE_CENTER:
+					_showInteraction(KPlaySketchLogger.INTERACTION_MOVE_CENTER,commandNode);
 					break;
-				case KLogger.INTERACTION_DESELECT:
-			//		_interact(commandNode);
-					_appState.selection = null;
+				case KPlaySketchLogger.INTERACTION_DESELECT:
+					_showInteraction(KPlaySketchLogger.INTERACTION_DESELECT,commandNode);
 					break;
-				case KLogger.INTERACTION_DRAW:
-					_interact(commandNode);
+				case KPlaySketchLogger.INTERACTION_DRAW:
+					_showInteraction(KPlaySketchLogger.INTERACTION_DRAW,commandNode);
 					break;
-				case KLogger.INTERACTION_ERASE:
-					_interact(commandNode);
+				case KPlaySketchLogger.INTERACTION_ERASE:
+					_showInteraction(KPlaySketchLogger.INTERACTION_ERASE,commandNode);
 					break;
-				case KLogger.INTERACTION_TRANSLATE:
-					_transform(KWidgetEvent.DOWN_TRANSLATE,commandNode);
+				case KPlaySketchLogger.INTERACTION_TRANSLATE:
+					_showInteraction(KPlaySketchLogger.INTERACTION_TRANSLATE,commandNode);
 					break;
-				case KLogger.INTERACTION_ROTATE:
-					_transform(KWidgetEvent.DOWN_ROTATE,commandNode);
+				case KPlaySketchLogger.INTERACTION_ROTATE:
+					_showInteraction(KPlaySketchLogger.INTERACTION_ROTATE,commandNode);
 					break;
-				case KLogger.INTERACTION_SCALE:
-					_transform(KWidgetEvent.DOWN_SCALE,commandNode);
+				case KPlaySketchLogger.INTERACTION_SCALE:
+					_showInteraction(KPlaySketchLogger.INTERACTION_SCALE,commandNode);
 					break;
-				case KLogger.INTERACTION_GESTURE:
-					_gesture(commandNode);
+				case KPlaySketchLogger.INTERACTION_GESTURE:
+					_showInteraction(KPlaySketchLogger.INTERACTION_GESTURE,commandNode);
 					break;
 				default:
 					_doOtherCommand(command,commandNode);
@@ -80,42 +82,42 @@ package sg.edu.smu.ksketch.interactor
 		{
 			switch (command)
 			{
-				case KLogger.BTN_TOGGLE_TIMEBAR_EXPAND:
+				case KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND:
 					dispatchEvent(new KCommandEvent(
-						KCommandEvent.EVENT_TIMEBAR_CHANGED,KLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
+						KCommandEvent.EVENT_TIMEBAR_CHANGED,KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
 					break;
 				case KLogger.CHANGE_TIME:
 					_appState.time = Number(commandNode.attribute(KLogger.CHANGE_TIME_TO));
 					break;
-				case KLogger.INTERACTION_DRAG_CENTER:
+				case KPlaySketchLogger.INTERACTION_DRAG_CENTER:
 					_tapCenter();
 					break;
-				case KLogger.INTERACTION_MOVE_CENTER:
+				case KPlaySketchLogger.INTERACTION_MOVE_CENTER:
 					_interact(commandNode);
 					break;
-				case KLogger.INTERACTION_DESELECT:
+				case KPlaySketchLogger.INTERACTION_DESELECT:
 					_interact(commandNode);
 					break;
 				//		case KLogger.INTERACTION_HIDE_POPUP:
 				//			_specialInteractor.mode = KSpecialInteractor.MODE_HIDE_POPUP;
 				//			_interact(_specialInteractor,commandNode);
 				//			break;
-				case KLogger.INTERACTION_DRAW:
+				case KPlaySketchLogger.INTERACTION_DRAW:
 					_appState.redo();
 					break;
-				case KLogger.INTERACTION_ERASE:
+				case KPlaySketchLogger.INTERACTION_ERASE:
 					_appState.redo();
 					break;
-				case KLogger.INTERACTION_TRANSLATE:
+				case KPlaySketchLogger.INTERACTION_TRANSLATE:
 					_appState.redo();
 					break;
-				case KLogger.INTERACTION_ROTATE:
+				case KPlaySketchLogger.INTERACTION_ROTATE:
 					_appState.redo();
 					break;
-				case KLogger.INTERACTION_SCALE:
+				case KPlaySketchLogger.INTERACTION_SCALE:
 					_appState.redo();
 					break;
-				case KLogger.INTERACTION_GESTURE:
+				case KPlaySketchLogger.INTERACTION_GESTURE:
 					_redoGesture(commandNode);
 					break;
 				default:
@@ -127,127 +129,127 @@ package sg.edu.smu.ksketch.interactor
 		{
 			switch (command)
 			{
-				case KLogger.BTN_TOGGLE_TIMEBAR_EXPAND:
+				case KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND:
 					dispatchEvent(new KCommandEvent(
-						KCommandEvent.EVENT_TIMEBAR_CHANGED,KLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
+						KCommandEvent.EVENT_TIMEBAR_CHANGED,KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
 					break;
 				case KLogger.CHANGE_TIME:
 					_appState.time = Number(commandNode.attribute(KLogger.CHANGE_TIME_FROM));
 					break;
-				case KLogger.INTERACTION_GESTURE:
+				case KPlaySketchLogger.INTERACTION_GESTURE:
 					_undoGesture(commandNode);
 					break;
-				case KLogger.INTERACTION_DRAG_CENTER:
+				case KPlaySketchLogger.INTERACTION_DRAG_CENTER:
 					_undoTapCenter();
 					break;
-				case KLogger.INTERACTION_MOVE_CENTER:
-					_select(commandNode.attribute(KLogger.SELECTED_ITEMS));
+				case KPlaySketchLogger.INTERACTION_MOVE_CENTER:
+					_select(commandNode.attribute(KPlaySketchLogger.SELECTED_ITEMS));
 					_tapCenter();
 					break;
-				case KLogger.INTERACTION_DESELECT:
-					_select(commandNode.attribute(KLogger.SELECTED_ITEMS));
+				case KPlaySketchLogger.INTERACTION_DESELECT:
+					_select(commandNode.attribute(KPlaySketchLogger.SELECTED_ITEMS));
 					break;
-				case KLogger.INTERACTION_HIDE_POPUP:
+				case KPlaySketchLogger.INTERACTION_HIDE_POPUP:
 					break;				
-				case KLogger.INTERACTION_DRAW:
+				case KPlaySketchLogger.INTERACTION_DRAW:
 					_undo();
 					break;
-				case KLogger.INTERACTION_ERASE:
+				case KPlaySketchLogger.INTERACTION_ERASE:
 					_undo();
 					break;
-				case KLogger.INTERACTION_TRANSLATE:
+				case KPlaySketchLogger.INTERACTION_TRANSLATE:
 					_undo();
 					break;
-				case KLogger.INTERACTION_ROTATE:
+				case KPlaySketchLogger.INTERACTION_ROTATE:
 					_undo();
 					break;
-				case KLogger.INTERACTION_SCALE:
+				case KPlaySketchLogger.INTERACTION_SCALE:
 					_undo();
 					break;
-				case KLogger.BTN_CUT:
+				case KPlaySketchLogger.BTN_CUT:
 					_undo();
 					break;
-				case KLogger.BTN_COPY:
+				case KPlaySketchLogger.BTN_COPY:
 					break;
-				case KLogger.BTN_PASTE:
+				case KPlaySketchLogger.BTN_PASTE:
 					_undo();
 					break;				
-				case KLogger.BTN_UNDO:
+				case KPlaySketchLogger.BTN_UNDO:
 					_redo();					
 					break;
-				case KLogger.BTN_REDO:
+				case KPlaySketchLogger.BTN_REDO:
 					_undo();					
 					break;
-				case KLogger.BTN_GROUP:
+				case KPlaySketchLogger.BTN_GROUP:
 					_undo();					
 					break;
-				case KLogger.BTN_UNGROUP:
+				case KPlaySketchLogger.BTN_UNGROUP:
 					_undo();					
 					break;
-				case KLogger.BTN_ERASER:
-					_configurePen(commandNode.attribute(KLogger.BTN_PEN_PREVIOUS_STATE));
+				case KPlaySketchLogger.BTN_ERASER:
+					_configurePen(commandNode.attribute(KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE));
 					break;
-				case KLogger.BTN_BLACK_PEN:
-					_configurePen(commandNode.attribute(KLogger.BTN_PEN_PREVIOUS_STATE));
+				case KPlaySketchLogger.BTN_BLACK_PEN:
+					_configurePen(commandNode.attribute(KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE));
 					break;
-				case KLogger.BTN_RED_PEN:					
-					_configurePen(commandNode.attribute(KLogger.BTN_PEN_PREVIOUS_STATE));
+				case KPlaySketchLogger.BTN_RED_PEN:					
+					_configurePen(commandNode.attribute(KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE));
 					break;
-				case KLogger.BTN_GREEN_PEN:					
-					_configurePen(commandNode.attribute(KLogger.BTN_PEN_PREVIOUS_STATE));
+				case KPlaySketchLogger.BTN_GREEN_PEN:					
+					_configurePen(commandNode.attribute(KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE));
 					break;
-				case KLogger.BTN_BLUE_PEN:					
-					_configurePen(commandNode.attribute(KLogger.BTN_PEN_PREVIOUS_STATE));
+				case KPlaySketchLogger.BTN_BLUE_PEN:					
+					_configurePen(commandNode.attribute(KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE));
 					break;
-				case KLogger.BTN_FIRST:
+				case KPlaySketchLogger.BTN_FIRST:
 					_appState.time = commandNode.attribute(KLogger.CHANGE_TIME_FROM);
 					break;
-				case KLogger.BTN_PREVIOUS:
+				case KPlaySketchLogger.BTN_PREVIOUS:
 					_next();
 					break;
-				case KLogger.BTN_NEXT:
+				case KPlaySketchLogger.BTN_NEXT:
 					_previous();
 					break;
-				case KLogger.BTN_TOGGLE_VISIBILITY:
-					_toggleVisibility();
+	//			case KPlaySketchLogger.BTN_TOGGLE_VISIBILITY:
+	//				_toggleVisibility();
 					break;
-				case KLogger.CHANGE_SELECTION_MODE:
-					_appState.groupSelectMode = commandNode.attribute(KLogger.CHANGE_SELECTION_MODE_FROM);
+				case KPlaySketchLogger.CHANGE_SELECTION_MODE:
+					_appState.groupSelectMode = commandNode.attribute(KPlaySketchLogger.CHANGE_SELECTION_MODE_FROM);
 					break;
-				case KLogger.CHANGE_GROUPING_MODE:
-					_appState.groupingMode = commandNode.attribute(KLogger.CHANGE_GROUPING_MODE_FROM);
+				case KPlaySketchLogger.CHANGE_GROUPING_MODE:
+					_appState.groupingMode = commandNode.attribute(KPlaySketchLogger.CHANGE_GROUPING_MODE_FROM);
 					break;
-				case KLogger.CHANGE_GESTURE_DESIGN:
-					_appState.gestureDesignName = commandNode.attribute(KLogger.CHANGE_GESTURE_DESIGN_FROM);
+				case KPlaySketchLogger.CHANGE_GESTURE_DESIGN:
+					_appState.gestureDesignName = commandNode.attribute(KPlaySketchLogger.CHANGE_GESTURE_DESIGN_FROM);
 					break;
-				case KLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE:
-					Recognizer.ACCEPT_SCORE =commandNode.attribute(KLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE_FROM);
+				case KPlaySketchLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE:
+					Recognizer.ACCEPT_SCORE =commandNode.attribute(KPlaySketchLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE_FROM);
 					break;
-				case KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT:
-					KGestureRecognizer.PEN_PAUSE_TIME = commandNode.attribute(KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_FROM);
+				case KPlaySketchLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT:
+					KGestureRecognizer.PEN_PAUSE_TIME = commandNode.attribute(KPlaySketchLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_FROM);
 					break;
-				case KLogger.CHANGE_CREATION_MODE:
-					_appState.creationMode = commandNode.attribute(KLogger.CHANGE_CREATION_MODE_FROM);
+				case KPlaySketchLogger.CHANGE_CREATION_MODE:
+					_appState.creationMode = commandNode.attribute(KPlaySketchLogger.CHANGE_CREATION_MODE_FROM);
 					break;
-				case KLogger.CHANGE_PATH_VISIBILITY:
-					_appState.userOption.showPath = commandNode.attribute(KLogger.CHANGE_PATH_VISIBILITY_FROM);
+				case KPlaySketchLogger.CHANGE_PATH_VISIBILITY:
+					_appState.userOption.showPath = commandNode.attribute(KPlaySketchLogger.CHANGE_PATH_VISIBILITY_FROM);
 					break;
-				case KLogger.CHANGE_CORRECT_FUTURE_MOTION:
-					KAppState.erase_real_time_future = commandNode.attribute(KLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM);
+				case KPlaySketchLogger.CHANGE_CORRECT_FUTURE_MOTION:
+					KAppState.erase_real_time_future = commandNode.attribute(KPlaySketchLogger.CHANGE_CORRECT_FUTURE_MOTION_FROM);
 					break;
 	//			case KLogger.CHANGE_DEMO_MERGE_MODE:
 	//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_FROM));
 	//				break;
-				case KLogger.CHANGE_RIGHT_MOUSE_ENABLED:
-					_appState.userOption.rightMouseButtonEnabled = commandNode.attribute(KLogger.CHANGE_RIGHT_MOUSE_ENABLED_FROM);
+				case KPlaySketchLogger.CHANGE_RIGHT_MOUSE_ENABLED:
+					_appState.userOption.rightMouseButtonEnabled = commandNode.attribute(KPlaySketchLogger.CHANGE_RIGHT_MOUSE_ENABLED_FROM);
 					break;
-				case KLogger.CHANGE_CONFIRM_DIALOG_ENABLED:
-					_appState.userOption.showConfirmWindow = commandNode.attribute(KLogger.CHANGE_CONFIRM_DIALOG_ENABLED_FROM);
+				case KPlaySketchLogger.CHANGE_CONFIRM_DIALOG_ENABLED:
+					_appState.userOption.showConfirmWindow = commandNode.attribute(KPlaySketchLogger.CHANGE_CONFIRM_DIALOG_ENABLED_FROM);
+					KPlaySketchLogger;
+				case KPlaySketchLogger.CHANGE_APPLICATION_LOG_ENABLED:
+					KLogger.enabled = commandNode.attribute(KPlaySketchLogger.CHANGE_APPLICATION_LOG_ENABLED_FROM);
 					break;
-				case KLogger.CHANGE_APPLICATION_LOG_ENABLED:
-					KLogger.enabled = commandNode.attribute(KLogger.CHANGE_APPLICATION_LOG_ENABLED_FROM);
-					break;
-				case KLogger.CHANGE_ASPECT_RATIO:
+				case KPlaySketchLogger.CHANGE_ASPECT_RATIO:
 					break;
 				case KLogger.NEW_SESSION:
 					break;
@@ -258,49 +260,49 @@ package sg.edu.smu.ksketch.interactor
 		{
 			switch (command)
 			{
-				case KLogger.CHANGE_SELECTION_MODE:
-					_appState.groupSelectMode = commandNode.attribute(KLogger.CHANGE_SELECTION_MODE_TO);
+				case KPlaySketchLogger.CHANGE_SELECTION_MODE:
+					_appState.groupSelectMode = commandNode.attribute(KPlaySketchLogger.CHANGE_SELECTION_MODE_TO);
 					break;
-				case KLogger.CHANGE_GROUPING_MODE:
-					_appState.groupingMode = commandNode.attribute(KLogger.CHANGE_GROUPING_MODE_TO);
+				case KPlaySketchLogger.CHANGE_GROUPING_MODE:
+					_appState.groupingMode = commandNode.attribute(KPlaySketchLogger.CHANGE_GROUPING_MODE_TO);
 					break;
-				case KLogger.CHANGE_GESTURE_DESIGN:
-					_appState.gestureDesignName = commandNode.attribute(KLogger.CHANGE_GESTURE_DESIGN_TO);
+				case KPlaySketchLogger.CHANGE_GESTURE_DESIGN:
+					_appState.gestureDesignName = commandNode.attribute(KPlaySketchLogger.CHANGE_GESTURE_DESIGN_TO);
 					break;
-				case KLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE:
-					Recognizer.ACCEPT_SCORE =commandNode.attribute(KLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE_TO);
+				case KPlaySketchLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE:
+					Recognizer.ACCEPT_SCORE =commandNode.attribute(KPlaySketchLogger.CHANGE_GESTURE_ACCEPTANCE_SCORE_TO);
 					break;
-				case KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT:
-					KGestureRecognizer.PEN_PAUSE_TIME = commandNode.attribute(KLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_TO);
+				case KPlaySketchLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT:
+					KGestureRecognizer.PEN_PAUSE_TIME = commandNode.attribute(KPlaySketchLogger.CHANGE_GESTURE_RECOGNITION_TIMEOUT_TO);
 					break;
-				case KLogger.CHANGE_CREATION_MODE:
-					_appState.creationMode = commandNode.attribute(KLogger.CHANGE_CREATION_MODE_TO);
+				case KPlaySketchLogger.CHANGE_CREATION_MODE:
+					_appState.creationMode = commandNode.attribute(KPlaySketchLogger.CHANGE_CREATION_MODE_TO);
 					break;
-				case KLogger.CHANGE_PATH_VISIBILITY:
-					_appState.userOption.showPath = commandNode.attribute(KLogger.CHANGE_PATH_VISIBILITY_TO);
+				case KPlaySketchLogger.CHANGE_PATH_VISIBILITY:
+					_appState.userOption.showPath = commandNode.attribute(KPlaySketchLogger.CHANGE_PATH_VISIBILITY_TO);
 					break;
-				case KLogger.CHANGE_CORRECT_FUTURE_MOTION:
-					KAppState.erase_real_time_future = commandNode.attribute(KLogger.CHANGE_CORRECT_FUTURE_MOTION_TO);
+				case KPlaySketchLogger.CHANGE_CORRECT_FUTURE_MOTION:
+					KAppState.erase_real_time_future = commandNode.attribute(KPlaySketchLogger.CHANGE_CORRECT_FUTURE_MOTION_TO);
 					break;
 		//			case KLogger.CHANGE_DEMO_MERGE_MODE:
 		//				_facade.setDemoMergeMode(commandNode.attribute(KLogger.CHANGE_DEMO_MERGE_MODE_TO));
 		//				break;
-				case KLogger.CHANGE_RIGHT_MOUSE_ENABLED:
-					_appState.userOption.rightMouseButtonEnabled = commandNode.attribute(KLogger.CHANGE_RIGHT_MOUSE_ENABLED_TO);
+				case KPlaySketchLogger.CHANGE_RIGHT_MOUSE_ENABLED:
+					_appState.userOption.rightMouseButtonEnabled = commandNode.attribute(KPlaySketchLogger.CHANGE_RIGHT_MOUSE_ENABLED_TO);
 					break;
-				case KLogger.CHANGE_CONFIRM_DIALOG_ENABLED:
-					_appState.userOption.showConfirmWindow = commandNode.attribute(KLogger.CHANGE_CONFIRM_DIALOG_ENABLED_TO);
+				case KPlaySketchLogger.CHANGE_CONFIRM_DIALOG_ENABLED:
+					_appState.userOption.showConfirmWindow = commandNode.attribute(KPlaySketchLogger.CHANGE_CONFIRM_DIALOG_ENABLED_TO);
 					break;
-				case KLogger.CHANGE_APPLICATION_LOG_ENABLED:
-					KLogger.enabled = commandNode.attribute(KLogger.CHANGE_APPLICATION_LOG_ENABLED_TO);
+				case KPlaySketchLogger.CHANGE_APPLICATION_LOG_ENABLED:
+					KLogger.enabled = commandNode.attribute(KPlaySketchLogger.CHANGE_APPLICATION_LOG_ENABLED_TO);
 					break;
-				case KLogger.CHANGE_ASPECT_RATIO:
+				case KPlaySketchLogger.CHANGE_ASPECT_RATIO:
 					break;
-				case KLogger.BTN_NEW:
+				case KPlaySketchLogger.BTN_NEW:
 					break;
-				case KLogger.BTN_LOAD:
+				case KPlaySketchLogger.BTN_LOAD:
 					break;
-				case KLogger.BTN_SAVE:
+				case KPlaySketchLogger.BTN_SAVE:
 					break;
 				case KLogger.NEW_SESSION:
 					break;
@@ -311,15 +313,15 @@ package sg.edu.smu.ksketch.interactor
 				
 		private function _interact(commandNode:XML):void
 		{
-			_dispatchMouseEvents(_getPath(commandNode));
+	//		_canvas.showInteraction(_getPath(commandNode));
 		}
 		
 		// Ignore toggle pen/eraser gesture, as it is also log as a Pen/Eraser button command
 		private function _gesture(commandNode:XML):void
 		{
-			if (commandNode.attribute(KLogger.SELECTED_ITEMS).length() > 0)
-				_select(commandNode.attribute(KLogger.SELECTED_ITEMS));
-			else if (commandNode.attribute(KLogger.MATCH) != GestureDesign.NAME_PRE_TOGGLE)
+			if (commandNode.attribute(KPlaySketchLogger.SELECTED_ITEMS).length() > 0)
+				_select(commandNode.attribute(KPlaySketchLogger.SELECTED_ITEMS));
+			else if (commandNode.attribute(KPlaySketchLogger.MATCH) != GestureDesign.NAME_PRE_TOGGLE)
 			{
 				var event:KeyboardEvent = new KeyboardEvent(KeyboardEvent.KEY_DOWN);
 				event.keyCode = Keyboard.CONTROL;
@@ -339,23 +341,15 @@ package sg.edu.smu.ksketch.interactor
 			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP, true, false, p.x, p.y));
 		}
 
-		private function _transform(widgetEventType:String,commandNode:XML):void
+		private function _showInteraction(interactionType:String,commandNode:XML):void
 		{
-			var path:Vector.<KPathPoint> = _getPath(commandNode);		
-			var type:int = commandNode.attribute(KLogger.TRANSITION_TYPE);
-			_appState.transitionType = isNaN(type) ? _appState.transitionType : type;
-			_appState.time = path[0].time;
-			var p:Point = KInteractorManager.getInverseCoordinate(
-				_canvas.localToGlobal(path[0]),_canvas);
-			var widget:KWidget = _canvas.interactorManager.widget as KWidget;
-			widget.dispatchEvent(new KWidgetEvent(widgetEventType, p.x, p.y));
-			_dispatchMouseMoveAndUpEvents(path);		
+			
 		}
 
 		// Ignore toggle pen/eraser gesture, as it is also log as a Pen/Eraser button command
 		private function _redoGesture(commandNode:XML):void
 		{
-			var match:String = commandNode.attribute(KLogger.MATCH).toString();
+			var match:String = commandNode.attribute(KPlaySketchLogger.MATCH).toString();
 			switch (match)
 			{
 				case GestureDesign.NAME_PRE_CUT:				
@@ -377,7 +371,7 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _undoGesture(commandNode:XML):void
 		{
-			var match:String = commandNode.attribute(KLogger.MATCH).toString();
+			var match:String = commandNode.attribute(KPlaySketchLogger.MATCH).toString();
 			switch (match)
 			{
 				case GestureDesign.NAME_PRE_CUT:				
@@ -393,7 +387,7 @@ package sg.edu.smu.ksketch.interactor
 					_redo();
 					break;
 				default:
-					_select(commandNode.attribute(KLogger.PREV_SELECTED_ITEMS));
+					_select(commandNode.attribute(KPlaySketchLogger.PREV_SELECTED_ITEMS));
 			}	
 		}
 		
@@ -404,9 +398,8 @@ package sg.edu.smu.ksketch.interactor
 			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP, true, false, p.x, p.y));
 		}
 		
-		private function _select(selectedItems:String):void
+		protected function _getObjectsByIDs(ids:Vector.<int>):KModelObjectList
 		{
-			var ids:Array = selectedItems.split(" ");
 			var objs:KModelObjectList = new KModelObjectList();
 			for (var i:int=0; i < ids.length; i++)
 			{
@@ -414,37 +407,16 @@ package sg.edu.smu.ksketch.interactor
 				if (obj)
 					objs.add(obj);
 			}
+			return objs;
+		}
+		
+		private function _select(selectedItems:String):void
+		{
+			var objs:KModelObjectList = _getObjectsByIDs(KFileParser.stringToInts(selectedItems));
 			_appState.selection = objs.length()>0?new KSelection(objs,_appState.time):null;
 		}	
 		
-		private function _dispatchMouseEvents(cursorPath:Vector.<KPathPoint>):void
-		{
-			var length:uint = cursorPath.length;
-			if(length <= 1)
-				throw new Error("Interaction on canvas must at least has 2 points!");
-			
-			_appState.time = cursorPath[0].time;
-			var p:Point = KInteractorManager.getInverseCoordinate(cursorPath[0],_canvas);
-			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_DOWN, true, false, p.x, p.y));
-			_dispatchMouseMoveAndUpEvents(cursorPath);
-		}
-		
-		private function _dispatchMouseMoveAndUpEvents(cursorPath:Vector.<KPathPoint>):void
-		{
-			var p:Point;
-			var length:uint = cursorPath.length;
-			for(var i:uint = 1;i<length-1;i++)
-			{
-				_appState.time = cursorPath[i].time;
-				p = KInteractorManager.getInverseCoordinate(cursorPath[i],_canvas);
-				_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_MOVE, true, false, p.x, p.y));
-			}
-			_appState.time = cursorPath[length-1].time;
-			p = KInteractorManager.getInverseCoordinate(cursorPath[length-1],_canvas);
-			_canvas.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP, true, false, p.x, p.y));
-		}		
-		
-		private function _getPath(commandNode:XML):Vector.<KPathPoint>
+		protected function _getPath(commandNode:XML):Vector.<KPathPoint>
 		{
 			return KPathProcessor.generatePathPointsFromString(
 				commandNode.attribute(KLogger.CURSOR_PATH));			

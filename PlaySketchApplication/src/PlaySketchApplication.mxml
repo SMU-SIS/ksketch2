@@ -9,8 +9,8 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   xmlns:local="*" showStatusBar = "false"
 					   minWidth ="900" minHeight = "600" width = "1067" height = "600"
-					   initialize="_init()" invoke="_loadInitHandler(event)"  
-					   closing="_closingHandler(event)">
+					   initialize="_init()" invoke="_loadInitHandler(event)" closing="_closingHandler(event)" 
+					   applicationComplete="stage.addEventListener(KeyboardEvent.KEY_UP,main.handleKeyBoardPress)">
 	
 	<fx:Style source="PlaySketchApplication.css" />
 
@@ -22,10 +22,10 @@
 			import mx.core.Window;
 			import mx.events.CloseEvent;
 			
-			import sg.edu.smu.ksketch.event.KDataSavedEvent;
-			import sg.edu.smu.ksketch.interactor.KLoggerCommandExecutor;
+			import sg.edu.smu.ksketch.interactor.KSystemCommandExecutor;
 			import sg.edu.smu.ksketch.io.KFileSaver;
 			import sg.edu.smu.ksketch.logger.KLogger;
+			import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 			
 			//ADDED THESE FEW LINES TO TEST IF UPSTREAM CHANGES WILL BE MERGED
 			//
@@ -40,19 +40,19 @@
 			{
 				var windowFreezer:Alert = _showFreezer();	
 				var canvas:LoggerCanvas = new LoggerCanvas();
-				var executor:KLoggerCommandExecutor = new KLoggerCommandExecutor(
+				var executor:KSystemCommandExecutor = new KSystemCommandExecutor(
 					main.appState,main.appCanvas,main.facade);
 				KLogger.enabled = false;
 				var modelXML:XML = main.facade.saveFile();
 				main.appCanvas.resetCanvas();
-				canvas.initLogger(executor,KLogger.logFile);	
+				canvas.initLogger(main.appCanvas,executor);	
 				var close:Function = function (e:Event):void
 				{
 					main.appCanvas.loadFile(modelXML);
 					KLogger.enabled = true;
 					windowFreezer.setVisible(false);
 				};
-				_showWindow("Logger",425,410,canvas,close);
+				_showWindow("Logger",425,440,canvas,close);
 			}
 			
 			public function triggerSettings(event:MouseEvent):void
@@ -90,7 +90,7 @@
 			
 			private function _close():void
 			{
-				main.commandExecutor.doButtonCommand(KLogger.BTN_EXIT);
+				main.commandExecutor.doButtonCommand(KPlaySketchLogger.BTN_EXIT);
 				stage.nativeWindow.close();
 			}
 

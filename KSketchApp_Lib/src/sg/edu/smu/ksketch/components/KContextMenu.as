@@ -18,6 +18,7 @@ package sg.edu.smu.ksketch.components
 	import sg.edu.smu.ksketch.interactor.KCommandExecutor;
 	import sg.edu.smu.ksketch.interactor.KSelection;
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
@@ -62,9 +63,9 @@ package sg.edu.smu.ksketch.components
                 <menuitem id="3" label="Paste Object with Motion(Ctrl+M)"/>
 			</root>;
 		
-		private static var _COMMANDS:Array = ["",KLogger.MENU_CONTEXT_MENU_COPY,
-			KLogger.MENU_CONTEXT_MENU_PASTE,KLogger.MENU_CONTEXT_MENU_PASTE_WITH_MOTION,
-			KLogger.MENU_CONTEXT_MENU_CLEAR_MOTIONS,KLogger.MENU_CONTEXT_MENU_INSERT_KEYS];
+		private static var _COMMANDS:Array = ["",KPlaySketchLogger.MENU_CONTEXT_MENU_COPY,
+			KPlaySketchLogger.MENU_CONTEXT_MENU_PASTE,KPlaySketchLogger.MENU_CONTEXT_MENU_PASTE_WITH_MOTION,
+			KPlaySketchLogger.MENU_CONTEXT_MENU_CLEAR_MOTIONS,KPlaySketchLogger.MENU_CONTEXT_MENU_INSERT_KEYS];
 		
 		private var _appState:KAppState;
 		private var _executor:KCommandExecutor;
@@ -101,9 +102,10 @@ package sg.edu.smu.ksketch.components
 		   
 		   var selectedItems:String = selectedObjects();
 			if(selectedItems != null)
-				KLogger.log(KLogger.MENU_CONTEXT_MENU, KLogger.MENU_SELECTED, selected, KLogger.SELECTED_ITEMS, selectedItems);
+				KLogger.log(KPlaySketchLogger.MENU_CONTEXT_MENU, KPlaySketchLogger.MENU_SELECTED, 
+					selected, KPlaySketchLogger.SELECTED_ITEMS, selectedItems);
 			else
-				KLogger.log(KLogger.MENU_CONTEXT_MENU, KLogger.MENU_SELECTED, selected);
+				KLogger.log(KPlaySketchLogger.MENU_CONTEXT_MENU, KPlaySketchLogger.MENU_SELECTED, selected);
 		}
 			
 		

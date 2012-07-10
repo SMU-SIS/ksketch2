@@ -186,7 +186,7 @@ private function _redoCommand(command:String):void
 	if (command == KLogger.SYSTEM_UNDO)
 		_commandExecutor.undoSystemCommand();
 	else if (command != KLogger.SYSTEM_LOAD && command != KLogger.SYSTEM_SAVE && 
-		command != KLogger.SYSTEM_CLEARCLIPBOARD)
+		command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD)
 		_commandExecutor.redoSystemCommand();
 }
 
@@ -195,7 +195,7 @@ private function _undoCommand(command:String):void
 	if (command == KLogger.SYSTEM_UNDO)
 		_commandExecutor.redoSystemCommand()
 	else if (command != KLogger.SYSTEM_LOAD && command != KLogger.SYSTEM_SAVE && 
-		command != KLogger.SYSTEM_CLEARCLIPBOARD)
+		command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD)
 		_commandExecutor.undoSystemCommand();
 }		
 

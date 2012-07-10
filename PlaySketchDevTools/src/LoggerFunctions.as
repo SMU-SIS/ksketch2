@@ -62,21 +62,17 @@ private function _initLogger(xml:XML,showUserEvent:Boolean=true):void
 	var length:uint = _actionTable.dataProviderLength;
 	if (length > 0)
 	{
-		//		_actionSlider.minimum = KLogger.timeOf(list[0][KLogger.LOG_TIME]).valueOf();
-		//		_actionSlider.maximum = KLogger.timeOf(list[length-1][KLogger.LOG_TIME]).valueOf();
-		//		_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
+		_actionSlider.minimum = KLogger.timeOf(list[0][KLogger.LOG_TIME]).valueOf();
+		_actionSlider.maximum = KLogger.timeOf(list[length-1][KLogger.LOG_TIME]).valueOf();
+		_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
 	}
-	var lastCommandIndex:int;
 	for (var i:int=0; i < length && !_isLoadCommand(_getCommand(i)); i++)
-	{
 		if (_isSystemCommand(_getCommand(i)))
-		{
 			_commandExecutor.initCommand(_getCommand(i),_commandNodes[i]);
-			lastCommandIndex = i;
-		}
-	}
-	_actionTable.selectedIndex = lastCommandIndex;
-	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
+
+	_actionTable.selectedIndex = 0;
+	_commandExecutor.undoAllCommand();
+	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);	
 }
 
 private function _isLoadCommand(command:String):Boolean
@@ -139,10 +135,12 @@ private function _playCommand(e:MouseEvent):void
 
 private function _selectedRowChanged(e:GridCaretEvent):void
 {
+	if (_actionTable.selectedIndex != e.newRowIndex)
+		_actionTable.selectedIndex = e.newRowIndex;
 	if (_isLoadCommand(_getCommand(e.newRowIndex)))
 	{
 		_commandExecutor.load(_commandNodes[e.newRowIndex]);
-		this.parent.visible = false;
+		_initLogger(KLogger.logFile);
 	}
 	if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
 		for (var i:int=e.oldRowIndex+1; i <= e.newRowIndex; i++)
@@ -150,8 +148,11 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	else if (e.oldRowIndex > e.newRowIndex)
 		for (var j:int=e.oldRowIndex; j > e.newRowIndex; j--)
 			_undoCommand(j);
-	_actionSlider.value = _getLogTime(_actionTable.selectedIndex);
-	_actionTable.ensureCellIsVisible(_actionTable.selectedIndex);
+	if (_actionTable.selectedIndex >=0)
+	{
+		_actionSlider.value = _getLogTime(_actionTable.selectedIndex);
+		_actionTable.ensureCellIsVisible(_actionTable.selectedIndex);
+	}
 }
 
 private function _redoCommand(index:int):void

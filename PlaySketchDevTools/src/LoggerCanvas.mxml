@@ -31,6 +31,6 @@
 		<s:Button label=">" click="_nextCommand(event)" />
 		<s:Button label=">>" click="_lastCommand(event)" />	
 	</s:HGroup>
-	<timebar:TimeSlider id="_actionSlider" width="100%" />
+	<s:HSlider id="_actionSlider" width="100%" />
 	<s:BorderContainer id="_markerBar" width="100%" height="10" />
 </s:Group>

@@ -94,6 +94,12 @@ package sg.edu.smu.ksketch.interactor
 			}
 		}
 		
+		public function undoAllCommand():void
+		{
+			while (_appState.undoEnabled)
+				_appState.undo();
+		}
+		
 		public function undoSystemCommand():void
 		{
 			_appState.undo();
@@ -117,7 +123,7 @@ package sg.edu.smu.ksketch.interactor
 			}
 			else
 				loader.loadKMV();
-		}
+		}		
 
 		private function _image(commandNode:XML):void
 		{

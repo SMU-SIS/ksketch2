@@ -34,8 +34,9 @@ package sg.edu.smu.ksketch.interactor
 			super(appState, canvas, facade);
 		}
 		
-		public override function initCommand(command:String,commandNode:XML):void
+		public override function initCommand(commandNode:XML):void
 		{
+			var command:String = commandNode.name();
 			switch (command)
 			{
 				case KLogger.SYSTEM_UNDO:

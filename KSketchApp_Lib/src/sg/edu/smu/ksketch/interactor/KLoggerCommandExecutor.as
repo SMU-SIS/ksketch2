@@ -34,8 +34,9 @@ package sg.edu.smu.ksketch.interactor
 			super(appState, canvas, facade);
 		}
 		
-		public function initCommand(command:String,commandNode:XML):void
+		public function initCommand(commandNode:XML):void
 		{
+			var command:String = commandNode.name();			
 			switch (command)
 			{
 				case KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND:

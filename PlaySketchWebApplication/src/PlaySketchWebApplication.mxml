@@ -47,13 +47,13 @@
 				KLogger.enabled = false;
 				var modelXML:XML = main.facade.saveFile();
 				main.appCanvas.resetCanvas();
-				canvas.initLogger(main.appCanvas,executor,KLogger.logFile);	
+				canvas.initLogger(main.appCanvas,executor);	
 //				main.appState.userOption.showConfirmWindow = false;				
 				var close:Function = function (e:Event):void
 				{
 					KLogger.enabled = true;
 					main.appCanvas.loadFile(modelXML);
-					canvas.initLogger(main.appCanvas,executor,KLogger.logFile);	
+//					canvas.initLogger(main.appCanvas,executor);	
 					(e.target as TitleWindow).removeEventListener(Event.CLOSE, close);
 					PopUpManager.removePopUp(e.target as TitleWindow);
 //					main.appState.userOption.showConfirmWindow = showConfirmWindow;

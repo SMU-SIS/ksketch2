@@ -71,17 +71,17 @@ package sg.edu.smu.ksketch.interactor
 					_newFile();
 					break;
 				case KPlaySketchLogger.BTN_LOAD:
-					//	filename = _generateFileName(); 
-					//	KLogger.log(command,KLogger.FILE_NAME,filename);
-					//	_save(filename,KLogger.FILE_APP_DIR);
-					//	KLogger.flush();
+					filename = _generateFileName();
+					KLogger.log(command);
+					_save(filename,KLogger.FILE_APP_DIR);
+					KLogger.flush();
 					_load();
 					break;
-				//		case KLogger.BTN_SAVE:
-				//			filename = _generateFileName(); 
-				//			KLogger.log(command,KLogger.FILE_NAME,filename);
-				//			_save(filename);
-				//			break;
+				case KPlaySketchLogger.BTN_SAVE:
+					filename = _generateFileName(); 
+					KLogger.log(command,KLogger.FILE_NAME,filename);
+					_save(filename);
+					break;
 				case KPlaySketchLogger.BTN_CUT:
 					KLogger.log(command);
 					_cut();

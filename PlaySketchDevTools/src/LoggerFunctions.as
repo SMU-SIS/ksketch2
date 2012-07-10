@@ -66,11 +66,22 @@ private function _initLogger(xml:XML,showUserEvent:Boolean=true):void
 		//		_actionSlider.maximum = KLogger.timeOf(list[length-1][KLogger.LOG_TIME]).valueOf();
 		//		_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
 	}
-	for (var i:int=0; i < length; i++)
+	var lastCommandIndex:int;
+	for (var i:int=0; i < length && !_isLoadCommand(_getCommand(i)); i++)
+	{
 		if (_isSystemCommand(_getCommand(i)))
+		{
 			_commandExecutor.initCommand(_getCommand(i),_commandNodes[i]);
-	_actionTable.selectedIndex = length-1;
+			lastCommandIndex = i;
+		}
+	}
+	_actionTable.selectedIndex = lastCommandIndex;
 	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
+}
+
+private function _isLoadCommand(command:String):Boolean
+{
+	return command.indexOf(KLogger.SYSTEM_LOAD) == 0;
 }
 
 private function _isSystemCommand(command:String):Boolean
@@ -128,6 +139,11 @@ private function _playCommand(e:MouseEvent):void
 
 private function _selectedRowChanged(e:GridCaretEvent):void
 {
+	if (_isLoadCommand(_getCommand(e.newRowIndex)))
+	{
+		_commandExecutor.load(_commandNodes[e.newRowIndex]);
+		this.parent.visible = false;
+	}
 	if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
 		for (var i:int=e.oldRowIndex+1; i <= e.newRowIndex; i++)
 			_redoCommand(i);
@@ -142,19 +158,43 @@ private function _redoCommand(index:int):void
 {
 	_actionText.text = _commandNodes[index].toXMLString();
 	if (_isSystemCommand(_getCommand(index)))
-		_commandExecutor.redoSystemCommand();
+	{
+		if (_getCommand(index) == KLogger.SYSTEM_UNDO)
+			_commandExecutor.undoSystemCommand();
+		else
+			_commandExecutor.redoSystemCommand();
+	}
 }
 
 private function _undoCommand(index:int):void
 {
 	_actionText.text = _commandNodes[index-1].toXMLString();
 	if (_isSystemCommand(_getCommand(index)))
-		_commandExecutor.undoSystemCommand();
+	{
+		if (_getCommand(index) == KLogger.SYSTEM_UNDO)
+			_commandExecutor.redoSystemCommand()
+		else
+			_commandExecutor.undoSystemCommand();
+	}
 }		
+
+private function _undoSystemCommandBefore(index:int):void
+{
+	for (var j:int=index; j > 0; j--)
+		if (_isSystemCommand(_getCommand(j)))
+			_undoCommand(j);
+}
+
+private function _redoSystemCommandBefore(index:int):void
+{
+	for (var j:int=index; j > 0; j--)
+		if (_isSystemCommand(_getCommand(j)))
+			_redoCommand(j);
+}
 
 private function _getCommand(index:int):String
 {
-	return _actionTable.dataProvider[index][_COMMAND_NAME]
+	return _actionTable.dataProvider[index][_COMMAND_NAME];
 }
 
 private function _updateTimeLine(e:TimerEvent):void

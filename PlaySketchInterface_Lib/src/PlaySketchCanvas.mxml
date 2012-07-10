@@ -12,7 +12,8 @@
 		 xmlns:playsketchskin="components.*"
 		 xmlns:playsketchcomponents="sg.edu.smu.playsketch.components.*"
 		 xmlns:timebar="sg.edu.smu.playsketch.components.timebar.*"
-		 width="100%" height="100%" updateComplete = "update_interface()" xmlns:group="sg.edu.smu.playsketch.components.group.*" xmlns:local="*">
+		 xmlns:group="sg.edu.smu.playsketch.components.group.*" xmlns:local="*"
+		 width="100%" height="100%" updateComplete = "update_interface()" >
 	<fx:Declarations>
 	
 		<ksketchutilities:KAppState id="appState"/>

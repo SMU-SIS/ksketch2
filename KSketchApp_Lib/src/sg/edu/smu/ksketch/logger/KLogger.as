@@ -19,13 +19,11 @@ package sg.edu.smu.ksketch.logger
 	 */	
 	public class KLogger
 	{
-		public static const LOG_INTERVAL:Number = 10000;
-		public static const LOG_SERVER_URL:String = "http://coalescences.net/logtest/put";
-
 		public static const LOG_TIME:String = "logtime";
 		public static const TIME:String = "time";
 
 		public static const OBJECTS:String = "objects";
+		public static const NAME:String = "name";
 		
 		// command names, same as xml node name
 		public static const COMMANDS:String = "commands";
@@ -60,6 +58,12 @@ package sg.edu.smu.ksketch.logger
 		public static const SYSTEM_GROUP:String = "sys-group";
 		public static const SYSTEM_UNGROUP:String = "sys-ungroup";
 		public static const SYSTEM_REGROUP:String = "sys-regroup";
+		public static const SYSTEM_NEW:String = "sys-new";
+		public static const SYSTEM_LOAD:String = "sys-load";
+		public static const SYSTEM_SAVE:String = "sys-save";
+		public static const SYSTEM_SETOBJECTNAME:String = "sys-setobjectname";
+		public static const SYSTEM_RETIMEKEYS:String = "sys-retimekeys";
+
 		public static const PASTEINCLUDEMOTION:String = "paste-include-motion";
 
 		public static const GROUPING_MODE:String = "mode";
@@ -246,7 +250,27 @@ package sg.edu.smu.ksketch.logger
 		{		
 			_logObject(_systemLog.endScale(kskTime));
 		}
-
+		
+		public static function logNewFile():void
+		{
+			_logObject(_systemLog.newFile());
+		}
+		
+		public static function logLoadFile(filepath:String):void
+		{
+			_logObject(_systemLog.loadFile(filepath));
+		}
+		
+		public static function logSaveFile(filepath:String):void
+		{
+			_logObject(_systemLog.saveFile(filepath));
+		}
+		
+		public static function logSetObjectName(objectID:int, name:String):void
+		{		
+			_logObject(_systemLog.setObjectName(objectID,name));
+		}
+		
 		public static function logObject(log:ILoggable):void
 		{
 			if(_enabled)
@@ -261,9 +285,12 @@ package sg.edu.smu.ksketch.logger
 			_logFile = new XML("<"+COMMANDS+"/>");
 		}
 		
-		public static function setLogFile(xml:XML):void
+		public static function setLogFile(xml:XML,keepPreviousLog:Boolean = false):void
 		{
-			_logFile = xml;
+			if (keepPreviousLog)
+				_logFile.appendChild(xml.children());
+			else
+				_logFile = xml;
 		}
 		
 		/**

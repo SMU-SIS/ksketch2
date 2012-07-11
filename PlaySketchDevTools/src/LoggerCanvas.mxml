@@ -28,12 +28,12 @@
 					change="_filterEvent(event)" />
 	</s:HGroup>
 	<s:HGroup paddingLeft="15" >
-		<s:Button label="&lt;&lt;" click="_firstCommand(event)" />
-		<s:Button label="&lt;" click="_prevCommand(event)" />
+		<s:Button id="_firstButton" label="&lt;&lt;" click="_firstCommand(event)" />
+		<s:Button id="_prevButton" label="&lt;" click="_prevCommand(event)" />
 		<s:Button id="_playButton" label="Play" click="_playCommand(event)" />
-		<s:Button label=">" click="_nextCommand(event)" />
-		<s:Button label=">>" click="_lastCommand(event)" />	
+		<s:Button id="_nextButton" label=">" click="_nextCommand(event)" />
+		<s:Button id="_lastButton" label=">>" click="_lastCommand(event)" />	
 	</s:HGroup>
-	<s:HSlider id="_actionSlider" width="100%" />
+	<s:HSlider id="_actionSlider" width="100%" enabled="false" />
 	<s:BorderContainer id="_markerBar" width="100%" height="10" />
 </s:Group>

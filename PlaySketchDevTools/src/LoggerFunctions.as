@@ -27,6 +27,7 @@ private var _commandExecutor:KSystemCommandExecutor;
 private var _commandNodes:Vector.<XML>;
 private var _systemCommandNodes:Vector.<XML>;
 private var _startPlayTime:Number;
+private var _startPlayIndex:int;
 private var _playTimer:Timer;
 private var _canvas:KCanvas;
 
@@ -34,6 +35,8 @@ public function initLogger(canvas:KCanvas,commandExecutor:KSystemCommandExecutor
 {
 	_canvas = canvas;
 	_commandExecutor = commandExecutor;
+	_playTimer = new Timer(50,0);
+	_playTimer.addEventListener(TimerEvent.TIMER,_updateTimeLine);
 	_initLogger(true,true);
 }
 
@@ -72,22 +75,11 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 	_commandExecutor.undoAllCommand();
 	if (_commandNodes.length > 0 && _isSystemCommand(_commandNodes[0].name().toString()))
 		_commandExecutor.redoSystemCommand();
-
 	_actionTable.removeEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
 	_actionTable.ensureCellIsVisible(list.length-1);
 	_actionTable.dataProvider = new ArrayCollection(list);
 	_actionTable.selectedIndex = 0;
 	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);	
-}
-
-private function _isLoadCommand(command:String):Boolean
-{
-	return command.indexOf(KLogger.SYSTEM_LOAD) == 0;
-}
-
-private function _isSystemCommand(command:String):Boolean
-{
-	return command.indexOf(_SYSTEM_COMMAND_PREFIX) == 0;
 }
 
 private function _filterEvent(e:Event):void
@@ -122,62 +114,33 @@ private function _lastCommand(e:MouseEvent):void
 private function _playCommand(e:MouseEvent):void
 {
 	if (_playButton.label == _PLAY_COMMAND)
-	{
-		_playButton.label = _STOP_COMMAND;
-		_actionTable.selectedIndex = 0;
-		_playTimer = new Timer(50,0);
-		_playTimer.addEventListener(TimerEvent.TIMER,_updateTimeLine);
-		_playTimer.start();
-		_startPlayTime = new Date().valueOf();
-	}
+		_startPlayer();
 	else if (_playButton.label == _STOP_COMMAND)
-	{
-		_playButton.label = _PLAY_COMMAND;
-		_playTimer.stop();
-		_playTimer.removeEventListener(TimerEvent.TIMER,_updateTimeLine);
-	}
+		_stopPlayer();
 }
 
 private function _selectedRowChanged(e:GridCaretEvent):void
 {
-	if (_isLoadCommand(_actionTable.dataProvider[e.newRowIndex][_COMMAND_NAME]))
+	_actionTable.selectedIndex = e.newRowIndex;	
+	if (_isLoadCommand(_commandNodes[_actionTable.selectedIndex].name().toString()))
 	{
-		_commandExecutor.load(_commandNodes[e.newRowIndex]);
+		_commandExecutor.load(_commandNodes[_actionTable.selectedIndex]);
 		_initLogger(_systemEvent.selected,_userEvent.selected);
+		if (_playTimer.running)
+			_stopPlayer();
+		return;
 	}
-	
-	if (_actionTable.selectedIndex != e.newRowIndex)
-		_actionTable.selectedIndex = e.newRowIndex;	
-	
-	_actionText.text = _commandNodes[_actionTable.selectedIndex].toXMLString();
-	var oldTime:Number=0;
-	var newTime:Number=Number.MAX_VALUE;
-	if (e.oldRowIndex >= 0)
-		oldTime = _getLogTime(_commandNodes[e.oldRowIndex]);
-	if (e.newRowIndex >= 0)
-		newTime = _getLogTime(_commandNodes[e.newRowIndex]);
-	
+	var oldTime:Number = e.oldRowIndex >= 0 ? _getLogTime(_commandNodes[e.oldRowIndex]) : 0;
+	var newTime:Number = e.newRowIndex >= 0 ? _getLogTime(_commandNodes[e.newRowIndex]) : 0;	
 	if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
-	{
-		for (var i:int=0; i < _systemCommandNodes.length; i++)
-			if (oldTime < _getLogTime(_systemCommandNodes[i]) &&
-				_getLogTime(_systemCommandNodes[i]) <= newTime)
-				_redoCommand(_systemCommandNodes[i].name().toString());				
-	}
+		_forwardCommand(oldTime,newTime);
 	else if (e.oldRowIndex > e.newRowIndex)
-	{
-		for (var j:int=_systemCommandNodes.length-1; j >= 0; j--)
-		{
-			if (newTime < _getLogTime(_systemCommandNodes[j]) && 
-				_getLogTime(_systemCommandNodes[j]) <= oldTime)
-				_undoCommand(_systemCommandNodes[j].name().toString());
-		}
-	}
-	
+		_backwardCommand(oldTime,newTime);
 	if (_actionTable.selectedIndex >=0)
 	{
-		_actionSlider.value = _getLogTime(_commandNodes[_actionTable.selectedIndex]);
 		_actionTable.ensureCellIsVisible(_actionTable.selectedIndex);
+		_actionText.text = _commandNodes[_actionTable.selectedIndex].toXMLString();
+		_actionSlider.value = _getLogTime(_commandNodes[_actionTable.selectedIndex]);
 	}
 }
 
@@ -201,21 +164,77 @@ private function _undoCommand(command:String):void
 
 private function _updateTimeLine(e:TimerEvent):void
 {
-	var value:Number = new Date().valueOf() - _startPlayTime + _actionSlider.minimum;
-	var next:Number = _getLogTime(_commandNodes[_actionTable.selectedIndex + 1]);
-	if (value > next)
-		_actionTable.selectedIndex++;
-	if (value >= _actionSlider.maximum)
+	if (_actionTable.selectedIndex < _actionTable.dataProviderLength-1)
 	{
-		_playButton.label = _PLAY_COMMAND;
-		(e.target as Timer).stop();
-		(e.target as Timer).removeEventListener(TimerEvent.TIMER,_updateTimeLine);
+		var start:Number = _getLogTime(_commandNodes[_startPlayIndex]);
+		var next:Number = _getLogTime(_commandNodes[_actionTable.selectedIndex + 1]);
+		if (new Date().valueOf() - _startPlayTime > next - start)
+			_actionTable.selectedIndex++;
+	}
+	else
+		_stopPlayer();
+}
+
+private function _startPlayer():void
+{
+	_playButton.label = _STOP_COMMAND;
+	_startPlayTime = new Date().valueOf();
+	_startPlayIndex = _actionTable.selectedIndex;
+	_playTimer.start();
+	_enableInteraction(false);
+}
+
+private function _stopPlayer():void
+{
+	_playButton.label = _PLAY_COMMAND;
+	_playTimer.stop();
+	_enableInteraction(true);
+}
+
+private function _forwardCommand(oldTime:Number,newTime:Number):void
+{
+	for (var i:int=0; i < _systemCommandNodes.length; i++)
+	{
+		var ti:Number = _getLogTime(_systemCommandNodes[i]); 
+		if (oldTime < ti && ti <= newTime)
+			_redoCommand(_systemCommandNodes[i].name().toString());
+	}
+}
+
+private function _backwardCommand(oldTime:Number,newTime:Number):void
+{
+	for (var i:int=_systemCommandNodes.length-1; i >= 0; i--)
+	{
+		var ti:Number = _getLogTime(_systemCommandNodes[i]); 
+		if (newTime < ti &&	ti <= oldTime)
+			_undoCommand(_systemCommandNodes[i].name().toString());
 	}
 }
 
 private function _getLogTime(xml:XML):Number
 {
 	return KLogger.timeOf(xml.attribute(KLogger.LOG_TIME)).valueOf();
+}
+
+private function _isLoadCommand(command:String):Boolean
+{
+	return command.indexOf(KLogger.SYSTEM_LOAD) == 0;
+}
+
+private function _isSystemCommand(command:String):Boolean
+{
+	return command.indexOf(_SYSTEM_COMMAND_PREFIX) == 0;
+}
+
+private function _enableInteraction(b:Boolean):void
+{
+	_actionTable.enabled = b;
+	_firstButton.enabled = b;
+	_prevButton.enabled = b;
+	_nextButton.enabled = b;
+	_lastButton.enabled = b;
+	_userEvent.enabled = b;
+	_systemEvent.enabled = b;
 }
 
 private function _setMarker(markerBar:BorderContainer,data:Array,min:Number,max:Number):void

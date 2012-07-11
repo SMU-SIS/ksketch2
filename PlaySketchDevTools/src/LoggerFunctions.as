@@ -35,7 +35,7 @@ public function initLogger(canvas:KCanvas,commandExecutor:KSystemCommandExecutor
 {
 	_canvas = canvas;
 	_commandExecutor = commandExecutor;
-	_playTimer = new Timer(50,0);
+	_playTimer = new Timer(100,0);
 	_playTimer.addEventListener(TimerEvent.TIMER,_updateTimeLine);
 	_initLogger(true,true);
 }
@@ -124,10 +124,12 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	_actionTable.selectedIndex = e.newRowIndex;	
 	if (_isLoadCommand(_commandNodes[_actionTable.selectedIndex].name().toString()))
 	{
+		if (_playTimer.running)
+			_playTimer.stop();
 		_commandExecutor.load(_commandNodes[_actionTable.selectedIndex]);
 		_initLogger(_systemEvent.selected,_userEvent.selected);
-		if (_playTimer.running)
-			_stopPlayer();
+		if (_playButton.label == _STOP_COMMAND)
+			_startPlayer();
 		return;
 	}
 	var oldTime:Number = e.oldRowIndex >= 0 ? _getLogTime(_commandNodes[e.oldRowIndex]) : 0;
@@ -168,8 +170,10 @@ private function _updateTimeLine(e:TimerEvent):void
 	{
 		var start:Number = _getLogTime(_commandNodes[_startPlayIndex]);
 		var next:Number = _getLogTime(_commandNodes[_actionTable.selectedIndex + 1]);
-		if (new Date().valueOf() - _startPlayTime > next - start)
+		var dt:Number = new Date().valueOf() - _startPlayTime; 
+		if (dt > next - start)
 			_actionTable.selectedIndex++;
+		_actionSlider.value = start + dt;
 	}
 	else
 		_stopPlayer();

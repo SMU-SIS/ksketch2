@@ -113,17 +113,16 @@ package sg.edu.smu.ksketch.interactor
 
 		public function load(commandNode:XML):void
 		{
-			var loader:KFileLoader = new KFileLoader();
 			var filename:String = commandNode.attribute(KLogger.FILE_NAME);
-			var file:File = File.desktopDirectory.resolvePath(filename);
+			var location:String = commandNode.attribute(KLogger.FILE_LOCATION);
+			var file:File = KFileParser.resolvePath(filename,
+				location ? location : KLogger.FILE_DESKTOP_DIR);
 			if (file.exists)
 			{
-				var xml:XML = loader.loadKMVFromFile(file);
+				var xml:XML = new KFileLoader().loadKMVFromFile(file);
 				_canvas.loadFile(xml);
-				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS).toXMLString()));
+				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
 			}
-			else
-				loader.loadKMV();
 		}		
 
 		private function _image(commandNode:XML):void

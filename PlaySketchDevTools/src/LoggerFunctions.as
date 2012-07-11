@@ -11,7 +11,10 @@ import mx.collections.ArrayCollection;
 import mx.graphics.SolidColor;
 
 import sg.edu.smu.ksketch.components.KCanvas;
+import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 import sg.edu.smu.ksketch.interactor.KSystemCommandExecutor;
+import sg.edu.smu.ksketch.io.KFileLoader;
+import sg.edu.smu.ksketch.io.KFileParser;
 import sg.edu.smu.ksketch.logger.KLogger;
 
 import spark.components.BorderContainer;
@@ -45,22 +48,8 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 	_canvas.resetCanvas();
 	_commandNodes = new Vector.<XML>();
 	_systemCommandNodes = new Vector.<XML>();
-	var commands:XMLList = KLogger.logFile.children();
-	var list:Array = new Array();
-	for each (var command:XML in commands)
-	{
-		var systemCommand:Boolean = _isSystemCommand(command.name());
-		if (systemCommand)
-			_systemCommandNodes.push(command);
-		if ((showSystemEvent && systemCommand) || (showUserEvent && !systemCommand))
-		{
-			_commandNodes.push(command);
-			var obj:Object = new Object();
-			obj[_COMMAND_NAME] = command.name();
-			obj[KLogger.LOG_TIME] = command.attribute(KLogger.LOG_TIME);
-			list.push(obj);
-		}
-	}
+	var list:Array = _getCommandArray(KLogger.logFile.children(),showSystemEvent,showUserEvent);
+	_enableInteraction(list.length > 0);
 	if (list.length > 0)
 	{
 		_actionSlider.minimum = KLogger.timeOf(list[0][KLogger.LOG_TIME]).valueOf();
@@ -80,6 +69,26 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 	_actionTable.dataProvider = new ArrayCollection(list);
 	_actionTable.selectedIndex = 0;
 	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);	
+}
+
+private function _selectedRowChanged(e:GridCaretEvent):void
+{
+	_actionTable.selectedIndex = e.newRowIndex;
+	var node:XML = _commandNodes[e.newRowIndex];
+	if (_isLoadCommand(node.name().toString()))
+		return _loadKMVFile(node);
+	var oldTime:Number = e.oldRowIndex >= 0 ? _getLogTime(_commandNodes[e.oldRowIndex]) : 0;
+	var newTime:Number = e.newRowIndex >= 0 ? _getLogTime(_commandNodes[e.newRowIndex]) : 0;
+	if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
+		_forwardCommand(oldTime,newTime);
+	else if (e.oldRowIndex > e.newRowIndex)
+		_backwardCommand(oldTime,newTime);
+	if (_actionTable.selectedIndex >=0)
+	{
+		_actionTable.ensureCellIsVisible(_actionTable.selectedIndex);
+		_actionText.text = node.toXMLString();
+		_actionSlider.value = _getLogTime(node);
+	}
 }
 
 private function _filterEvent(e:Event):void
@@ -119,44 +128,6 @@ private function _playCommand(e:MouseEvent):void
 		_stopPlayer();
 }
 
-private function _selectedRowChanged(e:GridCaretEvent):void
-{
-	_actionTable.selectedIndex = e.newRowIndex;
-	var node:XML = _commandNodes[_actionTable.selectedIndex];
-	if (_isLoadCommand(node.name().toString()))
-		return _doNewKMVFile(node);
-	var oldTime:Number = e.oldRowIndex >= 0 ? _getLogTime(_commandNodes[e.oldRowIndex]) : 0;
-	var newTime:Number = e.newRowIndex >= 0 ? _getLogTime(_commandNodes[e.newRowIndex]) : 0;	
-	if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
-		_forwardCommand(oldTime,newTime);
-	else if (e.oldRowIndex > e.newRowIndex)
-		_backwardCommand(oldTime,newTime);
-	if (_actionTable.selectedIndex >=0)
-	{
-		_actionTable.ensureCellIsVisible(_actionTable.selectedIndex);
-		_actionText.text = node.toXMLString();
-		_actionSlider.value = _getLogTime(node);
-	}
-}
-
-private function _redoCommand(command:String):void
-{
-	if (command == KLogger.SYSTEM_UNDO)
-		_commandExecutor.undoSystemCommand();
-	else if (command != KLogger.SYSTEM_LOAD && command != KLogger.SYSTEM_SAVE && 
-		command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD)
-		_commandExecutor.redoSystemCommand();
-}
-
-private function _undoCommand(command:String):void
-{
-	if (command == KLogger.SYSTEM_UNDO)
-		_commandExecutor.redoSystemCommand()
-	else if (command != KLogger.SYSTEM_LOAD && command != KLogger.SYSTEM_SAVE && 
-		command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD)
-		_commandExecutor.undoSystemCommand();
-}		
-
 private function _updateTimeLine(e:TimerEvent):void
 {
 	if (_actionTable.selectedIndex < _actionTable.dataProviderLength-1)
@@ -188,14 +159,42 @@ private function _stopPlayer():void
 	_enableInteraction(true);
 }
 
-private function _doNewKMVFile(commandNode:XML):void
+private function _loadKMVFile(commandNode:XML):void
 {
 	if (_playTimer.running)
 		_playTimer.stop();
-	_commandExecutor.load(commandNode);
+	
+	var filename:String = commandNode.attribute(KLogger.FILE_NAME);
+	var location:String = commandNode.attribute(KLogger.FILE_LOCATION);
+	if (_fileExist(filename,location))
+	{
+		_commandExecutor.load(commandNode);
+		_initLogger(_systemEvent.selected,_userEvent.selected);
+		if (_playButton.label == _STOP_COMMAND)
+			_startPlayer();
+	}
+	else
+	{
+		_enableInteraction(true);
+		var loader:KFileLoader = new KFileLoader();
+		loader.addEventListener(KFileLoadedEvent.EVENT_FILE_LOADED,_kmvLoaded);
+		loader.loadKMV();
+	}
+}
+
+private function _kmvLoaded(e:KFileLoadedEvent):void
+{
+	var kmv:XML = new XML(e.content);
+	KLogger.setLogFile(new XML(kmv.child(KLogger.COMMANDS)));
 	_initLogger(_systemEvent.selected,_userEvent.selected);
 	if (_playButton.label == _STOP_COMMAND)
 		_startPlayer();
+}
+
+private function _fileExist(filename:String,location:String):Boolean
+{
+	return KFileParser.resolvePath(filename,
+		location ? location : KLogger.FILE_DESKTOP_DIR).exists;
 }
 
 private function _forwardCommand(oldTime:Number,newTime:Number):void
@@ -216,6 +215,44 @@ private function _backwardCommand(oldTime:Number,newTime:Number):void
 		if (newTime < ti &&	ti <= oldTime)
 			_undoCommand(_systemCommandNodes[i].name().toString());
 	}
+}
+
+private function _redoCommand(command:String):void
+{
+	if (command == KLogger.SYSTEM_UNDO)
+		_commandExecutor.undoSystemCommand();
+	else if (command != KLogger.SYSTEM_LOAD && command != KLogger.SYSTEM_SAVE && 
+		command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD)
+		_commandExecutor.redoSystemCommand();
+}
+
+private function _undoCommand(command:String):void
+{
+	if (command == KLogger.SYSTEM_UNDO)
+		_commandExecutor.redoSystemCommand()
+	else if (command != KLogger.SYSTEM_LOAD && command != KLogger.SYSTEM_SAVE && 
+		command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD)
+		_commandExecutor.undoSystemCommand();
+}		
+
+private function _getCommandArray(commands:XMLList,systemEvent:Boolean,userEvent:Boolean):Array
+{
+	var list:Array = new Array();
+	for each (var command:XML in commands)
+	{
+		var systemCommand:Boolean = _isSystemCommand(command.name());
+		if (systemCommand)
+			_systemCommandNodes.push(command);
+		if ((systemEvent && systemCommand) || (userEvent && !systemCommand))
+		{
+			_commandNodes.push(command);
+			var obj:Object = new Object();
+			obj[_COMMAND_NAME] = command.name();
+			obj[KLogger.LOG_TIME] = command.attribute(KLogger.LOG_TIME);
+			list.push(obj);
+		}
+	}
+	return list;
 }
 
 private function _getLogTime(xml:XML):Number

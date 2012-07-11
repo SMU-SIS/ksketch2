@@ -30,9 +30,14 @@ package sg.edu.smu.ksketch.logger
 		public static const NEW_SESSION:String = "newsession";
 		public static const VERSION:String = "version";
 
-		public static const FILE_PATH:String = "file-path";
 		public static const FILE_NAME:String = "filename";
+		public static const FILE_PATH:String = "file-path";
 		public static const FILE_APP_DIR:String = "playsketch";
+		public static const FILE_LOCATION:String = "file-location";
+		public static const FILE_USER_DIR:String = "user-dir";
+		public static const FILE_DESKTOP_DIR:String = "desktop-dir";
+		public static const FILE_STORAGE_DIR:String = "storage-dir";
+		public static const FILE_DOCUMENT_DIR:String = "document-dir";
 
 		public static const CHANGE_TIME:String = "changetime";
 		public static const CHANGE_TIME_ACTION:String = "changetime-action";

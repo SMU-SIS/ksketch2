@@ -8,6 +8,8 @@ import flash.events.TimerEvent;
 import flash.utils.Timer;
 
 import mx.collections.ArrayCollection;
+import mx.controls.Alert;
+import mx.events.CloseEvent;
 import mx.graphics.SolidColor;
 
 import sg.edu.smu.ksketch.components.KCanvas;
@@ -176,9 +178,19 @@ private function _loadKMVFile(commandNode:XML):void
 	else
 	{
 		_enableInteraction(true);
+		Alert.show("Unable to find the file " + filename + 
+			" in location " + location + "\n\nReload manually?",
+			"File Not Found",Alert.YES|Alert.NO,this,_reloadFile);
+	}
+}
+
+private function _reloadFile(e:CloseEvent):void
+{
+	if (e.detail == Alert.YES)
+	{
 		var loader:KFileLoader = new KFileLoader();
 		loader.addEventListener(KFileLoadedEvent.EVENT_FILE_LOADED,_kmvLoaded);
-		loader.loadKMV();
+		loader.loadKMV();		
 	}
 }
 

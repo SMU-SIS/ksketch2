@@ -44,11 +44,13 @@
 					main.appState,main.appCanvas,main.facade);
 				KLogger.enabled = false;
 				var modelXML:XML = main.facade.saveFile();
+				var logXML:XML = KLogger.logFile;
 				main.appCanvas.resetCanvas();
 				canvas.initLogger(main.appCanvas,executor);	
 				var close:Function = function (e:Event):void
 				{
 					main.appCanvas.loadFile(modelXML);
+					KLogger.setLogFile(logXML);
 					KLogger.enabled = true;
 					windowFreezer.setVisible(false);
 				};

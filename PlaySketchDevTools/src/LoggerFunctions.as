@@ -121,17 +121,10 @@ private function _playCommand(e:MouseEvent):void
 
 private function _selectedRowChanged(e:GridCaretEvent):void
 {
-	_actionTable.selectedIndex = e.newRowIndex;	
-	if (_isLoadCommand(_commandNodes[_actionTable.selectedIndex].name().toString()))
-	{
-		if (_playTimer.running)
-			_playTimer.stop();
-		_commandExecutor.load(_commandNodes[_actionTable.selectedIndex]);
-		_initLogger(_systemEvent.selected,_userEvent.selected);
-		if (_playButton.label == _STOP_COMMAND)
-			_startPlayer();
-		return;
-	}
+	_actionTable.selectedIndex = e.newRowIndex;
+	var node:XML = _commandNodes[_actionTable.selectedIndex];
+	if (_isLoadCommand(node.name().toString()))
+		return _doNewKMVFile(node);
 	var oldTime:Number = e.oldRowIndex >= 0 ? _getLogTime(_commandNodes[e.oldRowIndex]) : 0;
 	var newTime:Number = e.newRowIndex >= 0 ? _getLogTime(_commandNodes[e.newRowIndex]) : 0;	
 	if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
@@ -141,8 +134,8 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	if (_actionTable.selectedIndex >=0)
 	{
 		_actionTable.ensureCellIsVisible(_actionTable.selectedIndex);
-		_actionText.text = _commandNodes[_actionTable.selectedIndex].toXMLString();
-		_actionSlider.value = _getLogTime(_commandNodes[_actionTable.selectedIndex]);
+		_actionText.text = node.toXMLString();
+		_actionSlider.value = _getLogTime(node);
 	}
 }
 
@@ -193,6 +186,16 @@ private function _stopPlayer():void
 	_playButton.label = _PLAY_COMMAND;
 	_playTimer.stop();
 	_enableInteraction(true);
+}
+
+private function _doNewKMVFile(commandNode:XML):void
+{
+	if (_playTimer.running)
+		_playTimer.stop();
+	_commandExecutor.load(commandNode);
+	_initLogger(_systemEvent.selected,_userEvent.selected);
+	if (_playButton.label == _STOP_COMMAND)
+		_startPlayer();
 }
 
 private function _forwardCommand(oldTime:Number,newTime:Number):void

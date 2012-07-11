@@ -5,10 +5,19 @@
  *-------------------------------------------------*/
 
 package sg.edu.smu.ksketch.io
-{		
+{
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.display.MovieClip;
+	import flash.geom.Point;
+	import flash.utils.ByteArray;
+	
+	import mx.graphics.codec.PNGEncoder;
+	import mx.utils.Base64Encoder;
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
+	import sg.edu.smu.ksketch.model.KMovieClip;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.KStroke;
 	import sg.edu.smu.ksketch.model.geom.K2DVector;
@@ -69,6 +78,8 @@ package sg.edu.smu.ksketch.io
 				node = new XML(groupNode);
 			else if(object is KImage)
 				node = new XML(imageNode);
+			else if(object is KMovieClip)
+				node = new XML(imageNode);
 			else
 				throw new Error("unsupported kobject!");
 			_parseIDAttr(node, object.id);
@@ -100,7 +111,18 @@ package sg.edu.smu.ksketch.io
 				node = new XML(imageNode);
 				_setObjectAttr(node, image, showDefault);
 				_setImageAttr(node, image);
-			}			
+			}
+			else if(object is KMovieClip)
+			{
+				var movieClip:MovieClip = (object as KMovieClip).movieClip;
+				var point:Point = movieClip.movieClipPosition;
+				var toBeSavedImage:BitmapData = new BitmapData(movieClip.width, movieClip.height);
+				toBeSavedImage.draw(movieClip);
+				var tempImage:KImage = new KImage(0, point.x, point.y, object.createdTime);
+				node = new XML(imageNode);
+				_setObjectAttr(node, object, showDefault);
+				_setImageAttr(node, tempImage);
+			}
 			else
 				throw new Error("unsupported kobject!");
 			return node;

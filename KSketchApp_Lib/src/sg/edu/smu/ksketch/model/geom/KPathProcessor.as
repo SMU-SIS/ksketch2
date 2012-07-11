@@ -368,5 +368,13 @@ package sg.edu.smu.ksketch.model.geom
 			return points;
 		}						
 
+		/**
+		 * Finds the difference in the integral of two given paths up till a given timeLimit
+		 */
+		public static function compare2DPaths(given:K2DPath, correctPath:K2DPath, timeLimit:Number):Number
+		{
+			return 0;
+		}
+		
 	}
 }

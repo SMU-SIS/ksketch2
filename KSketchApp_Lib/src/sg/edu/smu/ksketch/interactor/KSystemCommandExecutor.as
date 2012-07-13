@@ -29,6 +29,8 @@ package sg.edu.smu.ksketch.interactor
 	
 	public class KSystemCommandExecutor extends KLoggerCommandExecutor
 	{
+		private static const _SYSTEM_COMMAND_PREFIX:String = "sys";
+
 		public function KSystemCommandExecutor(appState:KAppState, canvas:KCanvas, facade:KModelFacade)
 		{
 			super(appState, canvas, facade);
@@ -123,7 +125,24 @@ package sg.edu.smu.ksketch.interactor
 				_canvas.loadFile(xml);
 				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
 			}
-		}		
+		}
+
+		public function isSystemCommand(command:String):Boolean
+		{
+			return command.indexOf(_SYSTEM_COMMAND_PREFIX) == 0;
+		}
+		
+		public function isOperationCommand(command:String):Boolean
+		{
+			return isSystemCommand(command) && command != KLogger.SYSTEM_NEW && 
+				command != KLogger.SYSTEM_SAVE && command != KLogger.SYSTEM_COPY && 
+				command != KLogger.SYSTEM_CLEARCLIPBOARD;
+		}
+
+		public function isLoadCommand(command:String):Boolean
+		{
+			return command.indexOf(KLogger.SYSTEM_LOAD) == 0;
+		}
 
 		private function _image(commandNode:XML):void
 		{

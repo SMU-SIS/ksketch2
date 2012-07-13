@@ -8,6 +8,7 @@ import flash.events.TimerEvent;
 import flash.utils.Timer;
 
 import mx.collections.ArrayCollection;
+import mx.collections.IList;
 import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.graphics.SolidColor;
@@ -24,7 +25,6 @@ import spark.components.CheckBox;
 import spark.events.GridCaretEvent;
 import spark.primitives.Rect;
 
-private static const _SYSTEM_COMMAND_PREFIX:String = "sys";
 private static const _COMMAND_NAME:String = "name";
 private static const _PLAY_COMMAND:String = "Play";
 private static const _STOP_COMMAND:String = "Stop";
@@ -43,6 +43,7 @@ public function initLogger(canvas:KCanvas,commandExecutor:KSystemCommandExecutor
 	_playTimer = new Timer(100,0);
 	_playTimer.addEventListener(TimerEvent.TIMER,_updateTimeLine);
 	_initLogger(true,true);
+	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);	
 }
 
 private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
@@ -50,34 +51,52 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 	_canvas.resetCanvas();
 	_commandNodes = new Vector.<XML>();
 	_systemCommandNodes = new Vector.<XML>();
-	var list:Array = _getCommandArray(KLogger.logFile.children(),showSystemEvent,showUserEvent);
-	_enableInteraction(list.length > 0);
-	if (list.length > 0)
+	var commands:XMLList = KLogger.logFile.children();
+	_actionTable.dataProvider = new ArrayCollection();
+	for each (var command:XML in commands)
 	{
+		var systemCommand:Boolean = _commandExecutor.isSystemCommand(command.name());
+		if (systemCommand)
+			_systemCommandNodes.push(command);
+		if ((showSystemEvent && systemCommand) || (showUserEvent && !systemCommand))
+		{
+			_commandNodes.push(command);
+			var obj:Object = new Object();
+			obj[_COMMAND_NAME] = command.name();
+			obj[KLogger.LOG_TIME] = command.attribute(KLogger.LOG_TIME);
+			_actionTable.dataProvider.addItem(obj);
+			
+		}
+	}
+	if (_actionTable.dataProviderLength > 0)
+	{
+		var list:IList = _actionTable.dataProvider;
+		_enableInteraction(true);
 		_actionSlider.minimum = KLogger.timeOf(list[0][KLogger.LOG_TIME]).valueOf();
 		_actionSlider.maximum = KLogger.timeOf(list[list.length-1][KLogger.LOG_TIME]).valueOf();
 		_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
+		_actionTable.ensureCellIsVisible(_actionTable.dataProviderLength-1);
+		_actionTable.selectedIndex = 0;
 	}
 	for (var i:int=0; i < _systemCommandNodes.length; i++)
-		if (_isLoadCommand(_systemCommandNodes[i].name().toString()))
+	{
+		var node:XML = _systemCommandNodes[i];
+		if (_commandExecutor.isLoadCommand(node.name()))
 			break;
 		else
-			_commandExecutor.initCommand(_systemCommandNodes[i]);
+			_commandExecutor.initCommand(node);
+	}
 	_commandExecutor.undoAllCommand();
-	if (_commandNodes.length > 0 && _isSystemCommand(_commandNodes[0].name().toString()))
+	if (_commandNodes.length > 0 && 
+		_commandExecutor.isOperationCommand(_commandNodes[0].name().toString()))
 		_commandExecutor.redoSystemCommand();
-	_actionTable.removeEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
-	_actionTable.ensureCellIsVisible(list.length-1);
-	_actionTable.dataProvider = new ArrayCollection(list);
-	_actionTable.selectedIndex = 0;
-	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);	
 }
 
 private function _selectedRowChanged(e:GridCaretEvent):void
 {
 	_actionTable.selectedIndex = e.newRowIndex;
 	var node:XML = _commandNodes[e.newRowIndex];
-	if (_isLoadCommand(node.name().toString()))
+	if (_commandExecutor.isLoadCommand(node.name()))
 		return _loadKMVFile(node);
 	var oldTime:Number = e.oldRowIndex >= 0 ? _getLogTime(_commandNodes[e.oldRowIndex]) : 0;
 	var newTime:Number = e.newRowIndex >= 0 ? _getLogTime(_commandNodes[e.newRowIndex]) : 0;
@@ -233,8 +252,7 @@ private function _redoCommand(command:String):void
 {
 	if (command == KLogger.SYSTEM_UNDO)
 		_commandExecutor.undoSystemCommand();
-	else if (command != KLogger.SYSTEM_LOAD && command != KLogger.SYSTEM_SAVE && 
-		command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD)
+	else if (_commandExecutor.isOperationCommand(command))
 		_commandExecutor.redoSystemCommand();
 }
 
@@ -242,44 +260,13 @@ private function _undoCommand(command:String):void
 {
 	if (command == KLogger.SYSTEM_UNDO)
 		_commandExecutor.redoSystemCommand()
-	else if (command != KLogger.SYSTEM_LOAD && command != KLogger.SYSTEM_SAVE && 
-		command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD)
+	else if (_commandExecutor.isOperationCommand(command))
 		_commandExecutor.undoSystemCommand();
 }		
-
-private function _getCommandArray(commands:XMLList,systemEvent:Boolean,userEvent:Boolean):Array
-{
-	var list:Array = new Array();
-	for each (var command:XML in commands)
-	{
-		var systemCommand:Boolean = _isSystemCommand(command.name());
-		if (systemCommand)
-			_systemCommandNodes.push(command);
-		if ((systemEvent && systemCommand) || (userEvent && !systemCommand))
-		{
-			_commandNodes.push(command);
-			var obj:Object = new Object();
-			obj[_COMMAND_NAME] = command.name();
-			obj[KLogger.LOG_TIME] = command.attribute(KLogger.LOG_TIME);
-			list.push(obj);
-		}
-	}
-	return list;
-}
 
 private function _getLogTime(xml:XML):Number
 {
 	return KLogger.timeOf(xml.attribute(KLogger.LOG_TIME)).valueOf();
-}
-
-private function _isLoadCommand(command:String):Boolean
-{
-	return command.indexOf(KLogger.SYSTEM_LOAD) == 0;
-}
-
-private function _isSystemCommand(command:String):Boolean
-{
-	return command.indexOf(_SYSTEM_COMMAND_PREFIX) == 0;
 }
 
 private function _enableInteraction(b:Boolean):void
@@ -293,7 +280,7 @@ private function _enableInteraction(b:Boolean):void
 	_systemEvent.enabled = b;
 }
 
-private function _setMarker(markerBar:BorderContainer,data:Array,min:Number,max:Number):void
+private function _setMarker(markerBar:BorderContainer,data:IList,min:Number,max:Number):void
 {
 	markerBar.removeAllElements();
 	var range:Number = min < max ? max - min : 1;

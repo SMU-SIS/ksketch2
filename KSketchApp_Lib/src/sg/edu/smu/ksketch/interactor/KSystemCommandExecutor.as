@@ -15,6 +15,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.io.KFileLoader;
 	import sg.edu.smu.ksketch.io.KFileParser;
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KImage;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.K2DVector;
@@ -24,6 +25,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KAddOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
+	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
@@ -92,8 +94,11 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.SYSTEM_SETOBJECTNAME:
 					_setObjectName(commandNode);
 					break;
-				//	default:
-				//		super.initCommand(command,commandNode);
+				case KLogger.SYSTEM_RETIMEKEYS:
+					_retimeKeys(commandNode);
+					break;
+			//	default:
+			//		super.initCommand(command,commandNode);
 			}
 		}
 		
@@ -302,6 +307,14 @@ package sg.edu.smu.ksketch.interactor
 			_facade.setObjectName(_facade.getObjectByID(id),name);
 		}
 		
+		private function _retimeKeys(commandNode:XML):void
+		{
+			var keys:Vector.<IKeyFrame> = _getKeys(commandNode);
+			var retimeTos:Vector.<Number> = _getNumbers(commandNode,KLogger.KEYFRAME_RETIMETOS);
+			var appTime:Number = _getNumber(commandNode,KLogger.TIME);
+			_appState.addOperation(_facade.retimeKeys(keys,retimeTos,appTime));
+		}
+		
 		private function _beginTranslation(object:KObject, time:Number, type:int):void
 		{
 			_facade.beginTranslation(object,_appState.time = time,type);
@@ -373,6 +386,22 @@ package sg.edu.smu.ksketch.interactor
 			return _getNumber(commandNode,KLogger.TRANSITION_END_TIME);
 		}		
 		
+		private function _getKeys(commandNode:XML):Vector.<IKeyFrame>
+		{
+			var objectIDs:Vector.<int> = _getInts(commandNode,KLogger.OBJECTS);
+			var keyTypes:Vector.<int> = _getInts(commandNode,KLogger.KEYFRAME_TYPES);
+			var keyTimes:Vector.<Number> = _getNumbers(commandNode,KLogger.KEYFRAME_TIMES);
+			var keys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+			var key:IKeyFrame;
+			for (var i:int=0; i < objectIDs.length; i++)
+			{
+				key = _facade.getObjectByID(objectIDs[i]).getKeyframe(keyTypes[i],keyTimes[i]);
+				if (key != null)
+					keys.push(key);
+			}
+			return keys;
+		}
+		
 		private function _getObjects(commandNode:XML):KModelObjectList
 		{
 			var list:KModelObjectList = new KModelObjectList();
@@ -400,6 +429,11 @@ package sg.edu.smu.ksketch.interactor
 		private function _get3DPoints(commandNode:XML,attribute:String):Vector.<K3DVector>
 		{
 			return KFileParser.stringToK3DVectors(commandNode.attribute(attribute));
+		}
+		
+		private function _getNumbers(commandNode:XML,attribute:String):Vector.<Number>
+		{
+			return KFileParser.stringToNumbers(commandNode.attribute(attribute));
 		}
 		
 		private function _getNumber(commandNode:XML,attribute:String):Number

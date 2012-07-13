@@ -69,6 +69,17 @@ package sg.edu.smu.ksketch.logger
 		public static const SYSTEM_SETOBJECTNAME:String = "sys-setobjectname";
 		public static const SYSTEM_RETIMEKEYS:String = "sys-retimekeys";
 
+		public static const KEYFRAME_TIME:String = "time";
+		public static const KEYFRAME_TIMES:String = "times";
+		public static const KEYFRAME_TYPE:String = "type";
+		public static const KEYFRAME_TYPES:String = "types";
+		public static const KEYFRAME_TYPE_TRANSLATE:String = "translate";
+		public static const KEYFRAME_TYPE_ROTATE:String = "rotate";
+		public static const KEYFRAME_TYPE_SCALE:String = "scale";
+		public static const KEYFRAME_TYPE_ACTIVITY:String = "activity";
+		public static const KEYFRAME_TYPE_PARENT:String = "parent";
+		public static const KEYFRAME_RETIMETOS:String = "retime-tos";
+		
 		public static const PASTEINCLUDEMOTION:String = "paste-include-motion";
 
 		public static const GROUPING_MODE:String = "mode";
@@ -274,6 +285,13 @@ package sg.edu.smu.ksketch.logger
 		public static function logSetObjectName(objectID:int, name:String):void
 		{		
 			_logObject(_systemLog.setObjectName(objectID,name));
+		}
+		
+		public static function logRetimeKeys(objectIDs:Vector.<int>, 
+											 keyTypes:Vector.<int>,keyTimes:Vector.<Number>, 
+											 retimeTos:Vector.<Number>, appTime:Number):void
+		{		
+			_logObject(_systemLog.retimeKeys(objectIDs,keyTypes,keyTimes,retimeTos,appTime));
 		}
 		
 		public static function logObject(log:ILoggable):void

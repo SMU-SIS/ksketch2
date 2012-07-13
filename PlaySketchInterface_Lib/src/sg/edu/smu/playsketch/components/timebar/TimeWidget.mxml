@@ -14,6 +14,7 @@
 			import mx.utils.OnDemandEventDispatcher;
 			
 			import sg.edu.smu.ksketch.event.KModelEvent;
+			import sg.edu.smu.ksketch.logger.KLogger;
 			import sg.edu.smu.ksketch.model.IKeyFrame;
 			import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 			import sg.edu.smu.ksketch.model.KModel;
@@ -275,6 +276,11 @@
 				var freeMarker:Marker;
 				var retimeTo:Number;
 				var keyInfo:Object;
+				
+				var objectIDs:Vector.<int> = new Vector.<int>();
+				var keyTypes:Vector.<int> = new Vector.<int>();
+				var keyTimes:Vector.<Number> = new Vector.<Number>();
+				
 				for each(stackedMarker in _stackedMarkers)
 				{
 					retimeTo = _positionToTime(stackedMarker.x);
@@ -282,6 +288,9 @@
 					{
 						keysToRetime.push(keyInfo.key);
 						times.push(retimeTo);
+						objectIDs.push(keyInfo.objectID);
+						keyTypes.push(keyInfo.type);
+						keyTimes.push(keyInfo.key.endTime);
 					}
 				}
 				
@@ -294,9 +303,14 @@
 						{
 							keysToRetime.push(keyInfo.key);
 							times.push(retimeTo);
+							objectIDs.push(keyInfo.objectID);
+							keyTypes.push(keyInfo.type);
+							keyTimes.push(keyInfo.key.endTime);
 						}
 					}
 				}
+				
+				KLogger.logRetimeKeys(objectIDs,keyTypes,keyTimes,times,_appState.time);
 				
 				var retimeOp:IModelOperation = _facade.retimeKeys(keysToRetime, times, _appState.time);
 				_appState.addOperation(retimeOp);

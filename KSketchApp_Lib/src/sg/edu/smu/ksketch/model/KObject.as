@@ -25,6 +25,7 @@ package sg.edu.smu.ksketch.model
 	import sg.edu.smu.ksketch.model.implementations.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KGroupUtil;
+	import sg.edu.smu.ksketch.operation.KKeyTimeOperator;
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.utilities.ErrorMessage;
@@ -381,6 +382,28 @@ package sg.edu.smu.ksketch.model
 		public function shiftParentKeys(dt:Number):void
 		{
 			_parentFrameList.shiftKeys(0,dt);
+		}
+		
+		public function getKeyframe(keyType:int,time:Number):IKeyFrame
+		{
+			switch(keyType)
+			{
+				case KKeyTimeOperator.TRANSLATE_KEY:
+					return _referenceFrameList.getReferenceFrameAt(
+						KKeyTimeOperator.TRANSLATE_KEY).getAtOrAfter(time);
+				case KKeyTimeOperator.ROTATE_KEY:
+					return _referenceFrameList.getReferenceFrameAt(
+						KKeyTimeOperator.ROTATE_KEY).getAtOrAfter(time);
+				case KKeyTimeOperator.SCALE_KEY:
+					return _referenceFrameList.getReferenceFrameAt(
+						KKeyTimeOperator.SCALE_KEY).getAtOrAfter(time);
+				case KKeyTimeOperator.ACTIVITY_KEY:
+					return _activityFrameList.getAtTime(time);
+				case KKeyTimeOperator.PARENT_KEY:
+					return _parentFrameList.getAtOrAfter(time);
+				default:
+					return null;
+			}
 		}
 		
 		private function _getAtTime(time:Number, type:int):KSpatialKeyFrame

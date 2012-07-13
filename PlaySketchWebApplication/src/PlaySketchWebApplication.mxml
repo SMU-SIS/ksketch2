@@ -18,7 +18,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-			
+		
 			import flash.utils.Timer;
 			
 			import mx.controls.Alert;

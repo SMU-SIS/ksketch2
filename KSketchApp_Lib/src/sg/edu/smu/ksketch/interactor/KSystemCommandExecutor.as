@@ -136,7 +136,7 @@ package sg.edu.smu.ksketch.interactor
 		{
 			return isSystemCommand(command) && command != KLogger.SYSTEM_NEW && 
 				command != KLogger.SYSTEM_SAVE && command != KLogger.SYSTEM_COPY && 
-				command != KLogger.SYSTEM_CLEARCLIPBOARD;
+				command != KLogger.SYSTEM_CLEARCLIPBOARD && command != "sys-initialised";
 		}
 
 		public function isLoadCommand(command:String):Boolean

@@ -42,17 +42,18 @@ public function initLogger(canvas:KCanvas,commandExecutor:KSystemCommandExecutor
 	_commandExecutor = commandExecutor;
 	_playTimer = new Timer(100,0);
 	_playTimer.addEventListener(TimerEvent.TIMER,_updateTimeLine);
+	_actionTable.dataProvider = new ArrayCollection();
 	_initLogger(true,true);
 	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);	
 }
 
 private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 {
+	_actionTable.dataProvider.removeAll();
 	_canvas.resetCanvas();
 	_commandNodes = new Vector.<XML>();
 	_systemCommandNodes = new Vector.<XML>();
 	var commands:XMLList = KLogger.logFile.children();
-	_actionTable.dataProvider = new ArrayCollection();
 	for each (var command:XML in commands)
 	{
 		var systemCommand:Boolean = _commandExecutor.isSystemCommand(command.name());
@@ -65,7 +66,6 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 			obj[_COMMAND_NAME] = command.name();
 			obj[KLogger.LOG_TIME] = command.attribute(KLogger.LOG_TIME);
 			_actionTable.dataProvider.addItem(obj);
-			
 		}
 	}
 	if (_actionTable.dataProviderLength > 0)
@@ -77,38 +77,42 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 		_setMarker(_markerBar,list,_actionSlider.minimum,_actionSlider.maximum);
 		_actionTable.ensureCellIsVisible(_actionTable.dataProviderLength-1);
 		_actionTable.selectedIndex = 0;
+		for (var i:int=0; i < _systemCommandNodes.length; i++)
+		{
+			var node:XML = _systemCommandNodes[i];
+			if (_commandExecutor.isLoadCommand(node.name()))
+				break;
+			else
+				_commandExecutor.initCommand(node);
+		}
+		_commandExecutor.undoAllCommand();
+		if (_getLogTime(_systemCommandNodes[0]) <= _getLogTime(_commandNodes[0]) && 
+			_commandExecutor.isOperationCommand(_systemCommandNodes[0].name().toString()))
+			_commandExecutor.redoSystemCommand();
 	}
-	for (var i:int=0; i < _systemCommandNodes.length; i++)
-	{
-		var node:XML = _systemCommandNodes[i];
-		if (_commandExecutor.isLoadCommand(node.name()))
-			break;
-		else
-			_commandExecutor.initCommand(node);
-	}
-	_commandExecutor.undoAllCommand();
-	if (_commandNodes.length > 0 && 
-		_commandExecutor.isOperationCommand(_commandNodes[0].name().toString()))
-		_commandExecutor.redoSystemCommand();
 }
 
 private function _selectedRowChanged(e:GridCaretEvent):void
 {
-	_actionTable.selectedIndex = e.newRowIndex;
-	var node:XML = _commandNodes[e.newRowIndex];
-	if (_commandExecutor.isLoadCommand(node.name()))
-		return _loadKMVFile(node);
-	var oldTime:Number = e.oldRowIndex >= 0 ? _getLogTime(_commandNodes[e.oldRowIndex]) : 0;
-	var newTime:Number = e.newRowIndex >= 0 ? _getLogTime(_commandNodes[e.newRowIndex]) : 0;
-	if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
-		_forwardCommand(oldTime,newTime);
-	else if (e.oldRowIndex > e.newRowIndex)
-		_backwardCommand(oldTime,newTime);
-	if (_actionTable.selectedIndex >=0)
+	if (e.newRowIndex < 0)
+		_commandExecutor.undoAllCommand();
+	else
 	{
-		_actionTable.ensureCellIsVisible(_actionTable.selectedIndex);
-		_actionText.text = node.toXMLString();
-		_actionSlider.value = _getLogTime(node);
+		var node:XML = _commandNodes[e.newRowIndex];
+		if (_commandExecutor.isLoadCommand(node.name()))
+			return _loadKMVFile(node);
+		var oldTime:Number = e.oldRowIndex >= 0 ? _getLogTime(_commandNodes[e.oldRowIndex]) : 0;
+		var newTime:Number = e.newRowIndex >= 0 ? _getLogTime(_commandNodes[e.newRowIndex]) : 0;
+		if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
+			_forwardCommand(oldTime,newTime);
+		else if (e.oldRowIndex > e.newRowIndex)
+			_backwardCommand(oldTime,newTime);
+		if (_actionTable.selectedIndex >=0)
+		{
+			_actionTable.ensureCellIsVisible(_actionTable.selectedIndex);
+			_actionText.text = node.toXMLString();
+			_actionSlider.value = _getLogTime(node);
+		}
 	}
 }
 
@@ -253,7 +257,9 @@ private function _redoCommand(command:String):void
 	if (command == KLogger.SYSTEM_UNDO)
 		_commandExecutor.undoSystemCommand();
 	else if (_commandExecutor.isOperationCommand(command))
+	{
 		_commandExecutor.redoSystemCommand();
+	}
 }
 
 private function _undoCommand(command:String):void

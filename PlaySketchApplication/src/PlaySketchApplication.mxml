@@ -161,8 +161,10 @@
 					var stream:FileStream = new FileStream();
 					stream.open(file, FileMode.READ);
 					var data:String = stream.readMultiByte(file.size, File.systemCharset);
-					stream.close();	
-					main.appCanvas.loadFile(new XML(data));
+					stream.close();
+					var xml:XML = new XML(data);
+					main.appCanvas.loadFile(xml);
+					KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
 				}
 			}					
 		]]>

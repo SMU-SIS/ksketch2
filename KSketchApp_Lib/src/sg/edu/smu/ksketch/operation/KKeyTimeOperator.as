@@ -103,13 +103,15 @@ package sg.edu.smu.ksketch.operation
 					selected = false;
 					
 				//Find their key headers
-				translateKeys = currentObject.getSpatialKeyAtOfAfter(currentObject.createdTime,KTransformMgr.TRANSLATION_REF);
-				rotateKeys = currentObject.getSpatialKeyAtOfAfter(currentObject.createdTime,KTransformMgr.ROTATION_REF);
-				scaleKeys = currentObject.getSpatialKeyAtOfAfter(currentObject.createdTime,KTransformMgr.SCALE_REF);
-				activityKeys = currentObject.getActivityKey(currentObject.createdTime);
+				var createdTime:Number = currentObject.createdTime;
+				translateKeys = currentObject.getSpatialKeyAtOfAfter(createdTime,KTransformMgr.TRANSLATION_REF);
+				rotateKeys = currentObject.getSpatialKeyAtOfAfter(createdTime,KTransformMgr.ROTATION_REF);
+				scaleKeys = currentObject.getSpatialKeyAtOfAfter(createdTime,KTransformMgr.SCALE_REF);
+				activityKeys = currentObject.getActivityKey(createdTime);
 				
 				//Create key frame information OBJECTS using these key and available information.
 				keyFrameInfo = new Object();
+				keyFrameInfo.objectID = currentObject.id;
 				keyFrameInfo.key = translateKeys;
 				keyFrameInfo.selected = selected;
 				keyFrameInfo.type = TRANSLATE_KEY;
@@ -117,6 +119,7 @@ package sg.edu.smu.ksketch.operation
 				keyFrameInfoVector.push(keyFrameInfo);
 				
 				keyFrameInfo = new Object();
+				keyFrameInfo.objectID = currentObject.id;
 				keyFrameInfo.key = rotateKeys;
 				keyFrameInfo.selected = selected;
 				keyFrameInfo.type = ROTATE_KEY;
@@ -124,6 +127,7 @@ package sg.edu.smu.ksketch.operation
 				keyFrameInfoVector.push(keyFrameInfo);
 				
 				keyFrameInfo = new Object();
+				keyFrameInfo.objectID = currentObject.id;
 				keyFrameInfo.key = scaleKeys;
 				keyFrameInfo.selected = selected;
 				keyFrameInfo.type = SCALE_KEY;
@@ -131,6 +135,7 @@ package sg.edu.smu.ksketch.operation
 				keyFrameInfoVector.push(keyFrameInfo);
 				
 				keyFrameInfo = new Object();
+				keyFrameInfo.objectID = currentObject.id;
 				keyFrameInfo.key = activityKeys;
 				keyFrameInfo.selected = selected;
 				keyFrameInfo.type = ACTIVITY_KEY;
@@ -173,12 +178,15 @@ package sg.edu.smu.ksketch.operation
 				if(currentObject.key.next)
 				{
 					newKeyInfoObject = new Object();
+					newKeyInfoObject.objectID = currentObject.objectID;
 					newKeyInfoObject.key = currentObject.key.next;
+					newKeyInfoObject.time = newKeyInfoObject.key.endTime;
 					newKeyInfoObject.selected = currentObject.selected;
 					newKeyInfoObject.type = currentObject.type;
 					
 					if(newKeyInfoObject.key is ISpatialKeyframe)
-						newKeyInfoObject.hasTransform = (newKeyInfoObject.key as ISpatialKeyframe).hasTransform();
+						newKeyInfoObject.hasTransform = 
+							(newKeyInfoObject.key as ISpatialKeyframe).hasTransform();
 					else
 						newKeyInfoObject.hasTransform = false;
 					
@@ -196,7 +204,8 @@ package sg.edu.smu.ksketch.operation
 		/**
 		 * Clusters key frame information objects of similar time together
 		 */
-		private function clusterKeyFrameTime(sortedKeyInfo:Vector.<Object>, mergeThreshold:Number = 0):Vector.<Object>
+		private function clusterKeyFrameTime(sortedKeyInfo:Vector.<Object>, 
+											 mergeThreshold:Number = 0):Vector.<Object>
 		{
 			var clusteredFrameInfo:Vector.<Object> = new Vector.<Object>();
 			var currentCluster:Object;

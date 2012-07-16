@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="300" height="200">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.utils.UIDUtil;
+			
+			private static const _LOG_SERVER_URL:String = "http://coalescences.net/logtest/put";
+			
+			private function _buttonClicked(e:Event):void
+			{
+				_sendData(_LOG_SERVER_URL,_dataArea.text);
+			}
+			
+			private function _sendData(host:String, dataString:String):void
+			{
+				var boundary:String = "boundary=---------------------------" + UIDUtil.createUID();
+				var uploadRequest:URLRequest = new URLRequest(host); 
+				uploadRequest.contentType = "multipart/form-data; "+ boundary; 
+				uploadRequest.method = URLRequestMethod.POST; 
+				uploadRequest.data = dataString; 
+				var uploader:URLLoader = new URLLoader; 
+				uploader.dataFormat = URLLoaderDataFormat.TEXT; 
+				uploader.load(uploadRequest); 
+			}
+		]]>
+	</fx:Script>
+	<s:TextArea id="_dataArea" x="12" y="14" width="278" height="146"
+				text="&lt;commands&gt;test data&lt;/commands&gt;"/>
+	<s:Button x="220" y="169" label="Send" click="_buttonClicked(event)"/>
+</s:Application>

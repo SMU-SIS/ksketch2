@@ -185,6 +185,20 @@ package sg.edu.smu.ksketch.logger
 			return _node;
 		}
 
+		// -------------- Time Widget Functions --------------- //						
+		public function retimeKeys(objectIDs:Vector.<int>, 
+								   keyTypes:Vector.<int>,keyTimes:Vector.<Number>, 
+								   retimeTos:Vector.<Number>, appTime:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_RETIMEKEYS+"/>");
+			_node.@[KLogger.OBJECTS] = KFileParser.intsToString(objectIDs);
+			_node.@[KLogger.KEYFRAME_TYPES] = KFileParser.intsToString(keyTypes);
+			_node.@[KLogger.KEYFRAME_TIMES] = KFileParser.numbersToString(keyTimes);
+			_node.@[KLogger.KEYFRAME_RETIMETOS] = KFileParser.numbersToString(retimeTos);
+			_node.@[KLogger.TIME] = appTime;
+			return _node;
+		}
+
 		// ------------------ Private Function ------------------- //
 		private function _getEditNode(editType:String, objectIDs:Vector.<int>,time:Number):XML
 		{

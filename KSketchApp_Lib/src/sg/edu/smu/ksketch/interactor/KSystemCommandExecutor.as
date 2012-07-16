@@ -15,6 +15,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.io.KFileLoader;
 	import sg.edu.smu.ksketch.io.KFileParser;
 	import sg.edu.smu.ksketch.logger.KLogger;
+	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KImage;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.K2DVector;
@@ -24,11 +25,14 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KAddOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
+	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
 	public class KSystemCommandExecutor extends KLoggerCommandExecutor
 	{
+		private static const _SYSTEM_COMMAND_PREFIX:String = "sys";
+
 		public function KSystemCommandExecutor(appState:KAppState, canvas:KCanvas, facade:KModelFacade)
 		{
 			super(appState, canvas, facade);
@@ -90,8 +94,11 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.SYSTEM_SETOBJECTNAME:
 					_setObjectName(commandNode);
 					break;
-				//	default:
-				//		super.initCommand(command,commandNode);
+				case KLogger.SYSTEM_RETIMEKEYS:
+					_retimeKeys(commandNode);
+					break;
+			//	default:
+			//		super.initCommand(command,commandNode);
 			}
 		}
 		
@@ -113,18 +120,34 @@ package sg.edu.smu.ksketch.interactor
 
 		public function load(commandNode:XML):void
 		{
-			var loader:KFileLoader = new KFileLoader();
 			var filename:String = commandNode.attribute(KLogger.FILE_NAME);
-			var file:File = File.desktopDirectory.resolvePath(filename);
+			var location:String = commandNode.attribute(KLogger.FILE_LOCATION);
+			var file:File = KFileParser.resolvePath(filename,
+				location ? location : KLogger.FILE_DESKTOP_DIR);
 			if (file.exists)
 			{
-				var xml:XML = loader.loadKMVFromFile(file);
+				var xml:XML = new KFileLoader().loadKMVFromFile(file);
 				_canvas.loadFile(xml);
-				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS).toXMLString()));
+				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
 			}
-			else
-				loader.loadKMV();
-		}		
+		}
+
+		public function isSystemCommand(command:String):Boolean
+		{
+			return command.indexOf(_SYSTEM_COMMAND_PREFIX) == 0;
+		}
+		
+		public function isOperationCommand(command:String):Boolean
+		{
+			return isSystemCommand(command) && command != KLogger.SYSTEM_NEW && 
+				command != KLogger.SYSTEM_SAVE && command != KLogger.SYSTEM_COPY && 
+				command != KLogger.SYSTEM_CLEARCLIPBOARD && command != "sys-initialised";
+		}
+
+		public function isLoadCommand(command:String):Boolean
+		{
+			return command.indexOf(KLogger.SYSTEM_LOAD) == 0;
+		}
 
 		private function _image(commandNode:XML):void
 		{
@@ -284,6 +307,14 @@ package sg.edu.smu.ksketch.interactor
 			_facade.setObjectName(_facade.getObjectByID(id),name);
 		}
 		
+		private function _retimeKeys(commandNode:XML):void
+		{
+			var keys:Vector.<IKeyFrame> = _getKeys(commandNode);
+			var retimeTos:Vector.<Number> = _getNumbers(commandNode,KLogger.KEYFRAME_RETIMETOS);
+			var appTime:Number = _getNumber(commandNode,KLogger.TIME);
+			_appState.addOperation(_facade.retimeKeys(keys,retimeTos,appTime));
+		}
+		
 		private function _beginTranslation(object:KObject, time:Number, type:int):void
 		{
 			_facade.beginTranslation(object,_appState.time = time,type);
@@ -355,6 +386,22 @@ package sg.edu.smu.ksketch.interactor
 			return _getNumber(commandNode,KLogger.TRANSITION_END_TIME);
 		}		
 		
+		private function _getKeys(commandNode:XML):Vector.<IKeyFrame>
+		{
+			var objectIDs:Vector.<int> = _getInts(commandNode,KLogger.OBJECTS);
+			var keyTypes:Vector.<int> = _getInts(commandNode,KLogger.KEYFRAME_TYPES);
+			var keyTimes:Vector.<Number> = _getNumbers(commandNode,KLogger.KEYFRAME_TIMES);
+			var keys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+			var key:IKeyFrame;
+			for (var i:int=0; i < objectIDs.length; i++)
+			{
+				key = _facade.getObjectByID(objectIDs[i]).getKeyframe(keyTypes[i],keyTimes[i]);
+				if (key != null)
+					keys.push(key);
+			}
+			return keys;
+		}
+		
 		private function _getObjects(commandNode:XML):KModelObjectList
 		{
 			var list:KModelObjectList = new KModelObjectList();
@@ -382,6 +429,11 @@ package sg.edu.smu.ksketch.interactor
 		private function _get3DPoints(commandNode:XML,attribute:String):Vector.<K3DVector>
 		{
 			return KFileParser.stringToK3DVectors(commandNode.attribute(attribute));
+		}
+		
+		private function _getNumbers(commandNode:XML,attribute:String):Vector.<Number>
+		{
+			return KFileParser.stringToNumbers(commandNode.attribute(attribute));
 		}
 		
 		private function _getNumber(commandNode:XML,attribute:String):Number

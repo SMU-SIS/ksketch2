@@ -505,8 +505,7 @@ package sg.edu.smu.ksketch.interactor
 			{
 				var xml:XML = new XML(e.content);
 				_canvas.loadFile(xml);
-				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS).toXMLString()));
-				KLogger.log(KLogger.NEW_SESSION, KLogger.VERSION, _appState.appBuildNumber);
+				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
 			}
 		}
 		

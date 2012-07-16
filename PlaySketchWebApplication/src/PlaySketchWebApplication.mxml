@@ -18,7 +18,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-			
+		
 			import flash.utils.Timer;
 			
 			import mx.controls.Alert;
@@ -46,13 +46,15 @@
 					main.appState,main.appCanvas,main.facade);
 				KLogger.enabled = false;
 				var modelXML:XML = main.facade.saveFile();
+				var logXML:XML = KLogger.logFile;
 				main.appCanvas.resetCanvas();
 				canvas.initLogger(main.appCanvas,executor);	
 //				main.appState.userOption.showConfirmWindow = false;				
 				var close:Function = function (e:Event):void
 				{
-					KLogger.enabled = true;
 					main.appCanvas.loadFile(modelXML);
+					KLogger.setLogFile(logXML);
+					KLogger.enabled = true;
 //					canvas.initLogger(main.appCanvas,executor);	
 					(e.target as TitleWindow).removeEventListener(Event.CLOSE, close);
 					PopUpManager.removePopUp(e.target as TitleWindow);

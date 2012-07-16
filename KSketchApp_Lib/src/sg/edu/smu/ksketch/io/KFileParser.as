@@ -7,6 +7,7 @@
 package sg.edu.smu.ksketch.io
 {		
 	import flash.display.BitmapData;
+	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	
@@ -35,13 +36,14 @@ package sg.edu.smu.ksketch.io
 		
 		public static const KEYFRAME:String = "keyframe";
 		public static const KEYFRAME_LIST:String = "keyframeList";		
-		public static const KEYFRAME_TYPE:String = "type";
-		public static const KEYFRAME_TYPE_TRANSLATE:String = "translate";
-		public static const KEYFRAME_TYPE_ROTATE:String = "rotate";
-		public static const KEYFRAME_TYPE_SCALE:String = "scale";
-		public static const KEYFRAME_TYPE_ACTIVITY:String = "activity";
-		public static const KEYFRAME_TYPE_PARENT:String = "parent";
-		public static const KEYFRAME_TIME:String = "time";
+		public static const KEYFRAME_TYPE:String = KLogger.KEYFRAME_TYPE;
+		public static const KEYFRAME_TYPE_TRANSLATE:String = KLogger.KEYFRAME_TYPE_TRANSLATE;
+		public static const KEYFRAME_TYPE_ROTATE:String = KLogger.KEYFRAME_TYPE_ROTATE;
+		public static const KEYFRAME_TYPE_SCALE:String = KLogger.KEYFRAME_TYPE_SCALE;
+		public static const KEYFRAME_TYPE_ACTIVITY:String = KLogger.KEYFRAME_TYPE_ACTIVITY;
+		public static const KEYFRAME_TYPE_PARENT:String = KLogger.KEYFRAME_TYPE_PARENT;
+		
+		public static const KEYFRAME_TIME:String = KLogger.KEYFRAME_TIME;
 		public static const KEYFRAME_CENTER_X:String = KLogger.TRANSITION_CENTER_X;
 		public static const KEYFRAME_CENTER_Y:String = KLogger.TRANSITION_CENTER_Y;
 		public static const KEYFRAME_CURSOR_PATH:String = "cursorPath";
@@ -65,6 +67,22 @@ package sg.edu.smu.ksketch.io
 		public static const IMAGE_FORMAT:String = KLogger.IMAGE_FORMAT;	
 		public static const IMAGE_FORMAT_PNG:String = KLogger.IMAGE_FORMAT_PNG;
 		
+		public static function resolvePath(filename:String,location:String):File
+		{
+			switch(location)
+			{
+				case KLogger.FILE_USER_DIR:
+					return File.userDirectory.resolvePath(filename);
+				case KLogger.FILE_DESKTOP_DIR:
+					return File.desktopDirectory.resolvePath(filename);
+				case KLogger.FILE_DOCUMENT_DIR:
+					return File.documentsDirectory.resolvePath(filename);
+				case KLogger.FILE_STORAGE_DIR:
+					return File.applicationStorageDirectory.resolvePath(filename);
+			}
+			return new File(null);
+		}
+				
 		public static function pngToString(data:BitmapData):String
 		{	
 			var base64Enc:Base64Encoder = new Base64Encoder();  
@@ -96,6 +114,25 @@ package sg.edu.smu.ksketch.io
 			for (var i:int=0; i < intArrays.length; i++)
 				ints.push(int(intArrays[i][0]));
 			return ints;
+		}
+		
+		public static function numbersToString(numbers:Vector.<Number>):String
+		{
+			var numbersString:String = "";
+			if(numbers.length > 0)
+				numbersString = String(numbers[0]);
+			for(var i:int = 1; i < numbers.length; i++)
+				numbersString += " "+numbers[i];
+			return numbersString;
+		}
+		
+		public static function stringToNumbers(numbersString:String):Vector.<Number>
+		{
+			var numbers:Vector.<Number> = new Vector.<Number>();
+			var numberArrays:Vector.<Array> = _stringToVectors(numbersString);
+			for (var i:int=0; i < numberArrays.length; i++)
+				numbers.push(int(numberArrays[i][0]));
+			return numbers;
 		}
 		
 		public static function pointsToString(points:Vector.<Point>):String

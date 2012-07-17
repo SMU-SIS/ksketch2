@@ -117,7 +117,46 @@ package sg.edu.smu.ksketch.interactor
 		{
 			_appState.redo();
 		}
-
+		
+		public function redoPlayerCommand(commandNode:XML):void
+		{
+			_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
+			var command:String = commandNode.name();
+			if (command == KLogger.SYSTEM_PLAY)
+				_appState.startPlaying();
+			else if (command == KLogger.SYSTEM_PAUSE)
+				_appState.pause();
+			else if (command == KLogger.SYSTEM_REWIND)
+				_first();
+			else if (command == KLogger.SYSTEM_PREVFRAME)
+				_previous()
+			else if (command == KLogger.SYSTEM_NEXTFRAME)
+				_next();
+			else if (command == KLogger.SYSTEM_SLIDERDRAG)
+				_appState.time = _getNumber(commandNode,KLogger.TIME_TO);
+			else if (command == KLogger.SYSTEM_GUTTERTAP)
+				_appState.time = _getNumber(commandNode,KLogger.TIME_TO);
+		}
+		
+		public function undoPlayerCommand(commandNode:XML):void
+		{
+			var command:String = commandNode.name();
+			if (command == KLogger.SYSTEM_PLAY)
+				_appState.pause();
+			else if (command == KLogger.SYSTEM_PAUSE)
+				_appState.startPlaying();
+			else if (command == KLogger.SYSTEM_REWIND)
+				_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
+			else if (command == KLogger.SYSTEM_PREVFRAME)
+				_next()
+			else if (command == KLogger.SYSTEM_NEXTFRAME)
+				_previous();
+			else if (command == KLogger.SYSTEM_SLIDERDRAG)
+				_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
+			else if (command == KLogger.SYSTEM_GUTTERTAP)
+				_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
+		}
+		
 		public function load(commandNode:XML):void
 		{
 			var filename:String = commandNode.attribute(KLogger.FILE_NAME);
@@ -139,11 +178,20 @@ package sg.edu.smu.ksketch.interactor
 		
 		public function isOperationCommand(command:String):Boolean
 		{
-			return isSystemCommand(command) && command != KLogger.SYSTEM_NEW && 
-				command != KLogger.SYSTEM_SAVE && command != KLogger.SYSTEM_COPY && 
-				command != KLogger.SYSTEM_CLEARCLIPBOARD && command != "sys-initialised";
+			return isSystemCommand(command) && !isPlayerCommand(command) && 
+				command != KLogger.SYSTEM_NEW && command != KLogger.SYSTEM_SAVE && 
+				command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD && 
+				command != "sys-initialised";
 		}
-
+		
+		public function isPlayerCommand(command:String):Boolean
+		{
+			return command == KLogger.SYSTEM_PLAY || command == KLogger.SYSTEM_PAUSE || 
+				command == KLogger.SYSTEM_REWIND || command == KLogger.SYSTEM_PREVFRAME || 
+				command == KLogger.SYSTEM_NEXTFRAME || command == KLogger.SYSTEM_SLIDERDRAG || 
+				command == KLogger.SYSTEM_GUTTERTAP;
+		}
+		
 		public function isLoadCommand(command:String):Boolean
 		{
 			return command.indexOf(KLogger.SYSTEM_LOAD) == 0;

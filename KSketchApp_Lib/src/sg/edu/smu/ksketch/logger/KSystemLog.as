@@ -199,6 +199,52 @@ package sg.edu.smu.ksketch.logger
 			return _node;
 		}
 
+		// -------------- Player Functions --------------- //						
+		public function play(startTime:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_PLAY+"/>");
+			_node.@[KLogger.TIME_FROM] = startTime;
+			return _node;
+		}
+		public function pause(pauseTime:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_PAUSE+"/>");
+			_node.@[KLogger.TIME_FROM] = pauseTime;
+			return _node;
+		}
+		public function rewind(fromTime:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_REWIND+"/>");
+			_node.@[KLogger.TIME_FROM] = fromTime;
+			return _node;
+		}
+		public function prevFrame(fromTime:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_PREVFRAME+"/>");
+			_node.@[KLogger.TIME_FROM] = fromTime;
+			return _node;
+		}
+		public function nextFrame(fromTime:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_NEXTFRAME+"/>");
+			_node.@[KLogger.TIME_FROM] = fromTime;
+			return _node;
+		}
+		public function gutterTab(fromTime:Number,toTime:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_GUTTERTAP+"/>");
+			_node.@[KLogger.TIME_FROM] = fromTime;
+			_node.@[KLogger.TIME_TO] = toTime;
+			return _node;
+		}
+		public function sliderDrag(fromTime:Number,toTime:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_SLIDERDRAG+"/>");
+			_node.@[KLogger.TIME_FROM] = fromTime;
+			_node.@[KLogger.TIME_TO] = toTime;
+			return _node;
+		}
+		
 		// ------------------ Private Function ------------------- //
 		private function _getEditNode(editType:String, objectIDs:Vector.<int>,time:Number):XML
 		{

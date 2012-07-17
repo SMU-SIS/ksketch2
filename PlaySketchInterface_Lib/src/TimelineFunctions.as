@@ -139,8 +139,10 @@ public function timeSlider_thumbReleaseHandler(event:TrackBaseEvent):void
 	if(_startKSKTimeValue != keyIndexSlider.value)
 	{
 		KLogger.log(KLogger.CHANGE_TIME, KLogger.CHANGE_TIME_ACTION, KLogger.CHANGE_TIME_DRAG,
-			KLogger.CHANGE_TIME_FROM, KAppState.kskTime(_startKSKTimeValue), 
-			KLogger.CHANGE_TIME_TO, KAppState.kskTime(keyIndexSlider.value));
+			KLogger.TIME_FROM, KAppState.kskTime(_startKSKTimeValue), 
+			KLogger.TIME_TO, KAppState.kskTime(keyIndexSlider.value));
+		
+		KLogger.logSliderDrag(_startKSKTimeValue,keyIndexSlider.value);
 	}
 	_isKSKTimeThumbDragging = false;
 	_startKSKTimeValue = -1;

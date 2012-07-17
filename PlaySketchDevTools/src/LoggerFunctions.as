@@ -238,7 +238,7 @@ private function _forwardCommand(oldTime:Number,newTime:Number):void
 	{
 		var ti:Number = _getLogTime(_systemCommandNodes[i]); 
 		if (oldTime < ti && ti <= newTime)
-			_redoCommand(_systemCommandNodes[i].name().toString());
+			_redoCommand(_systemCommandNodes[i]);
 	}
 }
 
@@ -248,26 +248,30 @@ private function _backwardCommand(oldTime:Number,newTime:Number):void
 	{
 		var ti:Number = _getLogTime(_systemCommandNodes[i]); 
 		if (newTime < ti &&	ti <= oldTime)
-			_undoCommand(_systemCommandNodes[i].name().toString());
+			_undoCommand(_systemCommandNodes[i]);
 	}
 }
 
-private function _redoCommand(command:String):void
+private function _redoCommand(commandNode:XML):void
 {
+	var command:String = commandNode.name();
 	if (command == KLogger.SYSTEM_UNDO)
 		_commandExecutor.undoSystemCommand();
 	else if (_commandExecutor.isOperationCommand(command))
-	{
 		_commandExecutor.redoSystemCommand();
-	}
+	else if (_commandExecutor.isPlayerCommand(command))
+		_commandExecutor.redoPlayerCommand(commandNode);
 }
 
-private function _undoCommand(command:String):void
+private function _undoCommand(commandNode:XML):void
 {
+	var command:String = commandNode.name();
 	if (command == KLogger.SYSTEM_UNDO)
 		_commandExecutor.redoSystemCommand()
 	else if (_commandExecutor.isOperationCommand(command))
 		_commandExecutor.undoSystemCommand();
+	else if (_commandExecutor.isPlayerCommand(command))
+		_commandExecutor.undoPlayerCommand(commandNode);
 }		
 
 private function _getLogTime(xml:XML):Number

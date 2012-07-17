@@ -44,7 +44,7 @@ package sg.edu.smu.ksketch.interactor
 						KCommandEvent.EVENT_TIMEBAR_CHANGED,KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
 					break;
 				case KLogger.CHANGE_TIME:
-					_appState.time = Number(commandNode.attribute(KLogger.CHANGE_TIME_TO));
+					_appState.time = Number(commandNode.attribute(KLogger.TIME_TO));
 					break;
 				case KPlaySketchLogger.INTERACTION_DRAG_CENTER:
 					_showInteraction(KPlaySketchLogger.INTERACTION_DRAG_CENTER,commandNode);
@@ -87,7 +87,7 @@ package sg.edu.smu.ksketch.interactor
 						KCommandEvent.EVENT_TIMEBAR_CHANGED,KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
 					break;
 				case KLogger.CHANGE_TIME:
-					_appState.time = Number(commandNode.attribute(KLogger.CHANGE_TIME_TO));
+					_appState.time = Number(commandNode.attribute(KLogger.TIME_TO));
 					break;
 				case KPlaySketchLogger.INTERACTION_DRAG_CENTER:
 					_tapCenter();
@@ -134,7 +134,7 @@ package sg.edu.smu.ksketch.interactor
 						KCommandEvent.EVENT_TIMEBAR_CHANGED,KPlaySketchLogger.BTN_TOGGLE_TIMEBAR_EXPAND));
 					break;
 				case KLogger.CHANGE_TIME:
-					_appState.time = Number(commandNode.attribute(KLogger.CHANGE_TIME_FROM));
+					_appState.time = Number(commandNode.attribute(KLogger.TIME_FROM));
 					break;
 				case KPlaySketchLogger.INTERACTION_GESTURE:
 					_undoGesture(commandNode);
@@ -202,7 +202,7 @@ package sg.edu.smu.ksketch.interactor
 					_configurePen(commandNode.attribute(KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE));
 					break;
 				case KPlaySketchLogger.BTN_FIRST:
-					_appState.time = commandNode.attribute(KLogger.CHANGE_TIME_FROM);
+					_appState.time = commandNode.attribute(KLogger.TIME_FROM);
 					break;
 				case KPlaySketchLogger.BTN_PREVIOUS:
 					_next();

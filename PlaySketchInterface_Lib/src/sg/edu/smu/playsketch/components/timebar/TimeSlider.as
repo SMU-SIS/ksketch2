@@ -99,8 +99,11 @@ package sg.edu.smu.playsketch.components.timebar
 					toTime = _appState.time;
 			}
 			_appState.time = toTime;
+			
 			KLogger.log(KLogger.CHANGE_TIME, KLogger.CHANGE_TIME_ACTION, KLogger.CHANGE_TIME_TAP,
-				KLogger.CHANGE_TIME_FROM, currentTime, KLogger.CHANGE_TIME_TO, toTime);
+				KLogger.TIME_FROM, currentTime, KLogger.TIME_TO, toTime);
+
+			KLogger.logGutterTab(currentTime,toTime);
 		}
 	}
 }

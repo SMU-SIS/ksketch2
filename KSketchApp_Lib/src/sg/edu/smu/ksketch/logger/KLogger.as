@@ -43,10 +43,10 @@ package sg.edu.smu.ksketch.logger
 		public static const CHANGE_TIME_ACTION:String = "changetime-action";
 		public static const CHANGE_TIME_TAP:String = "changetime-tap";
 		public static const CHANGE_TIME_DRAG:String = "changetime-drag";
-		public static const CHANGE_TIME_FROM:String = "fromtime";
-		public static const CHANGE_TIME_TO:String = "totime";
+		public static const TIME_FROM:String = "fromtime";
+		public static const TIME_TO:String = "totime";
 		
-		// System command
+		// System commands
 		public static const SYSTEM_UNDO:String = "sys-undo";
 		public static const SYSTEM_REDO:String = "sys-redo";
 		public static const SYSTEM_IMAGE:String = "sys-image";
@@ -68,6 +68,13 @@ package sg.edu.smu.ksketch.logger
 		public static const SYSTEM_SAVE:String = "sys-save";
 		public static const SYSTEM_SETOBJECTNAME:String = "sys-setobjectname";
 		public static const SYSTEM_RETIMEKEYS:String = "sys-retimekeys";
+		public static const SYSTEM_PLAY:String = "sys-play";
+		public static const SYSTEM_PAUSE:String = "sys-pause";
+		public static const SYSTEM_REWIND:String = "sys-rewind";
+		public static const SYSTEM_PREVFRAME:String = "sys-prevframe";
+		public static const SYSTEM_NEXTFRAME:String = "sys-nextframe";
+		public static const SYSTEM_GUTTERTAP:String = "sys-guttertap";
+		public static const SYSTEM_SLIDERDRAG:String = "sys-sliderdrag";
 
 		public static const KEYFRAME_TIME:String = "time";
 		public static const KEYFRAME_TIMES:String = "times";
@@ -292,6 +299,41 @@ package sg.edu.smu.ksketch.logger
 											 retimeTos:Vector.<Number>, appTime:Number):void
 		{		
 			_logObject(_systemLog.retimeKeys(objectIDs,keyTypes,keyTimes,retimeTos,appTime));
+		}
+		
+		public static function logPlay(startTime:Number):void
+		{		
+			_logObject(_systemLog.play(startTime));
+		}
+		
+		public static function logPause(pauseTime:Number):void
+		{		
+			_logObject(_systemLog.pause(pauseTime));
+		}
+		
+		public static function logRewind(fromTime:Number):void
+		{		
+			_logObject(_systemLog.rewind(fromTime));
+		}
+		
+		public static function logPrevFrame(fromTime:Number):void
+		{		
+			_logObject(_systemLog.prevFrame(fromTime));
+		}
+		
+		public static function logNextFrame(fromTime:Number):void
+		{		
+			_logObject(_systemLog.nextFrame(fromTime));
+		}
+		
+		public static function logGutterTab(fromTime:Number,toTime:Number):void
+		{		
+			_logObject(_systemLog.gutterTab(fromTime,toTime));
+		}
+		
+		public static function logSliderDrag(fromTime:Number,toTime:Number):void
+		{		
+			_logObject(_systemLog.sliderDrag(fromTime,toTime));
 		}
 		
 		public static function logObject(log:ILoggable):void

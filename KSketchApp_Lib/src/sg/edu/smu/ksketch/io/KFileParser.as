@@ -23,6 +23,7 @@ package sg.edu.smu.ksketch.io
 	
 	public class KFileParser
 	{
+		public static const KMV_EXTENSION:String = "kmv";
 		public static const ROOT:String = "kmv";
 		public static const ID:String = "id";
 		public static const PARENT_ID:String = "id";

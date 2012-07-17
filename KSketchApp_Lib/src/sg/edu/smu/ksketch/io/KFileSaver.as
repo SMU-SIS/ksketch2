@@ -12,6 +12,9 @@ package sg.edu.smu.ksketch.io
 	import flash.filesystem.FileStream;
 	import flash.net.FileReference;
 	
+	import mx.controls.Alert;
+	import mx.events.CloseEvent;
+	
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 		
@@ -24,22 +27,25 @@ package sg.edu.smu.ksketch.io
 		public function save(content:XML, name:String, completeListener:Function=null):void
 		{
 			var fileRef:FileReference = _isRunningInAIR() ? new File() : new FileReference();
-			var selected:Function = function (e:Event):void
+			var extensionChecker:Function = function (fileEvent:Event):void
 			{
-				var lastNode:XML;
-				var list:XMLList = content.elements(KLogger.COMMANDS).elements(
-					KPlaySketchLogger.BTN_SAVE);
-				list.@filename = (e.target as FileReference).name;
-		//		trace(list.attribute("filename"));
-		//		trace(content.elements(KLogger.COMMANDS).elements(KLogger.BTN_SAVE).toXMLString());
-				
+				if((fileEvent.target as FileReference).extension != KFileParser.KMV_EXTENSION)
+					Alert.show("The filename you chose does not end in '.kmv'. " +
+						"You must add this extension yourself.\n" +
+						"Would you like to choose another filename?",
+						"Warning", Alert.YES|Alert.NO, null,
+						function (closeEvent:CloseEvent):void
+						{
+							if (closeEvent.detail == Alert.YES)
+								save(content,(fileEvent.target as FileReference).name);
+						});
 			};
 			if (completeListener != null)
 				fileRef.addEventListener(Event.COMPLETE, completeListener);
-			fileRef.addEventListener(Event.SELECT, selected);
+			fileRef.addEventListener(Event.COMPLETE ,extensionChecker);
 			fileRef.save(content, name);
 		}
-		
+
 		public function saveToDir(content:XML, folder:String, name:String):void
 		{
 			var dir:File = File.applicationStorageDirectory.resolvePath(folder);

@@ -131,7 +131,7 @@ package sg.edu.smu.ksketch.interactor
 					_configurePen(KPenMenu.LABEL_BLUE);
 					break;
 				case KPlaySketchLogger.BTN_FIRST:
-					KLogger.log(command,KLogger.CHANGE_TIME_FROM,_appState.time);
+					KLogger.log(command,KLogger.TIME_FROM,_appState.time);
 					_first();
 					break;
 				case KPlaySketchLogger.BTN_PREVIOUS:
@@ -143,7 +143,7 @@ package sg.edu.smu.ksketch.interactor
 					_next();
 					break;
 				case KPlaySketchLogger.BTN_PLAY:
-					KLogger.log(command,KLogger.CHANGE_TIME_FROM,_appState.time);
+					KLogger.log(command,KLogger.TIME_FROM,_appState.time);
 					_play();
 					break;
 				case KPlaySketchLogger.BTN_TOGGLE_VISIBILITY:
@@ -306,18 +306,25 @@ package sg.edu.smu.ksketch.interactor
 		
 		protected function _redo():void
 		{
-			KLogger.logRedo();
-			_appState.redo();
+			if (_appState.redoEnabled)
+			{
+				KLogger.logRedo();
+				_appState.redo();
+			}
 		}		
 		
 		protected function _undo():void
 		{
-			KLogger.logUndo();
-			_appState.undo();
+			if (_appState.undoEnabled)
+			{
+				KLogger.logUndo();
+				_appState.undo();
+			}
 		}		
 		
 		protected function _first():void
 		{
+			KLogger.logRewind(_appState.time);
 			if(_appState.isAnimating)
 				_appState.timerReset(0);
 			else
@@ -326,6 +333,7 @@ package sg.edu.smu.ksketch.interactor
 		
 		protected function _previous():void
 		{
+			KLogger.logPrevFrame(_appState.time);
 			if(_appState.time == 0)
 				return;
 			_moveFrame(KAppState.previousKey(_appState.time));
@@ -333,6 +341,7 @@ package sg.edu.smu.ksketch.interactor
 		
 		protected function _next():void
 		{
+			KLogger.logNextFrame(_appState.time);
 			if(_appState.time == _appState.maxTime)
 				return;
 			_moveFrame(KAppState.nextKey(_appState.time));
@@ -341,9 +350,15 @@ package sg.edu.smu.ksketch.interactor
 		protected function _play():void
 		{
 			if(!_appState.isAnimating)
+			{
+				KLogger.logPlay(_appState.time);
 				_appState.startPlaying();
+			}
 			else
+			{
+				KLogger.logPause(_appState.time);
 				_appState.pause();
+			}
 		}
 		
 		protected function _configurePen(cursor_name:String):void

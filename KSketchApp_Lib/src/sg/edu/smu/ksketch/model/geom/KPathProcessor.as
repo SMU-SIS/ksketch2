@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch.model.geom
 
 	public class KPathProcessor
 	{	
+		private static const NO_VALUE:K2DVector = new K2DVector(0,0);
 		private static const QUARTER_CIRCLE:Number = 0.785398163;
 		private static const FULL_CIRCLE:Number = 6.28318531;
 		private static const PATH_RADIUS:Number = 100;
@@ -369,11 +370,57 @@ package sg.edu.smu.ksketch.model.geom
 		}						
 
 		/**
-		 * Finds the difference in the integral of two given paths up till a given timeLimit
+		 * Compares two vectors in the Value-T domain.
+		 * Vectors must have points in the (value, time) format.
+		 * time is computed in milliseconds.
+		 * Default timeStep is 62.5.
+		 * Smaller time steps may give more accurate results, at the cost of more iterations.
 		 */
-		public static function compare2DPaths(given:K2DPath, correctPath:K2DPath, timeLimit:Number):Number
+		public static function compare2DPaths(toCompare:Vector.<K2DVector>, pathTemplate:Vector.<K2DVector>, timeStep:Number = 62.5):Number
 		{
-			return 0;
+			var i:int = 0;
+			var error:Number = 0;
+			var length:int = pathTemplate.length;
+			
+			var targetPath:K2DPath = new K2DPath();
+			targetPath.points = toCompare;
+			var templatePath:K2DPath = new K2DPath();
+			templatePath.points = pathTemplate;
+			var templatePoint:K2DVector;
+			var targetPoint:K2DVector;
+			
+			
+			var targetDuration:Number = toCompare[toCompare.length-1].y;
+			var templateDuration:Number = pathTemplate[pathTemplate.length - 1].y
+			var maxDuration:Number = Math.max(targetDuration, templateDuration);
+			
+			var currentTime:Number = 0;
+			var templateProportion:Number = 0;
+			var targetProportion:Number = 0;
+			
+			while(currentTime <= maxDuration)
+			{
+				templateProportion = currentTime / templateDuration;
+				
+				if(templateProportion <= 1)
+					templatePoint = templatePath.getPoint(templateProportion);
+				else
+					templatePoint = NO_VALUE;
+				
+				targetProportion = currentTime / targetDuration;
+				
+				if(targetProportion <= 1)
+					targetPoint = targetPath.getPoint(targetProportion);
+				else
+					targetPoint = NO_VALUE;
+	
+				trace(templatePoint.x, targetPoint.x);
+				error += Math.abs(templatePoint.x - targetPoint.x);
+				
+				currentTime += timeStep;
+			}
+			
+			return error;
 		}
 		
 	}

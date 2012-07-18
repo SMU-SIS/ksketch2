@@ -43,12 +43,6 @@ public function initLogger(canvas:KCanvas,commandExecutor:KSystemCommandExecutor
 	_playTimer = new Timer(100,0);
 	_playTimer.addEventListener(TimerEvent.TIMER,_updateTimeLine);
 	_actionTable.dataProvider = new ArrayCollection();
-	_initLogger(true,true);
-	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);	
-}
-
-private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
-{
 	_actionTable.dataProvider.removeAll();
 	_canvas.resetCanvas();
 	_commandNodes = new Vector.<XML>();
@@ -56,17 +50,13 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 	var commands:XMLList = KLogger.logFile.children();
 	for each (var command:XML in commands)
 	{
-		var systemCommand:Boolean = KSystemCommandExecutor.isSystemCommand(command.name());
-		if (systemCommand)
+		var obj:Object = new Object();
+		obj[_COMMAND_NAME] = command.name();
+		obj[KLogger.LOG_TIME] = command.attribute(KLogger.LOG_TIME);
+		_actionTable.dataProvider.addItem(obj);
+		if (KSystemCommandExecutor.isSystemCommand(command.name()))
 			_systemCommandNodes.push(command);
-		if ((showSystemEvent && systemCommand) || (showUserEvent && !systemCommand))
-		{
-			_commandNodes.push(command);
-			var obj:Object = new Object();
-			obj[_COMMAND_NAME] = command.name();
-			obj[KLogger.LOG_TIME] = command.attribute(KLogger.LOG_TIME);
-			_actionTable.dataProvider.addItem(obj);
-		}
+		_commandNodes.push(command);
 	}
 	if (_actionTable.dataProviderLength > 0)
 	{
@@ -90,6 +80,7 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 			KSystemCommandExecutor.isOperationCommand(_systemCommandNodes[0].name().toString()))
 			_commandExecutor.redoSystemCommand();
 	}
+	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
 }
 
 private function _selectedRowChanged(e:GridCaretEvent):void
@@ -116,11 +107,6 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	}
 }
 
-private function _filterEvent(e:Event):void
-{
-	_initLogger(_systemEvent.selected,_userEvent.selected);
-}		
-
 private function _firstCommand(e:MouseEvent):void
 {
 	_actionTable.selectedIndex = 0;
@@ -137,6 +123,12 @@ private function _prevCommand(e:MouseEvent):void
 private function _nextCommand(e:MouseEvent):void
 {
 	if (_actionTable.selectedIndex < _actionTable.dataProviderLength-1)
+		_actionTable.selectedIndex++;
+	
+	while (_systemEventCheckBox.selected &&
+		_actionTable.selectedIndex < _actionTable.dataProviderLength-1 && 
+		!KSystemCommandExecutor.isSystemCommand(
+			_commandNodes[_actionTable.selectedIndex].name().toString()))
 		_actionTable.selectedIndex++;
 }
 
@@ -194,16 +186,14 @@ private function _loadKMVFile(commandNode:XML):void
 	if (_fileExist(filename,location))
 	{
 		_commandExecutor.load(commandNode);
-		_initLogger(_systemEvent.selected,_userEvent.selected);
 		if (_playButton.label == _STOP_COMMAND)
 			_startPlayer();
 	}
 	else
 	{
 		_enableInteraction(true);
-		Alert.show("Unable to find the file " + filename + 
-			" in location " + location + "\n\nReload manually?",
-			"File Not Found",Alert.YES|Alert.NO,this,_reloadFile);
+		Alert.show("Unable to find the file " + filename + " in location " + location + 
+			"\n\nReload manually?","File Not Found",Alert.YES|Alert.NO,this,_reloadFile);
 	}
 }
 
@@ -221,7 +211,6 @@ private function _kmvLoaded(e:KFileLoadedEvent):void
 {
 	var kmv:XML = new XML(e.content);
 	KLogger.setLogFile(new XML(kmv.child(KLogger.COMMANDS)));
-	_initLogger(_systemEvent.selected,_userEvent.selected);
 	if (_playButton.label == _STOP_COMMAND)
 		_startPlayer();
 }
@@ -279,6 +268,12 @@ private function _getLogTime(xml:XML):Number
 	return KLogger.timeOf(xml.attribute(KLogger.LOG_TIME)).valueOf();
 }
 
+private function _highlightSystemEvent(b:Boolean):void
+{
+	KSystemCommandExecutor.showSystemEvent = b;
+	(_actionTable.dataProvider as ArrayCollection).refresh();
+}
+
 private function _enableInteraction(b:Boolean):void
 {
 	_actionTable.enabled = b;
@@ -286,8 +281,6 @@ private function _enableInteraction(b:Boolean):void
 	_prevButton.enabled = b;
 	_nextButton.enabled = b;
 	_lastButton.enabled = b;
-	_userEvent.enabled = b;
-	_systemEvent.enabled = b;
 }
 
 private function _setMarker(markerBar:BorderContainer,data:IList,min:Number,max:Number):void

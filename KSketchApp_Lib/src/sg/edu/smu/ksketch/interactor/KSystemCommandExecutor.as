@@ -32,6 +32,8 @@ package sg.edu.smu.ksketch.interactor
 	public class KSystemCommandExecutor extends KLoggerCommandExecutor
 	{
 		private static const _SYSTEM_COMMAND_PREFIX:String = "sys";
+		
+		public static var showSystemEvent:Boolean = false;
 
 		public function KSystemCommandExecutor(appState:KAppState, canvas:KCanvas, facade:KModelFacade)
 		{

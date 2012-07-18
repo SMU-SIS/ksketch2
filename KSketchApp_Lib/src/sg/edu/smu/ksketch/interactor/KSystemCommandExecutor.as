@@ -38,6 +38,31 @@ package sg.edu.smu.ksketch.interactor
 			super(appState, canvas, facade);
 		}
 		
+		public static function isSystemCommand(command:String):Boolean
+		{
+			return command.indexOf(_SYSTEM_COMMAND_PREFIX) == 0;
+		}
+		
+		public static function isOperationCommand(command:String):Boolean
+		{
+			return isSystemCommand(command) && !isPlayerCommand(command) && 
+				command != KLogger.SYSTEM_NEW && command != KLogger.SYSTEM_SAVE && 
+				command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD;
+		}
+		
+		public static function isPlayerCommand(command:String):Boolean
+		{
+			return command == KLogger.SYSTEM_PLAY || command == KLogger.SYSTEM_PAUSE || 
+				command == KLogger.SYSTEM_REWIND || command == KLogger.SYSTEM_PREVFRAME || 
+				command == KLogger.SYSTEM_NEXTFRAME || command == KLogger.SYSTEM_SLIDERDRAG || 
+				command == KLogger.SYSTEM_GUTTERTAP;
+		}
+		
+		public static function isLoadCommand(command:String):Boolean
+		{
+			return command.indexOf(KLogger.SYSTEM_LOAD) == 0;
+		}
+		
 		public override function initCommand(commandNode:XML):void
 		{
 			var command:String = commandNode.name();
@@ -169,32 +194,6 @@ package sg.edu.smu.ksketch.interactor
 				_canvas.loadFile(xml);
 				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
 			}
-		}
-
-		public function isSystemCommand(command:String):Boolean
-		{
-			return command.indexOf(_SYSTEM_COMMAND_PREFIX) == 0;
-		}
-		
-		public function isOperationCommand(command:String):Boolean
-		{
-			return isSystemCommand(command) && !isPlayerCommand(command) && 
-				command != KLogger.SYSTEM_NEW && command != KLogger.SYSTEM_SAVE && 
-				command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD && 
-				command != "sys-initialised";
-		}
-		
-		public function isPlayerCommand(command:String):Boolean
-		{
-			return command == KLogger.SYSTEM_PLAY || command == KLogger.SYSTEM_PAUSE || 
-				command == KLogger.SYSTEM_REWIND || command == KLogger.SYSTEM_PREVFRAME || 
-				command == KLogger.SYSTEM_NEXTFRAME || command == KLogger.SYSTEM_SLIDERDRAG || 
-				command == KLogger.SYSTEM_GUTTERTAP;
-		}
-		
-		public function isLoadCommand(command:String):Boolean
-		{
-			return command.indexOf(KLogger.SYSTEM_LOAD) == 0;
 		}
 
 		private function _image(commandNode:XML):void

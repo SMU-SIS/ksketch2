@@ -19,7 +19,7 @@
 		<s:VerticalLayout paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 	</s:layout>
 	<s:DataGrid id="_actionTable" width="410" height="200" selectionMode="singleRow" 
-				variableRowHeight="true" minHeight="0" />
+				variableRowHeight="true" minHeight="0" itemRenderer="LoggerRenderer"/>
 	<s:TextArea id="_actionText" width="410" height="100" />
 	<s:HGroup paddingLeft="15">
 		<s:CheckBox id="_systemEvent" label="Show System Event" selected="true" 

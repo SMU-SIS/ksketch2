@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true">
+
+	<fx:Script>
+		<![CDATA[
+			
+			import sg.edu.smu.ksketch.interactor.KSystemCommandExecutor;
+			
+			private const _SYSTEM_EVENT_COLOR:uint = 0x0000FF;
+			private const _USER_EVENT_COLOR:uint = 0x000000;
+			private const _SYSTEM_EVENT_FONT:String = "bold";
+			private const _USER_EVENT_FONT:String = "normal";
+			
+			override public function prepare(hasBeenRecycled:Boolean):void 
+			{
+				var sys:Boolean = _isSystemCommandRow(); 
+				lblData.text = data[column.dataField];
+				lblData.setStyle("color", sys ? _SYSTEM_EVENT_COLOR : _USER_EVENT_COLOR);
+				lblData.setStyle("fontWeight", sys ? _SYSTEM_EVENT_FONT : _USER_EVENT_FONT);			
+			}
+			
+			private function _isSystemCommandRow():Boolean
+			{
+				for each (var t:String in data)
+				{
+					if (KSystemCommandExecutor.isSystemCommand(t))
+						return true;
+				}
+				return false;
+			}			
+		]]>
+	</fx:Script>
+	
+	<s:Label id="lblData" top="9" left="7" />
+	
+</s:GridItemRenderer>

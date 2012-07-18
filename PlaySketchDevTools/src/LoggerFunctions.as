@@ -56,7 +56,7 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 	var commands:XMLList = KLogger.logFile.children();
 	for each (var command:XML in commands)
 	{
-		var systemCommand:Boolean = _commandExecutor.isSystemCommand(command.name());
+		var systemCommand:Boolean = KSystemCommandExecutor.isSystemCommand(command.name());
 		if (systemCommand)
 			_systemCommandNodes.push(command);
 		if ((showSystemEvent && systemCommand) || (showUserEvent && !systemCommand))
@@ -80,14 +80,14 @@ private function _initLogger(showSystemEvent:Boolean,showUserEvent:Boolean):void
 		for (var i:int=0; i < _systemCommandNodes.length; i++)
 		{
 			var node:XML = _systemCommandNodes[i];
-			if (_commandExecutor.isLoadCommand(node.name()))
+			if (KSystemCommandExecutor.isLoadCommand(node.name()))
 				break;
 			else
 				_commandExecutor.initCommand(node);
 		}
 		_commandExecutor.undoAllCommand();
 		if (_getLogTime(_systemCommandNodes[0]) <= _getLogTime(_commandNodes[0]) && 
-			_commandExecutor.isOperationCommand(_systemCommandNodes[0].name().toString()))
+			KSystemCommandExecutor.isOperationCommand(_systemCommandNodes[0].name().toString()))
 			_commandExecutor.redoSystemCommand();
 	}
 }
@@ -99,7 +99,7 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	else
 	{
 		var node:XML = _commandNodes[e.newRowIndex];
-		if (_commandExecutor.isLoadCommand(node.name()))
+		if (KSystemCommandExecutor.isLoadCommand(node.name()))
 			return _loadKMVFile(node);
 		var oldTime:Number = e.oldRowIndex >= 0 ? _getLogTime(_commandNodes[e.oldRowIndex]) : 0;
 		var newTime:Number = e.newRowIndex >= 0 ? _getLogTime(_commandNodes[e.newRowIndex]) : 0;
@@ -257,9 +257,9 @@ private function _redoCommand(commandNode:XML):void
 	var command:String = commandNode.name();
 	if (command == KLogger.SYSTEM_UNDO)
 		_commandExecutor.undoSystemCommand();
-	else if (_commandExecutor.isOperationCommand(command))
+	else if (KSystemCommandExecutor.isOperationCommand(command))
 		_commandExecutor.redoSystemCommand();
-	else if (_commandExecutor.isPlayerCommand(command))
+	else if (KSystemCommandExecutor.isPlayerCommand(command))
 		_commandExecutor.redoPlayerCommand(commandNode);
 }
 
@@ -268,9 +268,9 @@ private function _undoCommand(commandNode:XML):void
 	var command:String = commandNode.name();
 	if (command == KLogger.SYSTEM_UNDO)
 		_commandExecutor.redoSystemCommand()
-	else if (_commandExecutor.isOperationCommand(command))
+	else if (KSystemCommandExecutor.isOperationCommand(command))
 		_commandExecutor.undoSystemCommand();
-	else if (_commandExecutor.isPlayerCommand(command))
+	else if (KSystemCommandExecutor.isPlayerCommand(command))
 		_commandExecutor.undoPlayerCommand(commandNode);
 }		
 

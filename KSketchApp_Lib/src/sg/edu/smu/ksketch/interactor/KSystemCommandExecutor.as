@@ -31,9 +31,12 @@ package sg.edu.smu.ksketch.interactor
 	
 	public class KSystemCommandExecutor extends KLoggerCommandExecutor
 	{
-		private static const _SYSTEM_COMMAND_PREFIX:String = "sys";
-		
-		public static var showSystemEvent:Boolean = false;
+		public static const SYSTEM_COMMAND_PREFIX:String = "sys";
+		public static const USER_EVENT_COLOR:uint = 0x0000FF;
+		public static const USER_EVENT_FONT:String = "bold";
+		public static const SYSTEM_EVENT_COLOR:uint = 0x000000;
+		public static const SYSTEM_EVENT_FONT:String = "normal";
+		public static var highlightUserEvent:Boolean = false;
 
 		public function KSystemCommandExecutor(appState:KAppState, canvas:KCanvas, facade:KModelFacade)
 		{
@@ -42,7 +45,7 @@ package sg.edu.smu.ksketch.interactor
 		
 		public static function isSystemCommand(command:String):Boolean
 		{
-			return command.indexOf(_SYSTEM_COMMAND_PREFIX) == 0;
+			return command.indexOf(SYSTEM_COMMAND_PREFIX) == 0;
 		}
 		
 		public static function isOperationCommand(command:String):Boolean

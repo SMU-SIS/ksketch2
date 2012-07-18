@@ -22,8 +22,8 @@
 				selectionMode="singleRow" itemRenderer="LoggerRenderer"/>
 	<s:TextArea id="_actionText" width="410" height="100" />
 	<s:HGroup paddingLeft="15">
-		<s:CheckBox id="_systemEventCheckBox" label="Pause on System Event" 
-					change="_highlightSystemEvent(_systemEventCheckBox.selected)" />
+		<s:CheckBox id="_skipSystemEventCheckBox" label="Skip System Event" 
+					change="_highlightUserEvent(_skipSystemEventCheckBox.selected)" />
 	</s:HGroup>
 	<s:HGroup paddingLeft="15" >
 		<s:Button id="_firstButton" label="&lt;&lt;" click="_firstCommand(event)" />

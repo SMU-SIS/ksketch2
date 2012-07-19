@@ -548,18 +548,13 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _clearMotions():void
 		{
-			var objects:IModelObjectList;
-			
-			if(_appState.selection)
+			var sel:KSelection = _appState.selection;
+			if(sel && sel.objects && sel.objects.length() > 0)
 			{
-				objects = _appState.selection.objects;
-				
-				if(!objects || objects.length() <= 0)
-					objects = null;
+				var op:IModelOperation = _facade.clearMotions(sel.objects);
+				if (op != null)
+					_appState.addOperation(op);
 			}
-			
-			if(objects)
-				_facade.clearMotions(objects);
 		}
 		
 		private function _save(filename:String,folder:String=null):void

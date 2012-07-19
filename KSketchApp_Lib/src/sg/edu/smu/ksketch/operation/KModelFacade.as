@@ -228,14 +228,12 @@ package sg.edu.smu.ksketch.operation
 										 kskTime:Number,cursorPoint:Point = null):void
 		{
 			object.transformMgr.addToTranslation(translateX,translateY,kskTime,cursorPoint);
-			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
+			_dispatchObjectTransformChanged(object);
 		}
 		public function endTranslation(object:KObject, kskTime:Number):IModelOperation
 		{	
 			var op:IModelOperation = object.transformMgr.endTranslation(kskTime);
-			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+			_dispatchObjectChangeAndModelUpdateEvent(object);
 			return op;
 		}
 		public function beginRotation(object:KObject, canvasCenter:Point, 
@@ -248,14 +246,12 @@ package sg.edu.smu.ksketch.operation
 									  cursorPoint:Point, kskTime:Number):void
 		{
 			object.transformMgr.addToRotation(angle, cursorPoint,kskTime);
-			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
+			_dispatchObjectTransformChanged(object);
 		}
 		public function endRotation(object:KObject, kskTime:Number):IModelOperation
 		{
 			var op:IModelOperation = object.transformMgr.endRotation(kskTime);
-			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+			_dispatchObjectChangeAndModelUpdateEvent(object);
 			return op;
 		}
 		public function beginScale(object:KObject, canvasCenter:Point, 
@@ -268,14 +264,12 @@ package sg.edu.smu.ksketch.operation
 								   cursorPoint:Point, kskTime:Number):void
 		{
 			object.transformMgr.addToScale(scale, cursorPoint,kskTime);
-			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
+			_dispatchObjectTransformChanged(object);
 		}
 		public function endScale(object:KObject, kskTime:Number):IModelOperation
 		{		
 			var op:IModelOperation = object.transformMgr.endScale(kskTime);
-			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+			_dispatchObjectChangeAndModelUpdateEvent(object);
 			return op;
 		}
 		public function insertKeyFrames(objects:IModelObjectList):IModelOperation
@@ -313,32 +307,26 @@ package sg.edu.smu.ksketch.operation
 			
 			return null;
 		}
-		
-		public function clearMotions(objects:IModelObjectList):void
+		public function clearMotions(objects:IModelObjectList):IModelOperation
 		{
-			if(objects && objects.length()>0)
+			var clearMotionsOp:KCompositeOperation = new KCompositeOperation();
+			if(objects && objects.length() > 0)
 			{
 				var it:IIterator = objects.iterator;
-				var clearMotionsOp:KCompositeOperation = new KCompositeOperation();
-				var clearKeyOp:IModelOperation;
 				while(it.hasNext())
 				{
 					var object:KObject = it.next();
-					clearKeyOp = object.transformMgr.clearTransforms();
-					
+					var clearKeyOp:IModelOperation = object.transformMgr.clearTransforms();
 					if(clearKeyOp)
+					{
 						clearMotionsOp.addOperation(clearKeyOp);
-				}
-				
-				if(clearMotionsOp.length > 0)
-				{
-					_appState.addOperation(clearMotionsOp);
-					var myTime:Number = _appState.time;
-					_appState.time = -1;
-					_appState.time = myTime;
+						_dispatchObjectTransformChanged(object);
+					}
 				}
 			}
+			return clearMotionsOp.length > 0 ? clearMotionsOp : null;
 		}
+		
 		// ------------------ IEventDispatcher Functions ------------------- //				
 		public function addEventListener(type:String, listener:Function,useCapture:Boolean=false,
 										 priority:int=0, useWeakReference:Boolean=false):void
@@ -422,6 +410,16 @@ package sg.edu.smu.ksketch.operation
 		{
 			
 			//		_appState.dispatchEvent(new KTimeChangedEvent(1000,0));
+		}
+		private function _dispatchObjectChangeAndModelUpdateEvent(object:KObject):void
+		{
+			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
+			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+		}
+		private function _dispatchObjectTransformChanged(object:KObject):void
+		{
+			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
 		}
 	}
 }

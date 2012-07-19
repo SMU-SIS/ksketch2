@@ -23,7 +23,7 @@
 	<s:TextArea id="_actionText" width="410" height="100" />
 	<s:HGroup paddingLeft="15">
 		<s:CheckBox id="_skipSystemEventCheckBox" label="Skip System Event" 
-					change="_highlightUserEvent(_skipSystemEventCheckBox.selected)" />
+					selected="true" change="_highlightUserEvent(true)" />
 	</s:HGroup>
 	<s:HGroup paddingLeft="15" >
 		<s:Button id="_firstButton" label="&lt;&lt;" click="_firstCommand(event)" />

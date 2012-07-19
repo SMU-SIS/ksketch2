@@ -138,11 +138,11 @@ public function timeSlider_thumbReleaseHandler(event:TrackBaseEvent):void
 	var keyIndexSlider:HSlider = event.target as HSlider;
 	if(_startKSKTimeValue != keyIndexSlider.value)
 	{
-		KLogger.log(KLogger.CHANGE_TIME, KLogger.CHANGE_TIME_ACTION, KLogger.CHANGE_TIME_DRAG,
-			KLogger.TIME_FROM, KAppState.kskTime(_startKSKTimeValue), 
-			KLogger.TIME_TO, KAppState.kskTime(keyIndexSlider.value));
-		
-		KLogger.logSliderDrag(_startKSKTimeValue,keyIndexSlider.value);
+		var from:Number = KAppState.kskTime(_startKSKTimeValue);
+		var to:Number = KAppState.kskTime(keyIndexSlider.value);
+		KLogger.logSliderDrag(from,to);
+		KLogger.log(KLogger.CHANGE_TIME, KLogger.CHANGE_TIME_ACTION, 
+			KLogger.CHANGE_TIME_DRAG, KLogger.TIME_FROM, from, KLogger.TIME_TO, to);		
 	}
 	_isKSKTimeThumbDragging = false;
 	_startKSKTimeValue = -1;

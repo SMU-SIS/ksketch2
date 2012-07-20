@@ -16,7 +16,6 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.model.geom.KTranslation;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
-	import sg.edu.smu.ksketch.operation.KUngroupUtil;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
@@ -48,6 +47,18 @@ package sg.edu.smu.ksketch.interactor
 		public override function get name():String
 		{
 			return KPlaySketchLogger.INTERACTION_TRANSLATE;
+		}
+		
+		/**
+		 * Returns the current displacement as a point.
+		 * Returns (0,0) if there is no ongoing translation
+		 */
+		public function get interactionDisplacement():Point
+		{
+			if(!_dxdy)
+				return new Point();
+			
+			return _dxdy.clone();
 		}
 		
 		/**

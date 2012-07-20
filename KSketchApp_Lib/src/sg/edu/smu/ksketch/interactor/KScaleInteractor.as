@@ -68,6 +68,15 @@ package sg.edu.smu.ksketch.interactor
 			return KPlaySketchLogger.INTERACTION_SCALE;
 		}
 		
+		/**
+		 * Returns the absolute amount of scale made for the current interaction.
+		 * Returns 1 if there is no scale interaction at time of call.
+		 */
+		public function get interactionScale():Number
+		{
+			return _currentScale+1;
+		}
+		
 		protected override function transitionStart(canvasPoint:Point, 
 													transitionType:int):IModelOperation
 		{
@@ -118,6 +127,7 @@ package sg.edu.smu.ksketch.interactor
 
 				_ghost.remove(obj);
 			}
+			_currentScale = 1;
 			_appState.userSetCenterOffset = null;
 			return op.length > 0 ? op : null;
 		}
@@ -143,7 +153,8 @@ package sg.edu.smu.ksketch.interactor
 		
 			var scaleNumerator:Number = KMathUtil.distanceOf(_activeCenter, canvasPoint);
 			var scale:Number = (scaleNumerator/_scaleDenominator) - 1;
-			
+			_currentScale = scale;
+
 			while (it.hasNext())
 			{
 				var obj:KObject = it.next();

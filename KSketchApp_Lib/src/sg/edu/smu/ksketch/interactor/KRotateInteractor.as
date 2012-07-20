@@ -61,6 +61,15 @@ package sg.edu.smu.ksketch.interactor
 		}
 		
 		/**
+		 * Returns the absolute amount of angle moved in degrees for the current interaction.
+		 * Returns 0 if there is no rotation interaction at time of call.
+		 */
+		public function get interactionAngle():Number
+		{
+			return _currentAngle/Math.PI * 180;
+		}
+		
+		/**
 		 * Name of the interaction. Return "rotate".
 		 */
 		public override function get name():String
@@ -123,7 +132,7 @@ package sg.edu.smu.ksketch.interactor
 				KLogger.logEndRotation(_appState.time);
 				_ghost.remove(obj);
 			}		
-			
+			_currentAngle = 0;
 			return op.length > 0 ? op : null;
 		}
 		

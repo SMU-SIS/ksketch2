@@ -80,10 +80,10 @@ package sg.edu.smu.ksketch.interactor
 					redoSystemCommand();
 					break;
 				case KLogger.SYSTEM_IMAGE:
-					_image(commandNode);
+					_addImage(commandNode);
 					break;
 				case KLogger.SYSTEM_STROKE:
-					_stroke(commandNode);
+					_addStroke(commandNode);
 					break;
 				case KLogger.SYSTEM_ERASE:
 					_erase(commandNode);
@@ -120,6 +120,12 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case KLogger.SYSTEM_SCALE:
 					_scale(commandNode);
+					break;
+				case KLogger.SYSTEM_INSERTKEYFRAMES:
+					_insertKeyFrames(commandNode);
+					break;
+				case KLogger.SYSTEM_CLEARMOTIONS:
+					_clearMotions(commandNode);
 					break;
 				case KLogger.SYSTEM_SETOBJECTNAME:
 					_setObjectName(commandNode);
@@ -201,7 +207,17 @@ package sg.edu.smu.ksketch.interactor
 			}
 		}
 
-		private function _image(commandNode:XML):void
+		private function _switchContent(commandNode:XML):void
+		{
+			
+		}
+		
+		private function _addMovieClip(commandNode:XML):void
+		{
+			
+		}
+		
+		private function _addImage(commandNode:XML):void
 		{
 			var x:Number = _getNumber(commandNode,KLogger.IMAGE_X);
 			var y:Number = _getNumber(commandNode,KLogger.IMAGE_Y);
@@ -219,7 +235,7 @@ package sg.edu.smu.ksketch.interactor
 			loader.loadBytes(KFileParser.stringToByteArray(data));
 		}	
 		
-		private function _stroke(commandNode:XML):void
+		private function _addStroke(commandNode:XML):void
 		{
 			var color:uint = uint(commandNode.attribute(KLogger.STROKE_COLOR));
 			var thickness:Number = _getNumber(commandNode,KLogger.STROKE_THICKNESS);
@@ -351,6 +367,16 @@ package sg.edu.smu.ksketch.interactor
 			_appState.addOperation(new KInteractionOperation(_appState,
 				startTime,endTime,oldSel,_appState.selection,op));
 		}	
+		
+		private function _insertKeyFrames(commandNode:XML):void
+		{
+			_appState.addOperation(_facade.insertKeyFrames(_getObjects(commandNode)));			
+		}
+		
+		private function _clearMotions(commandNode:XML):void
+		{
+			_appState.addOperation(_facade.clearMotions(_getObjects(commandNode)));			
+		}
 		
 		private function _setObjectName(commandNode:XML):void
 		{

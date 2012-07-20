@@ -60,6 +60,9 @@ package sg.edu.smu.ksketch.logger
 		public static const SYSTEM_TRANSLATE:String = "sys-translate";
 		public static const SYSTEM_ROTATE:String = "sys-rotate";
 		public static const SYSTEM_SCALE:String = "sys-scale";
+		public static const SYSTEM_INSERTKEYFRAMES:String = "sys-insertkeyframes";
+		public static const SYSTEM_CLEARMOTIONS:String = "sys-clearmotions";
+		
 		public static const SYSTEM_GROUP:String = "sys-group";
 		public static const SYSTEM_UNGROUP:String = "sys-ungroup";
 		public static const SYSTEM_REGROUP:String = "sys-regroup";
@@ -272,6 +275,16 @@ package sg.edu.smu.ksketch.logger
 		public static function logEndScale(kskTime:Number):void
 		{		
 			_logObject(_systemLog.endScale(kskTime));
+		}
+		
+		public static function logInsertKeyFrames(objectIDs:Vector.<int>):void
+		{
+			_logObject(_systemLog.insertKeyFrames(objectIDs));
+		}
+		
+		public static function logClearMotions(objectIDs:Vector.<int>):void
+		{		
+			_logObject(_systemLog.clearMotions(objectIDs));
 		}
 		
 		public static function logNewFile():void

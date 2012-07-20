@@ -524,26 +524,18 @@ package sg.edu.smu.ksketch.interactor
 			}
 		}
 		
-		//Function to insert blank key frames into the selected object's timeline
 		private function _insertKeyFrames():void
 		{
-			if(_appState.targetTrackBox < 0)
-				return;
-			
-			var objects:IModelObjectList;
-			
-			if(_appState.selection)
+			var sel:KSelection = _appState.selection;
+			if(sel && sel.objects && sel.objects.length() > 0 && _appState.targetTrackBox >= 0)
 			{
-				objects = _appState.selection.objects;
-				
-				if(!objects || objects.length() <= 0)
-					objects = null;
+				var op:IModelOperation = _facade.insertKeyFrames(sel.objects);
+				if (op != null)
+				{
+					KLogger.logInsertKeyFrames(sel.objects.toIDs());
+					_appState.addOperation(op);
+				}
 			}
-			
-			var insertKeyFrameOp:IModelOperation = _facade.insertKeyFrames(objects);
-			
-			if(insertKeyFrameOp)
-				_appState.addOperation(insertKeyFrameOp);
 		}
 		
 		private function _clearMotions():void
@@ -553,7 +545,10 @@ package sg.edu.smu.ksketch.interactor
 			{
 				var op:IModelOperation = _facade.clearMotions(sel.objects);
 				if (op != null)
+				{
+					KLogger.logClearMotions(sel.objects.toIDs());
 					_appState.addOperation(op);
+				}
 			}
 		}
 		

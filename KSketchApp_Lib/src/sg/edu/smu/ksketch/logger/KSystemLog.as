@@ -157,6 +157,18 @@ package sg.edu.smu.ksketch.logger
 		{
 			return _endTransitionNode(kskTime,KFileParser.k2DVectorsToString(_2DPoints));
 		}
+		public function insertKeyFrames(objectIDs:Vector.<int>):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_INSERTKEYFRAMES+"/>");
+			_node.@[KLogger.OBJECTS] = KFileParser.intsToString(objectIDs);
+			return _node;
+		}
+		public function clearMotions(objectIDs:Vector.<int>):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_CLEARMOTIONS+"/>");
+			_node.@[KLogger.OBJECTS] = KFileParser.intsToString(objectIDs);
+			return _node;
+		}
 
 		// ------------------ File Functions ------------------- //						
 		public function newFile():XML

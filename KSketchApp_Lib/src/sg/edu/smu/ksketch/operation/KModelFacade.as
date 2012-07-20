@@ -18,11 +18,8 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.interactor.KSelection;
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
-	import sg.edu.smu.ksketch.model.KImage;
 	import sg.edu.smu.ksketch.model.KModel;
 	import sg.edu.smu.ksketch.model.KObject;
-	import sg.edu.smu.ksketch.operation.implementations.KActivityOperation;
-	import sg.edu.smu.ksketch.operation.implementations.KAddOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KGroupOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
@@ -51,19 +48,15 @@ package sg.edu.smu.ksketch.operation
 			_model = new KModel();
 			_editor = new KObjectEditor();
 			_keyTimeOperator = new KKeyTimeOperator(_appState, _model);
-			
 			_model.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED,_refreshObjectTime);
 		}
 		
-		/**
-		 * Switches the old object root of the model with the new object root of the model.
-		 */
+		// Switches the old object root of the model with the new object root of the model //
 		public function switchContent(newContent:KModelObjectList):KModelObjectList
 		{
 			var oldContent:KModelObjectList = _model.switchContent(newContent);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
-			
 			return oldContent;
 		}
 		
@@ -75,9 +68,9 @@ package sg.edu.smu.ksketch.operation
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
-		public function addKMovieClip(movieClip:MovieClip, time:Number, xPos:Number, yPos:Number):void
+		public function addKMovieClip(movieClip:MovieClip, time:Number, x:Number, y:Number):void
 		{			
-			_appState.addOperation(_editor.addMovieClip(_model,movieClip ,xPos,yPos,time));
+			_appState.addOperation(_editor.addMovieClip(_model,movieClip,x,y,time));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 		}
@@ -292,7 +285,6 @@ package sg.edu.smu.ksketch.operation
 						objects.remove(currentObj);
 				}
 			}
-			
 			if(objects && objects.length()>0)
 			{
 				_appState.time = _appState.trackTapTime;
@@ -303,8 +295,7 @@ package sg.edu.smu.ksketch.operation
 					insertKeyOp.addOperation(it.next().insertBlankKey(
 						_appState.targetTrackBox,_appState.time));
 				return insertKeyOp;
-			}
-			
+			}			
 			return null;
 		}
 		public function clearMotions(objects:IModelObjectList):IModelOperation
@@ -373,8 +364,7 @@ package sg.edu.smu.ksketch.operation
 		public function get root():KGroup
 		{	
 			return _model.root;
-		}
-		
+		}		
 		public function length():int
 		{
 			return _model.length();
@@ -408,8 +398,7 @@ package sg.edu.smu.ksketch.operation
 		// A function to refresh KImage as the data may be loaded asyn
 		private function _refreshObjectTime(event:KObjectEvent):void
 		{
-			
-			//		_appState.dispatchEvent(new KTimeChangedEvent(1000,0));
+	//		_appState.dispatchEvent(new KTimeChangedEvent(1000,0));
 		}
 		private function _dispatchObjectChangeAndModelUpdateEvent(object:KObject):void
 		{

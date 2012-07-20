@@ -75,6 +75,7 @@ public function initLogger(canvas:KCanvas,commandExecutor:KSystemCommandExecutor
 			_commandExecutor.redoSystemCommand();
 	}
 	_actionTable.addEventListener(GridCaretEvent.CARET_CHANGE,_selectedRowChanged);
+	_highlightUserEvent(_skipSystemEventCheckBox.selected);
 }
 
 private function _selectedRowChanged(e:GridCaretEvent):void

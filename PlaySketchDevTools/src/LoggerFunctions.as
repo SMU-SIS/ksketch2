@@ -65,7 +65,7 @@ public function initLogger(canvas:KCanvas,commandExecutor:KSystemCommandExecutor
 		_actionTable.selectedIndex = 0;
 		for (var i:int=0; i < _commandNodes.length; i++)
 		{
-			if (_isLoadCommand(_commandNodes[i]))
+			if (_isLoadCommand(_commandNodes[i]) || _isSwitchContentCommand(_commandNodes[i]))
 				break;
 			else
 				_commandExecutor.initCommand(_commandNodes[i]);
@@ -85,8 +85,10 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	else
 	{
 		var node:XML = _commandNodes[e.newRowIndex];
-		if (KSystemCommandExecutor.isLoadCommand(node.name()))
+		if (_isLoadCommand(node.name()))
 			return _loadKMVFile(node);
+		else if (_isSwitchContentCommand(node.name()))
+			return _switchContent(node);
 		if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
 			_forwardCommand(e.oldRowIndex+1,e.newRowIndex);
 		else if (e.oldRowIndex > e.newRowIndex)
@@ -165,6 +167,11 @@ private function _stopPlayer():void
 	_playButton.label = _PLAY_COMMAND;
 	_playTimer.stop();
 	_enableInteraction(true);
+}
+
+private function _switchContent(commandNode:XML):void
+{
+	_commandExecutor.switchContent(commandNode);
 }
 
 private function _loadKMVFile(commandNode:XML):void
@@ -262,6 +269,11 @@ private function _isOperationCommand(commandNode:XML):Boolean
 private function _isPlayerCommand(commandNode:XML):Boolean
 {
 	return KSystemCommandExecutor.isPlayerCommand(commandNode.name());
+}
+
+private function _isSwitchContentCommand(commandNode:XML):Boolean
+{
+	return KSystemCommandExecutor.isSwitchContentCommand(commandNode.name());
 }
 
 private function _getLogTime(xml:XML):Number

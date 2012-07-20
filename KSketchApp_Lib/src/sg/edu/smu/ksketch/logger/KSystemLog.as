@@ -7,6 +7,7 @@
 package sg.edu.smu.ksketch.logger
 {
 	import flash.display.BitmapData;
+	import flash.display.MovieClip;
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.io.KFileParser;
@@ -40,19 +41,32 @@ package sg.edu.smu.ksketch.logger
 		}
 		
 		// ------------------ Edit Operation ------------------- //		
-		public function addImage(imageData:BitmapData, time:Number, xPos:Number, yPos:Number):XML
+		public function switchContent(objectIDs:Vector.<int>):XML
 		{
-			_node = new XML("<"+KLogger.SYSTEM_IMAGE+"/>");
+			return _getEditNode(KLogger.SYSTEM_SWITCHCONTENT, objectIDs);
+		}
+		public function addImage(imageData:BitmapData, time:Number, x:Number, y:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_ADDIMAGE+"/>");
 			_node.@[KLogger.TIME] = time;
-			_node.@[KLogger.IMAGE_X] = xPos;
-			_node.@[KLogger.IMAGE_Y] = yPos;
+			_node.@[KLogger.IMAGE_X] = x;
+			_node.@[KLogger.IMAGE_Y] = y;
 			_node.@[KLogger.IMAGE_DATA] = KFileParser.pngToString(imageData);
+			return _node;
+		}
+		public function addMovieClip(movieClip:MovieClip, time:Number, x:Number, y:Number):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_ADDMOVIECLIP+"/>");
+			_node.@[KLogger.TIME] = time;
+			_node.@[KLogger.MOVIE_X] = x;
+			_node.@[KLogger.MOVIE_Y] = y;
+			_node.@[KLogger.MOVIE_DATA] = " ----- ";
 			return _node;
 		}
 		public function beginStroke(color:uint, thickness:uint, time:Number):void
 		{
 			_points = new Vector.<Point>();
-			_node = new XML("<"+KLogger.SYSTEM_STROKE+"/>");
+			_node = new XML("<"+KLogger.SYSTEM_ADDSTROKE+"/>");
 			_node.@[KLogger.STROKE_COLOR] = color;
 			_node.@[KLogger.STROKE_THICKNESS] = thickness;
 			_node.@[KLogger.TIME] = time;
@@ -159,15 +173,11 @@ package sg.edu.smu.ksketch.logger
 		}
 		public function insertKeyFrames(objectIDs:Vector.<int>):XML
 		{
-			_node = new XML("<"+KLogger.SYSTEM_INSERTKEYFRAMES+"/>");
-			_node.@[KLogger.OBJECTS] = KFileParser.intsToString(objectIDs);
-			return _node;
+			return _getEditNode(KLogger.SYSTEM_INSERTKEYFRAMES, objectIDs);
 		}
 		public function clearMotions(objectIDs:Vector.<int>):XML
 		{
-			_node = new XML("<"+KLogger.SYSTEM_CLEARMOTIONS+"/>");
-			_node.@[KLogger.OBJECTS] = KFileParser.intsToString(objectIDs);
-			return _node;
+			return _getEditNode(KLogger.SYSTEM_CLEARMOTIONS, objectIDs);
 		}
 
 		// ------------------ File Functions ------------------- //						
@@ -258,11 +268,12 @@ package sg.edu.smu.ksketch.logger
 		}
 		
 		// ------------------ Private Function ------------------- //
-		private function _getEditNode(editType:String, objectIDs:Vector.<int>,time:Number):XML
+		private function _getEditNode(editType:String, objectIDs:Vector.<int>,time:Number=-1):XML
 		{
 			_node = new XML("<"+editType+"/>");
 			_node.@[KLogger.OBJECTS] = KFileParser.intsToString(objectIDs);
-			_node.@[KLogger.TIME] = time;
+			if (time >=0)
+				_node.@[KLogger.TIME] = time;
 			return _node;
 		}
 		private function _getGroupingNode(groupingType:String, objectIDs:Vector.<int>, 

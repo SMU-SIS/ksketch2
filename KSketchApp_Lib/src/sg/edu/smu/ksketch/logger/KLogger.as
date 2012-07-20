@@ -7,6 +7,7 @@
 package sg.edu.smu.ksketch.logger
 {
 	import flash.display.BitmapData;
+	import flash.display.MovieClip;
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.io.KFileParser;
@@ -49,8 +50,10 @@ package sg.edu.smu.ksketch.logger
 		// System commands
 		public static const SYSTEM_UNDO:String = "sys-undo";
 		public static const SYSTEM_REDO:String = "sys-redo";
-		public static const SYSTEM_IMAGE:String = "sys-image";
-		public static const SYSTEM_STROKE:String = "sys-stroke";
+		public static const SYSTEM_SWITCHCONTENT:String = "sys-switchcontent";
+		public static const SYSTEM_ADDIMAGE:String = "sys-addimage";
+		public static const SYSTEM_ADDMOVIECLIP:String = "sys-addmovieclip";
+		public static const SYSTEM_ADDSTROKE:String = "sys-addstroke";
 		public static const SYSTEM_ERASE:String = "sys-erase";
 		public static const SYSTEM_COPY:String = "sys-copy";
 		public static const SYSTEM_CUT:String = "sys-cut";
@@ -117,6 +120,10 @@ package sg.edu.smu.ksketch.logger
 		public static const IMAGE_FORMAT:String = "format";		
 		public static const IMAGE_FORMAT_PNG:String = "PNG";		
 
+		public static const MOVIE_DATA:String = "movie-data";
+		public static const MOVIE_X:String = "x";
+		public static const MOVIE_Y:String = "y";
+		
 		public static const STROKE_POINTS:String = "points";
 		public static const STROKE_THICKNESS:String = "thickness";
 		public static const STROKE_COLOR:String = "color";
@@ -162,9 +169,19 @@ package sg.edu.smu.ksketch.logger
 			_logObject(_systemLog.redo());
 		}		
 		
-		public static function logAddKImage(imageData:BitmapData, time:Number, xPos:Number, yPos:Number):void
+		public static function logSwitchContent(objectIDs:Vector.<int>):void
 		{
-			_logObject(_systemLog.addImage(imageData, time, xPos, yPos));
+			_logObject(_systemLog.switchContent(objectIDs));
+		}		
+		
+		public static function logAddKImage(imageData:BitmapData,time:Number,x:Number,y:Number):void
+		{
+			_logObject(_systemLog.addImage(imageData, time, x, y));
+		}		
+		
+		public static function logAddKMovieClip(movieClip:MovieClip,time:Number,x:Number,y:Number):void
+		{
+			_logObject(_systemLog.addMovieClip(movieClip, time, x, y));
 		}		
 		
 		public static function logBeginKStrokePoint(color:uint, thickness:Number, time:Number):void
@@ -213,15 +230,15 @@ package sg.edu.smu.ksketch.logger
 		}
 
 		public static function logRegroup(objectIDs:Vector.<int>, mode:String, transitionType:int,
-										  time:Number,isRealTimeTranslation:Boolean = false):void
+										  time:Number,isRealTimeTranslation:Boolean=false):void
 		{
-			_logObject(_systemLog.regroup(objectIDs, mode, transitionType, time, isRealTimeTranslation));
+			_logObject(_systemLog.regroup(objectIDs,mode,transitionType,time,isRealTimeTranslation));
 		}
 
 		public static function logGroup(objectIDs:Vector.<int>, mode:String, transitionType:int,
-										time:Number=-2,  isRealTimeTranslation:Boolean = false):void
+										time:Number=-2,  isRealTimeTranslation:Boolean=false):void
 		{	
-			_logObject(_systemLog.group(objectIDs, mode, transitionType, time, isRealTimeTranslation));
+			_logObject(_systemLog.group(objectIDs,mode,transitionType,time,isRealTimeTranslation));
 		}
 		
 		public static function logUngroup(objectIDs:Vector.<int>, mode:String, time:Number):void
@@ -229,7 +246,7 @@ package sg.edu.smu.ksketch.logger
 			_logObject(_systemLog.ungroup(objectIDs, mode, time));
 		}
 		
-		public static function logBeginTranslation(objectID:int, kskTime:int, transitionType:int):void
+		public static function logBeginTranslation(objectID:int,kskTime:int,transitionType:int):void
 		{
 			_systemLog.beginTranslation(objectID, kskTime, transitionType);
 		}	

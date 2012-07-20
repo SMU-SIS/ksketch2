@@ -68,6 +68,11 @@ package sg.edu.smu.ksketch.interactor
 			return command.indexOf(KLogger.SYSTEM_LOAD) == 0;
 		}
 		
+		public static function isSwitchContentCommand(command:String):Boolean
+		{
+			return command.indexOf(KLogger.SYSTEM_SWITCHCONTENT) == 0;
+		}
+		
 		public override function initCommand(commandNode:XML):void
 		{
 			var command:String = commandNode.name();
@@ -79,10 +84,13 @@ package sg.edu.smu.ksketch.interactor
 				case KLogger.SYSTEM_REDO:
 					redoSystemCommand();
 					break;
-				case KLogger.SYSTEM_IMAGE:
+				case KLogger.SYSTEM_ADDIMAGE:
 					_addImage(commandNode);
 					break;
-				case KLogger.SYSTEM_STROKE:
+				case KLogger.SYSTEM_ADDMOVIECLIP:
+					_addMovieClip(commandNode);
+					break;
+				case KLogger.SYSTEM_ADDSTROKE:
 					_addStroke(commandNode);
 					break;
 				case KLogger.SYSTEM_ERASE:
@@ -184,7 +192,7 @@ package sg.edu.smu.ksketch.interactor
 			else if (command == KLogger.SYSTEM_REWIND)
 				_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
 			else if (command == KLogger.SYSTEM_PREVFRAME)
-				_next()
+				_next();
 			else if (command == KLogger.SYSTEM_NEXTFRAME)
 				_previous();
 			else if (command == KLogger.SYSTEM_SLIDERDRAG)
@@ -207,14 +215,26 @@ package sg.edu.smu.ksketch.interactor
 			}
 		}
 
-		private function _switchContent(commandNode:XML):void
+		public function switchContent(commandNode:XML):void
 		{
-			
+			_canvas.resetCanvas();
+			_canvas.switchContents(_getObjects(commandNode));
 		}
 		
 		private function _addMovieClip(commandNode:XML):void
 		{
-			
+			var x:Number = _getNumber(commandNode,KLogger.MOVIE_X);
+			var y:Number = _getNumber(commandNode,KLogger.MOVIE_Y);
+			var data:String = commandNode.attribute(KLogger.MOVIE_DATA);
+			_appState.time = _getNumber(commandNode,KLogger.TIME);			
+			var loader:Loader = new Loader();
+			loader.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE, 
+				function (event:Event):void
+				{
+					_appState.addOperation(_facade.addKMovieClip(
+						event.target.content.movieClip,_appState.time,x,y));
+				});
+			loader.loadBytes(KFileParser.stringToByteArray(data));
 		}
 		
 		private function _addImage(commandNode:XML):void

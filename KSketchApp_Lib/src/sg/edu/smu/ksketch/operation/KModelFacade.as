@@ -68,11 +68,12 @@ package sg.edu.smu.ksketch.operation
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
-		public function addKMovieClip(movieClip:MovieClip, time:Number, x:Number, y:Number):void
-		{			
-			_appState.addOperation(_editor.addMovieClip(_model,movieClip,x,y,time));
+		public function addKMovieClip(clip:MovieClip,time:Number,x:Number,y:Number):IModelOperation
+		{
+			var op:IModelOperation = _editor.addMovieClip(_model,clip,x,y,time);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+			return op;
 		}
 		public function beginKStrokePoint(color:uint,thickness:Number,time:Number):int
 		{			

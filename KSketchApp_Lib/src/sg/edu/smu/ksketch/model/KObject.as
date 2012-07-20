@@ -6,7 +6,6 @@
 
 package sg.edu.smu.ksketch.model
 {
-	import flash.display.Shape;
 	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
 	import flash.geom.Matrix;
@@ -45,6 +44,7 @@ package sg.edu.smu.ksketch.model
 		private var _transformMgr:KTransformMgr;
 		private var _positionMatrix:Matrix;
 		private var _metaProperties:Array;
+		protected var _priorityCenter:Point
 		
 		public function KObject(id:int,createdTime:Number=0)
 		{
@@ -62,6 +62,11 @@ package sg.edu.smu.ksketch.model
 			_transformMgr = new KTransformMgr(this,_referenceFrameList);
 			_positionMatrix = new Matrix();
 			addActivityKey(createdTime,1);
+		}
+		
+		public function set priorityCenter(value:Point):void
+		{
+			_priorityCenter = value.clone();	
 		}
 		
 		public function get transformMgr():KTransformMgr
@@ -119,6 +124,9 @@ package sg.edu.smu.ksketch.model
 		
 		public function handleCenter(kskTime:Number):Point
 		{
+			if(_priorityCenter)
+				return _priorityCenter;
+			
 			var refFrame:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(
 				KTransformMgr.ROTATION_REF) as KReferenceFrame; 
 			

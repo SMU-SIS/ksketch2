@@ -12,6 +12,7 @@ package sg.edu.smu.ksketch.interactor
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
+	import sg.edu.smu.ksketch.io.KFileAccessor;
 	import sg.edu.smu.ksketch.io.KFileLoader;
 	import sg.edu.smu.ksketch.io.KFileParser;
 	import sg.edu.smu.ksketch.logger.KLogger;
@@ -205,8 +206,8 @@ package sg.edu.smu.ksketch.interactor
 		{
 			var filename:String = commandNode.attribute(KLogger.FILE_NAME);
 			var location:String = commandNode.attribute(KLogger.FILE_LOCATION);
-			var file:File = KFileParser.resolvePath(filename,
-				location ? location : KLogger.FILE_DESKTOP_DIR);
+			var file:File = KFileAccessor.resolvePath(filename,
+				location ? location : KLogger.FILE_DESKTOP_DIR) as File;
 			if (file.exists)
 			{
 				var xml:XML = new KFileLoader().loadKMVFromFile(file);

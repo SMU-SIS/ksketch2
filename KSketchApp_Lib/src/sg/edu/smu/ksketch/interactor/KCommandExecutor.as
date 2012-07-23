@@ -378,8 +378,8 @@ package sg.edu.smu.ksketch.interactor
 			if (selection != null)
 			{
 				var op:IModelOperation = _facade.toggleVisibility(selection.objects, time);
-				KLogger.logToggleVisibility(selection.objects.toIDs(),time);
-				_appState.addOperation(op);
+				if (op != null)
+					_appState.addOperation(op);
 			}
 		}
 		
@@ -415,7 +415,6 @@ package sg.edu.smu.ksketch.interactor
 			KLogger.flush();
 			_canvas.resetCanvas();
 			_facade.clearClipBoard();
-			KLogger.logClearClipBoard();
 			_appState.fireEditEnabledChangedEvent();
 			_appState.fireGroupingEnabledChangedEvent();
 		}
@@ -433,7 +432,6 @@ package sg.edu.smu.ksketch.interactor
 			var oldSel:KSelection = _appState.selection;
 			if (oldSel != null)
 			{
-				KLogger.logCut(oldSel.objects.toIDs(),time);
 				var op:IModelOperation = _facade.cut(oldSel.objects,time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
@@ -443,10 +441,7 @@ package sg.edu.smu.ksketch.interactor
 		private function _copy():void
 		{
 			if(_appState.selection)
-			{
 				_facade.copy(_appState.selection.objects,_appState.time);
-				KLogger.logCopy(_appState.selection.objects.toIDs(),_appState.time);
-			}
 		}
 		
 		private function _paste(includeMotion:Boolean):void
@@ -455,11 +450,8 @@ package sg.edu.smu.ksketch.interactor
 			var oldSel:KSelection = _appState.selection;
 			var op:IModelOperation = _facade.paste(includeMotion,time);
 			if (op != null)
-			{
-				KLogger.logPaste(includeMotion,time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
-			}
 		}
 		
 		private function _group():void
@@ -471,7 +463,6 @@ package sg.edu.smu.ksketch.interactor
 			var op:IModelOperation = _facade.group(oldSel.objects, mode, type, time);
 			if (op != null)
 			{
-				KLogger.logGroup(oldSel.objects.toIDs(), mode, type, time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
 			}
@@ -485,11 +476,8 @@ package sg.edu.smu.ksketch.interactor
 			var oldSel:KSelection = _appState.selection;
 			var op:IModelOperation = _facade.ungroup(oldSel.objects, mode, time);
 			if (op != null)
-			{
-				KLogger.logUngroup(oldSel.objects.toIDs(),mode, time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
-			}
 		}		
 		
 		private function _moveFrame(time:Number):void
@@ -531,10 +519,7 @@ package sg.edu.smu.ksketch.interactor
 			{
 				var op:IModelOperation = _facade.insertKeyFrames(sel.objects);
 				if (op != null)
-				{
-					KLogger.logInsertKeyFrames(sel.objects.toIDs());
 					_appState.addOperation(op);
-				}
 			}
 		}
 		
@@ -545,10 +530,7 @@ package sg.edu.smu.ksketch.interactor
 			{
 				var op:IModelOperation = _facade.clearMotions(sel.objects);
 				if (op != null)
-				{
-					KLogger.logClearMotions(sel.objects.toIDs());
 					_appState.addOperation(op);
-				}
 			}
 		}
 		

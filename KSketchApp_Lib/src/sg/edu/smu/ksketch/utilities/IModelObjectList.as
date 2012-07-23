@@ -14,6 +14,7 @@ package sg.edu.smu.ksketch.utilities
 		function remove(object:KObject):void;
 		function length():int;
 		function getObjectAt(index:int):KObject;
+		function toIDs():Vector.<int>;
 		function get iterator():IIterator;
 	}
 }

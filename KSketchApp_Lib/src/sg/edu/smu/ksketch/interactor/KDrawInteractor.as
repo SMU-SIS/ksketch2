@@ -11,7 +11,6 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KInteractiveLog;
-	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
@@ -64,10 +63,7 @@ package sg.edu.smu.ksketch.interactor
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 			
 			_facade.beginKStrokePoint(_appState.penColor,_appState.penThickness,_appState.time);
-			KLogger.logBeginKStrokePoint(_appState.penColor,_appState.penThickness,_appState.time);
-			
 			_facade.addKStrokePoint(point.x, point.y);
-			KLogger.logAddKStrokePoint(point);
 		}
 		
 		/**
@@ -81,7 +77,6 @@ package sg.edu.smu.ksketch.interactor
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 			
 			_facade.addKStrokePoint(point.x, point.y);
-			KLogger.logAddKStrokePoint(point);
 		}
 		
 		/**
@@ -97,13 +92,9 @@ package sg.edu.smu.ksketch.interactor
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 				_log = null;
 			}
-			
-			_facade.addKStrokePoint(point.x, point.y);
-			KLogger.logAddKStrokePoint(point);
-			
+			_facade.addKStrokePoint(point.x, point.y);			
 			_appState.addOperation(new KInteractionOperation(
 				_appState,_appState.time,_appState.time,null,null,_facade.endKStrokePoint()));
-			KLogger.logEndKStrokePoint();
 		}
 		
 		/**

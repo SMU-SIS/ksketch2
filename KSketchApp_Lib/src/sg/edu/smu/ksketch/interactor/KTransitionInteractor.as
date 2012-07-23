@@ -11,7 +11,6 @@ package sg.edu.smu.ksketch.interactor
 	import flash.utils.getQualifiedClassName;
 	
 	import sg.edu.smu.ksketch.logger.ILoggable;
-	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.logger.KTransitionLog;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
@@ -187,7 +186,6 @@ package sg.edu.smu.ksketch.interactor
 				var mode:String = _appState.groupingMode;
 				var type:int = _appState.transitionType;
 				var time:Number = _appState.time;
-				KLogger.logGroup(objects.toIDs(),mode,type,time);
 				return _facade.group(objects,mode,type,time);
 			}
 			return null;

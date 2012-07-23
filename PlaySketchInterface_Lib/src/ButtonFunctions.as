@@ -852,7 +852,6 @@ private function onAddPNG(loader:Loader, ev:Event):void
 	var bitmap:Bitmap = new Bitmap(bitmapData);	
 	var image:Image = new Image();
 	image.source = bitmap;
-	KLogger.logAddKImage(bitmapData,appState.time,100,100);
 	appState.addOperation(facade.addKImage(bitmapData,appState.time,100,100));	
 }
 

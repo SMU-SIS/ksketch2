@@ -216,7 +216,7 @@ private function _kmvLoaded(e:KFileLoadedEvent):void
 private function _fileExist(filename:String,location:String):Boolean
 {
 	return KFileParser.resolvePath(filename,
-		location ? location : KLogger.FILE_DESKTOP_DIR).exists;
+		location ? location : KLogger.FILE_DESKTOP_DIR).exists as Boolean;
 }
 
 private function _forwardCommand(from:int,to:int):void

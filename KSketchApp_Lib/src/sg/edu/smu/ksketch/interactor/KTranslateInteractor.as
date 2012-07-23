@@ -47,6 +47,18 @@ package sg.edu.smu.ksketch.interactor
 		}
 		
 		/**
+		 * Returns the current displacement as a point.
+		 * Returns (0,0) if there is no ongoing translation
+		 */
+		public function get interactionDisplacement():Point
+		{
+			if(!_dxdy)
+				return new Point();
+			
+			return _dxdy.clone();
+		}
+		
+		/**
 		 * transitionStart initiates the transition operation.
 		 */
 		protected override function transitionStart(canvasPoint:Point, 

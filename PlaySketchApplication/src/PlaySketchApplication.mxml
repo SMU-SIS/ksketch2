@@ -27,30 +27,24 @@
 			import sg.edu.smu.ksketch.logger.KLogger;
 			import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 			
-			//ADDED THESE FEW LINES TO TEST IF UPSTREAM CHANGES WILL BE MERGED
-			//
-			//
-			//
-			//
-			//END OF TESTING LINES
-			
 			private var _debuggerWindow:Window;
 			
 			public function triggerLogger(event:MouseEvent):void
 			{
 				var windowFreezer:Alert = _showFreezer();	
-				var canvas:LoggerCanvas = new LoggerCanvas();
-				var executor:KSystemCommandExecutor = new KSystemCommandExecutor(
-					main.appState,main.appCanvas,main.facade);
-				KLogger.enabled = false;
-				var modelXML:XML = main.facade.saveFile();
 				var logXML:XML = KLogger.logFile;
+				var modelXML:XML = main.facade.saveFile();
+				var appTime:Number = main.appState.time;
+				var canvas:LoggerCanvas = new LoggerCanvas();
+				KLogger.enabled = false;
 				main.appCanvas.resetCanvas();
-				canvas.initLogger(main.appCanvas,executor);	
+				canvas.initLogger(main.appCanvas,new KSystemCommandExecutor(
+					main.appState,main.appCanvas,main.facade));
 				var close:Function = function (e:Event):void
 				{
 					main.appCanvas.loadFile(modelXML);
 					KLogger.setLogFile(logXML);
+					main.appState.time = appTime;
 					KLogger.enabled = true;
 					windowFreezer.setVisible(false);
 				};

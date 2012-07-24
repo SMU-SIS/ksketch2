@@ -115,7 +115,9 @@ package sg.edu.smu.ksketch.operation
 			_appState.selection = null;
 			_appState.pasteEnabled = true;
 			_appState.fireEditEnabledChangedEvent();
-			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			for (var i:int = 0; i < objects.length(); i++)
+				dispatchEvent(new KObjectEvent(objects.getObjectAt(i),KObjectEvent.EVENT_OBJECT_REMOVED));
+			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}

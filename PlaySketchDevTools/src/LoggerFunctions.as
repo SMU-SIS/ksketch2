@@ -241,6 +241,8 @@ private function _redoCommand(commandNode:XML):void
 		_commandExecutor.redoSystemCommand();
 	else if (_isPlayerCommand(commandNode))
 		_commandExecutor.redoPlayerCommand(commandNode);
+	else if (_isSelectionCommand(commandNode))
+		_commandExecutor.redoSelectionCommand(commandNode);
 }
 
 private function _undoCommand(commandNode:XML):void
@@ -251,6 +253,8 @@ private function _undoCommand(commandNode:XML):void
 		_commandExecutor.undoSystemCommand();
 	else if (_isPlayerCommand(commandNode))
 		_commandExecutor.undoPlayerCommand(commandNode);
+	else if (_isSelectionCommand(commandNode))
+		_commandExecutor.undoSelectionCommand(commandNode);
 }		
 
 private function _isLoadCommand(commandNode:XML):Boolean
@@ -276,6 +280,11 @@ private function _isPlayerCommand(commandNode:XML):Boolean
 private function _isSwitchContentCommand(commandNode:XML):Boolean
 {
 	return KSystemCommandExecutor.isSwitchContentCommand(commandNode.name());
+}
+
+private function _isSelectionCommand(commandNode:XML):Boolean
+{
+	return KSystemCommandExecutor.isSelectionCommand(commandNode.name());
 }
 
 private function _getLogTime(xml:XML):Number

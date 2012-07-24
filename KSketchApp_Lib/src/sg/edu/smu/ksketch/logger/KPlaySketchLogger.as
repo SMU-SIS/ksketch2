@@ -118,8 +118,8 @@ package sg.edu.smu.ksketch.logger
 		
 		public static const IS_TAP:String = "isTap";
 		
-		public static const PREV_SELECTED_ITEMS:String = "previousSelectedItems";
-		public static const SELECTED_ITEMS:String = "selectedItems";
+		public static const SELECTED_ITEMS:String = KLogger.PREV_SELECTED_ITEMS;
+		public static const PREV_SELECTED_ITEMS:String = KLogger.PREV_SELECTED_ITEMS;
 		
 		public static const MATCH:String = "match";
 		public static const CONFIDENCE:String = "matchConfidence";

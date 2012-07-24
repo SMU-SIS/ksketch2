@@ -48,6 +48,8 @@ package sg.edu.smu.ksketch.logger
 		public static const TIME_TO:String = "totime";
 		
 		// System commands
+		public static const SYSTEM_SELECT:String = "sys-select";
+		public static const SYSTEM_DESELECT:String = "sys-deselect";
 		public static const SYSTEM_UNDO:String = "sys-undo";
 		public static const SYSTEM_REDO:String = "sys-redo";
 		public static const SYSTEM_SWITCHCONTENT:String = "sys-switchcontent";
@@ -65,7 +67,6 @@ package sg.edu.smu.ksketch.logger
 		public static const SYSTEM_SCALE:String = "sys-scale";
 		public static const SYSTEM_INSERTKEYFRAMES:String = "sys-insertkeyframes";
 		public static const SYSTEM_CLEARMOTIONS:String = "sys-clearmotions";
-		
 		public static const SYSTEM_GROUP:String = "sys-group";
 		public static const SYSTEM_UNGROUP:String = "sys-ungroup";
 		public static const SYSTEM_REGROUP:String = "sys-regroup";
@@ -92,7 +93,10 @@ package sg.edu.smu.ksketch.logger
 		public static const KEYFRAME_TYPE_ACTIVITY:String = "activity";
 		public static const KEYFRAME_TYPE_PARENT:String = "parent";
 		public static const KEYFRAME_RETIMETOS:String = "retime-tos";
-		
+
+		public static const SELECTED_ITEMS:String = "selectedItems";
+		public static const PREV_SELECTED_ITEMS:String = "previousSelectedItems";
+
 		public static const PASTEINCLUDEMOTION:String = "paste-include-motion";
 
 		public static const GROUPING_MODE:String = "mode";
@@ -159,6 +163,16 @@ package sg.edu.smu.ksketch.logger
 			}
 		}
 
+		public static function logSelect(selection:Vector.<int>,prevSelection:Vector.<int>):void
+		{
+			_logObject(_systemLog.select(selection,prevSelection));
+		}		
+		
+		public static function logDeselect(prevSelection:Vector.<int>):void
+		{
+			_logObject(_systemLog.deselect(prevSelection));
+		}		
+		
 		public static function logUndo():void
 		{
 			_logObject(_systemLog.undo());

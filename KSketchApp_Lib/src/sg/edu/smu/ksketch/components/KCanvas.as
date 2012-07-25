@@ -139,7 +139,6 @@ package sg.edu.smu.ksketch.components
 			_startStateMachine();
 			_appState.time = 0;
 			_appState.maxTime = KAppState.DEFAULT_MAX_TIME;
-			KLogger.logNewFile();
 			_facade.newFile();
 			
 			_viewsTable = new Dictionary();

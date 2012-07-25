@@ -15,10 +15,9 @@ package sg.edu.smu.ksketch.interactor
 	import flash.utils.Timer;
 	
 	import mx.controls.Button;
-		
+	
 	import sg.edu.smu.ksketch.components.KCanvas;
 	import sg.edu.smu.ksketch.components.KFilteredLoopView;
-	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.geom.KTimestampPoint;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
 	import sg.edu.smu.ksketch.gestures.Library;
@@ -29,8 +28,10 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KGestureLog;
 	import sg.edu.smu.ksketch.logger.KGestureSubLog;
+	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.logger.KPostGestureLog;
+	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KMathUtil;
@@ -517,6 +518,8 @@ package sg.edu.smu.ksketch.interactor
 		
 		public function end(point:Point):void
 		{
+			trace(_mode);
+			
 			update(point);
 			
 			_tempView.clear();
@@ -557,9 +560,18 @@ package sg.edu.smu.ksketch.interactor
 			
 			if(_log != null)
 			{
+				if ((_mode == MODE_SELECTING || _mode == MODE_DELAY_AFTER_PAUSE) && 
+					_appState.selection != null)
+				{
+					var prevItems:KModelObjectList = _log.prevSelectedItems ? 
+						_log.prevSelectedItems : new KModelObjectList();
+					KLogger.logSelect(_appState.selection.objects.toIDs(),prevItems.toIDs());
+				}
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 				_log = null;
 			}
+
+
 		}
 		
 		private function end_pigtail(point:Point):void

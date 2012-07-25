@@ -94,6 +94,11 @@ package sg.edu.smu.ksketch.model
 			return _root.getObjectAt(index);
 		}
 		
+		public function toIDs():Vector.<int>
+		{
+			return _root.toIDs();			
+		}
+		
 		/**
 		 * The iterator that can be used to access individual objects in the KGroup of the KModel.
 		 */		

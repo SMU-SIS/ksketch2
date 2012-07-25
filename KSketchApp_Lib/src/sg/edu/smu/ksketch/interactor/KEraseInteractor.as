@@ -11,7 +11,6 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.components.KCanvas;
 	import sg.edu.smu.ksketch.logger.ILoggable;
 	import sg.edu.smu.ksketch.logger.KInteractiveLog;
-	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
@@ -125,7 +124,6 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _erase(object:KObject,time:Number):IModelOperation
 		{
-			KLogger.logErase(object.id,time);
 			return _facade.erase(object,time);
 		}
 	}

@@ -10,6 +10,7 @@ package sg.edu.smu.ksketch.interactor
 	
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.logger.ILoggable;
+	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.logger.KInteractiveLog;
 	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.logger.KWithSelectionLog;
@@ -79,7 +80,10 @@ package sg.edu.smu.ksketch.interactor
 			if(_mode == MODE_DESELECT)
 			{
 				if(_log != null)
+				{
+					KLogger.logDeselect(_appState.selection.objects.toIDs());
 					(_log as KWithSelectionLog).selected = _appState.selection.objects;
+				}
 				_appState.selection = null;
 			}
 		}

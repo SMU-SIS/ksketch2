@@ -26,6 +26,16 @@ package sg.edu.smu.ksketch.logger
 			_selected = selection;
 		}
 		
+		public function get selectedItems():KModelObjectList
+		{
+			return _selected;
+		}
+		
+		public function get prevSelectedItems():KModelObjectList
+		{
+			return _prevSelected;
+		}
+		
 		public override function toXML():XML
 		{
 			var node:XML = super.toXML();

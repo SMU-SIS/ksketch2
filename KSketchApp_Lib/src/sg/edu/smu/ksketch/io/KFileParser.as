@@ -7,7 +7,6 @@
 package sg.edu.smu.ksketch.io
 {		
 	import flash.display.BitmapData;
-	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	
@@ -68,22 +67,6 @@ package sg.edu.smu.ksketch.io
 		public static const IMAGE_FORMAT:String = KLogger.IMAGE_FORMAT;	
 		public static const IMAGE_FORMAT_PNG:String = KLogger.IMAGE_FORMAT_PNG;
 		
-		public static function resolvePath(filename:String,location:String):File
-		{
-			switch(location)
-			{
-				case KLogger.FILE_USER_DIR:
-					return File.userDirectory.resolvePath(filename);
-				case KLogger.FILE_DESKTOP_DIR:
-					return File.desktopDirectory.resolvePath(filename);
-				case KLogger.FILE_DOCUMENT_DIR:
-					return File.documentsDirectory.resolvePath(filename);
-				case KLogger.FILE_STORAGE_DIR:
-					return File.applicationStorageDirectory.resolvePath(filename);
-			}
-			return new File(null);
-		}
-				
 		public static function pngToString(data:BitmapData):String
 		{	
 			var base64Enc:Base64Encoder = new Base64Encoder();  

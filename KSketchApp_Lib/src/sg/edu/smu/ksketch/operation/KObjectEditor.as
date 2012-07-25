@@ -11,7 +11,6 @@ package sg.edu.smu.ksketch.operation
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.components.KObjectView;
-	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.interactor.KSelection;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
@@ -30,6 +29,7 @@ package sg.edu.smu.ksketch.operation
 	
 	public class KObjectEditor
 	{	
+		private const _GHOST_ALPHA:Number = KObjectView.GHOST_ALPHA;
 		private var _stroke:KStroke;
 		private var _clipboard:KClipBoard;
 		
@@ -145,16 +145,16 @@ package sg.edu.smu.ksketch.operation
 		// 0 alpha at the next keyframe time, and return the erase operation.
 		private function _erase(model:KModel,obj:KObject,time:Number):IModelOperation
 		{
-			obj.addActivityKey(time,KObjectView.GHOST_ALPHA);
+			obj.addActivityKey(time,_GHOST_ALPHA);
 			obj.addActivityKey(KAppState.nextKey(time),0);
 			var ops:KCompositeOperation = new KCompositeOperation();
-			ops.addOperation(new KActivityOperation(obj,KObjectView.GHOST_ALPHA,time));
+			ops.addOperation(new KActivityOperation(obj,_GHOST_ALPHA,time));
 			ops.addOperation(new KActivityOperation(obj,0,KAppState.nextKey(time)));
 			var parent:KGroup = obj.getParent(time);
 			if (parent != model.root && _noVisibleChild(parent,time))
 			{
-				parent.addActivityKey(time,KObjectView.GHOST_ALPHA);
-				ops.addOperation(new KActivityOperation(parent,KObjectView.GHOST_ALPHA,time));
+				parent.addActivityKey(time,_GHOST_ALPHA);
+				ops.addOperation(new KActivityOperation(parent,_GHOST_ALPHA,time));
 			}
 			return ops;
 		}		
@@ -177,7 +177,6 @@ package sg.edu.smu.ksketch.operation
 								 time:Number):IModelOperation
 		{
 			obj.getParent(time).remove(obj);
-			facade.dispatchEvent(new KObjectEvent(obj,KObjectEvent.EVENT_OBJECT_REMOVED));
 			return new KRemoveOperation(facade,obj,time);
 		}
 		
@@ -213,7 +212,7 @@ package sg.edu.smu.ksketch.operation
 		{
 			var it:IIterator = parent.iterator;
 			while (it.hasNext())
-				if (it.next().getVisibility(time) > KObjectView.GHOST_ALPHA)
+				if (it.next().getVisibility(time) > _GHOST_ALPHA)
 					return false;
 			return true;
 		}		

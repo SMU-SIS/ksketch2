@@ -59,16 +59,15 @@ package sg.edu.smu.ksketch.interactor
 			{
 				case KPlaySketchLogger.BTN_EXIT:
 					filename = _generateFileName(); 
-					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_save(filename,KLogger.FILE_APP_DIR);
+					KLogger.log(command,KLogger.FILE_NAME,filename);
 					break;
 				case KPlaySketchLogger.BTN_NEW:
 					filename = _generateFileName(); 
 					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_save(filename,KLogger.FILE_APP_DIR);
-					KLogger.flush();
-					KLogger.log(KLogger.NEW_SESSION, KLogger.VERSION, _appState.appBuildNumber);
 					_newFile();
+					KLogger.log(KLogger.NEW_SESSION, KLogger.VERSION, _appState.appBuildNumber);
 					break;
 				case KPlaySketchLogger.BTN_LOAD:
 					filename = _generateFileName();
@@ -83,72 +82,72 @@ package sg.edu.smu.ksketch.interactor
 					_save(filename);
 					break;
 				case KPlaySketchLogger.BTN_CUT:
-					KLogger.log(command);
 					_cut();
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_COPY:
-					KLogger.log(command);
 					_copy();
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_PASTE:
-					KLogger.log(command);
 					_paste(false);
+					KLogger.log(command);
 					break;				
 				case KPlaySketchLogger.BTN_UNDO:
-					KLogger.log(command);
 					_undo();	
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_REDO:
-					KLogger.log(command);
 					_redo();					
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_GROUP:
-					KLogger.log(command);
 					_group();
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_UNGROUP:
-					KLogger.log(command);
 					_ungroup();
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_ERASER:
-					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_WHITE);
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					break;
 				case KPlaySketchLogger.BTN_BLACK_PEN:
-					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_BLACK);
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					break;
 				case KPlaySketchLogger.BTN_RED_PEN:					
-					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_RED);
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					break;
 				case KPlaySketchLogger.BTN_GREEN_PEN:					
-					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_GREEN);
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					break;
 				case KPlaySketchLogger.BTN_BLUE_PEN:					
-					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					_configurePen(KPenMenu.LABEL_BLUE);
+					KLogger.log(command,KPlaySketchLogger.BTN_PEN_PREVIOUS_STATE,Mouse.cursor);
 					break;
 				case KPlaySketchLogger.BTN_FIRST:
 					KLogger.log(command,KLogger.TIME_FROM,_appState.time);
 					_first();
 					break;
 				case KPlaySketchLogger.BTN_PREVIOUS:
-					KLogger.log(command);
 					_previous();
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_NEXT:
-					KLogger.log(command);
 					_next();
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_PLAY:
-					KLogger.log(command,KLogger.TIME_FROM,_appState.time);
 					_play();
+					KLogger.log(command,KLogger.TIME_FROM,_appState.time);
 					break;
 				case KPlaySketchLogger.BTN_TOGGLE_VISIBILITY:
-					KLogger.log(command);
 					_toggleVisibility();
+					KLogger.log(command);
 					break;
 				default:
 					break;
@@ -378,8 +377,8 @@ package sg.edu.smu.ksketch.interactor
 			if (selection != null)
 			{
 				var op:IModelOperation = _facade.toggleVisibility(selection.objects, time);
-				KLogger.logToggleVisibility(selection.objects.toIDs(),time);
-				_appState.addOperation(op);
+				if (op != null)
+					_appState.addOperation(op);
 			}
 		}
 		
@@ -415,7 +414,6 @@ package sg.edu.smu.ksketch.interactor
 			KLogger.flush();
 			_canvas.resetCanvas();
 			_facade.clearClipBoard();
-			KLogger.logClearClipBoard();
 			_appState.fireEditEnabledChangedEvent();
 			_appState.fireGroupingEnabledChangedEvent();
 		}
@@ -433,7 +431,6 @@ package sg.edu.smu.ksketch.interactor
 			var oldSel:KSelection = _appState.selection;
 			if (oldSel != null)
 			{
-				KLogger.logCut(oldSel.objects.toIDs(),time);
 				var op:IModelOperation = _facade.cut(oldSel.objects,time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
@@ -443,10 +440,7 @@ package sg.edu.smu.ksketch.interactor
 		private function _copy():void
 		{
 			if(_appState.selection)
-			{
 				_facade.copy(_appState.selection.objects,_appState.time);
-				KLogger.logCopy(_appState.selection.objects.toIDs(),_appState.time);
-			}
 		}
 		
 		private function _paste(includeMotion:Boolean):void
@@ -455,11 +449,8 @@ package sg.edu.smu.ksketch.interactor
 			var oldSel:KSelection = _appState.selection;
 			var op:IModelOperation = _facade.paste(includeMotion,time);
 			if (op != null)
-			{
-				KLogger.logPaste(includeMotion,time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
-			}
 		}
 		
 		private function _group():void
@@ -471,7 +462,6 @@ package sg.edu.smu.ksketch.interactor
 			var op:IModelOperation = _facade.group(oldSel.objects, mode, type, time);
 			if (op != null)
 			{
-				KLogger.logGroup(oldSel.objects.toIDs(), mode, type, time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
 			}
@@ -485,11 +475,8 @@ package sg.edu.smu.ksketch.interactor
 			var oldSel:KSelection = _appState.selection;
 			var op:IModelOperation = _facade.ungroup(oldSel.objects, mode, time);
 			if (op != null)
-			{
-				KLogger.logUngroup(oldSel.objects.toIDs(),mode, time);
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
-			}
 		}		
 		
 		private function _moveFrame(time:Number):void
@@ -531,10 +518,7 @@ package sg.edu.smu.ksketch.interactor
 			{
 				var op:IModelOperation = _facade.insertKeyFrames(sel.objects);
 				if (op != null)
-				{
-					KLogger.logInsertKeyFrames(sel.objects.toIDs());
 					_appState.addOperation(op);
-				}
 			}
 		}
 		
@@ -545,10 +529,7 @@ package sg.edu.smu.ksketch.interactor
 			{
 				var op:IModelOperation = _facade.clearMotions(sel.objects);
 				if (op != null)
-				{
-					KLogger.logClearMotions(sel.objects.toIDs());
 					_appState.addOperation(op);
-				}
 			}
 		}
 		

@@ -97,7 +97,7 @@ package sg.edu.smu.ksketch.components
 		
 		public function removeFromParent():void
 		{
-			if(_showPath)
+			if(_showPath && _path.parent == this.parent)
 				this.parent.removeChild(_path);
 			this.parent.removeChild(this);
 		}

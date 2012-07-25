@@ -5,6 +5,7 @@
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.events.TimerEvent;
+import flash.filesystem.File;
 import flash.utils.Timer;
 
 import mx.collections.ArrayCollection;
@@ -16,6 +17,7 @@ import mx.graphics.SolidColor;
 import sg.edu.smu.ksketch.components.KCanvas;
 import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 import sg.edu.smu.ksketch.interactor.KSystemCommandExecutor;
+import sg.edu.smu.ksketch.io.KFileAccessor;
 import sg.edu.smu.ksketch.io.KFileLoader;
 import sg.edu.smu.ksketch.io.KFileParser;
 import sg.edu.smu.ksketch.logger.KLogger;
@@ -85,9 +87,9 @@ private function _selectedRowChanged(e:GridCaretEvent):void
 	else
 	{
 		var node:XML = _commandNodes[e.newRowIndex];
-		if (_isLoadCommand(node.name()))
+		if (_isLoadCommand(node))
 			return _loadKMVFile(node);
-		else if (_isSwitchContentCommand(node.name()))
+		else if (_isSwitchContentCommand(node))
 			return _switchContent(node);
 		if (0 <= e.oldRowIndex && e.oldRowIndex < e.newRowIndex)
 			_forwardCommand(e.oldRowIndex+1,e.newRowIndex);
@@ -215,8 +217,8 @@ private function _kmvLoaded(e:KFileLoadedEvent):void
 
 private function _fileExist(filename:String,location:String):Boolean
 {
-	return KFileParser.resolvePath(filename,
-		location ? location : KLogger.FILE_DESKTOP_DIR).exists as Boolean;
+	return (KFileAccessor.resolvePath(filename,
+		location ? location : KLogger.FILE_DESKTOP_DIR) as File).exists;
 }
 
 private function _forwardCommand(from:int,to:int):void
@@ -239,6 +241,8 @@ private function _redoCommand(commandNode:XML):void
 		_commandExecutor.redoSystemCommand();
 	else if (_isPlayerCommand(commandNode))
 		_commandExecutor.redoPlayerCommand(commandNode);
+	else if (_isSelectionCommand(commandNode))
+		_commandExecutor.redoSelectionCommand(commandNode);
 }
 
 private function _undoCommand(commandNode:XML):void
@@ -249,6 +253,8 @@ private function _undoCommand(commandNode:XML):void
 		_commandExecutor.undoSystemCommand();
 	else if (_isPlayerCommand(commandNode))
 		_commandExecutor.undoPlayerCommand(commandNode);
+	else if (_isSelectionCommand(commandNode))
+		_commandExecutor.undoSelectionCommand(commandNode);
 }		
 
 private function _isLoadCommand(commandNode:XML):Boolean
@@ -274,6 +280,11 @@ private function _isPlayerCommand(commandNode:XML):Boolean
 private function _isSwitchContentCommand(commandNode:XML):Boolean
 {
 	return KSystemCommandExecutor.isSwitchContentCommand(commandNode.name());
+}
+
+private function _isSelectionCommand(commandNode:XML):Boolean
+{
+	return KSystemCommandExecutor.isSelectionCommand(commandNode.name());
 }
 
 private function _getLogTime(xml:XML):Number

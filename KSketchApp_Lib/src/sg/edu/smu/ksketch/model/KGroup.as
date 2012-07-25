@@ -76,6 +76,11 @@ package sg.edu.smu.ksketch.model
 			return new KAllChildrenIterator(this, kskTime);
 		}
 		
+		public function toIDs():Vector.<int>
+		{
+			return _children.toIDs();
+		}
+		
 		public function get iterator():IIterator
 		{
 			return new KModelObjectListIterator(_children);

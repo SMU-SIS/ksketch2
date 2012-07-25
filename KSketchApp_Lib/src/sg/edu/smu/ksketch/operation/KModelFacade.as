@@ -16,6 +16,7 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.event.KTimeChangedEvent;
 	import sg.edu.smu.ksketch.interactor.KSelection;
+	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KModel;
@@ -63,6 +64,7 @@ package sg.edu.smu.ksketch.operation
 		// ------------------ Edit Operation ------------------- //	
 		public function addKImage(data:BitmapData,time:Number,x:Number,y:Number):IModelOperation
 		{
+			KLogger.logAddKImage(data,time,x,y);
 			var op:IModelOperation = _editor.addImage(_model,data,x,y,time);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
@@ -70,6 +72,7 @@ package sg.edu.smu.ksketch.operation
 		}
 		public function addKMovieClip(clip:MovieClip,time:Number,x:Number,y:Number):IModelOperation
 		{
+			KLogger.logAddKMovieClip(clip,time,x,y);
 			var op:IModelOperation = _editor.addMovieClip(_model,clip,x,y,time);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
@@ -77,45 +80,55 @@ package sg.edu.smu.ksketch.operation
 		}
 		public function beginKStrokePoint(color:uint,thickness:Number,time:Number):int
 		{			
+			KLogger.logBeginKStrokePoint(color,thickness,time);
 			return _editor.beginStroke(_model, color, thickness, time);
 		}
 		public function addKStrokePoint(x:Number, y:Number):void
 		{			
+			KLogger.logAddKStrokePoint(new Point(x,y));
 			_editor.addToStroke(x, y);
 		}
 		public function endKStrokePoint():IModelOperation
-		{			
+		{
+			KLogger.logEndKStrokePoint();
 			var op:IModelOperation = _editor.endStroke(_model);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
-		public function erase(object:KObject, kskTime:Number):IModelOperation
+		public function erase(object:KObject, time:Number):IModelOperation
 		{
-			return _editor.erase(this,_model,object,kskTime);
+			KLogger.logErase(object.id,time);
+			return _editor.erase(this,_model,object,time);
 		}
 		public function copy(objects:KModelObjectList,time:Number):void
 		{
+			KLogger.logCopy(objects.toIDs(),time);
 			_editor.copy(objects,time);
 			_appState.pasteEnabled = true;
 			_appState.fireEditEnabledChangedEvent();
 		}
 		public function cut(objects:KModelObjectList,time:Number):IModelOperation
 		{
+			KLogger.logCut(objects.toIDs(),time);
 			var op:IModelOperation = _editor.cut(this,objects,time);
 			_appState.selection = null;
 			_appState.pasteEnabled = true;
 			_appState.fireEditEnabledChangedEvent();
-			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			for (var i:int = 0; i < objects.length(); i++)
+				dispatchEvent(new KObjectEvent(objects.getObjectAt(i),KObjectEvent.EVENT_OBJECT_REMOVED));
+			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
 		public function paste(includeMotion:Boolean,time:Number):IModelOperation
 		{
+			KLogger.logPaste(includeMotion,time);
 			return _editor.paste(_model, _appState, time, includeMotion);
 		}
 		public function clearClipBoard():void
 		{
+			KLogger.logClearClipBoard();
 			_editor.clearClipBoard();
 			_appState.pasteEnabled = false;
 			_appState.fireEditEnabledChangedEvent();
@@ -129,14 +142,21 @@ package sg.edu.smu.ksketch.operation
 				ops.addOperation(_editor.toggleVisibility(obj,time));
 				dispatchEvent(new KObjectEvent(obj,KObjectEvent.EVENT_VISIBILITY_CHANGED));
 			}
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			return ops.length>0 ? new KInteractionOperation(_appState,time,time,null,null,ops):null;
+			if (ops.length > 0)
+			{
+				KLogger.logToggleVisibility(objects.toIDs(),time);
+				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+				return new KInteractionOperation(_appState,time,time,null,null,ops);
+			}
+			return null
 		}
 		
 		// ------------------ Grouping Operation ------------------- //
-		public function regroup(objs:KModelObjectList, mode:String, transitionType:int, 
-								appTime:Number, isRealTimeTranslation:Boolean = false):IModelOperation
+		public function regroup(objs:KModelObjectList, mode:String, 
+								transitionType:int, appTime:Number, 
+								isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
+			KLogger.logRegroup(objs.toIDs(), mode, transitionType, appTime, isRealTimeTranslation);
 			//		var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,appTime);
 			var unOp:IModelOperation = ungroup(objs, mode, appTime);
 			var gpOp:IModelOperation = group(objs,mode,transitionType,appTime,isRealTimeTranslation);
@@ -147,8 +167,9 @@ package sg.edu.smu.ksketch.operation
 				ops.addOperation(gpOp);
 			return ops;
 		}
-		public function group(objs:KModelObjectList, mode:String, transitionType:int, 
-							  groupTime:Number=-2, isRealTimeTranslation:Boolean = false):IModelOperation
+		public function group(objs:KModelObjectList, mode:String, 
+							  transitionType:int, groupTime:Number=-2, 
+							  isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
 			var time:Number = groupTime;
 			time = time != -2 ? time:KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
@@ -176,17 +197,22 @@ package sg.edu.smu.ksketch.operation
 			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
 				ops.addOperation(rmOp);
 			
-			var list:KModelObjectList = new KModelObjectList();
-			list.add((gpOp as KGroupOperation).group);
-			_appState.selection = new KSelection(list,_appState.time);
+			if (ops.length > 0)
+			{
+				KLogger.logGroup(objs.toIDs(), mode, transitionType, groupTime);
+				var list:KModelObjectList = new KModelObjectList();
+				list.add((gpOp as KGroupOperation).group);
+				_appState.selection = new KSelection(list,_appState.time);
 			
-			
-			if(_appState.userSetCenterOffset)
-				_appState.userSetCenterOffset = _appState.userSetCenterOffset.clone();
-			_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
-			_appState.fireGroupingEnabledChangedEvent();
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
-			return ops.length > 0 ? ops : null;
+				if(_appState.userSetCenterOffset)
+					_appState.userSetCenterOffset = _appState.userSetCenterOffset.clone();
+
+				_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
+				_appState.fireGroupingEnabledChangedEvent();
+				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+				return ops;
+			}
+			return null;
 		}
 		public function ungroup(objs:KModelObjectList,mode:String,appTime:Number):IModelOperation
 		{	
@@ -204,65 +230,79 @@ package sg.edu.smu.ksketch.operation
 			if (rmOp != null)
 				ops.addOperation(rmOp);
 			
-			_appState.selection = strokes.length() > 0 ? 
-				new KSelection(strokes, appTime) : _appState.selection;
-			_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
-			_appState.fireGroupingEnabledChangedEvent();
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
-			return ops.length > 0 ? ops : null;
+			if (ops.length > 0)
+			{
+				KLogger.logUngroup(objs.toIDs(),mode, appTime);
+				_appState.selection = strokes.length() > 0 ? 
+					new KSelection(strokes, appTime) : _appState.selection;
+				_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
+				_appState.fireGroupingEnabledChangedEvent();
+				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+				return ops;
+			}
+			return null;
 		}
 		
 		// ------------------ Transform Operation ------------------- //		
-		public function beginTranslation(object:KObject, kskTime:Number, transitionType:int):void
+		public function beginTranslation(object:KObject, time:Number, transitionType:int):void
 		{
-			object.transformMgr.beginTranslation(kskTime, transitionType);
+			KLogger.logBeginTranslation(object.id, time, transitionType);
+			object.transformMgr.beginTranslation(time, transitionType);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));
 		}		
-		public function addToTranslation(object:KObject, translateX:Number, translateY:Number, 
-										 kskTime:Number,cursorPoint:Point = null):void
+		public function addToTranslation(object:KObject, translateX:Number, translateY:Number,
+										 time:Number, cursorPoint:Point = null):void
 		{
-			object.transformMgr.addToTranslation(translateX,translateY,kskTime,cursorPoint);
+			KLogger.logAddToTranslation(translateX, translateY,time, cursorPoint);
+			object.transformMgr.addToTranslation(translateX,translateY, time, cursorPoint);
 			_dispatchObjectTransformChanged(object);
 		}
-		public function endTranslation(object:KObject, kskTime:Number):IModelOperation
+		public function endTranslation(object:KObject, time:Number):IModelOperation
 		{	
-			var op:IModelOperation = object.transformMgr.endTranslation(kskTime);
+			KLogger.logEndTranslation(time);
+			var op:IModelOperation = object.transformMgr.endTranslation(time);
 			_dispatchObjectChangeAndModelUpdateEvent(object);
 			return op;
 		}
 		public function beginRotation(object:KObject, canvasCenter:Point, 
-									  kskTime:Number, transitionType:int):void
+									  time:Number, transitionType:int):void
 		{
-			object.transformMgr.beginRotation(canvasCenter, kskTime, transitionType);
+			KLogger.logBeginRotation(object.id, canvasCenter, time, transitionType);
+			object.transformMgr.beginRotation(canvasCenter, time, transitionType);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));
 		}		
 		public function addToRotation(object:KObject, angle:Number, 
-									  cursorPoint:Point, kskTime:Number):void
+									  cursorPoint:Point, time:Number):void
 		{
-			object.transformMgr.addToRotation(angle, cursorPoint,kskTime);
+			KLogger.logAddToRotation(angle, cursorPoint, time);
+			object.transformMgr.addToRotation(angle, cursorPoint, time);
 			_dispatchObjectTransformChanged(object);
 		}
-		public function endRotation(object:KObject, kskTime:Number):IModelOperation
+		public function endRotation(object:KObject, time:Number):IModelOperation
 		{
-			var op:IModelOperation = object.transformMgr.endRotation(kskTime);
+			KLogger.logEndRotation(time);
+			var op:IModelOperation = object.transformMgr.endRotation(time);
 			_dispatchObjectChangeAndModelUpdateEvent(object);
 			return op;
 		}
 		public function beginScale(object:KObject, canvasCenter:Point, 
-								   kskTime:Number, transitionType:int):void
+								   time:Number, transitionType:int):void
 		{
-			object.transformMgr.beginScale(canvasCenter,kskTime, transitionType);
+			KLogger.logBeginScale(object.id, canvasCenter, time, transitionType);
+			object.transformMgr.beginScale(canvasCenter, time, transitionType);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));
 		}		
 		public function addToScale(object:KObject, scale:Number, 
-								   cursorPoint:Point, kskTime:Number):void
+								   cursorPoint:Point, time:Number):void
 		{
-			object.transformMgr.addToScale(scale, cursorPoint,kskTime);
+			KLogger.logAddToScale(scale, cursorPoint, time);
+			object.transformMgr.addToScale(scale, cursorPoint, time);
 			_dispatchObjectTransformChanged(object);
 		}
-		public function endScale(object:KObject, kskTime:Number):IModelOperation
-		{		
-			var op:IModelOperation = object.transformMgr.endScale(kskTime);
+		public function endScale(object:KObject, time:Number):IModelOperation
+		{
+			KLogger.logEndScale(time);
+			var op:IModelOperation = object.transformMgr.endScale(time);
 			_dispatchObjectChangeAndModelUpdateEvent(object);
 			return op;
 		}
@@ -288,8 +328,8 @@ package sg.edu.smu.ksketch.operation
 			}
 			if(objects && objects.length()>0)
 			{
+				KLogger.logInsertKeyFrames(objects.toIDs());
 				_appState.time = _appState.trackTapTime;
-				
 				var it:IIterator = objects.iterator;
 				var insertKeyOp:KCompositeOperation = new KCompositeOperation();
 				while(it.hasNext())
@@ -316,7 +356,12 @@ package sg.edu.smu.ksketch.operation
 					}
 				}
 			}
-			return clearMotionsOp.length > 0 ? clearMotionsOp : null;
+			if (clearMotionsOp.length > 0)
+			{
+				KLogger.logClearMotions(objects.toIDs());
+				return clearMotionsOp;
+			}
+			return null;
 		}
 		
 		// ------------------ IEventDispatcher Functions ------------------- //				
@@ -361,7 +406,7 @@ package sg.edu.smu.ksketch.operation
 			return _model.saveModel();
 		}
 		
-		// -------------- Model Access Functions --------------- //						
+		// -------------- Model Access Functions --------------- //	
 		public function get root():KGroup
 		{	
 			return _model.root;
@@ -380,6 +425,7 @@ package sg.edu.smu.ksketch.operation
 		}
 		public function setObjectName(object:KObject, name:String):void
 		{
+			KLogger.logSetObjectName(object.id,name);
 			_model.setObjectName(object, name);
 		}
 		
@@ -387,6 +433,7 @@ package sg.edu.smu.ksketch.operation
 		public function retimeKeys(keys:Vector.<IKeyFrame>, times:Vector.<Number>, 
 								   appTime:Number):IModelOperation
 		{
+			// !! Logging is currently done outside of facade as there is some operation issue !! //
 			var op:IModelOperation = _keyTimeOperator.retimeKeys(_appState,_model,keys,times);
 			_appState.dispatchEvent(new KTimeChangedEvent(-1, _appState.time));
 			return op;

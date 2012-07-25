@@ -4,12 +4,12 @@
 *Developed under a grant from the Singapore-MIT GAMBIT Game Lab
 
 -->
-<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
-			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" 
-			   minWidth="800" minHeight="600" width="100%" height="100%" 
-			   xmlns:local="*" initialize="_init()" 
-			   creationComplete="_setKeyboardListener()" >
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:local="*"
+			   width="100%" height="100%" minWidth="800" minHeight="600" initialize="_init()"
+			   applicationComplete="stage.addEventListener(KeyboardEvent.KEY_UP,main.handleKeyBoardPress)" >
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -18,14 +18,15 @@
 	
 	<fx:Script>
 		<![CDATA[
-		
 			import flash.utils.Timer;
 			
 			import mx.controls.Alert;
-			import mx.core.FlexGlobals;
 			import mx.core.IVisualElement;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
 			import mx.utils.UIDUtil;
 			
 			import sg.edu.smu.ksketch.interactor.KSystemCommandExecutor;
@@ -33,36 +34,33 @@
 			
 			import spark.components.TitleWindow;
 
-			private static const _LOG_INTERVAL:Number = 30000;
-			private static const _LOG_SERVER_URL:String = "http://coalescences.net/logtest/put";
+			private const _LOG_INTERVAL:Number = 30000;
+			private const _LOG_SERVER_URL:String = "http://playsketch.org/logging/put/";
 			
 			private var _debuggerWindow:TitleWindow;
 
 			public function triggerLogger(event:MouseEvent):void
 			{
-//				var showConfirmWindow:Boolean = main.appState.userOption.showConfirmWindow;
-				var canvas:LoggerCanvas = new LoggerCanvas();
-				var executor:KSystemCommandExecutor = new KSystemCommandExecutor(
-					main.appState,main.appCanvas,main.facade);
-				KLogger.enabled = false;
-				var modelXML:XML = main.facade.saveFile();
 				var logXML:XML = KLogger.logFile;
+				var modelXML:XML = main.facade.saveFile();
+				var appTime:Number = main.appState.time;
+				var canvas:LoggerCanvas = new LoggerCanvas();
+				KLogger.enabled = false;
 				main.appCanvas.resetCanvas();
-				canvas.initLogger(main.appCanvas,executor);	
-//				main.appState.userOption.showConfirmWindow = false;				
+				canvas.initLogger(main.appCanvas,new KSystemCommandExecutor(
+					main.appState,main.appCanvas,main.facade));
 				var close:Function = function (e:Event):void
 				{
 					main.appCanvas.loadFile(modelXML);
 					KLogger.setLogFile(logXML);
+					main.appState.time = appTime;
 					KLogger.enabled = true;
-//					canvas.initLogger(main.appCanvas,executor);	
 					(e.target as TitleWindow).removeEventListener(Event.CLOSE, close);
 					PopUpManager.removePopUp(e.target as TitleWindow);
-//					main.appState.userOption.showConfirmWindow = showConfirmWindow;
 				};
-				_showWindow("Logger",420,410,canvas,close,true);
+				_showWindow("Logger",425,440,canvas,close,true);
 			}
-			
+						
 			public function triggerSettings(event:MouseEvent):void
 			{
 				var close:Function = function(e:Event):void
@@ -70,7 +68,7 @@
 					(e.target as TitleWindow).removeEventListener(Event.CLOSE, close);
 					PopUpManager.removePopUp(e.target as TitleWindow);
 				};
-				_showWindow("Settings",450,450,new OptionCanvas(main),close,true);
+				_showWindow("Settings",400,400,new OptionCanvas(main),close,true);
 			}
 			
 			public function triggerDebugger(event:MouseEvent):void
@@ -102,111 +100,72 @@
 				PopUpManager.addPopUp(window, main, modal);
 				return window;
 			}
-
+			
 			private function _init():void
 			{
 				main.appInit(width, height, 10,10);
 				main.setLogTrigger(triggerLogger);
 				main.setOptionTrigger(triggerSettings);
 				main.setDebugTrigger(triggerDebugger);	
-				
-				var username:String = FlexGlobals.topLevelApplication.parameters.username;				
-				var address:String = FlexGlobals.topLevelApplication.parameters.address;
-		//		var port:int = 8080;
-		//		var interval:Number = 30000;				
-		//		if (username != null && username.length > 1)
-		//			_automateLogDataUpload(address, port, username+'_'+_generateFileName(), interval);
-		//		else
-		//			Alert.show("Unknown user!","");
-				
-				_automateLogDataUpload(_LOG_SERVER_URL,_LOG_INTERVAL);
-			}
+
+				KLogger.log(KLogger.NEW_SESSION,KLogger.VERSION,main.appState.appBuildNumber); 
 			
-			private function _closeWindow(e:Event):void
-			{
-				(e.target as TitleWindow).removeEventListener(CloseEvent.CLOSE, _closeWindow);
-				PopUpManager.removePopUp(e.target as TitleWindow);
+				var sessionID:String = new Date().toString();				
+				var storedInfo:SharedObject = SharedObject.getLocal("ksketchLogging");
+				var userID:String = storedInfo.data.hasOwnProperty("userID") ? 
+					storedInfo.data.userID : "User_" + UIDUtil.createUID();
+				storedInfo.data.userID = userID;
+
+				_automateLogDataUpload(_LOG_SERVER_URL, userID, sessionID, _LOG_INTERVAL);
 			}
-			
-			private function _automateLogDataSocket(host:String, port:int,
-																 filename:String, logInterval:Number):void
+
+			private function _automateLogDataUpload(logServerUrl:String, userID:String, 
+													sessionID:String, logInterval:Number):void
 			{
-				var lastSendTime:String = "";
-				var xmlSocket:XMLSocket = new XMLSocket(host,port);
-				var timerFunction:Function = function(e:TimerEvent):void
-				{
-					var list:XMLList = KLogger.logFile.children();
-					for each (var node:XML in list)
-					{
-						var time:String = node.attribute(KLogger.LOG_TIME).toXMLString();
-						if (lastSendTime < time)
-						{
-							xmlSocket.send("filename="+filename+"&log="+node.toXMLString());
-							lastSendTime = time;
-						}
-					}
-				};
-				var logTimer:Timer = new Timer(logInterval,0);
-				logTimer.addEventListener(TimerEvent.TIMER,timerFunction);
-				logTimer.start();				
-			}
-			
-			private function _automateLogDataUpload(host:String,logInterval:Number):void
-			{
+				var loggingService:HTTPService = new HTTPService();
+				loggingService.url = logServerUrl;
+				loggingService.method = "POST";
+				loggingService.addEventListener(ResultEvent.RESULT, onLoggingServerResponse, false, 0, true);
+				loggingService.addEventListener(FaultEvent.FAULT, onLoggingServerFault);
 				var lastSendTime:String = "";
 				var timerFunction:Function = function(e:TimerEvent):void
 				{
+					var time:String="";
 					var data:String = "";
 					var list:XMLList = KLogger.logFile.children();
 					for each (var node:XML in list)
 					{
-						var time:String = node.attribute(KLogger.LOG_TIME).toXMLString();
+						var newline:String = data != null && data.length > 0 ? "\n" : "";
+						time = node.attribute(KLogger.LOG_TIME).toXMLString();
 						if (lastSendTime < time)
-						{
-							data = data + node.toXMLString();
-							lastSendTime = time;
-						}
+							data = data + newline + node.toXMLString();
 					}
-					_sendData(host,data);
+					lastSendTime = time;
+					var params:Object = {};
+					params['userID'] = userID;
+					params['sessionID'] = sessionID;
+					params['logData'] = data;
+					loggingService.send(params);
 				};
 				var logTimer:Timer = new Timer(logInterval,0);
 				logTimer.addEventListener(TimerEvent.TIMER,timerFunction);
 				logTimer.start();				
 			}
-
-			private function _sendData(host:String, dataString:String):void
+			
+			private function onLoggingServerResponse(e:ResultEvent): void
 			{
-				var uploadRequest:URLRequest = new URLRequest(host); 
-				uploadRequest.method = URLRequestMethod.POST; 
-				uploadRequest.contentType = "multipart/form-data; boundary=---------------------------" + UIDUtil.createUID(); 
-				uploadRequest.data = dataString; 
-				var uploader:URLLoader = new URLLoader; 
-				uploader.dataFormat = URLLoaderDataFormat.TEXT; 
-				uploader.load(uploadRequest); 
+				if ( e.result != "OK")
+					Alert.show("Error uploading log files:\n" + e.result);
+				else
+					trace("Log uploaded correctly: " + e.result);
 			}
 			
-			private function _generateFileName():String
+			private function onLoggingServerFault(e:FaultEvent): void
 			{
-				var d:Date = new Date();
-				return  d.fullYear + "-" + (d.month+1) + "-" + d.date + "-" +
-					_getTimeStamp(d.hours,d.minutes,d.seconds) + ".log";
+				var complaint:String = e.fault.faultCode + e.fault.faultString + e.fault.faultDetail;
+				Alert.show("Error uploading log files:\n" + complaint);
 			}
-			
-			private function _getTimeStamp(hr:Number,min:Number,sec:Number):String
-			{
-				var hrStr:String  =  hr < 10 ? "0" + hr.toString()  : hr.toString();
-				var minStr:String = min < 10 ? "0" + min.toString() : min.toString();
-				var secStr:String = sec < 10 ? "0" + sec.toString() : sec.toString();;
-				return hrStr +"."+ minStr+"."+ secStr;
-			}
-			
-			private function _setKeyboardListener():void
-			{
-				//			FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_UP, main.handleKeyBoardPress);
-				//			this.stage.addEventListener(KeyboardEvent.KEY_UP, main.handleKeyBoardPress);
-				//			this.setFocus();
-			}			
-			
+						
 		]]>
 	</fx:Script>
 	

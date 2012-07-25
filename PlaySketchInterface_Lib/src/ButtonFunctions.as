@@ -5,7 +5,6 @@
 *-------------------------------------------------*/
 import Audio.MicrophoneFunctions;
 
-import ImportImage.Dott;
 import ImportImage.ImageTrim;
 import ImportImage.ImgResizingWindow;
 import ImportImage.ImgWindowSkin;
@@ -18,24 +17,15 @@ import flash.display.Loader;
 import flash.display.LoaderInfo;
 import flash.display.MovieClip;
 import flash.display.Shape;
-import flash.errors.IOError;
-import flash.events.AsyncErrorEvent;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.MouseEvent;
-import flash.events.ProgressEvent;
-import flash.events.SecurityErrorEvent;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.media.Camera;
 import flash.net.FileFilter;
 import flash.net.FileReference;
-import flash.net.URLLoader;
-import flash.net.URLLoaderDataFormat;
-import flash.net.URLRequest;
-import flash.net.URLVariables;
-import flash.system.Capabilities;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.setTimeout;
@@ -43,37 +33,25 @@ import flash.utils.setTimeout;
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.collections.ArrayList;
-import mx.containers.HBox;
 import mx.containers.TitleWindow;
 import mx.controls.Alert;
 import mx.controls.Image;
 import mx.controls.ProgressBar;
-import mx.core.BitmapAsset;
-import mx.core.IFlexDisplayObject;
 import mx.core.UIComponent;
 import mx.events.CloseEvent;
-import mx.events.IndexChangedEvent;
 import mx.flash.UIMovieClip;
-import mx.graphics.codec.JPEGEncoder;
 import mx.graphics.codec.PNGEncoder;
 import mx.managers.PopUpManager;
-import mx.messaging.messages.ErrorMessage;
-import mx.utils.Base64Decoder;
-import mx.utils.Base64Encoder;
 
 import sg.edu.smu.ksketch.interactor.KCommandExecutor;
 import sg.edu.smu.ksketch.logger.KLogger;
 import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
-import sg.edu.smu.playsketch.components.timebar.Marker;
 import sg.edu.smu.playsketch.exportTools.SimpleFlvWriter;
 
 import spark.components.Button;
-import spark.components.ComboBox;
 import spark.components.DropDownList;
 import spark.components.Group;
 import spark.components.Label;
-import spark.core.IDisplayText;
-import spark.events.DropDownEvent;
 import spark.events.IndexChangeEvent;
 
 
@@ -105,7 +83,6 @@ private var ImageTr:ImportImage.ImageTrim;
 private var camera:Camera;
 private var liveOrSnapped:Boolean=false;	
 public var bitmapDataBeforeIrregular:BitmapData;
-private var fileref:FileReference;
 private var bitmapDataAfterIrregular:BitmapData;
 private var onLoadBtn:Boolean=false;
 private var bytes1:ByteArray = new ByteArray();
@@ -205,6 +182,7 @@ private function _initLoggableButtons():void
 		_toogle_TimebarExpand();
 	});
 }
+
 private function _getButtonMappings():Dictionary
 {
 	var mapping:Dictionary = new Dictionary();
@@ -443,7 +421,6 @@ private function onFlv3(event:MouseEvent):void
 	flvWizardWindow();
 }
 
-
 private function onSavePressedFlv(event:Event):void
 {
 	PopUpManager.removePopUp(flvTestWindow);
@@ -556,8 +533,6 @@ private function onFlv7(event:MouseEvent):void
 
 private var micr:MicrophoneFunctions;
 
-
-
 public function soundRecord():void
 {
 	///UNDER CONSTRUCTION- Ready to use window
@@ -621,12 +596,10 @@ public function soundRecord():void
 	loadxml.addEventListener("click",onloadxml);
 }
 
-
 private function onstrec(event:Event):void
 {	
 	micr.startMicRecording();
 }
-
 
 private function onendrec(event:Event):void
 {
@@ -650,7 +623,6 @@ private function onloadxml(event:Event):void
 
 public function imgWizardWindow():void
 {		
-			
 	arrListforCam=new ArrayList();	
 		
 	imgTitleWindow= new ImgResizingWindow(this);	
@@ -715,7 +687,6 @@ public function imgWizardWindow():void
 	onbtnLoadCamera();
 }
 
-
 private function onSaveSelected(event:Event):void
 {
 	var imageTypes:FileFilter = new FileFilter(
@@ -731,7 +702,6 @@ private function selectImageHandler( evt : Event ) : void
 	_fileRef.addEventListener(Event.COMPLETE, loadCompleteHandler);	
 	_fileRef.load();	
 }
-
 
 private function loadCompleteHandler(event:Event):void
 {	
@@ -781,8 +751,7 @@ private function loadBytesHandlerforFullImage(event:Event):void
 	
 	imgTitleWindow.btnLoad.enabled=true;
 	isRegionDrawn=false;
-		
- }
+}
 
 private function ldrError(evt:*):void 
 {    
@@ -797,8 +766,6 @@ private function onPNG(loader:Loader, ev:Event):void
 	bitmapDataBeforeIrregular=bitmap.bitmapData;
 }
 
-
-
 private function closeHandlerImg(event:Event):void
 {
 	imgTitleWindow.videoDisplay.attachCamera(null);
@@ -806,8 +773,6 @@ private function closeHandlerImg(event:Event):void
 	PopUpManager.removePopUp(imgTitleWindow);
 	isRegionDrawn=false;
 }
-
-
 
 public function onbtnSaveImage(event:Event):void
 {		 
@@ -826,14 +791,10 @@ public function onbtnSaveImage(event:Event):void
 	 loadBytesHandler();	 	 	 		 			
 }	
 
-
-
-
 private function on_fileLoadError(event:IOErrorEvent):void
 {
 	Alert.show("File Error");
 }
-
 
 private function loadBytesHandler():void
 {
@@ -844,7 +805,6 @@ private function loadBytesHandler():void
     loader.loadBytes(bytes1);							
 }
 
-
 private function onAddPNG(loader:Loader, ev:Event):void
 {			
 	var bitmapData:BitmapData = new BitmapData(loader.content.width, loader.content.height,true,0);
@@ -852,10 +812,8 @@ private function onAddPNG(loader:Loader, ev:Event):void
 	var bitmap:Bitmap = new Bitmap(bitmapData);	
 	var image:Image = new Image();
 	image.source = bitmap;
-	KLogger.logAddKImage(bitmapData,appState.time,100,100);
 	appState.addOperation(facade.addKImage(bitmapData,appState.time,100,100));	
 }
-
 
 private function trimmingIrregularShape():void
 {
@@ -922,7 +880,6 @@ private function trimmingIrregularShape():void
 	bmd.copyPixels(bitmapDataAfterIrregular,region,new Point());
 	bitmapDataAfterIrregular=bmd;			
 }
-
 
 public function onbtnLoadCamera():void
 {		
@@ -996,7 +953,6 @@ public function onbtnLoadCameraSnap(event:Event):void
 	imgTitleWindow.hBox.height=imgTitleWindow.windowHeight-imgTitleWindow.offsetForDisplayHeight;		
 	imgTitleWindow.setButtons();
 }
-
 
 private function setUpForTheBox():void
 {

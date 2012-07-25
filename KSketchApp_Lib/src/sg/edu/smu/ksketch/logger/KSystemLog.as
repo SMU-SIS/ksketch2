@@ -30,6 +30,21 @@ package sg.edu.smu.ksketch.logger
 		private var _2DPoints:Vector.<K2DVector>;
 		private var _3DPoints:Vector.<K3DVector>;
 		
+		// ------------------ Select / Deselect ---------------- //
+		public function select(currentSelections:Vector.<int>,previousSelections:Vector.<int>):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_SELECT+"/>");
+			_node.@[KLogger.SELECTED_ITEMS] = KFileParser.intsToString(currentSelections);
+			_node.@[KLogger.PREV_SELECTED_ITEMS] = KFileParser.intsToString(previousSelections);
+			return _node;
+		}		
+		public function deselect(previousSelections:Vector.<int>):XML
+		{
+			_node = new XML("<"+KLogger.SYSTEM_DESELECT+"/>");
+			_node.@[KLogger.PREV_SELECTED_ITEMS] = KFileParser.intsToString(previousSelections);
+			return _node;
+		}
+		
 		// ---------------- Undo/Redo Operation ---------------- //
 		public function undo():XML
 		{

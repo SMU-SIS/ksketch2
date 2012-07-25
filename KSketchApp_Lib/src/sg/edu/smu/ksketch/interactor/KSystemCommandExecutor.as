@@ -12,6 +12,7 @@ package sg.edu.smu.ksketch.interactor
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
+	import sg.edu.smu.ksketch.io.KFileAccessor;
 	import sg.edu.smu.ksketch.io.KFileLoader;
 	import sg.edu.smu.ksketch.io.KFileParser;
 	import sg.edu.smu.ksketch.logger.KLogger;
@@ -50,7 +51,9 @@ package sg.edu.smu.ksketch.interactor
 		
 		public static function isOperationCommand(command:String):Boolean
 		{
-			return isSystemCommand(command) && !isPlayerCommand(command) && 
+			return isSystemCommand(command) && 
+				!isPlayerCommand(command) && !isSelectionCommand(command) && 
+				!isLoadCommand(command) && !isSwitchContentCommand(command) &&  
 				command != KLogger.SYSTEM_NEW && command != KLogger.SYSTEM_SAVE && 
 				command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD;
 		}
@@ -73,6 +76,11 @@ package sg.edu.smu.ksketch.interactor
 			return command.indexOf(KLogger.SYSTEM_SWITCHCONTENT) == 0;
 		}
 		
+		public static function isSelectionCommand(command:String):Boolean
+		{
+			return command == KLogger.SYSTEM_SELECT || command == KLogger.SYSTEM_DESELECT; 
+		}
+				
 		public override function initCommand(commandNode:XML):void
 		{
 			var command:String = commandNode.name();
@@ -166,47 +174,83 @@ package sg.edu.smu.ksketch.interactor
 		{
 			_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
 			var command:String = commandNode.name();
-			if (command == KLogger.SYSTEM_PLAY)
-				_appState.startPlaying();
-			else if (command == KLogger.SYSTEM_PAUSE)
-				_appState.pause();
-			else if (command == KLogger.SYSTEM_REWIND)
-				_first();
-			else if (command == KLogger.SYSTEM_PREVFRAME)
-				_previous()
-			else if (command == KLogger.SYSTEM_NEXTFRAME)
-				_next();
-			else if (command == KLogger.SYSTEM_SLIDERDRAG)
-				_appState.time = _getNumber(commandNode,KLogger.TIME_TO);
-			else if (command == KLogger.SYSTEM_GUTTERTAP)
-				_appState.time = _getNumber(commandNode,KLogger.TIME_TO);
+			switch (command)
+			{
+				case KLogger.SYSTEM_PLAY:
+					_appState.startPlaying();
+					break;
+				case KLogger.SYSTEM_PAUSE:
+					_appState.pause();
+					break;
+				case KLogger.SYSTEM_REWIND:
+					_first();
+					break;
+				case KLogger.SYSTEM_PREVFRAME:
+					_previous()
+					break;
+				case KLogger.SYSTEM_NEXTFRAME:
+					_next();
+					break;
+				case KLogger.SYSTEM_SLIDERDRAG:
+				case KLogger.SYSTEM_GUTTERTAP:
+					_appState.time = _getNumber(commandNode,KLogger.TIME_TO);
+					break;
+			}
 		}
 		
 		public function undoPlayerCommand(commandNode:XML):void
 		{
 			var command:String = commandNode.name();
-			if (command == KLogger.SYSTEM_PLAY)
-				_appState.pause();
-			else if (command == KLogger.SYSTEM_PAUSE)
-				_appState.startPlaying();
-			else if (command == KLogger.SYSTEM_REWIND)
-				_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
-			else if (command == KLogger.SYSTEM_PREVFRAME)
-				_next();
-			else if (command == KLogger.SYSTEM_NEXTFRAME)
-				_previous();
-			else if (command == KLogger.SYSTEM_SLIDERDRAG)
-				_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
-			else if (command == KLogger.SYSTEM_GUTTERTAP)
-				_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
+			switch (command)
+			{
+				case KLogger.SYSTEM_PLAY:
+					_appState.pause();
+					break;
+				case KLogger.SYSTEM_PAUSE:
+					_appState.startPlaying();
+					break;
+				case KLogger.SYSTEM_REWIND:
+					_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
+					break;
+				case KLogger.SYSTEM_PREVFRAME:
+					_next();
+					break;
+				case KLogger.SYSTEM_NEXTFRAME:
+					_previous();
+					break;
+				case KLogger.SYSTEM_SLIDERDRAG:
+				case KLogger.SYSTEM_GUTTERTAP:
+					_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
+					break;
+			}
+		}
+		
+		public function redoSelectionCommand(commandNode:XML):void
+		{
+			var command:String = commandNode.name();
+			var objs:KModelObjectList = _getObjects(commandNode,KLogger.SELECTED_ITEMS);
+			if (command == KLogger.SYSTEM_SELECT)
+				_appState.selection = objs && objs.length() > 0 ? 
+					new KSelection(objs,_appState.time) : null;
+			else if (command == KLogger.SYSTEM_DESELECT)
+				_appState.selection = null;
+		}
+		
+		public function undoSelectionCommand(commandNode:XML):void
+		{
+			var command:String = commandNode.name();
+			var objs:KModelObjectList = _getObjects(commandNode,KLogger.PREV_SELECTED_ITEMS);
+			if (command == KLogger.SYSTEM_SELECT || command == KLogger.SYSTEM_DESELECT)
+				_appState.selection = objs && objs.length() > 0 ? 
+					new KSelection(objs,_appState.time) : null;
 		}
 		
 		public function load(commandNode:XML):void
 		{
 			var filename:String = commandNode.attribute(KLogger.FILE_NAME);
 			var location:String = commandNode.attribute(KLogger.FILE_LOCATION);
-			var file:File = KFileParser.resolvePath(filename,
-				location ? location : KLogger.FILE_DESKTOP_DIR);
+			var file:File = KFileAccessor.resolvePath(filename,
+				location ? location : KLogger.FILE_DESKTOP_DIR) as File;
 			if (file.exists)
 			{
 				var xml:XML = new KFileLoader().loadKMVFromFile(file);
@@ -500,10 +544,10 @@ package sg.edu.smu.ksketch.interactor
 			return keys;
 		}
 		
-		private function _getObjects(commandNode:XML):KModelObjectList
+		private function _getObjects(commandNode:XML,attribute:String=KLogger.OBJECTS):KModelObjectList
 		{
 			var list:KModelObjectList = new KModelObjectList();
-			var ints:Vector.<int> = _getInts(commandNode,KLogger.OBJECTS);
+			var ints:Vector.<int> = _getInts(commandNode,attribute);
 			for (var i:int = 0; i < ints.length; i++)
 				list.add(_facade.getObjectByID(ints[i]));
 			return list;

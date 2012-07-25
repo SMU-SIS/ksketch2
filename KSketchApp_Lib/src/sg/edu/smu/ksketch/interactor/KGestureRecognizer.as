@@ -517,9 +517,7 @@ package sg.edu.smu.ksketch.interactor
 		}
 		
 		public function end(point:Point):void
-		{
-			trace(_mode);
-			
+		{			
 			update(point);
 			
 			_tempView.clear();

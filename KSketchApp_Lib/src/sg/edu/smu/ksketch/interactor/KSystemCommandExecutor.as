@@ -170,6 +170,33 @@ package sg.edu.smu.ksketch.interactor
 			_appState.redo();
 		}
 		
+		public function undoPlayerCommand(commandNode:XML):void
+		{
+			var command:String = commandNode.name();
+			switch (command)
+			{
+				case KLogger.SYSTEM_PLAY:
+					_appState.pause();
+					break;
+				case KLogger.SYSTEM_PAUSE:
+					_appState.startPlaying();
+					break;
+				case KLogger.SYSTEM_REWIND:
+					_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
+					break;
+				case KLogger.SYSTEM_PREVFRAME:
+					_next();
+					break;
+				case KLogger.SYSTEM_NEXTFRAME:
+					_previous();
+					break;
+				case KLogger.SYSTEM_SLIDERDRAG:
+				case KLogger.SYSTEM_GUTTERTAP:
+					_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
+					break;
+			}
+		}
+		
 		public function redoPlayerCommand(commandNode:XML):void
 		{
 			_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
@@ -198,31 +225,13 @@ package sg.edu.smu.ksketch.interactor
 			}
 		}
 		
-		public function undoPlayerCommand(commandNode:XML):void
+		public function undoSelectionCommand(commandNode:XML):void
 		{
 			var command:String = commandNode.name();
-			switch (command)
-			{
-				case KLogger.SYSTEM_PLAY:
-					_appState.pause();
-					break;
-				case KLogger.SYSTEM_PAUSE:
-					_appState.startPlaying();
-					break;
-				case KLogger.SYSTEM_REWIND:
-					_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
-					break;
-				case KLogger.SYSTEM_PREVFRAME:
-					_next();
-					break;
-				case KLogger.SYSTEM_NEXTFRAME:
-					_previous();
-					break;
-				case KLogger.SYSTEM_SLIDERDRAG:
-				case KLogger.SYSTEM_GUTTERTAP:
-					_appState.time = _getNumber(commandNode,KLogger.TIME_FROM);
-					break;
-			}
+			var objs:KModelObjectList = _getObjects(commandNode,KLogger.PREV_SELECTED_ITEMS);
+			if (command == KLogger.SYSTEM_SELECT || command == KLogger.SYSTEM_DESELECT)
+				_appState.selection = objs && objs.length() > 0 ? 
+					new KSelection(objs,_appState.time) : null;
 		}
 		
 		public function redoSelectionCommand(commandNode:XML):void
@@ -234,15 +243,6 @@ package sg.edu.smu.ksketch.interactor
 					new KSelection(objs,_appState.time) : null;
 			else if (command == KLogger.SYSTEM_DESELECT)
 				_appState.selection = null;
-		}
-		
-		public function undoSelectionCommand(commandNode:XML):void
-		{
-			var command:String = commandNode.name();
-			var objs:KModelObjectList = _getObjects(commandNode,KLogger.PREV_SELECTED_ITEMS);
-			if (command == KLogger.SYSTEM_SELECT || command == KLogger.SYSTEM_DESELECT)
-				_appState.selection = objs && objs.length() > 0 ? 
-					new KSelection(objs,_appState.time) : null;
 		}
 		
 		public function load(commandNode:XML):void
@@ -328,16 +328,23 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _cut(commandNode:XML):void
 		{
-			_appState.time = _getNumber(commandNode,KLogger.TIME);
-			_appState.addOperation(_facade.cut(_getObjects(commandNode),_appState.time));
+			var time:Number = _getNumber(commandNode,KLogger.TIME);
+			var objects:KModelObjectList = _getObjects(commandNode);
+			var selection:KSelection = new KSelection(objects,time); 
+			_appState.time = time;
+			_appState.addOperation(new KInteractionOperation(
+				_appState,time,time,selection,null,_facade.cut(objects,time)));
 		}	
 		
 		private function _paste(commandNode:XML):void
 		{
-			_appState.time = _getNumber(commandNode,KLogger.TIME);
-			_appState.addOperation(_facade.paste(
-				_getBoolean(commandNode,KLogger.PASTEINCLUDEMOTION),
-				_getNumber(commandNode,KLogger.TIME)));
+			var oldSel:KSelection = _appState.selection;
+			var time:Number = _getNumber(commandNode,KLogger.TIME);
+			var includeMotion:Boolean = _getBoolean(commandNode,KLogger.PASTEINCLUDEMOTION);
+			var op:IModelOperation = _facade.paste(includeMotion,time);
+			_appState.time = time;
+			_appState.addOperation(new KInteractionOperation(
+				_appState,time,time,oldSel,_appState.selection,op));
 		}	
 		
 		private function _clearClipBoard(commandNode:XML):void

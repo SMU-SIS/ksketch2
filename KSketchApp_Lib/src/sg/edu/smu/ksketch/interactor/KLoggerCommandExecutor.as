@@ -251,7 +251,7 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case KPlaySketchLogger.CHANGE_ASPECT_RATIO:
 					break;
-				case KLogger.NEW_SESSION:
+				case KLogger.SYSTEM_NEWSESSION:
 					break;
 			}
 		}
@@ -304,7 +304,7 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case KPlaySketchLogger.BTN_SAVE:
 					break;
-				case KLogger.NEW_SESSION:
+				case KLogger.SYSTEM_NEWSESSION:
 					break;
 				default:
 					doButtonCommand(command);

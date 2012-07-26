@@ -185,7 +185,7 @@ private function _loadKMVFile(commandNode:XML):void
 	var location:String = commandNode.attribute(KLogger.FILE_LOCATION);
 	if (_fileExist(filename,location))
 	{
-		_commandExecutor.load(commandNode);
+		_commandExecutor.load(filename,location);
 		if (_playButton.label == _STOP_COMMAND)
 			_startPlayer();
 	}

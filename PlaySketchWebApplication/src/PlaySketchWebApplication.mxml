@@ -107,15 +107,13 @@
 				main.setLogTrigger(triggerLogger);
 				main.setOptionTrigger(triggerSettings);
 				main.setDebugTrigger(triggerDebugger);	
-
-				KLogger.log(KLogger.NEW_SESSION,KLogger.VERSION,main.appState.appBuildNumber); 
+				KLogger.logNewFile(main.appState.appBuildNumber); 
 			
 				var sessionID:String = new Date().toString();				
 				var storedInfo:SharedObject = SharedObject.getLocal("ksketchLogging");
 				var userID:String = storedInfo.data.hasOwnProperty("userID") ? 
 					storedInfo.data.userID : "User_" + UIDUtil.createUID();
 				storedInfo.data.userID = userID;
-
 				_automateLogDataUpload(_LOG_SERVER_URL, userID, sessionID, _LOG_INTERVAL);
 			}
 

@@ -7,6 +7,7 @@
 package sg.edu.smu.ksketch.interactor
 {
 	import flash.events.EventDispatcher;
+	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.ui.Mouse;
 	
@@ -19,6 +20,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.event.KCommandEvent;
 	import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 	import sg.edu.smu.ksketch.gestures.GestureDesign;
+	import sg.edu.smu.ksketch.io.KFileAccessor;
 	import sg.edu.smu.ksketch.io.KFileLoader;
 	import sg.edu.smu.ksketch.io.KFileSaver;
 	import sg.edu.smu.ksketch.logger.KLogger;
@@ -64,17 +66,17 @@ package sg.edu.smu.ksketch.interactor
 					break;
 				case KPlaySketchLogger.BTN_NEW:
 					filename = _generateFileName(); 
-					KLogger.log(command,KLogger.FILE_NAME,filename);
 					_save(filename,KLogger.FILE_APP_DIR);
+					KLogger.flush();
 					_newFile();
-					KLogger.log(KLogger.NEW_SESSION, KLogger.VERSION, _appState.appBuildNumber);
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_LOAD:
 					filename = _generateFileName();
-					KLogger.log(command);
 					_save(filename,KLogger.FILE_APP_DIR);
 					KLogger.flush();
 					_load();
+					KLogger.log(command);
 					break;
 				case KPlaySketchLogger.BTN_SAVE:
 					filename = _generateFileName(); 
@@ -282,6 +284,15 @@ package sg.edu.smu.ksketch.interactor
 			}
 			KLogger.log(command);
 		}
+
+		public function load(filename:String,location:String):void
+		{
+			var file:File = KFileAccessor.resolvePath(filename,
+				location ? location : KLogger.FILE_DESKTOP_DIR) as File;
+			var xml:XML = new KFileLoader().loadKMVFromFile(file);
+			_canvas.loadFile(xml);
+			KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
+		}
 		
 		public function saveWithListener(listener:Function):void
 		{
@@ -411,11 +422,11 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _newFile():void
 		{
-			KLogger.flush();
 			_canvas.resetCanvas();
 			_facade.clearClipBoard();
 			_appState.fireEditEnabledChangedEvent();
 			_appState.fireGroupingEnabledChangedEvent();
+			KLogger.logNewFile(_appState.appBuildNumber);
 		}
 		
 		private function _load():void
@@ -505,9 +516,28 @@ package sg.edu.smu.ksketch.interactor
 		{
 			if(e.filePath)
 			{
-				var xml:XML = new XML(e.content);
-				_canvas.loadFile(xml);
-				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
+				var kmv:XML = new XML(e.content);
+				var commands:XML = new XML(kmv.child(KLogger.COMMANDS));
+				var array:Array = _xmlListToArray(commands.children());
+				var newXML:XML = array != null && array.length > 0 && 
+					XML(array[0]).name().toString() == KLogger.SYSTEM_NEWSESSION  && 
+					XML(array[0]).attribute(KLogger.FILE_NAME).length() > 0 ? XML(array[0]) : null;
+				var filename:String = newXML ? newXML.attribute(KLogger.FILE_NAME) : null;
+				var location:String = newXML ? newXML.attribute(KLogger.FILE_LOCATION) : null;
+				if (newXML && filename && _fileExist(filename,location))
+				{
+					load(filename,location);
+					var logXML:XML = KLogger.logFile;
+					for (var i:int=1; i < array.length; i++)
+						logXML.appendChild(XML(array[i]));
+					KLogger.setLogFile(logXML);
+				}
+				else
+				{
+					_canvas.loadFile(kmv);
+					KLogger.setLogFile(commands);
+					KLogger.logLoadFile(_appState.appBuildNumber,e.filePath);
+				}	
 			}
 		}
 		
@@ -542,6 +572,22 @@ package sg.edu.smu.ksketch.interactor
 				saver.save(content,filename);
 			else if (KAppState.IS_AIR)
 				saver.saveToDir(content,folder,filename);
+		}
+		
+		private function _xmlListToArray(list:XMLList):Array
+		{
+			var array:Array = new Array();
+			for each(var xml:XML in list)
+			{
+				array.push(xml);
+			}
+			return array;
+		}
+		
+		private function _fileExist(filename:String,location:String):Boolean
+		{
+			return (KFileAccessor.resolvePath(filename,
+				location ? location : KLogger.FILE_DESKTOP_DIR) as File).exists;
 		}
 		
 		private function _generateFileName():String

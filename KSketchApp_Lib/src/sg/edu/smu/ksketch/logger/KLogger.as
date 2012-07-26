@@ -28,7 +28,6 @@ package sg.edu.smu.ksketch.logger
 		
 		// command names, same as xml node name
 		public static const COMMANDS:String = "commands";
-		public static const NEW_SESSION:String = "newsession";
 		public static const VERSION:String = "version";
 
 		public static const FILE_NAME:String = "filename";
@@ -48,6 +47,9 @@ package sg.edu.smu.ksketch.logger
 		public static const TIME_TO:String = "totime";
 		
 		// System commands
+		public static const SYSTEM_NEWSESSION:String = "sys-newsession";
+		public static const SYSTEM_LOAD:String = "sys-load";
+		public static const SYSTEM_SAVE:String = "sys-save";
 		public static const SYSTEM_SELECT:String = "sys-select";
 		public static const SYSTEM_DESELECT:String = "sys-deselect";
 		public static const SYSTEM_UNDO:String = "sys-undo";
@@ -70,9 +72,6 @@ package sg.edu.smu.ksketch.logger
 		public static const SYSTEM_GROUP:String = "sys-group";
 		public static const SYSTEM_UNGROUP:String = "sys-ungroup";
 		public static const SYSTEM_REGROUP:String = "sys-regroup";
-		public static const SYSTEM_NEW:String = "sys-new";
-		public static const SYSTEM_LOAD:String = "sys-load";
-		public static const SYSTEM_SAVE:String = "sys-save";
 		public static const SYSTEM_SETOBJECTNAME:String = "sys-setobjectname";
 		public static const SYSTEM_RETIMEKEYS:String = "sys-retimekeys";
 		public static const SYSTEM_PLAY:String = "sys-play";
@@ -318,14 +317,14 @@ package sg.edu.smu.ksketch.logger
 			_logObject(_systemLog.clearMotions(objectIDs));
 		}
 		
-		public static function logNewFile():void
+		public static function logNewFile(version:String):void
 		{
-			_logObject(_systemLog.newFile());
+			_logObject(_systemLog.newFile(version));
 		}
 		
-		public static function logLoadFile(filepath:String):void
+		public static function logLoadFile(version:String,filepath:String):void
 		{
-			_logObject(_systemLog.loadFile(filepath));
+			_logObject(_systemLog.loadFile(version,filepath));
 		}
 		
 		public static function logSaveFile(filepath:String):void
@@ -339,7 +338,7 @@ package sg.edu.smu.ksketch.logger
 		}
 		
 		public static function logRetimeKeys(objectIDs:Vector.<int>, 
-											 keyTypes:Vector.<int>,keyTimes:Vector.<Number>, 
+											 keyTypes:Vector.<int>, keyTimes:Vector.<Number>, 
 											 retimeTos:Vector.<Number>, appTime:Number):void
 		{		
 			_logObject(_systemLog.retimeKeys(objectIDs,keyTypes,keyTimes,retimeTos,appTime));

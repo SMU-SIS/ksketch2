@@ -54,7 +54,7 @@ package sg.edu.smu.ksketch.interactor
 			return isSystemCommand(command) && 
 				!isPlayerCommand(command) && !isSelectionCommand(command) && 
 				!isLoadCommand(command) && !isSwitchContentCommand(command) &&  
-				command != KLogger.SYSTEM_NEW && command != KLogger.SYSTEM_SAVE && 
+				command != KLogger.SYSTEM_NEWSESSION && command != KLogger.SYSTEM_SAVE && 
 				command != KLogger.SYSTEM_COPY && command != KLogger.SYSTEM_CLEARCLIPBOARD;
 		}
 		
@@ -245,20 +245,6 @@ package sg.edu.smu.ksketch.interactor
 				_appState.selection = null;
 		}
 		
-		public function load(commandNode:XML):void
-		{
-			var filename:String = commandNode.attribute(KLogger.FILE_NAME);
-			var location:String = commandNode.attribute(KLogger.FILE_LOCATION);
-			var file:File = KFileAccessor.resolvePath(filename,
-				location ? location : KLogger.FILE_DESKTOP_DIR) as File;
-			if (file.exists)
-			{
-				var xml:XML = new KFileLoader().loadKMVFromFile(file);
-				_canvas.loadFile(xml);
-				KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
-			}
-		}
-
 		public function switchContent(commandNode:XML):void
 		{
 			_canvas.resetCanvas();

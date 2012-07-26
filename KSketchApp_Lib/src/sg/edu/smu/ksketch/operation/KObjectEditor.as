@@ -8,6 +8,7 @@ package sg.edu.smu.ksketch.operation
 {
 	import flash.display.BitmapData;
 	import flash.display.MovieClip;
+	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.components.KObjectView;
 	import sg.edu.smu.ksketch.interactor.KSelection;
@@ -37,18 +38,22 @@ package sg.edu.smu.ksketch.operation
 			_clipboard = new KClipBoard();
 		}
 		
-		public function addMovieClip(model:KModel, movieClip:MovieClip, xPos:Number, yPos:Number, time:Number):IModelOperation
+		public function addMovieClip(model:KModel, movieClip:MovieClip, xPos:Number, yPos:Number, time:Number, centerX:Number = NaN, centerY:Number = NaN):IModelOperation
 		{
 			var kMovieClip:KMovieClip = new KMovieClip(model.nextID, movieClip, xPos, yPos, time);
+			if(!isNaN(centerX) && !isNaN(centerY))
+				kMovieClip.priorityCenter = kMovieClip.defaultCenter.add(new Point(0,50));
 			model.add(kMovieClip);
 			return _addObject(kMovieClip,model);
 		}
 		
-		public function addImage(model:KModel,imageData:BitmapData,xPos:Number,yPos:Number,time:Number):IModelOperation
+		public function addImage(model:KModel,imageData:BitmapData,xPos:Number,yPos:Number,time:Number, centerX:Number = NaN, centerY:Number = NaN):IModelOperation
 		{
 			var image:KImage = new KImage(model.nextID, xPos, yPos, time);
 			if (imageData)
 				image.imageData = imageData;
+			if(!isNaN(centerX) && !isNaN(centerY))
+				image.priorityCenter = image.defaultCenter.add(new Point(0,50));
 			model.add(image);
 			return _addObject(image,model);
 		}

@@ -62,18 +62,18 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Edit Operation ------------------- //	
-		public function addKImage(data:BitmapData,time:Number,x:Number,y:Number):IModelOperation
+		public function addKImage(imageData:BitmapData, time:Number, xPos:Number, yPos:Number, centerX:Number = NaN , centerY:Number = NaN ):IModelOperation
 		{
-			KLogger.logAddKImage(data,time,x,y);
-			var op:IModelOperation = _editor.addImage(_model,data,x,y,time);
+			KLogger.logAddKImage(imageData,time,xPos,yPos);
+			var op:IModelOperation = _editor.addImage(_model,imageData,xPos,yPos,time,centerX,centerY)
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
-		public function addKMovieClip(clip:MovieClip,time:Number,x:Number,y:Number):IModelOperation
+		public function  addKMovieClip(movieClip:MovieClip, time:Number, xPos:Number, yPos:Number, centerX:Number = NaN , centerY:Number = NaN ):IModelOperation
 		{
-			KLogger.logAddKMovieClip(clip,time,x,y);
-			var op:IModelOperation = _editor.addMovieClip(_model,clip,x,y,time);
+			KLogger.logAddKMovieClip(movieClip,time,xPos,yPos);
+			var op:IModelOperation = _editor.addMovieClip(_model,movieClip ,xPos,yPos,time,centerX,centerY);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;

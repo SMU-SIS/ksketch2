@@ -26,6 +26,9 @@ package sg.edu.smu.ksketch.logger
 		public static const OBJECTS:String = "objects";
 		public static const NAME:String = "name";
 		
+		public static const BEGIN_LEVEL:String = "begin-level";
+		public static const END_LEVEL:String = "end-level";
+
 		// command names, same as xml node name
 		public static const COMMANDS:String = "commands";
 		public static const VERSION:String = "version";

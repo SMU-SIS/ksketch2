@@ -26,6 +26,9 @@ package sg.edu.smu.ksketch.logger
 		public static const OBJECTS:String = "objects";
 		public static const NAME:String = "name";
 		
+		public static const BEGIN_LEVEL:String = "begin-level";
+		public static const END_LEVEL:String = "end-level";
+
 		// command names, same as xml node name
 		public static const COMMANDS:String = "commands";
 		public static const VERSION:String = "version";
@@ -162,9 +165,10 @@ package sg.edu.smu.ksketch.logger
 			}
 		}
 
-		public static function logSelect(selection:Vector.<int>,prevSelection:Vector.<int>):void
+		public static function logSelect(selection:Vector.<int>,
+										 prevSelection:Vector.<int>,path:Vector.<KPathPoint>):void
 		{
-			_logObject(_systemLog.select(selection,prevSelection));
+			_logObject(_systemLog.select(selection,prevSelection,path));
 		}		
 		
 		public static function logDeselect(prevSelection:Vector.<int>):void

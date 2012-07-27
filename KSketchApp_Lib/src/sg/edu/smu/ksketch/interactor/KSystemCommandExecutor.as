@@ -8,10 +8,13 @@ package sg.edu.smu.ksketch.interactor
 {
 	import flash.display.Loader;
 	import flash.events.Event;
+	import flash.events.TimerEvent;
 	import flash.filesystem.File;
 	import flash.geom.Point;
+	import flash.utils.Timer;
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
+	import sg.edu.smu.ksketch.components.KFilteredLoopView;
 	import sg.edu.smu.ksketch.io.KFileAccessor;
 	import sg.edu.smu.ksketch.io.KFileLoader;
 	import sg.edu.smu.ksketch.io.KFileParser;
@@ -38,7 +41,7 @@ package sg.edu.smu.ksketch.interactor
 		public static const SYSTEM_EVENT_COLOR:uint = 0x000000;
 		public static const SYSTEM_EVENT_FONT:String = "normal";
 		public static var highlightUserEvent:Boolean = false;
-
+		
 		public function KSystemCommandExecutor(appState:KAppState, canvas:KCanvas, facade:KModelFacade)
 		{
 			super(appState, canvas, facade);
@@ -239,8 +242,11 @@ package sg.edu.smu.ksketch.interactor
 			var command:String = commandNode.name();
 			var objs:KModelObjectList = _getObjects(commandNode,KLogger.SELECTED_ITEMS);
 			if (command == KLogger.SYSTEM_SELECT)
+			{
 				_appState.selection = objs && objs.length() > 0 ? 
-					new KSelection(objs,_appState.time) : null;
+					new KSelection(objs,_appState.time) : null;				
+				_showSelectPath(_getPathPoints(commandNode,KLogger.CURSOR_PATH),500);
+			}
 			else if (command == KLogger.SYSTEM_DESELECT)
 				_appState.selection = null;
 		}
@@ -499,6 +505,20 @@ package sg.edu.smu.ksketch.interactor
 		private function _endScale(object:KObject, time:Number):IModelOperation
 		{
 			return _facade.endScale(object, _appState.time = time);			
+		}
+
+		private function _showSelectPath(path:Vector.<KPathPoint>,duration:Number):void
+		{
+			var loopView:KFilteredLoopView = new KFilteredLoopView();
+			for (var i:int; i < path.length; i++)
+				loopView.add(path[i]);
+			_canvas.gestureLayer.addChild(loopView);			
+			var timer:Timer = new Timer(duration,1);
+			timer.addEventListener(TimerEvent.TIMER, function (e:TimerEvent):void
+			{
+				_canvas.gestureLayer.removeChild(loopView);
+			});
+			timer.start();
 		}
 		
 		private function _getGroupingMode(commandNode:XML):String

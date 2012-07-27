@@ -563,7 +563,7 @@ package sg.edu.smu.ksketch.interactor
 				{
 					var prevItems:KModelObjectList = _log.prevSelectedItems ? 
 						_log.prevSelectedItems : new KModelObjectList();
-					KLogger.logSelect(_appState.selection.objects.toIDs(),prevItems.toIDs());
+					KLogger.logSelect(_appState.selection.objects.toIDs(),prevItems.toIDs(),_log.cursorPath);
 				}
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 				_log = null;

@@ -155,8 +155,11 @@ package sg.edu.smu.ksketch.operation
 		public function regroup(objs:KModelObjectList, mode:String, 
 								transitionType:int, appTime:Number, 
 								isRealTimeTranslation:Boolean = false):IModelOperation
-		{	
-			KLogger.logRegroup(objs.toIDs(), mode, transitionType, appTime, isRealTimeTranslation);
+		{
+			
+	//		--- To prevent double logging, do not log regroup, as ungroup and group is logged ---		
+	//		KLogger.logRegroup(objs.toIDs(), mode, transitionType, appTime, isRealTimeTranslation);
+			
 			//		var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,appTime);
 			var unOp:IModelOperation = ungroup(objs, mode, appTime);
 			var gpOp:IModelOperation = group(objs,mode,transitionType,appTime,isRealTimeTranslation);

@@ -200,11 +200,11 @@ package sg.edu.smu.ksketch.logger
 		// ------------------ File Functions ------------------- //						
 		public function newFile(version:String):XML
 		{
-			return _newSession(version,null);
+			return _newSession(version,null,null);
 		}
-		public function loadFile(version:String,filename:String=null):XML
+		public function loadFile(version:String,filename:String=null,location:String=null):XML
 		{
-			return _newSession(version,filename);
+			return _newSession(version,filename,location);
 		}
 		public function saveFile(filename:String):XML
 		{
@@ -283,12 +283,14 @@ package sg.edu.smu.ksketch.logger
 		}
 		
 		// ------------------ Private Function ------------------- //
-		private function _newSession(version:String,filename:String):XML
+		private function _newSession(version:String,filename:String,location:String):XML
 		{
 			_node = new XML("<"+KLogger.SYSTEM_NEWSESSION+"/>");
 			_node.@[KLogger.VERSION] = version;
 			if (filename != null)
 				_node.@[KLogger.FILE_NAME] = filename;
+			if (location != null)
+				_node.@[KLogger.FILE_LOCATION] = location;
 			return _node;
 		}
 		private function _getEditNode(editType:String, objectIDs:Vector.<int>,time:Number=-1):XML

@@ -326,9 +326,9 @@ package sg.edu.smu.ksketch.logger
 			_logObject(_systemLog.newFile(version));
 		}
 		
-		public static function logLoadFile(version:String,filepath:String):void
+		public static function logLoadFile(version:String,filename:String,location:String):void
 		{
-			_logObject(_systemLog.loadFile(version,filepath));
+			_logObject(_systemLog.loadFile(version,filename,location));
 		}
 		
 		public static function logSaveFile(filepath:String):void

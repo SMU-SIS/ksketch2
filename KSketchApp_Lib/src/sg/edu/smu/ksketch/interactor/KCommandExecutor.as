@@ -6,12 +6,17 @@
 
 package sg.edu.smu.ksketch.interactor
 {
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.geom.Point;
+	import flash.net.FileFilter;
+	import flash.net.FileReference;
 	import flash.ui.Mouse;
 	
+	import mx.controls.Alert;
 	import mx.controls.Menu;
+	import mx.events.CloseEvent;
 	import mx.events.MenuEvent;
 	
 	import sg.edu.smu.ksketch.components.KCanvas;
@@ -433,8 +438,8 @@ package sg.edu.smu.ksketch.interactor
 		{
 			var loader:KFileLoader = new KFileLoader();
 			loader.addEventListener(KFileLoadedEvent.EVENT_FILE_LOADED, _kmvLoaded);
-			loader.loadKMV();
-		}			
+			loader.loadKMV();		
+		}
 		
 		private function _cut():void
 		{
@@ -514,30 +519,19 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _kmvLoaded(e:KFileLoadedEvent):void
 		{
-			if(e.filePath)
+			var kmv:XML = new XML(e.content);
+			var commands:XML = new XML(kmv.child(KLogger.COMMANDS));
+			var array:Array = _xmlListToArray(commands.children());				
+			var newXML:XML = array.length > 0 ? XML(array[0]) : null;
+			var filename:String = newXML ? newXML.attribute(KLogger.FILE_NAME) : null;
+			var location:String = newXML ? newXML.attribute(KLogger.FILE_LOCATION) : null;
+			if ( KAppState.IS_AIR && filename && _isLoadingNode(newXML))
+				_loadFileAndAppendLog(filename,location,array);
+			else
 			{
-				var kmv:XML = new XML(e.content);
-				var commands:XML = new XML(kmv.child(KLogger.COMMANDS));
-				var array:Array = _xmlListToArray(commands.children());
-				var newXML:XML = array != null && array.length > 0 && 
-					XML(array[0]).name().toString() == KLogger.SYSTEM_NEWSESSION  && 
-					XML(array[0]).attribute(KLogger.FILE_NAME).length() > 0 ? XML(array[0]) : null;
-				var filename:String = newXML ? newXML.attribute(KLogger.FILE_NAME) : null;
-				var location:String = newXML ? newXML.attribute(KLogger.FILE_LOCATION) : null;
-				if (newXML && filename && _fileExist(filename,location))
-				{
-					load(filename,location);
-					var logXML:XML = KLogger.logFile;
-					for (var i:int=1; i < array.length; i++)
-						logXML.appendChild(XML(array[i]));
-					KLogger.setLogFile(logXML);
-				}
-				else
-				{
-					_canvas.loadFile(kmv);
-					KLogger.setLogFile(commands);
-					KLogger.logLoadFile(_appState.appBuildNumber,e.filePath);
-				}	
+				_canvas.loadFile(kmv);
+				KLogger.setLogFile(commands);
+				KLogger.logLoadFile(_appState.appBuildNumber,e.fileName,null);
 			}
 		}
 		
@@ -573,7 +567,49 @@ package sg.edu.smu.ksketch.interactor
 			else if (KAppState.IS_AIR)
 				saver.saveToDir(content,folder,filename);
 		}
-		
+
+		private function _loadFileAndAppendLog(filename:String,location:String,array:Array):void
+		{
+			var fileExist:Boolean = _fileExist(filename,location);
+			var fileInDesktop:Boolean = _fileInDesktop(filename);
+			if (fileExist || fileInDesktop)
+			{
+				if (fileExist)
+					load(filename,location);
+				else
+				{
+					var file:File = KFileAccessor.resolvePath(filename,KLogger.FILE_DESKTOP_DIR) as File;
+					load(file.nativePath,null);
+				}
+				var logXML:XML = KLogger.logFile;
+				for (var i:int=1; i < array.length; i++)
+					logXML.appendChild(XML(array[i]));
+				KLogger.setLogFile(logXML);
+			}			
+			else
+			{
+				Alert.show("Unable to find the new session file " + filename + 
+					" in location " + location + "\n\nReload manually?",
+					"File Not Found",Alert.YES|Alert.NO,null,function (e:CloseEvent):void
+					{
+						if (e.detail == Alert.YES)
+						{
+							var file:File = new File(); 
+							file.addEventListener(Event.SELECT,function (e:Event):void
+							{
+								_loadFileAndAppendLog(file.nativePath,null,array);					
+							});
+							file.browseForOpen("Select a file");
+						}
+					});
+			}
+		}
+
+		private function _fileInDesktop(filename:String):Boolean
+		{
+			return (KFileAccessor.resolvePath(filename,KLogger.FILE_DESKTOP_DIR) as File).exists;
+		}
+				
 		private function _xmlListToArray(list:XMLList):Array
 		{
 			var array:Array = new Array();
@@ -584,6 +620,12 @@ package sg.edu.smu.ksketch.interactor
 			return array;
 		}
 		
+		private function _isLoadingNode(xml:XML):Boolean
+		{
+			return xml && xml.attribute(KLogger.FILE_NAME).length() > 0 && 
+				xml.name().toString() == KLogger.SYSTEM_NEWSESSION;
+		}
+				
 		private function _fileExist(filename:String,location:String):Boolean
 		{
 			return (KFileAccessor.resolvePath(filename,

@@ -15,7 +15,7 @@ package sg.edu.smu.ksketch.io
 	import sg.edu.smu.ksketch.event.KFileLoadedEvent;
 	
 	public class KFileLoader extends KFileAccessor
-	{			
+	{				
 		/**
 		 * Will dispatch an event when KMV file is loaded.
 		 * Event type is KFileLoadedEvent.EVENT_FILE_LOADED.
@@ -43,13 +43,18 @@ package sg.edu.smu.ksketch.io
 			_load([_getLogTypeFilter()]);
 		}
 		
-		public function loadKMVFromFile(file:File):XML
+		public function loadKMVFromFile(fileRef:FileReference):XML
 		{
-			var fileStream:FileStream = new FileStream();
-			fileStream.open(file, FileMode.READ);
-			var xml:XML = new XML(fileStream.readUTFBytes(file.size));
-			fileStream.close();
-			return xml;
+			if (_isRunningInAIR())
+			{
+				var file:File = fileRef as File;
+				var fileStream:FileStream = new FileStream();
+				fileStream.open(file, FileMode.READ);
+				var xml:XML = new XML(fileStream.readUTFBytes(file.size));
+				fileStream.close();
+				return xml;
+			}
+			return null;
 		}
 		
 		private function _load(typeFilter:Array = null):void
@@ -67,13 +72,13 @@ package sg.edu.smu.ksketch.io
 		private function _fileLoaded_WEB(e:Event):void
 		{
 			var fileRef:FileReference = e.target as FileReference;
-			this.dispatchEvent(new KFileLoadedEvent(null, fileRef.data));
+			this.dispatchEvent(new KFileLoadedEvent(fileRef.name, null, fileRef.data));
 		}
 		
 		private function _fileLoaded_AIR(e:Event):void
 		{
 			var file:File = e.target as File;
-			this.dispatchEvent(new KFileLoadedEvent(file.nativePath, file.data));
+			this.dispatchEvent(new KFileLoadedEvent(file.name, file.nativePath, file.data));
 		}
 	}
 }

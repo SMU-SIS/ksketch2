@@ -38,22 +38,22 @@ package sg.edu.smu.ksketch.operation
 			_clipboard = new KClipBoard();
 		}
 		
-		public function addMovieClip(model:KModel, movieClip:MovieClip, xPos:Number, yPos:Number, time:Number, centerX:Number = NaN, centerY:Number = NaN):IModelOperation
+		public function addMovieClip(model:KModel, movieClip:MovieClip, xPos:Number, yPos:Number, time:Number, centerOffsetX:Number = NaN, centerOffsetY:Number = NaN):IModelOperation
 		{
 			var kMovieClip:KMovieClip = new KMovieClip(model.nextID, movieClip, xPos, yPos, time);
-			if(!isNaN(centerX) && !isNaN(centerY))
-				kMovieClip.priorityCenter = kMovieClip.defaultCenter.add(new Point(0,50));
+			if(!isNaN(centerOffsetX) && !isNaN(centerOffsetY))
+				kMovieClip.priorityCenter = new Point(xPos+centerOffsetX,yPos+centerOffsetY);
 			model.add(kMovieClip);
 			return _addObject(kMovieClip,model);
 		}
 		
-		public function addImage(model:KModel,imageData:BitmapData,xPos:Number,yPos:Number,time:Number, centerX:Number = NaN, centerY:Number = NaN):IModelOperation
+		public function addImage(model:KModel,imageData:BitmapData,xPos:Number,yPos:Number,time:Number, centerOffsetX:Number = NaN, centerOffsetY:Number = NaN):IModelOperation
 		{
 			var image:KImage = new KImage(model.nextID, xPos, yPos, time);
 			if (imageData)
 				image.imageData = imageData;
-			if(!isNaN(centerX) && !isNaN(centerY))
-				image.priorityCenter = image.defaultCenter.add(new Point(0,50));
+			if(!isNaN(centerOffsetX) && !isNaN(centerOffsetY))
+				image.priorityCenter = new Point(xPos+centerOffsetX,yPos+centerOffsetY);
 			model.add(image);
 			return _addObject(image,model);
 		}

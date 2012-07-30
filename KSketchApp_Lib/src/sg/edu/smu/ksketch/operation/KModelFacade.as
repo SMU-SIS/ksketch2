@@ -154,9 +154,12 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Grouping Operation ------------------- //
-		public function setGroupingMode(mode:String = KAppState.GROUPING_IMPLICIT_STATIC):void
+		public function setGroupingMode(mode:String = null):void
 		{
-			if(mode = KAppState.GROUPING_IMPLICIT_STATIC || mode = KAppState.GROUPING_EXPLICIT_STATIC)
+			if(!mode)
+				mode = KAppState.GROUPING_IMPLICIT_STATIC;
+			
+			if(mode == KAppState.GROUPING_IMPLICIT_STATIC || mode == KAppState.GROUPING_EXPLICIT_STATIC)
 				_groupingUtil = null;
 			else
 				_groupingUtil = null;

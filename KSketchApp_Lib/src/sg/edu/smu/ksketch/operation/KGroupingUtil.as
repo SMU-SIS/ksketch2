@@ -22,9 +22,9 @@ package sg.edu.smu.ksketch.operation
 		 * ABSTRACT CLASS: DO NOT CALL THIS UTIL ON ITS OWN
 		 * Provides the base functions that a grouping utility needs
 		 */
-		public function KDefaultGroupingUtil()
+		public function KGroupingUtil()
 		{
-			if (getQualifiedClassName(this) == "sg.edu.smu.ksketch.operation.grouping::KDefaultGroupingUtil")
+			if (getQualifiedClassName(this) == "sg.edu.smu.ksketch.operation.grouping::KGroupingUtil")
 				throw new IllegalOperationError(ErrorMessage.ABSTRACT_CLASS_INSTANTIATED);
 		}
 		

@@ -48,6 +48,7 @@ package sg.edu.smu.ksketch.utilities
 		public static const GROUPING_EXPLICIT_STATIC:String = "Explicit-Static-Grouping";
 		public static const GROUPING_EXPLICIT_DYNAMIC:String = "Explicit-Dynamic-Grouping";
 		public static const GROUPING_IMPLICIT_DYNAMIC:String = "Implicit-Dynamic-Grouping";
+		public static const GROUPING_IMPLICIT_STATIC:String = "Implicit-Static-Grouping"
 		
 		public static const TRANSITION_INSTANT:int = 2;
 		public static const TRANSITION_INTERPOLATED:int = 1;
@@ -210,18 +211,6 @@ package sg.edu.smu.ksketch.utilities
 			_zoomedOutProportion = value;
 		}
 		
-		public function get refactorMode():String
-		{
-			return _refactorMode;
-		}
-		
-		public function set refactorMode(value:String):void
-		{
-			if(updateFacadeRefactorMode != null)
-				updateFacadeRefactorMode(value);
-			_refactorMode = value;
-		}
-		
 		public function get groupingMode():String
 		{
 			return _groupingMode;
@@ -298,16 +287,6 @@ package sg.edu.smu.ksketch.utilities
 		public function get isAnimating():Boolean
 		{
 			return _timer.running;
-		}
-		
-		public function get implicitUngroup():Boolean
-		{
-			return _implicitUngroup;
-		}
-		
-		public function set implicitUngroup(value:Boolean):void
-		{
-			_implicitUngroup = value;
 		}
 		
 		public function startPlaying():void
@@ -423,7 +402,6 @@ package sg.edu.smu.ksketch.utilities
 				_fireUndoRedoEvent();					
 			}			
 		}
-		
 		
 		public function addOperation(operation:IModelOperation):void
 		{

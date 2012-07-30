@@ -38,6 +38,7 @@ package sg.edu.smu.ksketch.operation
 	{	
 		public static const ERASE_SAME:String = "Erase-Same";
 		public static const KEEP_THRESHOLD:String = "Keep-Threshold";
+		private var _groupingUtil:IGroupingUtil;
 		private var _appState:KAppState;
 		private var _model:KModel;
 		private var _editor:KObjectEditor;
@@ -48,6 +49,7 @@ package sg.edu.smu.ksketch.operation
 			_appState = appState;
 			_model = new KModel();
 			_editor = new KObjectEditor();
+			setGroupingMode();
 			_keyTimeOperator = new KKeyTimeOperator(_appState, _model);
 			_model.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED,_refreshObjectTime);
 		}
@@ -152,8 +154,15 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		// ------------------ Grouping Operation ------------------- //
-		public function regroup(objs:KModelObjectList, mode:String, 
-								transitionType:int, appTime:Number, 
+		public function setGroupingMode(mode:String = KAppState.GROUPING_IMPLICIT_STATIC):void
+		{
+			if(mode = KAppState.GROUPING_IMPLICIT_STATIC || mode = KAppState.GROUPING_EXPLICIT_STATIC)
+				_groupingUtil = null;
+			else
+				_groupingUtil = null;
+		}
+		
+		public function regroup(objs:KModelObjectList, mode:String, transitionType:int, appTime:Number, 
 								isRealTimeTranslation:Boolean = false):IModelOperation
 		{
 			

@@ -29,6 +29,12 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		/**
+		 * Prepares the objects that are to be grouped for grouping
+		 * Technically speaking, this function is just a ungroup then group for translation operations
+		 * Should be deprecated soon.
+		 */
+		
+		/**
 		 * Creates a new group given the list of objects.
 		 * Behaviour of this function is mode specific.
 		 */

@@ -111,6 +111,10 @@ package sg.edu.smu.ksketch.interactor
 			}
 		}
 		
+		/**
+		 * Places all selected objects (including strokes inside groups) into the root
+		 * If number of selected objects > 1, form a new group with the selected objects under the root
+		 */
 		protected override function performGroupingOp(objects:KModelObjectList):IModelOperation
 		{
 			var mode:String = _appState.groupingMode;

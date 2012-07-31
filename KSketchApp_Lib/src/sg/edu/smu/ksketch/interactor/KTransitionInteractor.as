@@ -179,6 +179,10 @@ package sg.edu.smu.ksketch.interactor
 			return _appState.groupingMode == KAppState.GROUPING_IMPLICIT_DYNAMIC;
 		}
 		
+		/**
+		 * Will force a group if > 1 object
+		 * If all objects of a group is selected, nObject = 1 for those selected objects
+		 */
 		protected function performGroupingOp(objects:KModelObjectList):IModelOperation
 		{
 			if (isImplicitGrouping() && objects.length() > 1)

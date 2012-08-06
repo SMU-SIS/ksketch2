@@ -125,8 +125,16 @@ package sg.edu.smu.ksketch.model.geom
 							angleMoved += angleStep;
 							timeMoved += timeStep;
 						}
-						
-						_transitionPath.push(_currentAngle, timeMoved);
+
+						if(_transitionPath.length==0)
+						{
+							_transitionPath.push(0,0);
+							_transitionPath.push(_currentAngle, 0);
+						}
+						else
+						{
+							_transitionPath.push(_currentAngle, timeMoved);
+						}
 					}
 				}
 				else

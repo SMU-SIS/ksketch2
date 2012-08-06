@@ -148,7 +148,7 @@ package sg.edu.smu.ksketch.components
 			var arrowHeadColor:uint;
 			var arrowPosition:Point;
 			
-			if(length <= 0 || (length == 2 && Math.abs(points[0].time-points[1].time) <= 0))
+			if(length <= 1 || (length == 2 && Math.abs(points[0].time-points[1].time) <= 0))
 				return;
 			
 			var currentPoint:KPathPoint;

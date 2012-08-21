@@ -50,21 +50,8 @@ package sg.edu.smu.ksketch.model.geom
 			return _mergeK2DPath(path1,path2);
 		}
 		
-		
 		/**
-		 * Adds a dx to index on the given path
-		 */
-		public static function offset2DPath(path:Vector.<K2DVector>,dx:Number, index:int):void
-		{
-			if(index < path.length)
-			{
-				var targetPoint:K2DVector = path[index];
-				targetPoint.x += dx;
-			}
-		}
-		
-		/**
-		 * Adds a dx and dy to index on the given path
+		 * Adds a dx and dy to a position on the given path
 		 */
 		public static function offset3DPath(path:Vector.<K3DVector>,dx:Number, dy:Number, index:int):void
 		{

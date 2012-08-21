@@ -103,6 +103,20 @@ package sg.edu.smu.ksketch.model.geom
 					_transitionPath.push(_currentScale, duration);
 					
 				}
+				else if(transitionType == KAppState.TRANSITION_INSTANT)
+				{
+					if(_currentScalePoints.length == 0)
+						return;
+					
+					//Generate a rotation circle from the final angle
+					var instandEndTime:Number = _currentScalePoints.points[_currentScalePoints.length-1].z;
+					
+					//If the rotation is an instant transformation
+					//Ignore motion paths and just set the angle.
+					_transitionPath.push(0,0);
+					_transitionPath.push(0,instandEndTime);
+					_transitionPath.push(_currentScale, instandEndTime);
+				}
 				else
 				{
 					//Compute the angle values for the transition paths
@@ -134,8 +148,10 @@ package sg.edu.smu.ksketch.model.geom
 				//Transformation exists, so have to deal with the existing transformation via refactoring
 				//or interpolation of existing paths
 				
-				//Need to do refactoring here
-				KPathProcessor.interpolateScaleTransitionPath(_transitionPath.points, _currentScale);
+				if(transitionType == KAppState.TRANSITION_INTERPOLATED)
+					KPathProcessor.interpolateScaleTransitionPath(_transitionPath.points, _currentScale);
+				else
+					KPathProcessor.offset2DPath(_transitionPath.points, _currentScale,  _transitionPath.length-1);
 			}
 			
 			_motionPath = KPathProcessor.generateScaleMotionPath(_transitionPath);

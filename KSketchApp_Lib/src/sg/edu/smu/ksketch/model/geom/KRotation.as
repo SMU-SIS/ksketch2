@@ -137,6 +137,13 @@ package sg.edu.smu.ksketch.model.geom
 						}
 					}
 				}
+				else if(transitionType == KAppState.TRANSITION_INSTANT)
+				{
+					var instantEndTime:Number = _currentRotationPoints.points[_currentRotationPoints.length-1].z
+					_transitionPath.push(0,0);
+					_transitionPath.push(0, instantEndTime);
+					_transitionPath.push(_currentAngle, instantEndTime);
+				}
 				else
 				{
 					//Compute the angle values for the transition paths
@@ -174,10 +181,15 @@ package sg.edu.smu.ksketch.model.geom
 			{
 				//Transformation exists, so have to deal with the existing transformation via refactoring
 				//or interpolation of existing paths
-				KPathProcessor.interpolateRotationTransitionPath(_transitionPath.points, _currentAngle);
+				if(transitionType == KAppState.TRANSITION_INTERPOLATED)
+					KPathProcessor.interpolateRotationTransitionPath(_transitionPath.points, _currentAngle);
+				else if(transitionType == KAppState.TRANSITION_INSTANT)
+					KPathProcessor.offset2DPath(_transitionPath.points, _currentAngle, _transitionPath.length-1);
 			}
 			
-			_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
+			if(transitionType != KAppState.TRANSITION_INSTANT)
+				_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
+
 			_currentAngle = 0;
 			_currentRotationPoints = new K3DPath();
 		}

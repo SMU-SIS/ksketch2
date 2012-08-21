@@ -151,9 +151,6 @@ package sg.edu.smu.ksketch.components
 			if(length <= 1 || (length == 2 && Math.abs(points[0].time-points[1].time) <= 0))
 				return;
 			
-			if(points[points.length-1].time - points[0].time <= KAppState.ANIMATION_INTERVAL)
-				return;
-			
 			var currentPoint:KPathPoint;
 			
 			drawLayer.moveTo(points[0].x+origin.x, points[0].y+origin.y);

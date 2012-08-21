@@ -101,7 +101,9 @@ package sg.edu.smu.ksketch.operation
 		public function erase(object:KObject, time:Number):IModelOperation
 		{
 			KLogger.logErase(object.id,time);
-			return _editor.erase(this,_model,object,time);
+			var operation:IModelOperation = _editor.erase(this,_model,object,time);
+			dispatchEvent(new KObjectEvent(object,KObjectEvent.EVENT_OBJECT_REMOVED));
+			return operation;
 		}
 		public function copy(objects:KModelObjectList,time:Number):void
 		{

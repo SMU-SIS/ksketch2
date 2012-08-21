@@ -8,6 +8,7 @@ package sg.edu.smu.ksketch.model.geom
 {
 	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch.geom.KTimedPoint;
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.utilities.KMathUtil;
 
@@ -47,6 +48,33 @@ package sg.edu.smu.ksketch.model.geom
 		public static function mergeScaleTransitionPath(path1:K2DPath,path2:K2DPath):K2DPath
 		{
 			return _mergeK2DPath(path1,path2);
+		}
+		
+		/**
+		 * Adds a dx and dy to a position on the given path
+		 */
+		public static function offset3DPath(path:Vector.<K3DVector>,dx:Number, dy:Number, index:int):void
+		{
+			if(index < path.length)
+			{
+				var targetPoint:K3DVector = path[index];
+				targetPoint.x += dx;
+				targetPoint.y += dy;
+			}
+		}
+		
+		/**
+		 * Adds a dx and dy after index to the given path
+		 */
+		public static function offsetTimedPath(path:Vector.<KPathPoint>,dx:Number, dy:Number, index:int):void
+		{
+			while(index < path.length)
+			{
+				var targetPoint:KPathPoint = path[index];
+				targetPoint.x += dx;
+				targetPoint.y += dy;
+				index++;
+			}
 		}
 		
 		public static function interpolateTranslationMotionPath(
@@ -414,7 +442,6 @@ package sg.edu.smu.ksketch.model.geom
 				else
 					targetPoint = NO_VALUE;
 	
-				trace(templatePoint.x, targetPoint.x);
 				error += Math.abs(templatePoint.x - targetPoint.x);
 				
 				currentTime += timeStep;

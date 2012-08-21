@@ -98,7 +98,7 @@ package sg.edu.smu.ksketch.model.geom
 		public function endCurrentTransform(transitionType:int):void
 		{
 			var i:int;
-			
+
 			if(_transitionPath.length == 0)
 			{
 				if(transitionType == KAppState.TRANSITION_INTERPOLATED)
@@ -114,6 +114,21 @@ package sg.edu.smu.ksketch.model.geom
 					
 					_transitionPath.push(startPoint.x, startPoint.y, 0);
 					_transitionPath.push(endPoint.x, endPoint.y, endPoint.z);
+				}
+				else if(transitionType == KAppState.TRANSITION_INSTANT)
+				{
+					var instantStartPoint:K3DVector = _currentTranslationPoints.points[0];
+					var instantEndPoint:K3DVector = _currentTranslationPoints.points[_currentTranslationPoints.length-1];
+					if(instantEndPoint.z != 0)
+					{
+						//Need to change kPath to K3DPath
+						_motionPath.addPoint(instantStartPoint.x, instantStartPoint.y, instantEndPoint.z);
+						_motionPath.addPoint(instantEndPoint.x, instantEndPoint.y, instantEndPoint.z);
+					}
+					
+					_transitionPath.push(instantStartPoint.x, instantStartPoint.y, 0);
+					_transitionPath.push(instantStartPoint.x, instantStartPoint.y, instantEndPoint.z);
+					_transitionPath.push(instantEndPoint.x, instantEndPoint.y, instantEndPoint.z);
 				}
 				else
 				{
@@ -137,8 +152,16 @@ package sg.edu.smu.ksketch.model.geom
 			else
 			{
 				//Perform Interpolation on current Path
-				KPathProcessor.interpolateTranslationMotionPath(_motionPath.path, _currentTranslation.x, _currentTranslation.y);
-				KPathProcessor.interpolateTranslationTransitionPath(_transitionPath.points, _currentTranslation.x, _currentTranslation.y);
+				if(transitionType == KAppState.TRANSITION_INTERPOLATED)
+				{
+					KPathProcessor.interpolateTranslationMotionPath(_motionPath.path, _currentTranslation.x, _currentTranslation.y);
+					KPathProcessor.interpolateTranslationTransitionPath(_transitionPath.points, _currentTranslation.x, _currentTranslation.y);
+				}
+				else if(transitionType == KAppState.TRANSITION_INSTANT)
+				{
+					KPathProcessor.offsetTimedPath(_motionPath.path, _currentTranslation.x, _currentTranslation.y, _transitionPath.length-1);
+					KPathProcessor.offset3DPath(_transitionPath.points, _currentTranslation.x, _currentTranslation.y, _transitionPath.length-1);
+				}
 			}
 			
 			_currentTranslation = new Point();

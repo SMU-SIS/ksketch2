@@ -118,13 +118,13 @@ package sg.edu.smu.ksketch.components
 					
 					if(type == KTransformMgr.TRANSLATION_REF)
 					{
-						transformAtTime = _object.getFullMatrix(targetKey.startTime());
+						transformAtTime = _object.getFullPathMatrix(targetKey.startTime());
 						position = transformAtTime.transformPoint(targetKey.center);
 						_drawCursorPath(targetKey.translate.motionPath.path, position,_pathT, elapsedTime, type);
 					}
 					else
 					{
-						transformAtTime = _object.getFullMatrix(time);
+						transformAtTime = _object.getFullPathMatrix(time);
 						position = transformAtTime.transformPoint(targetKey.center);
 						
 						if(type == KTransformMgr.ROTATION_REF)

@@ -112,8 +112,14 @@ package sg.edu.smu.ksketch.model
 		{
 			if(!_cachedCenter)
 			{
-				var rect:Rectangle = getBoundingRect();
-				_cachedCenter = new Point(rect.x+rect.width/2, rect.y + rect.height/2);
+				var sumX:Number = 0;
+				var sumY:Number = 0;
+				for(var i:int = 1; i < points.length; i++)
+				{
+					sumX += points[i].x;
+					sumY += points[i].y;
+				}
+				_cachedCenter = new Point(sumX/points.length, sumY/points.length);
 			}
 			
 			return _cachedCenter.clone();			

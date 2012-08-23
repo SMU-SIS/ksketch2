@@ -114,7 +114,7 @@ package sg.edu.smu.ksketch.model
 			{
 				var sumX:Number = 0;
 				var sumY:Number = 0;
-				for(var i:int = 1; i < points.length; i++)
+				for(var i:int = 0; i < points.length; i++)
 				{
 					sumX += points[i].x;
 					sumY += points[i].y;

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+-->
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:local="*" showStatusBar = "false"
+					   minWidth ="900" minHeight = "600" width = "1067" height = "600"
+					   initialize="_init()" invoke="_loadInitHandler(event)" closing="_closingHandler(event)" 
+					   applicationComplete="stage.addEventListener(KeyboardEvent.KEY_UP,main.handleKeyBoardPress)">
+	
+	<fx:Style source="KSketch_2.css" />
+
+	<fx:Script>
+		
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.core.IVisualElement;
+			import mx.core.Window;
+			import mx.events.CloseEvent;
+			
+			import sg.edu.smu.ksketch.interactor.KSystemCommandExecutor;
+			import sg.edu.smu.ksketch.io.KFileSaver;
+			import sg.edu.smu.ksketch.logger.KLogger;
+			import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
+			
+			private var _debuggerWindow:Window;
+			
+			public function triggerLogger(event:MouseEvent):void
+			{
+				var windowFreezer:Alert = _showFreezer();	
+				var logXML:XML = KLogger.logFile;
+				var modelXML:XML = main.facade.saveFile();
+				var appTime:Number = main.appState.time;
+				var canvas:LoggerCanvas = new LoggerCanvas();
+				KLogger.enabled = false;
+				main.appCanvas.resetCanvas();
+				canvas.initLogger(main.appCanvas,new KSystemCommandExecutor(
+					main.appState,main.appCanvas,main.facade));
+				var close:Function = function (e:Event):void
+				{
+					main.appCanvas.loadFile(modelXML);
+					KLogger.setLogFile(logXML);
+					main.appState.time = appTime;
+					KLogger.enabled = true;
+					windowFreezer.setVisible(false);
+				};
+				_showWindow("Logger",425,440,canvas,close);
+			}
+			
+			public function triggerSettings(event:MouseEvent):void
+			{
+				var windowFreezer:Alert = _showFreezer();	
+				var close:Function = function (e:Event):void
+				{
+					windowFreezer.setVisible(false);
+				};				
+				_showWindow("Settings",400,400,new OptionCanvas(main),close);
+			}
+			
+			public function triggerDebugger(event:MouseEvent):void
+			{
+				var canvas:DebuggerCanvas = new DebuggerCanvas();
+				canvas.initNewDebuggerCanvas(main.facade,main.appState);
+				var close:Function = function (e:Event):void
+				{
+					canvas.removeAllEventListeners();
+				};	
+				if (_debuggerWindow)
+					_debuggerWindow.close();
+				_debuggerWindow = _showWindow("Debugger",400,600,canvas,close);
+				_debuggerWindow.title = "Version "+main.appState.appBuildNumber;
+			}
+			
+			private function _closingHandler(e:Event):void
+			{
+				e.preventDefault();
+				if (main.needSave())
+					main.promptForSave(_close);
+				else
+					_close();
+			}
+			
+			private function _close():void
+			{
+				main.commandExecutor.doButtonCommand(KPlaySketchLogger.BTN_EXIT);
+				stage.nativeWindow.close();
+			}
+
+			private function _showWindow(title:String,width:Number,height:Number,
+										 child:IVisualElement,closeHandler:Function):Window
+			{
+				var window:Window = new Window();
+				window.setStyle("backgroundColor","#EEEEFF");
+				window.showStatusBar = false;
+				window.title = title;
+				window.width = width;
+				window.height = height;
+				window.addElement(child);
+				window.addEventListener(Event.CLOSE,closeHandler);
+				window.alwaysInFront = true;
+				window.open();
+				return window;
+			}
+			
+			private function _showFreezer():Alert
+			{
+				var freezer:Alert = Alert.show("");
+				freezer.width = 0;
+				freezer.height = 0;
+				return freezer;
+			}
+			
+			private function _init():void
+			{
+				nativeWindow.x = (Capabilities.screenResolutionX - nativeWindow.bounds.width)/2;
+				nativeWindow.y = (Capabilities.screenResolutionY - nativeWindow.bounds.height)/2;
+				main.setOptionTrigger(triggerSettings);
+				main.setLogTrigger(triggerLogger);
+				main.setDebugTrigger(triggerDebugger);
+				main.appInit(nativeWindow.bounds.width, nativeWindow.bounds.height, 
+					bounds.width-width, bounds.height-height);
+				nativeWindow.activate();
+				
+				KLogger.logNewFile(main.appState.appBuildNumber); 
+				
+		//		_automateLogFileUpload(KLogger.FILE_APP_DIR, "log.txt", "Test-User-3",
+		//			KLogger.LOG_SERVER_URL, KLogger.LOG_INTERVAL);
+			}
+			
+			private function _automateLogFileUpload(logDir:String, logFile:String, username:String,
+													logURL:String, logInterval:Number):void
+			{
+				var timerFunction:Function = function(e:TimerEvent):void
+				{
+					new KFileSaver().saveToDir(KLogger.logFile, logDir, logFile);	
+					var requestURL:URLRequest = new URLRequest(logURL+"/"+username);
+					requestURL.method = URLRequestMethod.POST;
+					var f:File = File.applicationStorageDirectory.resolvePath(logDir+"/"+logFile);
+					f.upload(requestURL, "file");
+				};
+				var logTimer:Timer = new Timer(logInterval,0);
+				logTimer.addEventListener(TimerEvent.TIMER,timerFunction);
+				logTimer.start();				
+			}
+			
+			private function _loadInitHandler(event:InvokeEvent):void
+			{
+				if(event.arguments.length > 0)
+				{
+					var file:File = new File(event.arguments[0].toString());			
+					var stream:FileStream = new FileStream();
+					stream.open(file, FileMode.READ);
+					var data:String = stream.readMultiByte(file.size, File.systemCharset);
+					stream.close();
+					var xml:XML = new XML(data);
+					main.appCanvas.loadFile(xml);
+					KLogger.setLogFile(new XML(xml.child(KLogger.COMMANDS)));
+				}
+			}					
+		]]>
+		
+	</fx:Script>
+	
+	<local:KSketch2Canvas width="100%" height="100%" id="main"/>
+
+</s:WindowedApplication>

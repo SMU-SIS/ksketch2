@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+-->
+<s:SparkSkin name="TimeSliderSkin"
+			 xmlns:fx="http://ns.adobe.com/mxml/2009"
+			 xmlns:s="library://ns.adobe.com/flex/spark"
+			 xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+			 minHeight="11"
+			 alpha.disabled="0.5">
+	<!-- states -->
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="disabled" />
+	</s:states>
+	
+	<fx:Metadata>
+		[HostComponent("spark.components.HSlider")]
+	</fx:Metadata>
+	
+	<fx:Script fb:purpose="styling">
+		<![CDATA[
+			
+			/* Define the skin elements that should not be colorized.
+			For slider, the skin itself is colorized but the individual parts are not. */
+			static private const exclusions:Array = ["track", "thumb"];
+			
+			override public function get colorizeExclusions():Array {
+				return exclusions;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch.utilities.KAppState;
+			import sg.edu.smu.ksketch.utilities.KMathUtil;
+			import sg.edu.smu.ksketch2.components.timebar.TimeSlider;
+			
+			import spark.components.HSlider;
+			import spark.components.Label;
+			import spark.primitives.Graphic;
+			
+			public static const FIRST_QUARTER:Number = 0.4;
+			public static const HALF:Number = 0.75;
+			public static const FULL:Number = 1;
+			public static const MILLISECONDS:Number = 1000;
+			public static const TEXT_SCALE:Number = 1;
+			public static const TICK_MAX_LENGTH:Number = 22;
+			public static const CHAR_WIDTH:Number = 8;
+			
+			private var usedElements:int;
+			private var sliderMax:Number = 0;
+
+			private var host:TimeSlider;
+			private var drawLayer:Graphics;
+			
+			override protected function initializationComplete():void {
+
+				useChromeColor = true;
+				super.initializationComplete();
+				
+				host = hostComponent as TimeSlider;
+				drawLayer = ticks.graphics;
+			}
+			
+			override protected function measure():void {
+				// Temporarily move the thumb to the left of the Slider so measurement
+				// doesn't factor in its x position. This allows resizing the
+				// HSlider to less than 100px in width.
+				var thumbPos:Number = thumb.getLayoutBoundsX();
+				thumb.setLayoutBoundsPosition(0, thumb.getLayoutBoundsY());
+				super.measure();
+				thumb.setLayoutBoundsPosition(thumbPos, thumb.getLayoutBoundsY());
+			}
+			
+			/**
+			 * Probably a better way of doing this
+			 */
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+				drawTrackScale();
+			}
+			
+			public function drawTrackScale():void {
+
+				//House keeping and cleaning up of tick marks
+				drawLayer.clear();
+				clearUnusedText(0);
+				drawLayer.lineStyle(1.5, 0x3A3E59);
+				usedElements = 0;
+				
+				//Compute the range for the scale
+				sliderMax = host.maximum*KAppState.ANIMATION_INTERVAL/MILLISECONDS;
+
+				var partitionValue:Number;
+				var drawQuarters:Boolean = true;
+				var drawHalf:Boolean = true;
+				//Determine the step value (factor used to draw full ticks)
+				//to use for drawing the scale
+				if(sliderMax< 25)
+				{
+					if(sliderMax > 10)
+						drawQuarters = false;
+
+					partitionValue = 1;
+				}
+				else if(sliderMax <= 100)
+				{
+					if(sliderMax > 50)
+						drawQuarters = false;
+					partitionValue = 5;
+				}
+				else if(sliderMax <= 250)
+				{
+					if(sliderMax > 150)
+						drawQuarters = false;
+					partitionValue = 10;
+				}
+				else if(sliderMax <=1000)
+				{
+					if(sliderMax > 500)
+						drawQuarters = false;
+					
+					partitionValue = 50;
+				}
+				else
+				{
+					if(sliderMax > 2000)
+						drawQuarters = false;
+					
+					if(sliderMax > 2500)
+						drawHalf = false;
+					
+					partitionValue = 100;
+				}
+				
+				//Compute the width of the partitions
+				var numFullTicks:int = sliderMax/partitionValue;
+				var remainder:Number = sliderMax - numFullTicks*partitionValue;
+				var fullWidth:Number = partitionValue/sliderMax*(host.width - host.thumb.width);
+				var halfWidth:Number = 0.5*fullWidth;
+				var firstQuarterWidth:Number = 0.25*fullWidth;
+				var thirdQuarterWidth:Number = 0.75*fullWidth;
+				var i:int = 1;
+				var startingPosition:Number = 0;
+				var elementIndex:int = 0;
+				//Draw the partitions/ticks
+				for(i; i<=numFullTicks; i++)
+				{
+					if(drawQuarters)
+					{
+						drawTick(startingPosition+firstQuarterWidth, FIRST_QUARTER);
+						drawTick(startingPosition+thirdQuarterWidth, FIRST_QUARTER);
+					}
+					
+					if(drawHalf)
+						drawTick(startingPosition+halfWidth, HALF);
+					
+					drawTick(startingPosition+fullWidth, FULL);
+					
+					addText(i-1,startingPosition+fullWidth, i*partitionValue)
+					elementIndex++;
+				
+					
+					startingPosition = fullWidth * i;
+				}
+				
+				//draw the ticks for the remainders
+				if(drawQuarters)
+				{
+					if(remainder >= 0.25*partitionValue)
+						drawTick(startingPosition+firstQuarterWidth, FIRST_QUARTER);
+					if(remainder >= 0.75*partitionValue)
+						drawTick(startingPosition+firstQuarterWidth, FIRST_QUARTER);
+				}
+				
+				if(drawHalf)
+				{
+					if(remainder > 0.5*partitionValue)
+						drawTick(startingPosition+halfWidth, HALF);
+				}
+			}
+			
+			private function drawTick(xPos:Number, tickMarkProportion:Number):void
+			{
+				drawLayer.moveTo(xPos, host.height-3);
+				drawLayer.lineTo(xPos, host.height-(TICK_MAX_LENGTH*tickMarkProportion));
+			}
+			
+			//Adds a text to given position
+			private function addText(textIndex:int, textPos:Number, textNumber:int, shiftForward:Boolean = false):void
+			{
+				var timeText:Label = getAvailableText(textIndex);
+				timeText.text = textNumber.toString();
+
+				timeText.x = textPos+3;
+				
+				if((timeText.x+timeText.text.length*CHAR_WIDTH) >= host.width)
+					timeText.x = textPos - CHAR_WIDTH * timeText.text.length;
+
+				timeText.visible = true;
+				timeText.includeInLayout = true;
+			}
+			
+			private function getAvailableText(textIndex:int):Label
+			{
+				//If a label is already available as a child inside ticks, use it instead of readding it again.
+				if((textIndex+1) < ticks.numElements)
+				{
+					return ticks.getElementAt(textIndex) as Label;
+				}
+				else
+				{
+					//create a new label if needed.
+					var newLabel:Label = new Label();
+					newLabel.mouseEnabled = false;
+					newLabel.y = 6;
+					newLabel.scaleX = TEXT_SCALE;
+					newLabel.scaleY = TEXT_SCALE;
+					newLabel.visible = false;
+					newLabel.includeInLayout = false;
+					ticks.addElement(newLabel);
+
+					return newLabel;
+				}
+			}
+			
+			private function clearUnusedText(usedElements:int):void
+			{
+				//All unused text will be hidden but not removed from ticks
+				//Hidden elements are not included in the layout and does not count towards
+				//rendering costs
+				
+				var numEle:int = ticks.numElements;
+				var i:int = 0;// usedElements+1;
+				var myText:Label;
+				for(i; i < numEle; i++)
+				{
+					myText = ticks.getElementAt(i) as Label;
+					myText.visible = false;
+					myText.includeInLayout = false;
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!--- The tooltip used in the mx.controls.Slider control. To customize the DataTip's appearance, create a custom HSliderSkin class.-->
+		<fx:Component id="dataTip">
+			<s:DataRenderer minHeight="24" minWidth="40" y="-34">
+				<s:Rect top="0" left="0" right="0" bottom="0">
+					<s:fill>
+						<s:SolidColor color="0x000000" alpha="0.9"/>
+					</s:fill>
+					<s:filters>
+						<s:DropShadowFilter angle="90" color="0x999999" distance="3"/>
+					</s:filters>
+				</s:Rect>
+				<s:Label id="labelDisplay" text="{data}"
+						 horizontalCenter="0" verticalCenter="1"
+						 left="5" right="5" top="5" bottom="5"
+						 textAlign="center" verticalAlign="middle"
+						 fontWeight="normal" color="white" fontSize="11">
+				</s:Label>
+			</s:DataRenderer>
+		</fx:Component>
+	</fx:Declarations>
+	
+	<!--- The default skin class is HSliderTrackSkin. -->
+	<s:Button id="track" left="0" right="0" top="0" bottom="0" minWidth="33" width="100" skinClass="sg.edu.smu.ksketch2.components.skins.TimeSliderTrackSkin"/>
+	
+	<!--- The default skin class is HSliderThumbSkin. -->
+	<s:Button id="thumb" top="0" bottom="0" width="11" height="11" skinClass="sg.edu.smu.ksketch2.components.skins.TimeSliderThumbSkin"/>
+	<s:Group id="ticks" mouseChildren="false" mouseEnabled="false"/>
+</s:SparkSkin>

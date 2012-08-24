@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="DebugTreeRenderer"/>
+    <classEntry path="DebuggerCanvas"/>
+    <classEntry path="LoggerCanvas"/>
+    <classEntry path="LoggerRenderer"/>
+    <classEntry path="OptionCanvas"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

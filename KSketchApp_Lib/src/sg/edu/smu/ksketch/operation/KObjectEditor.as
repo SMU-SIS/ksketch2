@@ -11,6 +11,7 @@ package sg.edu.smu.ksketch.operation
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.components.KObjectView;
+	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.interactor.KSelection;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
@@ -177,6 +178,7 @@ package sg.edu.smu.ksketch.operation
 								 time:Number):IModelOperation
 		{
 			obj.getParent(time).remove(obj);
+			facade.dispatchEvent(new KObjectEvent(obj,KObjectEvent.EVENT_OBJECT_REMOVED));
 			return new KRemoveOperation(facade,obj,time);
 		}
 		

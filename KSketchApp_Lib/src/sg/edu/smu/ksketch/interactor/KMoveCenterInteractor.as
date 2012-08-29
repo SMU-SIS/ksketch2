@@ -1,9 +1,3 @@
-/**------------------------------------------------
-* Copyright 2012 Singapore Management University
-* All Rights Reserved
-*
-*-------------------------------------------------*/
-
 package sg.edu.smu.ksketch.interactor
 {
 	import flash.display.Graphics;

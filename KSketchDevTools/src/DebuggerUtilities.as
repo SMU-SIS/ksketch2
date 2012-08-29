@@ -1,8 +1,3 @@
-/**------------------------------------------------
-*Copyright 2010-2012 Singapore Management University
-*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
- 
-*-------------------------------------------------*/
 import sg.edu.smu.ksketch.event.KGroupUngroupEvent;
 import sg.edu.smu.ksketch.event.KObjectEvent;
 import sg.edu.smu.ksketch.event.KSelectionChangedEvent;

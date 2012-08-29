@@ -1,9 +1,4 @@
-/**------------------------------------------------
-*Copyright 2010-2012 Singapore Management University
-*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
- 
-*-------------------------------------------------*/
-package 
+package
 {
 	import flash.events.Event;
 	

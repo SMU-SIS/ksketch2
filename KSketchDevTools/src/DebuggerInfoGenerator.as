@@ -1,8 +1,3 @@
-/**------------------------------------------------
-*Copyright 2010-2012 Singapore Management University
-*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
- 
-*-------------------------------------------------*/
 import mx.collections.ArrayCollection;
 
 import sg.edu.smu.ksketch.io.KFileWriter;

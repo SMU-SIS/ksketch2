@@ -1,3 +1,29 @@
+/***************************************************
+ SimpleFlvWriter.as
+       Lee Felarca
+       http://www.zeropointnine.com/blog
+       5-2007
+       v0.8
+      
+       Singleton class to create uncompressed FLV files.
+       Does not handle audio. Feel free to extend.
+      
+       Source code licensed under a Creative Commons Attribution 3.0 License.
+       http://creativecommons.org/licenses/by/3.0/
+       Some Rights Reserved.
+ 
+       EXAMPLE USAGE:
+      
+              var myWriter:SimpleFlvWriter = SimpleFlvWriter.getInstance();
+              myWriter.createFile(myFile, 320,240, 30, 120);
+              myWriter.saveFrame( myBitmapData1 );
+              myWriter.saveFrame( myBitmapData2 );
+              myWriter.saveFrame( myBitmapData3 ); // etc.
+              myWriter.closeFile();
+ 
+ Modified 2012 by Singapore Management University
+****************************************************/
+
 package sg.edu.smu.ksketch2.exportTools
 {
 	import flash.display.BitmapData;

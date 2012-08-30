@@ -8,11 +8,11 @@
 *http://mozilla.org/MPL/2.0/.
 ****************************************************/
 
-import Audio.MicrophoneFunctions;
+import sg.edu.smu.ksketch2.components.Audio.MicrophoneFunctions;
 
-import ImportImage.ImageTrim;
-import ImportImage.ImgResizingWindow;
-import ImportImage.ImgWindowSkin;
+import sg.edu.smu.ksketch2.components.ImportImage.ImageTrim;
+import sg.edu.smu.ksketch2.components.ImportImage.ImgResizingWindow;
+import sg.edu.smu.ksketch2.components.ImportImage.ImgWindowSkin;
 
 import flash.display.Bitmap;
 import flash.display.BitmapData;
@@ -84,7 +84,7 @@ private var contentCanvas:MovieClip;;
 private var bmpData:BitmapData;
 private var transformMartixFlv:Matrix;
 public var imgTitleWindow:ImgResizingWindow;
-private var ImageTr:ImportImage.ImageTrim;
+private var ImageTr:sg.edu.smu.ksketch2.components.ImportImage.ImageTrim;
 private var camera:Camera;
 private var liveOrSnapped:Boolean=false;	
 public var bitmapDataBeforeIrregular:BitmapData;

@@ -8,9 +8,9 @@
 *http://mozilla.org/MPL/2.0/.
 ****************************************************/
 
-package ImportImage
+package sg.edu.smu.ksketch2.components.ImportImage
 {
-	import ImportImage.ImageTrim;	
+	import sg.edu.smu.ksketch2.components.ImportImage.ImageTrim;	
 	import flash.display.Shape;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;

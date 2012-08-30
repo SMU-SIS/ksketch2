@@ -8,7 +8,7 @@
 *http://mozilla.org/MPL/2.0/.
 ****************************************************/
 
-package Audio
+package sg.edu.smu.ksketch2.components.Audio
 {
 	import flash.display.Loader;
 	import flash.events.Event;

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="3">
   <includeClasses>
-    <classEntry path="Audio.MicrophoneFunctions"/>
-    <classEntry path="ImportImage.Dott"/>
-    <classEntry path="ImportImage.ImageTrim"/>
-    <classEntry path="ImportImage.ImgResizingWindow"/>
-    <classEntry path="ImportImage.ImgWindowSkin"/>
-    <classEntry path="ImportImage.events"/>
+    <classEntry path="sg.edu.smu.ksketch2.components.Audio.MicrophoneFunctions"/>
+    <classEntry path="sg.edu.smu.ksketch2.components.ImportImage.Dott"/>
+    <classEntry path="sg.edu.smu.ksketch2.components.ImportImage.ImageTrim"/>
+    <classEntry path="sg.edu.smu.ksketch2.components.ImportImage.ImgResizingWindow"/>
+    <classEntry path="sg.edu.smu.ksketch2.components.ImportImage.ImgWindowSkin"/>
+    <classEntry path="sg.edu.smu.ksketch2.components.ImportImage.events"/>
     <classEntry path="KSketch2Canvas"/>
     <classEntry path="sg.edu.smu.ksketch2.components.group.Button_PlayPause"/>
     <classEntry path="sg.edu.smu.ksketch2.components.group.Button_TimeBarControl"/>

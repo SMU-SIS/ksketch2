@@ -19,7 +19,7 @@
 
     <fx:Metadata>
         <![CDATA[ 
-           [HostComponent("ImportImage.ImgResizingWindow")]	
+           [HostComponent("sg.edu.smu.ksketch2.components.ImportImage.ImgResizingWindow")]	
         ]]>		
     </fx:Metadata> 
     

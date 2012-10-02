@@ -259,7 +259,7 @@
 				{
 					currentMarker = _stackedMarkers[i];
 					posFromTarget = currentMarker.originalPosition - _targetMarker.originalPosition;
-					currentMarker.updateX(_roundPosition(currentMarker.originalPosition+(_changeX-posFromTarget)));
+					currentMarker.updateX(currentMarker.originalPosition+(_changeX-posFromTarget));
 				}
 				
 				if(_futureConstant)

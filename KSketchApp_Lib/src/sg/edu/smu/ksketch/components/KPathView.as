@@ -112,19 +112,40 @@ package sg.edu.smu.ksketch.components
 		{
 			var position:Point;
 			var transformAtTime:Matrix;
+			var duration:Number;
 			var elapsedTime:Number;
+			var proportionCovered:Number;
+			var drawThisKey:Boolean = false;
 			
 			while(targetKey)
 			{
-				if(targetKey.hasTransform())
+				duration = targetKey.endTime - targetKey.startTime();
+				
+				if(duration <= 0)
+					drawThisKey = false;
+				else
+					drawThisKey = true;
+				
+				if(drawThisKey)
 				{
 					elapsedTime = time - targetKey.startTime();
 					
+					if(duration > 0)
+						proportionCovered = elapsedTime/duration;
+					else
+					{
+						if(elapsedTime >= duration)
+							proportionCovered = 1;
+						else
+							proportionCovered = 0;
+					}
+					
 					if(type == KTransformMgr.TRANSLATION_REF)
 					{
-						transformAtTime = _object.getFullPathMatrix(targetKey.startTime());
+						transformAtTime = _object.getFullPathMatrix(targetKey.startTime()+1);
+					
 						position = transformAtTime.transformPoint(targetKey.center);
-						_drawCursorPath(targetKey.translate.motionPath.path, position,_pathT, elapsedTime, type);
+						_drawCursorPath(targetKey.translate.motionPath.path, position,_pathT, proportionCovered, type);
 					}
 					else
 					{
@@ -132,20 +153,20 @@ package sg.edu.smu.ksketch.components
 						position = transformAtTime.transformPoint(targetKey.center);
 						
 						if(type == KTransformMgr.ROTATION_REF)
-							_drawCursorPath(targetKey.rotate.motionPath.path, position,_pathR, elapsedTime, type);
+							_drawCursorPath(targetKey.rotate.motionPath.path, position,_pathR, proportionCovered, type);
 						else if(type == KTransformMgr.SCALE_REF)
-							_drawCursorPath(targetKey.scale.motionPath.path, position,_pathS, elapsedTime, type);
+							_drawCursorPath(targetKey.scale.motionPath.path, position,_pathS, proportionCovered, type);
 					}
 				}
 				
 				if(showAll&& (type == KTransformMgr.TRANSLATION_REF))
 					targetKey = targetKey.next as ISpatialKeyframe;
 				else
-					targetKey = null;				
+					targetKey = null;
 			}
 		}
 		
-		protected function _drawCursorPath(points:Vector.<KPathPoint>, origin:Point, path:Sprite, time:Number, type:int):void
+		protected function _drawCursorPath(points:Vector.<KPathPoint>, origin:Point, path:Sprite, proportionCovered:Number, type:int):void
 		{
 			var length:int = points.length;
 			var drawLayer:Graphics = path.graphics;
@@ -160,7 +181,6 @@ package sg.edu.smu.ksketch.components
 			drawLayer.moveTo(points[0].x+origin.x, points[0].y+origin.y);
 		
 			var duration:Number = Math.abs(points[0].time-points[points.length-1].time);
-			var proportionCovered:Number = time/duration;
 			
 			if(length == 2)
 			{

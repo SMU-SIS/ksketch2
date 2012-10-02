@@ -112,6 +112,7 @@ package sg.edu.smu.ksketch.utilities
 		public var rotateTrackBox:Rectangle;
 		public var scaleTrackBox:Rectangle;
 		public var targetTrackBox:int;
+		public var pixelPerFrame:Number;
 		
 		public static var erase_real_time_future:Boolean = true;
 		private static var _time:Number; 
@@ -198,6 +199,7 @@ package sg.edu.smu.ksketch.utilities
 			
 			cyclingEnabled = true;
 			isUserTest = false;
+			pixelPerFrame = 0;
 		}
 		
 		public function get appBuildNumber():String

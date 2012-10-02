@@ -857,8 +857,8 @@ package sg.edu.smu.ksketch.interactor
 		{
 			if(trackBox.contains(x,y))
 			{
-				var approximateTime:Number = (x-trackBox.x+6)/trackBox.width*_appState.maxTime;
-				_appState.trackTapTime =  KMathUtil.nearestFrameBoundary(approximateTime);
+				var currentFrame:Number = (x- trackBox.x)/_appState.pixelPerFrame;
+				_appState.trackTapTime =  Math.ceil(currentFrame*KAppState.ANIMATION_INTERVAL);
 				return true;
 			}
 			else

@@ -154,6 +154,7 @@
 			public function calibrateTimeWidget():void
 			{
 				_pixelPerFrame = (_slider.width-_slider.thumb.width)/_slider.maximum;
+				_appState.pixelPerFrame = _pixelPerFrame;
 			}
 			
 			/**

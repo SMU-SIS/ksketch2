@@ -11,6 +11,7 @@
 package sg.edu.smu.ksketch.model.implementations
 {
 	import sg.edu.smu.ksketch.model.IKeyFrame;
+	import sg.edu.smu.ksketch.utilities.KAppState;
 	
 	public class KKeyFrame implements IKeyFrame
 	{
@@ -94,6 +95,17 @@ package sg.edu.smu.ksketch.model.implementations
 		public function retimeKeyframe(newTime:Number):void
 		{
 			_endTime = newTime;
+			
+			if(_previous)
+			{
+				if(_previous.endTime == _endTime)
+					_endTime += KAppState.ANIMATION_INTERVAL;
+					
+				if(_next)
+					_next.retimeKeyframe(_next.endTime);
+				
+			}
+					
 		}
 	}
 }

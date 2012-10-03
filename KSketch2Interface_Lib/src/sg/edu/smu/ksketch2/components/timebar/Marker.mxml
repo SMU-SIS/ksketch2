@@ -19,36 +19,66 @@
 		<![CDATA[
 			import mx.core.UIComponent;
 			
-			private var _linkedMarkers:Vector.<Marker>;
+			//Data
 			private var _keyList:Vector.<Object>;
 			private var _selected:Boolean;
 			private var _type:int;
 			private var _time:Number;
 			private var _originalPosition:Number;
 			private var _clone:Marker;
+			
+			//Display Variables
+			private var _previous:Marker;
+			private var _next:Marker;
+			private var _linkedMarkers:Vector.<Marker>;
 			private var _hasTransform:Boolean;
 			private var _activityBars:Vector.<ActivityBar>;
 			private var _color:uint;
 			private var _barThickness:Number;
+			
+			//Booleans to help in testing collisions
+			public var hasTranslate:Boolean = false;
+			public var hasRotate:Boolean = false;
+			public var hasScale:Boolean = false;
 
+			public function init():void
+			{
+				linkedMarkers = new Vector.<Marker>();
+				keyList = new Vector.<Object>();
+			}
+			
+			public function get next():Marker
+			{
+				return _next;
+			}
+			
+			public function set next(value:Marker):void
+			{
+				_next = value;
+			}
+			
+			public function get previous():Marker
+			{
+				return _previous;
+			}
+			
+			public function set previous(value:Marker):void
+			{
+				_previous = value;
+			}
+			
 			public function get activityBars():Vector.<ActivityBar>
 			{
 				if(!_activityBars)
 					_activityBars = new Vector.<ActivityBar>();
 				return _activityBars;
 			}
-
+			
 			public function set activityBars(value:Vector.<ActivityBar>):void
 			{
 				if(!_activityBars)
 					_activityBars = new Vector.<ActivityBar>();
 				_activityBars = value;
-			}
-
-			public function init():void
-			{
-				linkedMarkers = new Vector.<Marker>();
-				keyList = new Vector.<Object>();
 			}
 			
 			public function get linkedMarkers():Vector.<Marker>
@@ -130,21 +160,44 @@
 				_originalPosition = value;
 			}
 			
-			public function updateX(xPos:Number):void
+			public function moveWithFuture(dx:Number):void
 			{
-				x = xPos;
+				if(_next)
+					next.moveWithFuture(dx);
+				
+				updateX(dx);
+			}
+			
+			public function updateX(dx:Number):void
+			{
+				x += dx;
+				
+				if(x <= 0)
+				{
+					dx = -x;
+					x = 0;
+					
+					if(next)
+						next.moveWithFuture(dx);
+				}
+				
+				if(_previous)
+				{
+					if(_previous.x <= x)
+						_previous.updateX(x-TimeWidget.pixelPerFrame);
+				}
 				
 				for each(var linkedMarker:Marker in _linkedMarkers)
 				{
 					if(linkedMarker.type == TimeWidget.OVERVIEW)
 					{
 						if(linkedMarker.linkedMarkers.length > 1)
-							linkedMarker.moveClone(xPos);
+							linkedMarker.moveClone(x);
 						else
-							linkedMarker.x = xPos;
+							linkedMarker.x = x;
 					}
 					else
-						linkedMarker.x = xPos;
+						linkedMarker.x = x;
 					
 					for each(var activityBar:ActivityBar in linkedMarker.activityBars)
 					{

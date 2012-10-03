@@ -215,6 +215,8 @@ private function updateTimeWidgets(event:Event):void
 			newLinkedMarker = _generateMarker(translateCluster, TimeWidget.TRANSLATE, clusterTime, cluster.selected);
 			newLinkedMarker.linkedMarkers.push(newMarker);
 			newMarker.linkedMarkers.push(newLinkedMarker);
+			newMarker.hasTranslate = true;
+			newLinkedMarker.hasTranslate = true;
 			translateMarkers.push(newLinkedMarker);
 		}
 		
@@ -223,6 +225,8 @@ private function updateTimeWidgets(event:Event):void
 			newLinkedMarker = _generateMarker(rotateCluster, TimeWidget.ROTATE, clusterTime, cluster.selected);
 			newLinkedMarker.linkedMarkers.push(newMarker);
 			newMarker.linkedMarkers.push(newLinkedMarker);
+			newMarker.hasRotate = true;
+			newLinkedMarker.hasRotate = true;
 			rotateMarkers.push(newLinkedMarker);
 		}
 		
@@ -231,6 +235,8 @@ private function updateTimeWidgets(event:Event):void
 			newLinkedMarker = _generateMarker(scaleCluster, TimeWidget.SCALE, clusterTime, cluster.selected);
 			newLinkedMarker.linkedMarkers.push(newMarker);
 			newMarker.linkedMarkers.push(newLinkedMarker);
+			newMarker.hasScale = true;
+			newLinkedMarker.hasScale = true;
 			scaleMarkers.push(newLinkedMarker);
 		}
 		

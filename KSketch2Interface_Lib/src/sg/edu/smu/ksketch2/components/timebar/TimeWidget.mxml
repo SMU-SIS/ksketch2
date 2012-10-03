@@ -32,11 +32,11 @@
 			public static const SCALE:int = 3;
 			public static const ACTIVITY:int = 4;
 			public static var widget_max_time:Number;
+			public static var pixelPerFrame:Number;
 			
 			//Widget atrributes
 			private var _appState:KAppState;
 			private var _facade:KModelFacade;
-			private var _pixelPerFrame:Number;
 			private var _slider:TimeSlider;
 			private var _type:int;
 			private var _futureConstant:Boolean = true;
@@ -46,24 +46,19 @@
 			private var _startX:Number;
 			private var _currentX:Number;
 			private var _changeX:Number;
-			private var _snapRange:Number;
 			
 			private var _activityBars:Vector.<ActivityBar>;
 			private var _freeMarkers:Vector.<Marker>;
 			private var _stackedMarkers:Vector.<Marker>;
-			
-			private const _MAXTIME_ALLOWANCE_FACTOR:Number = 1.2;
-			private const KEY_SNAPPING_TOLERANCE:Number = 7;
 			
 			public function initTimeWidget(facade:KModelFacade, appState:KAppState, slider:TimeSlider, type:int = -1):void
 			{
 				_facade = facade;
 				_appState = appState;
 				_type = type;
-				_pixelPerFrame = 1;
+				pixelPerFrame = 1;
 				_stackedMarkers = new Vector.<Marker>();
 				_slider = slider;
-				_snapRange = 1;
 				widget_max_time = 0;
 			}
 			
@@ -121,7 +116,7 @@
 			 */
 			public function rescaleTimeWidget():void
 			{
-				var prevPixelPerFrame:Number = _pixelPerFrame;
+				var prevPixelPerFrame:Number = pixelPerFrame;
 				calibrateTimeWidget();
 
 				var numMarkers:int = markerContainer.numElements;
@@ -133,7 +128,7 @@
 				{
 					currentMarker = markerContainer.getElementAt(i) as Marker;
 					frame = currentMarker.x /prevPixelPerFrame;
-					currentMarker.x = frame * _pixelPerFrame;
+					currentMarker.x = frame * pixelPerFrame;
 				}
 			
 				numMarkers = selectedMarkerContainer.numElements;
@@ -142,7 +137,7 @@
 				{
 					currentMarker = selectedMarkerContainer.getElementAt(i) as Marker;
 					frame = currentMarker.x /prevPixelPerFrame;
-					currentMarker.x = frame * _pixelPerFrame;
+					currentMarker.x = frame * pixelPerFrame;
 				}
 				
 				_renderBars();
@@ -153,8 +148,8 @@
 			 */
 			public function calibrateTimeWidget():void
 			{
-				_pixelPerFrame = (_slider.width-_slider.thumb.width)/_slider.maximum;
-				_appState.pixelPerFrame = _pixelPerFrame;
+				pixelPerFrame = (_slider.width-_slider.thumb.width)/_slider.maximum;
+				_appState.pixelPerFrame = pixelPerFrame;
 			}
 			
 			public function updateBackground(width:Number):void
@@ -167,7 +162,7 @@
 			 */
 			private function _timeToPosition(time:Number):Number
 			{
-				return KAppState.indexOf(time) * _pixelPerFrame;
+				return KAppState.indexOf(time) * pixelPerFrame;
 			}
 			
 			/**
@@ -175,15 +170,15 @@
 			 */
 			private function _positionToTime(xPos:Number):Number
 			{
-				return KAppState.kskTime(Math.floor(xPos/_pixelPerFrame));
+				return KAppState.kskTime(Math.floor(xPos/pixelPerFrame));
 			}
 			
 			private function _framesToPixels(frameIndex:int, change:Number):Number
 			{
 				if(change < 0)
-					return frameIndex*_pixelPerFrame;			
+					return frameIndex*pixelPerFrame;			
 				else
-					return (frameIndex+1)*_pixelPerFrame;
+					return (frameIndex+1)*pixelPerFrame;
 			}
 			
 			/**
@@ -201,6 +196,7 @@
 					
 					_targetMarker = event.target as Marker;
 					_startX = event.stageX - _appState.overViewTrackBox.x;
+					_changeX = 0;
 					
 					_stackedMarkers = new Vector.<Marker>();
 					var currentMarker:Marker;
@@ -227,20 +223,21 @@
 				}
 			}
 			
-			//need to implement an elastic mode that compresses the markers in the direction of movement
-			//in equal distributions
-			//Let the entire right hand side of target be 100% time
-			//Moving right by 20% reduces the durations of all markers on the right by 20%
-			//Increases the duration of all markers on the left by 20%
 			private function _widget_MouseMove(event:MouseEvent):void
 			{
+				if(!_targetMarker)
+					return;
+				
+				//Compute mouse drag _changeX
+				//_changeX adheres strictly to frame boundaries.
 				var currentMouseX:Number = event.stageX - _appState.overViewTrackBox.x;
 				_changeX = currentMouseX - _startX;
-				_changeX = _framesToPixels(_changeX/_pixelPerFrame, _changeX);
+				_changeX = _framesToPixels(_changeX/pixelPerFrame, _changeX);
 				var xPos:Number = _targetMarker.originalPosition+_changeX;
 				
+				//Set limits for the mouse drag so the target marker does not move out of the
+				//Defined track region
 				var dragWidth:Number = width - _targetMarker.width;
-				
 				if(dragWidth < xPos)
 					_changeX -= xPos - dragWidth;
 				else if(xPos < 0)
@@ -250,6 +247,7 @@
 				var posFromTarget:Number;
 				var currentMarker:Marker;
 				
+				//Move the stacked markers and upcoming markers
 				for(i=0; i<_stackedMarkers.length; i++)
 				{
 					currentMarker = _stackedMarkers[i];
@@ -271,6 +269,12 @@
 				stage.removeEventListener(MouseEvent.MOUSE_MOVE,_widget_MouseMove,true);
 				stage.removeEventListener(MouseEvent.MOUSE_UP,_widget_MouseUp, true);
 				
+				if(!_targetMarker)
+					return;
+				
+				if(Math.abs(_changeX) < pixelPerFrame)
+					return;
+
 				//Actual condition will be for each marker moved
 				//Do the following
 				var keysToRetime:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
@@ -299,17 +303,14 @@
 				
 				for each(freeMarker in _freeMarkers)
 				{
-					if(stackedMarker.x <= freeMarker.x)
+					retimeTo = _positionToTime(freeMarker.x);
+					for each(keyInfo in freeMarker.keyList)
 					{
-						retimeTo = _positionToTime(freeMarker.x);
-						for each(keyInfo in freeMarker.keyList)
-						{
-							keysToRetime.push(keyInfo.key);
-							times.push(retimeTo);
-							objectIDs.push(keyInfo.objectID);
-							keyTypes.push(keyInfo.type);
-							keyTimes.push(keyInfo.key.endTime);
-						}
+						keysToRetime.push(keyInfo.key);
+						times.push(retimeTo);
+						objectIDs.push(keyInfo.objectID);
+						keyTypes.push(keyInfo.type);
+						keyTimes.push(keyInfo.key.endTime);
 					}
 				}
 				
@@ -317,6 +318,33 @@
 				
 				var retimeOp:IModelOperation = _facade.retimeKeys(keysToRetime, times, _appState.time);
 				_appState.addOperation(retimeOp);
+				
+			}
+			
+			private function _canStackMarkers(targetMarker:Marker, toCollideMarker:Marker):Boolean
+			{	
+				if(targetMarker.hasTranslate && toCollideMarker.hasTranslate)
+					return false;
+				if(targetMarker.hasRotate && toCollideMarker.hasRotate)
+					return false;
+				if(targetMarker.hasScale && toCollideMarker.hasScale)
+					return false;					
+		
+				return true;
+			}
+			
+			private function _onMoveCollideMarkers():void
+			{
+				var i:int = 0;
+				var currentMarker:Marker;
+				var posDiffFromTarget:Number;
+				var currentXPos:Number = _targetMarker.x;
+				var originalXPos:Number = _targetMarker.originalPosition;
+				
+			}
+			
+			private function _onMoveUncollideMarkers():void
+			{
 				
 			}
 			
@@ -423,7 +451,7 @@
 					
 					if(_targetMarker.originalPosition < currentMarker.originalPosition)
 					{
-						currentMarker.updateX(Math.ceil(currentMarker.originalPosition + _changeX));
+						currentMarker.updateX(currentMarker.originalPosition + _changeX);
 					}
 				}
 			}

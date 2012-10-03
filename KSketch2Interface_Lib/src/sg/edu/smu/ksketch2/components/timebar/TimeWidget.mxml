@@ -157,6 +157,11 @@
 				_appState.pixelPerFrame = _pixelPerFrame;
 			}
 			
+			public function updateBackground(width:Number):void
+			{
+				bgFill.width = width;
+			}
+			
 			/**
 			 * Function to convert time (in miliseconds) to x position in the widget.
 			 */
@@ -557,7 +562,7 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Rect width="100%" height="100%">
+	<s:Rect height="100%" id="bgFill">
 		<s:fill>
 			<s:LinearGradient rotation="90">
 				<s:GradientEntry color="0x36466E"/>

@@ -1,0 +1,13 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+global
+{
+	vertical-align: justify;
+	content-background-color: #FFFFFF;
+	modal-transparency: 0.05;
+	modal-transparency-color: red;
+	modal-transparency-blur: 0;   
+}
+	

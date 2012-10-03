@@ -177,7 +177,7 @@ public function update_interface():void
 	    imgTitleWindow.y=(appCanvas.height/2)-100-(imgTitleWindow.height/4);
     }
 	
-	computeTrackPositions();
+	updateTimeWidgetBounds();
 }
 
 
@@ -226,13 +226,26 @@ public function set stageAspectRatio(value:Boolean):void
 	update_interface();
 }
 
-public function computeTrackPositions():void
+public function updateTimeWidgetBounds():void
 {
 	var sliderTrackBox:Rectangle = slider_key_index.getBounds(this.stage);
+	sliderTrackBox.width = slider_key_index.width;
+	timeWidget.updateBackground(sliderTrackBox.width);
+
+	expandedWidget1.updateBackground(sliderTrackBox.width);
+	expandedWidget2.updateBackground(sliderTrackBox.width);
+	expandedWidget3.updateBackground(sliderTrackBox.width);
 	var overViewTrackBox:Rectangle =  timeWidget.getBounds(this.stage);
-	appState.overViewTrackBox = new Rectangle(overViewTrackBox.x, sliderTrackBox.y,
-											overViewTrackBox.width, overViewTrackBox.bottom - sliderTrackBox.y);
+	
+	appState.overViewTrackBox = new Rectangle(overViewTrackBox.x, 
+												sliderTrackBox.y,slider_key_index.width, overViewTrackBox.bottom - sliderTrackBox.y);
+	
 	appState.translateTrackBox = expandedWidget1.getBounds(this.stage);
+	appState.translateTrackBox.width = slider_key_index.width;
+	
 	appState.rotateTrackBox = expandedWidget2.getBounds(this.stage);
+	appState.rotateTrackBox.width = slider_key_index.width;
+	
 	appState.scaleTrackBox = expandedWidget3.getBounds(this.stage);
+	appState.rotateTrackBox.width = slider_key_index.width;
 }

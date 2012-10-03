@@ -16,7 +16,7 @@
 					   initialize="_init()" invoke="_loadInitHandler(event)" closing="_closingHandler(event)" 
 					   applicationComplete="stage.addEventListener(KeyboardEvent.KEY_UP,mainCanvas.handleKeyBoardPress)">
 	
-	<!--<fx:Style source="KSketch_2.css" />-->
+	<fx:Style source="KSketch2.css" />
 
 	<fx:Script>
 		

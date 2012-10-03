@@ -167,8 +167,7 @@
 			 */
 			private function _timeToPosition(time:Number):Number
 			{
-				var currentFrame:Number = time/KAppState.ANIMATION_INTERVAL; //Number or int doesnt matter, difference is small
-				return currentFrame * _pixelPerFrame;
+				return KAppState.indexOf(time) * _pixelPerFrame;
 			}
 			
 			/**
@@ -176,27 +175,15 @@
 			 */
 			private function _positionToTime(xPos:Number):Number
 			{
-				var currentFrame:Number = xPos/_pixelPerFrame;
-				return Math.ceil(currentFrame*KAppState.ANIMATION_INTERVAL);
+				return KAppState.kskTime(Math.floor(xPos/_pixelPerFrame));
 			}
 			
-			/**
-			 * Change a x position to that of the next nearest frame end position
-			 */
-			private function _roundPosition(position:Number):Number
+			private function _framesToPixels(frameIndex:int, change:Number):Number
 			{
-				if(position == 0)
-					return 0;
-				
-				var remainder:Number = Math.abs(position%_pixelPerFrame);
-				var roundedPosition:Number;
-				
-				if(position < 0)
-					roundedPosition = position + remainder - _pixelPerFrame;
+				if(change < 0)
+					return frameIndex*_pixelPerFrame;			
 				else
-					roundedPosition = position - remainder + _pixelPerFrame;
-				
-				return roundedPosition;
+					return (frameIndex+1)*_pixelPerFrame;
 			}
 			
 			/**
@@ -213,8 +200,8 @@
 					stage.addEventListener(MouseEvent.MOUSE_UP,_widget_MouseUp, true, 0, true);
 					
 					_targetMarker = event.target as Marker;
+					_startX = event.stageX - _appState.overViewTrackBox.x;
 					
-					_startX = event.stageX;
 					_stackedMarkers = new Vector.<Marker>();
 					var currentMarker:Marker;
 					var i:int;
@@ -247,8 +234,11 @@
 			//Increases the duration of all markers on the left by 20%
 			private function _widget_MouseMove(event:MouseEvent):void
 			{
-				_changeX = event.stageX - _startX;
+				var currentMouseX:Number = event.stageX - _appState.overViewTrackBox.x;
+				_changeX = currentMouseX - _startX;
+				_changeX = _framesToPixels(_changeX/_pixelPerFrame, _changeX);
 				var xPos:Number = _targetMarker.originalPosition+_changeX;
+				
 				var dragWidth:Number = width - _targetMarker.width;
 				
 				if(dragWidth < xPos)

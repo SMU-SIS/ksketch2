@@ -30,7 +30,7 @@ package sg.edu.smu.ksketch.utilities
 	
 	public class KAppState extends EventDispatcher
 	{
-		public static const APP_BUILD_SERIAL:String = "0.2a 24-08-2012";
+		public static const APP_BUILD_SERIAL:String = "0.2a 03 OCT 2012";
 		public static const TIMER_INTERVAL:Number = 15;
 		public static const ANIMATION_INTERVAL:Number = 62.5;
 		public static const DEFAULT_MAX_TIME:Number = 5000;
@@ -631,14 +631,14 @@ package sg.edu.smu.ksketch.utilities
 			return kskTime / ANIMATION_INTERVAL;
 		}
 		
-		public static function nextKey(kskTime:Number):int
+		public static function nextKey(kskTime:Number):Number
 		{
 			var nextIndex:int = KAppState.indexOf(kskTime);//kskTime / ANIMATION_INTERVAL;
 			nextIndex ++;
 			return KAppState.kskTime(nextIndex);
 		}
 		
-		public static function previousKey(kskTime:Number):int
+		public static function previousKey(kskTime:Number):Number
 		{
 			var preIndex:int = KAppState.indexOf(kskTime);//kskTime / ANIMATION_INTERVAL;
 			preIndex --;
@@ -651,7 +651,7 @@ package sg.edu.smu.ksketch.utilities
 		 * @param kskTime K-Sketch time
 		 * @return Nearest frame time from kskTime 
 		 */		
-		public static function nextNearestKey(kskTime:Number):int
+		public static function nextNearestKey(kskTime:Number):Number
 		{
 			var index:int = KAppState.indexOf(kskTime);//kskTime / ANIMATION_INTERVAL;
 			if(kskTime == KAppState.kskTime(index))//Math.ceil(ANIMATION_INTERVAL * index))
@@ -660,7 +660,7 @@ package sg.edu.smu.ksketch.utilities
 				return KAppState.kskTime(++index);
 		}
 		
-		public static function previousNearestKey(kskTime:Number):int
+		public static function previousNearestKey(kskTime:Number):Number
 		{
 			var index:int = KAppState.indexOf(kskTime);//kskTime / ANIMATION_INTERVAL;
 			if(kskTime == KAppState.kskTime(index))//Math.ceil(ANIMATION_INTERVAL * index))

@@ -191,6 +191,10 @@
 							xPos = _previous.x + TimeWidget.pixelPerFrame;
 						}
 					}
+					else
+					{
+						_previous.updateX(_previous.originalPosition);
+					}
 				}
 				
 				updateX(xPos);

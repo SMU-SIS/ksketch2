@@ -194,7 +194,11 @@
 			private function _getFrameIndex(xPos:Number):int
 			{
 				var rawFrameIndex:Number = xPos/pixelPerFrame;
-				return _slider.getNearestFrameValue(rawFrameIndex);
+				
+				if(rawFrameIndex < _slider.maximum)
+					return _slider.getNearestFrameValue(rawFrameIndex);
+				else
+					return Math.ceil(rawFrameIndex);
 			}
 			
 			private function _framesToPixels(frameIndex:int, change:Number):Number
@@ -246,8 +250,6 @@
 				xPos = _timeToPosition(_positionToTime(xPos));
 				_targetMarker.moveWithStacking(xPos);
 				_changeX = _targetMarker.x - _targetMarker.originalPosition;
-				
-				_framesToPixels(_changeX/pixelPerFrame,_changeX);
 				_targetMarker.moveFutureMarkers(_changeX);
 				
 				_renderBars();

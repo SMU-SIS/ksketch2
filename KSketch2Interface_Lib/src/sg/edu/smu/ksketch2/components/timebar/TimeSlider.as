@@ -48,7 +48,6 @@ package sg.edu.smu.ksketch2.components.timebar
 			
 		}
 		
-		
 		public function getNearestFrameValue(rawFrameNumber:Number):Number
 		{
 			return nearestValidValue(rawFrameNumber, snapInterval);

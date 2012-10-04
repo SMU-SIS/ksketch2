@@ -81,9 +81,9 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	
 	//Initialise keyframe marker operations	
 	timeWidget.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.OVERVIEW);
-	expandedWidget1.initTimeWidget(_facade, appState, slider_key_index, KTransformMgr.TRANSLATION_REF);
-	expandedWidget2.initTimeWidget(_facade, appState, slider_key_index, KTransformMgr.ROTATION_REF);
-	expandedWidget3.initTimeWidget(_facade, appState, slider_key_index, KTransformMgr.SCALE_REF);
+	expandedWidget1.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.TRANSLATE);
+	expandedWidget2.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.ROTATE);
+	expandedWidget3.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.SCALE);
 	_facade.addEventListener(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE, updateTimeWidgets);
 	appState.addEventListener(KAppState.EVENT_UNDO_REDO_ENABLED_CHANGED, updateTimeWidgets);
 	appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, updateTimeWidgets);
@@ -159,8 +159,8 @@ public function update_interface():void
 	if(Math.abs(appCanvas.width-_windowBoundsOffsetX -_prevWidth) > 0 ||
 		Math.abs(appCanvas.height-_windowBoundsOffsetY-_prevHeight) > 0)
 	{
-		rescaleTimeWidgets();
 		updateTimeWidgets(_dummyEvent);
+		rescaleTimeWidgets();
 	}
 	
 	_prevWidth = appCanvas.width-_windowBoundsOffsetX;

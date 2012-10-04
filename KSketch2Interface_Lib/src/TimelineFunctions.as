@@ -243,8 +243,6 @@ private function updateTimeWidgets(event:Event):void
 		overviewMarkers.push(newMarker);
 	}
 	
-	TimeWidget.widget_max_time = 0;
-	
 	timeWidget.clearTimeWidget();
 	expandedWidget1.clearTimeWidget();
 	expandedWidget2.clearTimeWidget();

@@ -31,7 +31,6 @@
 			public static const ROTATE:int = 2;
 			public static const SCALE:int = 3;
 			public static const ACTIVITY:int = 4;
-			public static var widget_max_time:Number;
 			public static var pixelPerFrame:Number;
 			
 			//Widget atrributes
@@ -48,8 +47,8 @@
 			private var _changeX:Number;
 			
 			private var _activityBars:Vector.<ActivityBar>;
-			private var _freeMarkers:Vector.<Marker>;
-			private var _stackedMarkers:Vector.<Marker>;
+			private var _selectedMarkers:Vector.<Marker>;
+			private var _unselectedMarkers:Vector.<Marker>;
 			
 			public function initTimeWidget(facade:KModelFacade, appState:KAppState, slider:TimeSlider, type:int = -1):void
 			{
@@ -57,9 +56,7 @@
 				_appState = appState;
 				_type = type;
 				pixelPerFrame = 1;
-				_stackedMarkers = new Vector.<Marker>();
 				_slider = slider;
-				widget_max_time = 0;
 			}
 			
 			/**
@@ -69,17 +66,19 @@
 			 */
 			public function updateTimeWidget(markers:Vector.<Marker>):void
 			{
+				var widgetMaxTime:Number = 0;
 				calibrateTimeWidget();
-				_freeMarkers = new Vector.<Marker>();
 				_activityBars = new Vector.<ActivityBar>();
+				_selectedMarkers = new Vector.<Marker>();
+				_unselectedMarkers = new Vector.<Marker>();
 				
 				var marker:Marker;
-				var selectedMarkers:Vector.<Marker> = new Vector.<Marker>();
-				var unselectedMarkers:Vector.<Marker> = new Vector.<Marker>();
 				for each(marker in markers)
 				{
-					if(widget_max_time < marker.time)
-						widget_max_time = marker.time;
+					if(_type == TimeWidget.OVERVIEW)
+						if(widgetMaxTime < marker.time)
+							widgetMaxTime = marker.time;
+		
 					marker.x  = _timeToPosition(marker.time);
 					if(marker.x < 0)
 						continue;
@@ -87,27 +86,44 @@
 					if(marker.selected)
 					{
 						selectedMarkerContainer.addElement(marker);
-						selectedMarkers.push(marker);
+						_selectedMarkers.push(marker);
 					}
 					else
 					{
 						markerContainer.addElement(marker);
-						unselectedMarkers.push(marker);
+						_unselectedMarkers.push(marker);
 					}
+
 					marker.originalPosition = marker.x;
-					_freeMarkers.push(marker);
 				}
 				
-				_freeMarkers.sort(_compareMarkerPosition);
+				if(_type == TimeWidget.OVERVIEW)
+					_appState.maxTime = _computeAppMaxTime(widgetMaxTime);
 				
-				_generateActivityBars(unselectedMarkers, false);
-				_generateActivityBars(selectedMarkers, true);
+				rescaleTimeWidget();
+
 				
+				//Sort and form a 2 different linked lists of
+				//selected or unselected markers
+				var i:int;
+				
+				_selectedMarkers.sort(_compareMarkerPosition)
+				for(i = 1; i< _selectedMarkers.length; i++)
+				{
+					_selectedMarkers[i].previous = _selectedMarkers[i-1];
+					_selectedMarkers[i-1].next = _selectedMarkers[i];
+				}
+				
+				_unselectedMarkers.sort(_compareMarkerPosition);
+				for(i = 1; i< _unselectedMarkers.length; i++)
+				{
+					_unselectedMarkers[i].previous = _unselectedMarkers[i-1];
+					_unselectedMarkers[i-1].next = _unselectedMarkers[i];
+				}
+				
+				_generateActivityBars(_selectedMarkers, true);
+				_generateActivityBars(_unselectedMarkers, false);
 				_renderBars();
-				_appState.maxPlayTime = widget_max_time;
-				
-				if(_type == OVERVIEW)
-					_computeAppMaxTime();
 			}
 			
 			/**
@@ -129,6 +145,7 @@
 					currentMarker = markerContainer.getElementAt(i) as Marker;
 					frame = currentMarker.x /prevPixelPerFrame;
 					currentMarker.x = frame * pixelPerFrame;
+					currentMarker.originalPosition = currentMarker.x;
 				}
 			
 				numMarkers = selectedMarkerContainer.numElements;
@@ -138,6 +155,7 @@
 					currentMarker = selectedMarkerContainer.getElementAt(i) as Marker;
 					frame = currentMarker.x /prevPixelPerFrame;
 					currentMarker.x = frame * pixelPerFrame;
+					currentMarker.originalPosition = currentMarker.x;
 				}
 				
 				_renderBars();
@@ -197,29 +215,6 @@
 					_targetMarker = event.target as Marker;
 					_startX = event.stageX - _appState.overViewTrackBox.x;
 					_changeX = 0;
-					
-					_stackedMarkers = new Vector.<Marker>();
-					var currentMarker:Marker;
-					var i:int;
-
-					for(i=0; i<_freeMarkers.length; i++)
-					{
-						currentMarker = _freeMarkers[i];
-						currentMarker.originalPosition = currentMarker.x;
-						
-						if(_type == OVERVIEW)
-							if(_targetMarker.selected)
-								if(!currentMarker.selected)
-									continue;
-						
-						if(currentMarker.x - _targetMarker.x == 0)
-						{
-							_freeMarkers.splice(i,1);
-							_stackedMarkers.push(currentMarker);
-							_stackedMarkers
-							i -= 1;
-						}
-					}
 				}
 			}
 			
@@ -237,30 +232,16 @@
 				
 				//Set limits for the mouse drag so the target marker does not move out of the
 				//Defined track region
-				var dragWidth:Number = width - _targetMarker.width;
-				if(dragWidth < xPos)
-					_changeX -= xPos - dragWidth;
-				else if(xPos < 0)
-					_changeX -= xPos;
+				if(xPos < 0)
+					xPos = 0;
+				else if(width < xPos)
+					xPos = width;
+
+				_targetMarker.moveWithStacking(xPos);
+				_changeX = _targetMarker.x - _startX;
 				
-				var i:int;
-				var posFromTarget:Number;
-				var currentMarker:Marker;
-				
-				//Move the stacked markers and upcoming markers
-				for(i=0; i<_stackedMarkers.length; i++)
-				{
-					currentMarker = _stackedMarkers[i];
-					posFromTarget = currentMarker.originalPosition - _targetMarker.originalPosition;
-					currentMarker.updateX(currentMarker.originalPosition+(_changeX-posFromTarget));
-				}
-				
-				if(_futureConstant)
-					_moveUpcomingMarkers();
-	
-				_onMoveStackMarkers()
-				_onMoveUnstackMarkers();
-				
+				_framesToPixels(_changeX/pixelPerFrame,_changeX);
+				_targetMarker.moveFutureMarkers(_changeX);
 				_renderBars();
 			}
 			
@@ -288,7 +269,7 @@
 				var keyTypes:Vector.<int> = new Vector.<int>();
 				var keyTimes:Vector.<Number> = new Vector.<Number>();
 				
-				for each(stackedMarker in _stackedMarkers)
+				for each(stackedMarker in _selectedMarkers)
 				{
 					retimeTo = _positionToTime(stackedMarker.x);
 					for each(keyInfo in stackedMarker.keyList)
@@ -301,7 +282,7 @@
 					}
 				}
 				
-				for each(freeMarker in _freeMarkers)
+				for each(freeMarker in _unselectedMarkers)
 				{
 					retimeTo = _positionToTime(freeMarker.x);
 					for each(keyInfo in freeMarker.keyList)
@@ -318,155 +299,6 @@
 				
 				var retimeOp:IModelOperation = _facade.retimeKeys(keysToRetime, times, _appState.time);
 				_appState.addOperation(retimeOp);
-				
-			}
-			
-			private function _canStackMarkers(targetMarker:Marker, toCollideMarker:Marker):Boolean
-			{	
-				if(targetMarker.hasTranslate && toCollideMarker.hasTranslate)
-					return false;
-				if(targetMarker.hasRotate && toCollideMarker.hasRotate)
-					return false;
-				if(targetMarker.hasScale && toCollideMarker.hasScale)
-					return false;					
-		
-				return true;
-			}
-			
-			private function _onMoveCollideMarkers():void
-			{
-				var i:int = 0;
-				var currentMarker:Marker;
-				var posDiffFromTarget:Number;
-				var currentXPos:Number = _targetMarker.x;
-				var originalXPos:Number = _targetMarker.originalPosition;
-				
-			}
-			
-			private function _onMoveUncollideMarkers():void
-			{
-				
-			}
-			
-			private function _onMoveStackMarkers():void
-			{
-				var i:int = 0;
-				var currentMarker:Marker;
-				var posDiffFromTarget:Number;
-				var currentXPos:Number = _targetMarker.x;
-				var originalXPos:Number = _targetMarker.originalPosition;
-				
-				for(i; i<_freeMarkers.length; i++)
-				{
-					currentMarker = _freeMarkers[i];
-					
-					if(_type == OVERVIEW)
-						if(_targetMarker.selected)
-							if(!currentMarker.selected)
-								continue;
-					
-					if(_targetMarker == null)
-						throw new Error("there is no target marker!");
-					
-					//Compute distance from dragged marker
-					posDiffFromTarget = currentMarker.x - currentXPos;
-					
-					if(currentMarker.originalPosition < originalXPos)
-					{
-						if(posDiffFromTarget >= 0)
-						{
-							_stackedMarkers.push(currentMarker);
-							_freeMarkers.splice(i,1);
-							i-=1;
-						}
-					}
-					else
-					{
-						if(posDiffFromTarget <= 0)
-						{
-							_stackedMarkers.push(currentMarker);
-							_freeMarkers.splice(i,1);
-							i-=1;
-						}
-					}
-				}
-			}
-			
-			private function _onMoveUnstackMarkers():void
-			{
-				var i:int = 0;
-				var currentMarker:Marker;
-				var posDiffFromOriginal:Number;
-				var currentXPos:Number = _targetMarker.x;
-				
-				for(i; i < _stackedMarkers.length; i++)
-				{
-					currentMarker = _stackedMarkers[i];
-					
-					if(currentMarker == _targetMarker)
-						continue;
-					
-					posDiffFromOriginal = Math.floor(currentMarker.x - currentMarker.originalPosition);
-					
-					if(currentMarker.originalPosition < _targetMarker.originalPosition)
-					{
-						if(posDiffFromOriginal > 0)
-						{
-							_freeMarkers.push(currentMarker);
-							currentMarker.updateX(currentMarker.originalPosition);
-							_stackedMarkers.splice(i,1);
-							i-=1;
-						}
-					}
-					else
-					{
-						if(posDiffFromOriginal < 0)
-						{
-							_freeMarkers.push(currentMarker);
-							currentMarker.updateX(currentMarker.originalPosition);
-							_stackedMarkers.splice(i,1);
-							i-=1;
-						}
-					}					
-				}
-			}
-			
-			/**
-			 * Move the markers behind the target marker relative to it
-			 */
-			private function _moveUpcomingMarkers():void
-			{
-				var length:int = _freeMarkers.length;
-				var i:int = 0;
-				var currentMarker:Marker;
-				
-				for(i; i<length; i++)
-				{
-					currentMarker = _freeMarkers[i];
-					
-					if(_type == OVERVIEW)
-						if(_targetMarker.selected)
-							if(!currentMarker.selected)
-								continue;
-					
-					if(_targetMarker.originalPosition < currentMarker.originalPosition)
-					{
-						currentMarker.updateX(currentMarker.originalPosition + _changeX);
-					}
-				}
-			}
-			
-			/**
-			 * Computes and sets the max time of the timeline
-			 */
-			private function _computeAppMaxTime():void
-			{
-				if(widget_max_time <= 0.8*KAppState.DEFAULT_MAX_TIME)
-					_appState.maxTime = KAppState.DEFAULT_MAX_TIME;
-				else
-				{
-					_appState.maxTime = (widget_max_time/KAppState.DEFAULT_MAX_TIME)*KAppState.DEFAULT_MAX_TIME+KAppState.DEFAULT_MAX_TIME;
-				}
 			}
 			
 			/**
@@ -490,6 +322,19 @@
 				else
 					return 1;				
 			}
+			
+			private function _computeAppMaxTime(maxTime:Number):Number
+			{
+				var correctMaxTime:Number = 0;
+				
+				if(maxTime <= 0.8*KAppState.DEFAULT_MAX_TIME)
+					correctMaxTime = KAppState.DEFAULT_MAX_TIME;
+				else
+					correctMaxTime = (maxTime/KAppState.DEFAULT_MAX_TIME)*KAppState.DEFAULT_MAX_TIME+KAppState.DEFAULT_MAX_TIME;
+				
+				return correctMaxTime;
+			}
+
 			
 			/**
 			 * Removes all markers from the container which holds the time markers

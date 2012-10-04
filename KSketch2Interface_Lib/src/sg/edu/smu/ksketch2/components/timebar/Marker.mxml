@@ -160,32 +160,46 @@
 				_originalPosition = value;
 			}
 			
-			public function moveWithFuture(dx:Number):void
+			public function get hasTransform():Boolean
 			{
-				if(_next)
-					next.moveWithFuture(dx);
-				
-				updateX(dx);
+				return _hasTransform;
 			}
 			
-			public function updateX(dx:Number):void
+			public function set hasTransform(value:Boolean):void
 			{
-				x += dx;
-				
-				if(x <= 0)
-				{
-					dx = -x;
-					x = 0;
-					
-					if(next)
-						next.moveWithFuture(dx);
-				}
-				
+				_hasTransform = value;
+			}
+
+			public function moveWithStacking(xPos:Number):void
+			{
 				if(_previous)
 				{
-					if(_previous.x <= x)
-						_previous.updateX(x-TimeWidget.pixelPerFrame);
+					if(xPos <= _previous.originalPosition)
+					{
+						if(_canStackMarkers(_previous))
+						{
+							_previous.moveWithStacking(xPos);
+						}
+						else
+						{
+							var prevX:Number = xPos - TimeWidget.pixelPerFrame;
+							
+							if(prevX <= 0)
+								prevX = 0;
+							
+							_previous.moveWithStacking(prevX);
+							xPos = _previous.x + TimeWidget.pixelPerFrame;
+						}
+					}
 				}
+				
+				updateX(xPos);
+			}
+			
+			
+			public function updateX(xPos:Number):void
+			{
+				x = xPos;
 				
 				for each(var linkedMarker:Marker in _linkedMarkers)
 				{
@@ -209,6 +223,16 @@
 					removeClone();
 			}
 			
+			public function moveFutureMarkers(dX:Number):void
+			{
+				if(_next)
+				{
+					var nextX:Number = next.originalPosition + dX;
+					next.updateX(nextX);
+					next.moveFutureMarkers(dX);
+				}
+			}
+			
 			public function moveClone(xPos:Number):void
 			{
 				if(!_clone)
@@ -228,17 +252,19 @@
 					(parent as Group).removeElement(_clone);
 				}
 			}
+			
+			private function _canStackMarkers(toCollideMarker:Marker):Boolean
+			{	
+				if(hasTranslate && toCollideMarker.hasTranslate)
+					return false;
+				if(hasRotate && toCollideMarker.hasRotate)
+					return false;
+				if(hasScale && toCollideMarker.hasScale)
+					return false;					
 
-			public function get hasTransform():Boolean
-			{
-				return _hasTransform;
+				return true;
 			}
-
-			public function set hasTransform(value:Boolean):void
-			{
-				_hasTransform = value;
-			}
-
+			
 			
 		]]>
 	</fx:Script>
@@ -246,7 +272,7 @@
 		<s:State name="SELECTED"/>
 		<s:State name="UNSELECTED"/>
 	</s:states>
-	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="UNSELECTED" x="-6">                              
+	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="UNSELECTED" x="-5.5">                              
 		<s:stroke>
 			<s:SolidColorStroke color="0x6d6e70" weight="1"/>
 		</s:stroke>
@@ -254,7 +280,7 @@
 			<s:SolidColor color="0xadb2bb" alpha="1"/>
 		</s:fill>
 	</s:Rect>
-	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="SELECTED" x="-6">                              
+	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="SELECTED" x="-5.5">                              
 		<s:stroke>
 			<s:SolidColorStroke color="0x000000" weight="0"/>
 		</s:stroke>

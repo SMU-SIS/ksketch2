@@ -45,6 +45,13 @@ package sg.edu.smu.ksketch2.components.timebar
 			
 			if(skin)
 				(skin as TimeSliderSkin).drawTrackScale();
+			
+		}
+		
+		
+		public function getNearestFrameValue(rawFrameNumber:Number):Number
+		{
+			return nearestValidValue(rawFrameNumber, snapInterval);
 		}
 		
 		/**

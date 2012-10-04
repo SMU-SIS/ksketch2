@@ -188,7 +188,13 @@
 			 */
 			private function _positionToTime(xPos:Number):Number
 			{
-				return KAppState.kskTime(Math.floor(xPos/pixelPerFrame));
+				return KAppState.kskTime(_getFrameIndex(xPos));
+			}
+			
+			private function _getFrameIndex(xPos:Number):int
+			{
+				var rawFrameIndex:Number = xPos/pixelPerFrame;
+				return _slider.getNearestFrameValue(rawFrameIndex);
 			}
 			
 			private function _framesToPixels(frameIndex:int, change:Number):Number
@@ -236,12 +242,14 @@
 					xPos = 0;
 				else if(width < xPos)
 					xPos = width;
-
+				
+				xPos = _timeToPosition(_positionToTime(xPos));
 				_targetMarker.moveWithStacking(xPos);
-				_changeX = _targetMarker.x - _startX;
+				_changeX = _targetMarker.x - _targetMarker.originalPosition;
 				
 				_framesToPixels(_changeX/pixelPerFrame,_changeX);
 				_targetMarker.moveFutureMarkers(_changeX);
+				
 				_renderBars();
 			}
 			

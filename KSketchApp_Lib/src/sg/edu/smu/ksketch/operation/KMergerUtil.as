@@ -14,6 +14,7 @@ package sg.edu.smu.ksketch.operation
 	
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.IParentKeyFrame;
+	import sg.edu.smu.ksketch.model.IReferenceFrame;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KObject;
@@ -21,6 +22,7 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.model.geom.KTranslation;
 	import sg.edu.smu.ksketch.model.implementations.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
+	import sg.edu.smu.ksketch.utilities.KClipBoard;
 
 	public class KMergerUtil
 	{
@@ -30,14 +32,15 @@ package sg.edu.smu.ksketch.operation
 		 */
 		public static function MergeHierarchyMotionsIntoObject(root:KGroup, object:KObject, time:Number):IModelOperation
 		{
+			var clipBoard:KClipBoard = new KClipBoard();
 			var mergeHierarchyOp:KCompositeOperation = new KCompositeOperation();
 			var parent:KGroup = object.getParent(KGroupUtil.STATIC_GROUP_TIME);
 			while(parent.id != root.id)
 			{
-				mergeKeys(object, parent, time, mergeHierarchyOp, KTransformMgr.TRANSLATION_REF);
-				mergeKeys(object, parent, time, mergeHierarchyOp, KTransformMgr.ROTATION_REF);
-				mergeKeys(object, parent, time, mergeHierarchyOp, KTransformMgr.SCALE_REF);
-				
+				var parentClone:KObject = clipBoard.cloneObject(parent);
+				_mergeMotionOfType(parentClone, object, time, mergeHierarchyOp, KTransformMgr.ROTATION_REF);
+				_mergeMotionOfType(parentClone, object, time, mergeHierarchyOp, KTransformMgr.SCALE_REF);
+				_mergeMotionOfType(parentClone, object, time, mergeHierarchyOp, KTransformMgr.TRANSLATION_REF);
 				parent = parent.getParent(KGroupUtil.STATIC_GROUP_TIME);
 			}
 			
@@ -46,7 +49,6 @@ package sg.edu.smu.ksketch.operation
 			else
 				return null;
 		}
-		
 		
 		/**
 		 * Merge the keys from source to target of the type at the specific time.
@@ -152,6 +154,44 @@ package sg.edu.smu.ksketch.operation
 				result.transitionPath.push(xi,yi,i);
 			}
 			return result;
+		}
+		
+		
+		/**
+		 * Merge the motions of a type from source object into the target
+		 * Motions from the source's creation time, to given time will be merged into the target
+		 * This function compensates for differences in centers between the source and target keys.
+		 */
+		private static function _mergeMotionOfType(source:KObject, target:KObject, time:Number, op:KCompositeOperation, type:int):void
+		{
+			var sourceRef:IReferenceFrame = source.getReferenceFrameAt(type);
+			var targetRef:IReferenceFrame = target.getReferenceFrameAt(type);
+			
+			//Normalise both reference frames
+			var currentSourceKey:ISpatialKeyframe = sourceRef.earliestKey() as ISpatialKeyframe;
+			var currentTargetKey:ISpatialKeyframe = null;
+			
+			source.transformMgr.forceKeyAtTime(time, sourceRef,op);
+			while(currentSourceKey)
+			{
+				if(type == 1)
+					trace(currentSourceKey.getTranslation(currentSourceKey.endTime));
+				currentTargetKey = targetRef.getAtTime(currentSourceKey.endTime) as ISpatialKeyframe;
+				if(!currentTargetKey)
+					target.transformMgr.forceKeyAtTime(currentSourceKey.endTime, targetRef, op);
+				currentSourceKey = currentSourceKey.next as ISpatialKeyframe;
+			}
+			
+			currentTargetKey = targetRef.earliestKey() as ISpatialKeyframe;
+			currentSourceKey = null;
+			while(currentTargetKey)
+			{
+				currentSourceKey = sourceRef.getAtTime(currentTargetKey.endTime) as ISpatialKeyframe;
+				if(!currentSourceKey)
+					source.transformMgr.forceKeyAtTime(currentTargetKey.endTime, sourceRef, op);
+				currentTargetKey.mergeKey(currentSourceKey, type);
+				currentTargetKey = currentTargetKey.next as ISpatialKeyframe;
+			}
 		}
 	}
 }

@@ -51,6 +51,13 @@ package sg.edu.smu.ksketch.utilities
 			_template_objects = _copyObjects(null,objects,time,true);
 		}
 		
+		public function cloneObject(toClone:KObject):KObject
+		{
+			var copy:KObject = _copyObject(null, toClone, 0);
+			_copyMotion(copy, toClone);
+			return copy;
+		}
+		
 		public function get(model:KModel, time:Number, 
 							includeMotion:Boolean):KModelObjectList
 		{

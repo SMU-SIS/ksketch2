@@ -410,12 +410,19 @@ package sg.edu.smu.ksketch.components
 			_alphaTracker.graphics.clear();
 			_alphaTracker.graphics.lineStyle(1, 0, 0.3);
 			if(event.newTime != event.oldTime)
+			{
 				for(var obj:Object in _viewsTable)
 					_updateObjectView(obj as KObject, event.oldTime, event.newTime);
+			}
 		}
 		
 		protected function _updateObjectView(object:KObject, fromKSKTime:Number, toKSKTime:Number):void
 		{
+			if(fromKSKTime == -1)
+				fromKSKTime = 0;
+			if(toKSKTime == -1)
+				toKSKTime = 0;
+			
 			var view:IObjectView = _viewsTable[object];
 			if(view == null)
 				throw new Error("object has no view");

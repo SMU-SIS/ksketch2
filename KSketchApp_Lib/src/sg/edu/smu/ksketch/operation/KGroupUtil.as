@@ -64,10 +64,10 @@ package sg.edu.smu.ksketch.operation
 				if(collapseOperation)
 					staticGroupOperation.addOperation(collapseOperation);
 				
-				//groupToRootOperation = KUngroupUtil.ungroupStatic(model, model.root,currentObject);
+				groupToRootOperation = KUngroupUtil.ungroupStatic(model, model.root,currentObject);
 				
-				//if(groupToRootOperation)
-					//staticGroupOperation.addOperation(groupToRootOperation);
+				if(groupToRootOperation)
+					staticGroupOperation.addOperation(groupToRootOperation);
 			}
 
 			var groupOperation:KGroupOperation
@@ -220,7 +220,6 @@ package sg.edu.smu.ksketch.operation
 				oldParents.push(key == null ? null : key.parent);
 				setParentKey(groupTime,obj,group);
 				key = obj.getParentKeyAtOrBefore(groupTime) as IParentKeyFrame;
-				trace("_Group object", obj.id, "has parent", key.parent.id, "at", groupTime);
 			}
 			
 			group.updateCenter();

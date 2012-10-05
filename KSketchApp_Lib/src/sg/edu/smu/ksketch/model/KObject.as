@@ -297,6 +297,7 @@ package sg.edu.smu.ksketch.model
 		{
 			var fromParent:KGroup = getParent(from);
 			var toParent:KGroup = getParent(to);
+			
 			if(fromParent.id != toParent.id)
 			{
 				return toParent;
@@ -394,6 +395,11 @@ package sg.edu.smu.ksketch.model
 		public function shiftParentKeys(dt:Number):void
 		{
 			_parentFrameList.shiftKeys(0,dt);
+		}
+		
+		public function getReferenceFrameAt(type:int):IReferenceFrame
+		{
+			return _referenceFrameList.getReferenceFrameAt(type);
 		}
 		
 		public function getKeyframe(keyType:int,time:Number):IKeyFrame

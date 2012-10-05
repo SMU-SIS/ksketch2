@@ -89,7 +89,7 @@ package sg.edu.smu.ksketch.operation
 		
 		private function _addObject(object:KObject,model:KModel):IModelOperation
 		{
-			object.addParentKey(object.createdTime, model.root);
+			object.addParentKey(KGroupUtil.STATIC_GROUP_TIME, model.root);
 			object.transformMgr.addInitialKeys(object.createdTime);
 			return new KAddOperation(model,object);
 		}

@@ -14,9 +14,11 @@ package sg.edu.smu.ksketch.interactor
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
+	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KTranslation;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
+	import sg.edu.smu.ksketch.operation.KGroupUtil;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
@@ -68,7 +70,9 @@ package sg.edu.smu.ksketch.interactor
 		protected override function transitionStart(canvasPoint:Point, 
 													transitionType:int):IModelOperation
 		{
+			var thisSelection:KSelection = selection();
 			var op:IModelOperation = performGroupingOp(selection().objects);
+			var thatSelection:KSelection = selection();
 			var it:IIterator = selection().objects.iterator;
 			
 			//Call the begin translation
@@ -121,7 +125,23 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		protected override function performGroupingOp(objects:KModelObjectList):IModelOperation
 		{
-			var mode:String = _appState.groupingMode;
+			//When to ungroup
+			//If demo, break and group objects under new parent, under the root.
+			//If interpolated
+			//	if length == 1, dont break
+			//  if length > 1, break and group objects under new parent, under the root
+			var time:Number = _appState.time;
+			if(_appState.transitionType == KAppState.TRANSITION_REALTIME)
+				return _facade.group(objects, _appState.groupingMode, _appState.transitionType, time);
+			else
+			{
+				if(objects.length() > 1)
+					return _facade.group(objects, _appState.groupingMode, _appState.transitionType, time);
+			}
+			
+			return null;
+			
+			/*var mode:String = _appState.groupingMode;
 			var type:int = _appState.transitionType;
 			var time:Number = _appState.time;
 			var length:int = objects.length();
@@ -138,7 +158,7 @@ package sg.edu.smu.ksketch.interactor
 				return _facade.regroup(objects, mode, type,time, realtimeTransition);
 			}
 			else
-				return null;
+				return null;*/
 		}
 	}
 }

@@ -36,12 +36,12 @@ package sg.edu.smu.ksketch.operation
 	public class KUngroupUtil
 	{
 		/**
-		 * Ungroup a list of objects in static mode at kskTime, by placing under root.
+		 * Ungroup the given object to the root
+		 * Merges all motions from the previous object's hierachy into the object
 		 */
-		public static function ungroupStatic(model:KModel, root:KGroup, 
-											 objs:KModelObjectList):IModelOperation
+		public static function ungroupStatic(model:KModel, root:KGroup, object:KObject):IModelOperation
 		{	
-			return _ungroupObjects(model, root, objs);
+			return _ungroupObject(model, object.getParent(KGroupUtil.STATIC_GROUP_TIME), model.root, object, KGroupUtil.STATIC_GROUP_TIME);
 		}
 		
 		/**
@@ -316,7 +316,7 @@ package sg.edu.smu.ksketch.operation
 		// Determine if the group has only one direct children at kskTime. 
 		private static function _singleChildren(group:KGroup, kskTime:Number):Boolean
 		{
-			var it:IIterator = group.directChildIterator(kskTime);
+			var it:IIterator = group.children.iterator;
 			return it.hasNext() && it.next() && !it.hasNext();
 		}
 	}

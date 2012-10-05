@@ -13,7 +13,9 @@ package sg.edu.smu.ksketch.operation
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.model.IKeyFrame;
+	import sg.edu.smu.ksketch.model.IParentKeyFrame;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
+	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.model.geom.KTranslation;
@@ -22,6 +24,30 @@ package sg.edu.smu.ksketch.operation
 
 	public class KMergerUtil
 	{
+		/**
+		 * Clone and Collapses the hierarchy of the given object
+		 * Merges all of the hierachy's motions (up till given time) into the object
+		 */
+		public static function MergeHierarchyMotionsIntoObject(root:KGroup, object:KObject, time:Number):IModelOperation
+		{
+			var mergeHierarchyOp:KCompositeOperation = new KCompositeOperation();
+			var parent:KGroup = object.getParent(KGroupUtil.STATIC_GROUP_TIME);
+			while(parent.id != root.id)
+			{
+				mergeKeys(object, parent, time, mergeHierarchyOp, KTransformMgr.TRANSLATION_REF);
+				mergeKeys(object, parent, time, mergeHierarchyOp, KTransformMgr.ROTATION_REF);
+				mergeKeys(object, parent, time, mergeHierarchyOp, KTransformMgr.SCALE_REF);
+				
+				parent = parent.getParent(KGroupUtil.STATIC_GROUP_TIME);
+			}
+			
+			if(mergeHierarchyOp.length > 0)
+				return mergeHierarchyOp;
+			else
+				return null;
+		}
+		
+		
 		/**
 		 * Merge the keys from source to target of the type at the specific time.
 		 */
@@ -127,6 +153,5 @@ package sg.edu.smu.ksketch.operation
 			}
 			return result;
 		}
-		
 	}
 }

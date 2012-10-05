@@ -182,7 +182,8 @@
 			
 			private function _isImplicitGrouping():Boolean
 			{
-				return appState.groupingMode == KAppState.GROUPING_IMPLICIT_DYNAMIC;
+				return appState.groupingMode == KAppState.GROUPING_IMPLICIT_DYNAMIC
+					|| appState.groupingMode == KAppState.GROUPING_IMPLICIT_STATIC;
 			}
 		]]>
 	</fx:Script>

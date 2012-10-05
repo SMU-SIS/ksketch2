@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch.model.implementations
 	import flash.geom.Matrix;
 	import flash.media.ID3Info;
 	
+	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.IParentKeyFrame;
 	import sg.edu.smu.ksketch.model.IParentKeyFrameList;
 	import sg.edu.smu.ksketch.model.KGroup;
@@ -29,6 +30,11 @@ package sg.edu.smu.ksketch.model.implementations
 		public function createParentKey(time:Number, parent:KGroup):IParentKeyFrame
 		{
 			return new KParentKeyframe(time, parent);
+		}
+		
+		override public function lookUp(kskTime:Number):IKeyFrame
+		{
+			return getAtOrBeforeTime(kskTime);
 		}
 	}
 }

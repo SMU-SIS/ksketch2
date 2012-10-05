@@ -30,7 +30,7 @@ package sg.edu.smu.ksketch.utilities
 	
 	public class KAppState extends EventDispatcher
 	{
-		public static const APP_BUILD_SERIAL:String = "0.2a 03 OCT 2012";
+		public static const APP_BUILD_SERIAL:String = "0.2a 04 OCT 2012";
 		public static const TIMER_INTERVAL:Number = 15;
 		public static const ANIMATION_INTERVAL:Number = 62.5;
 		public static const DEFAULT_MAX_TIME:Number = 5000;
@@ -177,7 +177,7 @@ package sg.edu.smu.ksketch.utilities
 			_pgUpEnabled = true;
 			_pgDownEnabled = true;
 			_groupSelectMode = SELECTION_GROUP_AND_STROKE;
-			_groupingMode = GROUPING_IMPLICIT_DYNAMIC;
+			_groupingMode = KAppState.GROUPING_IMPLICIT_STATIC;
 			_pasteEnabled = false;
 			_ungroupEnabled = false;
 			
@@ -584,7 +584,7 @@ package sg.edu.smu.ksketch.utilities
 		[Bindable(event='groupingEnabledChanged')]
 		public function get ungroupEnabled():Boolean
 		{	
-			return groupingMode != GROUPING_IMPLICIT_DYNAMIC && 
+			return groupingMode != GROUPING_IMPLICIT_DYNAMIC &&  
 				_ungroupEnabled && _selectedLength() > 0;
 		}
 

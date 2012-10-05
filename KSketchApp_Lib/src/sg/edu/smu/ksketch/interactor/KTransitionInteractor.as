@@ -189,13 +189,19 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		protected function performGroupingOp(objects:KModelObjectList):IModelOperation
 		{
-			if (isImplicitGrouping() && objects.length() > 1)
+			if(objects.length() > 1)
+			{
+				var time:Number = _appState.time;
+				return _facade.group(objects,_appState.groupingMode, _appState.transitionType,time);
+			}
+			
+			/*if (isImplicitGrouping() && objects.length() > 1)
 			{
 				var mode:String = _appState.groupingMode;
 				var type:int = _appState.transitionType;
 				var time:Number = _appState.time;
 				return _facade.group(objects,mode,type,time);
-			}
+			}*/
 			return null;
 		}
 		protected function selection():KSelection

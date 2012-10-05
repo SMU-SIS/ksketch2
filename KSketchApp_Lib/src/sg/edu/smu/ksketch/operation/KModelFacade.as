@@ -42,7 +42,6 @@ package sg.edu.smu.ksketch.operation
 	{	
 		public static const ERASE_SAME:String = "Erase-Same";
 		public static const KEEP_THRESHOLD:String = "Keep-Threshold";
-		private var _groupingUtil:IGroupingUtil;
 		private var _appState:KAppState;
 		private var _model:KModel;
 		private var _editor:KObjectEditor;
@@ -53,7 +52,6 @@ package sg.edu.smu.ksketch.operation
 			_appState = appState;
 			_model = new KModel();
 			_editor = new KObjectEditor();
-			setGroupingMode();
 			_keyTimeOperator = new KKeyTimeOperator(_appState, _model);
 			_model.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED,_refreshObjectTime);
 		}
@@ -157,18 +155,6 @@ package sg.edu.smu.ksketch.operation
 			return null
 		}
 		
-		// ------------------ Grouping Operation ------------------- //
-		public function setGroupingMode(mode:String = null):void
-		{
-			if(!mode)
-				mode = KAppState.GROUPING_IMPLICIT_STATIC;
-			
-			if(mode == KAppState.GROUPING_IMPLICIT_STATIC || mode == KAppState.GROUPING_EXPLICIT_STATIC)
-				_groupingUtil = null;
-			else
-				_groupingUtil = null;
-		}
-		
 		public function regroup(objs:KModelObjectList, mode:String, transitionType:int, appTime:Number, 
 								isRealTimeTranslation:Boolean = false):IModelOperation
 		{
@@ -177,20 +163,67 @@ package sg.edu.smu.ksketch.operation
 	//		KLogger.logRegroup(objs.toIDs(), mode, transitionType, appTime, isRealTimeTranslation);
 			
 			//		var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,appTime);
-			var unOp:IModelOperation = ungroup(objs, mode, appTime);
+/*			var unOp:IModelOperation = ungroup(objs, mode, appTime);
 			var gpOp:IModelOperation = group(objs,mode,transitionType,appTime,isRealTimeTranslation);
 			var ops:KCompositeOperation = new KCompositeOperation();
 			if (unOp)
 				ops.addOperation(unOp);
 			if (gpOp)
 				ops.addOperation(gpOp);
-			return ops;
+			return ops;*/
+			
+			return null;
 		}
+		
 		public function group(objs:KModelObjectList, mode:String, 
 							  transitionType:int, groupTime:Number=-2, 
 							  isRealTimeTranslation:Boolean = false):IModelOperation
-		{	
-			var time:Number = groupTime;
+		{				
+			var ops:KCompositeOperation = new KCompositeOperation();
+			
+			//Do static grouping
+			var groupResults:Array = KGroupUtil.groupStatic(_model, objs, groupTime);
+			if(groupResults)
+			{
+				var gp:KGroup = groupResults[1] as KGroup;
+				
+				if(gp)
+				{
+					gp.updateCenter(_appState.time);
+					gp.dispatchEvent(new KObjectEvent(gp,KObjectEvent.EVENT_OBJECT_CENTER_CHANGED));
+				}
+				
+				ops.addOperation(groupResults[0]);
+			}
+			
+			//Then we clean up the model of all singletons and dirty stuffs
+			var rmOp:IModelOperation;
+			
+			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
+				ops.addOperation(rmOp);
+			
+			if (ops.length > 0)
+			{
+				KLogger.logGroup(objs.toIDs(), mode, transitionType, groupTime);
+				var list:KModelObjectList = new KModelObjectList();
+				
+				if(groupResults[1])
+				{
+					var resultantGroup:KGroup = groupResults[1] as KGroup;
+					list.add(resultantGroup);
+					_appState.selection = new KSelection(list,_appState.time);
+					
+					if(_appState.userSetCenterOffset)
+						_appState.userSetCenterOffset = _appState.userSetCenterOffset.clone();
+				}
+				
+				_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
+				_appState.fireGroupingEnabledChangedEvent();
+				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
+				return ops;
+			}
+			
+/*			var time:Number = groupTime;
 			time = time != -2 ? time:KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
 			time = time >= 0 ? time : _appState.time;
 			
@@ -230,12 +263,12 @@ package sg.edu.smu.ksketch.operation
 				_appState.fireGroupingEnabledChangedEvent();
 				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 				return ops;
-			}
+			}*/
 			return null;
 		}
 		public function ungroup(objs:KModelObjectList,mode:String,appTime:Number):IModelOperation
 		{	
-			var strokes:KModelObjectList = KUngroupUtil.selectedStrokes(_model.root,objs,appTime);
+/*			var strokes:KModelObjectList = KUngroupUtil.selectedStrokes(_model.root,objs,appTime);
 			var mode:String = _appState.groupingMode;
 			var ops:KCompositeOperation = new KCompositeOperation();
 			
@@ -258,7 +291,7 @@ package sg.edu.smu.ksketch.operation
 				_appState.fireGroupingEnabledChangedEvent();
 				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 				return ops;
-			}
+			}*/
 			return null;
 		}
 		

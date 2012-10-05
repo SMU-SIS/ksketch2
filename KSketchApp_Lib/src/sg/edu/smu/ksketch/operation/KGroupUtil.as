@@ -11,13 +11,16 @@
 package sg.edu.smu.ksketch.operation
 {
 	import flash.geom.Matrix;
+	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.event.KGroupUngroupEvent;
+	import sg.edu.smu.ksketch.event.KModelEvent;
 	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.model.IParentKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KModel;
 	import sg.edu.smu.ksketch.model.KObject;
+	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KGroupOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
@@ -27,12 +30,65 @@ package sg.edu.smu.ksketch.operation
 	 */	
 	public class KGroupUtil
 	{	
+		public static const STATIC_GROUP_TIME:Number = 0;
+		
 		/**
 		 * Create a group of objects at kskTime with center in static grouping mode. 
 		 */			
-		public static function groupStatic(model:KModel, objs:KModelObjectList):IModelOperation
+		public static function groupStatic(model:KModel, objs:KModelObjectList, time:Number):Array
 		{
-			return _group(model, objs, _getLatestCreatedTime(objs));
+			var staticGroupOperation:KCompositeOperation = new KCompositeOperation();
+			
+			//Assume that the object list given consists of the highest order
+			//of object combinations possible ie. objects with common parents will
+			//be given as one KGroup
+			var it:IIterator = objs.iterator;
+			var currentObject:KObject;
+			var collapseOperation:IModelOperation;
+			var groupToRootOperation:IModelOperation;
+			//Iterate through the list of objects
+			while(it.hasNext())
+			{
+				currentObject = it.next();
+				
+				//If the object is a child of root, nothing to do with it
+				//Fly away to the next one
+				if(currentObject.getParent(KGroupUtil.STATIC_GROUP_TIME).id == model.root.id)
+					continue;
+				
+				//Collapse the hierachy of this object
+				//Merge all of the hierachy's motions into it
+				//Should end up in the root right after	
+				//Dont care first, implement grouping first
+				collapseOperation = KMergerUtil.MergeHierarchyMotionsIntoObject(model.root,currentObject, time);
+				if(collapseOperation)
+					staticGroupOperation.addOperation(collapseOperation);
+				
+				//groupToRootOperation = KUngroupUtil.ungroupStatic(model, model.root,currentObject);
+				
+				//if(groupToRootOperation)
+					//staticGroupOperation.addOperation(groupToRootOperation);
+			}
+
+			var groupOperation:KGroupOperation
+			if(objs.length() > 1)
+			{
+				groupOperation = _group(model, objs, KGroupUtil.STATIC_GROUP_TIME) as KGroupOperation;
+				staticGroupOperation.addOperation(groupOperation);
+			}
+			
+			if(staticGroupOperation.length == 0)
+				return null;
+			else
+			{
+				if(groupOperation)
+				{
+					var gp:KGroup = groupOperation.group;
+					return [staticGroupOperation, gp];
+				}
+				else
+					return [staticGroupOperation, null];
+			}
 		}
 		
 		/**
@@ -47,13 +103,13 @@ package sg.edu.smu.ksketch.operation
 		public static function setParentKey(time:Number, object:KObject, newParent:KGroup):void
 		{
 			
-			var matrices:Vector.<Matrix> = getParentChangeMatrices(object, newParent, time);
-			var key:IParentKeyFrame = object.getParentKey(time) as IParentKeyFrame;
+			//var matrices:Vector.<Matrix> = getParentChangeMatrices(object, newParent, time);
+			var key:IParentKeyFrame = object.getParentKeyAtOrBefore(time) as IParentKeyFrame;
 			if(key != null)
 				key = object.removeParentKey(time) as IParentKeyFrame;
 			var newParentKey:IParentKeyFrame = object.addParentKey(time,newParent);
-			newParentKey.positionMatrix = computePositionMatrix(
-				matrices[0],matrices[1],matrices[2],matrices[3], object.id);
+			//newParentKey.positionMatrix = computePositionMatrix(
+				//matrices[0],matrices[1],matrices[2],matrices[3], object.id);
 		}
 		
 		/**
@@ -158,12 +214,15 @@ package sg.edu.smu.ksketch.operation
 			while (it.hasNext())
 			{
 				var obj:KObject = it.next();
-				var key:IParentKeyFrame = obj.getParentKey(groupTime) as IParentKeyFrame;
+				var key:IParentKeyFrame = obj.getParentKeyAtOrBefore(groupTime) as IParentKeyFrame;
 				if (key != null && key.parent.children.contains(obj))
 					key.parent.remove(obj);
 				oldParents.push(key == null ? null : key.parent);
 				setParentKey(groupTime,obj,group);
+				key = obj.getParentKeyAtOrBefore(groupTime) as IParentKeyFrame;
+				trace("_Group object", obj.id, "has parent", key.parent.id, "at", groupTime);
 			}
+			
 			group.updateCenter();
 			group.transformMgr.addInitialKeys(groupTime);
 			

@@ -179,6 +179,7 @@ package sg.edu.smu.ksketch.model.geom
 
 		public function mergeTransform(transform:KTranslation):KTranslation
 		{
+			_oldTransformClone = this.clone();
 			var translate:KTranslation = new KTranslation();
 			translate.motionPath = KPathProcessor.mergeTranslationMotionPath(
 				_motionPath, transform.motionPath);

@@ -216,6 +216,7 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public function mergeTransform(transform:KRotation):KRotation
 		{
+			_oldTransformClone = this.clone();
 			var rotate:KRotation = new KRotation();
 			rotate.transitionPath = KPathProcessor.mergeRotationTransitionPath(
 				_transitionPath, transform.transitionPath);

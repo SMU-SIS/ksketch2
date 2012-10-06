@@ -22,6 +22,7 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.model.geom.KTranslation;
 	import sg.edu.smu.ksketch.model.implementations.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
+	import sg.edu.smu.ksketch.operation.implementations.KReplaceKeyframeOperation;
 	import sg.edu.smu.ksketch.utilities.KClipBoard;
 
 	public class KMergerUtil
@@ -201,7 +202,7 @@ package sg.edu.smu.ksketch.operation
 
 				//Manage difference in centers. 
 				source.transformMgr.updateCenter(currentSourceKey, currentTargetKey.center, currentTargetKey.endTime, op);
-				currentTargetKey.mergeKey(currentSourceKey, type);
+				op.addOperation(currentTargetKey.mergeKey(currentSourceKey, type));
 				currentTargetKey = currentTargetKey.next as ISpatialKeyframe;
 			}
 		}

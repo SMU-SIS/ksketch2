@@ -175,6 +175,7 @@ package sg.edu.smu.ksketch.model.geom
 
 		public function mergeTransform(transform:KScale):KScale
 		{
+			_oldTransformClone = this.clone();
 			var scale:KScale = new KScale();
 			scale.transitionPath = KPathProcessor.mergeScaleTransitionPath(
 				_transitionPath, transform.transitionPath);

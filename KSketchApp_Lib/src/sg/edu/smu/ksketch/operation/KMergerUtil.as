@@ -171,24 +171,36 @@ package sg.edu.smu.ksketch.operation
 			var currentSourceKey:ISpatialKeyframe = sourceRef.earliestKey() as ISpatialKeyframe;
 			var currentTargetKey:ISpatialKeyframe = null;
 			
+			//Set a key at the time to stop merging
 			source.transformMgr.forceKeyAtTime(time, sourceRef,op);
+			
+			//Iterate through both source and target reference frames, and make sure
+			//that if a the source ref has a key at time Ti, target should also have a key at Ti too.
 			while(currentSourceKey)
 			{
-				if(type == 1)
-					trace(currentSourceKey.getTranslation(currentSourceKey.endTime));
+				if(time < currentSourceKey.endTime)
+					break;
 				currentTargetKey = targetRef.getAtTime(currentSourceKey.endTime) as ISpatialKeyframe;
 				if(!currentTargetKey)
 					target.transformMgr.forceKeyAtTime(currentSourceKey.endTime, targetRef, op);
 				currentSourceKey = currentSourceKey.next as ISpatialKeyframe;
 			}
 			
+			//Same as the previous while loop
+			//But we will be merging the motions together after each iteration.
 			currentTargetKey = targetRef.earliestKey() as ISpatialKeyframe;
 			currentSourceKey = null;
 			while(currentTargetKey)
 			{
+				if(time < currentTargetKey.endTime)
+					break;
 				currentSourceKey = sourceRef.getAtTime(currentTargetKey.endTime) as ISpatialKeyframe;
 				if(!currentSourceKey)
 					source.transformMgr.forceKeyAtTime(currentTargetKey.endTime, sourceRef, op);
+				currentSourceKey = sourceRef.getAtTime(currentTargetKey.endTime) as ISpatialKeyframe;
+
+				//Manage difference in centers. 
+				source.transformMgr.updateCenter(currentSourceKey, currentTargetKey.center, currentTargetKey.endTime, op);
 				currentTargetKey.mergeKey(currentSourceKey, type);
 				currentTargetKey = currentTargetKey.next as ISpatialKeyframe;
 			}

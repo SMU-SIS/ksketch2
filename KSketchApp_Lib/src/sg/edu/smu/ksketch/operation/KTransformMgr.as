@@ -333,7 +333,7 @@ package sg.edu.smu.ksketch.operation
 					var changeCenterOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(
 						_object, ref, oldCenterKey, newCenterKey);
 					_currentOperation.addOperation(changeCenterOp);
-					updateCenter(_key,center, time, transformType);
+					updateCenter(_key,center, time, _currentOperation);
 				}
 			}
 			
@@ -518,7 +518,7 @@ package sg.edu.smu.ksketch.operation
 			}
 		}
 		
-		public function updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number, transformType:int):ISpatialKeyframe
+		public function updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number, op:KCompositeOperation):ISpatialKeyframe
 		{
 			//target key is key. so the center to be updated is actually 
 			
@@ -543,7 +543,7 @@ package sg.edu.smu.ksketch.operation
 				if(transKey.endTime != time)
 				{
 					if(time < transKey.endTime)
-						transKey = transKey.splitKey(time,_currentOperation)[0] as ISpatialKeyframe;
+						transKey = transKey.splitKey(time,op)[0] as ISpatialKeyframe;
 					else
 					{
 						transKey = new KSpatialKeyFrame(time,_object.defaultCenter) as ISpatialKeyframe;
@@ -554,13 +554,13 @@ package sg.edu.smu.ksketch.operation
 						
 						var insertOp:IModelOperation = new KReplaceKeyframeOperation(_object,transRef,null,newKeys);
 						(insertOp as KReplaceKeyframeOperation).actionType = "update center";
-						_currentOperation.addOperation(insertOp);
+						op.addOperation(insertOp);
 					}
 				}
 				
 				//Current Interpolation only interpolates the last key frame in the range,
 				//Not all translation keys in the time range.
-				transKey.interpolateTranslate(-prevMatrix.tx, -prevMatrix.ty, _currentOperation);
+				transKey.interpolateTranslate(-prevMatrix.tx, -prevMatrix.ty, op);
 			}
 			
 			return targetKey;

@@ -97,13 +97,8 @@ package sg.edu.smu.ksketch.interactor
 				var rect:Rectangle = obj.getBoundingRect(time);
 				var m:Matrix = obj.getFullPathMatrix(time);
 				
-				if (obj is KGroup && rect != null && m.tx == 0 && m.ty == 0)
-					c = new Point(rect.x+rect.width/2,rect.y+rect.height/2);
-				else
-				{
-					c = obj.handleCenter(time);
-					c = m.transformPoint(c);					
-				}
+				c = obj.handleCenter(time);
+				c = m.transformPoint(c);					
 				
 				if(_userSetHandleOffset != null)
 					c = c.add(_userSetHandleOffset);					

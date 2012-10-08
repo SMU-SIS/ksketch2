@@ -13,9 +13,9 @@ package sg.edu.smu.ksketch.geom
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
-	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KObject;
+	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
@@ -144,20 +144,19 @@ package sg.edu.smu.ksketch.geom
 			var m:Matrix;
 			var object:KObject;
 			var i:IIterator = objects.iterator;
-			var total:int = 0;
 			while(i.hasNext())
 			{
 				object = i.next();
+				m = object.getFullPathMatrix(kskTime);
 				if(object is KGroup)
-					total += _sumPoint(object as KGroup, kskTime, sum);
+					sum = sum.add(m.transformPoint((object as KGroup).getCentroid(kskTime)));
 				else
 				{
-					total ++;
-					m = object.getFullPathMatrix(kskTime);
+
 					sum = sum.add(m.transformPoint(object.defaultCenter));
 				}
 			}
-			return new Point(sum.x/total, sum.y/total);
+			return new Point(sum.x/objects.length(), sum.y/objects.length());
 		}
 		
 		// Used by defaultCenterOf()

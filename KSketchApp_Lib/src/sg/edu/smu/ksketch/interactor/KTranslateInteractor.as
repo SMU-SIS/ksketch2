@@ -113,8 +113,6 @@ package sg.edu.smu.ksketch.interactor
 			while (it.hasNext())
 			{
 				var obj:KObject = it.next();
-				var m:Matrix = obj.getFullPathMatrix(_appState.time);
-				var objCenter:Point = m.transformPoint(obj.defaultCenter);
 				_facade.addToTranslation(obj, _dxdy.x, _dxdy.y,_appState.time, canvasPoint);
 			}
 		}

@@ -137,19 +137,21 @@ package sg.edu.smu.ksketch.model
 		 */		
 		public override function get defaultCenter():Point
 		{
-
 			return _defaultCenter;
 		}
 		
 		public function updateCenter(kskTime:Number = 0):void
 		{
-	//		var time:Number = createdTime;
+			_defaultCenter = getCentroid(kskTime);
+		}
+		
+		public function getCentroid(kskTime:Number = 0):Point
+		{
 			var time:Number = Math.max(createdTime,kskTime);
 			var sum:Point = new Point();
 			var m:Matrix;
 			var object:KObject;
 			var total:int = 0;
-			//	var i:IIterator = allChildrenIterator(time);
 			var i:IIterator = directChildIterator(time);
 			while(i.hasNext())
 			{
@@ -162,7 +164,7 @@ package sg.edu.smu.ksketch.model
 			if(total == 0)
 				total = 1;
 			
-			_defaultCenter =  new Point(sum.x/total, sum.y/total);
+			return new Point(sum.x/total, sum.y/total);
 		}
 
 		public function getChildren(kskTime:Number):Vector.<KObject>

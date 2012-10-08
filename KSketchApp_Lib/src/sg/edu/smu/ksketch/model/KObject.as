@@ -131,6 +131,9 @@ package sg.edu.smu.ksketch.model
 			if(_priorityCenter)
 				return _priorityCenter;
 			
+			if(this is KGroup)
+				return (this as KGroup).getCentroid(kskTime);
+			
 			var refFrame:KReferenceFrame = _referenceFrameList.getReferenceFrameAt(
 				KTransformMgr.ROTATION_REF) as KReferenceFrame; 
 			

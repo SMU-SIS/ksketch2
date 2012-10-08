@@ -156,9 +156,17 @@ package sg.edu.smu.ksketch.model
 			while(i.hasNext())
 			{
 				object = i.next();
+
+				if(object.getVisibility(time) == 0)
+					continue;
+				
 				total ++;
 				m = object.getFullMatrix(time);
-				sum = sum.add(m.transformPoint(object.defaultCenter));
+				
+				if(object is KGroup)
+					sum = sum.add(m.transformPoint((object as KGroup).getCentroid(kskTime)));
+				else
+					sum = sum.add(m.transformPoint(object.defaultCenter));
 			}
 			
 			if(total == 0)

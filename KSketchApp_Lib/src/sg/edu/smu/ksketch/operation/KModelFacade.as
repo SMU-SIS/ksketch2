@@ -184,17 +184,7 @@ package sg.edu.smu.ksketch.operation
 			//Do static grouping
 			var groupResults:Array = KGroupUtil.groupStatic(_model, objs, groupTime);
 			if(groupResults)
-			{
-				var gp:KGroup = groupResults[1] as KGroup;
-				
-				if(gp)
-				{
-					gp.updateCenter(_appState.time);
-					gp.dispatchEvent(new KObjectEvent(gp,KObjectEvent.EVENT_OBJECT_CENTER_CHANGED));
-				}
-				
 				ops.addOperation(groupResults[0]);
-			}
 			
 			//Then we clean up the model of all singletons and dirty stuffs
 			var rmOp:IModelOperation;

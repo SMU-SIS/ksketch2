@@ -84,6 +84,9 @@ package sg.edu.smu.ksketch.operation
 				if(groupOperation)
 				{
 					var gp:KGroup = groupOperation.group;
+					gp.updateCenter(KGroupUtil.STATIC_GROUP_TIME);
+					gp.dispatchEvent(new KObjectEvent(gp,KObjectEvent.EVENT_OBJECT_CENTER_CHANGED));
+					
 					return [staticGroupOperation, gp];
 				}
 				else

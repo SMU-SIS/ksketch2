@@ -156,7 +156,6 @@ package sg.edu.smu.ksketch.interactor
 			{
 				currentObject = it.next();
 				
-				
 				if(currentObject is KGroup)
 				{
 					var visibleChildParts:Vector.<KObject> = (currentObject as KGroup).partsVisible(time);
@@ -166,9 +165,7 @@ package sg.edu.smu.ksketch.interactor
 				else
 				{
 					if(currentObject.getVisibility(time) > 0)
-					{	
 						visibleObjects.push(currentObject)
-					}
 				}
 			}
 			

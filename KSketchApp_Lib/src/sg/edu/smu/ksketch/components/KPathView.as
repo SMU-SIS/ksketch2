@@ -20,6 +20,7 @@ package sg.edu.smu.ksketch.components
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.IReferenceFrame;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
+	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KPath;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
@@ -143,8 +144,11 @@ package sg.edu.smu.ksketch.components
 					if(type == KTransformMgr.TRANSLATION_REF)
 					{
 						transformAtTime = _object.getFullPathMatrix(targetKey.startTime()+1);
-					
-						position = transformAtTime.transformPoint(targetKey.center);
+						
+						if(object is KGroup)
+							position = transformAtTime.transformPoint((_object as KGroup).getCentroid(targetKey.startTime()+1));
+						else
+							position = transformAtTime.transformPoint(targetKey.center);
 						_drawCursorPath(targetKey.translate.motionPath.path, position,_pathT, proportionCovered, type);
 					}
 					else

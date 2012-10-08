@@ -87,8 +87,11 @@ package sg.edu.smu.ksketch.operation
 			//Initialise and prepare the variables required for translation
 			_initOperation();
 			_transitionType = transitionType;
-			_prepareKeyframe(TRANSLATION_REF, time, _object.defaultCenter); 
-			_key.center = _object.defaultCenter;
+			
+			if(_object is KGroup)
+				_prepareKeyframe(TRANSLATION_REF, time, (_object as KGroup).getCentroid(time)); 
+			else
+				_prepareKeyframe(TRANSLATION_REF, time, _object.defaultCenter);
 		}
 		
 		/**
@@ -105,7 +108,6 @@ package sg.edu.smu.ksketch.operation
 			// Path points for translation paths starts from 0,0 
 			// and should be consistent with the current translation's dxdy.
 			_key.addToTranslation(translateX, translateY, time);
-			
 			_key.endTime = time;
 		}
 		//add to real time translate
@@ -120,12 +122,9 @@ package sg.edu.smu.ksketch.operation
 		public function endTranslation(time:Number):IModelOperation
 		{
 			var lastOverWrittenKey:ISpatialKeyframe = _findLastOverWrittenKey();
-			
 			if(lastOverWrittenKey)
 				_futureMode(lastOverWrittenKey);
-			
 			_key.endTranslation(_transitionType);
-			
 			return _endOperation();
 		}
 		
@@ -251,6 +250,7 @@ package sg.edu.smu.ksketch.operation
 		// Prepares the reference frame
 		private function _prepareKeyframe(transformType:int,time:Number, center:Point):void
 		{			
+			
 			//Perform consistency check on the ref frame, make sure there is a key at created time
 			var ref:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(transformType);
 			var keyHead:IKeyFrame = ref.earliestKey();
@@ -259,7 +259,7 @@ package sg.edu.smu.ksketch.operation
 			_prevFullTransform = _object.getFullPathMatrix(_prevLatestTime);
 			
 			_key = ref.lookUp(time) as ISpatialKeyframe;
-			
+
 			if(_key)
 			{
 				if(_key.endTime < time)
@@ -269,8 +269,10 @@ package sg.edu.smu.ksketch.operation
 				else if(_key.endTime > time)
 				{
 					if(_key == ref.earliestKey())
+					{
 						if(_object.createdTime < _key.endTime)
 							forceKeyAtTime(_object.createdTime, ref, _currentOperation);
+					}
 					
 					var preSplit:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 					preSplit.push(_key.clone());
@@ -336,7 +338,7 @@ package sg.edu.smu.ksketch.operation
 					updateCenter(_key,center, time, _currentOperation);
 				}
 			}
-			
+
 			(_key as ISpatialKeyframe).beginTransform();
 		}
 		

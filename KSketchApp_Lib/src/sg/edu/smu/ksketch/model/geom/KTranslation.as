@@ -130,7 +130,6 @@ package sg.edu.smu.ksketch.model.geom
 						pathPoint = _currentTranslationPoints.points[i];
 						_transitionPath.push(pathPoint.x, pathPoint.y, pathPoint.z);			
 					}
-					KPathProcessor.cleanUp3DPath(_transitionPath);
 				}
 			}
 			else
@@ -140,10 +139,8 @@ package sg.edu.smu.ksketch.model.geom
 			}
 			
 			if(_transitionPath)
-			{
-				_motionPath = KPathProcessor.generateTranslationMotionPath(_transitionPath);
-				_transitionPath.generateMagnitudeTable();
-			}
+				cleanUpPath();
+
 			_currentTranslation = new Point();
 			_currentTranslationPoints = new K3DPath();
 		}
@@ -173,6 +170,9 @@ package sg.edu.smu.ksketch.model.geom
 			frontTransform.motionPath = frontMotionPath;
 			frontTransform.transitionPath = frontTransitionPath;
 			
+			frontTransform.cleanUpPath();
+			cleanUpPath();
+			
 			return frontTransform;
 		}
 
@@ -180,8 +180,8 @@ package sg.edu.smu.ksketch.model.geom
 		{
 			_oldTransformClone = this.clone();
 			var translate:KTranslation = new KTranslation();
-			translate.transitionPath = KPathProcessor.mergeTranslationTransitionPath(
-				_transitionPath, transform.transitionPath);
+			translate.transitionPath = KPathProcessor.mergeTranslationTransitionPath(_transitionPath, transform.transitionPath);
+			KPathProcessor.cleanUp3DPath(translate.transitionPath);
 			translate.motionPath = KPathProcessor.generateTranslationMotionPath(translate.transitionPath);
 			return translate;		
 		}
@@ -195,6 +195,7 @@ package sg.edu.smu.ksketch.model.geom
 			clone.motionPath = _motionPath.clone();
 			clone.transitionPath = _transitionPath.clone();
 			clone._currentTranslation = _currentTranslation.clone();
+			clone.cleanUpPath();
 			return clone;
 		}
 		
@@ -212,8 +213,8 @@ package sg.edu.smu.ksketch.model.geom
 		public function addInterpolatedTransform(dx:Number, dy:Number):void
 		{
 			//Perform Interpolation on current Path
-			KPathProcessor.interpolateTranslationMotionPath(_motionPath.path, dx,dy, false);
 			KPathProcessor.interpolateTranslationTransitionPath(_transitionPath.points, dx, dy);
+			cleanUpPath();
 		}
 		
 		public function setLine(time:Number):void
@@ -224,20 +225,14 @@ package sg.edu.smu.ksketch.model.geom
 			_transitionPath.push(0,0,time);
 		}
 		
-		public function addInstantTransform(dx:Number, dy:Number, time:Number):void
+		/**
+		 * Removes excess points (points near each other, points too close in time)
+		 */
+		public function cleanUpPath():void
 		{
-			if(_transitionPath.length < 2)
-			{
-				_transitionPath.push(0, 0, 0);
-				_transitionPath.push(dx, dy, 0);
-			}
-			else
-			{	
-				var targetIndex:int = _transitionPath.getIndexAtOrAfterTime(time);
-				var targetPoint:K3DVector = _transitionPath.points[targetIndex];
-				targetPoint.x += dx;
-				targetPoint.y += dy;
-			}
+			KPathProcessor.cleanUp3DPath(_transitionPath);
+			_motionPath = KPathProcessor.generateTranslationMotionPath(_transitionPath);
+			_transitionPath.generateMagnitudeTable();
 		}
 	}
 }

@@ -490,6 +490,15 @@ package sg.edu.smu.ksketch.model.geom
 				sampledPoint.z = currentTime;
 				resampledPoints.push(sampledPoint);
 				currentTime += KPathProcessor.RESAMPLE_RATE;
+				
+				if(currentTime > endTime)
+				{
+					currentTime = endTime;
+					sampledPoint = toResample.getPointByProportion(currentTime/endTime);
+					sampledPoint.z = currentTime;
+					resampledPoints.push(sampledPoint);
+					currentTime += KPathProcessor.RESAMPLE_RATE;
+				}
 			}
 			
 			toResample.points = resampledPoints
@@ -513,6 +522,15 @@ package sg.edu.smu.ksketch.model.geom
 				sampledPoint.y = currentTime;
 				resampledPoints.push(sampledPoint);
 				currentTime += KPathProcessor.RESAMPLE_RATE;
+				
+				if(currentTime > endTime)
+				{
+					currentTime = endTime;
+					sampledPoint = toResample.getPointByProportion(currentTime/endTime);
+					sampledPoint.y = currentTime;
+					resampledPoints.push(sampledPoint);
+					currentTime += KPathProcessor.RESAMPLE_RATE;
+				}
 			}
 			
 			toResample.points = resampledPoints

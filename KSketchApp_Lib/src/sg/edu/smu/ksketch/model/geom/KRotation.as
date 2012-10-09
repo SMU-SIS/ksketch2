@@ -181,7 +181,9 @@ package sg.edu.smu.ksketch.model.geom
 				KPathProcessor.interpolateRotationTransitionPath(_transitionPath.points, _currentAngle);
 			}
 			
-			_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
+			if(_transitionPath)
+				cleanUpPath();
+			
 			_currentAngle = 0;
 			_currentRotationPoints = new K3DPath();
 		}
@@ -208,8 +210,8 @@ package sg.edu.smu.ksketch.model.geom
 			
 			frontTransform.transitionPath = frontTransitionPath;
 			
-			_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
-			frontTransform.motionPath = KPathProcessor.generateRotationMotionPath(frontTransitionPath);
+			cleanUpPath();
+			frontTransform.cleanUpPath();
 			
 			return frontTransform;
 		}
@@ -220,6 +222,7 @@ package sg.edu.smu.ksketch.model.geom
 			var rotate:KRotation = new KRotation();
 			rotate.transitionPath = KPathProcessor.mergeRotationTransitionPath(
 				_transitionPath, transform.transitionPath);
+			KPathProcessor.resample2DPath(rotate.transitionPath);
 			rotate.motionPath = KPathProcessor.generateRotationMotionPath(rotate.transitionPath);
 			return rotate;		
 		}
@@ -230,8 +233,8 @@ package sg.edu.smu.ksketch.model.geom
 		public function clone():KRotation
 		{
 			var clone:KRotation = new KRotation();
-			clone.motionPath = _motionPath.clone();
 			clone.transitionPath = _transitionPath.clone();
+			clone.cleanUpPath();
 			return clone;
 		}
 		
@@ -243,18 +246,24 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public function addInterpolatedTransform(dThetha:Number):void
 		{
-			//Perform Interpolation on current Path
-			//KPathProcessor.interpolateScaleMotionPath(_path.path,dScale,);
 			KPathProcessor.interpolateRotationTransitionPath(_transitionPath.points,dThetha);
-			_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
+			cleanUpPath();
 		}
 		
 		public function setLine(time:Number):void
 		{
-			//_path.addPoint(0,0);
-			//_path.addPoint(0,time);
 			_transitionPath.push(0,0);
 			_transitionPath.push(0,time);
+		}
+		
+		/**
+		 * Removes excess points (points near each other, points too close in time)
+		 */
+		public function cleanUpPath():void
+		{
+			KPathProcessor.cleanUp2DPath(_transitionPath);
+			_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
+			_transitionPath.generateMagnitudeTable();
 		}
 	}
 }

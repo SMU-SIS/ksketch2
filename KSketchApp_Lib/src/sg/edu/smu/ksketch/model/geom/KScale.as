@@ -142,7 +142,9 @@ package sg.edu.smu.ksketch.model.geom
 				KPathProcessor.interpolateScaleTransitionPath(_transitionPath.points, _currentScale);
 			}
 			
-			_motionPath = KPathProcessor.generateScaleMotionPath(_transitionPath);
+			if(_transitionPath)
+				cleanUpPath();
+			
 			_currentScale = 0;
 			_currentScalePoints = new K3DPath();
 		}
@@ -154,7 +156,11 @@ package sg.edu.smu.ksketch.model.geom
 			var pathPoint:K2DVector = _transitionPath.getPoint(proportion);
 			
 			var result:Number = 1 + pathPoint.x + _currentScale;
-			return absolute(result);
+
+			if(result < 0)
+				result *= -1;
+			
+			return result;
 		}
 		
 		/**
@@ -166,9 +172,8 @@ package sg.edu.smu.ksketch.model.geom
 			var frontTransitionPath:K2DPath = _transitionPath.split(proportion, shift);
 			
 			frontTransform.transitionPath = frontTransitionPath;
-			frontTransform.motionPath = KPathProcessor.generateScaleMotionPath(frontTransitionPath);
-			
-			_motionPath = KPathProcessor.generateScaleMotionPath(_transitionPath);
+			cleanUpPath();
+			frontTransform.cleanUpPath();
 			
 			return frontTransform;
 		}
@@ -179,6 +184,7 @@ package sg.edu.smu.ksketch.model.geom
 			var scale:KScale = new KScale();
 			scale.transitionPath = KPathProcessor.mergeScaleTransitionPath(
 				_transitionPath, transform.transitionPath);
+			KPathProcessor.resample2DPath(scale.transitionPath);
 			scale.motionPath = KPathProcessor.generateScaleMotionPath(scale.transitionPath);
 			return scale;		
 		}
@@ -189,8 +195,8 @@ package sg.edu.smu.ksketch.model.geom
 		public function clone():KScale
 		{
 			var clone:KScale = new KScale();
-			clone.motionPath = _motionPath.clone();
 			clone.transitionPath = _transitionPath.clone();
+			clone.cleanUpPath();
 			return clone;
 		}
 		
@@ -199,7 +205,7 @@ package sg.edu.smu.ksketch.model.geom
 			//Perform Interpolation on current Path
 			//KPathProcessor.interpolateScaleMotionPath(_path.path,dScale,);
 			KPathProcessor.interpolateScaleTransitionPath(_transitionPath.points,dScale);
-			_motionPath = KPathProcessor.generateScaleMotionPath(_transitionPath);
+			cleanUpPath();
 		}
 		
 		public function resampleMotion():void
@@ -210,18 +216,18 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public function setLine(time:Number):void
 		{
-			//_path.addPoint(0,0);
-			//_path.addPoint(0,time);
 			_transitionPath.push(1,0);
 			_transitionPath.push(1,time);
 		}
 		
-		private function absolute(value:Number):Number
+		/**
+		 * Removes excess points (points near each other, points too close in time)
+		 */
+		public function cleanUpPath():void
 		{
-			if(value < 0)
-				value *= -1;
-			
-			return value;
+			KPathProcessor.cleanUp2DPath(_transitionPath);
+			_motionPath = KPathProcessor.generateRotationMotionPath(_transitionPath);
+			_transitionPath.generateMagnitudeTable();
 		}
 	}
 }

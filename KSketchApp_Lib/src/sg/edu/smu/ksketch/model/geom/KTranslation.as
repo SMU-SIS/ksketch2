@@ -181,7 +181,7 @@ package sg.edu.smu.ksketch.model.geom
 			_oldTransformClone = this.clone();
 			var translate:KTranslation = new KTranslation();
 			translate.transitionPath = KPathProcessor.mergeTranslationTransitionPath(_transitionPath, transform.transitionPath);
-			KPathProcessor.cleanUp3DPath(translate.transitionPath);
+			KPathProcessor.resample3DPath(translate.transitionPath);
 			translate.motionPath = KPathProcessor.generateTranslationMotionPath(translate.transitionPath);
 			return translate;		
 		}

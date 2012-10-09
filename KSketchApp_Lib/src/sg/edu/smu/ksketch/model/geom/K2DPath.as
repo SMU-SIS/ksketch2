@@ -308,9 +308,11 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public function generateMagnitudeTable():void
 		{
-			_magnitudeTable = new Vector.<Number>();
-			
 			var length:int = points.length;
+			if(length ==0)
+				return;
+			
+			_magnitudeTable = new Vector.<Number>();
 			var i:int;
 
 			var currentMagnitude:Number = 0;

@@ -35,6 +35,7 @@ package sg.edu.smu.ksketch.utilities
 		public static const ANIMATION_INTERVAL:Number = 62.5;
 		public static const DEFAULT_MAX_TIME:Number = 5000;
 		public static const DEFAULT_MAX_PLAY_TIME:Number = 1000;
+		public static const RECORDING_SLOW_FACTOR:int = 2;
 		
 		public static const KEYBOARD_INTERPOLATED:Array = [];
 		public static const KEYBOARD_REALTIME:Array = [Keyboard.CONTROL, Keyboard.PAGE_UP,Keyboard.ALTERNATE, Keyboard.PAGE_DOWN];
@@ -342,7 +343,7 @@ package sg.edu.smu.ksketch.utilities
 		private function recordHandler(event:TimerEvent):void 
 		{
 			var now_sysTime:Number = (new Date()).time;
-			var now_kskTime:Number =  _startKSKTime + (now_sysTime - _startSysTime);
+			var now_kskTime:Number =  _startKSKTime + ((now_sysTime - _startSysTime)/KAppState.RECORDING_SLOW_FACTOR);
 			while(now_kskTime > maxTime)
 				maxTime = maxTime + KAppState.DEFAULT_MAX_TIME;
 			time = now_kskTime;

@@ -431,6 +431,10 @@ package sg.edu.smu.ksketch.model.geom
 		public static function cleanUp3DPath(toResample:K3DPath):void
 		{
 			var points:Vector.<K3DVector> = toResample.points;
+			
+			if(points.length == 0)
+				return;
+			
 			var currentTime:Number = points[0].z;
 			var endTime:Number = points[points.length - 1].z;
 			var resampledPoints:Vector.<K3DVector> = new Vector.<K3DVector>();
@@ -449,6 +453,10 @@ package sg.edu.smu.ksketch.model.geom
 		public static function cleanUp2DPath(toResample:K2DPath):void
 		{
 			var points:Vector.<K2DVector> = toResample.points;
+			
+			if(points.length == 0)
+				return;
+			
 			var currentTime:Number = points[0].y;
 			var endTime:Number = points[points.length - 1].y;
 			var resampledPoints:Vector.<K2DVector> = new Vector.<K2DVector>();
@@ -462,6 +470,52 @@ package sg.edu.smu.ksketch.model.geom
 			}
 			
 			toResample.points = resampledPoints;
+		}
+		
+		public static function resample3DPath(toResample:K3DPath):void
+		{
+			var points:Vector.<K3DVector> = toResample.points;
+			
+			if(points.length == 0)
+				return;
+			
+			var currentTime:Number = points[0].z;
+			var endTime:Number = points[points.length - 1].z;
+			var resampledPoints:Vector.<K3DVector> = new Vector.<K3DVector>();
+			var sampledPoint:K3DVector;
+			
+			while(currentTime <= endTime)
+			{
+				sampledPoint = toResample.getPointByProportion(currentTime/endTime);
+				sampledPoint.z = currentTime;
+				resampledPoints.push(sampledPoint);
+				currentTime += KPathProcessor.RESAMPLE_RATE;
+			}
+			
+			toResample.points = resampledPoints
+		}
+		
+		public static function resample2DPath(toResample:K2DPath):void
+		{
+			var points:Vector.<K2DVector> = toResample.points;
+			
+			if(points.length == 0)
+				return;
+			
+			var currentTime:Number = points[0].y;
+			var endTime:Number = points[points.length - 1].y;
+			var resampledPoints:Vector.<K2DVector> = new Vector.<K2DVector>();
+			var sampledPoint:K2DVector;
+			
+			while(currentTime <= endTime)
+			{
+				sampledPoint = toResample.getPointByProportion(currentTime/endTime);
+				sampledPoint.y = currentTime;
+				resampledPoints.push(sampledPoint);
+				currentTime += KPathProcessor.RESAMPLE_RATE;
+			}
+			
+			toResample.points = resampledPoints
 		}
 	}
 }

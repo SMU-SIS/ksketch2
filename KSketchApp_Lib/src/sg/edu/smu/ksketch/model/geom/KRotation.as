@@ -237,7 +237,8 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public function resampleMotion():void
 		{
-			
+			KPathProcessor.resample2DPath(_transitionPath);
+			KPathProcessor.generateRotationMotionPath(_transitionPath);	
 		}
 		
 		public function addInterpolatedTransform(dThetha:Number):void

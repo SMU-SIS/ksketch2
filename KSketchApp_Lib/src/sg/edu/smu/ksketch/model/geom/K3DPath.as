@@ -10,9 +10,12 @@
 
 package sg.edu.smu.ksketch.model.geom
 {
+	import sg.edu.smu.ksketch.utilities.KMathUtil;
+
 	public class K3DPath
 	{
 		public var points:Vector.<K3DVector>;
+		private var _magnitudeTable:Vector.<Number>;
 		
 		public function K3DPath()
 		{
@@ -314,6 +317,68 @@ package sg.edu.smu.ksketch.model.geom
 				currentPoint.x += proportion*xError;
 				currentPoint.y += proportion*yError;
 			}
+		}
+		
+		public function getPointByProportion(proportion:Number):K3DVector
+		{
+			var i:int;
+			var length:int = points.length;
+			
+			for(i = 0; i < length-1; i++)
+			{
+				if(proportion < _magnitudeTable[i])
+				{ 
+					i-=1;
+					break;
+				}
+			}
+
+			var startIndex:int = i;
+			var startPoint:K3DVector = getPointByIndex(startIndex);
+			
+			if(startIndex == length-1)
+				return startPoint;
+
+			//Point.time == given time, just return without interpolation
+			//Last Point, no need to interpolate)
+			if(startIndex == points.length -1)
+				return startPoint
+			
+			//Interpolate point
+			var nextPoint:K3DVector = getPointByIndex(startIndex+1);
+			
+			var proportionDifference:Number = (proportion-_magnitudeTable[startIndex])/(_magnitudeTable[startIndex+1]-_magnitudeTable[startIndex]);
+
+			//interpolate by difference
+			var finalX:Number = startPoint.x+(nextPoint.x - startPoint.x)*proportionDifference;
+			var finalY:Number = startPoint.y+(nextPoint.y - startPoint.y)*proportionDifference;
+			var finalZ:Number = startPoint.z+(nextPoint.z - startPoint.z)*proportionDifference;
+			
+			return new K3DVector(finalX, finalY, finalZ);
+		}
+		
+		public function generateMagnitudeTable():void
+		{
+			_magnitudeTable = new Vector.<Number>();
+			
+			var length:int = points.length;
+			var i:int;
+			
+			var currentMagnitude:Number = 0;
+			var dx:Number;
+			var dy:Number;
+			_magnitudeTable.push(KMathUtil.magnitude(points[0].x, points[0].y));
+			
+			for(i = 1; i < length; i++)
+			{
+				dx = points[i].x - points[i-1].x;
+				dy = points[i].y - points[i-1].y;
+				currentMagnitude += KMathUtil.magnitude(dx,dy);
+				_magnitudeTable.push(currentMagnitude);
+			}
+			
+			for(i = 0; i < length; i++)
+				_magnitudeTable[i] = _magnitudeTable[i]/currentMagnitude;
 		}
 	}
 }

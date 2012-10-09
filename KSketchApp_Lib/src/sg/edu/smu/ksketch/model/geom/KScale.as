@@ -204,7 +204,8 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public function resampleMotion():void
 		{
-			
+			KPathProcessor.resample2DPath(_transitionPath);
+			KPathProcessor.generateScaleMotionPath(_transitionPath);
 		}
 		
 		public function setLine(time:Number):void

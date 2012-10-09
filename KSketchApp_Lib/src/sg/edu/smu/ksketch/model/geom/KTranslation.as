@@ -140,7 +140,10 @@ package sg.edu.smu.ksketch.model.geom
 			}
 			
 			if(_transitionPath)
+			{
 				_motionPath = KPathProcessor.generateTranslationMotionPath(_transitionPath);
+				_transitionPath.generateMagnitudeTable();
+			}
 			_currentTranslation = new Point();
 			_currentTranslationPoints = new K3DPath();
 		}
@@ -177,10 +180,9 @@ package sg.edu.smu.ksketch.model.geom
 		{
 			_oldTransformClone = this.clone();
 			var translate:KTranslation = new KTranslation();
-			translate.motionPath = KPathProcessor.mergeTranslationMotionPath(
-				_motionPath, transform.motionPath);
 			translate.transitionPath = KPathProcessor.mergeTranslationTransitionPath(
 				_transitionPath, transform.transitionPath);
+			translate.motionPath = KPathProcessor.generateTranslationMotionPath(translate.transitionPath);
 			return translate;		
 		}
 		
@@ -203,8 +205,8 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public function resampleMotion():void
 		{
-//			KPathProcessor.resample3DPath(_transitionPath);
-//			KPathProcessor.generateTranslationMotionPath(_transitionPath);
+			KPathProcessor.resample3DPath(_transitionPath);
+			KPathProcessor.generateTranslationMotionPath(_transitionPath);
 		}
 		
 		public function addInterpolatedTransform(dx:Number, dy:Number):void

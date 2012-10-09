@@ -10,9 +10,12 @@
 
 package sg.edu.smu.ksketch.model.geom
 {
+	import sg.edu.smu.ksketch.utilities.KMathUtil;
+
 	public class K2DPath
 	{
 		public var points:Vector.<K2DVector>;
+		private var _magnitudeTable:Vector.<Number>;
 		
 		public function K2DPath()
 		{
@@ -264,6 +267,67 @@ package sg.edu.smu.ksketch.model.geom
 			{
 				trace(points[i].x, points[i].y);	
 			}			
+		}
+		
+		public function getPointByProportion(proportion:Number):K2DVector
+		{
+			var i:int;
+			var length:int = points.length;
+			
+			for(i = 0; i < length-1; i++)
+			{
+				if(proportion < _magnitudeTable[i])
+				{ 
+					i-=1;
+					break;
+				}
+			}
+			
+			var startIndex:int = i;
+			var startPoint:K2DVector = getPointByIndex(startIndex);
+			
+			if(startIndex == length-1)
+				return startPoint;
+			
+			//Point.time == given time, just return without interpolation
+			//Last Point, no need to interpolate)
+			if(startIndex == points.length -1)
+				return startPoint
+			
+			//Interpolate point
+			var nextPoint:K2DVector = getPointByIndex(startIndex+1);
+			
+			var proportionDifference:Number = (proportion-_magnitudeTable[startIndex])/(_magnitudeTable[startIndex+1]-_magnitudeTable[startIndex]);
+			
+			//interpolate by difference
+			var finalX:Number = startPoint.x+(nextPoint.x - startPoint.x)*proportionDifference;
+			var finalY:Number = startPoint.y+(nextPoint.y - startPoint.y)*proportionDifference;
+			
+			return new K2DVector(finalX, finalY);
+		}
+		
+		public function generateMagnitudeTable():void
+		{
+			_magnitudeTable = new Vector.<Number>();
+			
+			var length:int = points.length;
+			var i:int;
+
+			var currentMagnitude:Number = 0;
+			var dx:Number;
+			var dy:Number;
+			_magnitudeTable.push(KMathUtil.magnitude(points[0].x, points[0].y));
+			
+			for(i = 1; i < length; i++)
+			{
+				dx = points[i].x - points[i-1].x;
+				dy = points[i].y - points[i-1].y;
+				currentMagnitude += KMathUtil.magnitude(dx,dy);
+				_magnitudeTable.push(currentMagnitude);
+			}
+			
+			for(i = 0; i < length; i++)
+				_magnitudeTable[i] = _magnitudeTable[i]/currentMagnitude;
 		}
 	}
 }

@@ -314,15 +314,11 @@ package sg.edu.smu.ksketch.model.geom
 			var i:int;
 
 			var currentMagnitude:Number = 0;
-			var dx:Number;
-			var dy:Number;
-			_magnitudeTable.push(KMathUtil.magnitude(points[0].x, points[0].y));
+			_magnitudeTable.push(points[0].x);
 			
 			for(i = 1; i < length; i++)
 			{
-				dx = points[i].x - points[i-1].x;
-				dy = points[i].y - points[i-1].y;
-				currentMagnitude += KMathUtil.magnitude(dx,dy);
+				currentMagnitude += Math.abs(points[i].x - points[i-1].x);
 				_magnitudeTable.push(currentMagnitude);
 			}
 			

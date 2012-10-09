@@ -30,7 +30,7 @@ package sg.edu.smu.ksketch.utilities
 	
 	public class KAppState extends EventDispatcher
 	{
-		public static const APP_BUILD_SERIAL:String = "0.2a 08 OCT 2012";
+		public static const APP_BUILD_SERIAL:String = "0.2a 09 OCT 2012";
 		public static const TIMER_INTERVAL:Number = 15;
 		public static const ANIMATION_INTERVAL:Number = 62.5;
 		public static const DEFAULT_MAX_TIME:Number = 5000;
@@ -115,6 +115,8 @@ package sg.edu.smu.ksketch.utilities
 		public var pixelPerFrame:Number;
 		
 		public static var erase_real_time_future:Boolean = true;
+		public static var resampleFuture:Boolean = true;
+
 		private static var _time:Number; 
 		
 		private var _savedTime:Number;

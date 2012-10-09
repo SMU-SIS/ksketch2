@@ -111,8 +111,8 @@ package
 		private function _createOtherGroup(mainCanvas:KSketch2Canvas):VGroup
 		{
 			var vg:VGroup = new VGroup();
-			//vg.addElement(_createLabel("Canvas Aspect Ratios"));
-			//vg.addElement(_addAspectRatio(mainCanvas));
+			vg.addElement(_createLabel("Discard Transition Timing"));
+			vg.addElement(_addTransitionTiming(mainCanvas.appState));
 			vg.addElement(_createLabel("Other Options"));
 			vg.addElement(_addRightMouseEnabled(mainCanvas.appState));
 			vg.addElement(_addShowConfirmWindow(mainCanvas.appState));
@@ -305,23 +305,17 @@ package
 			return _createVGroup([lbl_score,ipt_accepted]);
 		}
 		
-		private function _addAspectRatio(mainCanvas:KSketch2Canvas):VGroup
+		private function _addTransitionTiming(appState:KAppState):IVisualElement
 		{
-			var modes:RadioButtonGroup = new RadioButtonGroup();
-			modes.addEventListener(Event.CHANGE, function(event:Event):void
+			var discardTiming:CheckBox = new CheckBox();
+			discardTiming.label = "Linearly resample transition timings"
+			discardTiming.selected = KAppState.resampleFuture;
+			discardTiming.addEventListener(Event.CHANGE, function(event:Event):void
 			{
-				KLogger.log(KPlaySketchLogger.CHANGE_ASPECT_RATIO,
-					KPlaySketchLogger.CHANGE_ASPECT_RATIO_FROM, mainCanvas.stageAspectRatio,
-					KPlaySketchLogger.CHANGE_ASPECT_RATIO_TO, modes.selectedValue);
-				mainCanvas.stageAspectRatio = modes.selectedValue;
+				KAppState.resampleFuture = discardTiming.selected;
 			});
-			var buttons:Array = new Array();
-			var labels:Array = ["4:3","16:9"];
-			var aspects:Array = [false,true];
-			for (var i:int = 0; i < aspects.length; i++)
-				buttons.push(_createRadioButton(labels[i],aspects[i],
-					aspects[i], modes));
-			return _createVGroup(buttons);
+
+			return discardTiming;
 		}
 		
 		private function _addRightMouseEnabled(appState:KAppState):IVisualElement

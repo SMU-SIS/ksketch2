@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch.model.geom
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
+	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KMathUtil;
 
 	public class KPathProcessor
@@ -22,6 +23,7 @@ package sg.edu.smu.ksketch.model.geom
 		private static const FULL_CIRCLE:Number = 6.28318531;
 		private static const PATH_RADIUS:Number = 100;
 		private static const PATH_DIRECTION:Number = 0.392699; //pi/8
+		private static const RESAMPLE_RATE:Number = KAppState.ANIMATION_INTERVAL/1.5;
 		
 		public static function mergeTranslationMotionPath(path1:KPath,path2:KPath):KPath
 		{
@@ -418,7 +420,6 @@ package sg.edu.smu.ksketch.model.geom
 				else
 					targetPoint = NO_VALUE;
 	
-				trace(templatePoint.x, targetPoint.x);
 				error += Math.abs(templatePoint.x - targetPoint.x);
 				
 				currentTime += timeStep;
@@ -427,5 +428,40 @@ package sg.edu.smu.ksketch.model.geom
 			return error;
 		}
 		
+		public static function cleanUp3DPath(toResample:K3DPath):void
+		{
+			var points:Vector.<K3DVector> = toResample.points;
+			var currentTime:Number = points[0].z;
+			var endTime:Number = points[points.length - 1].z;
+			var resampledPoints:Vector.<K3DVector> = new Vector.<K3DVector>();
+			var sampledPoint:K3DVector;
+			
+			while(currentTime <= endTime)
+			{
+				sampledPoint = toResample.getPoint(currentTime/endTime);
+				resampledPoints.push(sampledPoint);
+				currentTime += KPathProcessor.RESAMPLE_RATE;
+			}
+			
+			toResample.points = resampledPoints;
+		}
+		
+		public static function cleanUp2DPath(toResample:K2DPath):void
+		{
+			var points:Vector.<K2DVector> = toResample.points;
+			var currentTime:Number = points[0].y;
+			var endTime:Number = points[points.length - 1].y;
+			var resampledPoints:Vector.<K2DVector> = new Vector.<K2DVector>();
+			var sampledPoint:K2DVector;
+			
+			while(currentTime <= endTime)
+			{
+				sampledPoint = toResample.getPoint(currentTime/endTime);
+				resampledPoints.push(sampledPoint);
+				currentTime += KPathProcessor.RESAMPLE_RATE;
+			}
+			
+			toResample.points = resampledPoints;
+		}
 	}
 }

@@ -184,7 +184,7 @@ package sg.edu.smu.ksketch.utilities
 			_timer = new Timer(TIMER_INTERVAL, 0);
 			
 			_maxTime = DEFAULT_MAX_TIME;
-			_maxPlayTime = DEFAULT_MAX_PLAY_TIME;
+			_maxPlayTime = DEFAULT_MAX_TIME;
 			_startSysTime = -1;
 			_startKSKTime = -1;
 			
@@ -287,6 +287,7 @@ package sg.edu.smu.ksketch.utilities
 		public function set maxTime(value:Number):void
 		{
 			_maxTime = value;
+			_maxPlayTime = value;
 			this.dispatchEvent(new Event("maxTimeChanged"));
 		}
 		

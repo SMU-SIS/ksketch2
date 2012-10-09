@@ -202,6 +202,11 @@ package sg.edu.smu.ksketch.model.geom
 			_motionPath = KPathProcessor.generateScaleMotionPath(_transitionPath);
 		}
 		
+		public function resampleMotion():void
+		{
+			
+		}
+		
 		public function setLine(time:Number):void
 		{
 			//_path.addPoint(0,0);

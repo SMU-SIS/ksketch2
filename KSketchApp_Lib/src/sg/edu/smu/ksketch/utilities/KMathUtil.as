@@ -36,6 +36,11 @@ package sg.edu.smu.ksketch.utilities
 			return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y));
 		}
 		
+		public static function magnitude(x:Number, y:Number):Number
+		{
+			return Math.sqrt((x*x)+(y*y));
+		}
+		
 		/**
 		 * Compute the angle (in radians) from one vector to another.
 		 * @param startVector The 1st vector.

@@ -235,6 +235,11 @@ package sg.edu.smu.ksketch.model.geom
 			return clone;
 		}
 		
+		public function resampleMotion():void
+		{
+			
+		}
+		
 		public function addInterpolatedTransform(dThetha:Number):void
 		{
 			//Perform Interpolation on current Path

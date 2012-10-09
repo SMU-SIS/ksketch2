@@ -128,23 +128,19 @@ package sg.edu.smu.ksketch.model.geom
 					for(i; i<length; i++)
 					{
 						pathPoint = _currentTranslationPoints.points[i];
-						
-						_motionPath.addPoint(pathPoint.x, pathPoint.y, pathPoint.z);
-						
-						//Short cut, we will need to do pre-processing on the _motion path before 
-						//we add points to the transition path
 						_transitionPath.push(pathPoint.x, pathPoint.y, pathPoint.z);			
 					}
-
+					KPathProcessor.cleanUp3DPath(_transitionPath);
 				}
 			}
 			else
 			{
 				//Perform Interpolation on current Path
-				KPathProcessor.interpolateTranslationMotionPath(_motionPath.path, _currentTranslation.x, _currentTranslation.y);
 				KPathProcessor.interpolateTranslationTransitionPath(_transitionPath.points, _currentTranslation.x, _currentTranslation.y);
 			}
 			
+			if(_transitionPath)
+				_motionPath = KPathProcessor.generateTranslationMotionPath(_transitionPath);
 			_currentTranslation = new Point();
 			_currentTranslationPoints = new K3DPath();
 		}
@@ -203,6 +199,12 @@ package sg.edu.smu.ksketch.model.geom
 		public static function computeTranslate(startPoint:Point, endPoint:Point):Point
 		{
 			return endPoint.subtract(startPoint);
+		}
+		
+		public function resampleMotion():void
+		{
+//			KPathProcessor.resample3DPath(_transitionPath);
+//			KPathProcessor.generateTranslationMotionPath(_transitionPath);
 		}
 		
 		public function addInterpolatedTransform(dx:Number, dy:Number):void

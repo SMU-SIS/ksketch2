@@ -352,6 +352,9 @@ package sg.edu.smu.ksketch.operation
 		// Performs operation updating when the transition ends
 		private function _endOperation():IModelOperation
 		{	
+			if(true)
+				_key.resampleMotion();
+			
 			_currentOperation.addOperation(_key.getTransformOperation());
 			_overWrittenKeys = null;
 			return _currentOperation;

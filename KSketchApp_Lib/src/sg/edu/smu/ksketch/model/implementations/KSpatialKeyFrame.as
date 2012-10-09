@@ -326,6 +326,17 @@ package sg.edu.smu.ksketch.model.implementations
 		}
 		
 		/**
+		 * Resamples the motions on this key frame so that
+		 * The motions will appear to be interpolated linearly along the paths
+		 */
+		public function resampleMotion():void
+		{
+			_translateTransform.resampleMotion();
+			_rotateTransform.resampleMotion();
+			_scaleTransform.resampleMotion();
+		}
+		
+		/**
 		 * Returns a replace transform operation with the clones as 
 		 * the old keys and the current transforms as the new keys.
 		 */

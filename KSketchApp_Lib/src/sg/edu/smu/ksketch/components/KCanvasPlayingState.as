@@ -34,6 +34,7 @@ package sg.edu.smu.ksketch.components
 			_savedSelection = _appState.selection;
 			_appState.selection = null;
 			_savedVisibility = _widget.visible;
+			_appState.userOption.rightMouseButtonEnabled = false;
 			_widget.visible = false;
 		}
 		
@@ -41,6 +42,7 @@ package sg.edu.smu.ksketch.components
 		{
 			_appState.selection = _savedSelection;
 			_widget.visible = _savedVisibility;
+			_appState.userOption.rightMouseButtonEnabled = true;
 		}
 	}
 }

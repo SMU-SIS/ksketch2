@@ -146,9 +146,10 @@ package sg.edu.smu.ksketch.components
 						transformAtTime = _object.getFullPathMatrix(targetKey.startTime()+1);
 						
 						if(object is KGroup)
-							position = transformAtTime.transformPoint((_object as KGroup).getCentroid(targetKey.startTime()+1));
+							position = (_object as KGroup).getCentroid(targetKey.startTime()+1);
 						else
 							position = transformAtTime.transformPoint(targetKey.center);
+						
 						_drawCursorPath(targetKey.translate.motionPath.path, position,_pathT, proportionCovered, type);
 					}
 					else

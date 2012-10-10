@@ -184,8 +184,7 @@ package sg.edu.smu.ksketch.model.geom
 			var scale:KScale = new KScale();
 			scale.transitionPath = KPathProcessor.mergeScaleTransitionPath(
 				_transitionPath, transform.transitionPath);
-			KPathProcessor.resample2DPath(scale.transitionPath);
-			scale.motionPath = KPathProcessor.generateScaleMotionPath(scale.transitionPath);
+			scale.cleanUpPath();
 			return scale;		
 		}
 		

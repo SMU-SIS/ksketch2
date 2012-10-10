@@ -222,8 +222,7 @@ package sg.edu.smu.ksketch.model.geom
 			var rotate:KRotation = new KRotation();
 			rotate.transitionPath = KPathProcessor.mergeRotationTransitionPath(
 				_transitionPath, transform.transitionPath);
-			KPathProcessor.resample2DPath(rotate.transitionPath);
-			rotate.motionPath = KPathProcessor.generateRotationMotionPath(rotate.transitionPath);
+			rotate.cleanUpPath();
 			return rotate;		
 		}
 		

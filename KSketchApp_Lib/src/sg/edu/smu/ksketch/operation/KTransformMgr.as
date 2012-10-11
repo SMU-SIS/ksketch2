@@ -21,6 +21,8 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KObject;
+	import sg.edu.smu.ksketch.model.geom.K3DPath;
+	import sg.edu.smu.ksketch.model.geom.KTranslation;
 	import sg.edu.smu.ksketch.model.implementations.KKeyFrame;
 	import sg.edu.smu.ksketch.model.implementations.KReferenceFrame;
 	import sg.edu.smu.ksketch.model.implementations.KReferenceFrameList;
@@ -461,7 +463,6 @@ package sg.edu.smu.ksketch.operation
 		public function updateCenter(targetKey:ISpatialKeyframe, newCenter:Point, time:Number, op:KCompositeOperation):ISpatialKeyframe
 		{
 			//target key is key. so the center to be updated is actually 
-			
 			var oldCenter:Point = targetKey.center;
 
 			if(Math.abs(newCenter.x-oldCenter.x) > 0.05 || Math.abs(newCenter.y - oldCenter.y) > 0.05)
@@ -684,6 +685,42 @@ package sg.edu.smu.ksketch.operation
 				return returnOp;
 			else
 				return null;
+		}
+		
+		public function mergeTranslatePathOverTime(path:K3DPath, startTime:Number, endTime:Number, op:KCompositeOperation):void
+		{
+			var transRef:IReferenceFrame = _referenceFrameList.getReferenceFrameAt(TRANSLATION_REF);
+			
+			var correctionKey:ISpatialKeyframe = transRef.createSpatialKey(endTime, _object.defaultCenter.x, _object.defaultCenter.y);
+			var translate:KTranslation = new KTranslation();
+			translate.transitionPath = path;
+			correctionKey.translate = translate;
+			
+			var currentKey:ISpatialKeyframe = transRef.getAtOrAfter(startTime) as ISpatialKeyframe;
+			
+			if(!currentKey)
+				currentKey = transRef.getAtOrBeforeTime(startTime) as ISpatialKeyframe;
+			
+			var toMergeKey:ISpatialKeyframe;
+			var currentTime:Number;
+			
+			while(currentKey)
+			{				
+				currentTime = currentKey.endTime;
+				toMergeKey = correctionKey.splitKey(currentKey.endTime, new KCompositeOperation())[0] as ISpatialKeyframe;
+				op.addOperation(currentKey.mergeKey(toMergeKey, TRANSLATION_REF));
+				
+				currentKey = currentKey.next as ISpatialKeyframe;
+				
+				if(!currentKey && (correctionKey.endTime > currentTime))
+				{
+					transRef.insertKey(correctionKey);
+				}
+			}
+			
+			trace("====after inserting correction key===");
+			for(var i:int = 0; i< correctionKey.translate.transitionPath.length; i++)
+				trace(correctionKey.translate.transitionPath.points[i].x, correctionKey.translate.transitionPath.points[i].y);
 		}
 	}
 }

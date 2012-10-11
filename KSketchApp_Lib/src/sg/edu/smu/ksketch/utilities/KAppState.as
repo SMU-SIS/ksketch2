@@ -53,7 +53,7 @@ package sg.edu.smu.ksketch.utilities
 		public static const GROUPING_EXPLICIT_STATIC:String = "Explicit-Static-Grouping";
 		public static const GROUPING_EXPLICIT_DYNAMIC:String = "Explicit-Dynamic-Grouping";
 		public static const GROUPING_IMPLICIT_DYNAMIC:String = "Implicit-Dynamic-Grouping";
-		public static const GROUPING_IMPLICIT_STATIC:String = "Implicit-Static-Grouping"
+		public static const GROUPING_IMPLICIT_STATIC:String = "Implicit-Static-Grouping";
 		
 		public static const TRANSITION_INSTANT:int = 2;
 		public static const TRANSITION_INTERPOLATED:int = 1;

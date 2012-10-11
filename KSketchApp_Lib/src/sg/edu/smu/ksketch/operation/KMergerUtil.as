@@ -10,6 +10,7 @@
 
 package sg.edu.smu.ksketch.operation
 {
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch.model.IKeyFrame;
@@ -18,11 +19,13 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KObject;
+	import sg.edu.smu.ksketch.model.geom.K3DPath;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.model.geom.KTranslation;
 	import sg.edu.smu.ksketch.model.implementations.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KReplaceKeyframeOperation;
+	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KClipBoard;
 
 	public class KMergerUtil
@@ -39,10 +42,31 @@ package sg.edu.smu.ksketch.operation
 			while(parent.id != root.id)
 			{
 				var parentClone:KObject = clipBoard.cloneObject(parent);
+				var objectClone:KObject = clipBoard.cloneObject(object);
 				_mergeMotionOfType(parentClone, object, time, mergeHierarchyOp, KTransformMgr.ROTATION_REF);
 				_mergeMotionOfType(parentClone, object, time, mergeHierarchyOp, KTransformMgr.SCALE_REF);
 				_mergeMotionOfType(parentClone, object, time, mergeHierarchyOp, KTransformMgr.TRANSLATION_REF);
-				parent = parent.getParent(KGroupUtil.STATIC_GROUP_TIME);
+				
+				var currentTime:Number = 0;
+				var correctMatrix:Matrix;
+				var currentMatrix:Matrix;
+				var currentCenter:Point;
+				var correctCenter:Point;
+				var compensation:Point;
+				var correctionPath:K3DPath = new K3DPath();
+				
+				while(currentTime <= time)
+				{
+					correctMatrix = objectClone.getFullMatrix(currentTime);
+					correctCenter = correctMatrix.transformPoint(object.defaultCenter);
+					correctCenter = parent.getFullMatrix(currentTime).transformPoint(correctCenter);
+					
+					currentMatrix = object.getFullMatrix(currentTime);
+					currentCenter = currentMatrix.transformPoint(object.defaultCenter);//handleCenter(currentTime));
+					compensation = correctCenter.subtract(currentCenter);
+					correctionPath.push(compensation.x, compensation.y, currentTime);
+					currentTime += KAppState.ANIMATION_INTERVAL;
+				}
 			}
 			
 			if(mergeHierarchyOp.length > 0)
@@ -173,7 +197,7 @@ package sg.edu.smu.ksketch.operation
 			var currentTargetKey:ISpatialKeyframe = null;
 			
 			//Set a key at the time to stop merging
-			source.transformMgr.forceKeyAtTime(time, sourceRef,op);
+			//source.transformMgr.forceKeyAtTime(time, sourceRef,op);
 			
 			//Iterate through both source and target reference frames, and make sure
 			//that if a the source ref has a key at time Ti, target should also have a key at Ti too.
@@ -201,7 +225,7 @@ package sg.edu.smu.ksketch.operation
 				currentSourceKey = sourceRef.getAtTime(currentTargetKey.endTime) as ISpatialKeyframe;
 
 				//Manage difference in centers. 
-				source.transformMgr.updateCenter(currentSourceKey, currentTargetKey.center, currentTargetKey.endTime, op);
+				//source.transformMgr.updateCenter(currentSourceKey, currentTargetKey.center, currentTargetKey.endTime, op);
 				op.addOperation(currentTargetKey.mergeKey(currentSourceKey, type));
 				currentTargetKey = currentTargetKey.next as ISpatialKeyframe;
 			}

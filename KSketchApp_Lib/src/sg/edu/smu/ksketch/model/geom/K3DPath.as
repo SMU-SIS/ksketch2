@@ -242,8 +242,11 @@ package sg.edu.smu.ksketch.model.geom
 			bisectionPoint = getPoint(proportion);
 			
 			var i:int = this.getIndexAtOrBeforeTime(proportion*duration);
-			var removedPoints:Vector.<K3DVector> = points.splice(0, i-1);
 			
+			if(i == 0)
+				return newPath;
+			
+			var removedPoints:Vector.<K3DVector> = points.splice(0, i-1);
 			removedPoints.push(bisectionPoint.clone());
 			
 			if(points.length == 1)

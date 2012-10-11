@@ -67,6 +67,9 @@ package sg.edu.smu.ksketch.operation
 					correctionPath.push(compensation.x, compensation.y, currentTime);
 					currentTime += KAppState.ANIMATION_INTERVAL;
 				}
+				object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, time, mergeHierarchyOp);
+				
+				parent = parent.getParent(KGroupUtil.STATIC_GROUP_TIME);
 			}
 			
 			if(mergeHierarchyOp.length > 0)

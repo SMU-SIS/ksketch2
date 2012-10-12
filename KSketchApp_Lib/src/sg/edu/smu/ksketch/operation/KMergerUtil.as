@@ -31,8 +31,8 @@ package sg.edu.smu.ksketch.operation
 	public class KMergerUtil
 	{
 		/**
-		 * Clone and Collapses the hierarchy of the given object
-		 * Merges all of the hierachy's motions (up till given time) into the object
+		 * Collapses the hierarchy of the given object
+		 * Merges all of the object's hierachy's (all the way to the root) motions (up till given time) into the object
 		 */
 		public static function MergeHierarchyMotionsIntoObject(root:KGroup, object:KObject, time:Number):IModelOperation
 		{
@@ -56,21 +56,24 @@ package sg.edu.smu.ksketch.operation
 			//Merging of transformation data does not compensate for any differences in rotation or scaling center.
 			//Differences in centers cause positional changes but not orientation/size changes.
 			//Perform checking of position, and compensate for any differences.
-			var currentTime:Number = 0;
 			var correctMatrix:Matrix;
 			var currentMatrix:Matrix;
-			var currentCenter:Point;
-			var correctCenter:Point;
-			var compensation:Point;
-			var correctionPath:K3DPath = new K3DPath();
+			
 			var targetCenter:Point;
+			var correctCenter:Point;
+			var currentCenter:Point;
+			var compensation:Point;
+			
+			var currentTime:Number = 0;
+			var correctionPath:K3DPath = new K3DPath();
 			
 			if(object is KGroup)
 				targetCenter = (object as KGroup).getCentroid(time);
 			else
 				targetCenter = object.defaultCenter;
+			
 			//The idea is to use a translation path and merge any differences in.
-			//Not optimised, this algo can be better
+			//Not optimised, we need a faster algo. Its O(n) now, and merging everything, even dx = 0 and dy = 0
 			while(currentTime <= time)
 			{
 				correctMatrix = objectClone.getFullMatrix(currentTime);
@@ -83,6 +86,7 @@ package sg.edu.smu.ksketch.operation
 				currentTime += KAppState.ANIMATION_INTERVAL;
 			}
 			
+			//Merge the derived path into the object
 			object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, time, mergeHierarchyOp);
 			
 			if(mergeHierarchyOp.length > 0)

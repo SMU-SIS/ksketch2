@@ -715,12 +715,13 @@ package sg.edu.smu.ksketch.operation
 				if(!currentKey && (correctionKey.endTime > currentTime))
 				{
 					transRef.insertKey(correctionKey);
+					
+					var newKey:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+					newKey.push(correctionKey);
+					var appendOp:KReplaceKeyframeOperation = new KReplaceKeyframeOperation(_object, transRef, null, newKey);
+					op.addOperation(appendOp);
 				}
 			}
-			
-			trace("====after inserting correction key===");
-			for(var i:int = 0; i< correctionKey.translate.transitionPath.length; i++)
-				trace(correctionKey.translate.transitionPath.points[i].x, correctionKey.translate.transitionPath.points[i].y);
 		}
 	}
 }

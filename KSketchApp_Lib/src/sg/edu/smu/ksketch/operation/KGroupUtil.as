@@ -109,11 +109,8 @@ package sg.edu.smu.ksketch.operation
 			//var matrices:Vector.<Matrix> = getParentChangeMatrices(object, newParent, time);
 			var key:IParentKeyFrame = object.getParentKeyAtOrBefore(time) as IParentKeyFrame;
 			if(key != null)
-			{
 				key = object.removeParentKey(time) as IParentKeyFrame;
-				if(key.parent.children.contains(object))
-					key.parent.remove(object);
-			}
+
 			var newParentKey:IParentKeyFrame = object.addParentKey(time,newParent);
 			//newParentKey.positionMatrix = computePositionMatrix(
 				//matrices[0],matrices[1],matrices[2],matrices[3], object.id);

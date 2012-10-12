@@ -38,39 +38,52 @@ package sg.edu.smu.ksketch.operation
 		{
 			var clipBoard:KClipBoard = new KClipBoard();
 			var mergeHierarchyOp:KCompositeOperation = new KCompositeOperation();
+			
+			var objectClone:KObject = clipBoard.cloneObject(object);
+			
 			var parent:KGroup = object.getParent(KGroupUtil.STATIC_GROUP_TIME);
+			var directParent:KGroup = object.getParent(KGroupUtil.STATIC_GROUP_TIME);
+			
+			//Merge all available transformation data into the child object
 			while(parent.id != root.id)
 			{
-				var parentClone:KObject = clipBoard.cloneObject(parent);
-				var objectClone:KObject = clipBoard.cloneObject(object);
-				_mergeMotionOfType(parentClone, object, time, mergeHierarchyOp, KTransformMgr.ROTATION_REF);
-				_mergeMotionOfType(parentClone, object, time, mergeHierarchyOp, KTransformMgr.SCALE_REF);
-				_mergeMotionOfType(parentClone, object, time, mergeHierarchyOp, KTransformMgr.TRANSLATION_REF);
-				
-				var currentTime:Number = 0;
-				var correctMatrix:Matrix;
-				var currentMatrix:Matrix;
-				var currentCenter:Point;
-				var correctCenter:Point;
-				var compensation:Point;
-				var correctionPath:K3DPath = new K3DPath();
-				
-				while(currentTime <= time)
-				{
-					correctMatrix = objectClone.getFullMatrix(currentTime);
-					correctCenter = correctMatrix.transformPoint(object.defaultCenter);
-					correctCenter = parent.getFullMatrix(currentTime).transformPoint(correctCenter);
-					
-					currentMatrix = object.getFullMatrix(currentTime);
-					currentCenter = currentMatrix.transformPoint(object.defaultCenter);//handleCenter(currentTime));
-					compensation = correctCenter.subtract(currentCenter);
-					correctionPath.push(compensation.x, compensation.y, currentTime);
-					currentTime += KAppState.ANIMATION_INTERVAL;
-				}
-				object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, time, mergeHierarchyOp);
-				
+				_mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.ROTATION_REF);
+				_mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.SCALE_REF);
+				_mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.TRANSLATION_REF);
 				parent = parent.getParent(KGroupUtil.STATIC_GROUP_TIME);
 			}
+			
+			//Merging of transformation data does not compensate for any differences in rotation or scaling center.
+			//Differences in centers cause positional changes but not orientation/size changes.
+			//Perform checking of position, and compensate for any differences.
+			var currentTime:Number = 0;
+			var correctMatrix:Matrix;
+			var currentMatrix:Matrix;
+			var currentCenter:Point;
+			var correctCenter:Point;
+			var compensation:Point;
+			var correctionPath:K3DPath = new K3DPath();
+			var targetCenter:Point;
+			
+			if(object is KGroup)
+				targetCenter = (object as KGroup).getCentroid(time);
+			else
+				targetCenter = object.defaultCenter;
+			//The idea is to use a translation path and merge any differences in.
+			//Not optimised, this algo can be better
+			while(currentTime <= time)
+			{
+				correctMatrix = objectClone.getFullMatrix(currentTime);
+				correctMatrix.concat(directParent.getFullPathMatrix(currentTime));
+				correctCenter = correctMatrix.transformPoint(targetCenter);
+				currentMatrix = object.getFullMatrix(currentTime);
+				currentCenter = currentMatrix.transformPoint(targetCenter);
+				compensation = correctCenter.subtract(currentCenter);
+				correctionPath.push(compensation.x, compensation.y, currentTime);
+				currentTime += KAppState.ANIMATION_INTERVAL;
+			}
+			
+			object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, time, mergeHierarchyOp);
 			
 			if(mergeHierarchyOp.length > 0)
 				return mergeHierarchyOp;

@@ -171,8 +171,7 @@ package sg.edu.smu.ksketch.model
 			
 			if(parentKey)
 			{
-				var result:Matrix = new Matrix();
-				result.concat(getFullMatrix(time));
+				var result:Matrix = getFullMatrix(time);
 				result.concat(parentKey.parent.getFullPathMatrix(time));
 				return result;
 			}

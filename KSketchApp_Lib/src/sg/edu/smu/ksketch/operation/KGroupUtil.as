@@ -46,6 +46,13 @@ package sg.edu.smu.ksketch.operation
 			var currentObject:KObject;
 			var collapseOperation:IModelOperation;
 			var groupToRootOperation:IModelOperation;
+			var stopMergingAtParent:KGroup = _lowestCommonParent(objs, STATIC_GROUP_TIME, model.root);
+			
+			if(stopMergingAtParent.id != model.root.id)
+				stopMergingAtParent = stopMergingAtParent.getParent(STATIC_GROUP_TIME);
+			
+			trace("stop merging at", stopMergingAtParent.id);
+			
 			//Iterate through the list of objects
 			while(it.hasNext())
 			{
@@ -58,9 +65,7 @@ package sg.edu.smu.ksketch.operation
 				
 				//Collapse the hierachy of this object
 				//Merge all of the hierachy's motions into it
-				//Should end up in the root right after	
-				//Dont care first, implement grouping first
-				collapseOperation = KMergerUtil.MergeHierarchyMotionsIntoObject(model.root,currentObject, time);
+				collapseOperation = KMergerUtil.MergeHierarchyMotionsIntoObject(stopMergingAtParent,currentObject, time, "from group static");
 				if(collapseOperation)
 					staticGroupOperation.addOperation(collapseOperation);
 				
@@ -105,59 +110,20 @@ package sg.edu.smu.ksketch.operation
 		
 		public static function setParentKey(time:Number, object:KObject, newParent:KGroup):void
 		{
-			
 			//var matrices:Vector.<Matrix> = getParentChangeMatrices(object, newParent, time);
 			var key:IParentKeyFrame = object.getParentKeyAtOrBefore(time) as IParentKeyFrame;
 			if(key != null)
+			{
 				key = object.removeParentKey(time) as IParentKeyFrame;
+				if(key.parent.children.contains(object))
+					key.parent.remove(object);
+			}
 
 			var newParentKey:IParentKeyFrame = object.addParentKey(time,newParent);
+		
+			
 			//newParentKey.positionMatrix = computePositionMatrix(
 				//matrices[0],matrices[1],matrices[2],matrices[3], object.id);
-		}
-		
-		/**
-		 * Call this function before inserting
-		 * Returns a vector of matrices that are used to compute a position matrix
-		 * [0]:objFullMat:Matrix
-		 * [1]:prevParentFPM:Matrix
-		 * [2]:newParentFPM:Matrix
-		 * [3]:prevPositionMat:Matrix
-		 */
-		public static function getParentChangeMatrices(object:KObject, newParent:KGroup, 
-													   time:Number, strictlyBefore:Boolean = false):Vector.<Matrix>
-		{
-			var returnVector:Vector.<Matrix> = new Vector.<Matrix>(4);
-			
-			returnVector[0] = object.getFullMatrix(time);
-			
-			var prevParentKey:IParentKeyFrame = _getParentKeyBefore(object,time, strictlyBefore);
-			
-			if(prevParentKey)
-			{
-				var oldParent:KGroup = prevParentKey.parent;
-				
-				returnVector[1] = oldParent.getFullPathMatrix(time);
-				returnVector[3] = prevParentKey.positionMatrix;
-				
-				if(newParent)
-				{
-					returnVector[2] = newParent.getFullPathMatrix(time);
-				}
-				else
-				{
-					returnVector[2] = new Matrix();
-				}
-				
-				return returnVector;
-			}
-			else
-			{
-				returnVector[1] = new Matrix();
-				returnVector[2] = new Matrix();
-				returnVector[3] = new Matrix();
-				return returnVector;
-			}
 		}
 		
 		/**
@@ -181,27 +147,6 @@ package sg.edu.smu.ksketch.operation
 					maxTime = Math.max(maxTime,key.endTime);
 			}
 			return maxTime;
-		}
-		
-		public static function computePositionMatrix(objFullMat:Matrix, prevParentFPM:Matrix, 
-													 newParentFPM:Matrix, prevPositionMat:Matrix, 
-													 debugID:int=-1):Matrix
-		{
-			//Clone, just in case things happen and matrices get unnecessarily shared in computation.
-			var newPosMat:Matrix = new Matrix();
-			newPosMat.concat(prevPositionMat);
-			
-			var inverseFullMat:Matrix = objFullMat.clone();
-			inverseFullMat.invert();
-			
-			newPosMat.concat(objFullMat);
-			newPosMat.concat(prevParentFPM);
-			
-			newParentFPM.invert();
-			newPosMat.concat(newParentFPM);
-			
-			newPosMat.concat(inverseFullMat);
-			return newPosMat;
 		}
 		
 		// Create a group of objects at groupTime with center. 
@@ -245,6 +190,9 @@ package sg.edu.smu.ksketch.operation
 		private static function _lowestCommonParent(objects:KModelObjectList, 
 													time:Number, root:KGroup):KGroup
 		{
+			if(objects.length() == 1)
+				return root;
+			
 			var parents:KModelObjectList = _getParents(objects.getObjectAt(0),time,root);
 			for (var i:int = 1; i < objects.length(); i++)
 				parents.intersect(_getParents(objects.getObjectAt(i),time,root));

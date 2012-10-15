@@ -427,9 +427,18 @@ package sg.edu.smu.ksketch.components
 			if(view == null)
 				throw new Error("object has no view");
 			
+			if(object.id == 2)
+			{
+//				trace("parent at toKSKTime", toKSKTime, object.getParent(toKSKTime).id);
+	//			if((view as KObjectView).parent is KGroupView)
+		//			trace(((view as KObjectView).parent as KGroupView).object.id);
+			}
 			var changedParent:KGroup = object.parentChanged(fromKSKTime, toKSKTime);
+			
 			if(changedParent != null)
+			{
 				_updateParentView(view, changedParent);
+			}
 			
 			var changedAlpha:Number = object.getVisibility(toKSKTime);
 			view.updateVisibility(changedAlpha);

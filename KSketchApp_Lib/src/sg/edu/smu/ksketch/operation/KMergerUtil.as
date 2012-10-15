@@ -34,7 +34,7 @@ package sg.edu.smu.ksketch.operation
 		 * Collapses the hierarchy of the given object
 		 * Merges all of the object's hierachy's (all the way to the root) motions (up till given time) into the object
 		 */
-		public static function MergeHierarchyMotionsIntoObject(root:KGroup, object:KObject, time:Number):IModelOperation
+		public static function MergeHierarchyMotionsIntoObject(stopAtGroup:KGroup, object:KObject, time:Number, debugStatement:String = ""):IModelOperation
 		{
 			var clipBoard:KClipBoard = new KClipBoard();
 			var mergeHierarchyOp:KCompositeOperation = new KCompositeOperation();
@@ -43,13 +43,21 @@ package sg.edu.smu.ksketch.operation
 			
 			var parent:KGroup = object.getParent(KGroupUtil.STATIC_GROUP_TIME);
 			var directParent:KGroup = object.getParent(KGroupUtil.STATIC_GROUP_TIME);
-			
+			var currentMaxTime:Number;
+			var maxTime:Number = 0;
 			//Merge all available transformation data into the child object
-			while(parent.id != root.id)
+			while(parent.id != stopAtGroup.id)
 			{
-				_mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.ROTATION_REF);
-				_mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.SCALE_REF);
-				_mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.TRANSLATION_REF);
+				maxTime = _mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.ROTATION_REF);
+				
+				currentMaxTime = _mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.SCALE_REF);
+				if(currentMaxTime > maxTime)
+					maxTime = currentMaxTime;
+				
+				currentMaxTime = _mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.TRANSLATION_REF);
+				if(currentMaxTime > maxTime)
+					maxTime = currentMaxTime;
+				
 				parent = parent.getParent(KGroupUtil.STATIC_GROUP_TIME);
 			}
 			
@@ -74,7 +82,7 @@ package sg.edu.smu.ksketch.operation
 			
 			//The idea is to use a translation path and merge any differences in.
 			//Not optimised, we need a faster algo. Its O(n) now, and merging everything, even dx = 0 and dy = 0
-			while(currentTime <= time)
+			while(currentTime <= maxTime)
 			{
 				correctMatrix = objectClone.getFullMatrix(currentTime);
 				correctMatrix.concat(directParent.getFullPathMatrix(currentTime));
@@ -87,7 +95,7 @@ package sg.edu.smu.ksketch.operation
 			}
 			
 			//Merge the derived path into the object
-			object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, time, mergeHierarchyOp);
+			object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, maxTime, mergeHierarchyOp);
 			
 			if(mergeHierarchyOp.length > 0)
 				return mergeHierarchyOp;
@@ -207,7 +215,7 @@ package sg.edu.smu.ksketch.operation
 		 * Motions from the source's creation time, to given time will be merged into the target
 		 * This function compensates for differences in centers between the source and target keys.
 		 */
-		private static function _mergeMotionOfType(source:KObject, target:KObject, time:Number, op:KCompositeOperation, type:int):void
+		private static function _mergeMotionOfType(source:KObject, target:KObject, time:Number, op:KCompositeOperation, type:int):Number
 		{
 			var sourceRef:IReferenceFrame = source.getReferenceFrameAt(type);
 			var targetRef:IReferenceFrame = target.getReferenceFrameAt(type);
@@ -233,6 +241,7 @@ package sg.edu.smu.ksketch.operation
 			
 			//Same as the previous while loop
 			//But we will be merging the motions together after each iteration.
+			var lastKeyTime:Number = 0;
 			currentTargetKey = targetRef.earliestKey() as ISpatialKeyframe;
 			currentSourceKey = null;
 			while(currentTargetKey)
@@ -248,7 +257,12 @@ package sg.edu.smu.ksketch.operation
 				//source.transformMgr.updateCenter(currentSourceKey, currentTargetKey.center, currentTargetKey.endTime, op);
 				op.addOperation(currentTargetKey.mergeKey(currentSourceKey, type));
 				currentTargetKey = currentTargetKey.next as ISpatialKeyframe;
+				
+				if(currentTargetKey)
+					lastKeyTime = currentTargetKey.endTime;
 			}
+
+			return lastKeyTime;
 		}
 	}
 }

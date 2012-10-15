@@ -299,6 +299,9 @@ package sg.edu.smu.ksketch.model
 		{
 			var fromParent:KGroup = getParent(from);
 			var toParent:KGroup = getParent(to);
+
+			if(!fromParent || !toParent)
+				return null;
 			
 			if(fromParent.id != toParent.id)
 			{

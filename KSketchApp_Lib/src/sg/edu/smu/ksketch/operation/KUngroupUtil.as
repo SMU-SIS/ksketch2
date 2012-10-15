@@ -39,9 +39,9 @@ package sg.edu.smu.ksketch.operation
 		 * Ungroup the given object to the root
 		 * Merges all motions from the previous object's hierachy into the object
 		 */
-		public static function ungroupStatic(model:KModel, root:KGroup, object:KObject):IModelOperation
+		public static function ungroupStatic(model:KModel, newParent:KGroup, object:KObject):IModelOperation
 		{	
-			return _ungroupObject(model, object.getParent(KGroupUtil.STATIC_GROUP_TIME), model.root, object, KGroupUtil.STATIC_GROUP_TIME);
+			return _ungroupObject(model, object.getParent(KGroupUtil.STATIC_GROUP_TIME), newParent, object, KGroupUtil.STATIC_GROUP_TIME);
 		}
 		
 		/**
@@ -84,6 +84,54 @@ package sg.edu.smu.ksketch.operation
 					ops.addOperation(rmOp);
 			}
 			return ops.length > 0 ? ops : null;
+		}
+		
+		/**
+		 * Optimised code path for removal of singleton group in static grouping mode.
+		 * recursive, collapses group from leaves and branches upwards
+		 */
+		public static function removeStaticSingletonGroup(currentGroup:KGroup, model:KModel, debugSpacing:String = ""):IModelOperation
+		{
+			//Traverse all the way down to the leaves first
+			var groupIterator:IIterator = currentGroup.iterator;
+			var currentObject:KObject;
+			
+			var newDebugSpacing:String = " "+debugSpacing;
+			while(groupIterator.hasNext())
+			{
+				currentObject = groupIterator.next();
+				if(currentObject is KGroup)
+					removeStaticSingletonGroup(currentObject as KGroup, model, newDebugSpacing);
+			}
+			
+			//Root, dont do anything
+			if(currentGroup.id == 0)
+				return null;
+			
+			var numChildren:int = currentGroup.children.length();
+			
+			//Not singleton group, dont do anything
+			if(numChildren > 1)
+				return null;
+			
+			//Singleton group, 1 child, merge motion into child
+			if(numChildren == 1)
+			{	
+				var child:KObject = currentGroup.children.getObjectAt(0);
+				
+				//Merge motion into child
+				var grandParent:KGroup = currentGroup.getParent(KGroupUtil.STATIC_GROUP_TIME);
+
+				KMergerUtil.MergeHierarchyMotionsIntoObject(grandParent, child, Number.MAX_VALUE);
+				
+				//Move child to parent
+				grandParent.add(child);
+				KGroupUtil.setParentKey(KGroupUtil.STATIC_GROUP_TIME, child, grandParent);
+				
+				dispatchUngroupOperationEvent(model, grandParent, child);
+			}
+			
+			return null;
 		}
 		
 		/**

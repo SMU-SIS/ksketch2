@@ -19,7 +19,6 @@ package sg.edu.smu.ksketch.components
 	import mx.events.ListEvent;
 	import mx.managers.PopUpManager;
 	
-	import sg.edu.smu.ksketch.event.KGroupUngroupEvent;
 	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.event.KSelectionChangedEvent;
 	import sg.edu.smu.ksketch.event.KTimeChangedEvent;
@@ -98,8 +97,6 @@ package sg.edu.smu.ksketch.components
 			highlightUserSelection(null, _appState.selection);
 			_facade.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED, refreshTree);
 			_facade.addEventListener(KObjectEvent.EVENT_OBJECT_REMOVED, refreshTree);
-			_facade.addEventListener(KGroupUngroupEvent.EVENT_GROUP, refreshTree);
-			_facade.addEventListener(KGroupUngroupEvent.EVENT_UNGROUP, refreshTree);
 			_appState.addEventListener(KTimeChangedEvent.TIME_CHANGED, refreshTree);
 			
 			_appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, selectionChangedEventHandler, false, 1);
@@ -113,8 +110,6 @@ package sg.edu.smu.ksketch.components
 				this.removeObjectEventListener(_shownObj);
 			_facade.removeEventListener(KObjectEvent.EVENT_OBJECT_ADDED, refreshTree);
 			_facade.removeEventListener(KObjectEvent.EVENT_OBJECT_REMOVED, refreshTree);
-			_facade.removeEventListener(KGroupUngroupEvent.EVENT_GROUP, refreshTree);
-			_facade.removeEventListener(KGroupUngroupEvent.EVENT_UNGROUP, refreshTree);
 			_appState.removeEventListener(KTimeChangedEvent.TIME_CHANGED, refreshTree);
 			
 			_appState.removeEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, selectionChangedEventHandler);

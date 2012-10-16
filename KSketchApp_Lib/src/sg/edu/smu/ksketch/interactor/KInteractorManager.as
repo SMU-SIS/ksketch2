@@ -30,9 +30,9 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
+	import sg.edu.smu.ksketch.operation.KGroupUtil;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
-	import sg.edu.smu.ksketch.operation.KUngroupUtil;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KMathUtil;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
@@ -702,8 +702,8 @@ package sg.edu.smu.ksketch.interactor
 			
 			_endInteraction(event);
 			_waiting();
-		
-			_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_facade.root,_appState);
+
+			_appState.ungroupEnabled = KGroupUtil.ungroupEnable(_facade.root,_appState);
 			_appState.fireGroupingEnabledChangedEvent();
 			_appState.fireEditEnabledChangedEvent();
 		}

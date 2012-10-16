@@ -158,68 +158,33 @@ package sg.edu.smu.ksketch.operation
 		public function regroup(objs:KModelObjectList, mode:String, transitionType:int, appTime:Number, 
 								isRealTimeTranslation:Boolean = false):IModelOperation
 		{
-			
-	//		--- To prevent double logging, do not log regroup, as ungroup and group is logged ---		
-	//		KLogger.logRegroup(objs.toIDs(), mode, transitionType, appTime, isRealTimeTranslation);
-			
-			//		var time:Number = KGroupUtil.lastestConsistantParentKeyTime(objs,appTime);
-/*			var unOp:IModelOperation = ungroup(objs, mode, appTime);
-			var gpOp:IModelOperation = group(objs,mode,transitionType,appTime,isRealTimeTranslation);
-			var ops:KCompositeOperation = new KCompositeOperation();
-			if (unOp)
-				ops.addOperation(unOp);
-			if (gpOp)
-				ops.addOperation(gpOp);
-			return ops;*/
-			
 			return null;
 		}
 		
-		public function group(objs:KModelObjectList, mode:String, 
-							  transitionType:int, groupTime:Number=-2, 
+		public function group(objs:KModelObjectList, mode:String, transitionType:int, groupTime:Number=-2, 
 							  isRealTimeTranslation:Boolean = false):IModelOperation
 		{				
 			var ops:KCompositeOperation = new KCompositeOperation();
-			
-			var theOneObject:KObject;
-			if(objs.length() == 1)
-				theOneObject = objs.getObjectAt(0);
-			
-			//Do static grouping
-			var groupResults:Array = KGroupUtil.groupStatic(_model, objs, groupTime);
-			if(groupResults)
-				ops.addOperation(groupResults[0]);
-			
-			//Then we clean up the model of all singletons and dirty stuffs
-			//var removeSingletonOp:IModelOperation = KUngroupUtil.removeStaticSingletonGroup(_model.root, _model);
-			
-			//if(removeSingletonOp)
-				//ops.addOperation(removeSingletonOp);
 
+			//Do static grouping first
+			var groupResult:KObject = KGroupUtil.groupStatic(_model, objs, groupTime, ops);
+			KGroupUtil.removeStaticSingletonGroup(_model.root, _model, ops);
+			
 			if (ops.length > 0)
 			{
 				KLogger.logGroup(objs.toIDs(), mode, transitionType, groupTime);
 				var list:KModelObjectList = new KModelObjectList();
 				
-				if(groupResults[1] || theOneObject)
+				if(groupResult)
 				{
-					if(theOneObject)
-					{
-						list.add(theOneObject);	
-					}
-					else
-					{
-						var resultantGroup:KGroup = groupResults[1] as KGroup;
-						list.add(resultantGroup);
-					}
-					
+					list.add(groupResult);	
 					_appState.selection = new KSelection(list,_appState.time);
 
 					if(_appState.userSetCenterOffset)
 						_appState.userSetCenterOffset = _appState.userSetCenterOffset.clone();
 				}
 				
-				_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
+				_appState.ungroupEnabled = KGroupUtil.ungroupEnable(_model.root,_appState);
 				_appState.fireGroupingEnabledChangedEvent();
 				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 				return ops;
@@ -228,30 +193,6 @@ package sg.edu.smu.ksketch.operation
 		}
 		public function ungroup(objs:KModelObjectList,mode:String,appTime:Number):IModelOperation
 		{	
-/*			var strokes:KModelObjectList = KUngroupUtil.selectedStrokes(_model.root,objs,appTime);
-			var mode:String = _appState.groupingMode;
-			var ops:KCompositeOperation = new KCompositeOperation();
-			
-			var ungpOp:IModelOperation = mode == KAppState.GROUPING_EXPLICIT_STATIC ? 
-				KUngroupUtil.ungroupStatic(_model,_model.root,objs):
-				KUngroupUtil.ungroupDynamic(_model,_model.root,objs, appTime);
-			if (ungpOp != null)
-				ops.addOperation(ungpOp);
-			
-			var rmOp:IModelOperation = KUngroupUtil.removeAllSingletonGroups(_model);
-			if (rmOp != null)
-				ops.addOperation(rmOp);
-			
-			if (ops.length > 0)
-			{
-				KLogger.logUngroup(objs.toIDs(),mode, appTime);
-				_appState.selection = strokes.length() > 0 ? 
-					new KSelection(strokes, appTime) : _appState.selection;
-				_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
-				_appState.fireGroupingEnabledChangedEvent();
-				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
-				return ops;
-			}*/
 			return null;
 		}
 		

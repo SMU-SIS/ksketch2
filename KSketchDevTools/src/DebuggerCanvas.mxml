@@ -21,7 +21,6 @@
 	<fx:Script>
 		<![CDATA[
 			import sg.edu.smu.ksketch.components.DebugTreeRenderer;
-			import sg.edu.smu.ksketch.event.KGroupUngroupEvent;
 			import sg.edu.smu.ksketch.event.KModelEvent;
 			import sg.edu.smu.ksketch.event.KObjectEvent;
 			import sg.edu.smu.ksketch.event.KSelectionChangedEvent;
@@ -54,8 +53,8 @@
 
 				_facade.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED, _refreshDebugger, false, 1);
 				_facade.addEventListener(KObjectEvent.EVENT_OBJECT_REMOVED, _refreshDebugger, false, 1);
-				_facade.addEventListener(KGroupUngroupEvent.EVENT_GROUP, _refreshDebugger, false, 1);
-				_facade.addEventListener(KGroupUngroupEvent.EVENT_UNGROUP, _refreshDebugger, false, 1);
+				//_facade.addEventListener(KGroupUngroupEvent.EVENT_GROUP, _refreshDebugger, false, 1);
+				//_facade.addEventListener(KGroupUngroupEvent.EVENT_UNGROUP, _refreshDebugger, false, 1);
 				_appState.addEventListener(KTimeChangedEvent.TIME_CHANGED, _refreshDebugger, false, 1);
 				
 				_appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, selectionChangedEventHandler, false, 1);

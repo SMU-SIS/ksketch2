@@ -22,8 +22,9 @@ package sg.edu.smu.ksketch.event
 		public static const EVENT_POINTS_CHANGED:String = "points changed";
 		public static const EVENT_TRANSFORM_CHANGED:String = "transform changed";
 		public static const EVENT_VISIBILITY_CHANGED:String = "visibility changed";
-		public static const EVENT_PARENT_CHANGED:String = "parent changed";
 		public static const EVENT_OBJECT_CENTER_CHANGED:String = "center changed";
+		public static const EVENT_OBJECT_PARENTED:String = "objects grouped";
+		public static const EVENT_OBJECT_DISCARDED:String = "objects discarded"
 		
 		private var _object:KObject;
 		

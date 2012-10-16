@@ -7,8 +7,6 @@
 *not distributed with this file, You can obtain one at
 *http://mozilla.org/MPL/2.0/.
 ****************************************************/
-
-import sg.edu.smu.ksketch.event.KGroupUngroupEvent;
 import sg.edu.smu.ksketch.event.KObjectEvent;
 import sg.edu.smu.ksketch.event.KSelectionChangedEvent;
 import sg.edu.smu.ksketch.event.KTimeChangedEvent;
@@ -59,8 +57,8 @@ public function removeAllEventListeners():void
 	
 	_facade.removeEventListener(KObjectEvent.EVENT_OBJECT_ADDED, _refreshDebugger);
 	_facade.removeEventListener(KObjectEvent.EVENT_OBJECT_REMOVED, _refreshDebugger);
-	_facade.removeEventListener(KGroupUngroupEvent.EVENT_GROUP, _refreshDebugger);
-	_facade.removeEventListener(KGroupUngroupEvent.EVENT_UNGROUP, _refreshDebugger);
+//	_facade.removeEventListener(KGroupUngroupEvent.EVENT_GROUP, _refreshDebugger);
+//	_facade.removeEventListener(KGroupUngroupEvent.EVENT_UNGROUP, _refreshDebugger);
 	_appState.removeEventListener(KTimeChangedEvent.TIME_CHANGED, _refreshDebugger);
 	
 	_appState.removeEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, selectionChangedEventHandler);

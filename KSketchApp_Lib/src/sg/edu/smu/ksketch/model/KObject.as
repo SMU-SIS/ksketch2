@@ -276,17 +276,16 @@ package sg.edu.smu.ksketch.model
 		
 		public function addParentKey(time:Number, parent:KGroup):IParentKeyFrame
 		{
-			var key:KParentKeyframe = _parentFrameList.lookUp(time) as KParentKeyframe;
-			if(key != null && key.endTime == time)
-				key.endTime = key.endTime - KAppState.ANIMATION_INTERVAL;
-			key = _parentFrameList.createParentKey(time,parent) as KParentKeyframe;
-			key.debugID = id;
-			key.endTime = time;
-			_parentFrameList.insertKey(key);
+			var oldParentKey:KParentKeyframe = _parentFrameList.lookUp(time) as KParentKeyframe;
+
+			if(oldParentKey)
+				throw new Error("Parent exists at time, please use encapsulated method KGroupUtil.addObjectToParent() for an easier life");
+			
+			var newKey:KParentKeyframe = _parentFrameList.createParentKey(time,parent) as KParentKeyframe;
+			_parentFrameList.insertKey(newKey);
 			if (!parent.children.contains(this))
 				parent.add(this);
-			this.dispatchEvent(new KObjectEvent(this, KObjectEvent.EVENT_PARENT_CHANGED));
-			return key;
+			return newKey;
 		}
 
 		public function removeParentKey(time:Number):IKeyFrame

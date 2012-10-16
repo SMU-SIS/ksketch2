@@ -91,16 +91,8 @@ package sg.edu.smu.ksketch.components
 		
 		public function updateParent(newParent:DisplayObjectContainer):void
 		{
-/*			if(_object.id == 2)
-			{
-				if(newParent is KGroupView)
-					trace("updating 2's parent to", (newParent as KGroupView).object.id);
-				else
-					trace("updating 2's parent to root");
-			}*/
 			newParent.addChild(this);
 			_object.getFullPathMatrix(_appState.time);
-
 			updateTransform(_object.getFullMatrix(_appState.time));
 			if(_showPath)
 				newParent.addChild(_path);

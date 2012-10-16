@@ -14,6 +14,7 @@ package sg.edu.smu.ksketch.model
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAllChildrenIterator;

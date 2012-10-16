@@ -21,7 +21,7 @@ package sg.edu.smu.ksketch.components
 	import mx.core.UIComponent;
 	
 	import sg.edu.smu.ksketch.event.KDebugHighlightChanged;
-	import sg.edu.smu.ksketch.event.KGroupUngroupEvent;
+	import sg.edu.smu.ksketch.event.KModelEvent;
 	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.event.KSelectionChangedEvent;
 	import sg.edu.smu.ksketch.event.KTimeChangedEvent;
@@ -290,8 +290,7 @@ package sg.edu.smu.ksketch.components
 			_facade.addEventListener(KObjectEvent.EVENT_VISIBILITY_CHANGED, _objectAlphaEventHandler);
 			_facade.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED, _objectAddedEventHandler);
 			_facade.addEventListener(KObjectEvent.EVENT_OBJECT_REMOVED, _objectRemovedEventHandler);
-			_facade.addEventListener(KGroupUngroupEvent.EVENT_GROUP, _groupEventHandler);
-			_facade.addEventListener(KGroupUngroupEvent.EVENT_UNGROUP, _ungroupEventHandler);
+			_facade.addEventListener(KObjectEvent.EVENT_OBJECT_PARENTED, _groupEventHandler);
 		}
 		
 		protected function _initKAppStateEventsHandler():void
@@ -332,25 +331,14 @@ package sg.edu.smu.ksketch.components
 			delete _viewsTable[event.object];
 		}
 		
-		protected function _groupEventHandler(event:KGroupUngroupEvent):void
+		protected function _groupEventHandler(event:KObjectEvent):void
 		{
-			var g:KGroup = event.group;
+			trace("_group event handler", event.target);
+/*			var g:KGroup = event.group;
 			var obj:KObject;
 			var i:IIterator = g.iterator;
 			while(i.hasNext())
-				_updateParentView(_viewsTable[i.next()] as IObjectView, g);
-		}
-		
-		protected function _ungroupEventHandler(event:KGroupUngroupEvent):void
-		{
-			var g:KGroup = event.group;
-			var obj:KObject;
-			var it:IIterator = g.iterator;
-			while(it.hasNext())
-			{
-				obj = it.next();
-				_updateParentView(_viewsTable[obj] as IObjectView, obj.getParent(_appState.time));
-			}
+				_updateParentView(_viewsTable[i.next()] as IObjectView, g);*/
 		}
 		
 		protected function _selectionChangedEventHandler(event:KSelectionChangedEvent):void

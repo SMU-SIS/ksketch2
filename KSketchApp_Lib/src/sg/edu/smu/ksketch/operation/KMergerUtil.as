@@ -34,11 +34,10 @@ package sg.edu.smu.ksketch.operation
 		 * Collapses the hierarchy of the given object
 		 * Merges all of the object's hierachy's (all the way to the root) motions (up till given time) into the object
 		 */
-		public static function MergeHierarchyMotionsIntoObject(stopAtGroup:KGroup, object:KObject, time:Number, debugStatement:String = ""):IModelOperation
+		public static function MergeHierarchyMotionsIntoObject(stopAtGroup:KGroup, object:KObject,
+															   time:Number, currentOperation:KCompositeOperation):IModelOperation
 		{
 			var clipBoard:KClipBoard = new KClipBoard();
-			var mergeHierarchyOp:KCompositeOperation = new KCompositeOperation();
-			
 			var objectClone:KObject = clipBoard.cloneObject(object);
 			
 			var parent:KGroup = object.getParent(KGroupUtil.STATIC_GROUP_TIME);
@@ -48,13 +47,13 @@ package sg.edu.smu.ksketch.operation
 			//Merge all available transformation data into the child object
 			while(parent.id != stopAtGroup.id)
 			{
-				maxTime = _mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.ROTATION_REF);
+				maxTime = _mergeMotionOfType(parent, object, time, currentOperation, KTransformMgr.ROTATION_REF);
 				
-				currentMaxTime = _mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.SCALE_REF);
+				currentMaxTime = _mergeMotionOfType(parent, object, time, currentOperation, KTransformMgr.SCALE_REF);
 				if(currentMaxTime > maxTime)
 					maxTime = currentMaxTime;
 				
-				currentMaxTime = _mergeMotionOfType(parent, object, time, mergeHierarchyOp, KTransformMgr.TRANSLATION_REF);
+				currentMaxTime = _mergeMotionOfType(parent, object, time, currentOperation, KTransformMgr.TRANSLATION_REF);
 				if(currentMaxTime > maxTime)
 					maxTime = currentMaxTime;
 				
@@ -95,10 +94,10 @@ package sg.edu.smu.ksketch.operation
 			}
 			
 			//Merge the derived path into the object
-			object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, maxTime, mergeHierarchyOp);
+			object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, maxTime, currentOperation);
 			
-			if(mergeHierarchyOp.length > 0)
-				return mergeHierarchyOp;
+			if(currentOperation.length > 0)
+				return currentOperation;
 			else
 				return null;
 		}
@@ -132,40 +131,6 @@ package sg.edu.smu.ksketch.operation
 			}
 		}
 
-		/**
-		 * Add interpolated translation to the object fromPoint toPoint, fromTime toTime.
-		 */
-		public static function addInterpolatedTranslation(object:KObject,fromPoint:Point,
-														  toPoint:Point,fromTime:Number,
-														  toTime:Number):IModelOperation
-		{
-			const translateRef:int = KTransformMgr.TRANSLATION_REF;			
-			var ops:KCompositeOperation = new KCompositeOperation();
-			var center:Point = object.defaultCenter;
-			var toKeys:Vector.<IKeyFrame> = object.getSpatialKeys(translateRef);			
-			var fmKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
-			var key:ISpatialKeyframe = new KSpatialKeyFrame(toTime,center);
-			key.translate = _getInterpolatedTranslation(fromPoint,toPoint,toTime-fromTime);
-			fmKeys.push(key);
-			for (var i:int = 0; i < toKeys.length; i++)
-				_splitKeys(fmKeys,toKeys[i].endTime,new KCompositeOperation());
-			for (var j:int = 0; j < fmKeys.length; j++)
-			{
-				var endTime:Number = fmKeys[j].endTime;
-				key = object.getSpatialKey(endTime,translateRef);
-				if (endTime < key.endTime)
-					key.splitKey(endTime,ops,center);
-				else if (endTime > key.endTime)
-					object.transformMgr.addKeyFrame(
-						translateRef,endTime,center.x,center.y,ops);
-				key = object.getSpatialKeyAt(endTime,translateRef);
-				var op:IModelOperation = key.mergeKey(fmKeys[j] as ISpatialKeyframe,translateRef);
-				if (op != null)
-					ops.addOperation(op);
-			}
-			return ops.length > 0 ? ops : null;
-		}
-		
 		// Split the key in keys, where key.startTime() < time < key.endTime. 
 		private static function _splitKeys(keys:Vector.<IKeyFrame>,time:Number, 
 										   ops:KCompositeOperation):void
@@ -190,25 +155,6 @@ package sg.edu.smu.ksketch.operation
 				clones.push(keys[i].clone());
 			return clones;
 		}
-		
-		// Obtain the translation from fromPoint to toPoint, interpolated across duration.
-		private static function _getInterpolatedTranslation(fromPoint:Point,toPoint:Point,
-															duration:Number):KTranslation
-		{
-			const translateRef:int = KTransformMgr.TRANSLATION_REF;			
-			var offset:Point = toPoint.subtract(fromPoint);
-			var result:KTranslation = new KTranslation();
-			for (var i:int=0; i <= duration; i++)
-			{
-				var xi:Number = i*offset.x/duration;
-				var yi:Number = i*offset.y/duration;
-				var point:Point = new Point(fromPoint.x+xi,fromPoint.y+yi);
-				result.motionPath.addPoint(xi,yi,i);
-				result.transitionPath.push(xi,yi,i);
-			}
-			return result;
-		}
-		
 		
 		/**
 		 * Merge the motions of a type from source object into the target

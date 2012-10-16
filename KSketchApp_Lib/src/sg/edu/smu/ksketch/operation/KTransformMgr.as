@@ -712,7 +712,7 @@ package sg.edu.smu.ksketch.operation
 				
 				currentKey = currentKey.next as ISpatialKeyframe;
 				
-				if(!currentKey && (correctionKey.endTime > currentTime))
+				if(!currentKey && (currentTime< correctionKey.endTime))
 				{
 					transRef.insertKey(correctionKey);
 					

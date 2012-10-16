@@ -42,6 +42,7 @@ package sg.edu.smu.ksketch.operation
 			//Assume that the object list given consists of the highest order
 			//of object combinations possible ie. objects with common parents will
 			//be given as one KGroup
+			trace("right before shit happened", objs.length());
 			var it:IIterator = objs.iterator;
 			var currentObject:KObject;
 			var collapseOperation:IModelOperation;
@@ -50,9 +51,7 @@ package sg.edu.smu.ksketch.operation
 			
 			if(stopMergingAtParent.id != model.root.id)
 				stopMergingAtParent = stopMergingAtParent.getParent(STATIC_GROUP_TIME);
-			
-			trace("stop merging at", stopMergingAtParent.id);
-			
+			trace("in the midst of shit part 1", objs.length());
 			//Iterate through the list of objects
 			while(it.hasNext())
 			{
@@ -73,14 +72,15 @@ package sg.edu.smu.ksketch.operation
 				
 				if(groupToRootOperation)
 					staticGroupOperation.addOperation(groupToRootOperation);
+				trace("rolling in deep shit", objs.length());
 			}
-
+			
 			var groupOperation:KGroupOperation
-			if(objs.length() > 1)
-			{
-				groupOperation = _group(model, objs, KGroupUtil.STATIC_GROUP_TIME) as KGroupOperation;
-				staticGroupOperation.addOperation(groupOperation);
-			}
+			
+			groupOperation = _group(model, objs, KGroupUtil.STATIC_GROUP_TIME) as KGroupOperation;
+			staticGroupOperation.addOperation(groupOperation);
+
+			trace("right after the stuffs", objs.length());
 			
 			if(staticGroupOperation.length == 0)
 				return null;

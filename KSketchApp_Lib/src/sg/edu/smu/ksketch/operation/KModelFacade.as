@@ -181,6 +181,10 @@ package sg.edu.smu.ksketch.operation
 		{				
 			var ops:KCompositeOperation = new KCompositeOperation();
 			
+			var theOneObject:KObject;
+			if(objs.length() == 1)
+				theOneObject = objs.getObjectAt(0);
+			
 			//Do static grouping
 			var groupResults:Array = KGroupUtil.groupStatic(_model, objs, groupTime);
 			if(groupResults)
@@ -188,18 +192,26 @@ package sg.edu.smu.ksketch.operation
 			
 			//Then we clean up the model of all singletons and dirty stuffs
 			KUngroupUtil.removeStaticSingletonGroup(_model.root, _model);
-			
+
 			if (ops.length > 0)
 			{
 				KLogger.logGroup(objs.toIDs(), mode, transitionType, groupTime);
 				var list:KModelObjectList = new KModelObjectList();
 				
-				if(groupResults[1])
+				if(groupResults[1] || theOneObject)
 				{
-					var resultantGroup:KGroup = groupResults[1] as KGroup;
-					list.add(resultantGroup);
-					_appState.selection = new KSelection(list,_appState.time);
+					if(theOneObject)
+					{
+						list.add(theOneObject);	
+					}
+					else
+					{
+						var resultantGroup:KGroup = groupResults[1] as KGroup;
+						list.add(resultantGroup);
+					}
 					
+					_appState.selection = new KSelection(list,_appState.time);
+
 					if(_appState.userSetCenterOffset)
 						_appState.userSetCenterOffset = _appState.userSetCenterOffset.clone();
 				}
@@ -209,48 +221,6 @@ package sg.edu.smu.ksketch.operation
 				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 				return ops;
 			}
-			
-/*			var time:Number = groupTime;
-			time = time != -2 ? time:KGroupUtil.lastestConsistantParentKeyTime(objs,_appState.time);
-			time = time >= 0 ? time : _appState.time;
-			
-			var interpMode:Boolean = transitionType == KAppState.TRANSITION_INTERPOLATED;
-			var staticMode:Boolean = mode == KAppState.GROUPING_EXPLICIT_STATIC;
-			var implicitMode:Boolean = mode == KAppState.GROUPING_IMPLICIT_DYNAMIC;
-			var ops:KCompositeOperation = new KCompositeOperation();
-			var rmOp:IModelOperation;
-			
-			if ((rmOp = KUngroupUtil.removeAllFutureParentKeys(objs,time)))
-				ops.addOperation(rmOp);
-			
-			var gpOp:IModelOperation = staticMode || (interpMode && implicitMode) ? 
-				KGroupUtil.groupStatic(_model,objs):KGroupUtil.groupDynamic(_model,objs,time);
-			ops.addOperation(gpOp);
-			
-			// -------------
-			var gp:KGroup = (gpOp as KGroupOperation).group; 
-			gp.updateCenter(_appState.time);
-			gp.dispatchEvent(new KObjectEvent(gp,KObjectEvent.EVENT_OBJECT_CENTER_CHANGED));
-			// -------------
-			
-			if ((rmOp = KUngroupUtil.removeAllSingletonGroups(_model)))
-				ops.addOperation(rmOp);
-			
-			if (ops.length > 0)
-			{
-				KLogger.logGroup(objs.toIDs(), mode, transitionType, groupTime);
-				var list:KModelObjectList = new KModelObjectList();
-				list.add((gpOp as KGroupOperation).group);
-				_appState.selection = new KSelection(list,_appState.time);
-			
-				if(_appState.userSetCenterOffset)
-					_appState.userSetCenterOffset = _appState.userSetCenterOffset.clone();
-
-				_appState.ungroupEnabled = KUngroupUtil.ungroupEnable(_model.root,_appState);
-				_appState.fireGroupingEnabledChangedEvent();
-				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
-				return ops;
-			}*/
 			return null;
 		}
 		public function ungroup(objs:KModelObjectList,mode:String,appTime:Number):IModelOperation

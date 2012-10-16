@@ -94,12 +94,18 @@ package sg.edu.smu.ksketch.operation
 		{
 			//Traverse all the way down to the leaves first
 			var groupIterator:IIterator = currentGroup.iterator;
-			var currentObject:KObject;
+			var children:Vector.<KObject> = new Vector.<KObject>();
 			
-			var newDebugSpacing:String = " "+debugSpacing;
 			while(groupIterator.hasNext())
+				children.push(groupIterator.next());
+			
+			var currentObject:KObject;
+			var i:int;
+			var length:int = children.length;
+			var newDebugSpacing:String = "	"+debugSpacing;
+			for(i = 0; i<length;i++)
 			{
-				currentObject = groupIterator.next();
+				currentObject = children[i];
 				if(currentObject is KGroup)
 					removeStaticSingletonGroup(currentObject as KGroup, model, newDebugSpacing);
 			}
@@ -109,7 +115,6 @@ package sg.edu.smu.ksketch.operation
 				return null;
 			
 			var numChildren:int = currentGroup.children.length();
-			
 			//Not singleton group, dont do anything
 			if(numChildren > 1)
 				return null;
@@ -118,7 +123,6 @@ package sg.edu.smu.ksketch.operation
 			if(numChildren == 1)
 			{	
 				var child:KObject = currentGroup.children.getObjectAt(0);
-				
 				//Merge motion into child
 				var grandParent:KGroup = currentGroup.getParent(KGroupUtil.STATIC_GROUP_TIME);
 
@@ -129,6 +133,28 @@ package sg.edu.smu.ksketch.operation
 				KGroupUtil.setParentKey(KGroupUtil.STATIC_GROUP_TIME, child, grandParent);
 				
 				dispatchUngroupOperationEvent(model, grandParent, child);
+			}
+			
+			removeFromParent(model, currentGroup, KGroupUtil.STATIC_GROUP_TIME);
+			
+			return null;
+		}
+		
+		public static function removeFromParent(model:KModel, object:KObject, time:Number):IModelOperation
+		{
+			//var matrices:Vector.<Matrix> = getParentChangeMatrices(object, newParent, time);
+			var key:IParentKeyFrame = object.getParentKeyAtOrBefore(time) as IParentKeyFrame;
+			if(key != null)
+			{
+				key = object.removeParentKey(time) as IParentKeyFrame;
+				if(key.parent.children.contains(object))
+					key.parent.remove(object);
+				
+				model.dispatchEvent(new KGroupUngroupEvent(key.parent,KGroupUngroupEvent.EVENT_UNGROUP));
+				key.parent.dispatchEvent(new KObjectEvent(key.parent,KObjectEvent.EVENT_TRANSFORM_CHANGED));
+				object.dispatchEvent(new KObjectEvent(object,KObjectEvent.EVENT_TRANSFORM_CHANGED));
+				object.dispatchEvent(new KObjectEvent(object,KObjectEvent.EVENT_PARENT_CHANGED));
+				model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			}
 			
 			return null;

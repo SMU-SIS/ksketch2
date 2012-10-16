@@ -191,7 +191,10 @@ package sg.edu.smu.ksketch.operation
 				ops.addOperation(groupResults[0]);
 			
 			//Then we clean up the model of all singletons and dirty stuffs
-			KUngroupUtil.removeStaticSingletonGroup(_model.root, _model);
+			//var removeSingletonOp:IModelOperation = KUngroupUtil.removeStaticSingletonGroup(_model.root, _model);
+			
+			//if(removeSingletonOp)
+				//ops.addOperation(removeSingletonOp);
 
 			if (ops.length > 0)
 			{

@@ -24,6 +24,7 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.model.KStroke;
 	import sg.edu.smu.ksketch.operation.implementations.KActivityOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
+	import sg.edu.smu.ksketch.operation.implementations.KGroupOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KRemoveParentKeyFrameOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KUngroupOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
@@ -92,6 +93,8 @@ package sg.edu.smu.ksketch.operation
 		 */
 		public static function removeStaticSingletonGroup(currentGroup:KGroup, model:KModel, debugSpacing:String = ""):IModelOperation
 		{
+			var removeStaticSingletonOp:KCompositeOperation = new KCompositeOperation();
+
 			//Traverse all the way down to the leaves first
 			var groupIterator:IIterator = currentGroup.iterator;
 			var children:Vector.<KObject> = new Vector.<KObject>();
@@ -102,12 +105,17 @@ package sg.edu.smu.ksketch.operation
 			var currentObject:KObject;
 			var i:int;
 			var length:int = children.length;
+			var removeChildSingletonOp:IModelOperation;
 			var newDebugSpacing:String = "	"+debugSpacing;
 			for(i = 0; i<length;i++)
 			{
 				currentObject = children[i];
 				if(currentObject is KGroup)
-					removeStaticSingletonGroup(currentObject as KGroup, model, newDebugSpacing);
+				{
+					removeChildSingletonOp = removeStaticSingletonGroup(currentObject as KGroup, model, newDebugSpacing);
+					if(removeChildSingletonOp)
+						removeStaticSingletonOp.addOperation(removeChildSingletonOp);
+				}
 			}
 			
 			//Root, dont do anything
@@ -126,35 +134,46 @@ package sg.edu.smu.ksketch.operation
 				//Merge motion into child
 				var grandParent:KGroup = currentGroup.getParent(KGroupUtil.STATIC_GROUP_TIME);
 
-				KMergerUtil.MergeHierarchyMotionsIntoObject(grandParent, child, Number.MAX_VALUE);
+				var mergeOp:IModelOperation = KMergerUtil.MergeHierarchyMotionsIntoObject(grandParent, child, Number.MAX_VALUE);
 				
+				if(mergeOp)
+					removeStaticSingletonOp.addOperation(mergeOp);
+				
+				var oldParents:Vector.<KGroup> = new Vector.<KGroup>();
+				oldParents.push(currentGroup);
 				//Move child to parent
-				grandParent.add(child);
 				KGroupUtil.setParentKey(KGroupUtil.STATIC_GROUP_TIME, child, grandParent);
+				var groupOp:IModelOperation = new KUngroupOperation(model, child, KGroupUtil.STATIC_GROUP_TIME, currentGroup, grandParent);
+				
+				if(groupOp)
+					removeStaticSingletonOp.addOperation(groupOp);
 				
 				dispatchUngroupOperationEvent(model, grandParent, child);
 			}
 			
-			removeFromParent(model, currentGroup, KGroupUtil.STATIC_GROUP_TIME);
+			var removeOp:IModelOperation = removeFromParent(model, currentGroup, KGroupUtil.STATIC_GROUP_TIME);
 			
-			return null;
+			if(removeOp)
+				removeStaticSingletonOp.addOperation(removeOp);
+			
+			if(removeStaticSingletonOp.length > 0)
+				return removeStaticSingletonOp;
+			else
+				return null;
 		}
 		
 		public static function removeFromParent(model:KModel, object:KObject, time:Number):IModelOperation
 		{
-			//var matrices:Vector.<Matrix> = getParentChangeMatrices(object, newParent, time);
 			var key:IParentKeyFrame = object.getParentKeyAtOrBefore(time) as IParentKeyFrame;
 			if(key != null)
 			{
 				key = object.removeParentKey(time) as IParentKeyFrame;
-				if(key.parent.children.contains(object))
-					key.parent.remove(object);
-				
 				model.dispatchEvent(new KGroupUngroupEvent(key.parent,KGroupUngroupEvent.EVENT_UNGROUP));
 				key.parent.dispatchEvent(new KObjectEvent(key.parent,KObjectEvent.EVENT_TRANSFORM_CHANGED));
 				object.dispatchEvent(new KObjectEvent(object,KObjectEvent.EVENT_TRANSFORM_CHANGED));
 				object.dispatchEvent(new KObjectEvent(object,KObjectEvent.EVENT_PARENT_CHANGED));
 				model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+				return new KUngroupOperation(model,object,time,key.parent,null);
 			}
 			
 			return null;
@@ -223,9 +242,6 @@ package sg.edu.smu.ksketch.operation
 			
 			KGroupUtil.setParentKey(ungroupTime,object,newParent);
 			oldParent.updateCenter();
-			if (!newParent.children.contains(object))
-				newParent.add(object);
-			
 			if (!_hasChildren(oldParent, ungroupTime))
 				oldParent.addActivityKey(ungroupTime,0);
 			
@@ -326,13 +342,6 @@ package sg.edu.smu.ksketch.operation
 					list.add(child);
 					var groupTime:Number = KGroupUtil.lastestConsistantParentKeyTime(list,time);
 					
-	//				gp.addActivityKey(groupTime,0);
-	//				ops.addOperation(new KActivityOperation(gp,0,groupTime));
-
-					if (!group.children.contains(child))
-						group.add(child);
-					
-	//				group.addActivityKey(time,1);
 					KGroupUtil.setParentKey(groupTime,child,group);
 					
 					var op:IModelOperation = removeDuplicateParentKeys(child);

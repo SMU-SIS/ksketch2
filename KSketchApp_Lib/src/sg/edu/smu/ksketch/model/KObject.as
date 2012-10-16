@@ -283,6 +283,8 @@ package sg.edu.smu.ksketch.model
 			key.debugID = id;
 			key.endTime = time;
 			_parentFrameList.insertKey(key);
+			if (!parent.children.contains(this))
+				parent.add(this);
 			this.dispatchEvent(new KObjectEvent(this, KObjectEvent.EVENT_PARENT_CHANGED));
 			return key;
 		}
@@ -291,7 +293,11 @@ package sg.edu.smu.ksketch.model
 		{
 			var key:KKeyFrame = _parentFrameList.lookUp(time) as KKeyFrame;
 			if (key != null)
+			{
 				_parentFrameList.remove(key);
+				if ((key as IParentKeyFrame).parent.children.contains(this))
+					(key as IParentKeyFrame).parent.remove(this);
+			}
 			return key;	
 		}
 		

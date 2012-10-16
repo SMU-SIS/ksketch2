@@ -39,17 +39,11 @@ package sg.edu.smu.ksketch.operation.implementations
 		
 		public function apply():void
 		{
-			if (!_parent.children.contains(_group))
-				_parent.add(_group);
 			KGroupUtil.setParentKey(_group.createdTime,_group,_parent);
 			var children:KModelObjectList = _group.children;
 			for (var i:int = 0; i < children.length(); i++)
 			{
 				var obj:KObject = children.getObjectAt(i);
-				var key:IParentKeyFrame = obj.getParentKey(_group.createdTime) as IParentKeyFrame;
-	
-				if (key != null && key.parent.children.contains(obj))
-					key.parent.remove(obj);
 				KGroupUtil.setParentKey(_group.createdTime,obj,_group);
 				obj.dispatchEvent(new KObjectEvent(obj,KObjectEvent.EVENT_PARENT_CHANGED));
 			}
@@ -66,11 +60,7 @@ package sg.edu.smu.ksketch.operation.implementations
 			{
 				var obj:KObject = children.getObjectAt(i);
 				if (_oldParents[i])
-				{
 					KGroupUtil.setParentKey(_group.createdTime,obj,_oldParents[i]);
-					if (!_oldParents[i].children.contains(obj))
-						_oldParents[i].add(obj);
-				}
 				else
 					obj.removeParentKey(_group.createdTime);
 				obj.dispatchEvent(new KObjectEvent(obj,KObjectEvent.EVENT_PARENT_CHANGED));

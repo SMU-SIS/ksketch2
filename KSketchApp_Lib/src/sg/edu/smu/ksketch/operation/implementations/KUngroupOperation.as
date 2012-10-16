@@ -51,8 +51,6 @@ package sg.edu.smu.ksketch.operation.implementations
 		
 		private function _do(model:KModel,object:KObject,time:Number,parent:KGroup):void
 		{
-			if (!parent.children.contains(object))
-				parent.add(object);
 			parent.addActivityKey(time,1);
 			KGroupUtil.setParentKey(time,object,parent);
 			KUngroupUtil.removeDuplicateParentKeys(object);

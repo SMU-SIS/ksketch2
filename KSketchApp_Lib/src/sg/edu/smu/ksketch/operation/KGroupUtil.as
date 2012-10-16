@@ -108,14 +108,12 @@ package sg.edu.smu.ksketch.operation
 			//var matrices:Vector.<Matrix> = getParentChangeMatrices(object, newParent, time);
 			var key:IParentKeyFrame = object.getParentKeyAtOrBefore(time) as IParentKeyFrame;
 			if(key != null)
-			{
 				key = object.removeParentKey(time) as IParentKeyFrame;
-				if(key.parent.children.contains(object))
-					key.parent.remove(object);
-			}
 
 			var newParentKey:IParentKeyFrame = object.addParentKey(time,newParent);
-		
+			if (!newParent.children.contains(object))
+				newParent.add(object);
+			
 			
 			//newParentKey.positionMatrix = computePositionMatrix(
 				//matrices[0],matrices[1],matrices[2],matrices[3], object.id);
@@ -150,7 +148,6 @@ package sg.edu.smu.ksketch.operation
 		{			
 			var parent:KGroup = _lowestCommonParent(objs,groupTime,model.root);
 			var group:KGroup = new KGroup(model.nextID, groupTime, objs, null);
-			parent.add(group);
 			setParentKey(groupTime,group,parent);
 			
 			var oldParents:Vector.<KGroup> = new Vector.<KGroup>();

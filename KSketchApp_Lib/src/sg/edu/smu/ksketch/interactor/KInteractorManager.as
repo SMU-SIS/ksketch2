@@ -361,7 +361,7 @@ package sg.edu.smu.ksketch.interactor
 		{	
 			_state = STATE_NORMAL_WAITING; 
 			
-			if(!_ctrlDown && !_altDown && !_pageUpHolding && !_pageDownHolding)
+			if(!_ctrlDown && !_altDown && !_pageUpHolding && !_pageDownHolding && !_shift)
 			{
 				if (_eraserMode)
 					_activate(_eraseInteractor);
@@ -455,7 +455,7 @@ package sg.edu.smu.ksketch.interactor
 					_activate(_scaleInteractor);
 					break;
 				case KWidgetEvent.OUT:
-					if(_ctrlDown || _altDown || _pageUpHolding || _pageDownHolding)
+					if(_ctrlDown || _altDown || _pageUpHolding || _pageDownHolding || _shift)
 						_activate(_selectInteractor);
 					else
 						_activate(_drawInteractor);
@@ -471,7 +471,7 @@ package sg.edu.smu.ksketch.interactor
 			_changeInteractor(event);
 			if(event.type == KWidgetEvent.RIGHT_DOWN_CENTER ||
 				(event.type == KWidgetEvent.DOWN_CENTER && 
-					(_ctrlDown || _altDown || _pageUpHolding || _pageDownHolding)))
+					(_ctrlDown || _altDown || _pageUpHolding || _pageDownHolding || _shift)))
 				_activate(_translateInteractor);
 			// MouseUp or RightMouseUp event listener
 			var sbRoot:DisplayObject = _canvas.systemManager.getSandboxRoot();
@@ -574,13 +574,13 @@ package sg.edu.smu.ksketch.interactor
 			if(event.type == MouseEvent.MOUSE_DOWN)
 			{
 	//			_pathInteractor.keyframe = _pathDetector.detectPath(_canvas,_appState.time,true);				
-				if(_shift && _pathInteractor.keyframe != null)
+				if(false)//_pathInteractor.keyframe != null)
 				{
 					sbRoot.addEventListener(MouseEvent.MOUSE_UP, _onMouseUp_downOnCanvas, true);
 					_pathInteractor.object = _pathDetector.lastPathView.object;
 					interactor = _pathInteractor;
 				}
-				else if(_ctrlDown || _altDown || _pageUpHolding || _pageDownHolding)
+				else if(_ctrlDown || _altDown || _pageUpHolding || _pageDownHolding || _shift)
 				{
 					sbRoot.addEventListener(MouseEvent.MOUSE_UP, _onMouseUp_downOnCanvas, true);
 					interactor = _selectInteractor;
@@ -737,7 +737,7 @@ package sg.edu.smu.ksketch.interactor
 			// 2. change interactor
 			if(_currentInteractor == _drawInteractor || _currentInteractor == _selectInteractor)
 			{
-				if(!_ctrlDown && !_altDown && !_pageUpHolding && !_pageDownHolding)
+				if(!_ctrlDown && !_altDown && !_pageUpHolding && !_pageDownHolding && !_shift)
 					_activate(_drawInteractor);
 				else
 					_activate(_selectInteractor);
@@ -746,7 +746,7 @@ package sg.edu.smu.ksketch.interactor
 		
 		private function _resetTransitionType():void
 		{
-			if(_ctrlDown)
+			if(_ctrlDown || _shift)
 			{
 				if(KAppState.KEYBOARD_REALTIME.indexOf(Keyboard.CONTROL) >= 0)
 					_appState.transitionType = KAppState.TRANSITION_REALTIME;
@@ -792,7 +792,7 @@ package sg.edu.smu.ksketch.interactor
 			
 			// --- Overide Ctrl/PageUp and Alt/PageDown when Interpolate and Demonstrate  --- //
 			// --- option in the Animation Creation Mode of OptionWindow is not selected. --- //
-			if ((_ctrlDown || _pageUpHolding) && 
+			if ((_ctrlDown || _pageUpHolding || _shift) && 
 				_appState.creationMode == KAppState.CREATION_INTERPOLATE)
 				_appState.transitionType = KAppState.TRANSITION_INTERPOLATED;
 			else if ((_altDown || _pageDownHolding) && 

@@ -53,7 +53,6 @@ package sg.edu.smu.ksketch.operation
 			_model = new KModel();
 			_editor = new KObjectEditor();
 			_keyTimeOperator = new KKeyTimeOperator(_appState, _model);
-			_model.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED,_refreshObjectTime);
 		}
 		
 		// Switches the old object root of the model with the new object root of the model //
@@ -61,7 +60,6 @@ package sg.edu.smu.ksketch.operation
 		{
 			var oldContent:KModelObjectList = _model.switchContent(newContent);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return oldContent;
 		}
 		
@@ -71,7 +69,6 @@ package sg.edu.smu.ksketch.operation
 			KLogger.logAddKImage(imageData,time,xPos,yPos);
 			var op:IModelOperation = _editor.addImage(_model,imageData,xPos,yPos,time,centerX,centerY)
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
 		public function  addKMovieClip(movieClip:MovieClip, time:Number, xPos:Number, yPos:Number, centerX:Number = NaN , centerY:Number = NaN ):IModelOperation
@@ -79,7 +76,6 @@ package sg.edu.smu.ksketch.operation
 			KLogger.logAddKMovieClip(movieClip,time,xPos,yPos);
 			var op:IModelOperation = _editor.addMovieClip(_model,movieClip ,xPos,yPos,time,centerX,centerY);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
 		public function beginKStrokePoint(color:uint,thickness:Number,time:Number):int
@@ -97,7 +93,6 @@ package sg.edu.smu.ksketch.operation
 			KLogger.logEndKStrokePoint();
 			var op:IModelOperation = _editor.endStroke(_model);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
 		public function erase(object:KObject, time:Number):IModelOperation
@@ -122,7 +117,6 @@ package sg.edu.smu.ksketch.operation
 			for (var i:int = 0; i < objects.length(); i++)
 				dispatchEvent(new KObjectEvent(objects.getObjectAt(i),KObjectEvent.EVENT_OBJECT_REMOVED));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			return op;
 		}
 		public function paste(includeMotion:Boolean,time:Number):IModelOperation
@@ -168,6 +162,9 @@ package sg.edu.smu.ksketch.operation
 
 			//Do static grouping first
 			var groupResult:KObject = KGroupUtil.groupStatic(_model, objs, groupTime, ops);
+			
+			//Dispatch events to signify changes in hierachy and transforms 
+			
 			KGroupUtil.removeStaticSingletonGroup(_model.root, _model, ops);
 			
 			if (ops.length > 0)
@@ -186,7 +183,6 @@ package sg.edu.smu.ksketch.operation
 				
 				_appState.ungroupEnabled = KGroupUtil.ungroupEnable(_model.root,_appState);
 				_appState.fireGroupingEnabledChangedEvent();
-				_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 				return ops;
 			}
 			return null;
@@ -201,7 +197,6 @@ package sg.edu.smu.ksketch.operation
 		{
 			KLogger.logBeginTranslation(object.id, time, transitionType);
 			object.transformMgr.beginTranslation(time, transitionType);
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));
 		}		
 		public function addToTranslation(object:KObject, translateX:Number, translateY:Number,
 										 time:Number, cursorPoint:Point = null):void
@@ -222,7 +217,6 @@ package sg.edu.smu.ksketch.operation
 		{
 			KLogger.logBeginRotation(object.id, canvasCenter, time, transitionType);
 			object.transformMgr.beginRotation(canvasCenter, time, transitionType);
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));
 		}		
 		public function addToRotation(object:KObject, angle:Number, 
 									  cursorPoint:Point, time:Number):void
@@ -346,13 +340,11 @@ package sg.edu.smu.ksketch.operation
 		{
 			_model.resetModel();
 			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 		}
 		public function loadFile(xml:XML):void
 		{
 			_model.addToModel(xml);
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 		}
 		public function saveFile():XML
 		{
@@ -396,16 +388,9 @@ package sg.edu.smu.ksketch.operation
 			return _keyTimeOperator.getTimeLineInformation();
 		}
 		
-		// A function to refresh KImage as the data may be loaded asyn
-		private function _refreshObjectTime(event:KObjectEvent):void
-		{
-	//		_appState.dispatchEvent(new KTimeChangedEvent(1000,0));
-		}
 		private function _dispatchObjectChangeAndModelUpdateEvent(object:KObject):void
 		{
 			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 		}
 		private function _dispatchObjectTransformChanged(object:KObject):void
 		{

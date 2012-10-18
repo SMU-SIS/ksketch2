@@ -11,9 +11,10 @@
 package sg.edu.smu.ksketch.components
 {
 	import flash.display.DisplayObjectContainer;
+	import flash.events.IEventDispatcher;
 	import flash.geom.Matrix;
 	
-	public interface IObjectView
+	public interface IObjectView extends IEventDispatcher
 	{
 		/**
 		 * A boolean value that indicates whether the object rendered by this view is selected.

@@ -29,9 +29,10 @@ package sg.edu.smu.ksketch.utilities
 		public function intersect(list:KModelObjectList):void
 		{
 			var it:IIterator = iterator;
+			var obj:KObject;
 			while (it.hasNext())
 			{
-				var obj:KObject = it.next();
+				obj = it.next();
 				if (!list.contains(obj))
 					remove(obj);
 			}

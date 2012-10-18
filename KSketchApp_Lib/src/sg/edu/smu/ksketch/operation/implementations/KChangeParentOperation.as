@@ -27,12 +27,12 @@ package sg.edu.smu.ksketch.operation.implementations
 		
 		public function apply():void
 		{
-			KGroupUtil.addObjectToParent(_time, _object, _newParent);
+			KGroupUtil.addObjectToParent(_time, _object, _newParent, null);
 		}
 		
 		public function undo():void
 		{
-			KGroupUtil.addObjectToParent(_time, _object, _oldParent);
+			KGroupUtil.addObjectToParent(_time, _object, _oldParent, null);
 		}
 	}
 }

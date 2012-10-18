@@ -38,7 +38,7 @@ package sg.edu.smu.ksketch.operation.implementations
 		//Then moves all of new parent's "children" back into it
 		override public function apply():void
 		{
-			KGroupUtil.addObjectToParent(_time, _newParent, null);
+			KGroupUtil.addObjectToParent(_time, _newParent, _grandParent, null);
 			super.apply();
 		}
 		
@@ -47,7 +47,7 @@ package sg.edu.smu.ksketch.operation.implementations
 		override public function undo():void
 		{	
 			super.undo();
-			KGroupUtil.addObjectToParent(_time, _newParent, null);
+			KGroupUtil.addObjectToParent(_time, _newParent, null, null);
 		}
 	}
 }

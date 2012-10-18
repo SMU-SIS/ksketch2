@@ -46,7 +46,7 @@ package sg.edu.smu.ksketch.model
 		{
 			_points.push(new Point(x, y));
 			defaultBoundingBox = this.getBoundingRect(createdTime);
-			this.dispatchEvent(new KObjectEvent(this, KObjectEvent.EVENT_POINTS_CHANGED, true));
+			this.dispatchEvent(new KObjectEvent(this, KObjectEvent.EVENT_POINTS_CHANGED));
 		}
 		
 		public function endAddingPoint():void
@@ -114,6 +114,9 @@ package sg.edu.smu.ksketch.model
 		
 		public override function get defaultCenter():Point
 		{
+			if(points.length == 0)
+				return null;
+			
 			if(!_cachedCenter)
 			{
 				var sumX:Number = 0;

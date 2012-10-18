@@ -56,7 +56,7 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		public function detect(p:Point):KObject
 		{	
-			var view:KObjectView = _detect(_canvas.objectRoot,_x,_y,p.x,p.y) as KObjectView;
+			var view:KObjectView = _detect(_canvas.objectRoot as Sprite,_x,_y,p.x,p.y) as KObjectView;
 			_x = p.x;
 			_y = p.y;
 			return view ? view.object : null;

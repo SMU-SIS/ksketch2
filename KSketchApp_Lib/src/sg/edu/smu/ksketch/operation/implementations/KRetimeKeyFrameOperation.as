@@ -38,7 +38,6 @@ package sg.edu.smu.ksketch.operation.implementations
 		{
 			for (var i:int; i < _keys.length; i++)
 				_keys[i].retimeKeyframe(_newTimes[i]);
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			if (_newTimes.length > 0)
 				_appState.time = _newTimes[_newTimes.length-1]; 
@@ -48,7 +47,6 @@ package sg.edu.smu.ksketch.operation.implementations
 		{
 			for (var i:int; i < _keys.length; i++)
 				_keys[i].retimeKeyframe(_oldTimes[i]);
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE));
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			if (_oldTimes.length > 0)
 				_appState.time = _oldTimes[_oldTimes.length-1]; 

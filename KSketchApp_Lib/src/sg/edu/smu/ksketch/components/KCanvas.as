@@ -11,6 +11,7 @@
 package sg.edu.smu.ksketch.components
 {
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -52,7 +53,7 @@ package sg.edu.smu.ksketch.components
 		protected var _visibleGestureLayer:UIComponent;
 		protected var _drawingRegion:UIComponent;
 		protected var _alphaTracker:UIComponent;
-		protected var _objectRoot:MovieClip;
+		protected var _objectRoot:IObjectView;
 		protected var _viewsTable:Dictionary;
 		
 		protected var _mouseOffsetX:Number;
@@ -85,10 +86,9 @@ package sg.edu.smu.ksketch.components
 			_contentContainer = new UIComponent();
 			addElement(contentContainer);
 			
-			_objectRoot = new MovieClip();
-			_contentContainer.addChild(_objectRoot);
+			_objectRoot = _createObjectView(_facade.root);
+			_contentContainer.addChild(_objectRoot as Sprite);
 			
-			_initModelEventsHandler();
 			_initKAppStateEventsHandler();
 			
 			_widget = widget;
@@ -110,6 +110,7 @@ package sg.edu.smu.ksketch.components
 			_mouseOffsetX = 0;
 			_mouseOffsetY = 0;
 			_contentScale = 1;
+			
 		}
 		
 		//Interactor Related Functions
@@ -143,9 +144,14 @@ package sg.edu.smu.ksketch.components
 			_startStateMachine();
 			_appState.time = 0;
 			_appState.maxTime = KAppState.DEFAULT_MAX_TIME;
+			_facade.root.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED, _objectHandleObjectParented);
+			_facade.root.addEventListener(KObjectEvent.EVENT_OBJECT_REMOVED, _objectHandleObjectDiscarded);
 			_facade.newFile();
-			
+
+			_contentContainer.removeChild(_objectRoot as Sprite);
 			_viewsTable = new Dictionary();
+			_objectRoot = _createObjectView(_facade.root);
+			_contentContainer.addChild(_objectRoot as Sprite);
 			_initStatesMachine(_widget);
 			_startStateMachine();
 		}
@@ -154,6 +160,7 @@ package sg.edu.smu.ksketch.components
 		 * Resets the canvas to its original state and
 		 * adds in the contents from the given group.
 		 * Expects an override for this function
+		 * Make sure the root is at newContents.getObjectAt(0);
 		 */
 		public function switchContents(newContents:KModelObjectList):KModelObjectList
 		{
@@ -165,16 +172,14 @@ package sg.edu.smu.ksketch.components
 			
 			//Clearing the current view/scene
 			_viewsTable = new Dictionary();
-			_contentContainer.removeChild(_objectRoot);
-			_objectRoot = new MovieClip();
-			_contentContainer.addChild(_objectRoot);
-			_contentContainer.swapChildren(_objectRoot, (_widget as KWidget).parent);
+			
+			_contentContainer.removeChild(_objectRoot as Sprite);
+			_objectRoot = _createObjectView(newContents.getObjectAt(0));
+			_contentContainer.addChild(_objectRoot as Sprite);
+			_contentContainer.swapChildren(_objectRoot as Sprite, (_widget as KWidget).parent);
 			
 			//Changing the model
 			return _facade.switchContent(newContents);
-			
-			//Please remember that a scene and an object list
-			//ARE ALWAYS PAIRED. do not change one withu
 		}
 		
 		public function loadFile(xml:XML):void
@@ -194,7 +199,7 @@ package sg.edu.smu.ksketch.components
 			(_widget as KWidget).scaleY = 1/yScale;
 		}
 		
-		public function get objectRoot():MovieClip
+		public function get objectRoot():IObjectView
 		{
 			return _objectRoot;
 		}
@@ -260,6 +265,11 @@ package sg.edu.smu.ksketch.components
 			_clockState.entry();
 		}
 		
+		//================================
+		//Application states
+		//Another set of tightly coupled code!
+		//Dont touch anything in this region yet until richard gives us the go
+		//===============================
 		protected function _startStateMachine():void
 		{
 			_stoppedState.init();
@@ -284,15 +294,6 @@ package sg.edu.smu.ksketch.components
 			this.addEventListener(EVENT_INTERACTION_STOP, function(event:Event):void{clockState = _stoppedState});
 		}
 		
-		//Listener Management
-		protected function _initModelEventsHandler():void
-		{
-			_facade.addEventListener(KObjectEvent.EVENT_VISIBILITY_CHANGED, _objectAlphaEventHandler);
-			_facade.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED, _objectAddedEventHandler);
-			_facade.addEventListener(KObjectEvent.EVENT_OBJECT_REMOVED, _objectRemovedEventHandler);
-			_facade.addEventListener(KObjectEvent.EVENT_OBJECT_PARENTED, _groupEventHandler);
-		}
-		
 		protected function _initKAppStateEventsHandler():void
 		{
 			_appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGING, _selectionChangedEventHandler);
@@ -300,12 +301,15 @@ package sg.edu.smu.ksketch.components
 			_appState.addEventListener(KDebugHighlightChanged.EVENT_DEBUG_CHANGED, _debugSelectionChangedEventHandler);
 			_appState.addEventListener(KTimeChangedEvent.TIME_CHANGED, _updateViews);
 		}
+		//====================================================
+
 		
-		//View Functions
-		protected function _objectAddedEventHandler(event:KObjectEvent):void
+		/**
+		 * View creation function. Adds an object to the viewtable.
+		 * It will stay in the view table forever.
+		 */
+		protected function _createObjectView(object:KObject):IObjectView
 		{
-			var object:KObject = event.object;
-			
 			if(_viewsTable[object]!=null)
 				throw new Error("object view already exists!");
 			
@@ -313,32 +317,39 @@ package sg.edu.smu.ksketch.components
 			if(object is KStroke)
 				view = new KStrokeView(_appState, object as KStroke);
 			else if(object is KGroup)
+			{
+				trace("group",object.id,"is being added to the view");
 				view = new KGroupView(_appState, object as KGroup);
+				object.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED, _objectHandleObjectParented);
+				object.addEventListener(KObjectEvent.EVENT_OBJECT_REMOVED, _objectHandleObjectDiscarded);
+			}
 			else if(object is KImage)
 				view = new KImageView(_appState, object as KImage);
 			else
 				throw new Error("no view supported for this kobject type!");
-			
-			_updateParentView(view, object.getParent(_appState.time));
 			_viewsTable[object] = view;
+			return view;
 		}
 		
-		protected function _objectRemovedEventHandler(event:KObjectEvent):void
+		protected function _objectHandleObjectParented(event:KObjectEvent):void
 		{
-			var view:IObjectView = _viewsTable[event.object];
-			view.removeListeners();
-			view.removeFromParent();
-			delete _viewsTable[event.object];
+			var parent:KGroup = event.parent;
+			var parentView:IObjectView = _viewsTable[parent];
+			
+			var newChild:KObject = event.object;
+			var newChildView:IObjectView = _viewsTable[newChild];
+			
+			if(!newChildView)
+				newChildView = _createObjectView(newChild);
+			
+			trace("group",parent.id,parentView,"is taking in", newChild.id, newChildView);
+			newChildView.updateParent(parentView as KGroupView);
 		}
 		
-		protected function _groupEventHandler(event:KObjectEvent):void
+		protected function _objectHandleObjectDiscarded(event:KObjectEvent):void
 		{
-			trace("_group event handler", event.target);
-/*			var g:KGroup = event.group;
-			var obj:KObject;
-			var i:IIterator = g.iterator;
-			while(i.hasNext())
-				_updateParentView(_viewsTable[i.next()] as IObjectView, g);*/
+			var objectView:IObjectView = _viewsTable[event.object];
+			objectView.removeFromParent();
 		}
 		
 		protected function _selectionChangedEventHandler(event:KSelectionChangedEvent):void
@@ -415,37 +426,13 @@ package sg.edu.smu.ksketch.components
 			if(view == null)
 				throw new Error("object has no view");
 			
-			if(object.id == 2)
-			{
-//				trace("parent at toKSKTime", toKSKTime, object.getParent(toKSKTime).id);
-	//			if((view as KObjectView).parent is KGroupView)
-		//			trace(((view as KObjectView).parent as KGroupView).object.id);
-			}
-			var changedParent:KGroup = object.parentChanged(fromKSKTime, toKSKTime);
-			
-			if(changedParent != null)
-			{
-				_updateParentView(view, changedParent);
-			}
-			
 			var changedAlpha:Number = object.getVisibility(toKSKTime);
 			view.updateVisibility(changedAlpha);
 
 			var changedTransform:Matrix = object.getFullMatrix(toKSKTime);
 			view.updateTransform(changedTransform);
 			
-		//	if (changedAlpha == 0 && object.createdTime < toKSKTime && !_isErased(object,toKSKTime))
-		//		_drawTracker((view as KObjectView).getRect(this));
 		}
-		
-		protected function _updateParentView(view:IObjectView, parent:KGroup):void
-		{
-			var newParentView:Sprite = _viewsTable[parent];
-			if(newParentView == null)
-				newParentView = _objectRoot;
-			view.updateParent(newParentView);
-		}
-		
 		
 		//Alpha Functions
 		protected function _objectAlphaEventHandler(event:KObjectEvent):void

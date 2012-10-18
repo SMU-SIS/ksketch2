@@ -38,8 +38,10 @@ package sg.edu.smu.ksketch.operation
 		 * At the given time, removes the object from its old parent and switches it to be under the new parent.
 		 * newParent can be null, but it must be specified.
 		 */
-		public static function addObjectToParent(time:Number, object:KObject, newParent:KGroup):IModelOperation
+		public static function addObjectToParent(time:Number, object:KObject, newParent:KGroup, op:KCompositeOperation):void
 		{
+			time = STATIC_GROUP_TIME;
+			
 			var key:IParentKeyFrame = object.getParentKeyAtOrBefore(time) as IParentKeyFrame;
 			var oldParent:KGroup;
 			if(key != null)
@@ -51,7 +53,8 @@ package sg.edu.smu.ksketch.operation
 			if(newParent)
 				object.addParentKey(time,newParent);
 			
-			return new KChangeParentOperation(object, newParent, oldParent, time);
+			if(op)
+				op.addOperation(new KChangeParentOperation(object, newParent, oldParent, time));
 		}
 		
 		/**
@@ -65,7 +68,7 @@ package sg.edu.smu.ksketch.operation
 			var it:IIterator = objs.iterator;
 			var currentObject:KObject;
 			var collapseOperation:IModelOperation;
-			var stopMergingAtParent:KGroup = _lowestCommonParent(objs, STATIC_GROUP_TIME, model.root);
+			var stopMergingAtParent:KGroup = _lowestCommonParent(objs, STATIC_GROUP_TIME);
 			
 			if(stopMergingAtParent.id != model.root.id)
 				stopMergingAtParent = stopMergingAtParent.getParent(STATIC_GROUP_TIME);
@@ -92,7 +95,10 @@ package sg.edu.smu.ksketch.operation
 				
 				//Group that dude to the root if needed
 				if(the_one_object.getParent(STATIC_GROUP_TIME).id != model.root.id)
-					staticGroupOperation.addOperation(addObjectToParent(STATIC_GROUP_TIME, the_one_object, model.root));
+				{
+					addObjectToParent(STATIC_GROUP_TIME, the_one_object, model.root, staticGroupOperation);
+					
+				}
 				
 				return the_one_object;
 			}
@@ -105,20 +111,24 @@ package sg.edu.smu.ksketch.operation
 		 */
 		private static function _group(objs:KModelObjectList, grandParent:KGroup, groupTime:Number, model:KModel,
 									   operation:KCompositeOperation):KGroup
-		{			
+		{	
+			if(objs.length() <= 1)
+				throw new Error("one does not simply group one object, it'll feel lonely in a group you know.");
+			
 			//Find the grandparent: parent which the new group will be grouped under
-			var grandParent:KGroup = _lowestCommonParent(objs,groupTime,model.root);
+			var grandParent:KGroup = _lowestCommonParent(objs,groupTime);
 			
 			var groupOp:KCompositeOperation = new KCompositeOperation();
 
 			//create the new parent and put it under the grandparent
-			var newParent:KGroup = new KGroup(model.nextID, groupTime, objs, null);
-			groupOp.addOperation(addObjectToParent(groupTime,newParent,grandParent));
+			var newParent:KGroup = new KGroup(model.nextID, groupTime, new KModelObjectList(), null);
+			addObjectToParent(groupTime,newParent,grandParent, groupOp);
 			
 			//Add the objects in the given list to the new parent 
 			var it:IIterator = objs.iterator;
+
 			while (it.hasNext())
-				groupOp.addOperation(addObjectToParent(groupTime,it.next(),newParent));
+				addObjectToParent(groupTime,it.next(),newParent, groupOp);
 			
 			newParent.updateCenter();
 			newParent.transformMgr.addInitialKeys(groupTime);
@@ -175,13 +185,13 @@ package sg.edu.smu.ksketch.operation
 				var oldParents:Vector.<KGroup> = new Vector.<KGroup>();
 				oldParents.push(currentGroup);
 				//Move child to parent
-				removeStaticSingletonOp.addOperation(KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, child, grandParent));
+				KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, child, grandParent,removeStaticSingletonOp);
 			}
 			
 			//Remove the current group from the model
 			var oldParent:KGroup = currentGroup.getParent(KGroupUtil.STATIC_GROUP_TIME);
 			if(oldParent)
-				removeStaticSingletonOp.addOperation(KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, currentGroup, null));
+				KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, currentGroup, null,removeStaticSingletonOp);
 		}
 		
 		/**
@@ -220,30 +230,30 @@ package sg.edu.smu.ksketch.operation
 			return strokes;
 		}
 		
-		private static function _lowestCommonParent(objects:KModelObjectList, 
-													time:Number, root:KGroup):KGroup
-		{
-			if(objects.length() == 1)
-				return root;
+		private static function _lowestCommonParent(objects:KModelObjectList,time:Number):KGroup
+		{	
+			var it:IIterator = objects.iterator;
 			
-			var parents:KModelObjectList = _getParents(objects.getObjectAt(0),time,root);
-			for (var i:int = 1; i < objects.length(); i++)
-				parents.intersect(_getParents(objects.getObjectAt(i),time,root));
-			return parents.getObjectAt(0) as KGroup;
+			var hierarchy:KModelObjectList = _getHierarchy(it.next(), time, new KModelObjectList());
+			while(it.hasNext())
+			{
+				var next:KObject = it.next();
+				var toCompare:KModelObjectList = _getHierarchy(next, time, new KModelObjectList());
+				hierarchy.intersect(toCompare);
+			}
+			return hierarchy.getObjectAt(0) as KGroup;
 		}
 		
-		private static function _getParents(object:KObject, time:Number,
-											root:KGroup):KModelObjectList
+		private static function _getHierarchy(object:KObject, time:Number, hierarchyList:KModelObjectList):KModelObjectList
 		{
-			var parents:KModelObjectList = new KModelObjectList();
-			var gp:KGroup = object.getParent(time);
-			while (gp != root)
+			var parent:KGroup = object.getParent(time);
+
+			if(parent)
 			{
-				parents.add(gp);
-				gp = gp.getParent(time);
+				hierarchyList.add(parent);
+				_getHierarchy(parent,time,hierarchyList);
 			}
-			parents.add(root);
-			return parents;
+			return hierarchyList;
 		}
 	}
 }

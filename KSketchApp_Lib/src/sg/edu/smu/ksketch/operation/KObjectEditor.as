@@ -49,7 +49,8 @@ package sg.edu.smu.ksketch.operation
 			if(!isNaN(centerOffsetX) && !isNaN(centerOffsetY))
 				kMovieClip.priorityCenter = new Point(xPos+centerOffsetX,yPos+centerOffsetY);
 			model.add(kMovieClip);
-			return _addObject(kMovieClip,model);
+			kMovieClip.transformMgr.addInitialKeys(_stroke.createdTime);
+			return new KAddOperation(model,kMovieClip);
 		}
 		
 		public function addImage(model:KModel,imageData:BitmapData,xPos:Number,yPos:Number,time:Number, centerOffsetX:Number = NaN, centerOffsetY:Number = NaN):IModelOperation
@@ -60,7 +61,8 @@ package sg.edu.smu.ksketch.operation
 			if(!isNaN(centerOffsetX) && !isNaN(centerOffsetY))
 				image.priorityCenter = new Point(xPos+centerOffsetX,yPos+centerOffsetY);
 			model.add(image);
-			return _addObject(image,model);
+			image.transformMgr.addInitialKeys(_stroke.createdTime);
+			return new KAddOperation(model,image);
 		}
 		
 		public function beginStroke(model:KModel,color:uint,thickness:uint,time:Number):int
@@ -84,14 +86,8 @@ package sg.edu.smu.ksketch.operation
 			if (_stroke == null)
 				throw new Error("Stroke not initialised");
 			_stroke.endAddingPoint();
-			return _addObject(_stroke,model);
-		}
-		
-		private function _addObject(object:KObject,model:KModel):IModelOperation
-		{
-			object.addParentKey(KGroupUtil.STATIC_GROUP_TIME, model.root);
-			object.transformMgr.addInitialKeys(object.createdTime);
-			return new KAddOperation(model,object);
+			_stroke.transformMgr.addInitialKeys(_stroke.createdTime);
+			return new KAddOperation(model,_stroke);
 		}
 		
 		public function clearClipBoard():void

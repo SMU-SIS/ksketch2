@@ -39,6 +39,7 @@ package sg.edu.smu.ksketch.interactor
 		public override function bestGuess(rawData:Dictionary, time:Number):KModelObjectList
 		{
 			prepareOn(rawData, time);
+			
 			if(_rawSelection.length() == 0)
 				return null;
 			// skip if same as _g or _rawSelection
@@ -110,6 +111,7 @@ package sg.edu.smu.ksketch.interactor
 		private function prepareOn(rawData:Dictionary, time:Number):void
 		{
 			_rawSelection = rawSelection(rawData, time);
+			
 			if(_rawSelection.length() == 0)
 				return;
 			

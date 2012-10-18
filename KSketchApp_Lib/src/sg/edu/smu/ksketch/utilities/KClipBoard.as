@@ -21,6 +21,7 @@ package sg.edu.smu.ksketch.utilities
 	import sg.edu.smu.ksketch.model.KModel;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.KStroke;
+	import sg.edu.smu.ksketch.operation.KGroupUtil;
 	import sg.edu.smu.ksketch.operation.KMergerUtil;
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
@@ -127,8 +128,7 @@ package sg.edu.smu.ksketch.utilities
 			while (it.hasNext())
 			{
 				var obj:KObject = _copyObject(model,it.next(),offset);
-				obj.addParentKey(time,group);
-				group.add(obj);
+				KGroupUtil.addObjectToParent(time, obj, group, null);
 			}
 			group.updateCenter();
 			return group;

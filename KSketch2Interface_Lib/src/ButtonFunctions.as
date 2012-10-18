@@ -253,7 +253,7 @@ private function _pauseToPlay(event:Event):void
 
 private function onCompleteforFLV():void
 {							
-	timeInSeconds=(this.appState.maxPlayTime/62.5)/16;
+	/*timeInSeconds=(this.appState.maxPlayTime/62.5)/16;
 	numberOfFrames=this.appState.maxPlayTime/62.5;										 	
 	myWriter= SimpleFlvWriter.getInstance();	
 	fps;
@@ -306,7 +306,7 @@ private function onCompleteforFLV():void
 			FLVresolution+=0.1;
 		}				
 	}		
-	flagForFLV=true;	
+	flagForFLV=true;	*/
 }
 
 private function drawImageFlv():void

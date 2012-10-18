@@ -107,27 +107,6 @@ package sg.edu.smu.ksketch.interactor
 			_loopView.add(point);
 		}
 		
-		public override function end(point:Point):void
-		{
-			update(point);
-			
-			_appState.selection = _appState.selection;
-			
-			_loopEnd = null;
-			_loopStart = null;
-			_secondToLast = null;
-			
-			_lastChecked = -1;
-			_all = new ByteArray();
-			_last = new ByteArray();
-			
-			_loopView.clear();
-			
-			_portions = null;
-			
-			endLog();
-		}
-		
 		public override function update(point:Point):void
 		{
 			updateLog(point);
@@ -173,6 +152,27 @@ package sg.edu.smu.ksketch.interactor
 				_appState.interactingSelection = new KSelection(selection, _appState.time);
 				_appState._fireFacadeUndoRedoModelChangedEvent();
 			}
+		}
+		
+		public override function end(point:Point):void
+		{
+			update(point);
+			
+			_appState.selection = _appState.selection;
+			
+			_loopEnd = null;
+			_loopStart = null;
+			_secondToLast = null;
+			
+			_lastChecked = -1;
+			_all = new ByteArray();
+			_last = new ByteArray();
+			
+			_loopView.clear();
+			
+			_portions = null;
+			
+			endLog();
 		}
 		
 		private function checkAllObjects():void

@@ -16,7 +16,6 @@ package sg.edu.smu.ksketch.event
 	{	
 		public static const EVENT_MODEL_UPDATING:String = "updating";
 		public static const EVENT_MODEL_UPDATED:String = "updated";
-		public static const EVENT_MODEL_UPDATE_COMPLETE:String = "completed";
 		
 		public function KModelEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{

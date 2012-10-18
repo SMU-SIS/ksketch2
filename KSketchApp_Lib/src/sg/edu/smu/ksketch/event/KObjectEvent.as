@@ -12,6 +12,7 @@ package sg.edu.smu.ksketch.event
 {
 	import flash.events.Event;
 	
+	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KObject;
 
 	public class KObjectEvent extends Event
@@ -23,21 +24,26 @@ package sg.edu.smu.ksketch.event
 		public static const EVENT_TRANSFORM_CHANGED:String = "transform changed";
 		public static const EVENT_VISIBILITY_CHANGED:String = "visibility changed";
 		public static const EVENT_OBJECT_CENTER_CHANGED:String = "center changed";
-		public static const EVENT_OBJECT_PARENTED:String = "objects grouped";
-		public static const EVENT_OBJECT_DISCARDED:String = "objects discarded"
+		public static const EVENT_OBJECT_DISCARDED:String = "objects discarded";
 		
 		private var _object:KObject;
+		private var _parent:KGroup;
 		
-		public function KObjectEvent(object:KObject, type:String, 
-									 bubbles:Boolean=false, cancelable:Boolean=false)
+		public function KObjectEvent(object:KObject, type:String, parent:KGroup = null)
 		{
 			super(type, bubbles, cancelable);
 			_object = object;
+			_parent = parent;
 		}
 
 		public function get object():KObject
 		{
 			return _object;
+		}
+		
+		public function get parent():KGroup
+		{
+			return _parent;
 		}
 
 	}

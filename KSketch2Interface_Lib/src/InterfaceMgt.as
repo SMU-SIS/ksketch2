@@ -8,6 +8,7 @@
 *http://mozilla.org/MPL/2.0/.
 ****************************************************/
 
+import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.geom.Rectangle;
@@ -84,7 +85,7 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	expandedWidget1.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.TRANSLATE);
 	expandedWidget2.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.ROTATE);
 	expandedWidget3.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.SCALE);
-	_facade.addEventListener(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE, updateTimeWidgets);
+	//_facade.addEventListener(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE, updateTimeWidgets);
 	appState.addEventListener(KAppState.EVENT_UNDO_REDO_ENABLED_CHANGED, updateTimeWidgets);
 	appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, updateTimeWidgets);
 	
@@ -132,8 +133,8 @@ public function update_interface():void
 		var idealContentWidth:Number = appState.zoomedOutProportion*maxCanvasWidth; 
 		var idealContentHeight:Number = appState.zoomedOutProportion*maxCanvasHeight;
 		
-		var widthConcerned:Number = Math.max(appCanvas.objectRoot.width, drawingArea_stage.width);
-		var heightConcerned:Number = Math.max(appCanvas.objectRoot.height, drawingArea_stage.height);
+		var widthConcerned:Number = Math.max((appCanvas.objectRoot as Sprite).width, drawingArea_stage.width);
+		var heightConcerned:Number = Math.max((appCanvas.objectRoot as Sprite).height, drawingArea_stage.height);
 		
 		toScaleX = (idealContentWidth/widthConcerned)-xScale;
 		toScaleY = (idealContentHeight/heightConcerned)-yScale;

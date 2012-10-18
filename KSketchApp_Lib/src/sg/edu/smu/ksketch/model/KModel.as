@@ -21,6 +21,7 @@ package sg.edu.smu.ksketch.model
 	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.io.KFileReader;
 	import sg.edu.smu.ksketch.io.KFileWriter;
+	import sg.edu.smu.ksketch.operation.KGroupUtil;
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
@@ -56,16 +57,15 @@ package sg.edu.smu.ksketch.model
 		}
 
 		/**
-		 * Add the object (KObject) to the KGroup of the model at position specify by index. 
+		 * Add the object (KObject) to the KGroup of the model at position specified by index. 
 		 * Event of type KObjectEvent.EVENT_OBJECT_ADDED is dispatched after adding.
 		 * @param object The KObject to be added to the KGroup.
 		 * @param index The Index on the KGroup to be inserted.
 		 */		
 		public function add(object:KObject, index:int = -1):void
 		{
-			_root.add(object, index);
+			KGroupUtil.addObjectToParent(object.createdTime, object, _root, null);
 			_highestID = Math.max(_highestID,object.id);
-			this.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_OBJECT_ADDED));
 		}
 		
 		/**
@@ -75,8 +75,7 @@ package sg.edu.smu.ksketch.model
 		 */		
 		public function remove(object:KObject):void
 		{
-			_root.remove(object);
-			this.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_OBJECT_REMOVED));
+			KGroupUtil.addObjectToParent(object.createdTime, object, null, null);
 		}
 		
 		/**

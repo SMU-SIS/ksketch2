@@ -111,6 +111,8 @@ package sg.edu.smu.ksketch.components
 			_mouseOffsetY = 0;
 			_contentScale = 1;
 			
+			//addEventListener(KModelEvent.EVENT_MODEL_UPDATED, _debugDisplayTree);
+			trace("===============End Init==================");
 		}
 		
 		//Interactor Related Functions
@@ -318,7 +320,6 @@ package sg.edu.smu.ksketch.components
 				view = new KStrokeView(_appState, object as KStroke);
 			else if(object is KGroup)
 			{
-				trace("group",object.id,"is being added to the view");
 				view = new KGroupView(_appState, object as KGroup);
 				object.addEventListener(KObjectEvent.EVENT_OBJECT_ADDED, _objectHandleObjectParented);
 				object.addEventListener(KObjectEvent.EVENT_OBJECT_REMOVED, _objectHandleObjectDiscarded);
@@ -328,6 +329,9 @@ package sg.edu.smu.ksketch.components
 			else
 				throw new Error("no view supported for this kobject type!");
 			_viewsTable[object] = view;
+			
+			if(object.id != 0)
+				trace(view,object.id,"is being added to the view");
 			return view;
 		}
 		
@@ -344,13 +348,46 @@ package sg.edu.smu.ksketch.components
 			
 			trace("group",parent.id,parentView,"is taking in", newChild.id, newChildView);
 			newChildView.updateParent(parentView as KGroupView);
+			_debugDisplayTree(null, "", "Object Parented")
+			trace("=========================================");
 		}
 		
 		protected function _objectHandleObjectDiscarded(event:KObjectEvent):void
 		{
 			var objectView:IObjectView = _viewsTable[event.object];
 			objectView.removeFromParent();
+			
+			trace("group",event.parent.id,"is discarding", event.object.id, objectView);
+			_debugDisplayTree(null, "", "Object Discarded")
+			trace("=========================================");
 		}
+		
+		private function _debugDisplayTree(object:KObjectView = null, debugSpacing:String = "", callingFrom:String = ""):void
+		{
+			if(!object)
+				object = _objectRoot as KObjectView;
+			
+			if(!object)	
+				return;
+			
+			var numObjects:int = 0;
+			
+			for(var a:int = 0; a < object.numChildren; a++)
+			{
+				if(object.getChildAt(a) is KObjectView)
+					numObjects++;
+			}
+			
+			trace(debugSpacing+"Currently at view for object", object.object.id, "it has", object.numChildren, "children");
+			for(var i:int = 0; i < object.numChildren; i++)
+			{
+				var child:DisplayObject = object.getChildAt(i);
+				if(child is KObjectView)
+					_debugDisplayTree(child as KObjectView, debugSpacing+"	");
+			}
+		}
+		
+		
 		
 		protected function _selectionChangedEventHandler(event:KSelectionChangedEvent):void
 		{

@@ -59,7 +59,7 @@ package sg.edu.smu.ksketch.operation
 		public function switchContent(newContent:KModelObjectList):KModelObjectList
 		{
 			var oldContent:KModelObjectList = _model.switchContent(newContent);
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			return oldContent;
 		}
 		
@@ -68,14 +68,14 @@ package sg.edu.smu.ksketch.operation
 		{
 			KLogger.logAddKImage(imageData,time,xPos,yPos);
 			var op:IModelOperation = _editor.addImage(_model,imageData,xPos,yPos,time,centerX,centerY)
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			return op;
 		}
 		public function  addKMovieClip(movieClip:MovieClip, time:Number, xPos:Number, yPos:Number, centerX:Number = NaN , centerY:Number = NaN ):IModelOperation
 		{
 			KLogger.logAddKMovieClip(movieClip,time,xPos,yPos);
 			var op:IModelOperation = _editor.addMovieClip(_model,movieClip ,xPos,yPos,time,centerX,centerY);
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			return op;
 		}
 		public function beginKStrokePoint(color:uint,thickness:Number,time:Number):int
@@ -92,7 +92,7 @@ package sg.edu.smu.ksketch.operation
 		{
 			KLogger.logEndKStrokePoint();
 			var op:IModelOperation = _editor.endStroke(_model);
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			return op;
 		}
 		public function erase(object:KObject, time:Number):IModelOperation
@@ -114,9 +114,7 @@ package sg.edu.smu.ksketch.operation
 			_appState.selection = null;
 			_appState.pasteEnabled = true;
 			_appState.fireEditEnabledChangedEvent();
-			for (var i:int = 0; i < objects.length(); i++)
-				dispatchEvent(new KObjectEvent(objects.getObjectAt(i),KObjectEvent.EVENT_OBJECT_REMOVED));
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 			return op;
 		}
 		public function paste(includeMotion:Boolean,time:Number):IModelOperation
@@ -157,7 +155,8 @@ package sg.edu.smu.ksketch.operation
 		
 		public function group(objs:KModelObjectList, mode:String, transitionType:int, groupTime:Number=-2, 
 							  isRealTimeTranslation:Boolean = false):IModelOperation
-		{				
+		{	
+			trace("***************************Grouping Requested for objects", objs,"***************************");
 			var ops:KCompositeOperation = new KCompositeOperation();
 
 			//Do static grouping first
@@ -183,6 +182,7 @@ package sg.edu.smu.ksketch.operation
 				
 				_appState.ungroupEnabled = KGroupUtil.ungroupEnable(_model.root,_appState);
 				_appState.fireGroupingEnabledChangedEvent();
+				dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 				return ops;
 			}
 			return null;
@@ -237,7 +237,6 @@ package sg.edu.smu.ksketch.operation
 		{
 			KLogger.logBeginScale(object.id, canvasCenter, time, transitionType);
 			object.transformMgr.beginScale(canvasCenter, time, transitionType);
-			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATING));
 		}		
 		public function addToScale(object:KObject, scale:Number, 
 								   cursorPoint:Point, time:Number):void
@@ -282,6 +281,8 @@ package sg.edu.smu.ksketch.operation
 				while(it.hasNext())
 					insertKeyOp.addOperation(it.next().insertBlankKey(
 						_appState.targetTrackBox,_appState.time));
+				
+				dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 				return insertKeyOp;
 			}			
 			return null;
@@ -391,6 +392,7 @@ package sg.edu.smu.ksketch.operation
 		private function _dispatchObjectChangeAndModelUpdateEvent(object:KObject):void
 		{
 			object.dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_TRANSFORM_CHANGED));
+			dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 		}
 		private function _dispatchObjectTransformChanged(object:KObject):void
 		{

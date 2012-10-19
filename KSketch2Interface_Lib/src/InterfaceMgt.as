@@ -85,9 +85,9 @@ public function init_canvas(appWidth:Number, appHeight:Number, windowBoundsOffse
 	expandedWidget1.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.TRANSLATE);
 	expandedWidget2.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.ROTATE);
 	expandedWidget3.initTimeWidget(_facade, appState, slider_key_index, TimeWidget.SCALE);
-	//_facade.addEventListener(KModelEvent.EVENT_MODEL_UPDATE_COMPLETE, updateTimeWidgets);
-	appState.addEventListener(KAppState.EVENT_UNDO_REDO_ENABLED_CHANGED, updateTimeWidgets);
+	_facade.addEventListener(KModelEvent.EVENT_MODEL_UPDATED, updateTimeWidgets);
 	appState.addEventListener(KSelectionChangedEvent.EVENT_SELECTION_CHANGED, updateTimeWidgets);
+	//appState.addEventListener(KAppState.EVENT_UNDO_REDO_ENABLED_CHANGED, updateTimeWidgets);
 	
 	//Play button state listener
 	appState.addEventListener(KAppState.EVENT_ANIMATION_START, _playToPause);

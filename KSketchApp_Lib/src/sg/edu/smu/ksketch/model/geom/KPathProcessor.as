@@ -430,6 +430,7 @@ package sg.edu.smu.ksketch.model.geom
 		
 		public static function cleanUp3DPath(toResample:K3DPath):void
 		{
+			return;
 			var points:Vector.<K3DVector> = toResample.points;
 			
 			if(points.length == 0)

@@ -47,6 +47,7 @@ package sg.edu.smu.ksketch.operation
 			//Merge all available transformation data into the child object
 			while(parent.id != stopAtGroup.id)
 			{
+				trace("Merging",parent.id,"into",object.id);
 				maxTime = _mergeMotionOfType(parent, object, time, currentOperation, KTransformMgr.ROTATION_REF);
 				
 				currentMaxTime = _mergeMotionOfType(parent, object, time, currentOperation, KTransformMgr.SCALE_REF);
@@ -81,8 +82,12 @@ package sg.edu.smu.ksketch.operation
 			
 			//The idea is to use a translation path and merge any differences in.
 			//Not optimised, we need a faster algo. Its O(n) now, and merging everything, even dx = 0 and dy = 0
-			while(currentTime <= maxTime)
+			var correctMaxTime:Number = maxTime;
+			maxTime += KAppState.ANIMATION_INTERVAL;
+			while(currentTime < maxTime)
 			{
+				if(correctMaxTime < currentTime)
+					currentTime = correctMaxTime;
 				correctMatrix = objectClone.getFullMatrix(currentTime);
 				correctMatrix.concat(directParent.getFullPathMatrix(currentTime));
 				correctCenter = correctMatrix.transformPoint(targetCenter);
@@ -92,9 +97,9 @@ package sg.edu.smu.ksketch.operation
 				correctionPath.push(compensation.x, compensation.y, currentTime);
 				currentTime += KAppState.ANIMATION_INTERVAL;
 			}
-			
+
 			//Merge the derived path into the object
-			object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, maxTime, currentOperation);
+			object.transformMgr.mergeTranslatePathOverTime(correctionPath, KGroupUtil.STATIC_GROUP_TIME, correctMaxTime, currentOperation);
 			
 			if(currentOperation.length > 0)
 				return currentOperation;

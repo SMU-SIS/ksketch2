@@ -62,17 +62,28 @@ package sg.edu.smu.ksketch.operation
 		 */			
 		public static function groupStatic(model:KModel, objs:KModelObjectList, time:Number, staticGroupOperation:KCompositeOperation):KObject
 		{
+			if(objs.length() == 0)
+				throw new Error("KGroupUtil.groupStatic: No objects in the objectlist given. Wth dood");
+			
 			//Assume that the object list given consists of the highest order
 			//of object combinations possible ie. objects with common parents will
 			//be given as one KGroup
 			var it:IIterator = objs.iterator;
 			var currentObject:KObject;
 			var collapseOperation:IModelOperation;
-			var stopMergingAtParent:KGroup = _lowestCommonParent(objs, STATIC_GROUP_TIME);
 			
-			if(stopMergingAtParent.id != model.root.id)
-				stopMergingAtParent = stopMergingAtParent.getParent(STATIC_GROUP_TIME);
+			//Need a parent within the objects' common hierarchy to stop the merge
+			//Merging does not include this parent
+			var stopMergingAtParent:KGroup;
+			
+			//Find the lowest common parent if there are more than 1 object
+			if(1 < objs.length())
+				stopMergingAtParent= _lowestCommonParent(objs, STATIC_GROUP_TIME);
+			else
+				stopMergingAtParent = model.root; //one object, break it out! merge everything!!
 
+			trace("Common Parent derived for grouping is group", stopMergingAtParent.id);
+			
 			//Iterate through the list of objects
 			while(it.hasNext())
 			{
@@ -114,9 +125,6 @@ package sg.edu.smu.ksketch.operation
 		{	
 			if(objs.length() <= 1)
 				throw new Error("one does not simply group one object, it'll feel lonely in a group you know.");
-			
-			//Find the grandparent: parent which the new group will be grouped under
-			var grandParent:KGroup = _lowestCommonParent(objs,groupTime);
 			
 			var groupOp:KCompositeOperation = new KCompositeOperation();
 
@@ -167,11 +175,14 @@ package sg.edu.smu.ksketch.operation
 			//Root, dont do anything
 			if(currentGroup.id == 0)
 				return;
-			
+	
 			var numChildren:int = currentGroup.children.length();
 			//Not singleton group, dont do anything
 			if(numChildren > 1)
 				return;
+			
+			
+			trace("********************Trigger singleton purging at group",currentGroup.id,"**************************");
 			
 			//Singleton group, 1 child, merge motion into child
 			if(numChildren == 1)
@@ -179,7 +190,7 @@ package sg.edu.smu.ksketch.operation
 				var child:KObject = currentGroup.children.getObjectAt(0);
 				//Merge motion into child
 				var grandParent:KGroup = currentGroup.getParent(KGroupUtil.STATIC_GROUP_TIME);
-				
+				trace("Singleton merging", child.id,"with", currentGroup.id, "and parenting it under", grandParent.id);
 				KMergerUtil.MergeHierarchyMotionsIntoObject(grandParent, child, Number.MAX_VALUE, removeStaticSingletonOp);
 
 				var oldParents:Vector.<KGroup> = new Vector.<KGroup>();
@@ -230,6 +241,11 @@ package sg.edu.smu.ksketch.operation
 			return strokes;
 		}
 		
+		/**
+		 * Returns the parent that are common among the list of given objects
+		 * It will be the common parent that is lowest in the tree.
+		 * If you give this function a list of one object, it will return its immediate parent.
+		 */
 		private static function _lowestCommonParent(objects:KModelObjectList,time:Number):KGroup
 		{	
 			var it:IIterator = objects.iterator;

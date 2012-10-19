@@ -177,8 +177,7 @@ package sg.edu.smu.ksketch.operation
 		private function _remove(facade:KModelFacade,obj:KObject,
 								 time:Number):IModelOperation
 		{
-			obj.getParent(time).remove(obj);
-			facade.dispatchEvent(new KObjectEvent(obj,KObjectEvent.EVENT_OBJECT_REMOVED));
+			KGroupUtil.addObjectToParent(time, obj, null, new KCompositeOperation());
 			return new KRemoveOperation(facade,obj,time);
 		}
 		

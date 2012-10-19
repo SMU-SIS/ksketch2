@@ -79,7 +79,6 @@ package sg.edu.smu.ksketch.gestures
 				return null;
 			
 			var area:Number = KMathUtil.area(Vector.<Point>(polygon));
-//			trace(perimeter +"\t" + area);
 			if(area > THRESHOLD_A || area < THRESHOLD_A_FLOOR)
 				return null;
 			polygon.splice(0, 1, _points[index]); // change the intersection to the raw point
@@ -199,7 +198,6 @@ package sg.edu.smu.ksketch.gestures
 				return null;
 			
 			var area:Number = KMathUtil.area(Vector.<Point>(polygon));
-			//			trace(perimeter +"\t" + area);
 			if(area > THRESHOLD_A || area < THRESHOLD_A_FLOOR)
 				return null;
 			polygon.splice(0, 1, _points[index]); // change the intersection to the raw point
@@ -229,7 +227,6 @@ package sg.edu.smu.ksketch.gestures
 				return null;
 			
 			var area:Number = KMathUtil.area(Vector.<Point>(polygon));
-			//			trace(perimeter +"\t" + area);
 			if(area > THRESHOLD_A || area < THRESHOLD_A_FLOOR)
 				return null;
 			

@@ -564,16 +564,13 @@ package sg.edu.smu.ksketch.interactor
 		{			
 			if(event.currentTarget != _canvas)
 				return;
-			//	trace("before sb root");
 			// self-transition within normal wating state
 			var sbRoot:DisplayObject = _canvas.systemManager.getSandboxRoot();
-			//	trace(sbRoot);
 			// MouseUp or RightMouseUp event listener
 			var interactor:IInteractor;
 			
 			if(event.type == MouseEvent.MOUSE_DOWN)
 			{
-	//			_pathInteractor.keyframe = _pathDetector.detectPath(_canvas,_appState.time,true);				
 				if(false)//_pathInteractor.keyframe != null)
 				{
 					sbRoot.addEventListener(MouseEvent.MOUSE_UP, _onMouseUp_downOnCanvas, true);
@@ -809,7 +806,6 @@ package sg.edu.smu.ksketch.interactor
 				_currentInteractor.deactivate();
 			_currentInteractor = interactor;
 			_currentInteractor.activate();
-			//trace("---->"+_currentInteractor);
 		}
 		
 		private function _beginInteraction(event:MouseEvent):void

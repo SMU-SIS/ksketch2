@@ -47,7 +47,6 @@ package sg.edu.smu.ksketch.operation
 			//Merge all available transformation data into the child object
 			while(parent.id != stopAtGroup.id)
 			{
-				trace("Merging",parent.id,"into",object.id);
 				maxTime = _mergeMotionOfType(parent, object, time, currentOperation, KTransformMgr.ROTATION_REF);
 				
 				currentMaxTime = _mergeMotionOfType(parent, object, time, currentOperation, KTransformMgr.SCALE_REF);

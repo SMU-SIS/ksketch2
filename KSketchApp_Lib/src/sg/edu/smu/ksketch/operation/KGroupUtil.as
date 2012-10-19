@@ -82,8 +82,6 @@ package sg.edu.smu.ksketch.operation
 			else
 				stopMergingAtParent = model.root; //one object, break it out! merge everything!!
 
-			trace("Common Parent derived for grouping is group", stopMergingAtParent.id);
-			
 			//Iterate through the list of objects
 			while(it.hasNext())
 			{
@@ -181,16 +179,12 @@ package sg.edu.smu.ksketch.operation
 			if(numChildren > 1)
 				return;
 			
-			
-			trace("********************Trigger singleton purging at group",currentGroup.id,"**************************");
-			
 			//Singleton group, 1 child, merge motion into child
 			if(numChildren == 1)
 			{	
 				var child:KObject = currentGroup.children.getObjectAt(0);
 				//Merge motion into child
 				var grandParent:KGroup = currentGroup.getParent(KGroupUtil.STATIC_GROUP_TIME);
-				trace("Singleton merging", child.id,"with", currentGroup.id, "and parenting it under", grandParent.id);
 				KMergerUtil.MergeHierarchyMotionsIntoObject(grandParent, child, Number.MAX_VALUE, removeStaticSingletonOp);
 
 				var oldParents:Vector.<KGroup> = new Vector.<KGroup>();

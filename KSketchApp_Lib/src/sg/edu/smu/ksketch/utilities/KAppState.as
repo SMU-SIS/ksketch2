@@ -383,8 +383,6 @@ package sg.edu.smu.ksketch.utilities
 			if(!_undoEnabled)
 				return;
 			
-			trace("*****************Performing Undo****************************");
-			
 			var undoOperation:IModelOperation = _undoStack.pop();
 			if(undoOperation != null)
 			{				
@@ -402,8 +400,6 @@ package sg.edu.smu.ksketch.utilities
 			if(!_redoEnabled)
 				return;
 
-			trace("*****************Performing Redo****************************");
-			
 			var redoOperation:IModelOperation = _redoStack.pop();
 			if(redoOperation != null)
 			{			

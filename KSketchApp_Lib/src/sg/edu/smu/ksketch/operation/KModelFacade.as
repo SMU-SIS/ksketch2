@@ -156,7 +156,6 @@ package sg.edu.smu.ksketch.operation
 		public function group(objs:KModelObjectList, mode:String, transitionType:int, groupTime:Number=-2, 
 							  isRealTimeTranslation:Boolean = false):IModelOperation
 		{	
-			trace("***************************Grouping Requested for objects", objs,"***************************");
 			var ops:KCompositeOperation = new KCompositeOperation();
 
 			//Do static grouping first

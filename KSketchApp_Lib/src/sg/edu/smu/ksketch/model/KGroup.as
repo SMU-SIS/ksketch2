@@ -94,7 +94,6 @@ package sg.edu.smu.ksketch.model
 		public function add(object:KObject, index:int = -1):void
 		{
 			_children.add(object, index);
-			trace("Group", id , "is dispatching object added event for", object.id);
 			dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_OBJECT_ADDED, this));
 		}
 		
@@ -105,7 +104,6 @@ package sg.edu.smu.ksketch.model
 		public function remove(object:KObject):void
 		{
 			_children.remove(object);
-			trace("Group", id , "is dispatching object removed event for", object.id);
 			dispatchEvent(new KObjectEvent(object, KObjectEvent.EVENT_OBJECT_REMOVED, this));
 		}
 		

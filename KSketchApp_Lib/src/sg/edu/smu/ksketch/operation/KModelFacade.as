@@ -20,6 +20,7 @@ package sg.edu.smu.ksketch.operation
 	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.event.KTimeChangedEvent;
 	import sg.edu.smu.ksketch.interactor.KSelection;
+	import sg.edu.smu.ksketch.io.KFileReader;
 	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.model.IKeyFrame;
 	import sg.edu.smu.ksketch.model.KGroup;
@@ -343,7 +344,7 @@ package sg.edu.smu.ksketch.operation
 		}
 		public function loadFile(xml:XML):void
 		{
-			_model.addToModel(xml);
+			KFileReader.xmlToModel(xml, _model);	
 			_model.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 		}
 		public function saveFile():XML

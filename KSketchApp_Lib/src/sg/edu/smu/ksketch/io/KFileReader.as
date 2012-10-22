@@ -15,6 +15,7 @@ package sg.edu.smu.ksketch.io
 	import sg.edu.smu.ksketch.model.ISpatialKeyframe;
 	import sg.edu.smu.ksketch.model.KGroup;
 	import sg.edu.smu.ksketch.model.KImage;
+	import sg.edu.smu.ksketch.model.KModel;
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.KStroke;
 	import sg.edu.smu.ksketch.model.geom.K2DPath;
@@ -22,14 +23,15 @@ package sg.edu.smu.ksketch.io
 	import sg.edu.smu.ksketch.model.geom.K3DPath;
 	import sg.edu.smu.ksketch.model.geom.K3DVector;
 	import sg.edu.smu.ksketch.model.geom.KPath;
-	import sg.edu.smu.ksketch.model.geom.KPathProcessor;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
+	import sg.edu.smu.ksketch.model.geom.KPathProcessor;
 	import sg.edu.smu.ksketch.model.geom.KRotation;
 	import sg.edu.smu.ksketch.model.geom.KScale;
 	import sg.edu.smu.ksketch.model.geom.KTranslation;
 	import sg.edu.smu.ksketch.model.implementations.KActivityKeyFrame;
 	import sg.edu.smu.ksketch.model.implementations.KKeyFrame;
 	import sg.edu.smu.ksketch.model.implementations.KParentKeyframe;
+	import sg.edu.smu.ksketch.operation.KGroupUtil;
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
@@ -37,147 +39,81 @@ package sg.edu.smu.ksketch.io
 	
 	public class KFileReader extends KFileParser
 	{
-		public static function fileToKObjects(xml:XML, root:KGroup):KModelObjectList
+		/**
+		 * Given a model, replaces its current hierarchy and instantiates
+		 * a scene graph from the given xml
+		 */
+		public static function xmlToModel(xml:XML, model:KModel, parent:KGroup = null, debugSpacing:String = ""):void
 		{
 			if(xml == null)
 				throw new Error("file cannot be null!");
 			if(xml.name() == null)
 				throw new Error("unsupported file!");
-			if(xml.name().toString() != ROOT)
-				throw new Error("unsupported tag: " + xml.name());
 			
+			if(!parent)
+				parent = model.root;
+			
+			var currentNode:XML;
 			var objectNodes:XMLList = xml.children();
-			var objectList:KModelObjectList = new KModelObjectList();
-			objectList.add(root);
-			
-			_generateEmptyGroups(objectNodes, objectList);
-			_generateSimpleObjects(objectNodes, objectList);
-			
-			var result:KModelObjectList = new KModelObjectList();
-			for each(var node:XML in objectNodes)
+
+			for(var i:int = 0; i< objectNodes.length(); i++)
 			{
-				if (node.name().toString() == COMMANDS)
-					break;
-				var object:KObject = _getObjectByID(objectList, node.@[ID]);
-				if(object && object is KGroup)
-					_setGroupChildrenAndTimeline(objectList, object as KGroup, node);
-				result.add(object);
-			}
-			var i:IIterator = result.iterator;
-			while(i.hasNext())
-				root.add(i.next());
-			return result;
-		}
-		
-		private static function _generateEmptyGroups(list:XMLList, objectList:KModelObjectList):void
-		{
-			for each(var node:XML in list)
-			{
-				if(node.name().toString() == GROUP)
+				currentNode = objectNodes[i];
+				trace(debugSpacing,currentNode.name(), currentNode.@id);
+				
+				switch(currentNode.name().toString())
 				{
-					var id:int = node.attribute(ID);
-					if(!_hasObjectID(objectList, id))
-					{
-						var createdTime:Number = _getCreatedTime(node);
-						var group:KGroup = new KGroup(id, createdTime, null, new Point(0, 0));
-						objectList.add(group);
-					}
-					_generateEmptyGroups(node.children(), objectList);
+					case KFileParser.GROUP:
+						var group:KGroup = _generateGroup(currentNode);
+						KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, group, parent, null);
+						xmlToModel(currentNode, model, group, debugSpacing+"	");
+						break;
+					case KFileParser.STROKE:
+						var stroke:KStroke = _generateStroke(currentNode);
+						KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, stroke, parent, null);
+						break;
+					case KFileParser.IMAGE:
+						var image:KImage = _generateImage(currentNode);
+						KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, image, parent, null);
+						break;
 				}
 			}
 		}
 		
-		private static function _generateSimpleObjects(list:XMLList, objectList:KModelObjectList):void
-		{
-			for each(var node:XML in list)
-			{
-				switch(node.name().toString())
-				{
-					case IMAGE:
-						_generateImage(node, objectList);
-						break;
-					case STROKE:
-						_generateStroke(node, objectList);
-						break;
-					case GROUP:
-						_generateSimpleObjects(node.children(), objectList);
-						break;
-					case KEYFRAME_LIST:
-						break;
-					case COMMANDS:
-						break;
-					default:
-						throw new Error("unsupported tag: " + node.name());
-				}
-			}
-		}		
-		
-		private static function _setGroupChildrenAndTimeline(objectList:KModelObjectList, 
-															 group:KGroup, groupNode:XML):void
-		{
-			var groupChildren:XMLList = groupNode.children();
-			for each(var childNode:XML in groupChildren)
-			{
-				var child:KObject = _getObjectByID(objectList, childNode.@[ID]);
-				if(childNode.name().toString() == GROUP && childNode.children().length() > 0)
-					_setGroupChildrenAndTimeline(objectList, child as KGroup, childNode);
-				switch(childNode.name().toString())
-				{
-					case STROKE:
-					case GROUP:
-						var hasContained:Boolean = false;
-						var i:IIterator = group.iterator;
-						while(i.hasNext())
-							if(i.next().id == child.id)
-							{
-								hasContained = true;
-								break;
-							}
-						if(!hasContained)
-							group.add(child);
-						break;
-					case KEYFRAME_LIST:
-						break;
-				}
-			}
-			group.updateCenter();
-			_setObjectFields(objectList, group, groupNode);
-		}
-		
-		private static function _generateImage(node:XML, objectList:KModelObjectList):void
+		private static function _generateGroup(node:XML):KGroup
 		{
 			var id:int = node.attribute(ID);
-			if(!_hasObjectID(objectList, id))
-			{
-				var createdTime:Number = _getCreatedTime(node);
-				var xPos:Number = node.attribute(IMAGE_X);
-				var yPos:Number = node.attribute(IMAGE_Y);	
-				var image:KImage = new KImage(id, xPos, yPos, createdTime);
-				image.data64 = node.attribute(IMAGE_DATA);
-				_setObjectFields(objectList, image, node);						
-				objectList.add(image);
-			}
-		}		
-		
-		private static function _generateStroke(node:XML, objectList:KModelObjectList):KStroke
-		{
-			var id:int = node.attribute(ID);
-			if(!_hasObjectID(objectList, id))
-			{
-				var createdTime:Number = _getCreatedTime(node);
-				var points:Vector.<Point> = _generatePoints(node.attribute(STROKE_POINTS));
-				var stroke:KStroke = new KStroke(id, createdTime, points);
-				stroke.color = node.attribute(COLOR);
-				stroke.thickness = node.attribute(THICKNESS);
-				_setObjectFields(objectList, stroke, node);
-				objectList.add(stroke);
-				return stroke;
-			}
-			return null;
+			var createdTime:Number = _getCreatedTime(node);
+			var group:KGroup = new KGroup(id, createdTime, null, new Point(0, 0));
+			_setObjectFields(group, node);
+			return group;
 		}
 		
-		private static function _setObjectFields(objectList:KModelObjectList, 
-												 object:KObject, node:XML):void
+		private static function _generateImage(node:XML):KImage
+		{
+			var id:int = node.attribute(ID);
+			var createdTime:Number = _getCreatedTime(node);
+			var xPos:Number = node.attribute(IMAGE_X);
+			var yPos:Number = node.attribute(IMAGE_Y);	
+			var image:KImage = new KImage(id, xPos, yPos, createdTime);
+			image.data64 = node.attribute(IMAGE_DATA);
+			_setObjectFields(image, node);
+			return image;
+		}		
+		
+		private static function _generateStroke(node:XML):KStroke
+		{
+			var id:int = node.attribute(ID);
+			var createdTime:Number = _getCreatedTime(node);
+			var points:Vector.<Point> = _generatePoints(node.attribute(STROKE_POINTS));
+			var stroke:KStroke = new KStroke(id, createdTime, points);
+			stroke.color = node.attribute(COLOR);
+			stroke.thickness = node.attribute(THICKNESS);
+			_setObjectFields(stroke, node);
+			return stroke;
+		}
+		
+		private static function _setObjectFields(object:KObject, node:XML):void
 		{
 			var frame_listNodes:XMLList = node.child(KEYFRAME_LIST);
 			if(frame_listNodes.length() == 1)
@@ -187,12 +123,7 @@ package sg.edu.smu.ksketch.io
 				{
 					var path:String = keyNode.attribute(KEYFRAME_CURSOR_PATH);
 					var keyframeType:String = keyNode.attribute(KEYFRAME_TYPE).toString();
-					if(keyframeType == KEYFRAME_TYPE_PARENT)
-					{
-						var parentKey:KKeyFrame = _generateParentKeyframe(keyNode, objectList);
-						object.addParentKey(parentKey.endTime,(parentKey as KParentKeyframe).parent);
-					}
-					else if(keyframeType == KEYFRAME_TYPE_ACTIVITY)
+					if(keyframeType == KEYFRAME_TYPE_ACTIVITY)
 					{
 						var activityKey:KActivityKeyFrame = 
 							_generateActivityKeyframe(keyNode) as KActivityKeyFrame;
@@ -217,8 +148,6 @@ package sg.edu.smu.ksketch.io
 							case KEYFRAME_TYPE_SCALE:
 								_setScale(object,path,centerX,centerY,endTime);
 								break;
-							default:
-								throw new Error("Unsupported keyframe type: " + keyframeType);
 						}
 					}
 				}

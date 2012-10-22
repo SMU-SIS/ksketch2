@@ -133,22 +133,13 @@ package sg.edu.smu.ksketch.model
 		public function resetModel():void
 		{
 			while(length() > 0)
+			{
+				trace(this.getObjectAt(0).id);
 				remove(this.getObjectAt(0));
+			}
 			_highestID = 0;
 		}
 
-		/**
-		 * Extract the object list (KModelObjectList) from the provided xml and add the extracted 
-		 * object list to the KGroup of the model. Event of type KObjectEvent.EVENT_OBJECT_ADDED 
-		 * is dispatched whenever a new object is added to the KGroup of the model.
-		 * @param xml The XML storing the data of the list of objects.
-		 */	
-		public function addToModel(xml:XML):void
-		{
-			KFileReader.fileToKObjects(xml, _root);
-			_highestID = _dispatchAdded(_root,new Dictionary());
-		}
-		
 		/**
 		 * Saved the group data into a XML structure.
 		 * @return The XML storing the data of the objects in the KGroup of the model.

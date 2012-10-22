@@ -160,6 +160,7 @@ public function timeSlider_thumbReleaseHandler(event:TrackBaseEvent):void
 
 private function updateTimeWidgets(event:Event):void
 {
+	return;
 	var clusterList:Vector.<Object> = _facade.getMarkerInfo();
 	
 	var newMarker:Marker;

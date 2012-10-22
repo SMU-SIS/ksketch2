@@ -99,12 +99,6 @@ package sg.edu.smu.ksketch.utilities
 		[Bindable]
 		public var isUserTest:Boolean;
 		
-		public var setSliderMaxValueForUndo:Function;
-		public var setSliderMaxValueForRedo:Function;
-		
-		public var updateFacadeInsertionMode:Function;
-		public var updateFacadeCenterMode:Function;
-		public var updateFacadeRefactorMode:Function;
 		public var updateFacadeCreationMode:Function;
 		
 		public var trackTapTime:Number;
@@ -147,8 +141,6 @@ package sg.edu.smu.ksketch.utilities
 		private var _redoEnabled:Boolean;
 		private var _pasteEnabled:Boolean;
 		private var _ungroupEnabled:Boolean;
-		
-		private var _refactorMode:String;
 		
 		private var _groupSelectMode:String;
 		private var _groupingMode:String;

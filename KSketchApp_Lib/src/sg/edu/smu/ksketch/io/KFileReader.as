@@ -59,21 +59,23 @@ package sg.edu.smu.ksketch.io
 			for(var i:int = 0; i< objectNodes.length(); i++)
 			{
 				currentNode = objectNodes[i];
-				trace(debugSpacing,currentNode.name(), currentNode.@id);
 				
 				switch(currentNode.name().toString())
 				{
 					case KFileParser.GROUP:
 						var group:KGroup = _generateGroup(currentNode);
+						model.add(group);
 						KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, group, parent, null);
 						xmlToModel(currentNode, model, group, debugSpacing+"	");
 						break;
 					case KFileParser.STROKE:
 						var stroke:KStroke = _generateStroke(currentNode);
+						model.add(stroke);
 						KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, stroke, parent, null);
 						break;
 					case KFileParser.IMAGE:
 						var image:KImage = _generateImage(currentNode);
+						model.add(image);
 						KGroupUtil.addObjectToParent(KGroupUtil.STATIC_GROUP_TIME, image, parent, null);
 						break;
 				}

@@ -479,24 +479,23 @@ package sg.edu.smu.ksketch.interactor
 			var type:int = _appState.transitionType;
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
-			var op:IModelOperation = _facade.group(oldSel.objects, mode, type, time);
+			/*var op:IModelOperation = _facade.group(oldSel.objects, mode, type, time);
 			if (op != null)
 			{
 				_appState.addOperation(new KInteractionOperation(
 					_appState,time,time,oldSel,_appState.selection,op));
-			}
+			}*/
 		}
 		
 		private function _ungroup():void
 		{
-			var mode:String = _appState.groupingMode;
-			var type:int = _appState.transitionType;
 			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
-			var op:IModelOperation = _facade.ungroup(oldSel.objects, mode, time);
-			if (op != null)
-				_appState.addOperation(new KInteractionOperation(
-					_appState,time,time,oldSel,_appState.selection,op));
+			trace("objects to be ungrouped",oldSel.objects.length());
+//			var op:IModelOperation = _facade.ungroup(oldSel.objects, time);
+	//		if (op != null)
+		//		_appState.addOperation(new KInteractionOperation(
+			//		_appState,time,time,oldSel,_appState.selection,op));
 		}		
 		
 		private function _moveFrame(time:Number):void

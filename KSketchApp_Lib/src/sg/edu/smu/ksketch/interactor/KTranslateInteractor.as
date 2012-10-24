@@ -31,9 +31,10 @@ package sg.edu.smu.ksketch.interactor
 	 */
 	public class KTranslateInteractor extends KTransitionInteractor
 	{
+		public static const BREAK_OUT:Boolean = true;
 		protected var _startPoint:Point;
 		protected var _dxdy:Point;
-		
+
 		/**
 		 * Subclass constructor to initialise KModelFacade and KAppState for KTransitionInteractor.
 		 * @param facade DefaultKModelFacade object to manipulate objects. 
@@ -123,40 +124,14 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		protected override function performGroupingOp(objects:KModelObjectList):IModelOperation
 		{
-			//When to ungroup
-			//If demo, break and group objects under new parent, under the root.
-			//If interpolated
-			//	if length == 1, dont break
-			//  if length > 1, break and group objects under new parent, under the root
-			var time:Number = _appState.time;
-			if(_appState.transitionType == KAppState.TRANSITION_REALTIME)
-				return _facade.group(objects, _appState.groupingMode, _appState.transitionType, time);
-			else
-			{
-				if(objects.length() > 1)
-					return _facade.group(objects, _appState.groupingMode, _appState.transitionType, time);
-			}
+			var groupOp:KCompositeOperation = new KCompositeOperation();
+			var groupedObjects:KModelObjectList = _facade.group(objects,_appState.time, BREAK_OUT, groupOp);
+			_appState.selection = new KSelection(groupedObjects, _appState.time);
 			
-			return null;
-			
-			/*var mode:String = _appState.groupingMode;
-			var type:int = _appState.transitionType;
-			var time:Number = _appState.time;
-			var length:int = objects.length();
-			var zerothObj:KObject = objects.getObjectAt(0);
-			var needGroup:Boolean = isImplicitGrouping() && length > 1;
-			var needUngroup:Boolean = isImplicitGrouping() && length == 1 &&
-				zerothObj.getParent(_appState.time) != _facade.root;
-
-			if (needUngroup)
-				return _facade.ungroup(objects,mode,time);
-			else if (needGroup)
-			{
-				var realtimeTransition:Boolean = _transitionType == KAppState.TRANSITION_REALTIME;
-				return _facade.regroup(objects, mode, type,time, realtimeTransition);
-			}
+			if(groupOp.length > 1)
+				return groupOp;
 			else
-				return null;*/
+				return null;
 		}
 	}
 }

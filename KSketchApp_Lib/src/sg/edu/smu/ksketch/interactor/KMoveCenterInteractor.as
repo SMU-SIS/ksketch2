@@ -87,7 +87,7 @@ package sg.edu.smu.ksketch.interactor
 		{
 			//For one center mode and grouping explicit
 			//return since center movement is not allowed
-			if(_appState.groupingMode == KAppState.GROUPING_EXPLICIT_DYNAMIC)
+			if(_appState.groupingMode == KAppState.GROUPING_EXPLICIT_STATIC)
 			{
 				if(_appState.selection.objects.length() > 1)
 				{
@@ -134,7 +134,7 @@ package sg.edu.smu.ksketch.interactor
 		{
 			//For one center mode and grouping explicit
 			//return since center movement is not allowed
-			if(_appState.groupingMode == KAppState.GROUPING_EXPLICIT_DYNAMIC)
+			if(_appState.groupingMode == KAppState.GROUPING_EXPLICIT_STATIC)
 			{
 				if(_appState.selection.objects.length() > 1)
 				{
@@ -162,7 +162,7 @@ package sg.edu.smu.ksketch.interactor
 		{
 			//For one center mode and grouping explicit
 			//return since center movement is not allowed
-			if(_appState.groupingMode == KAppState.GROUPING_EXPLICIT_DYNAMIC)
+			if(_appState.groupingMode == KAppState.GROUPING_EXPLICIT_STATIC)
 			{
 				if(_appState.selection.objects.length() > 1)
 				{

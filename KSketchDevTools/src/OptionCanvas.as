@@ -141,9 +141,8 @@ package
 		
 		private function _addGroupingMode(mainCanvas:KSketch2Canvas):IVisualElement
 		{
-			var impMode:String = KAppState.GROUPING_IMPLICIT_DYNAMIC;
-			var expMode:String = KAppState.GROUPING_EXPLICIT_DYNAMIC;
-			var staMode:String = KAppState.GROUPING_EXPLICIT_STATIC;
+			var impMode:String = KAppState.GROUPING_IMPLICIT_STATIC;
+			var expMode:String = KAppState.GROUPING_EXPLICIT_STATIC;
 			var appState:KAppState = mainCanvas.appState;
 			var modes:RadioButtonGroup = new RadioButtonGroup();
 			modes.addEventListener(Event.CHANGE, function(event:Event):void
@@ -165,7 +164,7 @@ package
 				}
 			});
 			var buttons:Array = new Array();
-			var groupings:Array = [impMode,expMode,staMode];
+			var groupings:Array = [impMode,expMode];
 			for (var i:int = 0; i < groupings.length; i++)
 				buttons.push(_createRadioButton(groupings[i],groupings[i],
 					appState.groupingMode == groupings[i], modes));

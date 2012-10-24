@@ -134,7 +134,6 @@ package sg.edu.smu.ksketch.model
 		{
 			while(length() > 0)
 			{
-				trace(this.getObjectAt(0).id);
 				remove(this.getObjectAt(0));
 			}
 			_highestID = 0;

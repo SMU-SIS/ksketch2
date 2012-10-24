@@ -60,42 +60,13 @@ package sg.edu.smu.ksketch.operation
 		/**
 		 * Create a group of objects at kskTime with center in static grouping mode. 
 		 */			
-		public static function groupStatic(model:KModel, objs:KModelObjectList, time:Number, staticGroupOperation:KCompositeOperation):KObject
+		public static function groupStatic(model:KModel, objs:KModelObjectList, time:Number, stopMergingAtParent:KGroup,
+										   staticGroupOperation:KCompositeOperation):KObject
 		{
 			if(objs.length() == 0)
 				throw new Error("KGroupUtil.groupStatic: No objects in the objectlist given. Wth dood");
 			
-			//Assume that the object list given consists of the highest order
-			//of object combinations possible ie. objects with common parents will
-			//be given as one KGroup
-			var it:IIterator = objs.iterator;
-			var currentObject:KObject;
-			var collapseOperation:IModelOperation;
-			
-			//Need a parent within the objects' common hierarchy to stop the merge
-			//Merging does not include this parent
-			var stopMergingAtParent:KGroup;
-			
-			//Find the lowest common parent if there are more than 1 object
-			if(1 < objs.length())
-				stopMergingAtParent= _lowestCommonParent(objs, STATIC_GROUP_TIME);
-			else
-				stopMergingAtParent = model.root; //one object, break it out! merge everything!!
-
-			//Iterate through the list of objects
-			while(it.hasNext())
-			{
-				currentObject = it.next();
-				
-				//If the object is a child of root, nothing to do with it
-				//Fly away to the next one
-				if(currentObject.getParent(KGroupUtil.STATIC_GROUP_TIME).id == model.root.id)
-					continue;
-				
-				//Collapse the hierachy of this object
-				//Merge all of the hierachy's motions into it
-				KMergerUtil.MergeHierarchyMotionsIntoObject(stopMergingAtParent,currentObject, time, staticGroupOperation);
-			}
+			_static_CollapseHierarchy(objs, time, model, stopMergingAtParent, staticGroupOperation);
 			
 			//RIght, we need to deal with the case of breaking ONE bloody object out.
 			if(objs.length() == 1)
@@ -114,6 +85,60 @@ package sg.edu.smu.ksketch.operation
 			else
 				return _group(objs, stopMergingAtParent,STATIC_GROUP_TIME, model, staticGroupOperation);
 		}
+		
+		/**
+		 * Ungroups the given group's children to the root in static grouping mode
+		 * Returns the list of objects added to the root
+		 * All motions from the objects' hierarchy, up till time, will be merged to the objects themselves
+		 */
+		public static function ungroupStatic(model:KModel, toUngroup:KGroup, time:Number,
+											 staticGroupOperation:KCompositeOperation):KModelObjectList
+		{
+			if(!toUngroup)
+				throw new Error("KGroupUtil.groupStatic: Deh, can't ungroup no objects man.");
+			
+			var i:int;
+			var children:Vector.<KObject> = toUngroup.getChildren(time);
+			var childrenList:KModelObjectList = new KModelObjectList();
+			
+			for(i = 0; i < children.length; i++)
+				childrenList.add(children[i]);
+			
+			_static_CollapseHierarchy(childrenList, time, model, model.root, staticGroupOperation);
+			
+			for(i = 0; i < children.length; i++)
+				addObjectToParent(STATIC_GROUP_TIME, children[i], model.root, staticGroupOperation);
+				
+			return childrenList;
+		}
+		
+		/**
+		 * 
+		 */
+		 private static function _static_CollapseHierarchy(objs:KModelObjectList, time:Number, model:KModel, stopMergingAtParent:KGroup,
+														   collapseOperation:KCompositeOperation):void
+		 {
+			 //Assume that the object list given consists of the highest order
+			 //of object combinations possible ie. objects with common parents will
+			 //be given as one KGroup
+			 var it:IIterator = objs.iterator;
+			 var currentObject:KObject;
+			 
+			 //Iterate through the list of objects
+			 while(it.hasNext())
+			 {
+				 currentObject = it.next();
+				 
+				 //If the object is a child of root, nothing to do with it
+				 //Fly away to the next one
+				 if(currentObject.getParent(KGroupUtil.STATIC_GROUP_TIME).id == model.root.id)
+					 continue;
+				 
+				 //Collapse the hierachy of this object
+				 //Merge all of the hierachy's motions into it
+				 KMergerUtil.MergeHierarchyMotionsIntoObject(stopMergingAtParent,currentObject, time, collapseOperation);
+			 }
+		 }
 		
 		/**
 		 * Groups the given list of objects together in a new group and adds the new group under grandParent at group time 
@@ -204,8 +229,8 @@ package sg.edu.smu.ksketch.operation
 		 */
 		public static function ungroupEnable(root:KGroup, appState:KAppState):Boolean
 		{
-			return appState.selection != null && selectedStrokes(root,
-				appState.selection.objects,appState.time).length() > 0
+			return appState.selection != null && appState.selection.objects.length() == 1
+					&&(appState.selection.objects.getObjectAt(0) is KGroup)
 		}		
 		
 		/**
@@ -240,7 +265,7 @@ package sg.edu.smu.ksketch.operation
 		 * It will be the common parent that is lowest in the tree.
 		 * If you give this function a list of one object, it will return its immediate parent.
 		 */
-		private static function _lowestCommonParent(objects:KModelObjectList,time:Number):KGroup
+		public static function lowestCommonParent(objects:KModelObjectList,time:Number):KGroup
 		{	
 			var it:IIterator = objects.iterator;
 			

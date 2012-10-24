@@ -107,8 +107,6 @@ package sg.edu.smu.ksketch.logger
 
 		public static const GROUPING_MODE:String = "mode";
 		public static const GROUPING_MODE_EXPLICIT_STATIC:String = KAppState.GROUPING_EXPLICIT_STATIC;
-		public static const GROUPING_MODE_EXPLICIT_DYNAMIC:String = KAppState.GROUPING_EXPLICIT_DYNAMIC;
-		public static const GROUPING_MODE_IMPLICIT_DYNAMIC:String = KAppState.GROUPING_IMPLICIT_DYNAMIC;
 		public static const GROUPING_ISREALTIMETRANSLATION:String = "is-realtime-translation";
 		
 		public static const TRANSITION_START_TIME:String = "start-time";

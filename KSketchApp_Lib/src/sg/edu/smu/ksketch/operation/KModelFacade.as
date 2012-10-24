@@ -154,40 +154,48 @@ package sg.edu.smu.ksketch.operation
 			return null;
 		}
 		
-		public function group(objs:KModelObjectList, mode:String, transitionType:int, groupTime:Number=-2, 
-							  isRealTimeTranslation:Boolean = false):IModelOperation
+		/**
+		 * Groups the given list of object and modifies the model at
+		 * given groupTime. Modificiations to the model and its objects are subjected to the active grouping mode.
+		 * If breakToRoot is true, the new group will be parented under the root.
+		 */
+		public function group(objs:KModelObjectList, groupTime:Number, breakToRoot:Boolean, ops:KCompositeOperation):KModelObjectList
 		{	
-			var ops:KCompositeOperation = new KCompositeOperation();
+			//Find the lowest common parent if there are more than 1 object
+			var groupToParent:KGroup;
+			if(1 < objs.length() && !breakToRoot)
+				groupToParent= KGroupUtil.lowestCommonParent(objs, KGroupUtil.STATIC_GROUP_TIME);
+			else
+				groupToParent = _model.root; //one object or is real time translation, break it out! merge everything!!
 
 			//Do static grouping first
-			var groupResult:KObject = KGroupUtil.groupStatic(_model, objs, groupTime, ops);
+			var groupResult:KObject = KGroupUtil.groupStatic(_model, objs, groupTime, groupToParent, ops);
 			
 			//Dispatch events to signify changes in hierachy and transforms 
 			
 			KGroupUtil.removeStaticSingletonGroup(_model.root, _model, ops);
-			
+
 			if (ops.length > 0)
 			{
-				KLogger.logGroup(objs.toIDs(), mode, transitionType, groupTime);
+				//KLogger.logGroup(objs.toIDs(), mode, transitionType, groupTime);
 				var list:KModelObjectList = new KModelObjectList();
 				
 				if(groupResult)
-				{
 					list.add(groupResult);	
-					_appState.selection = new KSelection(list,_appState.time);
-
-					if(_appState.userSetCenterOffset)
-						_appState.userSetCenterOffset = _appState.userSetCenterOffset.clone();
-				}
 				
 				_appState.ungroupEnabled = KGroupUtil.ungroupEnable(_model.root,_appState);
 				_appState.fireGroupingEnabledChangedEvent();
 				dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
-				return ops;
+				return list;
 			}
-			return null;
+			return objs;
 		}
-		public function ungroup(objs:KModelObjectList,mode:String,appTime:Number):IModelOperation
+		
+		/**
+		 * Ungroup the given group and parents all its direct children into the root.
+		 * Effects are dependent on the active grouping mode.
+		 */
+		public function ungroup(toUngroup:KGroup, appTime:Number):IModelOperation
 		{	
 			return null;
 		}

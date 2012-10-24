@@ -30,7 +30,7 @@ package sg.edu.smu.ksketch.utilities
 	
 	public class KAppState extends EventDispatcher
 	{
-		public static const APP_BUILD_SERIAL:String = "0.2a 09 OCT 2012";
+		public static const APP_BUILD_SERIAL:String = "0.2a 24 OCT 2012";
 		public static const TIMER_INTERVAL:Number = 15;
 		public static const ANIMATION_INTERVAL:Number = 62.5;
 		public static const DEFAULT_MAX_TIME:Number = 5000;
@@ -51,8 +51,6 @@ package sg.edu.smu.ksketch.utilities
 		public static const CREATION_INTERPOLATE_DEMONSTRATE:String = "Interpolate-and-Demonstrate";
 		
 		public static const GROUPING_EXPLICIT_STATIC:String = "Explicit-Static-Grouping";
-		public static const GROUPING_EXPLICIT_DYNAMIC:String = "Explicit-Dynamic-Grouping";
-		public static const GROUPING_IMPLICIT_DYNAMIC:String = "Implicit-Dynamic-Grouping";
 		public static const GROUPING_IMPLICIT_STATIC:String = "Implicit-Static-Grouping";
 		
 		public static const TRANSITION_INSTANT:int = 2;
@@ -574,14 +572,13 @@ package sg.edu.smu.ksketch.utilities
 		[Bindable(event='groupingEnabledChanged')]
 		public function get groupEnabled():Boolean
 		{	
-			return groupingMode != GROUPING_IMPLICIT_DYNAMIC && _selectedLength() > 1;
+			return groupingMode != GROUPING_IMPLICIT_STATIC && _selectedLength() > 1;
 		}
 		
 		[Bindable(event='groupingEnabledChanged')]
 		public function get ungroupEnabled():Boolean
 		{	
-			return groupingMode != GROUPING_IMPLICIT_DYNAMIC &&  
-				_ungroupEnabled && _selectedLength() > 0;
+			return groupingMode != GROUPING_IMPLICIT_STATIC &&  _ungroupEnabled && _selectedLength() == 1;
 		}
 
 		public function set ungroupEnabled(enabled:Boolean):void

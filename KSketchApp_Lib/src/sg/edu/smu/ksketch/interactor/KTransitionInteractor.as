@@ -33,6 +33,7 @@ package sg.edu.smu.ksketch.interactor
 	 */	
 	public class KTransitionInteractor implements IInteractor
 	{
+		public static const BREAK_OUT:Boolean = false;
 		protected var _facade:KModelFacade;
 		protected var _appState:KAppState;
 		protected var _transitionType:int;
@@ -180,7 +181,7 @@ package sg.edu.smu.ksketch.interactor
 		// Determine if the current appState is in Implicit Dynamic Grouping mode.
 		protected function isImplicitGrouping():Boolean
 		{
-			return _appState.groupingMode == KAppState.GROUPING_IMPLICIT_DYNAMIC;
+			return _appState.groupingMode == KAppState.GROUPING_IMPLICIT_STATIC;
 		}
 		
 		/**
@@ -191,17 +192,13 @@ package sg.edu.smu.ksketch.interactor
 		{
 			if(objects.length() > 1)
 			{
-				var time:Number = _appState.time;
-				return _facade.group(objects,_appState.groupingMode, _appState.transitionType,time);
+				var groupOp:KCompositeOperation = new KCompositeOperation();
+				var groupedObjects:KModelObjectList = _facade.group(objects,_appState.time, BREAK_OUT, groupOp);
+				_appState.selection = new KSelection(groupedObjects, _appState.time);
+				
+				if(groupOp.length > 1)
+					return groupOp;
 			}
-			
-			/*if (isImplicitGrouping() && objects.length() > 1)
-			{
-				var mode:String = _appState.groupingMode;
-				var type:int = _appState.transitionType;
-				var time:Number = _appState.time;
-				return _facade.group(objects,mode,type,time);
-			}*/
 			return null;
 		}
 		protected function selection():KSelection

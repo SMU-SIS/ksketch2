@@ -362,7 +362,7 @@ package sg.edu.smu.ksketch.interactor
 			var type:int = _getTransitionType(commandNode);
 			var real:Boolean = _getBoolean(commandNode,KLogger.GROUPING_ISREALTIMETRANSLATION);
 			_appState.time = _getNumber(commandNode,KLogger.TIME);
-			_appState.addOperation(_facade.group(objs,mode,type,_appState.time,real));
+			//_appState.addOperation(_facade.group(objs,mode,type,_appState.time,real));
 		}	
 		
 		private function _ungroup(commandNode:XML):void
@@ -371,7 +371,7 @@ package sg.edu.smu.ksketch.interactor
 			var mode:String = _getGroupingMode(commandNode);
 			var type:int = _getTransitionType(commandNode);
 			_appState.time = _getNumber(commandNode,KLogger.TIME);
-			_appState.addOperation(_facade.ungroup(objs,mode,_appState.time));			
+			//_appState.addOperation(_facade.ungroup(objs,mode,_appState.time));			
 		}	
 		
 		private function _regroup(commandNode:XML):void

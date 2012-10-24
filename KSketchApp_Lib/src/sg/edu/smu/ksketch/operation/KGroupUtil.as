@@ -88,7 +88,7 @@ package sg.edu.smu.ksketch.operation
 		
 		/**
 		 * Ungroups the given group's children to the root in static grouping mode
-		 * Returns the list of objects added to the root
+		 * Returns the list of objects added to the group's grandparent
 		 * All motions from the objects' hierarchy, up till time, will be merged to the objects themselves
 		 */
 		public static function ungroupStatic(model:KModel, toUngroup:KGroup, time:Number,
@@ -98,17 +98,21 @@ package sg.edu.smu.ksketch.operation
 				throw new Error("KGroupUtil.groupStatic: Deh, can't ungroup no objects man.");
 			
 			var i:int;
+			var grandParent:KGroup = toUngroup.getParent(time);
 			var children:Vector.<KObject> = toUngroup.getChildren(time);
 			var childrenList:KModelObjectList = new KModelObjectList();
 			
 			for(i = 0; i < children.length; i++)
 				childrenList.add(children[i]);
 			
-			_static_CollapseHierarchy(childrenList, time, model, model.root, staticGroupOperation);
+			_static_CollapseHierarchy(childrenList, time, model, grandParent, staticGroupOperation);
 			
 			for(i = 0; i < children.length; i++)
-				addObjectToParent(STATIC_GROUP_TIME, children[i], model.root, staticGroupOperation);
-				
+				addObjectToParent(STATIC_GROUP_TIME, children[i], grandParent, staticGroupOperation);
+			
+			//Remove the original parent from the model
+			addObjectToParent(STATIC_GROUP_TIME, toUngroup, null, staticGroupOperation);
+			
 			return childrenList;
 		}
 		

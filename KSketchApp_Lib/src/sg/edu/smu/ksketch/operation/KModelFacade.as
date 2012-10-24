@@ -192,12 +192,12 @@ package sg.edu.smu.ksketch.operation
 		}
 		
 		/**
-		 * Ungroup the given group and parents all its direct children into the root.
+		 * Ungroup the given group and parents all its direct children into its parent.
 		 * Effects are dependent on the active grouping mode.
 		 */
-		public function ungroup(toUngroup:KGroup, appTime:Number):IModelOperation
+		public function ungroup(toUngroup:KGroup, ungroupTime:Number, ops:KCompositeOperation):KModelObjectList
 		{	
-			return null;
+			return KGroupUtil.ungroupStatic(_model, toUngroup, ungroupTime, ops);
 		}
 		
 		// ------------------ Transform Operation ------------------- //		

@@ -492,16 +492,18 @@ package sg.edu.smu.ksketch.interactor
 			var groupOp:KCompositeOperation = new KCompositeOperation();
 			var groupedObjectList:IModelObjectList = _facade.group(oldSel.objects, _appState.time, breakOut, groupOp);
 			
-			if(groupedObjectList)
-				var newSelection:KSelection = new KSelection(groupedObjectList, _appState.time);
-			
-			
-			/*var op:IModelOperation = _facade.group(oldSel.objects, mode, type, time);
-			if (op != null)
+			if(groupOp.length > 0)
 			{
-				_appState.addOperation(new KInteractionOperation(
-					_appState,time,time,oldSel,_appState.selection,op));
-			}*/
+				var newSelection:KSelection;
+				if(groupedObjectList)
+					newSelection = new KSelection(groupedObjectList, _appState.time);
+				
+				_appState.selection = newSelection;
+				
+				var newInteractionOp:KInteractionOperation = new KInteractionOperation(_appState, _appState.time, _appState.time
+																						, oldSel, newSelection, groupOp);
+				_appState.addOperation(newInteractionOp);
+			}
 		}
 		
 		private function _ungroup():void

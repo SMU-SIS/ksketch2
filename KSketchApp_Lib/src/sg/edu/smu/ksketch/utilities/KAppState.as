@@ -172,7 +172,7 @@ package sg.edu.smu.ksketch.utilities
 			_pgUpEnabled = true;
 			_pgDownEnabled = true;
 			_groupSelectMode = SELECTION_GROUP_AND_STROKE;
-			_groupingMode = KAppState.GROUPING_IMPLICIT_STATIC;
+			_groupingMode = GROUPING_EXPLICIT_STATIC;
 			_pasteEnabled = false;
 			_ungroupEnabled = false;
 			
@@ -460,8 +460,7 @@ package sg.edu.smu.ksketch.utilities
 			var oldSelection:KSelection = _selection;
 			_selection = value;
 			
-			_fireSelectionChangedEvent(
-				KSelectionChangedEvent.EVENT_SELECTION_CHANGING,oldSelection,_selection);
+			_fireSelectionChangedEvent(KSelectionChangedEvent.EVENT_SELECTION_CHANGING,oldSelection,_selection);	
 		}
 		
 		public function set selection(value:KSelection):void
@@ -717,7 +716,8 @@ package sg.edu.smu.ksketch.utilities
 		
 		private function _fireSelectionChangedEvent(event_type:String,old:KSelection,current:KSelection):void
 		{
-			this.dispatchEvent(new KSelectionChangedEvent(event_type, old, current));
+			dispatchEvent(new KSelectionChangedEvent(event_type, old, current));
+			fireGroupingEnabledChangedEvent();			
 		}
 		
 		private function _selectedLength():int

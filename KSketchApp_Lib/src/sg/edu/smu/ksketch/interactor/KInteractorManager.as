@@ -700,7 +700,6 @@ package sg.edu.smu.ksketch.interactor
 			_endInteraction(event);
 			_waiting();
 
-			_appState.ungroupEnabled = KGroupUtil.ungroupEnable(_facade.root,_appState);
 			_appState.fireGroupingEnabledChangedEvent();
 			_appState.fireEditEnabledChangedEvent();
 		}

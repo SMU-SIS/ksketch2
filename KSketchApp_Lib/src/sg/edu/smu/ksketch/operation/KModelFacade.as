@@ -183,7 +183,6 @@ package sg.edu.smu.ksketch.operation
 				if(groupResult)
 					list.add(groupResult);	
 				
-				_appState.ungroupEnabled = KGroupUtil.ungroupEnable(_model.root,_appState);
 				_appState.fireGroupingEnabledChangedEvent();
 				dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 				return list;
@@ -194,10 +193,40 @@ package sg.edu.smu.ksketch.operation
 		/**
 		 * Ungroup the given group and parents all its direct children into its parent.
 		 * Effects are dependent on the active grouping mode.
+		 * Returns a list of objects that were ungrouped.
+		 * Objects that were not ungrouped will not be returned.
+		 * Returned result will not be ordered according to their ids.
 		 */
-		public function ungroup(toUngroup:KGroup, ungroupTime:Number, ops:KCompositeOperation):KModelObjectList
+		public function ungroup(toUngroup:KModelObjectList, ungroupTime:Number, ops:KCompositeOperation):KModelObjectList
 		{	
-			return KGroupUtil.ungroupStatic(_model, toUngroup, ungroupTime, ops);
+			var it:IIterator = toUngroup.iterator;
+			var currentObject:KObject;
+			
+			var resultObjectList:KModelObjectList = new KModelObjectList();
+			
+			while(it.hasNext())
+			{
+				currentObject = it.next();
+				
+				if(currentObject.getParent(ungroupTime).id == _model.root.id)
+					continue;
+				
+				if(!(currentObject is KGroup))
+					continue;
+				
+				resultObjectList.merge(KGroupUtil.ungroupStatic(_model, currentObject as KGroup, ungroupTime, ops));
+			}
+			
+			KGroupUtil.removeStaticSingletonGroup(_model.root, _model, ops);
+			
+			if(ops.length > 0)
+			{
+				_appState.fireGroupingEnabledChangedEvent();
+				dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+				return resultObjectList;
+			}
+			
+			return null;
 		}
 		
 		// ------------------ Transform Operation ------------------- //		

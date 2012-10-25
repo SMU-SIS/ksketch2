@@ -26,6 +26,8 @@ package sg.edu.smu.ksketch.utilities
 	import sg.edu.smu.ksketch.interactor.KLoopSelectInteractor;
 	import sg.edu.smu.ksketch.interactor.KSelection;
 	import sg.edu.smu.ksketch.interactor.UserOption;
+	import sg.edu.smu.ksketch.model.KGroup;
+	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	
 	public class KAppState extends EventDispatcher
@@ -578,12 +580,33 @@ package sg.edu.smu.ksketch.utilities
 		[Bindable(event='groupingEnabledChanged')]
 		public function get ungroupEnabled():Boolean
 		{	
-			return groupingMode != GROUPING_IMPLICIT_STATIC &&  _ungroupEnabled && _selectedLength() == 1;
-		}
-
-		public function set ungroupEnabled(enabled:Boolean):void
-		{
-			_ungroupEnabled = enabled;
+			if(groupingMode == GROUPING_IMPLICIT_STATIC)
+				return false;
+			
+			if(!selection)
+				return false;
+			
+			var allTopLevelGroups:Boolean = true;
+			var it:IIterator = selection.objects.iterator;
+			var currentObject:KObject;
+			
+			while(it.hasNext())
+			{
+				currentObject = it.next();
+				if(!(currentObject is KGroup))
+				{
+						allTopLevelGroups = false;
+						break;
+				}
+				
+				if(currentObject.getParent(time).id != 0)
+				{
+					allTopLevelGroups = false;
+					break;
+				}
+			}
+			
+			return allTopLevelGroups;
 		}
 		
 		public function set groupSelectMode(value:String):void

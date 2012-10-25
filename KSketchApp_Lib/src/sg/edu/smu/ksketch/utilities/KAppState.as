@@ -711,7 +711,7 @@ package sg.edu.smu.ksketch.utilities
 		
 		public function _fireFacadeUndoRedoModelChangedEvent():void
 		{
-			//		   facade.dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
+			
 		}
 		
 		private function _fireSelectionChangedEvent(event_type:String,old:KSelection,current:KSelection):void

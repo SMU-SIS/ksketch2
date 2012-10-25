@@ -183,7 +183,6 @@ package sg.edu.smu.ksketch.operation
 				if(groupResult)
 					list.add(groupResult);	
 				
-				_appState.fireGroupingEnabledChangedEvent();
 				dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 				return list;
 			}
@@ -209,9 +208,6 @@ package sg.edu.smu.ksketch.operation
 			{
 				currentObject = it.next();
 				
-				if(currentObject.getParent(ungroupTime).id == _model.root.id)
-					continue;
-				
 				if(!(currentObject is KGroup))
 					continue;
 				
@@ -222,7 +218,6 @@ package sg.edu.smu.ksketch.operation
 			
 			if(ops.length > 0)
 			{
-				_appState.fireGroupingEnabledChangedEvent();
 				dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 				return resultObjectList;
 			}

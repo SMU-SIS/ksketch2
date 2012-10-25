@@ -506,15 +506,31 @@ package sg.edu.smu.ksketch.interactor
 			}
 		}
 		
+		/**
+		 * Manual Ungrouping Function
+		 * Effects on model differs accord to grouping
+		 * 
+		 * Ungroup function assumes that the current selection consists only of top-level groups
+		 */
 		private function _ungroup():void
 		{
-			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
-			trace("objects to be ungrouped",oldSel.objects.length());
-//			var op:IModelOperation = _facade.ungroup(oldSel.objects, time);
-	//		if (op != null)
-		//		_appState.addOperation(new KInteractionOperation(
-			//		_appState,time,time,oldSel,_appState.selection,op));
+			var groupOp:KCompositeOperation = new KCompositeOperation();
+			var groupedObjectList:IModelObjectList = _facade.ungroup(oldSel.objects, _appState.time, groupOp);
+			
+			trace(groupedObjectList);
+			if(groupOp.length > 0)
+			{
+				var newSelection:KSelection;
+				if(groupedObjectList)
+					newSelection = new KSelection(groupedObjectList, _appState.time);
+				
+				_appState.selection = newSelection;
+				
+				var newInteractionOp:KInteractionOperation = new KInteractionOperation(_appState, _appState.time, _appState.time
+					, oldSel, newSelection, groupOp);
+				_appState.addOperation(newInteractionOp);
+			}
 		}		
 		
 		private function _moveFrame(time:Number):void

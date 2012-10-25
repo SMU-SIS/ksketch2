@@ -588,7 +588,7 @@ package sg.edu.smu.ksketch.interactor
 			else
 				_appState.selection = _appState.selection;
 			if(_log != null && _appState.selection != null)
-				_log.selected = _appState.selection.objects;
+				_log.selected = _appState.selection.objects as KModelObjectList;
 		}
 		
 		private function end_pregesture(point:Point):void
@@ -627,7 +627,7 @@ package sg.edu.smu.ksketch.interactor
 			if(_log != null)
 			{
 				if(_appState.selection != null)
-					_log.selected = _appState.selection.objects;
+					_log.selected = _appState.selection.objects as KModelObjectList;
 			}
 			
 			_intelliGuess.clear();
@@ -649,7 +649,7 @@ package sg.edu.smu.ksketch.interactor
 			if(_log != null)
 			{
 				if(_appState.selection != null)
-					_log.selected = _appState.selection.objects;
+					_log.selected = _appState.selection.objects as KModelObjectList;
 			}
 			
 		}
@@ -766,7 +766,7 @@ package sg.edu.smu.ksketch.interactor
 					var subLog:KGestureSubLog;
 					if(result != RecognizeResult.UNDEFINED)
 						subLog = new KPostGestureLog(result, new Date(), 
-							_postGesture, _appState.selection.objects);
+							_postGesture, _appState.selection.objects as KModelObjectList);
 					else
 						subLog = new KGestureSubLog(_postGesture, KPlaySketchLogger.UNDEFINED, new Date());
 					_log.addSubLog(subLog);
@@ -825,7 +825,7 @@ package sg.edu.smu.ksketch.interactor
 		public function enableLog():ILoggable
 		{
 			_log = new KGestureLog(new Vector.<KPathPoint>(),
-				_appState.selection?_appState.selection.objects:null);
+				_appState.selection?(_appState.selection.objects as KModelObjectList):null);
 			return _log;
 		}
 		

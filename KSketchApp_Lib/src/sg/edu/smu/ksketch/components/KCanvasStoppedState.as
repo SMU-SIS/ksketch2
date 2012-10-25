@@ -111,7 +111,7 @@ package sg.edu.smu.ksketch.components
 		{
 			if(selection == null)
 				return;
-			var list:KModelObjectList = selection.objects;
+			var list:IModelObjectList = selection.objects;
 			if(list != null)
 			{
 				var it:IIterator = list.iterator;
@@ -149,7 +149,7 @@ package sg.edu.smu.ksketch.components
 			}
 		}
 		
-		protected function canSelect(objects:KModelObjectList):Boolean
+		protected function canSelect(objects:IModelObjectList):Boolean
 		{
 			if(objects.length() == 0)
 				return false;
@@ -231,7 +231,7 @@ package sg.edu.smu.ksketch.components
 			if(selection == null)
 				return;
 			
-			var list:KModelObjectList = selection.objects;
+			var list:IModelObjectList = selection.objects;
 			var it:IIterator = list.iterator;
 			while(it.hasNext())
 				showPath_Object(it.next(), show);

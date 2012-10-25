@@ -23,6 +23,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.ErrorMessage;
+	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
@@ -188,12 +189,12 @@ package sg.edu.smu.ksketch.interactor
 		 * Will force a group if > 1 object
 		 * If all objects of a group is selected, nObject = 1 for those selected objects
 		 */
-		protected function performGroupingOp(objects:KModelObjectList):IModelOperation
+		protected function performGroupingOp(objects:IModelObjectList):IModelOperation
 		{
 			if(objects.length() > 1)
 			{
 				var groupOp:KCompositeOperation = new KCompositeOperation();
-				var groupedObjects:KModelObjectList = _facade.group(objects,_appState.time, BREAK_OUT, groupOp);
+				var groupedObjects:IModelObjectList = _facade.group(objects,_appState.time, BREAK_OUT, groupOp);
 				_appState.selection = new KSelection(groupedObjects, _appState.time);
 				
 				if(groupOp.length > 1)

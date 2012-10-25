@@ -17,6 +17,7 @@ package sg.edu.smu.ksketch.geom
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.utilities.IIterator;
+	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 
@@ -135,7 +136,7 @@ package sg.edu.smu.ksketch.geom
 		 * @param kskTime the specify time.
 		 * @return coordinate of the center.
 		 */		
-		public static function defaultCentroidOf(objects:KModelObjectList, kskTime:Number):Point
+		public static function defaultCentroidOf(objects:IModelObjectList, kskTime:Number):Point
 		{
 			if(objects.length() == 0)
 				return new Point(0, 0);

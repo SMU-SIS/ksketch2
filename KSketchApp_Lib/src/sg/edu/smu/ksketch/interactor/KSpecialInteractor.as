@@ -12,14 +12,16 @@ package sg.edu.smu.ksketch.interactor
 {
 	import flash.geom.Point;
 	
-	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.logger.ILoggable;
-	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.logger.KInteractiveLog;
+	import sg.edu.smu.ksketch.logger.KLogger;
 	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.logger.KWithSelectionLog;
+	import sg.edu.smu.ksketch.model.geom.KPathPoint;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
+	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
+	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
 	/**
 	 * Handles special case interactions that are too simple to require a separate class
@@ -57,7 +59,7 @@ package sg.edu.smu.ksketch.interactor
 			{
 				case MODE_DESELECT:
 					_log = new KWithSelectionLog(new Vector.<KPathPoint>(), 
-						KPlaySketchLogger.INTERACTION_DESELECT, _appState.selection.objects);
+						KPlaySketchLogger.INTERACTION_DESELECT, _appState.selection.objects as KModelObjectList);
 					break;
 				case MODE_HIDE_POPUP:
 					_log = new KInteractiveLog(new Vector.<KPathPoint>(), KPlaySketchLogger.INTERACTION_HIDE_POPUP);
@@ -86,7 +88,7 @@ package sg.edu.smu.ksketch.interactor
 				if(_log != null)
 				{
 					KLogger.logDeselect(_appState.selection.objects.toIDs());
-					(_log as KWithSelectionLog).selected = _appState.selection.objects;
+					(_log as KWithSelectionLog).selected = _appState.selection.objects  as KModelObjectList;
 				}
 				_appState.selection = null;
 			}

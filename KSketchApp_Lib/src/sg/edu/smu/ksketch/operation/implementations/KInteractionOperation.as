@@ -16,6 +16,7 @@ package sg.edu.smu.ksketch.operation.implementations
 	import sg.edu.smu.ksketch.model.KObject;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
+	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
@@ -76,7 +77,7 @@ package sg.edu.smu.ksketch.operation.implementations
 				_dispatchEvent(_oldSelection.objects);
 		}
 		
-		private function _dispatchEvent(objs:KModelObjectList):void
+		private function _dispatchEvent(objs:IModelObjectList):void
 		{
 			var it:IIterator = objs.iterator;
 			while (it.hasNext())

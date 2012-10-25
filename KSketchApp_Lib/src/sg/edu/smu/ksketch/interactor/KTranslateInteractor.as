@@ -22,6 +22,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.operation.KModelFacade;
 	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.utilities.IIterator;
+	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
@@ -122,10 +123,10 @@ package sg.edu.smu.ksketch.interactor
 		 * Places all selected objects (including strokes inside groups) into the root
 		 * If number of selected objects > 1, form a new group with the selected objects under the root
 		 */
-		protected override function performGroupingOp(objects:KModelObjectList):IModelOperation
+		protected override function performGroupingOp(objects:IModelObjectList):IModelOperation
 		{
 			var groupOp:KCompositeOperation = new KCompositeOperation();
-			var groupedObjects:KModelObjectList = _facade.group(objects,_appState.time, BREAK_OUT, groupOp);
+			var groupedObjects:IModelObjectList = _facade.group(objects,_appState.time, BREAK_OUT, groupOp);
 			_appState.selection = new KSelection(groupedObjects, _appState.time);
 			
 			if(groupOp.length > 1)

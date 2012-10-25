@@ -33,6 +33,7 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.operation.KTransformMgr;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KMathUtil;
+	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
 	import spark.primitives.Graphic;
 
@@ -97,7 +98,7 @@ package sg.edu.smu.ksketch.interactor
 			
 			if(_log != null)
 			{
-				_log.selected = _appState.selection.objects;
+				_log.selected = _appState.selection.objects as KModelObjectList;
 				_log.addPoint(new KPathPoint(point.x, point.y, _appState.time));
 			}
 			
@@ -377,7 +378,7 @@ package sg.edu.smu.ksketch.interactor
 		public function enableLog():ILoggable
 		{
 			_log = new KWithSelectionLog(new Vector.<KPathPoint>(), 
-				KPlaySketchLogger.INTERACTION_MOVE_CENTER, _appState.selection.objects);
+				KPlaySketchLogger.INTERACTION_MOVE_CENTER, _appState.selection.objects as KModelObjectList);
 			return _log;
 		}
 	}

@@ -101,17 +101,17 @@ package sg.edu.smu.ksketch.operation
 			KLogger.logErase(object.id,time);
 			return _editor.erase(this,_model,object,time);
 		}
-		public function copy(objects:KModelObjectList,time:Number):void
+		public function copy(objects:IModelObjectList,time:Number):void
 		{
 			KLogger.logCopy(objects.toIDs(),time);
-			_editor.copy(objects,time);
+			_editor.copy(objects as KModelObjectList,time);
 			_appState.pasteEnabled = true;
 			_appState.fireEditEnabledChangedEvent();
 		}
-		public function cut(objects:KModelObjectList,time:Number):IModelOperation
+		public function cut(objects:IModelObjectList,time:Number):IModelOperation
 		{
 			KLogger.logCut(objects.toIDs(),time);
-			var op:IModelOperation = _editor.cut(this,objects,time);
+			var op:IModelOperation = _editor.cut(this,objects as KModelObjectList,time);
 			_appState.selection = null;
 			_appState.pasteEnabled = true;
 			_appState.fireEditEnabledChangedEvent();
@@ -130,7 +130,7 @@ package sg.edu.smu.ksketch.operation
 			_appState.pasteEnabled = false;
 			_appState.fireEditEnabledChangedEvent();
 		}
-		public function toggleVisibility(objects:KModelObjectList,time:Number):IModelOperation
+		public function toggleVisibility(objects:IModelObjectList,time:Number):IModelOperation
 		{
 			var ops:KCompositeOperation = new KCompositeOperation();
 			for (var i:int = 0; i < objects.length(); i++)
@@ -159,17 +159,17 @@ package sg.edu.smu.ksketch.operation
 		 * given groupTime. Modificiations to the model and its objects are subjected to the active grouping mode.
 		 * If breakToRoot is true, the new group will be parented under the root.
 		 */
-		public function group(objs:KModelObjectList, groupTime:Number, breakToRoot:Boolean, ops:KCompositeOperation):KModelObjectList
+		public function group(objs:IModelObjectList, groupTime:Number, breakToRoot:Boolean, ops:KCompositeOperation):IModelObjectList
 		{	
 			//Find the lowest common parent if there are more than 1 object
 			var groupToParent:KGroup;
 			if(1 < objs.length() && !breakToRoot)
-				groupToParent= KGroupUtil.lowestCommonParent(objs, KGroupUtil.STATIC_GROUP_TIME);
+				groupToParent= KGroupUtil.lowestCommonParent(objs as KModelObjectList, KGroupUtil.STATIC_GROUP_TIME);
 			else
 				groupToParent = _model.root; //one object or is real time translation, break it out! merge everything!!
 
 			//Do static grouping first
-			var groupResult:KObject = KGroupUtil.groupStatic(_model, objs, groupTime, groupToParent, ops);
+			var groupResult:KObject = KGroupUtil.groupStatic(_model, objs as KModelObjectList, groupTime, groupToParent, ops);
 			
 			//Dispatch events to signify changes in hierachy and transforms 
 			
@@ -187,6 +187,7 @@ package sg.edu.smu.ksketch.operation
 				dispatchEvent(new KModelEvent(KModelEvent.EVENT_MODEL_UPDATED));
 				return list;
 			}
+			
 			return objs;
 		}
 		
@@ -197,7 +198,7 @@ package sg.edu.smu.ksketch.operation
 		 * Objects that were not ungrouped will not be returned.
 		 * Returned result will not be ordered according to their ids.
 		 */
-		public function ungroup(toUngroup:KModelObjectList, ungroupTime:Number, ops:KCompositeOperation):KModelObjectList
+		public function ungroup(toUngroup:IModelObjectList, ungroupTime:Number, ops:KCompositeOperation):IModelObjectList
 		{	
 			var it:IIterator = toUngroup.iterator;
 			var currentObject:KObject;

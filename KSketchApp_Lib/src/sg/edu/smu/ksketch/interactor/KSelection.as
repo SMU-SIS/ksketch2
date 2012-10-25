@@ -24,7 +24,7 @@ package sg.edu.smu.ksketch.interactor
 
 	public class KSelection
 	{
-		private var _objects:KModelObjectList;
+		private var _objects:IModelObjectList;
 		
 		private var _selectedTime:Number;
 		
@@ -32,9 +32,9 @@ package sg.edu.smu.ksketch.interactor
 		
 		private var _interactionCenter:Point;
 		private var _userSetHandleOffset:Point;
-		private var _fullObjectSet:KModelObjectList;
+		private var _fullObjectSet:IModelObjectList;
 		
-		public function KSelection(selection:KModelObjectList, selectedTime:Number)
+		public function KSelection(selection:IModelObjectList, selectedTime:Number)
 		{
 			_fullObjectSet = selection;
 			_objects = selection;
@@ -48,17 +48,17 @@ package sg.edu.smu.ksketch.interactor
 			return _selectedTime;
 		}
 
-		public function get objects():KModelObjectList
+		public function get objects():IModelObjectList
 		{
 			return _objects;
 		}
 		
-		public function get fullObjectSet():KModelObjectList
+		public function get fullObjectSet():IModelObjectList
 		{
 			return _fullObjectSet;	
 		}
 		
-		public function set objects(value:KModelObjectList):void
+		public function set objects(value:IModelObjectList):void
 		{
 			_objects = value;
 		}

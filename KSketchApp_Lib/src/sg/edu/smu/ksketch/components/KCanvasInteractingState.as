@@ -14,11 +14,11 @@ package sg.edu.smu.ksketch.components
 	
 	import sg.edu.smu.ksketch.event.KObjectEvent;
 	import sg.edu.smu.ksketch.event.KSelectionChangedEvent;
+	import sg.edu.smu.ksketch.interactor.KSelection;
 	import sg.edu.smu.ksketch.utilities.IIterator;
 	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
 	import sg.edu.smu.ksketch.utilities.KModelObjectList;
-	import sg.edu.smu.ksketch.interactor.KSelection;
 	
 	public class KCanvasInteractingState implements ICanvasClockState
 	{
@@ -73,7 +73,7 @@ package sg.edu.smu.ksketch.components
 			if(selection == null)
 				return;
 			
-			var list:KModelObjectList = selection.objects;
+			var list:IModelObjectList = selection.objects;
 			if(list != null)
 			{
 				var it:IIterator = list.iterator;

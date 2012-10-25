@@ -98,7 +98,7 @@ package sg.edu.smu.ksketch.interactor
 			if(_log != null)
 			{
 				if(_appState.selection != null)
-					_log.selected = _appState.selection.objects;
+					_log.selected = _appState.selection.objects as KModelObjectList;
 				_log = null;
 			}
 		}
@@ -127,7 +127,7 @@ package sg.edu.smu.ksketch.interactor
 		public function enableLog():ILoggable
 		{
 			_log = new KWithSelectionLog(new Vector.<KPathPoint>(), 
-				name, _appState.selection.objects);
+				name, _appState.selection.objects as KModelObjectList);
 			return _log;
 		}
 	}

@@ -36,9 +36,11 @@ package sg.edu.smu.ksketch.interactor
 	import sg.edu.smu.ksketch.logger.KPlaySketchLogger;
 	import sg.edu.smu.ksketch.operation.IModelOperation;
 	import sg.edu.smu.ksketch.operation.KModelFacade;
+	import sg.edu.smu.ksketch.operation.implementations.KCompositeOperation;
 	import sg.edu.smu.ksketch.operation.implementations.KInteractionOperation;
 	import sg.edu.smu.ksketch.utilities.IModelObjectList;
 	import sg.edu.smu.ksketch.utilities.KAppState;
+	import sg.edu.smu.ksketch.utilities.KModelObjectList;
 	
 	public class KCommandExecutor extends EventDispatcher
 	{
@@ -473,12 +475,27 @@ package sg.edu.smu.ksketch.interactor
 					_appState,time,time,oldSel,_appState.selection,op));
 		}
 		
-		private function _group():void
+		/**
+		 * Manual Grouping function
+		 * Effects on model differs according to grouping mode
+		 * 
+		 * Explicit Grouping will group the selected objects into a newly formed group, parented under their common parent.
+		 * Explicit Grouping is impossible if only one object is selected.
+		 * 
+		 * Implicit Grouping breaks the newly formed group out of their parents if it is a translation operation
+		 * 
+		 * Singleton groups should still be removed.
+		 */
+		private function _group(breakOut:Boolean = false):void
 		{
-			var mode:String = _appState.groupingMode;
-			var type:int = _appState.transitionType;
-			var time:Number = _appState.time;
 			var oldSel:KSelection = _appState.selection;
+			var groupOp:KCompositeOperation = new KCompositeOperation();
+			var groupedObjectList:IModelObjectList = _facade.group(oldSel.objects, _appState.time, breakOut, groupOp);
+			
+			if(groupedObjectList)
+				var newSelection:KSelection = new KSelection(groupedObjectList, _appState.time);
+			
+			
 			/*var op:IModelOperation = _facade.group(oldSel.objects, mode, type, time);
 			if (op != null)
 			{

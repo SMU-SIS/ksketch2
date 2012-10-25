@@ -191,6 +191,9 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		protected function performGroupingOp(objects:IModelObjectList):IModelOperation
 		{
+			if(_appState.groupingMode != KAppState.GROUPING_IMPLICIT_STATIC)
+				return null;
+			
 			if(objects.length() > 1)
 			{
 				var groupOp:KCompositeOperation = new KCompositeOperation();

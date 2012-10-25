@@ -125,6 +125,9 @@ package sg.edu.smu.ksketch.interactor
 		 */
 		protected override function performGroupingOp(objects:IModelObjectList):IModelOperation
 		{
+			if(_appState.groupingMode != KAppState.GROUPING_IMPLICIT_STATIC)
+				return null;
+			
 			var groupOp:KCompositeOperation = new KCompositeOperation();
 			var groupedObjects:IModelObjectList = _facade.group(objects,_appState.time, BREAK_OUT, groupOp);
 			_appState.selection = new KSelection(groupedObjects, _appState.time);

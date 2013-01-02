@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			public static const BAR_GAP:Number = 2.5;
+			public static const SELECTED_OVERVIEW_COLORS:Array = [0x000000, 0xE6E8ED];
+			public static const UNSELECTED_OVERVIEW_COLORS:Array = [0x7e7f82,0x8f9094];
+			public static const ROTATE_COLORS:Array = [0xFFFFFF,[0x52af86,0X5ad9a0]];
+			public static const SCALE_COLORS:Array = [0xFFFFFF, [0xc6394a,0xe44759]];
+			public static const TRANSLATE_COLORS:Array = [0xFFFFFF,[0x1c87b1,0x2599c7]];
+			
+			private var _leftMarker:KTimeMarker;
+			private var _rightMarker:KTimeMarker;
+			public var selected:Boolean;
+			public var colorSet:Array;
+			public var type:int;
+			
+			public function initBar(left:KTimeMarker, right:KTimeMarker):void
+			{
+				_leftMarker = left;
+				if(_leftMarker.selected)
+					selected = true;
+				_rightMarker = right;
+				if(_rightMarker.selected)
+					selected = true;
+				_leftMarker.activityBars.push(this);
+				_rightMarker.activityBars.push(this);
+				
+				colorSet = [];
+				bar.height = 7;
+			}
+			
+			public function renderBar():void
+			{
+				//Compute xpos of this bar and its width
+				x = _leftMarker.x+BAR_GAP;
+				width = _rightMarker.x - _leftMarker.x - BAR_GAP;
+				
+				if(_leftMarker.selected)
+				{
+					colorSet = SELECTED_OVERVIEW_COLORS;
+					barOutline.color = colorSet[0];
+					entry1.color = colorSet[1];
+					entry2.color = colorSet[1];
+				}
+				else
+				{
+					colorSet = UNSELECTED_OVERVIEW_COLORS;
+					barOutline.color = colorSet[0];
+					entry1.color = colorSet[0];
+					entry2.color = colorSet[1];
+					
+				}
+			}
+			
+			public function get leftMarker():KTimeMarker
+			{
+				return _leftMarker;
+			}
+			
+			public function set leftMarker(value:KTimeMarker):void
+			{
+				_leftMarker = value;
+			}
+			
+			public function get rightMarker():KTimeMarker
+			{
+				return _rightMarker;
+			}
+			
+			public function set rightMarker(value:KTimeMarker):void
+			{
+				_rightMarker = value;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Rect height="19" width="100%" id="bar">                           
+		<s:stroke>
+			<s:SolidColorStroke color="0x000000" weight="0.5" id="barOutline"/>
+		</s:stroke>
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry id="entry1" ratio="0.44"/>
+				<s:GradientEntry id="entry2" ratio="0.77"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+</s:Group>

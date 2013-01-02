@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="100%" height="25" borderVisible="false">
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+			import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
+			import sg.edu.smu.ksketch2.events.KSketchEvent;
+			import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
+			import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
+			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+			import sg.edu.smu.ksketch2.model.objects.KGroup;
+			import sg.edu.smu.ksketch2.model.objects.KObject;
+			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+			import sg.edu.smu.ksketch2.utils.SortingFunctions;
+			
+			public var maxTime:int;
+			private var _KSketch:KSketch2;
+			private var _timeControl:KTimeControl;
+			private var _interactionControl:IInteractionControl;
+			
+			private var _stackedMarkers:Vector.<KTimeMarker>;
+			private var _markers:Vector.<KTimeMarker>;
+			private var _selectedMarkers:Vector.<KTimeMarker>;
+			private var _unselectedMarkers:Vector.<KTimeMarker>;
+			private var _activityBars:Vector.<KMarkerActivityBar>;
+			
+			private var _targetMarker:KTimeMarker;
+			private var _startX:Number;
+			private var _changeX:Number;
+			
+			public function init(KSketchInstance:KSketch2, timeControl:KTimeControl, interactionControl:IInteractionControl):void
+			{
+				_KSketch = KSketchInstance;
+				_timeControl = timeControl;
+				_interactionControl = interactionControl;
+			}
+			
+			
+			/**
+			 * Refresh updates the time marker widget.
+			 * Triggers when the model is updated
+			 * Can force a refresh if you pass in an event with the scene graph's root in it.
+			 */
+			public function refresh():void
+			{
+				_timeControl.invalidateDisplayList();
+				maxTime = 0;
+				selectedBarContainer.removeAllElements();
+				selectedMarkerContainer.removeAllElements();
+				unselectedBarContainer.removeAllElements();
+				unselectedMarkerContainer.removeAllElements();
+				_createMarkers();
+			}
+			
+			/**
+			 * Function to fill and instantiate the two marker vectors with usable markers
+			 */
+			private function _createMarkers():void
+			{
+				_selectedMarkers = new Vector.<KTimeMarker>();
+				_unselectedMarkers = new Vector.<KTimeMarker>();
+				var selectedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+				var unselectedKeys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
+				var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
+				
+				var i:int;
+				var j:int;
+				var currentObject:KObject;
+				var length:int = allObjects.length();
+				var currentKey:IKeyFrame;
+				var holdingVector:Vector.<IKeyFrame>;
+				var availableKeyHeaders:Vector.<IKeyFrame>;
+				_timeControl.timeList = new Vector.<int>();
+				
+				for(i = 0; i<length; i++)
+				{
+					currentObject = allObjects.getObjectAt(i);
+					
+					if(currentObject.selected)
+						holdingVector = selectedKeys;
+					else
+						holdingVector = unselectedKeys;
+					
+					availableKeyHeaders = currentObject.transformInterface.getAllKeyFrames();
+					currentKey = currentObject.visibilityControl.visibilityKeyHeader;
+					
+					if(currentKey)
+						availableKeyHeaders.push(currentKey);
+					
+					for(j = 0; j < availableKeyHeaders.length; j++)
+					{
+						currentKey = availableKeyHeaders[j];
+						while(currentKey)
+						{
+							currentKey.ownerID = currentObject.id;
+							holdingVector.push(currentKey);
+							currentKey = currentKey.next
+						}
+					}
+				}
+
+				selectedKeys.sort(SortingFunctions._compareKeyTimes);
+				unselectedKeys.sort(SortingFunctions._compareKeyTimes);
+				
+				if(selectedKeys.length > 0)
+					maxTime = selectedKeys[selectedKeys.length -1].time;
+				
+				if(unselectedKeys.length > 0)
+				{
+					if(unselectedKeys[unselectedKeys.length -1].time > maxTime)
+						maxTime = unselectedKeys[unselectedKeys.length -1].time;
+				}
+				
+				_timeControl.updateMaxTime(maxTime);
+				_markers = new Vector.<KTimeMarker>();
+				_generateMarkers(_selectedMarkers, selectedKeys, true);
+				_generateMarkers(_unselectedMarkers, unselectedKeys, false);
+				
+				_timeControl.timeList.sort(SortingFunctions._sortInt);
+				_markers.sort(SortingFunctions._compareMarkerPosition);
+			}
+			
+			
+			/**
+			 * Sets the dragging of a clicked widget
+			 */
+			private function _marker_MouseDown(event:MouseEvent):void
+			{
+				if(event.target is KTimeMarker)
+				{
+					stage.addEventListener(MouseEvent.MOUSE_MOVE,_widget_MouseMove,true, 0, true);
+					stage.addEventListener(MouseEvent.MOUSE_UP,_widget_MouseUp, true, 0, true);
+					
+					_targetMarker = event.target as KTimeMarker;
+					_startX = globalToLocal(new Point(event.stageX, event.stageY)).x;
+					_changeX = 0;
+					
+					var targetMarkerVector:Vector.<KTimeMarker> = _targetMarker.selected? _selectedMarkers:_unselectedMarkers;
+					_stackedMarkers = new Vector.<KTimeMarker>();
+					
+					for(var i:int = 0; i< targetMarkerVector.length; i++)
+					{
+						if(targetMarkerVector[i].time == _targetMarker.time)
+							_stackedMarkers.push(targetMarkerVector[i]);
+					}
+				}
+			}
+			
+			private function _widget_MouseMove(event:MouseEvent):void
+			{
+				if(!_targetMarker)
+					return;
+
+				//Compute mouse drag _changeX
+				//_changeX adheres strictly to frame boundaries.
+				var currentMouseX:Number = globalToLocal(new Point(event.stageX, event.stageY)).x;
+				_changeX = currentMouseX - _startX;
+				_changeX = _timeControl.nearestSnappedXValue(_changeX);
+				var xPos:Number = _targetMarker.originalPosition+_changeX;
+				//Set limits for the mouse drag so the target marker does not move out of the
+				//Defined track region
+				if(xPos < 0)
+					xPos = 0;
+				else if(width < xPos)
+					xPos = width;
+				
+				for each(var stackedMarker:KTimeMarker in _stackedMarkers)
+				{
+					xPos = _timeControl.timeToPosition(_timeControl.positionToTime(xPos));
+					stackedMarker.moveWithStacking(xPos, _timeControl.pixelPerFrame);
+					stackedMarker.changeX = _targetMarker.x - _targetMarker.originalPosition;
+					stackedMarker.moveFutureMarkers(_targetMarker.changeX);
+				}
+				
+				_renderBars();
+			}
+			
+			private function _widget_MouseUp(event:MouseEvent):void
+			{
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE,_widget_MouseMove,true);
+				stage.removeEventListener(MouseEvent.MOUSE_UP,_widget_MouseUp, true);
+				
+				if(!_targetMarker)
+					return;
+				
+				if(Math.abs(_changeX) < _timeControl.pixelPerFrame)
+					return;
+				
+				//Actual condition will be for each marker moved
+				//Do the following
+				var selectedMarker:KTimeMarker;
+				var unselectedMarker:KTimeMarker;
+				var retimeTo:Number;
+				
+				var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
+				_interactionControl.begin_interaction_operation();
+				var retimeKeyOp:KCompositeOperation = new KCompositeOperation();
+				_selectedMarkers.sort(SortingFunctions._compareMarkerInitTime);
+				_unselectedMarkers.sort(SortingFunctions._compareMarkerInitTime);
+
+				for each(selectedMarker in _selectedMarkers)
+				{
+					retimeTo = _timeControl.positionToTime(selectedMarker.x);
+					_KSketch.editKeyTime(allObjects.getObjectByID(selectedMarker.key.ownerID), selectedMarker.key, retimeTo, retimeKeyOp);
+				}
+				
+				for each(unselectedMarker in _unselectedMarkers)
+				{
+					retimeTo = _timeControl.positionToTime(unselectedMarker.x);
+					_KSketch.editKeyTime(allObjects.getObjectByID(unselectedMarker.key.ownerID), unselectedMarker.key, retimeTo, retimeKeyOp);
+				}
+				
+				_interactionControl.end_interaction_operation(retimeKeyOp, _interactionControl.selection);
+				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
+			}
+			
+			/**
+			 * Interactions
+			 */
+			
+			/**
+			 * Places the markers on the screen
+			 */
+			private function _generateMarkers(markers:Vector.<KTimeMarker>, keys:Vector.<IKeyFrame>, selected:Boolean):void
+			{
+				var prevKey:IKeyFrame;
+				var currentKey:IKeyFrame;
+				while(0 < keys.length)
+				{
+					currentKey = keys.shift();
+					
+					var newMarker:KTimeMarker = new KTimeMarker();
+					newMarker.selected = selected;
+					newMarker.key = currentKey;
+					newMarker.associatedObject = currentKey.ownerID;
+					newMarker.time = currentKey.time;
+					newMarker.activityBars = new Vector.<KMarkerActivityBar>();
+					markers.push(newMarker);
+					_markers.push(newMarker);
+					_timeControl.timeList.push(newMarker.time);
+					
+					prevKey = currentKey;
+				}
+				
+				var i:int;
+				var currentMarker:KTimeMarker;
+				var previousMarker:KTimeMarker;
+				var targetContainer:Group = selected? selectedMarkerContainer:unselectedMarkerContainer;
+
+				for(i = 0; i<markers.length; i++)
+				{
+					currentMarker = markers[i];
+					currentMarker.x = _timeControl.timeToPosition(currentMarker.time);
+					currentMarker.originalPosition = currentMarker.x;
+					targetContainer.addElement(currentMarker);
+					currentMarker.prev = previousMarker;
+					currentMarker.addEventListener(MouseEvent.MOUSE_DOWN,_marker_MouseDown, false, 0, true);
+					if(previousMarker)
+						previousMarker.next = currentMarker;
+					previousMarker = currentMarker;
+				}
+				
+				for(i = 0; i < markers.length; i++)
+					markers[i].updateAssociation();
+				
+				_generateActivityBars(markers, selected);
+			}
+			
+			/**
+			 * Generates activity bars for the the given type of markers
+			 */
+			private function _generateActivityBars(markers:Vector.<KTimeMarker>,selected:Boolean):void
+			{
+				_activityBars = new Vector.<KMarkerActivityBar>();
+				
+				var targetBarContainer:Group = selected? selectedBarContainer:unselectedBarContainer;
+				var newActivityBar:KMarkerActivityBar;
+				var currentRightMarker:KTimeMarker;
+				var currentLeftMarker:KTimeMarker;
+				var targetLeftMarker:KTimeMarker;
+				
+				var i:int;
+				var j:int;
+				
+				for(i = markers.length-1; -1 < i; i--)
+				{
+					
+					targetLeftMarker = null;
+					
+					currentRightMarker = markers[i];
+					
+					//Find target left marker
+					//Left marker must be the marker furthest away from the current right marker
+					if(!(currentRightMarker.key is ISpatialKeyFrame))
+						continue;
+						
+					if(!currentRightMarker.key.hasActivityAtTime())
+						continue;
+					
+					j = i-1;
+					
+					for(j; -1 < j; j--)
+					{
+						currentLeftMarker = markers[j];
+						
+						if(currentLeftMarker.key.next == currentRightMarker.key)
+						{
+							targetLeftMarker = currentLeftMarker;
+							break;
+						}
+					}
+					
+					if(targetLeftMarker)
+					{
+						newActivityBar = new KMarkerActivityBar();
+						newActivityBar.initBar(targetLeftMarker, currentRightMarker);
+						targetBarContainer.addElement(newActivityBar);
+						newActivityBar.renderBar();
+						_activityBars.push(newActivityBar);
+					}
+				}
+			}
+			
+			/**
+			 * rerenders all the bars in this time widget
+			 */
+			private function _renderBars():void
+			{
+				for each(var activityBar:KMarkerActivityBar in _activityBars)
+				{
+					activityBar.renderBar();
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:backgroundFill>
+		<s:LinearGradient rotation="90">
+			<s:GradientEntry color="0x36466E"/>
+			<s:GradientEntry color="0x557695"/>
+		</s:LinearGradient>
+	</s:backgroundFill>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="unselectedBarContainer"/>
+	</s:Group>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="unselectedMarkerContainer"/>
+	</s:Group>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="selectedBarContainer"/>
+	</s:Group>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="selectedMarkerContainer"/>
+	</s:Group>
+</s:BorderContainer>

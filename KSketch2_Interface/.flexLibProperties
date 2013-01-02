@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="sg.edu.smu.ksketch2.utils.KMouseCursors"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.KIOEvent"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.inputmethods.KDesktopInput"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.inputmethods.IInteractionMethod"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.interactionmodes.IInteractionMode"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.interactionmodes.KManipulationMode"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.interactionmodes.KGestureMode"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.interactionmodes.KDrawingMode"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.KMouseCursorEvent"/>
+    <classEntry path="sg.edu.smu.ksketch2.OptionsPanel"/>
+    <classEntry path="sg.edu.smu.ksketch2.view.KPathView"/>
+    <classEntry path="sg.edu.smu.ksketch2.view.KSingleCenterPathView"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.interactors.KEraserInteractor"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

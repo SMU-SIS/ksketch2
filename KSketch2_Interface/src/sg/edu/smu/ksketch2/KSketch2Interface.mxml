@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		 xmlns:components="sg.edu.smu.ksketch2.components.*"
+		 xmlns:view="sg.edu.smu.ksketch2.view.*"
+		 xmlns:controls="sg.edu.smu.ksketch2.controls.*"
+		 addedToStage="_initStates()" xmlns:buttons="sg.edu.smu.ksketch2.controls.buttons.*" xmlns:local="*" xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*" xmlns:timewidget="sg.edu.smu.ksketch2.controls.widgets.timewidget.*"
+		 >
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Image;
+			import mx.resources.ResourceManager;
+			
+			import sg.edu.smu.ksketch2.controls.inputmethods.IInteractionMethod;
+			import sg.edu.smu.ksketch2.controls.inputmethods.KDesktopInput;
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
+			import sg.edu.smu.ksketch2.model.data_structures.KPath;
+			import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
+			import sg.edu.smu.ksketch2.utils.KButtonCommandExecutor;
+			import sg.edu.smu.ksketch2.utils.KIOEvent;
+			
+			import spark.components.Image;
+
+			private var _KSketch:KSketch2;
+			private var _inputMethod:IInteractionMethod;
+			private var _interactionControl:IInteractionControl;
+			private var _commandInterface:KButtonCommandExecutor;
+						
+			public function init():void
+			{
+				_KSketch = new KSketch2();
+				_interactionControl = new KInteractionControl(_KSketch, modelDisplay, timeSlider, interactionWidget, timeWidget);
+				_commandInterface = new KButtonCommandExecutor(_KSketch, _interactionControl, timeSlider);
+				_commandInterface.debugDisplay = modelDisplay;
+			}
+			
+			private function _initStates():void
+			{
+				modelDisplay.init(_KSketch);
+				interactionWidget.init(_interactionControl);
+				timeSlider.init(_KSketch);
+				timeWidget.init(_KSketch, timeSlider, _interactionControl);
+				btn_play.init(_commandInterface, timeSlider);
+				group_fileOps.init(_commandInterface, this);
+				group_editOps.init(_commandInterface);
+				group_Operations.init(_commandInterface, _interactionControl);
+				group_groupOps.init(_commandInterface, _interactionControl);
+				group_pen.init(_commandInterface);
+				group_key.init(_commandInterface, _interactionControl, _KSketch);
+				group_configOps.init();
+				
+				_interactionControl.init();
+				
+				_inputMethod = new KDesktopInput();
+				_inputMethod.init(interactionLayer, _interactionControl, interactionWidget, modelDisplay);				
+			}
+			
+			public function loadFile(readData:XML):void
+			{
+				_commandInterface.newFile();
+				_KSketch.generateSceneFromXML(new XML(readData.scene));
+			}
+			
+			public function focusApp():void
+			{
+				if(_interactionControl)
+					_interactionControl.determineMode();
+			}
+			
+			public function scenePresent():Boolean
+			{
+				var sceneXML:XML = _KSketch.sceneXML;
+				
+				return 0 < sceneXML.children().length()
+			}
+			
+			public function triggerSave():void
+			{
+				var xml:XML = _commandInterface.saveFile();
+
+				if(xml)
+					dispatchEvent(new KIOEvent(KIOEvent.EVENT_SAVE, xml, true));
+			}
+		]]>
+	</fx:Script>
+	
+	
+	<s:Rect width="100%" height="100%" id="mainContainer_BG">
+		<s:fill>
+			<s:SolidColor color="0X748993"/>
+		</s:fill>
+	</s:Rect>
+
+	<s:Group width="100%" height="100%" id="mainLayout_Group">
+		<s:layout>
+			<s:VerticalLayout gap="0"/>
+		</s:layout>
+		
+		<!--Top bar-->
+		<s:Group id="topBar" width="100%">
+			
+			<s:Rect id="topBar_BG" width="100%" height="100%">
+				<s:fill>
+					<s:LinearGradient rotation="90">
+						<s:GradientEntry ratio="0.011378" color="#BCD4EB"/>
+						<s:GradientEntry ratio="0.988622" color="#476584"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			
+			<s:Group id="topBar_buttonContainer" width="100%" height="100%">
+				
+				<s:layout>
+					<s:HorizontalLayout gap="5" paddingLeft="5" paddingRight="2" paddingTop="2" paddingBottom="2"/>
+				</s:layout>
+				<buttons:Group_IO id="group_fileOps"/>
+				<buttons:Group_Edit id="group_editOps" visible="false" includeInLayout="false"/>
+				<buttons:Group_Operation id="group_Operations"/>
+				<buttons:Group_Grouping id="group_groupOps"/>
+				<buttons:Group_Pen id="group_pen"/>
+				<buttons:Group_Key id="group_key"/>
+				<!--black red green blue white-->
+				
+				<!--Stretchable part of the top bar-->
+				<s:Group id = "topBar_resizableContainer" width="100%"/>
+				<buttons:Group_Settings id="group_configOps"/>
+			</s:Group>
+			
+		</s:Group>
+		<!-- end of top bar-->
+		
+		<!--Drawing area-->
+		<s:BorderContainer width="100%" height="100%" id="drawingArea" backgroundColor="0X748993">
+			<s:Group width="100%" height="100%">
+				<s:layout>
+					<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+				</s:layout>
+				<s:BorderContainer backgroundColor="0xFFFFFF" id="drawing_stage" borderColor="0x0000" borderWeight="2"
+								   width="{drawing_stage.height/9*16}" height="90%">
+					<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
+										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
+				</s:BorderContainer>
+			</s:Group>
+
+			<s:Group id="interactionLayer" width="100%" height="100%">
+				<widgets:KWidget id="interactionWidget" includeInLayout="false"/>
+			</s:Group>
+		</s:BorderContainer>
+		
+		<!-- Time bar-->
+		<s:Group id="timeBar" width="100%">
+			
+			<s:Group width="100%" id="timeBarMainGroup">
+				<s:Rect width="100%" height="100%">
+					<s:fill>
+						<s:LinearGradient rotation="90">
+							<s:GradientEntry ratio="0.011378" color="#BCD4EB"/>
+							<s:GradientEntry ratio="0.988622" color="#476584"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Rect>
+				
+				<s:Group width="100%" height="100%">
+					<s:layout>
+						<s:HorizontalLayout gap="3" paddingLeft="3" paddingTop="3" paddingBottom="5" paddingRight="3"/>
+					</s:layout>
+					<s:Group>
+						<s:layout>
+							<s:VerticalLayout gap="2" horizontalAlign="right"/>
+						</s:layout>
+						<s:Group>
+							<s:layout>
+								<s:HorizontalLayout gap="1"/>
+							</s:layout>
+							<buttons:Button_PlayPause id="btn_play"/>
+							<local:Button_Rewind id="btn_firstFrame" click="_commandInterface.rewind()"/>
+							<local:Button_PrevFrame id="btn_previous" click="_commandInterface.prevFrame()"/>	
+						</s:Group>
+					</s:Group>
+					
+					<s:Group width="100%">
+						<s:layout>
+							<s:VerticalLayout horizontalAlign="center"/>
+						</s:layout>
+						<s:Group width="100%" depth="1">
+							<s:Rect width="100%" height="100%" radiusX="10">
+								<s:fill>
+									<s:LinearGradient rotation="90">
+										<s:GradientEntry ratio="0.011378" color="#5D82A8"/>
+										<s:GradientEntry ratio="0.988622" color="#476584"/>
+									</s:LinearGradient>
+								</s:fill>
+							</s:Rect>
+							<s:Group width="100%">
+								<s:layout>
+									<s:VerticalLayout horizontalAlign="center"/>
+								</s:layout>
+								<widgets:KTimeControl width="98%" height="30" id="timeSlider" skinClass="sg.edu.smu.ksketch2.controls.skins.TimeSliderSkin"/>
+							</s:Group>
+						</s:Group>
+						<s:Group width="100%">
+							<s:layout>
+								<s:VerticalLayout horizontalAlign="center"/>
+							</s:layout>
+							<timewidget:KTimeMarkerWidget width="98%" height="30" id="timeWidget"/>
+						</s:Group>
+					</s:Group>
+					
+					<local:Button_NextFrame id="btn_next" click="_commandInterface.nextFrame()"/>
+				</s:Group>
+			</s:Group>
+			
+		</s:Group>
+		<!--End of time bar-->
+	</s:Group>
+</s:Group>

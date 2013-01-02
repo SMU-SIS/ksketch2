@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
+			import sg.edu.smu.ksketch2.utils.KButtonCommandExecutor;
+			
+			private var _commandExecutor:KButtonCommandExecutor;
+			
+			public function init(executor:KButtonCommandExecutor, timeControl:KTimeControl):void
+			{
+				_commandExecutor = executor;
+				timeControl.addEventListener(KTimeControl.PLAY_START, _handlePlayPause);
+				timeControl.addEventListener(KTimeControl.PLAY_STOP, _handlePlayPause);
+			}
+			
+			public function clickPlay():void
+			{
+				_commandExecutor.play();
+			}
+			
+			public function clickPause():void
+			{
+				_commandExecutor.pause();
+			}
+			
+			private function _handlePlayPause(event:Event):void
+			{
+				if(event.type == KTimeControl.PLAY_START)
+				{
+					btn_play.depth = 1;
+					btn_pause.depth = 0;
+				}
+				else
+				{
+					btn_play.depth = 0;
+					btn_pause.depth = 1;
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<local:Button_Pause id="btn_play" click="clickPause()"/>
+	<local:Button_Play id="btn_pause" click="clickPlay()"/>
+</s:Group>

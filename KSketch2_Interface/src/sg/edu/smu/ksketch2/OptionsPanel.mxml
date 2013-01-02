@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" width="250" height="300"
+				   close="closeOptions()" title="Study Options" creationComplete="initDefaults()">
+	<fx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
+			import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
+			
+			public function initDefaults():void
+			{
+				speedValues.selectedIndex = 2;
+				discardTiming.selected = true;
+				demoSticky.selected = true;
+				autoKeys.selected = true;
+				uninterpolateTranslate.selected = true;
+				uninterpolateRotate.selected = false;
+				uninterpolateScale.selected = false;
+				
+				_applySpeed();
+				_applyTiming();
+				_applyStickyDemoMode();
+				_applyAutoInsertInterpolateKeys();
+				_applyAutoUninterpolate();
+			}
+			
+			private function _applySpeed():void
+			{
+				KTimeControl.recordingSpeed = speedValues.selectedItem as Number;
+			}
+			
+			private function _applyTiming():void
+			{
+				KSketch2.discardTransitionTimings = discardTiming.selected;
+			}
+			
+			private function _applyStickyDemoMode():void
+			{
+				KInteractionControl.stickyDemonstration = demoSticky.selected;
+			}
+			
+			private function _applyAutoInsertInterpolateKeys():void
+			{
+				KSketch2.addInterpolationKeys = autoKeys.selected;
+			}
+			
+			private function _applyAutoUninterpolate():void
+			{
+				KSketch2.returnTranslationInterpolationToZero = uninterpolateTranslate.selected;
+				KSketch2.returnRotationInterpolationToZero = uninterpolateRotate.selected;
+				KSketch2.returnScaleInterpolationToZero = uninterpolateScale.selected;
+			}
+			
+			private function closeOptions():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</fx:Script>
+	<s:layout>
+		<s:VerticalLayout paddingTop="5" paddingLeft="5" paddingRight="5" paddingBottom="5" horizontalAlign="left"/>
+	</s:layout>
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout paddingTop="3" paddingLeft="3" verticalAlign="middle" horizontalAlign="left" gap="3"/>
+		</s:layout>
+		<s:Label text="Recording Speed"/>
+		<s:DropDownList id="speedValues" change="_applySpeed()">
+			<s:ArrayCollection>
+				<fx:Number>0.25</fx:Number>
+				<fx:Number>0.5</fx:Number>
+				<fx:Number>1</fx:Number>
+				<fx:Number>2</fx:Number>
+				<fx:Number>4</fx:Number>
+			</s:ArrayCollection>
+		</s:DropDownList>
+	</s:Group>
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout paddingTop="3" paddingLeft="3" verticalAlign="middle" horizontalAlign="left" gap="3"/>
+		</s:layout>
+		<s:Label text="Discard Timing"/>
+		<s:CheckBox id="discardTiming" change="_applyTiming()"/>
+	</s:Group>
+	
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout paddingTop="3" paddingLeft="3" verticalAlign="middle" horizontalAlign="left" gap="3"/>
+		</s:layout>
+		<s:Label text="Sticky Demonstration"/>
+		<s:CheckBox id="demoSticky" change="_applyStickyDemoMode()"/>
+	</s:Group>
+	
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout paddingTop="3" paddingLeft="3" verticalAlign="middle" horizontalAlign="left" gap="3"/>
+		</s:layout>
+		<s:Label text="Automatically Insert Interpolation Keys"/>
+		<s:CheckBox id="autoKeys" change="_applyAutoInsertInterpolateKeys()"/>
+	</s:Group>
+	<s:Label text="Automatically UnInterpolate:"/>
+	
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout paddingTop="3" paddingLeft="3" verticalAlign="middle" horizontalAlign="left" gap="3"/>
+		</s:layout>
+		<s:Label text="Translation"/>
+		<s:CheckBox id="uninterpolateTranslate" change="_applyAutoUninterpolate()"/>
+	</s:Group>
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout paddingTop="3" paddingLeft="3" verticalAlign="middle" horizontalAlign="left" gap="3"/>
+		</s:layout>
+		<s:Label text="Rotation"/>
+		<s:CheckBox id="uninterpolateRotate" change="_applyAutoUninterpolate()"/>
+	</s:Group>
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout paddingTop="3" paddingLeft="3" verticalAlign="middle" horizontalAlign="left" gap="3"/>
+		</s:layout>
+		<s:Label text="Scale"/>
+		<s:CheckBox id="uninterpolateScale" change="_applyAutoUninterpolate()"/>
+	</s:Group>
+</s:TitleWindow>

@@ -1,0 +1,2 @@
+This project should be considered the interface for ksketch. The projects linking to it, KSketch2_web and KSketch2_air are just shells to deliver
+the application.

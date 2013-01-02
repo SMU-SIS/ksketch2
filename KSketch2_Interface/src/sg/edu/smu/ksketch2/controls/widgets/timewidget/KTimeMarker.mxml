@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="12" height="21">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
+			import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
+			import sg.edu.smu.ksketch2.model.data_structures.IVisibilityKey;
+			
+			public static const MARKER_SELECTED:String = "SELECTED";
+			public static const MARKER_UNSELECTED:String = "UNSELECTED";
+			
+			public var key:IKeyFrame;
+			public var associatedObject:int;
+			public var activityBars:Vector.<KMarkerActivityBar>;
+			public var time:int;
+			public var prev:KTimeMarker;
+			public var next:KTimeMarker;
+			public var changeX:Number;
+			public var prevAssociated:KTimeMarker;
+			public var nextAssociated:KTimeMarker;
+			public var originalPosition:Number;
+			
+			private var _selected:Boolean;
+			
+			public function updateAssociation():void
+			{
+				var prevMarker:KTimeMarker = prev;
+				
+				while(prevMarker)
+				{
+					if(!prevMarker.canStackWith(this))
+					{
+						prevAssociated = prevMarker;
+						prevMarker.nextAssociated = this;
+						prevMarker = null;
+					}
+					else
+						prevMarker = prevMarker.prev;
+				}
+			}
+			
+			public function set selected(value:Boolean):void
+			{
+				_selected = value;
+				if(_selected)
+					currentState = MARKER_SELECTED;
+				else
+					currentState = MARKER_UNSELECTED;
+			}
+			
+			public function get selected():Boolean
+			{
+				return _selected;
+			}
+			
+			public function canStackWith(toStackMarker:KTimeMarker):Boolean
+			{			
+				var toStackKey:IKeyFrame = toStackMarker.key;
+				
+				if(associatedObject != toStackMarker.associatedObject)
+					return true;
+				
+				if(key is IVisibilityKey && toStackKey is ISpatialKeyFrame)
+					return true;
+				
+				if(key is ISpatialKeyFrame && toStackKey is IVisibilityKey)
+					return true;
+				
+				if(key is ISpatialKeyFrame && toStackKey is ISpatialKeyFrame)
+					return !(toStackKey as ISpatialKeyFrame).hasActivityAtTime();
+				
+				return false;
+			}
+			
+			public function moveFutureMarkers(dX:Number):void
+			{
+				if(next)
+				{
+					var nextX:Number = next.originalPosition + dX;
+					next.updateX(nextX);
+					next.moveFutureMarkers(dX);
+				}
+			}
+			
+			public function updateX(xPos:Number):void
+			{
+				x = xPos;
+					
+				for each(var activityBar:KMarkerActivityBar in activityBars)
+					activityBar.renderBar();
+			}
+			
+			/**
+			 * Move marker to toXPos, taking into considerations its collisions with markers in front of it
+			 */
+			public function moveWithStacking(toXPos:Number, pixelPerFrame:Number):void
+			{
+				//If there is no prev, prev associated should not exist!
+				if(prev)
+				{
+					//Handle the prev first
+					//If prev is not associated, then we stack prev and this
+					//If prev is associated then we dont do anything first
+					if((toXPos-1) <= prev.originalPosition)
+					{
+						if(prev != prevAssociated)
+							prev.moveWithStacking(toXPos, pixelPerFrame);
+					}
+					
+					//Then we handle the bunching case
+					if(prevAssociated)
+					{
+						if((toXPos-1) <= prevAssociated.originalPosition)
+						{
+							var prevX:Number = toXPos - pixelPerFrame;
+							
+							if(prevX <= 0)
+								prevX = 0;
+							
+							prevAssociated.moveWithStacking(prevX, pixelPerFrame);
+							toXPos = prevAssociated.x + pixelPerFrame;
+						}
+					}
+				}
+				
+				updateX(toXPos);
+			}
+		]]>
+	</fx:Script>
+	<s:states>
+		<s:State name="SELECTED" id="state_selected"/>
+		<s:State name="UNSELECTED" id="state_unselected"/>
+	</s:states>
+	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="UNSELECTED" x="-5.5">                              
+		<s:stroke>
+			<s:SolidColorStroke color="0x6d6e70" weight="1"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="0xadb2bb" alpha="1"/>
+		</s:fill>
+	</s:Rect>
+	<s:Rect height="100%" width="100%" radiusX="2" radiusY="2" includeIn="SELECTED" x="-5.5">                              
+		<s:stroke>
+			<s:SolidColorStroke color="0x000000" weight="0"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="0xE6E8ED" alpha="1"/>
+		</s:fill>
+	</s:Rect>
+</s:Group>

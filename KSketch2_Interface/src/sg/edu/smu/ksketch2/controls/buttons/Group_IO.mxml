@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*">
+	
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketch2Interface;
+			import sg.edu.smu.ksketch2.utils.KButtonCommandExecutor;
+			import sg.edu.smu.ksketch2.utils.KIOEvent;
+			
+			private var _hostInterface:KSketch2Interface;
+			private var _commandExecutor:KButtonCommandExecutor;
+			
+			public function init(executor:KButtonCommandExecutor, host:KSketch2Interface):void
+			{
+				_commandExecutor = executor;
+				_hostInterface = host;
+			}
+			
+			private function _saveFile():void
+			{
+				var xml:XML = _commandExecutor.saveFile();
+				
+				if(xml)
+					_hostInterface.dispatchEvent(new KIOEvent(KIOEvent.EVENT_SAVE, xml));
+			}
+			
+			private function _loadFile():void
+			{
+				_hostInterface.dispatchEvent(new KIOEvent(KIOEvent.EVENT_LOAD));
+			}
+		]]>
+	</fx:Script>
+	<s:Rect width="100%" height="100%" radiusX="15">
+		<s:fill>
+			<s:LinearGradient rotation="270">
+				<s:GradientEntry ratio="0.011378" color="#BCD4EB"/>
+				<s:GradientEntry ratio="0.988622" color="#476584"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout gap="2" paddingLeft="8" paddingTop="3.5" paddingRight="8" paddingBottom="3.5"/>
+		</s:layout>
+		
+		<local:Button_New id="btn_new" click="_commandExecutor.newFile()"/>
+		<local:Button_LoadFile id="btn_load" click="_loadFile()"/>
+		<local:Button_Save id="btn_save" click="_saveFile()"/>
+		<local:Button_Export id="btn_FLV" click="_commandExecutor.export()"/>
+		<local:Button_WebCam id="btn_IMG" click="_commandExecutor.importImage()"/>
+	</s:Group>
+</s:Group>

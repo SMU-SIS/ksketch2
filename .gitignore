@@ -11,14 +11,6 @@ bin-release/
 #mac ds store
 .DS_Store
 
-KSketchApp_Designer/.flexLibProperties
-
-KSketchApp_Lib/.flexLibProperties
-
-PlaySketchDevTools/.flexLibProperties
-
-PlaySketchInterface_Lib/.flexLibProperties
-
 PlaySketchWebApplication/html-template/history/history.css
 
 PlaySketchWebApplication/html-template/history/history.js

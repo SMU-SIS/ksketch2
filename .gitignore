@@ -6,7 +6,6 @@ bin-release/
 .metadata
 
 # Project property files
-.flexProperties
 .settings/
 
 #mac ds store

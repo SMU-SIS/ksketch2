@@ -27,7 +27,6 @@
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_agent.swc" useDefaultLinkType="false"/>
         </excludedEntries>
       </libraryPathEntry>
-      <libraryPathEntry kind="1" linkType="1" path="libs"/>
       <libraryPathEntry kind="3" linkType="1" path="/KSketch2_Interface/bin/KSketch2_Interface.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
@@ -42,12 +41,12 @@
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
   <buildTargets>
     <buildTarget buildTargetName="com.adobe.flexide.multiplatform.ios.platform" iosSettingsVersion="1" provisioningFile="/Users/jtkhoo/Documents/Dropbox/StorySketch (1)/PlaySketchReleases/KSketchWildcardProvisioningProfile_v1.mobileprovision" releasePackageType="ipa-ad-hoc">
-      <multiPlatformSettings enabled="true" includePlatformLibs="false" platformID="com.adobe.flexide.multiplatform.ios.platform" version="2"/>
       <airSettings airCertificatePath="/Users/jtkhoo/Documents/RCDavisIOSDeveloper.p12" airTimestamp="true" version="1">
         <airExcludes>
           <pathEntry path="blackberry-tablet.xml"/>
         </airExcludes>
       </airSettings>
+      <multiPlatformSettings enabled="true" includePlatformLibs="false" platformID="com.adobe.flexide.multiplatform.ios.platform" version="2"/>
       <actionScriptSettings version="1"/>
     </buildTarget>
     <buildTarget airDownloadURL="https://market.android.com/details?id=com.adobe.air" androidSettingsVersion="1" buildTargetName="com.adobe.flexide.multiplatform.android.platform">

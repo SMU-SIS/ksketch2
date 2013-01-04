@@ -1,12 +1,21 @@
-ksketch2
-========
+Building and Running KSketch2 - Reworked
+========================================
 
-Building KSketch2
+**In Flash Builder 4.5 and later**
+1. Download the code
+2. Start up flash builder, make sure the workbench is at the root of your cloned KSketch2 directory
+3. Import these projects - KSketch2_Desktop, KSketch2_Interface, KSketch2_Lib 
 
-Flash Builder Project settings for the projects in KSketch2- reworked_KSketch2 are included in the repository.
-Just import them into flash builder.
+Project files should take care of the project references and build path. If not, continue.
+4. Set project reference for KSketch2_Interface to refer to KSketch2_Lib.
+5. Make sure the libs folder in KSketch2_Interface is refered inside its build path
+6. Set project reference for KSketch2_Desktop to refer to KSketch2_Interface.
+7. Build and run KSketch2_Desktop.
+
+For building KSketch2_Portable on IOS, You'll need your own ios development and provisioning certificate. 
 
 Overview of project structure.
+==============================
 
 Application projects
 KSketch_Portable (Access to mobile libraries)

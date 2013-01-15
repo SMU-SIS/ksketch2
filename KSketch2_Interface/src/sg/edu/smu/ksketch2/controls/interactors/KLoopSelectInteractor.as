@@ -28,7 +28,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	
 	import spark.core.SpriteVisualElement;
 	
-	public class KSelectInteractor extends KInteractor
+	public class KLoopSelectInteractor extends KInteractor
 	{
 		public var gestureDisplay:SpriteVisualElement;
 		
@@ -56,7 +56,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 		/**
 		 * SelectInteractor 
 		 */
-		public function KSelectInteractor(KSketchInstance:KSketch2, gestureComponent:SpriteVisualElement, interactionControl:IInteractionControl)
+		public function KLoopSelectInteractor(KSketchInstance:KSketch2, gestureComponent:SpriteVisualElement, interactionControl:IInteractionControl)
 		{
 			super(KSketchInstance, interactionControl);
 			_loopView = new KFilteredLoopView();

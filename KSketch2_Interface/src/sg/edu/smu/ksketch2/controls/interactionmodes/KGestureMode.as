@@ -15,7 +15,7 @@ package sg.edu.smu.ksketch2.controls.interactionmodes
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactors.KSelectInteractor;
+	import sg.edu.smu.ksketch2.controls.interactors.KLoopSelectInteractor;
 	
 	import spark.core.SpriteVisualElement;
 	
@@ -24,7 +24,7 @@ package sg.edu.smu.ksketch2.controls.interactionmodes
 		private var _KSketch:KSketch2;
 		private var _interactorDisplay:SpriteVisualElement;
 		private var _interactionControl:IInteractionControl;
-		private var _selectInteractor:KSelectInteractor;
+		private var _selectInteractor:KLoopSelectInteractor;
 		
 		public function KGestureMode(ksketchInstance:KSketch2, interactorDisplay:SpriteVisualElement, interactionControl:IInteractionControl)
 		{
@@ -36,7 +36,7 @@ package sg.edu.smu.ksketch2.controls.interactionmodes
 		
 		public function init():void
 		{
-			_selectInteractor = new KSelectInteractor(_KSketch, _interactorDisplay, _interactionControl);
+			_selectInteractor = new KLoopSelectInteractor(_KSketch, _interactorDisplay, _interactionControl);
 		}
 		
 		public function activate():void

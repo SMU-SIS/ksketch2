@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" creationComplete="initShapes()">
+	<fx:Script>
+		<![CDATA[
+			import org.gestouch.events.GestureEvent;
+			import org.gestouch.gestures.PanGesture;
+			import org.gestouch.gestures.RotateGesture;
+			import org.gestouch.gestures.TapGesture;
+			import org.gestouch.gestures.TransformGesture;
+			
+			import sg.edu.smu.ksketch2.utils.KMathUtil;
+			
+			import spark.components.Panel;
+			
+			public static const DEFAULT_SLOP:uint = Math.round(20 / 252 * flash.system.Capabilities.screenDPI);
+			private var _prevPoint:Point;
+			
+			private var _thresholdAngle:Number;
+			
+			private var _deactivateGesture:TapGesture;
+			private var _activateAlign:TapGesture;
+			private var _activateMoveCenter:TapGesture;
+			private var _orientateArrow:PanGesture;
+			private var _moveCentroid:PanGesture;
+			
+			public function initShapes():void
+			{
+				baseCircle.graphics.beginFill(0x242426);
+				baseCircle.graphics.drawCircle(0,0, 185);
+				baseCircle.graphics.drawCircle(0,0, 135);
+				baseCircle.graphics.endFill();
+				baseCircle.alpha = 0.9;
+				
+				innerCircle.graphics.beginFill(0x46494F);
+				innerCircle.graphics.drawCircle(0,0, 135);
+				innerCircle.graphics.endFill();
+				innerCircle.alpha = 0.9;
+				
+				centroidCircle.graphics.beginFill(0xF2F9F9);
+				centroidCircle.graphics.drawCircle(0,0, 20);
+				centroidCircle.graphics.endFill();
+				
+				orientationArrow.graphics.beginFill(0xF2F9F9);
+				orientationArrow.graphics.moveTo(0, -180);
+				orientationArrow.graphics.lineTo(-25, -145);
+				orientationArrow.graphics.lineTo(25, -145);
+				orientationArrow.graphics.lineTo(0, -180);
+				orientationArrow.graphics.endFill();
+				
+				_activateAlign = new TapGesture(orientationArrow);
+				_activateAlign.numTapsRequired = 2;
+				_activateAlign.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _activateAlignArrow);
+				
+				_activateMoveCenter = new TapGesture(centroidCircle);
+				_activateMoveCenter.numTapsRequired = 2;
+				_activateMoveCenter.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _activateMove);
+				
+				_orientateArrow = new PanGesture(orientationArrow);
+				_moveCentroid = new PanGesture(this);
+				_deactivateGesture = new TapGesture(parent);
+			}
+			
+			public function init():void
+			{
+				
+			}
+			
+			private function _activateAlignArrow(event:org.gestouch.events.GestureEvent):void
+			{
+				_activateAlign.removeAllEventListeners();
+				
+				_orientateArrow.addEventListener(org.gestouch.events.GestureEvent.GESTURE_BEGAN, _beginAlignArrow);
+				_orientateArrow.addEventListener(org.gestouch.events.GestureEvent.GESTURE_CHANGED, _alignArrow);
+				_deactivateGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _deactivateAlignArrow);
+				
+				baseCircle.alpha = 0.4;
+				innerCircle.alpha = 0.4;
+				centroidCircle.alpha = 0.4;
+				_prevPoint = null;
+			}
+			
+			private function _beginAlignArrow(event:org.gestouch.events.GestureEvent):void
+			{
+				_prevPoint = null;
+				_thresholdAngle = Math.asin(DEFAULT_SLOP / (2 * _orientateArrow.location.length)) * 2;
+			}
+			
+			private function _alignArrow(event:org.gestouch.events.GestureEvent):void
+			{
+				var currentPoint:Point = orientationArrow.globalToLocal(_orientateArrow.location);
+				
+				if(_prevPoint)
+				{
+					var angleChange:Number = KMathUtil.angleOf(_prevPoint, currentPoint);
+					
+					if(Math.abs(angleChange) < _thresholdAngle)
+						return;
+					
+					if(angleChange > Math.PI)
+						angleChange = angleChange - Math.PI*2;
+					
+					angleChange = angleChange > 0 ? angleChange - _thresholdAngle : angleChange + _thresholdAngle;
+					orientationArrow.rotation += (angleChange/Math.PI*180);
+					
+				}
+				
+				_prevPoint = currentPoint.clone();
+			}
+			
+			private function _deactivateAlignArrow(event:org.gestouch.events.GestureEvent):void
+			{
+				_orientateArrow.removeAllEventListeners();
+				_deactivateGesture.removeAllEventListeners();
+				_activateAlign.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _activateAlignArrow);
+				
+				baseCircle.alpha = 0.9;
+				innerCircle.alpha = 0.9;
+				centroidCircle.alpha = 1;
+			}
+			
+			private function _activateMove(event:org.gestouch.events.GestureEvent):void
+			{
+				_activateMoveCenter.removeAllEventListeners();
+				
+				_moveCentroid.addEventListener(org.gestouch.events.GestureEvent.GESTURE_CHANGED, _moveWidget);
+				_deactivateGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _deactivateMove);
+				
+				baseCircle.alpha = 0.4;
+				innerCircle.alpha = 0.4;
+				orientationArrow.alpha = 0.4;
+				_prevPoint = null;
+			}
+			
+			private function _moveWidget(event:org.gestouch.events.GestureEvent):void
+			{
+				x += _moveCentroid.offsetX;
+				y += _moveCentroid.offsetY;
+			}
+			
+			private function _deactivateMove(event:org.gestouch.events.GestureEvent):void
+			{
+				_moveCentroid.removeAllEventListeners();
+				_deactivateGesture.removeAllEventListeners();
+				_activateMoveCenter.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _activateMove);
+				
+				baseCircle.alpha = 0.9;
+				innerCircle.alpha = 0.9;
+				orientationArrow.alpha = 1;
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group id="baseCircle"/>
+	<s:Group id="innerCircle"/>
+	<s:Group id="centroidCircle"/>
+	<s:Group id="orientationArrow"/>
+</s:Group>

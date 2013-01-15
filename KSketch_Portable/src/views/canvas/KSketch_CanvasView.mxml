@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="HomeView" actionBarVisible="false" xmlns:components="views.canvas.components.*" xmlns:buttondrawer="views.canvas.components.buttondrawer.*" xmlns:view="sg.edu.smu.ksketch2.view.*"
+	    creationComplete="initCanvas()" addedToStage="_initStates()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.controls.inputmethods.IInteractionMethod;
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+			
+			import views.canvas.interactioncontrol.KMobileInteractionControl;
+			
+			private var _KSketch:KSketch2;
+			private var _inputMethod:IInteractionMethod;
+			private var _interactionControl:IInteractionControl;
+			//private var _commandInterface:KButtonCommandExecutor;
+			
+			public function initCanvas():void
+			{
+				_KSketch = new KSketch2();
+				_interactionControl = new KMobileInteractionControl(_KSketch, canvas_region, modelDisplay);
+			}			
+			
+			private function _initStates():void
+			{
+				modelDisplay.init(_KSketch);
+				_interactionControl.init();
+			/*	interactionWidget.init(_interactionControl);
+				timeSlider.init(_KSketch);
+				timeWidget.init(_KSketch, timeSlider, _interactionControl);
+				btn_play.init(_commandInterface, timeSlider);
+				group_fileOps.init(_commandInterface, this);
+				group_editOps.init(_commandInterface);
+				group_Operations.init(_commandInterface, _interactionControl);
+				group_groupOps.init(_commandInterface, _interactionControl);
+				group_pen.init(_commandInterface);
+				group_key.init(_commandInterface, _interactionControl, _KSketch);
+				group_configOps.init();
+				
+				_interactionControl.init();
+				
+				_inputMethod = new KDesktopInput();
+				_inputMethod.init(interactionLayer, _interactionControl, interactionWidget, modelDisplay);				*/
+			}
+		]]>
+	</fx:Script>
+	<s:layout>
+		<s:VerticalLayout gap="0"/>
+	</s:layout>
+	
+	<s:Group width="100%" height="100%">
+		<s:BorderContainer id="canvas_region" backgroundColor="0XD8D8D8" width="100%" height="100%">
+			<s:layout>
+				<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+			</s:layout>	
+			<s:BorderContainer id="drawing_stage" height="80%" width="90%" borderVisible="false">
+				<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
+									scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
+			</s:BorderContainer>
+		</s:BorderContainer>		
+	</s:Group>
+	
+	<s:BorderContainer id="timebar_region" backgroundColor="0xD8D8D8" width="100%" height="60">
+		
+		<s:Group width="100%" height="100%">
+			<s:layout >
+				<s:HorizontalLayout gap="0" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalAlign="middle"/>
+			</s:layout>
+			<s:BorderContainer width="40" height="40" backgroundColor="0x000000" id="playbutton"/>
+			<components:FrameControl/>
+			<s:Group width="100%" height="100%">
+				<s:layout>
+					<s:VerticalLayout gap="3" verticalAlign="middle" horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
+				</s:layout>
+				<s:HSlider width="100%" height="40"/>
+			</s:Group>
+			<components:FrameControl/>
+			<s:BorderContainer width="40" height="40" backgroundColor="0x000000" id="menuButton"/>
+		</s:Group>
+		
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout gap="0"/>
+			</s:layout>
+			<s:BorderContainer width="50" height="60" backgroundColor="0x000000" backgroundAlpha="1" borderVisible="false"/>
+			<s:Group width="100%"/>
+			<s:BorderContainer width="50" height="60" backgroundColor="0x000000" backgroundAlpha="1" borderVisible="false"/>
+		</s:Group>
+	</s:BorderContainer>
+</s:View>

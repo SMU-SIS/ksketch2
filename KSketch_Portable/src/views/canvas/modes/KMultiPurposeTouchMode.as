@@ -27,37 +27,40 @@ package views.canvas.modes
 	import sg.edu.smu.ksketch2.controls.interactors.KLoopSelectInteractor;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	
-	import views.canvas.interactors.KTapSelectInteractor;
+	import spark.core.SpriteVisualElement;
+	
+	import views.canvas.interactors.KTouchSelectInteractor;
 	
 	public class KMultiPurposeTouchMode extends EventDispatcher implements IInteractionMode
 	{
 		private var _KSketch:KSketch2;
 		private var _interactionControl:IInteractionControl;
 		private var _inputComponent:UIComponent;
-		private var _modelDisplay:KModelDisplay;
+		private var _interactionDisplay:SpriteVisualElement;
 
 		private var _tapGesture:TapGesture;
 		private var _drawGesture:PanGesture;
 		
 		private var _drawInteractor:KDrawInteractor;
 		private var _loopSelectInteractor:KLoopSelectInteractor;
-		private var _tapSelectInteractor:KTapSelectInteractor;
+		private var _tapSelectInteractor:KTouchSelectInteractor;
 		
 		private var _activeInteractor:IInteractor;
 		
 		public function KMultiPurposeTouchMode(KSketchInstance:KSketch2, interactionControl:IInteractionControl,
-											   inputComponent:UIComponent, displayContainer:KModelDisplay)
+											   inputComponent:UIComponent, interactionDisplay:SpriteVisualElement)
 		{
 			super(this);
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
 			_inputComponent = inputComponent;
-			_modelDisplay = displayContainer;
+			_interactionDisplay = interactionDisplay;
 		}
 		
 		public function init():void
 		{
-			_drawInteractor = new KDrawInteractor(_KSketch, _modelDisplay, _interactionControl);
+			_drawInteractor = new KDrawInteractor(_KSketch, _interactionDisplay, _interactionControl);
+			_loopSelectInteractor = new KLoopSelectInteractor(_KSketch, _interactionDisplay, _interactionControl);
 			
 			_tapGesture = new TapGesture(_inputComponent);
 			_tapGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _recogniseTap);
@@ -68,7 +71,7 @@ package views.canvas.modes
 		
 		private function _recogniseTap(event:GestureEvent):void
 		{
-			trace("Tapping to select!");	
+
 		}
 		
 		private function _recogniseDraw(event:GestureEvent):void
@@ -77,9 +80,9 @@ package views.canvas.modes
 				_activeInteractor = _drawInteractor;
 			else if(_drawGesture.touchesCount == 2)
 				_activeInteractor = _loopSelectInteractor;
-			
+
 			_activeInteractor.activate();
-			_activeInteractor.interaction_Begin(_modelDisplay.globalToLocal(_drawGesture.location));
+			_activeInteractor.interaction_Begin(_interactionDisplay.globalToLocal(_drawGesture.lastTouchLocation));
 			
 			_drawGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updateDraw);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_ENDED, _endDraw);
@@ -87,15 +90,21 @@ package views.canvas.modes
 		
 		private function _updateDraw(event:GestureEvent):void
 		{
-			var currentPoint:Point = _drawGesture.location;
-			var localPoint:Point = _modelDisplay.globalToLocal(currentPoint);
+			if(_drawGesture.touchesCount == 1 && _activeInteractor is KLoopSelectInteractor)
+				return;
 			
+			if(_drawGesture.touchesCount == 2 && _activeInteractor is KDrawInteractor)
+				return;
 			
+			var currentPoint:Point = _drawGesture.lastTouchLocation;
+			var localPoint:Point = _interactionDisplay.globalToLocal(currentPoint);
+			
+			_activeInteractor.interaction_Update(localPoint);
 		}
 		
 		private function _endDraw(event:GestureEvent):void
 		{
-		
+			_activeInteractor.interaction_End();
 		}
 	
 		

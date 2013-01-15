@@ -8,15 +8,34 @@
  */
 package views.canvas.interactors
 {
+	import flash.geom.Point;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.KInteractor;
 	
-	public class KTapSelectInteractor extends KInteractor
+	public class KTouchSelectInteractor extends KInteractor
 	{
-		public function KTapSelectInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl)
+		/**
+		 * Touch Select Interactor for selection done through the view.
+		 * The old select interactor works thru the model.
+		 */
+		public function KTouchSelectInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl)
 		{
 			super(KSketchInstance, interactionControl);
+		}
+		
+		/**
+		 *  
+		 */
+		public function select():void
+		{
+			
+		}
+		
+		override public function interaction_Begin(point:Point):void
+		{
+			
 		}
 	}
 }

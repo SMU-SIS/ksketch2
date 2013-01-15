@@ -24,20 +24,25 @@ package views.canvas.interactioncontrol
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	
+	import spark.core.SpriteVisualElement;
+	
 	import views.canvas.modes.KMultiPurposeTouchMode;
 	import views.canvas.modes.KMultitouchManipulationMode;
 	
 	public class KMobileInteractionControl extends EventDispatcher implements IInteractionControl
 	{
 		private var _KSketch:KSketch2;
-		private var _displayContainer:KModelDisplay;
-		private var _inputComponent:UIComponent;
+		private var _displayContainer:KModelDisplay; //display container to visualise model objects
+		private var _interactionDisplay:SpriteVisualElement; //display contianer to visualise graphics that appear during interaction. for debugging
+		private var _inputComponent:UIComponent; //component that receives the touch inputs
 		
 		private var _activeMode:IInteractionMode;
 		private var _defaultInteractionMode:IInteractionMode;
 		private var _manipulationMode:IInteractionMode;
 		
-		public function KMobileInteractionControl(KSketchInstance:KSketch2, inputComponent:UIComponent, displayContainer:KModelDisplay)
+		public function KMobileInteractionControl(KSketchInstance:KSketch2, inputComponent:UIComponent,
+												  interactionDisplay:SpriteVisualElement
+												  , displayContainer:KModelDisplay)
 		{
 			super(this);
 			_KSketch = KSketchInstance;

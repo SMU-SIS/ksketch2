@@ -64,6 +64,9 @@ package sg.edu.smu.ksketch2.controls.interactors
 			reset();
 		}
 		
+		/**
+		 * Cleans up the interactor
+		 */
 		override public function reset():void
 		{
 			_lastChecked = -1;
@@ -85,6 +88,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_secondToLast = point;
 			_loopEnd = point;
 		}
+		
 		override public function interaction_Update(point:Point):void
 		{
 			_lastChecked = -1;
@@ -95,15 +99,14 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_secondToLast = _loopEnd;
 			_loopEnd = point;
 			
-			var dx:Number = _loopEnd.x - _secondToLast.x;
-			var dy:Number = _loopEnd.y - _secondToLast.y;
-			var distFromPrev:Number = Math.sqrt((dx*dx) + (dy*dy));
-			
+			//Updates the loop view only. No selection here
 			_loopView.add(point);
 			
 			checkAllObjects();
 			
-			var selectedObjects:KModelObjectList = (_arbiter as KSimpleArbiter).bestGuess(_portions, _KSketch.time);//.selectStrokes(_portions, _KSketch.time);
+			//Selection happens here
+			//A new set of selection is gather on every update.
+			var selectedObjects:KModelObjectList = (_arbiter as KSimpleArbiter).bestGuess(_portions, _KSketch.time);
 			_interactionControl.selection = new KSelection(selectedObjects);
 		}
 		

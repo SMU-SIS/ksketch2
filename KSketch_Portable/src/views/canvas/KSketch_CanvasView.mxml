@@ -30,12 +30,13 @@
 			public function initCanvas():void
 			{
 				_KSketch = new KSketch2();
-				_interactionControl = new KMobileInteractionControl(_KSketch, canvas_region, modelDisplay);
+				_interactionControl = new KMobileInteractionControl(_KSketch, canvas_region, modelDisplay, manipulationWidget);
 			}			
 			
 			private function _initStates():void
 			{
 				modelDisplay.init(_KSketch);
+				manipulationWidget.init(_interactionControl);
 				_interactionControl.init();
 			/*	interactionWidget.init(_interactionControl);
 				timeSlider.init(_KSketch);
@@ -70,6 +71,7 @@
 				<!-- The model display displays the objects in the model -->
 				<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 									scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
+				<components:KMobileWidget id="manipulationWidget"/>
 			</s:BorderContainer>
 		</s:BorderContainer>		
 	</s:Group>

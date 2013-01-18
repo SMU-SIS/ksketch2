@@ -19,6 +19,7 @@ package views.canvas.interactioncontrol
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactionmodes.IInteractionMode;
 	import sg.edu.smu.ksketch2.controls.interactionmodes.KDrawingMode;
+	import sg.edu.smu.ksketch2.controls.widgets.IWidget;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
@@ -27,7 +28,7 @@ package views.canvas.interactioncontrol
 	
 	import spark.core.SpriteVisualElement;
 	
-	import views.canvas.modes.KMultiPurposeTouchMode;
+	import views.canvas.modes.KMobileSelectionMode;
 	import views.canvas.modes.KMultitouchManipulationMode;
 	
 	public class KMobileInteractionControl extends EventDispatcher implements IInteractionControl
@@ -36,6 +37,7 @@ package views.canvas.interactioncontrol
 		private var _modelDisplay:KModelDisplay; //display container to visualise model objects
 		private var _interactionDisplay:SpriteVisualElement; //display contianer to visualise graphics that appear during interaction. for debugging
 		private var _inputComponent:UIComponent; //component that receives the touch inputs
+		private var _widget:IWidget;
 		
 		private var _activeMode:IInteractionMode;
 		private var _defaultInteractionMode:IInteractionMode;
@@ -43,18 +45,20 @@ package views.canvas.interactioncontrol
 		
 		private var _selection:KSelection;
 		
-		public function KMobileInteractionControl(KSketchInstance:KSketch2, inputComponent:UIComponent, modelDisplay:KModelDisplay)
+		public function KMobileInteractionControl(KSketchInstance:KSketch2, inputComponent:UIComponent, modelDisplay:KModelDisplay,
+													widget:IWidget)
 		{
 			super(this);
 			_KSketch = KSketchInstance;
 			_inputComponent = inputComponent;
 			_modelDisplay = modelDisplay;
+			_widget = widget;
 		}
 		
 		public function init():void
 		{
-			_defaultInteractionMode = new KMultiPurposeTouchMode(_KSketch, this, _inputComponent, _modelDisplay);
-			_manipulationMode = new KMultitouchManipulationMode();
+			_defaultInteractionMode = new KMobileSelectionMode(_KSketch, this, _inputComponent, _modelDisplay);
+			_manipulationMode = new KMultitouchManipulationMode(_KSketch, this, _widget) ;
 			determineMode();
 		}
 		
@@ -110,7 +114,7 @@ package views.canvas.interactioncontrol
 		
 		public function get selection():KSelection
 		{
-			return null;
+			return _selection;
 		}
 		
 		public function enterSelectionMode():void
@@ -193,7 +197,7 @@ package views.canvas.interactioncontrol
 		
 		private function _selectionChangedEventHandler():void
 		{
-			
+			(_manipulationMode as KMultitouchManipulationMode).refreshManipulationMode();
 		}
 	}
 }

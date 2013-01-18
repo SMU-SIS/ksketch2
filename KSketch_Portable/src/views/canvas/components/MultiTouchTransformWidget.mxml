@@ -70,11 +70,6 @@
 				_deactivateGesture = new TapGesture(parent);
 			}
 			
-			public function init():void
-			{
-				
-			}
-			
 			private function _activateAlignArrow(event:org.gestouch.events.GestureEvent):void
 			{
 				_activateAlign.removeAllEventListeners();

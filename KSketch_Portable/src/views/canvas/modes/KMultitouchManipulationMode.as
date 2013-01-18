@@ -12,21 +12,36 @@ package views.canvas.modes
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactionmodes.IInteractionMode;
+	import sg.edu.smu.ksketch2.controls.widgets.IWidget;
+	
+	import views.canvas.components.MultiTouchTransformWidget;
 	
 	public class KMultitouchManipulationMode extends EventDispatcher implements IInteractionMode
 	{
-		public function KMultitouchManipulationMode()
+		private var _KSketch:KSketch2;
+		private var _widget:IWidget;
+		private var _interactionControl:IInteractionControl;
+		
+		public function KMultitouchManipulationMode(KSketchInstance:KSketch2, interactionControl:IInteractionControl, widget:IWidget)
 		{
 			super(this);
+			
+			_widget = widget;
+			_KSketch = KSketchInstance;
+			_interactionControl = interactionControl;
 		}
 		
 		public function init():void
 		{
+			//The widget is the interactor now????
 		}
 		
 		public function activate():void
 		{
+			
 		}
 		
 		public function reset():void
@@ -43,6 +58,11 @@ package views.canvas.modes
 		
 		public function endInteraction():void
 		{
+		}
+		
+		public function refreshManipulationMode():void
+		{
+			_widget.highlightSelection(_interactionControl.selection, _KSketch.time);
 		}
 	}
 }

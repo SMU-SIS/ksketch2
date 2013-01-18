@@ -31,7 +31,7 @@ package views.canvas.modes
 	
 	import views.canvas.interactors.KTouchSelectInteractor;
 	
-	public class KMultiPurposeTouchMode extends EventDispatcher implements IInteractionMode
+	public class KMobileSelectionMode extends EventDispatcher implements IInteractionMode
 	{
 		private var _KSketch:KSketch2;
 		private var _interactionControl:IInteractionControl;
@@ -47,7 +47,16 @@ package views.canvas.modes
 		
 		private var _activeInteractor:IInteractor;
 		
-		public function KMultiPurposeTouchMode(KSketchInstance:KSketch2, interactionControl:IInteractionControl,
+		/**
+		 * KMobileSelection mode is the state machine that switches between
+		 * drawing, tap selection and loop selection interactors.
+		 * @param KSketchInstance: KSketch2 instance that this mode is going to interact with
+		 * @param interactionControl: iInteractionControl that oversees application's mode switching.
+		 * @param inputComponent: Target UIcomponent that will dispatch gesture events for this mode.
+		 * @param modelDisplay: ModelDisplay linked to given KSketchInstance
+		 * 
+		 */
+		public function KMobileSelectionMode(KSketchInstance:KSketch2, interactionControl:IInteractionControl,
 											   inputComponent:UIComponent, modelDisplay:KModelDisplay)
 		{
 			super(this);
@@ -57,6 +66,9 @@ package views.canvas.modes
 			_modelDisplay = modelDisplay;
 		}
 		
+		/**
+		 * Initialises the interactors and gestures for this mode
+		 */
 		public function init():void
 		{
 			_drawInteractor = new KDrawInteractor(_KSketch, _modelDisplay, _interactionControl);
@@ -70,29 +82,41 @@ package views.canvas.modes
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
 		}
 		
+		/**
+		 * Gesture handler for tap gesture
+		 */
 		private function _recogniseTap(event:GestureEvent):void
 		{
 			_activeInteractor = _tapSelectInteractor;
 			_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
 		}
 		
+		/**
+		 * Gesture handler for draw gesture event
+		 */
 		private function _recogniseDraw(event:GestureEvent):void
 		{
+			//Switches interactor based on draw gesture's nTouches
 			if(_drawGesture.touchesCount == 1)
 				_activeInteractor = _drawInteractor;
 			else if(_drawGesture.touchesCount == 2)
 				_activeInteractor = _loopSelectInteractor;
 
 			_activeInteractor.activate();
-			_activeInteractor.interaction_Begin(_modelDisplay.globalToLocal(_drawGesture.lastTouchLocation));
+			//make sure the input coordinates are in the correct coordinate space
+			_activeInteractor.interaction_Begin(_modelDisplay.globalToLocal(_drawGesture.lastTouchLocation)); 
 			
 			_drawGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updateDraw);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_ENDED, _endDraw);
 		}
 		
+		/**
+		 * Gesture handler for an update by the draw gesture
+		 */
 		private function _updateDraw(event:GestureEvent):void
 		{
-			if(_drawGesture.touchesCount == 1 && _activeInteractor is KLoopSelectInteractor)
+			//Gesture change updates. A loop interactor should have two fingers
+			if(_drawGesture.touchesCount == 1 && _activeInteractor is KLoopSelectInteractor) 
 			{
 				_endDraw(event);
 				return;
@@ -101,11 +125,16 @@ package views.canvas.modes
 			if(_drawGesture.touchesCount == 2 && _activeInteractor is KDrawInteractor)
 				return;
 			
+			//make sure the input coordinates are in the correct coordinate space
 			_activeInteractor.interaction_Update(_modelDisplay.globalToLocal(_drawGesture.lastTouchLocation));
 		}
 		
+		/**
+		 * Gesture handler for draw gesture's end even
+		 */
 		private function _endDraw(event:GestureEvent):void
 		{
+			//Clean up and do whatever the active interactor have to do at the end of an interaction
 			_activeInteractor.interaction_End();
 			_drawGesture.removeAllEventListeners();
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);

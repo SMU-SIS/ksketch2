@@ -38,6 +38,7 @@ package views.canvas.interactors
 		/**
 		 * Touch Select Interactor for selection done through the view.
 		 * The old select interactor works thru the model.
+		 * Will have to bring this into the model soon instead of letting it run on view components
 		 */
 		public function KTouchSelectInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl,
 											   modelDisplay:KModelDisplay)
@@ -60,6 +61,11 @@ package views.canvas.interactors
 			detectObjects();
 		}
 		
+		/**
+		 * Collision Detection code vs view
+		 * Must change it to collision detection vs model data to maintain consistency
+		 * View CD can't handle >20 objects :(
+		 */
 		public function detectObjects():void
 		{
 			var collisionList:CollisionList = new CollisionList(_selectionArea);

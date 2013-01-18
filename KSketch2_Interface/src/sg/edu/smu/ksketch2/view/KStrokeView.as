@@ -46,6 +46,7 @@ package sg.edu.smu.ksketch2.view
 			var filter:GlowFilter = new GlowFilter(_color, 1,3,3,2,1,true, true);
 			_glowFilter = [filter];
 			_render_DrawStroke();
+			cacheAsBitmap = true;
 		}
 		
 		override public function eraseIfHit(xPoint:Number, yPoint:Number, time:int, op:KCompositeOperation):void

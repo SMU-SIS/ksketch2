@@ -25,9 +25,13 @@
 				Security.allowDomain("*");
 				main.init();
 				main.addEventListener(KIOEvent.EVENT_SAVE, _saveHandler);
+				main.addEventListener(KIOEvent.EVENT_LOAD, _loadHandler);
 				
 				if(ExternalInterface.available)
-					ExternalInterface.addCallback("loadKSketchFile", loadHandler);
+				{
+					ExternalInterface.addCallback("save", saveTrigger);
+					ExternalInterface.addCallback("load", loadTrigger);
+				}
 				else
 					throw new Error("Load call back not added");
 			}
@@ -41,9 +45,21 @@
 				}
 			}
 			
-			public function loadHandler(fileData:String):void
+			private function _loadHandler(event:KIOEvent):void
 			{
+				if(ExternalInterface.available)
+					ExternalInterface.call("initLoad");
+			}
+			
+			public function loadTrigger(fileData:String):void
+			{
+				trace(fileData);
 				main.loadFile(new XML(fileData));
+			}
+			
+			public function saveTrigger():void
+			{
+				main.triggerSave();
 			}
 		]]>
 	</fx:Script>

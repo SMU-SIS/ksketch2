@@ -12,6 +12,8 @@ package sg.edu.smu.ksketch2.view
 
 	public interface IObjectView extends IEventDispatcher
 	{
+		function displayable():KObjectView;
+		
 		/**
 		 * Update view uses the given time to generate updated values from
 		 * the model object. Uses these updated values to update this view object

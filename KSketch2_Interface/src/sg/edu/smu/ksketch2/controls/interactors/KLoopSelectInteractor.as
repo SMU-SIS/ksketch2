@@ -111,7 +111,6 @@ package sg.edu.smu.ksketch2.controls.interactors
 		{
 			_reset();
 			_gestureComponent.removeChild(_loopView);
-//			_interactionControl.determineCanvas();
 		}
 		
 		private function _reset():void

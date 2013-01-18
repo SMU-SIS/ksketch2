@@ -19,6 +19,7 @@ package views.canvas.interactioncontrol
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactionmodes.IInteractionMode;
 	import sg.edu.smu.ksketch2.controls.interactionmodes.KDrawingMode;
+	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
@@ -32,7 +33,7 @@ package views.canvas.interactioncontrol
 	public class KMobileInteractionControl extends EventDispatcher implements IInteractionControl
 	{
 		private var _KSketch:KSketch2;
-		private var _displayContainer:KModelDisplay; //display container to visualise model objects
+		private var _modelDisplay:KModelDisplay; //display container to visualise model objects
 		private var _interactionDisplay:SpriteVisualElement; //display contianer to visualise graphics that appear during interaction. for debugging
 		private var _inputComponent:UIComponent; //component that receives the touch inputs
 		
@@ -40,19 +41,19 @@ package views.canvas.interactioncontrol
 		private var _defaultInteractionMode:IInteractionMode;
 		private var _manipulationMode:IInteractionMode;
 		
-		public function KMobileInteractionControl(KSketchInstance:KSketch2, inputComponent:UIComponent,
-												  interactionDisplay:SpriteVisualElement
-												  , displayContainer:KModelDisplay)
+		private var _selection:KSelection;
+		
+		public function KMobileInteractionControl(KSketchInstance:KSketch2, inputComponent:UIComponent, modelDisplay:KModelDisplay)
 		{
 			super(this);
 			_KSketch = KSketchInstance;
 			_inputComponent = inputComponent;
-			_displayContainer = displayContainer;
+			_modelDisplay = modelDisplay;
 		}
 		
 		public function init():void
 		{
-			_defaultInteractionMode = new KMultiPurposeTouchMode(_KSketch, this, _inputComponent, _displayContainer);
+			_defaultInteractionMode = new KMultiPurposeTouchMode(_KSketch, this, _inputComponent, _modelDisplay);
 			_manipulationMode = new KMultitouchManipulationMode();
 			determineMode();
 		}
@@ -72,8 +73,39 @@ package views.canvas.interactioncontrol
 			return 0;
 		}
 		
-		public function set selection(selection:KSelection):void
+		public function set selection(newSelection:KSelection):void
 		{
+			if(newSelection)
+			{
+				if(newSelection.objects.length() == 0)
+					newSelection = null;
+				else
+				{
+					if(!newSelection.isDifferentFrom(_selection))
+						return;
+				}
+			}
+			
+			if(!_selection && !newSelection)
+				return;
+			
+			var oldSelection:KSelection = _selection;
+			_selection = newSelection;
+			
+			var i:int;
+			var length:int;
+			
+			//Will trigger the selection/deselection
+			//Will cause the objects to trigger their selection events
+			if(oldSelection)
+				oldSelection.triggerDeselected();
+			
+			if(newSelection)
+				newSelection.triggerSelected();
+			
+			_selectionChangedEventHandler();
+			
+			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_SELECTION_SET_CHANGED));
 		}
 		
 		public function get selection():KSelection
@@ -155,6 +187,11 @@ package views.canvas.interactioncontrol
 		}
 		
 		public function debugView():void
+		{
+			
+		}
+		
+		private function _selectionChangedEventHandler():void
 		{
 			
 		}

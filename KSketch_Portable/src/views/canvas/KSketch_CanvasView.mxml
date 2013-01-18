@@ -30,7 +30,7 @@
 			public function initCanvas():void
 			{
 				_KSketch = new KSketch2();
-				_interactionControl = new KMobileInteractionControl(_KSketch, canvas_region, interactionDisplay, modelDisplay);
+				_interactionControl = new KMobileInteractionControl(_KSketch, canvas_region, modelDisplay);
 			}			
 			
 			private function _initStates():void
@@ -70,8 +70,6 @@
 				<!-- The model display displays the objects in the model -->
 				<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 									scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
-				<!-- This interactor display just displays what ever things the interactor wants to show. It's mainly for debugging -->
-				<s:SpriteVisualElement id="interactionDisplay" mouseEnabled="false" mouseChildren="false"/>
 			</s:BorderContainer>
 		</s:BorderContainer>		
 	</s:Group>

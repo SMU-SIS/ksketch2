@@ -57,6 +57,16 @@ package sg.edu.smu.ksketch2.view
 			}
 		}
 		
+		public function get object():KObject
+		{
+			return _object;
+		}
+		
+		public function displayable():KObjectView
+		{
+			return this;
+		}
+		
 		public function eraseIfHit(xPoint:Number, yPoint:Number, time:int, op:KCompositeOperation):void
 		{
 			

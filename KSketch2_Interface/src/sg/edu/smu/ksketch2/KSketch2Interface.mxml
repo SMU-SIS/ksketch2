@@ -69,7 +69,8 @@
 			public function loadFile(readData:XML):void
 			{
 				_commandInterface.newFile();
-				_KSketch.generateSceneFromXML(new XML(readData.scene));
+				if(readData.scene.children().length() > 0)
+					_KSketch.generateSceneFromXML(new XML(readData.scene));
 			}
 			
 			public function focusApp():void
@@ -88,7 +89,6 @@
 			public function triggerSave():void
 			{
 				var xml:XML = _commandInterface.saveFile();
-
 				if(xml)
 					dispatchEvent(new KIOEvent(KIOEvent.EVENT_SAVE, xml, true));
 			}

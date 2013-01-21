@@ -8,6 +8,7 @@
  */
 package sg.edu.smu.ksketch2
 {
+	import flash.display.BitmapData;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
@@ -21,6 +22,7 @@ package sg.edu.smu.ksketch2
 	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
+	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.KGroupingUtil;
@@ -121,6 +123,17 @@ package sg.edu.smu.ksketch2
 			newStroke.init(time, op);
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 			return newStroke;
+		}
+	
+		public function object_Add_Image(imgData:BitmapData, time:int):KImage
+		{
+			var newImage:KImage = new KImage(_sceneGraph.nextHighestID, imgData);
+			trace("after construction", newImage.transformInterface);
+			_sceneGraph.registerObject(newImage, null);
+			newImage.init(time, null);
+			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
+			
+			return newImage;
 		}
 		
 		//Functions to modify the model hierarchy

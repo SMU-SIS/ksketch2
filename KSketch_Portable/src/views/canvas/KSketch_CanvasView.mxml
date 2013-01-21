@@ -25,10 +25,11 @@
 			private var _KSketch:KSketch2;
 			private var _inputMethod:IInteractionMethod;
 			private var _interactionControl:IInteractionControl;
-			//private var _commandInterface:KButtonCommandExecutor;
+			 //private var _commandInterface:KButtonCommandExecutor;
 			
 			public function initCanvas():void
 			{
+			
 				_KSketch = new KSketch2();
 				_interactionControl = new KMobileInteractionControl(_KSketch, canvas_region, modelDisplay, manipulationWidget);
 			}			
@@ -54,6 +55,15 @@
 				
 				_inputMethod = new KDesktopInput();
 				_inputMethod.init(interactionLayer, _interactionControl, interactionWidget, modelDisplay);				*/
+				
+				var mysprite:Sprite = new Sprite();
+				mysprite.graphics.beginFill(0x000000);
+				mysprite.graphics.drawRect(0,0,300,300);
+				mysprite.graphics.endFill();
+					
+				var bd:BitmapData = new BitmapData(300, 300);
+				bd.draw(mysprite);
+				_KSketch.object_Add_Image(bd, 0);
 			}
 		]]>
 	</fx:Script>

@@ -316,7 +316,8 @@ package sg.edu.smu.ksketch2.operators
 				//Else we will need to insert a key at time
 				key = new KSpatialKeyFrame(time, _object.centroid);
 				_refFrame.insertKey(key);
-				op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));		
+				if(op)
+					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));		
 			}
 		}
 		

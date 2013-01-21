@@ -15,6 +15,7 @@
     <classEntry path="sg.edu.smu.ksketch2.view.KPathView"/>
     <classEntry path="sg.edu.smu.ksketch2.view.KSingleCenterPathView"/>
     <classEntry path="sg.edu.smu.ksketch2.controls.interactors.KEraserInteractor"/>
+    <classEntry path="sg.edu.smu.ksketch2.view.KImageView"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

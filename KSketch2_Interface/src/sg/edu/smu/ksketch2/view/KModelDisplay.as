@@ -11,6 +11,8 @@ package sg.edu.smu.ksketch2.view
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
+	import spark.core.SpriteVisualElement;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KGroupEvent;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
@@ -18,11 +20,10 @@ package sg.edu.smu.ksketch2.view
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
+	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.utils.KSelection;
-	
-	import spark.core.SpriteVisualElement;
 	
 	/**
 	 * Exists to display the objects in the model
@@ -86,6 +87,8 @@ package sg.edu.smu.ksketch2.view
 			}
 			else if(object is KStroke)
 				view = new KStrokeView(object as KStroke);
+			else if (object is KImage)
+				view = new KImageView(object);
 			else
 				throw new Error("Object type "+object.toString()+" is not supported by the model display yet");
 			

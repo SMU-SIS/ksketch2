@@ -33,6 +33,11 @@
 			private var _orientateArrow:PanGesture;
 			private var _moveCentroid:PanGesture;
 			
+			private var _isChanging:Boolean;
+			private var _originalX:Number;
+			private var _originalY:Number;
+			private var _originalOrientation:Number;
+			
 			public function initShapes():void
 			{
 				baseCircle.graphics.beginFill(0x242426);
@@ -81,6 +86,12 @@
 				baseCircle.alpha = 0.4;
 				innerCircle.alpha = 0.4;
 				centroidCircle.alpha = 0.4;
+
+				_isChanging = true;
+				_originalOrientation = orientationArrow.rotation;
+				_originalX = x;
+				_originalY = y;
+				
 				_prevPoint = null;
 			}
 			
@@ -134,6 +145,12 @@
 				innerCircle.alpha = 0.4;
 				orientationArrow.alpha = 0.4;
 				_prevPoint = null;
+				
+				_isChanging = true;
+				_originalOrientation = orientationArrow.rotation;
+				_originalX = x;
+				_originalY = y;
+				
 			}
 			
 			private function _moveWidget(event:org.gestouch.events.GestureEvent):void
@@ -151,6 +168,24 @@
 				baseCircle.alpha = 0.9;
 				innerCircle.alpha = 0.9;
 				orientationArrow.alpha = 1;
+				
+				_isChanging = false;
+			}
+			
+			public function reset():void
+			{
+				if(_isChanging)
+				{
+					baseCircle.alpha = 0.9;
+					innerCircle.alpha = 0.9;
+					orientationArrow.alpha = 1;
+					centroidCircle.alpha = 1;
+					
+					x = _originalX;
+					y = _originalY;
+					orientationArrow.rotation = _originalOrientation;
+					_isChanging = false;
+				}
 			}
 			
 		]]>

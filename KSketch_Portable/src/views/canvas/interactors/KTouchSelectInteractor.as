@@ -126,6 +126,7 @@ package views.canvas.interactors
 			}
 	
 			_interactionControl.selection = newSelection;
+			_interactionControl.determineMode();
 		}
 	}
 }

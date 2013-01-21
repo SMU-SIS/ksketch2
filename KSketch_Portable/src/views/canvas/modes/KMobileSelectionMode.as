@@ -89,6 +89,7 @@ package views.canvas.modes
 		{
 			_activeInteractor = _tapSelectInteractor;
 			_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
+			_interactionControl.determineMode();
 		}
 		
 		/**
@@ -138,6 +139,7 @@ package views.canvas.modes
 			_activeInteractor.interaction_End();
 			_drawGesture.removeAllEventListeners();
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
+			_interactionControl.determineMode();
 		}	
 		
 		/**

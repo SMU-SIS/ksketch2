@@ -21,6 +21,7 @@ package views.canvas.modes
 	
 	public class KMultitouchManipulationMode extends EventDispatcher implements IInteractionMode
 	{
+		public var isActive:Boolean = false;
 		private var _KSketch:KSketch2;
 		private var _widget:IWidget;
 		private var _interactionControl:IInteractionControl;

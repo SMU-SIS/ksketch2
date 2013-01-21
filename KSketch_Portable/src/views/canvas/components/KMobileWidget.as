@@ -37,12 +37,14 @@ package views.canvas.components
 			if(!selection)
 			{
 				visible = false;
+				reset();
 				return;
 			}
 			
 			if(!selection.isVisible(time))
 			{
 				visible = false;
+				reset();
 				return;
 			}
 			else

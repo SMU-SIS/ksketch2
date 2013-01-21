@@ -58,8 +58,9 @@ package views.canvas.interactioncontrol
 		public function init():void
 		{
 			_defaultInteractionMode = new KMobileSelectionMode(_KSketch, this, _inputComponent, _modelDisplay);
-			_manipulationMode = new KMultitouchManipulationMode(_KSketch, this, _widget) ;
-			determineMode();
+			_manipulationMode = new KMultitouchManipulationMode(_KSketch, this, _widget);
+			_defaultInteractionMode.init();
+			_manipulationMode.init();			
 		}
 		
 		public function reset():void
@@ -122,34 +123,23 @@ package views.canvas.interactioncontrol
 			
 		}
 		
-		public function enterDrawingMode(drawModeType:String):void
-		{
-			
-		}
-		
+		/**
+		 * For touch versions, call after every selection interaction
+		 */
 		public function determineMode():void
 		{
-			_activeMode = _defaultInteractionMode;
-			_activeMode.init();
-		}
-		
-		public function beginCanvasInput(point:Point, isManipulation:Boolean, manipulationType:String):void
-		{
-			//Disabled for touch
-		}
-		
-		public function updateCanvasInput(point:Point):void
-		{
-			//Disabled for touch
-		}
-		
-		public function completeCanvasInput():void
-		{
-			//Disabled for touch
+			if(selection)
+			{
+				(_manipulationMode as KMultitouchManipulationMode).isActive = true;
+				_selectionChangedEventHandler();
+			}
+			else
+				(_manipulationMode as KMultitouchManipulationMode).isActive = false;
 		}
 		
 		public function addToUndoStack(operation:IModelOperation):void
 		{
+
 		}
 		
 		public function undo():void
@@ -197,7 +187,29 @@ package views.canvas.interactioncontrol
 		
 		private function _selectionChangedEventHandler():void
 		{
-			(_manipulationMode as KMultitouchManipulationMode).refreshManipulationMode();
+			if((_manipulationMode as KMultitouchManipulationMode).isActive)
+				(_manipulationMode as KMultitouchManipulationMode).refreshManipulationMode();	
+		}
+		
+		
+		/**
+		 * Not required for touch
+		 */
+		public function beginCanvasInput(point:Point, isManipulation:Boolean, manipulationType:String):void
+		{
+			//Disabled for touch
+		}
+		public function updateCanvasInput(point:Point):void
+		{
+			//Disabled for touch
+		}
+		public function completeCanvasInput():void
+		{
+			//Disabled for touch
+		}
+		public function enterDrawingMode(drawModeType:String):void
+		{
+			
 		}
 	}
 }

@@ -55,15 +55,6 @@
 				
 				_inputMethod = new KDesktopInput();
 				_inputMethod.init(interactionLayer, _interactionControl, interactionWidget, modelDisplay);				*/
-				
-				var mysprite:Sprite = new Sprite();
-				mysprite.graphics.beginFill(0x000000);
-				mysprite.graphics.drawRect(0,0,300,300);
-				mysprite.graphics.endFill();
-					
-				var bd:BitmapData = new BitmapData(300, 300);
-				bd.draw(mysprite);
-				_KSketch.object_Add_Image(bd, 0);
 			}
 		]]>
 	</fx:Script>

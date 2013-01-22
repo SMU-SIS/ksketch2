@@ -1,37 +1,31 @@
 package views.canvas.interactors
 {
 	import flash.display.DisplayObject;
+	import flash.geom.Point;
 	
 	import org.gestouch.events.GestureEvent;
-	import org.gestouch.gestures.PanGesture;
+	import org.gestouch.gestures.TransformGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
-	public class KTouchTranslateInteractor extends KTouchTransitionInteractor
+	public class KTouchFreeTransformInteractor extends KTouchTransitionInteractor
 	{
-		private var _translateGesture:PanGesture;
+		private var _center:Point;
+		private var _transformGesture:TransformGesture;
 		
-		private var _dx:Number;
-		private var _dy:Number;
-		
-		public function KTouchTranslateInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl, inputComponent:DisplayObject)
+		public function KTouchFreeTransformInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl, inputComponent:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl, inputComponent);
-			
-			_translateGesture = new PanGesture(inputComponent);
-			_translateGesture.maxNumTouchesRequired = 1;
+			_transformGesture = new TransformGesture(inputComponent);
 		}
 		
 		override public function reset():void
 		{
 			super.reset();
-			_translateGesture.removeAllEventListeners();
-			
-			_dx = NaN;
-			_dy = NaN;
+			_transformGesture.removeAllEventListeners();
 			
 			activate();
 		}
@@ -39,21 +33,20 @@ package views.canvas.interactors
 		override public function activate():void
 		{
 			super.activate();
-			_translateGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _interaction_begin);
+			_transformGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _interaction_begin);
 		}
 		
 		override public function deactivate():void
 		{
 			super.deactivate();
-			_translateGesture.removeAllEventListeners();
+			_transformGesture.removeAllEventListeners();
 		}
 		
 		override protected function _interaction_begin(event:GestureEvent):void
 		{
 			super._interaction_begin(event);
 			
-			_dx = 0;
-			_dy = 0;
+			_center = _newSelection.centerAt(0);
 			
 			var i:int = 0;
 			var length:int = _transitionObjects.length();
@@ -62,11 +55,11 @@ package views.canvas.interactors
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_Begin_Translation(currentObject, KSketch2.TRANSITION_INTERPOLATED, new KCompositeOperation());
+//				_KSketch.transform_Begin_Rotation(currentObject, KSketch2.TRANSITION_INTERPOLATED, new KCompositeOperation());
 			}
 			
-			_translateGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Translate);
-			_translateGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			
+			_transformGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Transform);
+			_transformGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			
 		}
 		
 		override protected function _interaction_end(event:GestureEvent):void
@@ -78,17 +71,16 @@ package views.canvas.interactors
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_End_Translation(currentObject, new KCompositeOperation());
+//				_KSketch.transform_End_Rotation(currentObject, new KCompositeOperation());
 			}
 			
 			super._interaction_end(event);
 			reset();
 		}
 		
-		private function _update_Translate(event:GestureEvent):void
+		private function _update_Transform(event:GestureEvent):void
 		{
-			_dx += _translateGesture.offsetX;
-			_dy += _translateGesture.offsetY;
+			trace("Updating free transform");
 			
 			var i:int = 0;
 			var length:int = _transitionObjects.length();
@@ -97,8 +89,8 @@ package views.canvas.interactors
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_Update_Translation(currentObject, _dx, _dy);
-			}
+//				_KSketch.transform_Update_Rotation(currentObject, _theta);
+			}			
 		}
 	}
 }

@@ -8,16 +8,16 @@ package views.canvas.components
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	
+	import views.canvas.interactors.KTouchFreeTransformInteractor;
 	import views.canvas.interactors.KTouchRotateInteractor;
-	import views.canvas.interactors.KTouchTranslateInteractor;
 	
 	public class KMobileWidget extends MultiTouchTransformWidget
 	{
 		public var display:KModelDisplay;
 		private var _interactionControl:IInteractionControl;
 		
-		private var _translateInteractor:KTouchTranslateInteractor;
 		private var _rotateInteractor:KTouchRotateInteractor;
+		private var _freeTransformInteractor:KTouchFreeTransformInteractor;
 		
 		public function KMobileWidget()
 		{
@@ -28,11 +28,11 @@ package views.canvas.components
 		{
 			visible = false;
 			_interactionControl = interactionControl;	
-			_translateInteractor = new KTouchTranslateInteractor(KSketchInstance, interactionControl, innerCircle);
 			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, baseCircle);
+			_freeTransformInteractor = new KTouchFreeTransformInteractor(KSketchInstance, interactionControl, innerCircle);
 			
-			_translateInteractor.reset();
 			_rotateInteractor.reset();
+			_freeTransformInteractor.reset();
 		}
 		
 		public function get center():Point

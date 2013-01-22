@@ -18,7 +18,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	
 	public class KRotateInteractor extends KTransitionInteractor
 	{
-		private const PIx2:Number = 6.283185307;
+		public static const PIx2:Number = 6.283185307;
 		private var _dTheta:Number;
 		
 		private var _workingCenter:Point;

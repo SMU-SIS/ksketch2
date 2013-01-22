@@ -2,25 +2,37 @@ package views.canvas.components
 {
 	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.widgets.IWidget;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	
-	public class KMobileWidget extends MultiTouchTransformWidget implements IWidget
+	import views.canvas.interactors.KTouchRotateInteractor;
+	import views.canvas.interactors.KTouchTranslateInteractor;
+	
+	public class KMobileWidget extends MultiTouchTransformWidget
 	{
 		public var display:KModelDisplay;
 		private var _interactionControl:IInteractionControl;
+		
+		private var _translateInteractor:KTouchTranslateInteractor;
+		private var _rotateInteractor:KTouchRotateInteractor;
 		
 		public function KMobileWidget()
 		{
 			super();
 		}
 		
-		public function init(interactionControl:IInteractionControl):void
+		public function init(KSketchInstance:KSketch2, interactionControl:IInteractionControl):void
 		{
 			visible = false;
 			_interactionControl = interactionControl;	
+			_translateInteractor = new KTouchTranslateInteractor(KSketchInstance, interactionControl, innerCircle);
+			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, baseCircle);
+			
+			_translateInteractor.reset();
+			_rotateInteractor.reset();
 		}
 		
 		public function get center():Point

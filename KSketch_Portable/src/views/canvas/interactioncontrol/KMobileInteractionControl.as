@@ -28,6 +28,7 @@ package views.canvas.interactioncontrol
 	
 	import spark.core.SpriteVisualElement;
 	
+	import views.canvas.components.KMobileWidget;
 	import views.canvas.modes.KMobileSelectionMode;
 	import views.canvas.modes.KMultitouchManipulationMode;
 	
@@ -37,7 +38,7 @@ package views.canvas.interactioncontrol
 		private var _modelDisplay:KModelDisplay; //display container to visualise model objects
 		private var _interactionDisplay:SpriteVisualElement; //display contianer to visualise graphics that appear during interaction. for debugging
 		private var _inputComponent:UIComponent; //component that receives the touch inputs
-		private var _widget:IWidget;
+		private var _widget:KMobileWidget;
 		
 		private var _activeMode:IInteractionMode;
 		private var _defaultInteractionMode:IInteractionMode;
@@ -46,7 +47,7 @@ package views.canvas.interactioncontrol
 		private var _selection:KSelection;
 		
 		public function KMobileInteractionControl(KSketchInstance:KSketch2, inputComponent:UIComponent, modelDisplay:KModelDisplay,
-													widget:IWidget)
+													widget:KMobileWidget)
 		{
 			super(this);
 			_KSketch = KSketchInstance;

@@ -17,16 +17,17 @@ package views.canvas.modes
 	import sg.edu.smu.ksketch2.controls.interactionmodes.IInteractionMode;
 	import sg.edu.smu.ksketch2.controls.widgets.IWidget;
 	
+	import views.canvas.components.KMobileWidget;
 	import views.canvas.components.MultiTouchTransformWidget;
 	
 	public class KMultitouchManipulationMode extends EventDispatcher implements IInteractionMode
 	{
 		public var isActive:Boolean = false;
 		private var _KSketch:KSketch2;
-		private var _widget:IWidget;
+		private var _widget:KMobileWidget;
 		private var _interactionControl:IInteractionControl;
 		
-		public function KMultitouchManipulationMode(KSketchInstance:KSketch2, interactionControl:IInteractionControl, widget:IWidget)
+		public function KMultitouchManipulationMode(KSketchInstance:KSketch2, interactionControl:IInteractionControl, widget:KMobileWidget)
 		{
 			super(this);
 			

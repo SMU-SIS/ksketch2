@@ -18,6 +18,7 @@
 			import org.gestouch.gestures.TapGesture;
 			import org.gestouch.gestures.TransformGesture;
 			
+			import sg.edu.smu.ksketch2.controls.interactors.KRotateInteractor;
 			import sg.edu.smu.ksketch2.utils.KMathUtil;
 			
 			import spark.components.Panel;
@@ -32,6 +33,10 @@
 			private var _activateMoveCenter:TapGesture;
 			private var _orientateArrow:PanGesture;
 			private var _moveCentroid:PanGesture;
+			
+			private var _rotateGesture:PanGesture;
+			private var _orientatedToPathGesture:PanGesture;
+			private var _freeTransformGesture:TransformGesture;
 			
 			private var _isChanging:Boolean;
 			private var _originalX:Number;
@@ -73,6 +78,8 @@
 				_orientateArrow = new PanGesture(orientationArrow);
 				_moveCentroid = new PanGesture(this);
 				_deactivateGesture = new TapGesture(parent);
+				
+				
 			}
 			
 			private function _activateAlignArrow(event:org.gestouch.events.GestureEvent):void

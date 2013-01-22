@@ -37,7 +37,7 @@
 			private function _initStates():void
 			{
 				modelDisplay.init(_KSketch);
-				manipulationWidget.init(_interactionControl);
+				manipulationWidget.init(_KSketch, _interactionControl);
 				_interactionControl.init();
 			/*	interactionWidget.init(_interactionControl);
 				timeSlider.init(_KSketch);

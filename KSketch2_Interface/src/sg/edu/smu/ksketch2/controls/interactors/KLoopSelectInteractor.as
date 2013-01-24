@@ -22,6 +22,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
+	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KFilteredLoopView;
@@ -164,6 +165,8 @@ package sg.edu.smu.ksketch2.controls.interactors
 		{
 			if(target is KStroke)
 				return updateByteArray(scaledBoundingBox(target), target.fullPathMatrix(kskTime), _loopStart, _secondToLast, _loopEnd);
+			else if(target is KImage)
+				return 0;
 			else
 				throw new Error("not supported kobject!");
 		}
@@ -220,7 +223,10 @@ package sg.edu.smu.ksketch2.controls.interactors
 		{
 			if(object is KStroke)
 				return (object as KStroke).points.length;
-			else throw new Error("not supported kobject: "+object);
+			else if(object is KImage)
+				return 0;
+			else
+				throw new Error("not supported kobject: "+object);
 		}
 		
 		/**
@@ -230,7 +236,10 @@ package sg.edu.smu.ksketch2.controls.interactors
 		{
 			if(object is KStroke)
 				return (object as KStroke).points;
-			else throw new Error("not supported kobject: "+object);
+			else if(object is KImage)
+				return null;
+			else
+				throw new Error("not supported kobject: "+object);
 		}
 	}
 }

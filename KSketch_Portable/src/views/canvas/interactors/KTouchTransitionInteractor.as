@@ -5,15 +5,16 @@ package views.canvas.interactors
 	import org.gestouch.events.GestureEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.utils.KSelection;
+	
+	import views.canvas.interactioncontrol.KMobileInteractionControl;
 
 	public class KTouchTransitionInteractor
 	{
 		protected var _activated:Boolean = false;
 		protected var _KSketch:KSketch2;
-		protected var _interactionControl:IInteractionControl;
+		protected var _interactionControl:KMobileInteractionControl;
 		
 		protected var _startTime:int;
 		protected var _endTime:int;
@@ -27,7 +28,7 @@ package views.canvas.interactors
 		 * @param InteractionControl IInteractionControl interface that this interactor gets its working selection and undo/redo stacks from.
 		 * @param inputComponent Target component that is will activate the transition gesture inputs.
 		 */
-		public function KTouchTransitionInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl, inputComponent:DisplayObject)
+		public function KTouchTransitionInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl)
 		{
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;

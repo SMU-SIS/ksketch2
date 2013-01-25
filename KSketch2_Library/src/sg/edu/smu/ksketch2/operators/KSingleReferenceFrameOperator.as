@@ -34,7 +34,9 @@ package sg.edu.smu.ksketch2.operators
 		private var _object:KObject;
 		private var _refFrame:KReferenceFrame;
 		
-		private var _workingPath:KPath;
+		private var _TWorkingPath:KPath;
+		private var _RWorkingPath:KPath;
+		private var _SWorkingPath:KPath;
 		
 		private var _startTime:int;
 		private var _transitionType:int;
@@ -173,22 +175,18 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function beginTransition(time:int, transitionType:int, transformType:int,op:KCompositeOperation):void
 		{
-			if(_workingPath)
-				throw new Error("TransformInterface BeginTransition: Someone forgot to clean up the previous transition");
-			
 			_transitionType = transitionType;
 			
 			//We need to put the model into its magical state first.
 			_normaliseModel(time, transformType, op);
 
 			//Then we can find the keys we need for transition
-			_workingPath = new KPath();
 			_startTime = time;
 		}
 		
 		public function endTransition(time:int, op:KCompositeOperation):void
 		{
-			_workingPath = null;
+			_clearEmptyKeys(op);
 		}
 		
 		/**
@@ -198,7 +196,8 @@ package sg.edu.smu.ksketch2.operators
 		{
 			if(_transitionX != 0 || _transitionY != 0)
 				throw new Error("Transition variables are not clean, can't proceed");
-			_workingPath.push(0, 0, 0);
+			_TWorkingPath = new KPath();
+			_TWorkingPath.push(0, 0, 0);
 		}
 		
 		public function updateTranslation(dx:Number, dy:Number, time:int):void
@@ -207,7 +206,7 @@ package sg.edu.smu.ksketch2.operators
 			_transitionY = dy;
 			
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-				_workingPath.push(dx, dy, time-_startTime);
+				_TWorkingPath.push(dx, dy, time-_startTime);
 			else
 				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time));
 		}
@@ -217,9 +216,8 @@ package sg.edu.smu.ksketch2.operators
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				if(KSketch2.discardTransitionTimings)
-					_discardTransitionTiming(_workingPath);
-				_replacePathOverTime(_workingPath, _startTime, time, KSketch2.TRANSFORM_TRANSLATION, op);
-				_clearEmptyKeys(op);
+					_discardTransitionTiming(_TWorkingPath);
+				_replacePathOverTime(_TWorkingPath, _startTime, time, KSketch2.TRANSFORM_TRANSLATION, op);
 			}
 			else
 			{
@@ -230,6 +228,7 @@ package sg.edu.smu.ksketch2.operators
 			//Reset the transition values
 			_transitionX = 0;
 			_transitionY = 0;
+			_TWorkingPath = null;
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
 		}
 		
@@ -237,14 +236,15 @@ package sg.edu.smu.ksketch2.operators
 		{
 			if(_transitionTheta != 0)
 				throw new Error("Transition variables are not clean, can't proceed");
-			_workingPath.push(0, 0, 0);
+			_RWorkingPath = new KPath();
+			_RWorkingPath.push(0, 0, 0);
 		}
 		
 		public function updateRotation(dTheta:Number, time:int):void
 		{
 			_transitionTheta = dTheta;
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-					_workingPath.push(dTheta, 0, time-_startTime);
+				_RWorkingPath.push(dTheta, 0, time-_startTime);
 			else
 				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time));
 		}
@@ -254,9 +254,8 @@ package sg.edu.smu.ksketch2.operators
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				if(KSketch2.discardTransitionTimings)
-					_discardTransitionTiming(_workingPath);
-				_replacePathOverTime(_workingPath, _startTime, time, KSketch2.TRANSFORM_ROTATION, op);
-				_clearEmptyKeys(op);
+					_discardTransitionTiming(_RWorkingPath);
+				_replacePathOverTime(_RWorkingPath, _startTime, time, KSketch2.TRANSFORM_ROTATION, op);
 			}
 			else
 			{
@@ -264,6 +263,7 @@ package sg.edu.smu.ksketch2.operators
 				interpolateKey(_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
 			}
 			_transitionTheta = 0;
+			_RWorkingPath = null;
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
 		}
 		
@@ -271,14 +271,15 @@ package sg.edu.smu.ksketch2.operators
 		{
 			if(_transitionSigma != 0)
 				throw new Error("Transition variables are not clean, can't proceed");
-			_workingPath.push(0, 0, 0);
+			_SWorkingPath = new KPath();
+			_SWorkingPath.push(0, 0, 0);
 		}
 		
 		public function updateScale(dSigma:Number, time:int):void
 		{
 			_transitionSigma = dSigma;
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-				_workingPath.push(dSigma, 0, time-_startTime);
+				_SWorkingPath.push(dSigma, 0, time-_startTime);
 			else
 				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time));
 		}
@@ -288,9 +289,8 @@ package sg.edu.smu.ksketch2.operators
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				if(KSketch2.discardTransitionTimings)
-					_discardTransitionTiming(_workingPath);
-				_replacePathOverTime(_workingPath, _startTime, time, KSketch2.TRANSFORM_SCALE, op);
-				_clearEmptyKeys(op);
+					_discardTransitionTiming(_SWorkingPath);
+				_replacePathOverTime(_SWorkingPath, _startTime, time, KSketch2.TRANSFORM_SCALE, op);
 			}
 			else
 			{
@@ -298,6 +298,7 @@ package sg.edu.smu.ksketch2.operators
 				interpolateKey(_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);
 			}
 			_transitionSigma = 0;
+			_SWorkingPath = null;
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
 		}
 		

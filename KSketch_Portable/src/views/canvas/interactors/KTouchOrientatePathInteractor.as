@@ -13,26 +13,24 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
-	import views.canvas.components.KMobileWidget;
+	import views.canvas.components.transformWidget.TouchWidgetTemplate;
+	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
 	public class KTouchOrientatePathInteractor extends KTouchTransitionInteractor
 	{
-		public static const dragRange:
+		public static const dragRange:Number = 185;
 		
 		private var _dragGesture:PanGesture;
 		private var _dx:Number;
 		private var _dy:Number;
 		private var _theta:Number;
 		
-		private var _widget:KMobileWidget;
-		private var _previousPoint;
+		private var _previousPoint:Point;
 		
-		public function KTouchOrientatePathInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl,
-													  widget:KMobileWidget, inputComponent:DisplayObject)
+		public function KTouchOrientatePathInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, inputComponent:DisplayObject)
 		{
-			super(KSketchInstance, interactionControl, inputComponent);
+			super(KSketchInstance, interactionControl);
 			
-			_widget = widget;
 			_dragGesture = new PanGesture(inputComponent);
 			_dragGesture.maxNumTouchesRequired = 1;
 		}
@@ -68,7 +66,8 @@ package views.canvas.interactors
 			_dx = 0;
 			_dy = 0;
 			_theta = 0;
-			_previousPoint = _dragGesture.location.subtract(new Point(_widget.x,_widget.y));
+			var selectionCenter:Point = _newSelection.centerAt(_KSketch.time);
+			_previousPoint = _dragGesture.location.subtract(selectionCenter);
 			
 			var i:int = 0;
 			var length:int = _transitionObjects.length();
@@ -77,7 +76,8 @@ package views.canvas.interactors
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-//				_KSketch.transform_Begin_Rotation(currentObject, KSketch2.TRANSITION_INTERPOLATED, new KCompositeOperation());
+				_KSketch.transform_Begin_Translation(currentObject, KSketch2.TRANSITION_INTERPOLATED, new KCompositeOperation());
+				_KSketch.transform_Begin_Rotation(currentObject, KSketch2.TRANSITION_INTERPOLATED, new KCompositeOperation());
 			}
 			
 			_dragGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Drag);
@@ -93,7 +93,8 @@ package views.canvas.interactors
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-//				_KSketch.transform_End_Rotation(currentObject, new KCompositeOperation());
+				_KSketch.transform_End_Translation(currentObject, new KCompositeOperation());
+				_KSketch.transform_End_Rotation(currentObject, new KCompositeOperation());
 			}
 			
 			super._interaction_end(event);
@@ -102,7 +103,8 @@ package views.canvas.interactors
 		
 		private function _update_Drag(event:GestureEvent):void
 		{
-			var current:Point = _dragGesture.location.subtract(new Point(_widget.x,_widget.y));
+			var selectionCenter:Point = _newSelection.centerAt(_KSketch.time);
+			var current:Point = _dragGesture.location.subtract(selectionCenter);
 			var angleChange:Number = KMathUtil.angleOf(_previousPoint, current);
 			
 			if(angleChange > Math.PI)
@@ -115,7 +117,18 @@ package views.canvas.interactors
 			_dx += current.x - (current.x*proportion);
 			_dy += current.y - (current.y*proportion);
 			
-			//Update model here
+			var i:int = 0;
+			var length:int = _transitionObjects.length();
+			var currentObject:KObject;
+			
+			for(i; i < length; i++)
+			{
+				currentObject = _transitionObjects.getObjectAt(i);
+				_KSketch.transform_Update_Translation(currentObject, _dx, _dy);
+				_KSketch.transform_Update_Rotation(currentObject, _theta);
+			}
+			
+			_previousPoint = current;
 		}
 	}
 }

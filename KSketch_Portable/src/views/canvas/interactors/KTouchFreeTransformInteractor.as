@@ -11,14 +11,23 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
+	import views.canvas.interactioncontrol.KMobileInteractionControl;
+	
 	public class KTouchFreeTransformInteractor extends KTouchTransitionInteractor
 	{
+		private var _dx:Number;
+		private var _dy:Number;
+		private var _theta:Number;
+		private var _scale:Number;
+		
 		private var _center:Point;
 		private var _transformGesture:TransformGesture;
 		
-		public function KTouchFreeTransformInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl, inputComponent:DisplayObject)
+		private var dummyOp:KCompositeOperation;
+		
+		public function KTouchFreeTransformInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, inputComponent:DisplayObject)
 		{
-			super(KSketchInstance, interactionControl, inputComponent);
+			super(KSketchInstance, interactionControl);
 			_transformGesture = new TransformGesture(inputComponent);
 		}
 		
@@ -46,16 +55,24 @@ package views.canvas.interactors
 		{
 			super._interaction_begin(event);
 			
-			_center = _newSelection.centerAt(0);
+			_center = _newSelection.centerAt(_KSketch.time);
+			_dx = 0;
+			_dy = 0;
+			_theta = 0;
+			_scale = 1;
 			
 			var i:int = 0;
 			var length:int = _transitionObjects.length();
 			var currentObject:KObject;
+			dummyOp = new KCompositeOperation();
 			
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-//				_KSketch.transform_Begin_Rotation(currentObject, KSketch2.TRANSITION_INTERPOLATED, new KCompositeOperation());
+
+				_KSketch.transform_Begin_Translation(currentObject, KSketch2.TRANSITION_INTERPOLATED, dummyOp);
+				_KSketch.transform_Begin_Rotation(currentObject, KSketch2.TRANSITION_INTERPOLATED, dummyOp);
+				_KSketch.transform_Begin_Scale(currentObject, KSketch2.TRANSITION_INTERPOLATED, dummyOp);
 			}
 			
 			_transformGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Transform);
@@ -71,7 +88,9 @@ package views.canvas.interactors
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-//				_KSketch.transform_End_Rotation(currentObject, new KCompositeOperation());
+				_KSketch.transform_End_Translation(currentObject, dummyOp);
+				_KSketch.transform_End_Rotation(currentObject, dummyOp);
+				_KSketch.transform_End_Scale(currentObject, dummyOp);
 			}
 			
 			super._interaction_end(event);
@@ -80,7 +99,10 @@ package views.canvas.interactors
 		
 		private function _update_Transform(event:GestureEvent):void
 		{
-			trace("Updating free transform");
+			_dx += _transformGesture.offsetX;
+			_dy += _transformGesture.offsetY;
+			_theta += _transformGesture.rotation;
+			_scale *= _transformGesture.scale;
 			
 			var i:int = 0;
 			var length:int = _transitionObjects.length();
@@ -89,7 +111,9 @@ package views.canvas.interactors
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-//				_KSketch.transform_Update_Rotation(currentObject, _theta);
+				_KSketch.transform_Update_Translation(currentObject, _dx, _dy);
+				_KSketch.transform_Update_Rotation(currentObject, _theta);
+				_KSketch.transform_Update_Scale(currentObject, _scale-1);
 			}			
 		}
 	}

@@ -10,7 +10,7 @@
 -->
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark" title="HomeView" actionBarVisible="false" xmlns:components="views.canvas.components.*" xmlns:buttondrawer="views.canvas.components.buttondrawer.*" xmlns:view="sg.edu.smu.ksketch2.view.*"
-	    creationComplete="initCanvas()" addedToStage="_initStates()">
+	    creationComplete="initCanvas()" addedToStage="_initStates()" xmlns:transformWidget="views.canvas.components.transformWidget.*">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -21,40 +21,28 @@
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 			
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
+			import views.canvas.interactors.KSelectionDelegator;
+			import views.canvas.interactors.KTransitionDelegator;
 			
 			private var _KSketch:KSketch2;
-			private var _inputMethod:IInteractionMethod;
-			private var _interactionControl:IInteractionControl;
-			 //private var _commandInterface:KButtonCommandExecutor;
+			private var _interactionControl:KMobileInteractionControl;
+			
+			private var _transitionDelegator:KTransitionDelegator;
+			private var _selectionDelegator:KSelectionDelegator;
 			
 			public function initCanvas():void
 			{
-			
 				_KSketch = new KSketch2();
-				_interactionControl = new KMobileInteractionControl(_KSketch, canvas_region, modelDisplay, manipulationWidget);
+				_interactionControl = new KMobileInteractionControl(_KSketch);
 			}			
 			
 			private function _initStates():void
 			{
 				modelDisplay.init(_KSketch);
-				manipulationWidget.init(_KSketch, _interactionControl);
-				_interactionControl.init();
-			/*	interactionWidget.init(_interactionControl);
-				timeSlider.init(_KSketch);
-				timeWidget.init(_KSketch, timeSlider, _interactionControl);
-				btn_play.init(_commandInterface, timeSlider);
-				group_fileOps.init(_commandInterface, this);
-				group_editOps.init(_commandInterface);
-				group_Operations.init(_commandInterface, _interactionControl);
-				group_groupOps.init(_commandInterface, _interactionControl);
-				group_pen.init(_commandInterface);
-				group_key.init(_commandInterface, _interactionControl, _KSketch);
-				group_configOps.init();
-				
 				_interactionControl.init();
 				
-				_inputMethod = new KDesktopInput();
-				_inputMethod.init(interactionLayer, _interactionControl, interactionWidget, modelDisplay);				*/
+				_transitionDelegator = new KTransitionDelegator(_KSketch, _interactionControl, widget, modelDisplay);
+				_selectionDelegator = new KSelectionDelegator(_KSketch, _interactionControl, canvas_region, modelDisplay);
 			}
 		]]>
 	</fx:Script>
@@ -72,7 +60,7 @@
 				<!-- The model display displays the objects in the model -->
 				<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 									scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
-				<components:KMobileWidget id="manipulationWidget"/>
+				<transformWidget:TouchWidgetTemplate id="widget" visible="false"/>
 			</s:BorderContainer>
 		</s:BorderContainer>		
 	</s:Group>

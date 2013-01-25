@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 creationComplete="init()">
+	<fx:Script>
+		<![CDATA[
+			
+			public function init():void
+			{
+				enterInterpolateState();
+				enterInteractionState();
+				enterEnabledState();
+			}
+			
+			public function enterRecordState():void
+			{
+				rotationTrigger.graphics.clear();
+				rotationTrigger.graphics.beginFill(0x8C0303);
+				rotationTrigger.graphics.drawCircle(0,0, 185);
+				rotationTrigger.graphics.drawCircle(0,0, 135);
+				rotationTrigger.graphics.endFill();
+				
+				freeTransformTrigger.graphics.clear();
+				freeTransformTrigger.graphics.beginFill(0xBF0404);
+				freeTransformTrigger.graphics.drawCircle(0,0, 135);
+				freeTransformTrigger.graphics.endFill();
+				
+				centroid.graphics.clear();
+				centroid.graphics.beginFill(0xF2F9F9);
+				centroid.graphics.drawCircle(0,0, 20);
+				centroid.graphics.endFill();
+				
+				dragTrigger.graphics.clear();
+				dragTrigger.graphics.beginFill(0xF2F9F9);
+				dragTrigger.graphics.moveTo(0, -180);
+				dragTrigger.graphics.lineTo(-25, -145);
+				dragTrigger.graphics.lineTo(25, -145);
+				dragTrigger.graphics.lineTo(0, -180);
+				dragTrigger.graphics.endFill();
+			}
+			
+			public function enterInterpolateState():void
+			{
+				rotationTrigger.graphics.clear();
+				rotationTrigger.graphics.beginFill(0x242426);
+				rotationTrigger.graphics.drawCircle(0,0, 185);
+				rotationTrigger.graphics.drawCircle(0,0, 135);
+				rotationTrigger.graphics.endFill();
+				
+				freeTransformTrigger.graphics.clear();
+				freeTransformTrigger.graphics.beginFill(0x46494F);
+				freeTransformTrigger.graphics.drawCircle(0,0, 135);
+				freeTransformTrigger.graphics.endFill();
+				
+				centroid.graphics.clear();
+				centroid.graphics.beginFill(0xF2F9F9);
+				centroid.graphics.drawCircle(0,0, 20);
+				centroid.graphics.endFill();
+				
+				dragTrigger.graphics.clear();
+				dragTrigger.graphics.beginFill(0xF2F9F9);
+				dragTrigger.graphics.moveTo(0, -180);
+				dragTrigger.graphics.lineTo(-25, -145);
+				dragTrigger.graphics.lineTo(25, -145);
+				dragTrigger.graphics.lineTo(0, -180);
+				dragTrigger.graphics.endFill();
+			}
+			
+			public function enterInteractionState():void
+			{
+				rotationTrigger.alpha = 0.9;
+				freeTransformTrigger.alpha = 0.9;
+				centroid.alpha = 1.0;
+				dragTrigger.alpha = 1.0;
+			}
+			
+			public function enterEditDirectionState():void
+			{
+				rotationTrigger.alpha = 0.4;
+				freeTransformTrigger.alpha = 0.4;
+				centroid.alpha = 0.5;
+				dragTrigger.alpha = 1.0;
+			}
+			
+			public function enterDisabledState():void
+			{
+				enterInterpolateState();
+				alpha = 0.4;
+			}
+			
+			public function enterEnabledState():void
+			{
+				enterInterpolateState();
+				alpha = 1.0;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Group id="rotationTrigger"/>
+	<s:Group id="freeTransformTrigger"/>
+	<s:Group id="centroid"/>
+	<s:Group id="dragTrigger"/>
+</s:Group>

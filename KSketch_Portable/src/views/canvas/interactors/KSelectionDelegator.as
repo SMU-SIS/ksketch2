@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package views.canvas.modes
+package views.canvas.interactors
 {
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
@@ -29,12 +29,13 @@ package views.canvas.modes
 	
 	import spark.core.SpriteVisualElement;
 	
-	import views.canvas.interactors.KTouchSelectInteractor;
+	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
-	public class KMobileSelectionMode extends EventDispatcher implements IInteractionMode
+	
+	public class KSelectionDelegator extends EventDispatcher
 	{
 		private var _KSketch:KSketch2;
-		private var _interactionControl:IInteractionControl;
+		private var _interactionControl:KMobileInteractionControl;
 		private var _inputComponent:UIComponent;
 		private var _modelDisplay:KModelDisplay;
 
@@ -50,13 +51,14 @@ package views.canvas.modes
 		/**
 		 * KMobileSelection mode is the state machine that switches between
 		 * drawing, tap selection and loop selection interactors.
+		 * Note: This class's implementation is inconsistent with that of the transition delegator
 		 * @param KSketchInstance: KSketch2 instance that this mode is going to interact with
 		 * @param interactionControl: iInteractionControl that oversees application's mode switching.
 		 * @param inputComponent: Target UIcomponent that will dispatch gesture events for this mode.
 		 * @param modelDisplay: ModelDisplay linked to given KSketchInstance
 		 * 
 		 */
-		public function KMobileSelectionMode(KSketchInstance:KSketch2, interactionControl:IInteractionControl,
+		public function KSelectionDelegator(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
 											   inputComponent:UIComponent, modelDisplay:KModelDisplay)
 		{
 			super(this);
@@ -64,13 +66,12 @@ package views.canvas.modes
 			_interactionControl = interactionControl;
 			_inputComponent = inputComponent;
 			_modelDisplay = modelDisplay;
-		}
-		
-		/**
-		 * Initialises the interactors and gestures for this mode
-		 */
-		public function init():void
-		{
+			
+			/**
+			 * Implementation is inconsistent with the transition module
+			 * Reusing Draw and loop select interactors so implementation will feel a bit weird
+			 * These interactors are sharing gesture inputs
+			 */
 			_drawInteractor = new KDrawInteractor(_KSketch, _modelDisplay, _interactionControl);
 			_tapSelectInteractor = new KTouchSelectInteractor(_KSketch, _interactionControl, _modelDisplay);
 			_loopSelectInteractor = new KLoopSelectInteractor(_KSketch, _modelDisplay, _interactionControl);
@@ -141,26 +142,5 @@ package views.canvas.modes
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
 			_interactionControl.determineMode();
 		}	
-		
-		/**
-		 * Does Nothing
-		 */
-		public function activate():void{}
-		/**
-		 * Does Nothing
-		 */
-		public function reset():void{}
-		/**
-		 * Does Nothing
-		 */
-		public function beginInteraction(point:Point):void{}
-		/**
-		 * Does Nothing
-		 */
-		public function updateInteraction(point:Point):void{}
-		/**
-		 * Does Nothing
-		 */
-		public function endInteraction():void{}
 	}
 }

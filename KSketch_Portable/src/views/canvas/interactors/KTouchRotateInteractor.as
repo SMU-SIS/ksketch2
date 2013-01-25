@@ -7,11 +7,12 @@ package views.canvas.interactors
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.KRotateInteractor;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
+	
+	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
 	public class KTouchRotateInteractor extends KTouchTransitionInteractor
 	{
@@ -22,9 +23,9 @@ package views.canvas.interactors
 		private var _previousPoint:Point;
 		private var _startPoint:Point;
 		
-		public function KTouchRotateInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl, inputComponent:DisplayObject)
+		public function KTouchRotateInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, inputComponent:DisplayObject)
 		{
-			super(KSketchInstance, interactionControl, inputComponent);
+			super(KSketchInstance, interactionControl);
 			
 			_rotateGesture = new PanGesture(inputComponent);
 			_rotateGesture.maxNumTouchesRequired = 1;

@@ -70,9 +70,9 @@ package views.canvas.interactors
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
 
-				_KSketch.transform_Begin_Translation(currentObject, KSketch2.TRANSITION_INTERPOLATED, dummyOp);
-				_KSketch.transform_Begin_Rotation(currentObject, KSketch2.TRANSITION_INTERPOLATED, dummyOp);
-				_KSketch.transform_Begin_Scale(currentObject, KSketch2.TRANSITION_INTERPOLATED, dummyOp);
+				_KSketch.transform_Begin_Translation(currentObject, _interactionControl.transitionMode, dummyOp);
+				_KSketch.transform_Begin_Rotation(currentObject, _interactionControl.transitionMode, dummyOp);
+				_KSketch.transform_Begin_Scale(currentObject, _interactionControl.transitionMode, dummyOp);
 			}
 			
 			_transformGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Transform);

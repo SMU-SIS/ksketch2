@@ -9,6 +9,7 @@
 */
 package views.canvas.interactioncontrol
 {
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
@@ -17,9 +18,11 @@ package views.canvas.interactioncontrol
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactionmodes.IInteractionMode;
 	import sg.edu.smu.ksketch2.controls.interactionmodes.KDrawingMode;
 	import sg.edu.smu.ksketch2.controls.widgets.IWidget;
+	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
@@ -32,14 +35,30 @@ package views.canvas.interactioncontrol
 	
 	public class KMobileInteractionControl extends EventDispatcher implements IInteractionControl
 	{
+		public static const EVENT_INTERACTION_BEGIN:String = "Interaction Begin";
+		public static const EVENT_INTERACTION_END:String = "Interaction End";
+		
 		private var _KSketch:KSketch2;
 		private var _transitionMode:int;
 		private var _selection:KSelection;
+		private var _timeControl:KTimeControl;
 		
-		public function KMobileInteractionControl(KSketchInstance:KSketch2)
+		private var _undoStack:Vector.<IModelOperation>;
+		private var _redoStack:Vector.<IModelOperation>;
+		private var _currentInteraction:KInteractionOperation;
+		
+		public function KMobileInteractionControl(KSketchInstance:KSketch2, timeControl:KTimeControl)
 		{
 			super(this);
 			_KSketch = KSketchInstance;
+			_timeControl = timeControl;
+		}
+		
+		public function reset():void
+		{
+			_undoStack = new Vector.<IModelOperation>();
+			_redoStack = new Vector.<IModelOperation>();
+			_currentInteraction = null;
 		}
 		
 		public function set transitionMode(mode:int):void
@@ -95,45 +114,81 @@ package views.canvas.interactioncontrol
 		 */
 		public function addToUndoStack(operation:IModelOperation):void
 		{
+			if(!operation.isValid())
+				throw new Error(operation.errorMessage);
+			_undoStack.push(operation);
+			
+			if(hasRedo)
+				_redoStack = new Vector.<IModelOperation>();
 
+			dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
 		}
 		
 		public function undo():void
 		{
+			var undoOp:IModelOperation = _undoStack.pop();
+			undoOp.undo();
+			_redoStack.push(undoOp);
+			dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
 		}
 		
 		public function redo():void
 		{
+			var redoOp:IModelOperation = _redoStack.pop();
+			redoOp.redo();
+			_undoStack.push(redoOp);
+			dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
 		}
 		
 		public function get hasUndo():Boolean
 		{
-			return false;
+			return _undoStack.length > 0;
 		}
 		
 		public function get hasRedo():Boolean
 		{
-			return false;
+			return _redoStack.length > 0;
 		}
 		
 		public function triggerInterfaceUpdate():void
 		{
-			
-		}
-		
-		public function begin_interaction_operation():void
-		{
-			
+			//Wait and see if we need to do anything ehre
 		}
 		
 		public function get currentInteraction():KInteractionOperation
 		{
-			return null;
+			return _currentInteraction;
+		}
+		
+		public function beginRecording():void
+		{
+			_timeControl.startRecording();
+		}
+		
+		public function stopRecording():void
+		{
+			_timeControl.stopRecording();
+		}
+		
+		public function begin_interaction_operation():void
+		{
+			if(currentInteraction)
+				throw new Error("Can't begin an interaction operation. The previous interaction was not properly closed.");
+			_currentInteraction = new KInteractionOperation(this, _timeControl);
+			_currentInteraction.startTime = _KSketch.time;
+			_currentInteraction.oldSelection = selection;
 		}
 		
 		public function end_interaction_operation(operation:IModelOperation=null, newSelection:KSelection=null):void
 		{
-			
+			if(currentInteraction && operation)
+			{
+				currentInteraction.addOperation(operation);
+				currentInteraction.newSelection = newSelection;
+				currentInteraction.endTime = _KSketch.time;
+				addToUndoStack(currentInteraction);
+			}
+			_currentInteraction = null;
 		}
 		
 		public function debugView():void
@@ -162,11 +217,6 @@ package views.canvas.interactioncontrol
 		}
 		
 		public function init():void
-		{
-			
-		}
-		
-		public function reset():void
 		{
 			
 		}

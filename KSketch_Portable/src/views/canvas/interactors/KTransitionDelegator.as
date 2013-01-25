@@ -1,6 +1,7 @@
 package views.canvas.interactors
 {
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	import flash.geom.Point;
 	
 	import mx.core.UIComponent;
@@ -31,6 +32,8 @@ package views.canvas.interactors
 		
 		private var _enabled:Boolean;
 		private var _modeGesture:TapGesture;
+		private var _isInteracting:Boolean;
+		
 		/**
 		 * Instantiates widget and transition interactors.
 		 * Also controls the appearance of the widget based on selection location
@@ -59,18 +62,21 @@ package views.canvas.interactors
 			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, widget.rotationTrigger);
 			
 			interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateWidget);
+			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_BEGIN, _updateWidget);
+			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateWidget);
 			
 			transitionMode = KSketch2.TRANSITION_INTERPOLATED;
 			enabled = true;
+			_isInteracting = false;
 		}
 		
 		public function set transitionMode(mode:int):void
 		{
 			_interactionControl.transitionMode = mode;
 			
-			if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
+			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 				_widget.enterRecordState();
-			else if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
+			else if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
 				_widget.enterInterpolateState();
 			else
 				throw new Error("Unknow transition mode. Check what kind of modes the transition delegate is setting");
@@ -103,9 +109,15 @@ package views.canvas.interactors
 		/**
 		 * Handles ksketch events that changes the widget
 		 */
-		private function _updateWidget(event:KSketchEvent):void
+		private function _updateWidget(event:Event):void
 		{
-			if(!_interactionControl.selection)
+			if(event.type == KMobileInteractionControl.EVENT_INTERACTION_BEGIN)
+				_isInteracting = true;
+			
+			if(event.type == KMobileInteractionControl.EVENT_INTERACTION_END)
+				_isInteracting = false;
+			
+			if(!_interactionControl.selection || _isInteracting)
 			{
 				_widget.visible = false;
 				return;

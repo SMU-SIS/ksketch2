@@ -1,6 +1,7 @@
 package views.canvas.interactors
 {
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	
 	import org.gestouch.events.GestureEvent;
 	
@@ -71,11 +72,20 @@ package views.canvas.interactors
 			//Handle general interaction implicit grouping here in this class
 			_newSelection = _interactionControl.selection; // For the time being. We have to put it thru a grouping algo to get the correct one
 			_transitionObjects = _newSelection.objects;
+			
+			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_BEGIN));
+			
+			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
+				_interactionControl.beginRecording();
 		}
 		
 		protected function _interaction_end(event:GestureEvent):void
 		{
 			//Handle interaction operation wrap up here in this class	
+			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_END));
+
+			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
+				_interactionControl.stopRecording();
 		}
 	}
 }

@@ -47,8 +47,7 @@ package views.canvas.interactors
 			_modelDisplay = modelDisplay;
 
 			_selectionArea = new Sprite();
-//			_selectionArea.alpha = 0;
-			_modelDisplay.addChild(_selectionArea);
+			//_selectionArea.alpha = 0;
 		}
 		
 		public function tap(location:Point):void
@@ -58,7 +57,9 @@ package views.canvas.interactors
 			_selectionArea.graphics.drawCircle(location.x, location.y, DETECTION_RADIUS);
 			_selectionArea.graphics.endFill();
 			
+			_modelDisplay.addChild(_selectionArea);
 			detectObjects();
+			_modelDisplay.removeChild(_selectionArea);
 		}
 		
 		/**

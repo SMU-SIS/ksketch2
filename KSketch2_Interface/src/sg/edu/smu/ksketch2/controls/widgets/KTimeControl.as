@@ -92,7 +92,9 @@ package sg.edu.smu.ksketch2.controls.widgets
 		public function set maxTime(value:int):void
 		{
 			maximum = value/KSketch2.ANIMATION_INTERVAL;
-			(skin as TimeSliderSkin).drawTrackScale();
+			
+			if(skin is TimeSliderSkin)
+				(skin as TimeSliderSkin).drawTrackScale();
 		}
 		
 		override public function set maximum(value:Number):void
@@ -105,7 +107,8 @@ package sg.edu.smu.ksketch2.controls.widgets
 			if(skin)
 			{
 				pixelPerFrame = Math.floor((width - (thumb.width/2))/maximum*20)/20;
-				(skin as TimeSliderSkin).drawTrackScale();
+				if(skin is TimeSliderSkin)
+					(skin as TimeSliderSkin).drawTrackScale();
 			}
 		}
 		

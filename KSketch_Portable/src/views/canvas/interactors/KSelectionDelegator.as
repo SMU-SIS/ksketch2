@@ -8,6 +8,7 @@
  */
 package views.canvas.interactors
 {
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
@@ -90,7 +91,6 @@ package views.canvas.interactors
 		{
 			_activeInteractor = _tapSelectInteractor;
 			_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
-			_interactionControl.determineMode();
 		}
 		
 		/**
@@ -107,9 +107,10 @@ package views.canvas.interactors
 			_activeInteractor.activate();
 			//make sure the input coordinates are in the correct coordinate space
 			_activeInteractor.interaction_Begin(_modelDisplay.globalToLocal(_drawGesture.lastTouchLocation)); 
-			
+
 			_drawGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updateDraw);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_ENDED, _endDraw);
+			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_BEGIN));
 		}
 		
 		/**
@@ -140,7 +141,7 @@ package views.canvas.interactors
 			_activeInteractor.interaction_End();
 			_drawGesture.removeAllEventListeners();
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
-			_interactionControl.determineMode();
+			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_END));
 		}	
 	}
 }

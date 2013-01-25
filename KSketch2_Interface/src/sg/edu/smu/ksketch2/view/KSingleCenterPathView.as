@@ -125,7 +125,6 @@ package sg.edu.smu.ksketch2.view
 			{
 				currentTransitionPoint = path[i];
 				dRadius = PATH_RADIUS * (currentTransitionPoint.x / maxScaleValue);
-				trace("Path Distance", dRadius, currentTransitionPoint.time);
 				currentAngle = (currentTransitionPoint.time - firstPoint.time)/duration*QUARTER_CIRCLE;
 				cartesianPoint = Point.polar(PATH_RADIUS+dRadius,currentAngle+Math.PI);
 				currentTransitionPoint.x = cartesianPoint.x;

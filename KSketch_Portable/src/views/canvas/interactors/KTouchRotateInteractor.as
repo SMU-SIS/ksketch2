@@ -67,7 +67,7 @@ package views.canvas.interactors
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_Begin_Rotation(currentObject, KSketch2.TRANSITION_INTERPOLATED, new KCompositeOperation());
+				_KSketch.transform_Begin_Rotation(currentObject,_interactionControl.transitionMode, new KCompositeOperation());
 			}
 			
 			_rotateGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Rotate);

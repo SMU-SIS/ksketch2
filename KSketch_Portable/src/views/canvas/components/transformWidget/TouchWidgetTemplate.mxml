@@ -27,15 +27,16 @@
 				
 				centroid.graphics.clear();
 				centroid.graphics.beginFill(0xF2F9F9);
-				centroid.graphics.drawCircle(0,0, 20);
+				centroid.graphics.drawCircle(0,0, 27.5);
 				centroid.graphics.endFill();
 				
 				dragTrigger.graphics.clear();
-				dragTrigger.graphics.beginFill(0xF2F9F9);
-				dragTrigger.graphics.moveTo(0, -180);
-				dragTrigger.graphics.lineTo(-25, -145);
-				dragTrigger.graphics.lineTo(25, -145);
-				dragTrigger.graphics.lineTo(0, -180);
+				dragTrigger.graphics.lineStyle(2, 0x8C0303);
+				dragTrigger.graphics.beginFill(0xBF0404);
+				dragTrigger.graphics.moveTo(0, -220);
+				dragTrigger.graphics.lineTo(-25, -195);
+				dragTrigger.graphics.lineTo(25, -195);
+				dragTrigger.graphics.lineTo(0, -220);
 				dragTrigger.graphics.endFill();
 			}
 			
@@ -54,22 +55,23 @@
 				
 				centroid.graphics.clear();
 				centroid.graphics.beginFill(0xF2F9F9);
-				centroid.graphics.drawCircle(0,0, 20);
+				centroid.graphics.drawCircle(0,0, 27.5);
 				centroid.graphics.endFill();
 				
 				dragTrigger.graphics.clear();
-				dragTrigger.graphics.beginFill(0xF2F9F9);
-				dragTrigger.graphics.moveTo(0, -180);
-				dragTrigger.graphics.lineTo(-25, -145);
-				dragTrigger.graphics.lineTo(25, -145);
-				dragTrigger.graphics.lineTo(0, -180);
+				dragTrigger.graphics.lineStyle(2, 0x46494F);
+				dragTrigger.graphics.beginFill(0x242426);
+				dragTrigger.graphics.moveTo(0, -220);
+				dragTrigger.graphics.lineTo(-25, -195);
+				dragTrigger.graphics.lineTo(25, -195);
+				dragTrigger.graphics.lineTo(0, -220);
 				dragTrigger.graphics.endFill();
 			}
 			
 			public function enterInteractionState():void
 			{
-				rotationTrigger.alpha = 0.9;
-				freeTransformTrigger.alpha = 0.9;
+				rotationTrigger.alpha = 0.75;
+				freeTransformTrigger.alpha = 0.75;
 				centroid.alpha = 1.0;
 				dragTrigger.alpha = 1.0;
 			}

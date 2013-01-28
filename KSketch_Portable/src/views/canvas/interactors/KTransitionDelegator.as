@@ -13,6 +13,7 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.KRotateInteractor;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
+	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
 	import views.canvas.components.transformWidget.TouchWidgetTemplate;
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
@@ -54,16 +55,17 @@ package views.canvas.interactors
 			_widgetSpace = widget.parent;
 				
 			_modeGesture = new TapGesture(_widget.centroid);
-			_modeGesture.numTapsRequired = 2;
+			_modeGesture.numTapsRequired = 1;
 			
 			//_directionInteractor = new KTouchDragDirectionInteractor(KSketchInstance, interactionControl, this, widget.dragTrigger, widget);
 			_transformInteractor = new KTouchFreeTransformInteractor(KSketchInstance, interactionControl, widget.freeTransformTrigger);
 			_dragInteractor = new KTouchOrientatePathInteractor(KSketchInstance, interactionControl, widget.dragTrigger);
-			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, widget.rotationTrigger);
-			
+			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, widget.rotationTrigger);			
+
 			interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateWidget);
 			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_BEGIN, _updateWidget);
 			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateWidget);
+			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _updateWidget);
 			
 			transitionMode = KSketch2.TRANSITION_INTERPOLATED;
 			enabled = true;
@@ -89,7 +91,6 @@ package views.canvas.interactors
 			if(isEnabled)
 			{
 				_widget.enterEnabledState();
-				//_directionInteractor.activate();
 				_transformInteractor.activate();
 				_dragInteractor.activate();
 				_rotateInteractor.activate();
@@ -98,7 +99,6 @@ package views.canvas.interactors
 			else
 			{
 				_widget.enterDisabledState();
-				//_directionInteractor.deactivate();
 				_transformInteractor.deactivate();
 				_dragInteractor.deactivate();
 				_rotateInteractor.deactivate();
@@ -115,7 +115,10 @@ package views.canvas.interactors
 				_isInteracting = true;
 			
 			if(event.type == KMobileInteractionControl.EVENT_INTERACTION_END)
+			{
 				_isInteracting = false;
+				transitionMode = KSketch2.TRANSITION_INTERPOLATED;
+			}
 			
 			if(!_interactionControl.selection || _isInteracting)
 			{
@@ -132,6 +135,12 @@ package views.canvas.interactors
 			
 			_widget.x = selectionCenter.x;
 			_widget.y = selectionCenter.y;
+			
+			if(_interactionControl.selection.selectionTransformable(_KSketch.time)||
+				(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED))
+				enabled = true;
+			else
+				enabled = false;
 		}
 		
 		/**

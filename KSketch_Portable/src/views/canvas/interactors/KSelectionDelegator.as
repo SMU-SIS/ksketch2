@@ -103,6 +103,8 @@ package views.canvas.interactors
 				_activeInteractor = _drawInteractor;
 			else if(_drawGesture.touchesCount == 2)
 				_activeInteractor = _loopSelectInteractor;
+			
+			_interactionControl.selection = null;
 
 			_activeInteractor.activate();
 			//make sure the input coordinates are in the correct coordinate space

@@ -81,11 +81,12 @@ package views.canvas.interactors
 		
 		protected function _interaction_end(event:GestureEvent):void
 		{
+			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
+				_interactionControl.stopRecording();
+			
 			//Handle interaction operation wrap up here in this class	
 			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_END));
 
-			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
-				_interactionControl.stopRecording();
 		}
 	}
 }

@@ -10,12 +10,16 @@
 -->
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark" title="HomeView" actionBarVisible="false" xmlns:components="views.canvas.components.*" xmlns:buttondrawer="views.canvas.components.buttondrawer.*" xmlns:view="sg.edu.smu.ksketch2.view.*"
-	    creationComplete="initCanvas()" addedToStage="_initStates()" xmlns:transformWidget="views.canvas.components.transformWidget.*" xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*">
+	    creationComplete="initCanvas()" xmlns:transformWidget="views.canvas.components.transformWidget.*" xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*" add="_addObjHandler(event);" destructionPolicy="never">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import spark.primitives.BitmapImage;
+			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.controls.inputmethods.IInteractionMethod;
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
@@ -30,10 +34,14 @@
 			private var _transitionDelegator:KTransitionDelegator;
 			private var _selectionDelegator:KSelectionDelegator;
 			
+			private var _newObjType:uint = 0;
+			
 			public function initCanvas():void
 			{
 				_KSketch = new KSketch2();
 				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
+				
+				_initStates();
 			}			
 			
 			private function _initStates():void
@@ -46,6 +54,43 @@
 				
 				_interactionControl.reset();
 			}
+			
+			private function _onAddedToStage(e:FlexEvent):void
+			{
+				//_addObjHandler();
+			}
+			
+			private function _menuBtnHandler():void
+			{
+				navigator.addEventListener("addImgToScn", _addImgHandler);
+				navigator.pushView(views.canvas.Menu);
+			}
+			
+			private function _addImgHandler(e:Event):void
+			{
+				_removeMenuBtnHandler();
+				_newObjType = 1;
+			}
+			
+			private function _removeMenuBtnHandler():void
+			{
+				navigator.removeEventListener("addImgToScn", _addImgHandler);
+			}
+			
+			private function _addObjHandler(e:FlexEvent):void
+			{
+				if(_newObjType == 1)
+				{
+					//Add image
+					trace("_addObjHandler");
+					var tempImg:BitmapImage = new BitmapImage();
+					
+					//tempImg.source = "file:///storage/sdcard0/Download/3d11ae64abb9f58c5e0556c082157e3c.jpeg";
+					tempImg.source = navigator.poppedViewReturnedObject.object;
+					_KSketch.object_Add_Image(tempImg.bitmapData,0);
+					_newObjType = 0;
+				}
+			}
 		]]>
 	</fx:Script>
 	<s:layout>
@@ -57,7 +102,7 @@
 		<s:BorderContainer id="canvas_region" backgroundColor="0XD8D8D8" width="100%" height="100%">
 			<s:layout>
 				<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
-			</s:layout>	
+			</s:layout>
 			<s:BorderContainer id="drawing_stage" height="95%" width="{drawing_stage.height/9*16}" borderVisible="false">
 				<!-- The model display displays the objects in the model -->
 				<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
@@ -71,9 +116,9 @@
 		
 		<s:Group width="100%" height="100%">
 			<s:layout >
-				<s:HorizontalLayout gap="0" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalAlign="middle"/>
+				<s:HorizontalLayout gap="0" verticalAlign="middle"/>
 			</s:layout>
-			<s:BorderContainer width="40" height="40" backgroundColor="0x000000" id="playbutton"/>
+			<!--<s:BorderContainer width="40" height="40" backgroundColor="0x000000" id="playbutton"/>-->
 			<components:FrameControl/>
 			<s:Group width="100%" height="100%">
 				<s:layout>
@@ -82,16 +127,32 @@
 				<widgets:KTimeControl id="timeControl" width="100%"/>
 			</s:Group>
 			<components:FrameControl/>
-			<s:BorderContainer width="40" height="40" backgroundColor="0x000000" id="menuButton"/>
+			
+			<s:Group width="50"
+					 height="60"
+					 chromeColor="0x000000">
+				<s:Rect width="100%"
+						height="100%">
+					<s:fill>
+						<s:SolidColor color="0x000000"/>
+					</s:fill>
+				</s:Rect>
+				<s:Button label="M"
+						  width="100%"
+						  height="100%"
+						  chromeColor="0x000000"
+						  color="0xFFFFFF"
+						  click="_menuBtnHandler();"/>
+			</s:Group>
 		</s:Group>
 		
-		<s:Group width="100%">
+		<!--<s:Group width="100%">
 			<s:layout>
 				<s:HorizontalLayout gap="0"/>
 			</s:layout>
 			<s:BorderContainer width="50" height="60" backgroundColor="0x000000" backgroundAlpha="1" borderVisible="false"/>
 			<s:Group width="100%"/>
 			<s:BorderContainer width="50" height="60" backgroundColor="0x000000" backgroundAlpha="1" borderVisible="false"/>
-		</s:Group>
+		</s:Group>-->
 	</s:BorderContainer>
 </s:View>

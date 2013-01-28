@@ -1,20 +1,18 @@
 package sg.edu.smu.ksketch2.view
-{
-	import flash.display.Bitmap;
-	
+{	
 	import sg.edu.smu.ksketch2.model.objects.KImage;
-	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import flash.display.Bitmap;
 	
 	public class KImageView extends KObjectView
 	{
-		private var _bitmapDisplay:Bitmap;
+		private var _imgDisplay:Bitmap = new Bitmap();
 		
-		public function KImageView(object:KObject, isGhost:Boolean=false)
+		public function KImageView(object:KImage, isGhost:Boolean=false)
 		{
 			super(object, isGhost);
-			_bitmapDisplay = new Bitmap((object as KImage).imgData);
-			addChild(_bitmapDisplay);
-			
+			trace("KImageView")
+			_imgDisplay.bitmapData = object.imgData;
+			addChild(_imgDisplay);			
 		}
 	}
 }

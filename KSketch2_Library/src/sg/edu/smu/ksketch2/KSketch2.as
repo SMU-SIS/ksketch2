@@ -129,6 +129,7 @@ package sg.edu.smu.ksketch2
 		{
 			var newImage:KImage = new KImage(_sceneGraph.nextHighestID, imgData);
 			trace("after construction", newImage.transformInterface);
+			trace("object_Add_Image");
 			_sceneGraph.registerObject(newImage, null);
 			newImage.init(time, null);
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));

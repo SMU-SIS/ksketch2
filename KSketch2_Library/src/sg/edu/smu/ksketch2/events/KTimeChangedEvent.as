@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch2.events
 	public class KTimeChangedEvent extends Event
 	{
 		public static const EVENT_TIME_CHANGED:String = "Time changed";
+		public static const EVENT_MAX_TIME_CHANGED:String = "Max time changed"
 		private var _from:int;
 		private var _to:int;
 		

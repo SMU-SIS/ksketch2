@@ -89,7 +89,6 @@ package sg.edu.smu.ksketch2.view
 				view = new KStrokeView(object as KStroke);
 			else if (object is KImage)
 			{
-				trace("view_addObject");
 				view = new KImageView(object as KImage);
 			}
 			else

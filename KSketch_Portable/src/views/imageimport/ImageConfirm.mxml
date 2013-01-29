@@ -22,19 +22,17 @@
 					var heightScale:Number = (scnHeight/imgHeight);
 					var imgScale:Number;
 					
-					imgScale = myImg.scaleX = myImg.scaleY = Math.min(0.7*heightScale, 0.7*widthScale);
+					imgScale = myImg.scaleX = myImg.scaleY = Math.min(0.9*heightScale, 0.9*widthScale);
 					
 					imgWarning.text = "Warning: As the image is too large for your device screen, it is " +
 						"currently scaled to " + imgScale.toPrecision(2) + " time of its original image size.";					
 					(imgWarning as Label).setStyle('color', 0xFF0000);
-					//scaleSlider.value = imgScale;
 				}
 			}
 			
 			private function _addImgHandler():void
 			{
 				dispatchEvent(new Event("addImgToScn", true));
-				trace("_addImgHandler: " + data);
 				navigator.popToFirstView();
 			}
 			
@@ -44,35 +42,36 @@
 			}
 			
 			override public function createReturnObject():Object {
-				trace("createReturnObject: " + data);
 				return data;
 			}
 		]]>
 	</fx:Script>
 	
+	<s:Rect width="100%"
+			height="100%">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:entries>
+					<s:GradientEntry color="0x000000"/>
+					<s:GradientEntry color="0xFFFFFF"/>
+				</s:entries>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	
 	<s:VGroup width="100%"
 			  height="100%"
 			  horizontalAlign="center"
-			  verticalAlign="middle" 
-			  paddingTop="20"
-			  gap="20">
-		<s:Label text="Confirm use this image?"/>
+			  verticalAlign="middle">
+		
+		<s:Label text="Confirm use this image?"
+				 fontSize="30"
+				 color="0xFFFFFF"/>
 		
 		<s:HGroup width="100%"
 				  horizontalAlign="center">		
 			<s:BitmapImage id="myImg"
 						   source="{data}"/>
-			
-			<!--<s:Spacer width="10%"/>
-			
-			<s:VSlider id="scaleSlider"
-					   liveDragging="true"
-					   dataTipPrecision="2"
-					   height="100%"
-					   width="25"
-					   minimum="0"
-					   maximum="1"
-					   stepSize="0.01"/>-->
 		</s:HGroup>	
 		
 		<s:Label id="imgWarning"/>
@@ -80,9 +79,13 @@
 		<s:HGroup width="100%"
 				  horizontalAlign="center">			
 			<s:Button label="Confirm"
+					  chromeColor="0x000000"
+					  color="0xFFFFFF"
 					  click="_addImgHandler();"/>
 			
 			<s:Button label="Cancel"
+					  chromeColor="0x000000"
+					  color="0xFFFFFF"
 					  click="_cancelImgHandler();"/>
 		</s:HGroup>						
 	</s:VGroup>

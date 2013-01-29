@@ -1,4 +1,4 @@
-package views.canvas.interactors
+package views.canvas.interactors.transition
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
@@ -18,7 +18,7 @@ package views.canvas.interactors
 	import views.canvas.components.transformWidget.TouchWidgetTemplate;
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 
-	public class KTransitionDelegator
+	public class KTransitionInteractorManager
 	{
 		//private var _directionInteractor:KTouchDragDirectionInteractor;
 		private var _transformInteractor:KTouchFreeTransformInteractor;
@@ -45,7 +45,7 @@ package views.canvas.interactors
 		 */
 		// This class doesn't really do anything other than help in keeping JT a bit more sane
 		// By keeping the code a bit neater
-		public function KTransitionDelegator(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, 
+		public function KTransitionInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, 
 									 widget:TouchWidgetTemplate, modelSpace:DisplayObject):void
 		{
 			_KSketch = KSketchInstance;

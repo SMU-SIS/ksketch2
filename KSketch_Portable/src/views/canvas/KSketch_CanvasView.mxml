@@ -10,29 +10,31 @@
 -->
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark" title="HomeView" actionBarVisible="false" xmlns:components="views.canvas.components.*" xmlns:buttondrawer="views.canvas.components.buttondrawer.*" xmlns:view="sg.edu.smu.ksketch2.view.*"
-	    creationComplete="initCanvas()" xmlns:transformWidget="views.canvas.components.transformWidget.*" xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*" add="_addObjHandler(event);" destructionPolicy="never">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+	    creationComplete="initCanvas()"
+		addedToStage="_initStates()"
+		xmlns:transformWidget="views.canvas.components.transformWidget.*"
+		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
+		xmlns:timeBar="views.canvas.components.timeBar.*"
+		destructionPolicy="never"
+		add="_addHandler(event);" 
+		>
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
-			
-			import spark.primitives.BitmapImage;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.controls.inputmethods.IInteractionMethod;
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 			
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
-			import views.canvas.interactors.KSelectionDelegator;
-			import views.canvas.interactors.KTransitionDelegator;
+			import views.canvas.interactors.selection.KSelectionInteractorManager;
+			import views.canvas.interactors.transition.KTransitionInteractorManager;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KMobileInteractionControl;
 			
-			private var _transitionDelegator:KTransitionDelegator;
-			private var _selectionDelegator:KSelectionDelegator;
+			private var _transitionDelegator:KTransitionInteractorManager;
+			private var _selectionDelegator:KSelectionInteractorManager;
 			
 			private var _newObjType:uint = 0;
 			
@@ -46,18 +48,22 @@
 			
 			private function _initStates():void
 			{
+				currentTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_CURRENT_TIME);
+				maxTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_MAX_TIME);
+
 				modelDisplay.init(_KSketch);
 				timeControl.init(_KSketch);
 				
-				_transitionDelegator = new KTransitionDelegator(_KSketch, _interactionControl, widget, modelDisplay);
-				_selectionDelegator = new KSelectionDelegator(_KSketch, _interactionControl, canvas_region, modelDisplay);
+				playButton.init(timeControl);
+				_transitionDelegator = new KTransitionInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
+				_selectionDelegator = new KSelectionInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
 				
 				_interactionControl.reset();
 			}
 			
-			private function _onAddedToStage(e:FlexEvent):void
+			private function _addHandler(e:FlexEvent):void
 			{
-				//_addObjHandler();
+				_addObjHandler();
 			}
 			
 			private function _menuBtnHandler():void
@@ -77,19 +83,23 @@
 				navigator.removeEventListener("addImgToScn", _addImgHandler);
 			}
 			
-			private function _addObjHandler(e:FlexEvent):void
+			private function _addObjHandler():void
 			{
 				if(_newObjType == 1)
 				{
 					//Add image
-					trace("_addObjHandler");
-					var tempImg:BitmapImage = new BitmapImage();
+					var myImg:Loader = new Loader();
 					
-					//tempImg.source = "file:///storage/sdcard0/Download/3d11ae64abb9f58c5e0556c082157e3c.jpeg";
-					tempImg.source = navigator.poppedViewReturnedObject.object;
-					_KSketch.object_Add_Image(tempImg.bitmapData,0);
+					myImg.load(new URLRequest(navigator.poppedViewReturnedObject.object as String));
+					myImg.contentLoaderInfo.addEventListener(Event.COMPLETE, _imgLoadedHandler);
 					_newObjType = 0;
 				}
+			}
+			
+			private function _imgLoadedHandler(e:Event):void
+			{				
+				e.target.removeEventListener(Event.COMPLETE, _imgLoadedHandler);
+				_KSketch.object_Add_Image((e.target.content as Bitmap).bitmapData, _KSketch.time);
 			}
 		]]>
 	</fx:Script>
@@ -118,41 +128,25 @@
 			<s:layout >
 				<s:HorizontalLayout gap="0" verticalAlign="middle"/>
 			</s:layout>
-			<!--<s:BorderContainer width="40" height="40" backgroundColor="0x000000" id="playbutton"/>-->
-			<components:FrameControl/>
+			<timeBar:Touch_Play_Button id="playButton"/>
+			<timeBar:KTimeLabel id="currentTimeLabel"/>
 			<s:Group width="100%" height="100%">
 				<s:layout>
 					<s:VerticalLayout gap="3" verticalAlign="middle" horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
 				</s:layout>
-				<widgets:KTimeControl id="timeControl" width="100%"/>
+				<timeBar:KTouchTimeControl id="timeControl"/>
 			</s:Group>
-			<components:FrameControl/>
-			
-			<s:Group width="50"
-					 height="60"
-					 chromeColor="0x000000">
-				<s:Rect width="100%"
-						height="100%">
-					<s:fill>
-						<s:SolidColor color="0x000000"/>
-					</s:fill>
-				</s:Rect>
-				<s:Button label="M"
-						  width="100%"
-						  height="100%"
-						  chromeColor="0x000000"
-						  color="0xFFFFFF"
-						  click="_menuBtnHandler();"/>
-			</s:Group>
+			<timeBar:KTimeLabel id="maxTimeLabel"/>
+			<timeBar:Touch_Menu_Button id="menuButton"/>
 		</s:Group>
 		
-		<!--<s:Group width="100%">
+		<s:Group width="100%">
 			<s:layout>
 				<s:HorizontalLayout gap="0"/>
 			</s:layout>
-			<s:BorderContainer width="50" height="60" backgroundColor="0x000000" backgroundAlpha="1" borderVisible="false"/>
+			<s:BorderContainer width="50" height="60" backgroundColor="0x000000" backgroundAlpha="0" borderVisible="false" click="playButton.playToggle()"/>
 			<s:Group width="100%"/>
-			<s:BorderContainer width="50" height="60" backgroundColor="0x000000" backgroundAlpha="1" borderVisible="false"/>
-		</s:Group>-->
+			<s:BorderContainer width="50" height="60" backgroundColor="0x000000" backgroundAlpha="0" borderVisible="false" click="_menuBtnHandler()"/>
+		</s:Group>
 	</s:BorderContainer>
 </s:View>

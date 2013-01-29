@@ -36,8 +36,6 @@ package sg.edu.smu.ksketch2.view
 		{
 			super();
 			_object = object;
-			trace("_object: " + _object);
-			trace("isGhost: " + isGhost);
 			
 			if(_object && !isGhost)
 			{
@@ -80,8 +78,6 @@ package sg.edu.smu.ksketch2.view
 		public function updateParent(newParent:IObjectView):void
 		{
 			(newParent as KObjectView).addChild(this);
-			trace(_pathView);
-			trace(newParent);
 			_pathView.setDrawingArea(newParent as KGroupView, newParent as KGroupView, newParent as KGroupView);
 			if(_ghost)
 				(newParent as KObjectView).addChild(_ghost as KObjectView);

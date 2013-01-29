@@ -10,7 +10,7 @@ package sg.edu.smu.ksketch2.view
 		public function KImageView(object:KImage, isGhost:Boolean=false)
 		{
 			super(object, isGhost);
-			trace("KImageView")
+			
 			_imgDisplay.bitmapData = object.imgData;
 			addChild(_imgDisplay);			
 		}

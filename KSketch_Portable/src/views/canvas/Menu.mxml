@@ -8,10 +8,12 @@
 	<fx:Script>
 		<![CDATA[			
 			import mx.core.UIComponent;
+			
 			import views.imageimport.ImageConfirm;
 			import views.imageimport.nativeapps.Cam;
 			import views.imageimport.nativeapps.CamRoll;
 			
+			private var _fontSize:int;
 			private var _container:UIComponent = new UIComponent();
 			private var _imgApp:Sprite;			
 			private var _isCam:Boolean;
@@ -58,31 +60,60 @@
 		]]>
 	</fx:Script>
 	
+	<s:Rect width="100%"
+			height="100%">
+		<s:fill>
+			<s:RadialGradient>
+				<s:entries>
+					<s:GradientEntry color="0x000000"/>
+					<s:GradientEntry color="0x666666"/>
+				</s:entries>
+			</s:RadialGradient>
+		</s:fill>
+	</s:Rect>
+	
 	<s:Group width="100%"
-			 height="100%">
+			 height="100%" >
 		<s:layout>
 			<local:MenuLayout/>
 		</s:layout>
 		
-		<s:Button label="Back"
-				  click="navigator.popView();"/>
+		<s:Label id="menuLabel"
+				 text="Menu" 
+				 color="0xFFFFFF"
+				 fontWeight="bold">
+			<s:filters>
+				<s:DropShadowFilter distance="15" angle="30"/>
+			</s:filters>
+		</s:Label>
 		
+		<s:Button id="backBtn"
+				  label="Back"
+				  chromeColor="0x000000"
+				  color="0xFFFFFF"
+				  click="navigator.popView();"/>
 		<s:CalloutButton id="picBtn"
 						 horizontalPosition="middle"
 						 verticalPosition="before"
-						 label="Image">
+						 label="Image"
+						 chromeColor="0x000000"
+						 color="0xFFFFFF">
 			<s:calloutLayout>
 				<s:HorizontalLayout/>
 			</s:calloutLayout>
-			<s:Button label="Camera" 
+			<s:Button label="Camera"
+					  chromeColor="0x000000"
+					  color="0xFFFFFF"
 					  click="_showCam(true);"/>
-			<s:Button label="Gallery" 
+			<s:Button label="Gallery"					  
+					  chromeColor="0x000000"
+					  color="0xFFFFFF"
 					  click="_showCam(false);"/>
 		</s:CalloutButton>
 		
-		<s:Button/>
-		<s:Button/>
-		<s:Button/>
-		<s:Button/>
+		<s:Button chromeColor="0x000000"/>
+		<s:Button chromeColor="0x000000"/>
+		<s:Button chromeColor="0x000000"/>
+		<s:Button chromeColor="0x000000"/>
 	</s:Group>
 </s:View>

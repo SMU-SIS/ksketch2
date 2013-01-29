@@ -12,9 +12,9 @@ package sg.edu.smu.ksketch2.model.objects
 		public function KImage(id:int, newImgData:BitmapData)
 		{
 			super(id);
-			trace("KImage");
+			
 			_imgData = newImgData;
-			this._center = new Point(150, 150);
+			this._center = new Point(_imgData.width/2, _imgData.height/2);
 			transformInterface = new KSingleReferenceFrameOperator(this);
 		}
 		

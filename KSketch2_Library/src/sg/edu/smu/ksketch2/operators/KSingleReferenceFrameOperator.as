@@ -65,16 +65,25 @@ package sg.edu.smu.ksketch2.operators
 
 		}
 		
+		/**
+		 * Returns the time value of the first key in the reference frame this transform operator handles
+		 */
 		public function get firstKeyTime():int
 		{
 			return _refFrame.head.time;
 		}
 		
+		/**
+		 * Returns the time value of the last key in the reference frame this transform operator handles
+		 */
 		public function get lastKeyTime():int
 		{
 			return _refFrame.lastKey.time;
 		}
 		
+		/**
+		 * Returns the key in effect at given time
+		 */
 		public function getActiveKey(time:int):IKeyFrame
 		{
 			var activeKey:IKeyFrame = _refFrame.getKeyAtTime(time);
@@ -90,6 +99,9 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function matrix(time:int):Matrix
 		{
+			//Extremely hardcoded matrix
+			//Iterate through the key list and add up the rotation, scale, dx dy values
+			//Pump these values into the matrix after wards
 			var currentKey:KSpatialKeyFrame = _refFrame.head as KSpatialKeyFrame;
 			
 			if(!currentKey)
@@ -153,6 +165,10 @@ package sg.edu.smu.ksketch2.operators
 			return activeKey.hasActivityAtTime();
 		}
 		
+		/**
+		 * Returns a boolean denoting whether it is possible to insert a key
+		 * into this operator's key list
+		 */
 		public function canInsertKey(time:int):Boolean
 		{
 			var activeKey:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
@@ -208,9 +224,16 @@ package sg.edu.smu.ksketch2.operators
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 				_TWorkingPath.push(dx, dy, time-_startTime);
 			else
-				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time));
+				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
+			//Dispatches event to make the interface update
+			//View should be listening to this event
 		}
 		
+		/**
+		 * Ends the translation and does path processing on the working path
+		 * All three kinds of end Transition functions are similar.
+		 * Should collapse them into one function during clean up
+		 */
 		public function endTranslation(time:int, op:KCompositeOperation):void
 		{
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
@@ -218,6 +241,7 @@ package sg.edu.smu.ksketch2.operators
 				if(KSketch2.discardTransitionTimings)
 					_discardTransitionTiming(_TWorkingPath);
 				_replacePathOverTime(_TWorkingPath, _startTime, time, KSketch2.TRANSFORM_TRANSLATION, op);
+				// Need to replace the path for the future keys since it is a demonstration
 			}
 			else
 			{
@@ -229,6 +253,9 @@ package sg.edu.smu.ksketch2.operators
 			_transitionX = 0;
 			_transitionY = 0;
 			_TWorkingPath = null;
+			
+			//Dispatches a transform finalised event
+			//Interface can listen to this event to do updates
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
 		}
 		
@@ -332,6 +359,9 @@ package sg.edu.smu.ksketch2.operators
 			return allKeys;
 		}
 		
+		/**
+		 * Merges the transform from the source object into this operator's key list's keys
+		 */
 		public function mergeTransform(sourceObject:KObject, stopMergeTime:int, op:KCompositeOperation):void
 		{
 			var sourceInterface:KSingleReferenceFrameOperator = sourceObject.transformInterface.clone() as KSingleReferenceFrameOperator;
@@ -342,18 +372,28 @@ package sg.edu.smu.ksketch2.operators
 
 			//Clone the source object's reference frame and modify the this operator's reference frame 
 			//Such that it is the same as the source reference frame
+			//The following loop makes sure that this operator's reference frame
+			//Has keys at the key times of the source key list
 			while(currentKey && currentKey.time <= stopMergeTime)
 			{
+				//To Merge Ref Frame is a new reference frame
+				//This insert key op is basically adding a cloned key from the source into it
 				toMergeRefFrame.insertKey(currentKey.clone());
+				
+				//To Modify key is a key from this operator's reference frame at the cloned key's time
 				toModifyKey = _refFrame.getKeyAtTime(currentKey.time) as KSpatialKeyFrame;
+				
+				//If there is a key then we can move on to the next key
 				if(!toModifyKey)
 				{
+					//Else we need to split the next key at this time to make sure a key exists at this time
 					toModifyKey = _refFrame.getKeyAftertime(currentKey.time) as KSpatialKeyFrame;
 					
 					if(toModifyKey)
 						toModifyKey.splitKey(currentKey.time, dummyOp);
 					else
 					{
+						//Else we just insert a new one at time
 						toModifyKey = new KSpatialKeyFrame(currentKey.time, _object.centroid);
 						op.addOperation(new KInsertKeyOperation(_refFrame.getKeyAtBeforeTime(currentKey.time), null, toModifyKey));
 						_refFrame.insertKey(toModifyKey);
@@ -363,6 +403,8 @@ package sg.edu.smu.ksketch2.operators
 				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
 			
+			//Deal with the keys that may be missed if the source key list has a time after
+			//This operator's last time
 			toModifyKey = _refFrame.getKeyAtTime(stopMergeTime) as KSpatialKeyFrame;
 			if(!toModifyKey)
 			{
@@ -380,7 +422,7 @@ package sg.edu.smu.ksketch2.operators
 			
 			currentKey = _refFrame.head as KSpatialKeyFrame;			
 			var dummyOp:KCompositeOperation = new KCompositeOperation();
-			
+			//Modify the source key list to be the same as this operator's key list
 			while(currentKey && currentKey.time <= stopMergeTime)
 			{
 				toModifyKey = toMergeRefFrame.getKeyAtTime(currentKey.time) as KSpatialKeyFrame;
@@ -395,6 +437,7 @@ package sg.edu.smu.ksketch2.operators
 				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
 			
+			//Merge the two key lists
 			currentKey = toMergeRefFrame.head as KSpatialKeyFrame;
 			var oldPath:KPath;
 			while(currentKey && currentKey.time <= stopMergeTime)
@@ -442,7 +485,7 @@ package sg.edu.smu.ksketch2.operators
 		}
 		
 		/**
-		 * Adds an dx, dy interpolation to targetKey
+		 * Adds a dx, dy interpolation to targetKey
 		 */
 		public function interpolateKey(dx:Number, dy:Number, targetKey:KSpatialKeyFrame, transformType:int, time:int,
 									   op:KCompositeOperation, followUp:Boolean = false):void
@@ -534,6 +577,9 @@ package sg.edu.smu.ksketch2.operators
 			}
 		}
 		
+		/**
+		 * Makes the timing for the given path linear
+		 */
 		private function _discardTransitionTiming(path:KPath):void
 		{
 			var currentTime:int = 0;
@@ -553,6 +599,10 @@ package sg.edu.smu.ksketch2.operators
 			path.points = newPoints;
 		}
 		
+		/**
+		 * Linearly adds dx and dy up to the proportion given
+		 * Linearly removes dx and dy up from that proportion onwards
+		 */
 		private function _interpolatePath(dx:Number, dy:Number, targetPath:KPath, upToProportion:Number):void
 		{
 			var pathDuration:int = targetPath.pathDuration;
@@ -573,11 +623,13 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(currentProportion <= upToProportion)
 				{
+					//Adding dx and dy linearly up to proportion
 					currentPoint.x += dx * currentProportion/upToProportion;
 					currentPoint.y += dy * currentProportion/upToProportion;
 				}
 				else
 				{
+					//Removing dx and dy linearly for the rest of the path
 					currentPoint.x += dx+(dx *(upToProportion - currentProportion)/(1-upToProportion));
 					currentPoint.y += dy+(dy *(upToProportion - currentProportion)/(1-upToProportion));
 				}
@@ -590,8 +642,9 @@ package sg.edu.smu.ksketch2.operators
 		}
 		
 		/**
-		 * Adds the path to the reference frame across frames (if needed) over time
-		 * Assume that the current keys are empty!
+		 * Make source path the transition path of type for this operator's key list.
+		 * Will split the source path to fit the time range
+		 * Replaces all current paths of given type
 		 */
 		private function _replacePathOverTime(sourcePath:KPath, startTime:int, endTime:int, transformType:int, op:KCompositeOperation):void
 		{

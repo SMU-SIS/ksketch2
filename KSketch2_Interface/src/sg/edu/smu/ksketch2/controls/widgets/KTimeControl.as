@@ -16,10 +16,11 @@ package sg.edu.smu.ksketch2.controls.widgets
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.skins.TimeSliderSkin;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
+	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
 	import spark.components.HSlider;
 
-	public class KTimeControl extends HSlider
+	public class KTimeControl extends HSlider implements ITimeControl
 	{
 		public static const PLAY_START:String = "Start Playing";
 		public static const PLAY_STOP:String = "Stop Playing";
@@ -95,6 +96,8 @@ package sg.edu.smu.ksketch2.controls.widgets
 			
 			if(skin is TimeSliderSkin)
 				(skin as TimeSliderSkin).drawTrackScale();
+
+			dispatchEvent(new Event(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED));
 		}
 		
 		override public function set maximum(value:Number):void
@@ -103,6 +106,8 @@ package sg.edu.smu.ksketch2.controls.widgets
 				return;
 			
 			super.maximum = value;
+			maxTime = maxTime;
+			
 			
 			if(skin)
 			{

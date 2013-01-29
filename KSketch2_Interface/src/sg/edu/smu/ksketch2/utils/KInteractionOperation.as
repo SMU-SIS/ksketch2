@@ -9,6 +9,7 @@
 package sg.edu.smu.ksketch2.utils
 {
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+	import sg.edu.smu.ksketch2.controls.widgets.ITimeControl;
 	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
@@ -18,7 +19,7 @@ package sg.edu.smu.ksketch2.utils
 	public class KInteractionOperation extends KCompositeOperation
 	{
 		private var _interactionControl:IInteractionControl;
-		private var _timeControl:KTimeControl;
+		private var _timeControl:ITimeControl;
 		
 		public var startTime:int;
 		public var endTime:int;
@@ -26,7 +27,7 @@ package sg.edu.smu.ksketch2.utils
 		public var newSelection:KSelection;
 		public var oldSelection:KSelection;
 		
-		public function KInteractionOperation(interactionControl:IInteractionControl, timeControl:KTimeControl)
+		public function KInteractionOperation(interactionControl:IInteractionControl, timeControl:ITimeControl)
 		{
 			super();
 			_interactionControl = interactionControl;

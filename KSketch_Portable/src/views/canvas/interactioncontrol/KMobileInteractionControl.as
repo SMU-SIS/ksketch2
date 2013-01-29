@@ -31,7 +31,8 @@ package views.canvas.interactioncontrol
 	
 	import spark.core.SpriteVisualElement;
 	
-	import views.canvas.interactors.KSelectionDelegator;
+	import views.canvas.components.timeBar.KTouchTimeControl;
+	import views.canvas.interactors.selection.KSelectionInteractorManager;
 	
 	public class KMobileInteractionControl extends EventDispatcher implements IInteractionControl
 	{
@@ -41,24 +42,34 @@ package views.canvas.interactioncontrol
 		private var _KSketch:KSketch2;
 		private var _transitionMode:int;
 		private var _selection:KSelection;
-		private var _timeControl:KTimeControl;
+		private var _timeControl:KTouchTimeControl;
 		
 		private var _undoStack:Vector.<IModelOperation>;
 		private var _redoStack:Vector.<IModelOperation>;
 		private var _currentInteraction:KInteractionOperation;
 		
-		public function KMobileInteractionControl(KSketchInstance:KSketch2, timeControl:KTimeControl)
+		public function KMobileInteractionControl(KSketchInstance:KSketch2, timeControl:KTouchTimeControl)
 		{
 			super(this);
 			_KSketch = KSketchInstance;
 			_timeControl = timeControl;
 		}
 		
+		/**
+		 * Resets application state variables
+		 *  - Resets undo/redo stacks
+		 *  - Resets selection
+		 *  - Resets interaction state
+		 *  - Resets time Control
+		 */
 		public function reset():void
 		{
 			_undoStack = new Vector.<IModelOperation>();
 			_redoStack = new Vector.<IModelOperation>();
+			_selection = null;
 			_currentInteraction = null;
+			
+			_timeControl.reset();
 		}
 		
 		public function set transitionMode(mode:int):void
@@ -203,29 +214,33 @@ package views.canvas.interactioncontrol
 		{
 			//Disabled for touch
 		}
+		
 		public function updateCanvasInput(point:Point):void
 		{
 			//Disabled for touch
 		}
+		
 		public function completeCanvasInput():void
 		{
 			//Disabled for touch
 		}
+		
 		public function enterDrawingMode(drawModeType:String):void
 		{
 			
 		}
 		
+		
 		public function init():void
 		{
 			
 		}
+		
 
 		public function determineMode():void
 		{
 			
 		}
-		
 		
 		public function enterSelectionMode():void
 		{

@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package views.canvas.interactors
+package views.canvas.interactors.selection
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -33,7 +33,7 @@ package views.canvas.interactors
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
 	
-	public class KSelectionDelegator extends EventDispatcher
+	public class KSelectionInteractorManager extends EventDispatcher
 	{
 		private var _KSketch:KSketch2;
 		private var _interactionControl:KMobileInteractionControl;
@@ -59,7 +59,7 @@ package views.canvas.interactors
 		 * @param modelDisplay: ModelDisplay linked to given KSketchInstance
 		 * 
 		 */
-		public function KSelectionDelegator(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+		public function KSelectionInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
 											   inputComponent:UIComponent, modelDisplay:KModelDisplay)
 		{
 			super(this);

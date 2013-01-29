@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="100" height="40"
+		 backgroundAlpha="0" borderVisible="false">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import org.gestouch.events.GestureEvent;
+			import org.gestouch.gestures.SwipeGesture;
+			import org.gestouch.gestures.TapGesture;
+			
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
+			
+			public static const LABEL_CURRENT_TIME:int = 0;
+			public static const LABEL_MAX_TIME:int = 1;
+			
+			private var _KSketch:KSketch2;
+			private var _type:int;
+			private var _timeControl:KTouchTimeControl;
+			private var _swipeGesture:SwipeGesture;
+			private var _tapGesture:TapGesture;
+			
+			public function init(KSketchInstance:KSketch2, timeControl:KTouchTimeControl, type:int):void
+			{
+				_KSketch = KSketchInstance;
+				_timeControl = timeControl;
+				_type = type;
+				
+				_swipeGesture = new SwipeGesture(this);
+				_swipeGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleSwipe);
+				
+				_tapGesture = new TapGesture(this);
+				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
+				
+				if(type == LABEL_CURRENT_TIME)
+					_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _updateCurrentTime);
+				else
+					_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _updateMaxTime);
+			}
+			
+			/**
+			 * Tap handler to handle tapping to advance/roll back frames
+			 */
+			private function _handleTap(event:org.gestouch.events.GestureEvent):void
+			{
+				if(_type == LABEL_CURRENT_TIME)
+					_timeControl.time = _timeControl.time - KSketch2.ANIMATION_INTERVAL;
+				else 
+					_timeControl.time = _timeControl.time + KSketch2.ANIMATION_INTERVAL;
+			}
+			
+			/**
+			 * Swipe handler to handle prev/next marker time
+			 */
+			private function _handleSwipe(event:org.gestouch.events.GestureEvent):void
+			{
+				if(_swipeGesture.offsetX < 0)
+					_timeControl.time = 0;
+				else if(_swipeGesture.offsetX > 0)
+					_timeControl.time = _timeControl.maximum;
+			}
+			
+			private function _updateCurrentTime(event:Event):void
+			{
+				timeLabel.text = toTimeCode(_KSketch.time);
+			}
+			
+			private function _updateMaxTime(event:Event):void
+			{
+				timeLabel.text = toTimeCode(_timeControl.maximum);
+			}
+			
+			public function toTimeCode(milliseconds:Number):String
+			{
+				var seconds:int = Math.floor((milliseconds/1000));
+				var strSeconds:String = seconds.toString();
+				if(seconds < 10)
+					strSeconds = "0" + strSeconds;
+				
+				
+				var remainingMilliseconds:int = milliseconds%1000;
+				var strMilliseconds:String = remainingMilliseconds.toString();
+				strMilliseconds = strMilliseconds.charAt(0) + strMilliseconds.charAt(1);
+				
+				if(remainingMilliseconds < 10)
+					strMilliseconds = "0" + strMilliseconds;
+				
+				var timeCode:String = strSeconds + ':' + strMilliseconds;
+				return timeCode;
+			}
+		]]>
+	</fx:Script>
+	<s:layout>
+		<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+	</s:layout>
+	<s:Label id="timeLabel" text="12:34" fontSize="{(10/40)*width}"/>
+</s:BorderContainer>

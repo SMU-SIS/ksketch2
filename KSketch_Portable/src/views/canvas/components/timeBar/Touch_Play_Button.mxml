@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark">
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
+			
+			private var _timeControl:KTouchTimeControl;
+			private var _buttonState:int;
+			private const SHOW_PLAY:int = 0;
+			private const SHOW_PAUSE:int = 1;
+			
+			public function init(timeControl:KTouchTimeControl):void
+			{
+				_timeControl = timeControl;
+				buttonState = SHOW_PLAY;
+				
+				timeControl.addEventListener(KTimeControl.PLAY_START, _handlePlayPause);
+				timeControl.addEventListener(KTimeControl.PLAY_STOP, _handlePlayPause);
+			}
+			
+			public function playToggle():void
+			{
+				if(_buttonState == SHOW_PLAY)
+					_timeControl.play();
+				else
+					_timeControl.stop();
+			}
+			
+			private function _handlePlayPause(event:Event):void
+			{
+				if(event.type == KTimeControl.PLAY_START)
+					buttonState = SHOW_PAUSE;  //Very mind f. If it is playing. SHOW PAUSE. 
+				else
+					buttonState = SHOW_PLAY;	// IF IT IS PAUSING,THEN SHOW PLAY!
+			}
+			
+			private function set buttonState(value:int):void
+			{
+				buttonDisplay.graphics.clear();
+				_buttonState = value;
+				if(_buttonState == SHOW_PLAY)
+				{
+					buttonDisplay.graphics.beginFill(0x000000);
+					buttonDisplay.graphics.lineStyle(1);
+					buttonDisplay.graphics.moveTo(0,0);
+					buttonDisplay.graphics.lineTo(0,40);
+					buttonDisplay.graphics.lineTo(40,20);
+					buttonDisplay.graphics.lineTo(0,0);
+					buttonDisplay.graphics.endFill();
+				}
+				else
+				{
+					buttonDisplay.graphics.lineStyle(10,0x000000);
+					buttonDisplay.graphics.moveTo(12.5,5);
+					buttonDisplay.graphics.lineTo(12.5,35);
+					buttonDisplay.graphics.moveTo(27.5,5);
+					buttonDisplay.graphics.lineTo(27.5,35);
+				}
+			}
+		]]>
+	</fx:Script>
+	<s:BorderContainer width="40" height="40" id="buttonDisplay" borderVisible="false" backgroundAlpha="0"/>
+</s:Group>

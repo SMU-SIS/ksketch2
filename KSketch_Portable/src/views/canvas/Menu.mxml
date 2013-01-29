@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:local="views.custom.*"
+		title="Menu"
+		actionBarVisible="false">
+	
+	<fx:Script>
+		<![CDATA[			
+			import mx.core.UIComponent;
+			import views.imageimport.ImageConfirm;
+			import views.imageimport.nativeapps.Cam;
+			import views.imageimport.nativeapps.CamRoll;
+			
+			private var _container:UIComponent = new UIComponent();
+			private var _imgApp:Sprite;			
+			private var _isCam:Boolean;
+			
+			private function _showCam(isCam:Boolean):void
+			{
+				_isCam = isCam;
+				
+				if(_isCam)
+				{
+					_imgApp = new Cam();
+				}
+				else
+				{
+					_imgApp = new CamRoll();
+				}
+				
+				picBtn.closeDropDown();
+				_imgApp.addEventListener("exitImgApp", _exitImgAppHandler);
+				_imgApp.addEventListener("cfmImgApp", _openImgHandler);	
+				addElement(_container);
+				_container.addChild(_imgApp);
+			}
+			
+			private function _exitImgAppHandler(e:Event):void
+			{
+				_imgApp.removeEventListener("exitImgApp", _exitImgAppHandler);
+				_imgApp.removeEventListener("cfmImgApp", _openImgHandler);
+				_container.removeChild(_imgApp);				
+				removeElement(_container);
+			}
+			
+			private function _openImgHandler(e:Event):void
+			{				
+				if(_isCam)
+				{
+					navigator.pushView(views.imageimport.ImageConfirm, (_imgApp as Cam).imgPath);
+				}
+				else
+				{
+					navigator.pushView(views.imageimport.ImageConfirm, (_imgApp as CamRoll).imgPath);
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Group width="100%"
+			 height="100%">
+		<s:layout>
+			<local:MenuLayout/>
+		</s:layout>
+		
+		<s:Button label="Back"
+				  click="navigator.popView();"/>
+		<s:CalloutButton id="picBtn"
+						 horizontalPosition="middle"
+						 verticalPosition="before"
+						 label="Image">
+			<s:calloutLayout>
+				<s:HorizontalLayout/>
+			</s:calloutLayout>
+			<s:Button label="Camera" 
+					  click="_showCam(true);"/>
+			<s:Button label="Gallery" 
+					  click="_showCam(false);"/>
+		</s:CalloutButton>
+		
+		<s:Button/>
+		<s:Button/>
+		<s:Button/>
+		<s:Button/>
+	</s:Group>
+</s:View>

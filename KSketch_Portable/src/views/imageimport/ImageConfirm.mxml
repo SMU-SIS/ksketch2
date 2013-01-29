@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		title="ImageConfirm"
+		actionBarVisible="false"
+		viewActivate="_viewActivateHandler(event);">
+	
+	<fx:Script>
+		<![CDATA[
+			import spark.events.ViewNavigatorEvent;
+			
+			private function _viewActivateHandler(e:ViewNavigatorEvent):void
+			{
+				var scnWidth:uint = stage.stageWidth;
+				var scnHeight:uint = stage.stageHeight;
+				var imgWidth:uint = myImg.sourceWidth;
+				var imgHeight:uint = myImg.sourceWidth;				
+				
+				if((imgWidth > scnWidth) || (imgHeight > scnHeight))
+				{
+					var widthScale:Number = (scnWidth/imgWidth);
+					var heightScale:Number = (scnHeight/imgHeight);
+					var imgScale:Number;
+					
+					imgScale = myImg.scaleX = myImg.scaleY = Math.min(0.7*heightScale, 0.7*widthScale);
+					
+					imgWarning.text = "Warning: As the image is too large for your device screen, it is " +
+						"currently scaled to " + imgScale.toPrecision(2) + " time of its original image size.";					
+					(imgWarning as Label).setStyle('color', 0xFF0000);
+					//scaleSlider.value = imgScale;
+				}
+			}
+			
+			private function _addImgHandler():void
+			{
+				dispatchEvent(new Event("addImgToScn", true));
+				trace("_addImgHandler: " + data);
+				navigator.popToFirstView();
+			}
+			
+			private function _cancelImgHandler():void
+			{
+				navigator.popView();
+			}
+			
+			override public function createReturnObject():Object {
+				trace("createReturnObject: " + data);
+				return data;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:VGroup width="100%"
+			  height="100%"
+			  horizontalAlign="center"
+			  verticalAlign="middle" 
+			  paddingTop="20"
+			  gap="20">
+		<s:Label text="Confirm use this image?"/>
+		
+		<s:HGroup width="100%"
+				  horizontalAlign="center">		
+			<s:BitmapImage id="myImg"
+						   source="{data}"/>
+			
+			<!--<s:Spacer width="10%"/>
+			
+			<s:VSlider id="scaleSlider"
+					   liveDragging="true"
+					   dataTipPrecision="2"
+					   height="100%"
+					   width="25"
+					   minimum="0"
+					   maximum="1"
+					   stepSize="0.01"/>-->
+		</s:HGroup>	
+		
+		<s:Label id="imgWarning"/>
+		
+		<s:HGroup width="100%"
+				  horizontalAlign="center">			
+			<s:Button label="Confirm"
+					  click="_addImgHandler();"/>
+			
+			<s:Button label="Cancel"
+					  click="_cancelImgHandler();"/>
+		</s:HGroup>						
+	</s:VGroup>
+</s:View>

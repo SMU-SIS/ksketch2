@@ -7,12 +7,13 @@ package sg.edu.smu.ksketch2.model.objects
 
 	public class KImage extends KObject
 	{
-		private var _img:BitmapData;
+		private var _imgData:BitmapData;
 		
-		public function KImage(id:int, newImg:BitmapData)
+		public function KImage(id:int, newImgData:BitmapData)
 		{
 			super(id);
-			_img = newImg;
+			trace("KImage");
+			_imgData = newImgData;
 			this._center = new Point(150, 150);
 			transformInterface = new KSingleReferenceFrameOperator(this);
 		}
@@ -24,7 +25,7 @@ package sg.edu.smu.ksketch2.model.objects
 		
 		public function get imgData():BitmapData
 		{
-			return _img;
+			return _imgData;
 		}
 	}
 }

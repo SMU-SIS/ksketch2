@@ -88,7 +88,9 @@ package sg.edu.smu.ksketch2.view
 			else if(object is KStroke)
 				view = new KStrokeView(object as KStroke);
 			else if (object is KImage)
-				view = new KImageView(object);
+			{
+				view = new KImageView(object as KImage);
+			}
 			else
 				throw new Error("Object type "+object.toString()+" is not supported by the model display yet");
 			

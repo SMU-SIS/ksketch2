@@ -77,7 +77,12 @@ package views.canvas.interactors.transition
 			_interactionControl.transitionMode = mode;
 			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
+			{
+				if(!_enabled)
+					enabled = true;	
+				
 				_widget.enterRecordState();
+			}
 			else if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
 				_widget.enterInterpolateState();
 			else
@@ -94,7 +99,9 @@ package views.canvas.interactors.transition
 				_transformInteractor.activate();
 				_dragInteractor.activate();
 				_rotateInteractor.activate();
-				_modeGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
+	
+				if(!_modeGesture.hasEventListener(GestureEvent.GESTURE_RECOGNIZED))
+					_modeGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
 			}
 			else
 			{
@@ -102,7 +109,6 @@ package views.canvas.interactors.transition
 				_transformInteractor.deactivate();
 				_dragInteractor.deactivate();
 				_rotateInteractor.deactivate();
-				//_modeGesture.removeAllEventListeners();
 			}
 		}
 		
@@ -127,6 +133,9 @@ package views.canvas.interactors.transition
 				return;
 			}
 			
+			if(!_isInteracting)
+				transitionMode = KSketch2.TRANSITION_INTERPOLATED;
+			
 			_widget.visible = true;
 
 			//Need to localise the point
@@ -137,8 +146,7 @@ package views.canvas.interactors.transition
 			_widget.x = selectionCenter.x;
 			_widget.y = selectionCenter.y;
 			
-			if(_interactionControl.selection.selectionTransformable(_KSketch.time)||
-				(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED))
+			if(_interactionControl.selection.selectionTransformable(_KSketch.time))
 				enabled = true;
 			else
 				enabled = false;

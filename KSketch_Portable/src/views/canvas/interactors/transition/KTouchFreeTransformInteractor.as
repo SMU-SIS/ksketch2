@@ -52,7 +52,6 @@ package views.canvas.interactors.transition
 		override protected function _interaction_begin(event:GestureEvent):void
 		{
 			super._interaction_begin(event);
-			
 			_center = _newSelection.centerAt(_KSketch.time);
 			_dx = 0;
 			_dy = 0;

@@ -48,6 +48,8 @@ package views.canvas.interactors.selection
 		private var _tapSelectInteractor:KTouchSelectInteractor;
 		
 		private var _activeInteractor:IInteractor;
+		private var _startPoint:Point;
+		
 		
 		/**
 		 * KMobileSelection mode is the state machine that switches between
@@ -90,6 +92,9 @@ package views.canvas.interactors.selection
 		 */
 		private function _recogniseTap(event:GestureEvent):void
 		{
+			if(_interactionControl.currentInteraction)
+				return;
+			
 			_activeInteractor = _tapSelectInteractor;
 			_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
 		}
@@ -99,6 +104,9 @@ package views.canvas.interactors.selection
 		 */
 		private function _recogniseDraw(event:GestureEvent):void
 		{
+			if(_interactionControl.currentInteraction)
+				return;
+			
 			//Switches interactor based on draw gesture's nTouches
 			if(_drawGesture.touchesCount == 1)
 				_activeInteractor = _drawInteractor;
@@ -123,6 +131,8 @@ package views.canvas.interactors.selection
 		 */
 		private function _updateDraw(event:GestureEvent):void
 		{
+			
+			
 			//Gesture change updates. A loop interactor should have two fingers
 			if((_drawGesture.touchesCount == 1 && _activeInteractor is KLoopSelectInteractor)||
 				(_drawGesture.touchesCount == 2 && _activeInteractor is KDrawInteractor)) 

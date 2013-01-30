@@ -120,7 +120,8 @@ package views.canvas.interactors.transition
 				transitionMode = KSketch2.TRANSITION_INTERPOLATED;
 			}
 			
-			if(!_interactionControl.selection || _isInteracting)
+			if(!_interactionControl.selection || _isInteracting||
+				!_interactionControl.selection.isVisible(_KSketch.time))
 			{
 				_widget.visible = false;
 				return;

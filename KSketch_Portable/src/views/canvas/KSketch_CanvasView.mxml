@@ -11,7 +11,6 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark" title="HomeView" actionBarVisible="false" xmlns:components="views.canvas.components.*" xmlns:buttondrawer="views.canvas.components.buttondrawer.*" xmlns:view="sg.edu.smu.ksketch2.view.*"
 	    creationComplete="initCanvas()"
-		addedToStage="_initStates()"
 		xmlns:transformWidget="views.canvas.components.transformWidget.*"
 		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
 		xmlns:timeBar="views.canvas.components.timeBar.*"
@@ -40,19 +39,16 @@
 			
 			private var _newObjType:uint = 0;
 			
+			//We probably need a load and save handler in this canvas view
+			//The xml can be passed through a data handler and the load handler will access it though {data}
 			public function initCanvas():void
 			{
 				_KSketch = new KSketch2();
 				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
 				
-				_initStates();
-			}			
-			
-			private function _initStates():void
-			{
 				currentTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_CURRENT_TIME);
 				maxTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_MAX_TIME);
-
+				
 				modelDisplay.init(_KSketch);
 				timeControl.init(_KSketch);
 				
@@ -61,7 +57,7 @@
 				_selectionDelegator = new KSelectionInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
 				
 				_interactionControl.reset();
-			}
+			}			
 			
 			private function _menuBtnHandler():void
 			{

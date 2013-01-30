@@ -86,8 +86,8 @@
 			<s:Button label="Gallery" click="_showCam(false);"/>
 		</s:CalloutButton>
 		
-		<s:Button label="Redo"/>
-		<s:Button label="Undo"/>
+		<s:Button label="Redo" click="{if(_interactionControl.hasRedo){_interactionControl.redo();}}"/>
+		<s:Button label="Undo" click="{if(_interactionControl.hasUndo){_interactionControl.undo();}}"/>
 		<s:Button label="Erase All" click="{_interactionControl.reset();navigator.popView();}"/>
 		<s:Button/>
 	</s:Group>

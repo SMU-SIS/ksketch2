@@ -13,6 +13,8 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	
+	import spark.core.SpriteVisualElement;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.selectors.ISelectionArbiter;
@@ -20,14 +22,12 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import sg.edu.smu.ksketch2.controls.interactors.selectors.KSimpleArbiter;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
+	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
-	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KFilteredLoopView;
-	
-	import spark.core.SpriteVisualElement;
 	
 	public class KLoopSelectInteractor extends KInteractor
 	{
@@ -166,7 +166,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			if(target is KStroke)
 				return updateByteArray(scaledBoundingBox(target), target.fullPathMatrix(kskTime), _loopStart, _secondToLast, _loopEnd);
 			else if(target is KImage)
-				return 0;
+				return updateByteArray(scaledBoundingBox(target), target.fullPathMatrix(kskTime), _loopStart, _secondToLast, _loopEnd);
 			else
 				throw new Error("not supported kobject!");
 		}
@@ -224,7 +224,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			if(object is KStroke)
 				return (object as KStroke).points.length;
 			else if(object is KImage)
-				return 0;
+				return (object as KImage).points.length;
 			else
 				throw new Error("not supported kobject: "+object);
 		}
@@ -237,7 +237,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			if(object is KStroke)
 				return (object as KStroke).points;
 			else if(object is KImage)
-				return null;
+				return (object as KImage).points;
 			else
 				throw new Error("not supported kobject: "+object);
 		}

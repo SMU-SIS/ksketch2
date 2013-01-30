@@ -15,13 +15,11 @@
 		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
 		xmlns:timeBar="views.canvas.components.timeBar.*"
 		destructionPolicy="never"
-		add="_addObjHandler(event);" 
+		add="_addHandler(event);" 
 		>
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
-			
-			import spark.primitives.BitmapImage;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.controls.inputmethods.IInteractionMethod;
@@ -57,7 +55,12 @@
 				_selectionDelegator = new KSelectionInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
 				
 				_interactionControl.reset();
-			}			
+			}
+			
+			private function _addHandler(e:FlexEvent):void
+			{
+				_addObjHandler();
+			}
 			
 			private function _menuBtnHandler():void
 			{
@@ -76,18 +79,23 @@
 				navigator.removeEventListener("addImgToScn", _addImgHandler);
 			}
 			
-			private function _addObjHandler(e:FlexEvent):void
+			private function _addObjHandler():void
 			{
 				if(_newObjType == 1)
 				{
 					//Add image
-					var tempImg:BitmapImage = new BitmapImage();
+					var myImg:Loader = new Loader();
 					
-					//tempImg.source = "file:///storage/sdcard0/Download/3d11ae64abb9f58c5e0556c082157e3c.jpeg";
-					tempImg.source = navigator.poppedViewReturnedObject.object;
-					_KSketch.object_Add_Image(tempImg.bitmapData,0); //<< Should use _KSketch.time
+					myImg.load(new URLRequest(navigator.poppedViewReturnedObject.object as String));
+					myImg.contentLoaderInfo.addEventListener(Event.COMPLETE, _imgLoadedHandler);
 					_newObjType = 0;
 				}
+			}
+			
+			private function _imgLoadedHandler(e:Event):void
+			{				
+				e.target.removeEventListener(Event.COMPLETE, _imgLoadedHandler);
+				_KSketch.object_Add_Image((e.target.content as Bitmap).bitmapData, _KSketch.time);
 			}
 		]]>
 	</fx:Script>

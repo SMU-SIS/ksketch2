@@ -13,8 +13,6 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	
-	import spark.core.SpriteVisualElement;
-	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.selectors.ISelectionArbiter;
@@ -25,9 +23,12 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
+	import sg.edu.smu.ksketch2.operators.KSceneGraph;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KFilteredLoopView;
+	
+	import spark.core.SpriteVisualElement;
 	
 	public class KLoopSelectInteractor extends KInteractor
 	{
@@ -48,6 +49,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 		private var _all:ByteArray;
 		private var _last:ByteArray;
 		
+		private var _root:KGroup;
 		private var _portions:Dictionary;
 		private var _arbiter:ISelectionArbiter;
 		
@@ -73,15 +75,18 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_lastChecked = -1;
 			_all = new ByteArray();
 			_last = new ByteArray();
-			_arbiter = new KSimpleArbiter(_KSketch.root);
+			_arbiter = new KSimpleArbiter();
 			_loopView.clear();
 		}
 		
 		override public function interaction_Begin(point:Point):void
 		{
 			_reset();
+			
+			_root = _KSketch.root;
 			_gestureComponent.addChild(_loopView);
 			_loopView.add(point);
+			
 			
 			_portions = new Dictionary();
 			
@@ -107,7 +112,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			
 			//Selection happens here
 			//A new set of selection is gather on every update.
-			var selectedObjects:KModelObjectList = (_arbiter as KSimpleArbiter).bestGuess(_portions, _KSketch.time);
+			var selectedObjects:KModelObjectList = (_arbiter as KSimpleArbiter).bestGuess(_portions, _KSketch.time, _root);
 			_interactionControl.selection = new KSelection(selectedObjects);
 		}
 		
@@ -150,7 +155,6 @@ package sg.edu.smu.ksketch2.controls.interactors
 				object = objects.getObjectAt(i);
 				selectedPnts = hitTest(object, _KSketch.time);
 				totalPnts = testPointsCount(object);
-
 				if(selectedPnts > 0)
 					_portions[object] = new KPortion(totalPnts, selectedPnts);
 				else if(_portions[object] != null)

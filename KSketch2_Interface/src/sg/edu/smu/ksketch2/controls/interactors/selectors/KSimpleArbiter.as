@@ -14,42 +14,41 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.operators.KSceneGraph;
 	
 	public class KSimpleArbiter implements ISelectionArbiter
 	{
 		public static const THRESHOLD:Number = 0.6;
 		
-		protected var _root:KGroup;
-		
-		public function KSimpleArbiter(root:KGroup)
+		public function KSimpleArbiter()
 		{
-			_root = root;
+
 		}
 		
-		public function bestGuess(rawData:Dictionary, time:Number):KModelObjectList
+		public function bestGuess(rawData:Dictionary, time:Number, searchRoot:KGroup):KModelObjectList
 		{
-			return rawSelection(rawData, time);
+			return rawSelection(rawData, time, searchRoot);
 		}
 		
-		public function rawSelection(rawData:Dictionary, time:Number):KModelObjectList
+		public function rawSelection(rawData:Dictionary, time:Number, searchRoot:KGroup):KModelObjectList
 		{
 			var selection:KModelObjectList = new KModelObjectList();
 			
-			rawSelection_recurse(rawData, _root, time, selection);
-			
+			rawSelection_recurse(rawData, searchRoot, time, selection);
 			
 			return selection;
 		}
 		
-		private function rawSelection_recurse(rawData:Dictionary, root:KGroup, time:Number, addTo:KModelObjectList):void
+		private function rawSelection_recurse(rawData:Dictionary, searchRoot:KGroup, time:Number, addTo:KModelObjectList):void
 		{
-			var objects:KModelObjectList = root.children;
+			var objects:KModelObjectList = searchRoot.children;
 			var obj:KObject;
 			var portion:KPortion;
-			
+
 			for(var i:int = 0; i < objects.length(); i++)
 			{
 				obj = objects.getObjectAt(i);
+
 				if(obj is KGroup)
 				{
 					if(allSelected(obj as KGroup, time, rawData))
@@ -62,6 +61,7 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 				else
 				{
 					portion = rawData[obj];
+
 					if(portion != null && portion.portion > THRESHOLD)
 						addTo.add(obj);
 				}
@@ -88,71 +88,5 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 			}
 			return allSelected;
 		}
-		
-		//Function to select strokes only
-		public function selectStrokes(rawData:Dictionary, time:Number, selection:KModelObjectList = null):KModelObjectList
-		{
-			
-			if(!selection)
-				selection = new KModelObjectList();
-			
-			var objects:KModelObjectList = _root.children;
-			var obj:KObject;
-			var portion:KPortion;
-
-			//Iterate throught every child
-			for(var i:int = 0; i < objects.length(); i++)
-			{
-				obj = objects.getObjectAt(i);
-				
-				if(obj is KGroup)
-					rawSelection_recurse(rawData, obj as KGroup, time, selection);
-				else
-				{
-					portion = rawData[obj];
-					if(portion != null && portion.portion > THRESHOLD)
-						selection.add(obj);
-				}
-			}
-			
-			return selection;
-		}
-		
-		//Function to select top level nodes
-		public function selectTopGroups(rawData:Dictionary, time:Number):KModelObjectList
-		{
-			var selection:KModelObjectList = new KModelObjectList();
-			
-			var objects:KModelObjectList = _root.children;
-			var obj:KObject;
-			var portion:KPortion;
-			
-			//Iterate throught every child
-			for(var i:int = 0; i < objects.length(); i++)
-			{
-				obj = objects.getObjectAt(i);
-				
-				//Determine if the object's parent is the root
-				if(obj.parent == _root)
-				{	
-					//if the object is a kgroup, make sure all of its child nodes have been selected before adding to selection
-					if(obj is KGroup)
-					{
-						if(allSelected(obj as KGroup, time, rawData))
-							selection.add(obj);
-					}
-					else
-					{
-						//if is single kobject, check if the loop encloses it enough before adding it to the selection	
-						portion = rawData[obj];
-						if(portion != null && portion.portion > THRESHOLD)
-							selection.add(obj);
-					}
-				}
-			}
-			
-			return selection;
-		}
-		
 	}
 }

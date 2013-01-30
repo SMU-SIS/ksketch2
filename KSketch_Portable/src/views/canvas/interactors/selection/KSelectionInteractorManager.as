@@ -103,7 +103,9 @@ package views.canvas.interactors.selection
 			if(_drawGesture.touchesCount == 1)
 				_activeInteractor = _drawInteractor;
 			else if(_drawGesture.touchesCount == 2)
+			{
 				_activeInteractor = _loopSelectInteractor;
+			}
 			
 			_interactionControl.selection = null;
 

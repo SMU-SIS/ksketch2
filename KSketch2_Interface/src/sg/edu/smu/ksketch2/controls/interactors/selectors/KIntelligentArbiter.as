@@ -15,6 +15,7 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
+	import sg.edu.smu.ksketch2.operators.KSceneGraph;
 		
 	public class KIntelligentArbiter extends KSimpleArbiter
 	{
@@ -27,14 +28,14 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 		private var _candidates:Vector.<KModelObjectList>;
 		private var _index:int;
 		
-		public function KIntelligentArbiter(root:KGroup)
+		public function KIntelligentArbiter()
 		{
-			super(root);
+
 		}
 		
-		public override function bestGuess(rawData:Dictionary, time:Number):KModelObjectList
+		public override function bestGuess(rawData:Dictionary, time:Number, searchRoot:KGroup):KModelObjectList
 		{
-			prepareOn(rawData, time);
+			prepareOn(rawData, time, searchRoot);
 			
 			if(_rawSelection.length() == 0)
 				return null;
@@ -43,10 +44,10 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 			return _candidates[_index];
 		}
 		
-		public function cycleNext(rawData:Dictionary, time:Number):KModelObjectList
+		public function cycleNext(rawData:Dictionary, time:Number, searchRoot:KGroup):KModelObjectList
 		{
 			if(_leafPortion == null)
-				prepareOn(rawData, time);
+				prepareOn(rawData, time, searchRoot);
 			if(_rawSelection.length() == 0)
 				return null;
 			// skip if same as _g or _rawSelection
@@ -56,10 +57,10 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 			return _candidates[_index];
 		}
 		
-		public function cyclePrevious(rawData:Dictionary, time:Number):KModelObjectList
+		public function cyclePrevious(rawData:Dictionary, time:Number, searchRoot:KGroup):KModelObjectList
 		{
 			if(_leafPortion == null)
-				prepareOn(rawData, time);
+				prepareOn(rawData, time,searchRoot);
 			if(_rawSelection.length() == 0)
 				return null;
 			// skip if same as _g or _rawSelection
@@ -100,9 +101,9 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 			return allSelected;
 		}
 		
-		private function prepareOn(rawData:Dictionary, time:Number):void
+		private function prepareOn(rawData:Dictionary, time:Number, searchRoot:KGroup):void
 		{
-			_rawSelection = rawSelection(rawData, time);
+			_rawSelection = rawSelection(rawData, time, searchRoot);
 			
 			if(_rawSelection.length() == 0)
 				return;
@@ -110,7 +111,7 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 			_leafPortion = rawData;
 			_s = new Vector.<KGroup>();
 			_groupPortion = new Dictionary();
-			findSelectedNodes(_root, _s, time, _leafPortion, _groupPortion);
+			findSelectedNodes(searchRoot, _s, time, _leafPortion, _groupPortion);
 			
 			_candidates = combination(_s, time);
 			_candidates.sort(sort);

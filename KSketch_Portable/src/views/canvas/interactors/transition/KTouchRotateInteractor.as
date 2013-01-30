@@ -58,7 +58,7 @@ package views.canvas.interactors.transition
 			
 			_theta = 0;
 			_previousPoint = _rotateGesture.location;
-			_center = _newSelection.centerAt(0);
+			_center = _newSelection.centerAt(_KSketch.time);
 			
 			var i:int = 0;
 			var length:int = _transitionObjects.length();

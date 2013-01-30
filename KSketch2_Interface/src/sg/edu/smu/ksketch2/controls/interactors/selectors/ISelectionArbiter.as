@@ -11,9 +11,10 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 	import flash.utils.Dictionary;
 	
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 
 	public interface ISelectionArbiter
 	{
-		function bestGuess(rawData:Dictionary, time:Number):KModelObjectList;
+		function bestGuess(rawData:Dictionary, time:Number, searchRoot:KGroup):KModelObjectList;
 	}
 }

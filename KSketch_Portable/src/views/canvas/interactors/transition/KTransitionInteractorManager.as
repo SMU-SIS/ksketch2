@@ -102,7 +102,7 @@ package views.canvas.interactors.transition
 				_transformInteractor.deactivate();
 				_dragInteractor.deactivate();
 				_rotateInteractor.deactivate();
-				_modeGesture.removeAllEventListeners();
+				//_modeGesture.removeAllEventListeners();
 			}
 		}
 		

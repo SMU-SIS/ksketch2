@@ -53,7 +53,7 @@ package sg.edu.smu.ksketch2.view
 			if(_ghost)
 			{
 				_ghost.visible = false;
-				_ghost.alpha = 0.5;
+				_ghost.alpha = 0.3;
 			}
 		}
 		

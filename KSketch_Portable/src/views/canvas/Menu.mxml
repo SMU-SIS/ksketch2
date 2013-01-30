@@ -3,18 +3,27 @@
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		xmlns:local="views.custom.*"
 		title="Menu"
-		actionBarVisible="false">
+		actionBarVisible="false"
+		viewActivate="activateMenu()">
 	
 	<fx:Script>
 		<![CDATA[			
 			import mx.core.UIComponent;
+			
+			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			import views.imageimport.ImageConfirm;
 			import views.imageimport.nativeapps.Cam;
 			import views.imageimport.nativeapps.CamRoll;
 			
+			private var _interactionControl:KMobileInteractionControl;
 			private var _container:UIComponent = new UIComponent();
 			private var _imgApp:Sprite;			
 			private var _isCam:Boolean;
+			
+			public function activateMenu():void
+			{
+				_interactionControl = data as KMobileInteractionControl;
+			}
 			
 			private function _showCam(isCam:Boolean):void
 			{
@@ -73,15 +82,13 @@
 			<s:calloutLayout>
 				<s:HorizontalLayout/>
 			</s:calloutLayout>
-			<s:Button label="Camera" 
-					  click="_showCam(true);"/>
-			<s:Button label="Gallery" 
-					  click="_showCam(false);"/>
+			<s:Button label="Camera" click="_showCam(true);"/>
+			<s:Button label="Gallery" click="_showCam(false);"/>
 		</s:CalloutButton>
 		
-		<s:Button/>
-		<s:Button/>
-		<s:Button/>
+		<s:Button label="Redo"/>
+		<s:Button label="Undo"/>
+		<s:Button label="Erase All" click="{_interactionControl.reset();navigator.popView();}"/>
 		<s:Button/>
 	</s:Group>
 </s:View>

@@ -70,6 +70,8 @@ package views.canvas.interactioncontrol
 			_currentInteraction = null;
 			
 			_timeControl.reset();
+			
+			_KSketch.reset();
 		}
 		
 		public function set transitionMode(mode:int):void
@@ -192,12 +194,18 @@ package views.canvas.interactioncontrol
 		
 		public function end_interaction_operation(operation:IModelOperation=null, newSelection:KSelection=null):void
 		{
-			if(currentInteraction && operation)
+			if(currentInteraction)
 			{
-				currentInteraction.addOperation(operation);
-				currentInteraction.newSelection = newSelection;
+				if(operation)
+					currentInteraction.addOperation(operation);
+	
+				currentInteraction.newSelection = selection;
 				currentInteraction.endTime = _KSketch.time;
-				addToUndoStack(currentInteraction);
+				
+				if(currentInteraction.length > 0)
+					addToUndoStack(currentInteraction);
+				else
+					throw new Error("There are no operations in the current interaction operation");
 			}
 			_currentInteraction = null;
 		}

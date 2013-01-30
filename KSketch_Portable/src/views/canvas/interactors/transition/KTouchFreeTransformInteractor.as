@@ -23,8 +23,6 @@ package views.canvas.interactors.transition
 		private var _center:Point;
 		private var _transformGesture:TransformGesture;
 		
-		private var dummyOp:KCompositeOperation;
-		
 		public function KTouchFreeTransformInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, inputComponent:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl);
@@ -64,15 +62,14 @@ package views.canvas.interactors.transition
 			var i:int = 0;
 			var length:int = _transitionObjects.length();
 			var currentObject:KObject;
-			dummyOp = new KCompositeOperation();
 			
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
 
-				_KSketch.transform_Begin_Translation(currentObject, _interactionControl.transitionMode, dummyOp);
-				_KSketch.transform_Begin_Rotation(currentObject, _interactionControl.transitionMode, dummyOp);
-				_KSketch.transform_Begin_Scale(currentObject, _interactionControl.transitionMode, dummyOp);
+				_KSketch.transform_Begin_Translation(currentObject, _interactionControl.transitionMode, _interactionControl.currentInteraction);
+				_KSketch.transform_Begin_Rotation(currentObject, _interactionControl.transitionMode, _interactionControl.currentInteraction);
+				_KSketch.transform_Begin_Scale(currentObject, _interactionControl.transitionMode, _interactionControl.currentInteraction);
 			}
 			
 			_transformGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Transform);
@@ -88,9 +85,9 @@ package views.canvas.interactors.transition
 			for(i; i < length; i++)
 			{
 				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_End_Translation(currentObject, dummyOp);
-				_KSketch.transform_End_Rotation(currentObject, dummyOp);
-				_KSketch.transform_End_Scale(currentObject, dummyOp);
+				_KSketch.transform_End_Translation(currentObject, _interactionControl.currentInteraction);
+				_KSketch.transform_End_Rotation(currentObject, _interactionControl.currentInteraction);
+				_KSketch.transform_End_Scale(currentObject, _interactionControl.currentInteraction);
 			}
 			
 			super._interaction_end(event);

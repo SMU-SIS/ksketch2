@@ -82,6 +82,7 @@ package views.canvas.interactors.selection
 			
 			_drawGesture = new PanGesture(_inputComponent);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
+			_drawGesture.maxNumTouchesRequired = 2;
 		}
 		
 		/**
@@ -121,14 +122,12 @@ package views.canvas.interactors.selection
 		private function _updateDraw(event:GestureEvent):void
 		{
 			//Gesture change updates. A loop interactor should have two fingers
-			if(_drawGesture.touchesCount == 1 && _activeInteractor is KLoopSelectInteractor) 
+			if((_drawGesture.touchesCount == 1 && _activeInteractor is KLoopSelectInteractor)||
+				(_drawGesture.touchesCount == 2 && _activeInteractor is KDrawInteractor)) 
 			{
 				_endDraw(event);
 				return;
 			}
-			
-			if(_drawGesture.touchesCount == 2 && _activeInteractor is KDrawInteractor)
-				return;
 			
 			//make sure the input coordinates are in the correct coordinate space
 			_activeInteractor.interaction_Update(_modelDisplay.globalToLocal(_drawGesture.lastTouchLocation));

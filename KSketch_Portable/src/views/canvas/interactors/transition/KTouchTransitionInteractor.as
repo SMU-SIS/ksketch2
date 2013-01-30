@@ -73,6 +73,7 @@ package views.canvas.interactors.transition
 			_newSelection = _interactionControl.selection; // For the time being. We have to put it thru a grouping algo to get the correct one
 			_transitionObjects = _newSelection.objects;
 			
+			_interactionControl.begin_interaction_operation();
 			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_BEGIN));
 			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
@@ -84,7 +85,8 @@ package views.canvas.interactors.transition
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 				_interactionControl.stopRecording();
 			
-			//Handle interaction operation wrap up here in this class	
+			//Handle interaction operation wrap up here in this class
+			_interactionControl.end_interaction_operation();
 			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_END));
 
 		}

@@ -17,6 +17,7 @@ package views.canvas.interactors.selection
 	
 	import org.gestouch.core.Touch;
 	import org.gestouch.events.GestureEvent;
+	import org.gestouch.gestures.LongPressGesture;
 	import org.gestouch.gestures.PanGesture;
 	import org.gestouch.gestures.TapGesture;
 	
@@ -41,6 +42,7 @@ package views.canvas.interactors.selection
 		private var _modelDisplay:KModelDisplay;
 
 		private var _tapGesture:TapGesture;
+		private var _doubleTap:TapGesture;
 		private var _drawGesture:PanGesture;
 		
 		private var _drawInteractor:KDrawInteractor;
@@ -49,7 +51,6 @@ package views.canvas.interactors.selection
 		
 		private var _activeInteractor:IInteractor;
 		private var _startPoint:Point;
-		
 		
 		/**
 		 * KMobileSelection mode is the state machine that switches between
@@ -79,8 +80,15 @@ package views.canvas.interactors.selection
 			_tapSelectInteractor = new KTouchSelectInteractor(_KSketch, _interactionControl, _modelDisplay);
 			_loopSelectInteractor = new KLoopSelectInteractor(_KSketch, _modelDisplay, _interactionControl);
 			
+			_doubleTap = new TapGesture(_inputComponent);
+			_doubleTap.numTapsRequired = 2;
+			_doubleTap.maxTapDelay = 100;
+			_doubleTap.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _recogniseDoubleTap);
+			
 			_tapGesture = new TapGesture(_inputComponent);
 			_tapGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _recogniseTap);
+			_tapGesture.requireGestureToFail(_doubleTap);
+			_tapGesture.maxTapDuration = 200;
 			
 			_drawGesture = new PanGesture(_inputComponent);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
@@ -88,7 +96,27 @@ package views.canvas.interactors.selection
 		}
 		
 		/**
+		 * Handler for double tap gesture
+		 */
+		private function _recogniseDoubleTap(event:GestureEvent):void
+		{
+			var left:Boolean = (_doubleTap.location.x/_inputComponent.width <= 0.5)? true:false;
+			
+			if(left)
+			{
+				if(_interactionControl.hasUndo)
+					_interactionControl.undo();
+			}
+			else
+			{
+				if(_interactionControl.hasRedo)
+					_interactionControl.redo();
+			}
+		}
+		
+		/**
 		 * Gesture handler for tap gesture
+		 * Requires double tap to fail
 		 */
 		private function _recogniseTap(event:GestureEvent):void
 		{
@@ -131,8 +159,6 @@ package views.canvas.interactors.selection
 		 */
 		private function _updateDraw(event:GestureEvent):void
 		{
-			
-			
 			//Gesture change updates. A loop interactor should have two fingers
 			if((_drawGesture.touchesCount == 1 && _activeInteractor is KLoopSelectInteractor)||
 				(_drawGesture.touchesCount == 2 && _activeInteractor is KDrawInteractor)) 

@@ -10,6 +10,7 @@
 				enterInterpolateState();
 				enterInteractionState();
 				enterEnabledState();
+				drawMenu();
 			}
 			
 			public function enterRecordState():void
@@ -95,11 +96,55 @@
 				enterInterpolateState();
 				alpha = 1.0;
 			}
+			
+			public function drawMenu():void
+			{
+				var i:int =0;
+				var nIterations:int = 60;
+				var stepValue:Number = Math.PI/180;
+				var sectorRadius:Number = 250;
+				var point:Point;
+				
+				button1.graphics.lineStyle(3, 0xBDBDBD);
+				button1.graphics.beginFill(0xFFFFFF);
+				button1.graphics.moveTo(0,0);
+				
+				for(i = 0; i < nIterations; i++)
+				{
+					point = Point.polar(sectorRadius, i*stepValue);
+					button1.graphics.lineTo(point.x, point.y);
+				}
+				
+				stepValue = Math.PI/360;
+				
+				button2.graphics.lineTo(0,0);
+				button2.graphics.endFill();
+				
+				button2.graphics.lineStyle(3, 0xBDBDBD);
+				button2.graphics.beginFill(0xFFFFFF);
+				button2.graphics.moveTo(0,0);
+				
+				for(i = 0; i < nIterations; i++)
+				{
+					point = Point.polar(sectorRadius, i*stepValue);
+					button2.graphics.lineTo(point.x, point.y);
+				}
+				
+				button2.graphics.lineTo(0,0);
+				button2.graphics.endFill();
+				widgetContextMenu.visible = false;
+			}
 		]]>
 	</fx:Script>
 	
 	<s:Group id="rotationTrigger"/>
 	<s:Group id="freeTransformTrigger"/>
-	<s:Group id="centroid"/>
+	<s:Group>
+		<s:Group id="centroid"/>
+		<s:Group id="widgetContextMenu">
+			<s:Group id="button1"/>
+			<s:Group id="button2"/>
+		</s:Group>
+	</s:Group>
 	<s:Group id="dragTrigger"/>
 </s:Group>

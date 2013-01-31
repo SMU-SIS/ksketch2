@@ -35,6 +35,8 @@ package views.canvas.interactors.transition
 		private var _modeGesture:TapGesture;
 		private var _isInteracting:Boolean;
 		
+		private var _menuGesture:TapGesture;
+		
 		/**
 		 * Instantiates widget and transition interactors.
 		 * Also controls the appearance of the widget based on selection location
@@ -54,8 +56,15 @@ package views.canvas.interactors.transition
 			_modelSpace = modelSpace;
 			_widgetSpace = widget.parent;
 				
+			_menuGesture = new TapGesture(_widget.centroid);
+			_menuGesture.numTapsRequired = 2;
+			_menuGesture.maxTapDelay = 100;
+			_menuGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, toggleContextMenu);
+				
 			_modeGesture = new TapGesture(_widget.centroid);
 			_modeGesture.numTapsRequired = 1;
+			_modeGesture.maxTapDuration = 100;
+			_modeGesture.requireGestureToFail(_menuGesture);
 			
 			//_directionInteractor = new KTouchDragDirectionInteractor(KSketchInstance, interactionControl, this, widget.dragTrigger, widget);
 			_transformInteractor = new KTouchFreeTransformInteractor(KSketchInstance, interactionControl, widget.freeTransformTrigger);
@@ -75,6 +84,7 @@ package views.canvas.interactors.transition
 		public function set transitionMode(mode:int):void
 		{
 			_interactionControl.transitionMode = mode;
+			_widget.widgetContextMenu.visible = false;
 			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 			{
@@ -92,7 +102,8 @@ package views.canvas.interactors.transition
 		public function set enabled(isEnabled:Boolean):void
 		{
 			_enabled = isEnabled
-			
+			_widget.widgetContextMenu.visible = false;
+				
 			if(isEnabled)
 			{
 				_widget.enterEnabledState();
@@ -117,6 +128,8 @@ package views.canvas.interactors.transition
 		 */
 		private function _updateWidget(event:Event):void
 		{
+			_widget.widgetContextMenu.visible = false;
+			
 			if(event.type == KMobileInteractionControl.EVENT_INTERACTION_BEGIN)
 				_isInteracting = true;
 			
@@ -157,6 +170,7 @@ package views.canvas.interactors.transition
 		 */
 		private function _handleModeSwitch(event:GestureEvent):void
 		{
+			_widget.widgetContextMenu.visible = false;
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 			else
@@ -165,6 +179,7 @@ package views.canvas.interactors.transition
 		
 		public function enterChangeDirectionMode():void
 		{
+			_widget.widgetContextMenu.visible = false;
 			_widget.enterEditDirectionState();
 			//_transformInteractor.deactivate();
 			//_dragInteractor.deactivate();
@@ -174,11 +189,20 @@ package views.canvas.interactors.transition
 		
 		public function exitChangeDirectionMode():void
 		{
+			_widget.widgetContextMenu.visible = false;
 			_widget.enterInteractionState();
 			_transformInteractor.activate();
 			_dragInteractor.activate();
 			_rotateInteractor.activate();
 			_modeGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
+		}
+		
+		public function toggleContextMenu(event:GestureEvent):void
+		{
+			if(_widget.widgetContextMenu.visible)
+				_widget.widgetContextMenu.visible = false;
+			else
+				_widget.widgetContextMenu.visible = true;
 		}
 	}
 }

@@ -26,14 +26,14 @@
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 			
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
-			import views.canvas.interactors.selection.KSelectionInteractorManager;
-			import views.canvas.interactors.transition.KTransitionInteractorManager;
+			import views.canvas.interactors.selection.KCanvasInteractorManager;
+			import views.canvas.interactors.transition.KWidgetInteractorManager;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KMobileInteractionControl;
 			
-			private var _transitionDelegator:KTransitionInteractorManager;
-			private var _selectionDelegator:KSelectionInteractorManager;
+			private var _transitionDelegator:KWidgetInteractorManager;
+			private var _selectionDelegator:KCanvasInteractorManager;
 			
 			private var _newObjType:uint = 0;
 			
@@ -51,8 +51,8 @@
 				timeControl.init(_KSketch);
 				
 				playButton.init(timeControl);
-				_transitionDelegator = new KTransitionInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-				_selectionDelegator = new KSelectionInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
+				_transitionDelegator = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
+				_selectionDelegator = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
 				
 				_interactionControl.reset();
 			}

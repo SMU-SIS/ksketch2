@@ -34,7 +34,7 @@ package views.canvas.interactors.selection
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
 	
-	public class KSelectionInteractorManager extends EventDispatcher
+	public class KCanvasInteractorManager extends EventDispatcher
 	{
 		private var _KSketch:KSketch2;
 		private var _interactionControl:KMobileInteractionControl;
@@ -62,7 +62,7 @@ package views.canvas.interactors.selection
 		 * @param modelDisplay: ModelDisplay linked to given KSketchInstance
 		 * 
 		 */
-		public function KSelectionInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
 											   inputComponent:UIComponent, modelDisplay:KModelDisplay)
 		{
 			super(this);
@@ -93,6 +93,7 @@ package views.canvas.interactors.selection
 			_drawGesture = new PanGesture(_inputComponent);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
 			_drawGesture.maxNumTouchesRequired = 2;
+			
 		}
 		
 		/**

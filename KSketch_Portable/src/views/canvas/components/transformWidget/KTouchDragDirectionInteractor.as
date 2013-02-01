@@ -15,11 +15,11 @@ package views.canvas.components.transformWidget
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
 	import views.canvas.interactors.transition.KTouchTransitionInteractor;
-	import views.canvas.interactors.transition.KTransitionInteractorManager;
+	import views.canvas.interactors.transition.KWidgetInteractorManager;
 	
 	public class KTouchDragDirectionInteractor extends KTouchTransitionInteractor
 	{
-		private var _delegator:KTransitionInteractorManager;
+		private var _delegator:KWidgetInteractorManager;
 		private var _directionArrow:DisplayObject;
 		private var _widget:TouchWidgetTemplate;
 		
@@ -29,7 +29,7 @@ package views.canvas.components.transformWidget
 		private var _center:Point;
 		private var _previousPoint:Point;
 		
-		public function KTouchDragDirectionInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl, delegator:KTransitionInteractorManager,
+		public function KTouchDragDirectionInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl, delegator:KWidgetInteractorManager,
 													  inputComponent:DisplayObject, widget:TouchWidgetTemplate)
 		{
 			super(KSketchInstance, interactionControl);

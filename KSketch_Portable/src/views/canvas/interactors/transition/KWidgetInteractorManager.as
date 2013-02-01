@@ -18,7 +18,7 @@ package views.canvas.interactors.transition
 	import views.canvas.components.transformWidget.TouchWidgetTemplate;
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 
-	public class KTransitionInteractorManager
+	public class KWidgetInteractorManager
 	{
 		//private var _directionInteractor:KTouchDragDirectionInteractor;
 		private var _transformInteractor:KTouchFreeTransformInteractor;
@@ -36,6 +36,8 @@ package views.canvas.interactors.transition
 		private var _isInteracting:Boolean;
 		
 		private var _menuGesture:TapGesture;
+		private var _menuTrigger1:TapGesture;
+		private var _menuTrigger2:TapGesture;
 		
 		/**
 		 * Instantiates widget and transition interactors.
@@ -47,7 +49,7 @@ package views.canvas.interactors.transition
 		 */
 		// This class doesn't really do anything other than help in keeping JT a bit more sane
 		// By keeping the code a bit neater
-		public function KTransitionInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, 
+		public function KWidgetInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, 
 									 widget:TouchWidgetTemplate, modelSpace:DisplayObject):void
 		{
 			_KSketch = KSketchInstance;
@@ -203,6 +205,16 @@ package views.canvas.interactors.transition
 				_widget.widgetContextMenu.visible = false;
 			else
 				_widget.widgetContextMenu.visible = true;
+		}
+		
+		public function contextMenuTrigger1(event:GestureEvent):void
+		{
+		
+		}
+		
+		public function contextMenuTrigger2(event:GestureEvent):void
+		{
+			
 		}
 	}
 }

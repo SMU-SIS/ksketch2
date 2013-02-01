@@ -2,16 +2,13 @@ package views.canvas.interactors
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	
-	import mx.core.UIComponent;
 	
 	import org.gestouch.events.GestureEvent;
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactors.KRotateInteractor;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
@@ -78,9 +75,13 @@ package views.canvas.interactors
 			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateWidget);
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _updateWidget);
 			
+			_widget.contextTrigger1 = contextMenuTrigger1;
+			_widget.contextTrigger2 = contextMenuTrigger2;
+			
 			transitionMode = KSketch2.TRANSITION_INTERPOLATED;
 			enabled = true;
 			_isInteracting = false;
+			_widget.drawMenu();
 		}
 		
 		public function set transitionMode(mode:int):void
@@ -207,14 +208,14 @@ package views.canvas.interactors
 				_widget.widgetContextMenu.visible = true;
 		}
 		
-		public function contextMenuTrigger1(event:GestureEvent):void
+		public function contextMenuTrigger1():void
 		{
-		
+			trace("Context menu trigger 1");	
 		}
 		
-		public function contextMenuTrigger2(event:GestureEvent):void
+		public function contextMenuTrigger2():void
 		{
-			
+			trace("Context menu trigger 2");
 		}
 	}
 }

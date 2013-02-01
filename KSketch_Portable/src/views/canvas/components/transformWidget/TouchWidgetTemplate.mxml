@@ -6,12 +6,14 @@
 		<![CDATA[
 			import spark.components.Label;
 			
+			public var contextTrigger1:Function;
+			public var contextTrigger2:Function;
+			
 			public function init():void
 			{
 				enterInterpolateState();
 				enterInteractionState();
 				enterEnabledState();
-				drawMenu();
 			}
 			
 			public function enterRecordState():void
@@ -100,11 +102,10 @@
 			
 			public function drawMenu():void
 			{
-				
-				button1.graphics.lineStyle(3, 0xBDBDBD);
-				button1.graphics.moveTo(0,0);
-				button1.graphics.lineTo(-145, 140);
-				button1.graphics.lineTo(-240, 140);
+				button1BackGround.graphics.lineStyle(3, 0xBDBDBD);
+				button1BackGround.graphics.moveTo(-19.1, 19.8);
+				button1BackGround.graphics.lineTo(-145, 140);
+				button1BackGround.graphics.lineTo(-240, 140);
 				
 				var button1Label1:Label = new Label();
 				button1Label1.text = "Group";
@@ -124,10 +125,10 @@
 				
 //////
 				
-				button2.graphics.lineStyle(3, 0xBDBDBD);
-				button2.graphics.moveTo(0,0);
-				button2.graphics.lineTo(145, -140);
-				button2.graphics.lineTo(250, -140);
+				button2BackGround.graphics.lineStyle(3, 0xBDBDBD);
+				button2BackGround.graphics.moveTo(19.1, -19.8);
+				button2BackGround.graphics.lineTo(145, -140);
+				button2BackGround.graphics.lineTo(250, -140);
 				
 				var button2Label1:Label = new Label();
 				button2Label1.text = "Add Blank Key";
@@ -136,6 +137,7 @@
 				button2Label1.y = -158;
 				button2Label1.scaleX = 0.75;
 				button2Label1.scaleY = 0.75;
+				widgetContextMenu.visible = false;
 				
 /*				var i:int =0;
 				var nIterations:int = 60;
@@ -172,6 +174,18 @@
 				widgetContextMenu.visible = false;
 				*/
 			}
+			
+			public function trigger1():void
+			{
+				if(contextTrigger1 != null)
+					contextTrigger1();
+			}
+			
+			public function trigger2():void
+			{
+				if(contextTrigger2 != null)
+					contextTrigger2();
+			}
 		]]>
 	</fx:Script>
 	
@@ -180,8 +194,12 @@
 	<s:Group>
 		<s:Group id="centroid"/>
 		<s:Group id="widgetContextMenu">
-			<s:Group id="button1"/>
-			<s:Group id="button2"/>
+			<s:Group id="button1" touchTap="trigger1()">
+				<s:Group id="button1BackGround"/>
+			</s:Group>
+			<s:Group id="button2" touchTap="trigger2()">
+				<s:Group id="button2BackGround"/>
+			</s:Group>
 		</s:Group>
 	</s:Group>
 	<s:Group id="dragTrigger"/>

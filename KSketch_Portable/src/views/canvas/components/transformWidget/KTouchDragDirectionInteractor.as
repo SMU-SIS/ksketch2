@@ -14,8 +14,8 @@ package views.canvas.components.transformWidget
 	import sg.edu.smu.ksketch2.controls.interactors.KRotateInteractor;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
-	import views.canvas.interactors.transition.KTouchTransitionInteractor;
-	import views.canvas.interactors.transition.KWidgetInteractorManager;
+	import views.canvas.interactors.KTouchTransitionInteractor;
+	import views.canvas.interactors.KWidgetInteractorManager;
 	
 	public class KTouchDragDirectionInteractor extends KTouchTransitionInteractor
 	{

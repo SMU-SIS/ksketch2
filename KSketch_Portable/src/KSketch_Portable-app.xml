@@ -12,7 +12,6 @@
 	minimumPatchLevel - The minimum patch level of the AIR runtime required to run 
 			the application. Optional.
 -->
-
 	<!-- A universally unique application identifier. Must be unique across all AIR applications.
 	Using a reverse DNS-style name as the id is recommended. (Eg. com.example.ExampleApplication.) Required. -->
 	<id>KSketch.Portable</id>
@@ -41,7 +40,7 @@
 
 	<!-- Publisher ID. Used if you're updating an application created prior to 1.5.3 -->
 	<!-- <publisherID></publisherID> -->
-
+	
 	<!-- Settings for the application's initial window. Required. -->
 	<initialWindow>
 		<!-- The main SWF or HTML file of the application. Required. -->
@@ -155,7 +154,9 @@
 			<!-- <name></name> -->
 
 			<!-- The extension to register. Required. -->
-			<!-- <extension></extension> -->
+			<extensions>
+				<extensionID>com.adobe.Vibration</extensionID>
+			</extensions>
 			
 			<!-- The description of the file type. Optional. -->
 			<!-- <description></description> -->
@@ -225,6 +226,7 @@
 			    <!--Removing the permission android.permission.INTERNET will have the side effect
 					of preventing you from debugging your application on your device-->
 			    <uses-permission android:name="android.permission.INTERNET"/>
+			    <uses-permission android:name="android.permission.VIBRATE"/>
 			    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>-->
 			    <!--<uses-permission android:name="android.permission.READ_PHONE_STATE"/>-->
 			    <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>-->
@@ -241,6 +243,7 @@
 			</manifest>
 			
 		]]></manifestAdditions>
+	   <colorDepth>16bit</colorDepth>
     </android>
     <iPhone>
         <InfoAdditions><![CDATA[

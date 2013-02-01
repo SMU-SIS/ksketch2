@@ -6,36 +6,35 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package views.canvas.interactors.selection
+package views.canvas.interactors
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
+	import flash.events.TimerEvent;
 	import flash.geom.Point;
+	import flash.utils.Timer;
 	
 	import mx.core.UIComponent;
 	
-	import org.gestouch.core.Touch;
 	import org.gestouch.events.GestureEvent;
-	import org.gestouch.gestures.LongPressGesture;
 	import org.gestouch.gestures.PanGesture;
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactionmodes.IInteractionMode;
 	import sg.edu.smu.ksketch2.controls.interactors.IInteractor;
 	import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
 	import sg.edu.smu.ksketch2.controls.interactors.KLoopSelectInteractor;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	
-	import spark.core.SpriteVisualElement;
+	import utils.TactileFeedback;
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
-	
 	public class KCanvasInteractorManager extends EventDispatcher
 	{
+		private const _LEFT:int = 0;
+		private const _RIGHT:int = 1;
+		
 		private var _KSketch:KSketch2;
 		private var _interactionControl:KMobileInteractionControl;
 		private var _inputComponent:UIComponent;
@@ -52,6 +51,10 @@ package views.canvas.interactors.selection
 		private var _activeInteractor:IInteractor;
 		private var _startPoint:Point;
 		
+		private var _feedbackLeft:UIComponent;
+		private var _feedbackRight:UIComponent;
+		private var _feedbackTimer:Timer;
+		
 		/**
 		 * KMobileSelection mode is the state machine that switches between
 		 * drawing, tap selection and loop selection interactors.
@@ -63,14 +66,19 @@ package views.canvas.interactors.selection
 		 * 
 		 */
 		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
-											   inputComponent:UIComponent, modelDisplay:KModelDisplay)
+											   inputComponent:UIComponent, modelDisplay:KModelDisplay,
+											   feedbackLeft:UIComponent, feedbackRight:UIComponent)
 		{
 			super(this);
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
 			_inputComponent = inputComponent;
 			_modelDisplay = modelDisplay;
-			
+			_feedbackLeft = feedbackLeft;
+			_feedbackRight = feedbackRight;
+			_feedbackTimer = new Timer(100);
+			_feedbackTimer.addEventListener(TimerEvent.TIMER, _endFeedback);
+
 			/**
 			 * Implementation is inconsistent with the transition module
 			 * Reusing Draw and loop select interactors so implementation will feel a bit weird
@@ -106,13 +114,45 @@ package views.canvas.interactors.selection
 			if(left)
 			{
 				if(_interactionControl.hasUndo)
+				{
 					_interactionControl.undo();
+					_triggerFeedback(_LEFT);
+				}
 			}
 			else
 			{
 				if(_interactionControl.hasRedo)
+				{
 					_interactionControl.redo();
+					_triggerFeedback(_RIGHT);
+				}
 			}
+		}
+		
+		private function _triggerFeedback(direction:int):void
+		{
+			if(TactileFeedback.isAvailable)
+				TactileFeedback.vibrate();
+
+			if(_feedbackTimer.running)
+				_feedbackTimer.stop();
+
+			_feedbackLeft.visible = false;
+			_feedbackRight.visible = false;
+			
+			if(direction == _LEFT)
+				_feedbackLeft.visible = true;
+			else
+				_feedbackRight.visible = true;
+			
+			_feedbackTimer.start();
+		}
+		
+		private function _endFeedback(event:TimerEvent):void
+		{
+			_feedbackTimer.stop();
+			_feedbackLeft.visible = false;
+			_feedbackRight.visible = false;
 		}
 		
 		/**

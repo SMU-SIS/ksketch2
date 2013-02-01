@@ -32,7 +32,7 @@ package views.canvas.interactioncontrol
 	import spark.core.SpriteVisualElement;
 	
 	import views.canvas.components.timeBar.KTouchTimeControl;
-	import views.canvas.interactors.selection.KCanvasInteractorManager;
+	import views.canvas.interactors.KCanvasInteractorManager;
 	
 	public class KMobileInteractionControl extends EventDispatcher implements IInteractionControl
 	{

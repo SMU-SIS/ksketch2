@@ -1,4 +1,4 @@
-package views.canvas.interactors.transition
+package views.canvas.interactors
 {
 	import flash.display.DisplayObject;
 	import flash.geom.Point;

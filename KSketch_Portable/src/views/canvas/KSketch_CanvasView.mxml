@@ -22,12 +22,10 @@
 			import mx.events.FlexEvent;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.controls.inputmethods.IInteractionMethod;
-			import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 			
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
-			import views.canvas.interactors.selection.KCanvasInteractorManager;
-			import views.canvas.interactors.transition.KWidgetInteractorManager;
+			import views.canvas.interactors.KCanvasInteractorManager;
+			import views.canvas.interactors.KWidgetInteractorManager;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KMobileInteractionControl;
@@ -52,7 +50,8 @@
 				
 				playButton.init(timeControl);
 				_transitionDelegator = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-				_selectionDelegator = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
+				_selectionDelegator = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay,
+											feedbackLeft, feedbackRight);
 				
 				_interactionControl.reset();
 			}
@@ -113,6 +112,10 @@
 				<!-- The model display displays the objects in the model -->
 				<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 									scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
+				<s:Group>
+					<s:Label id="feedbackLeft" text="Undo" x="15" y="15" visible="false"/>
+					<s:Label id="feedbackRight" text="Redo" x="{drawing_stage.width-feedbackRight.width-15}" y="15" visible="false"/>
+				</s:Group>
 				<transformWidget:TouchWidgetTemplate id="widget" visible="false"/>
 			</s:BorderContainer>
 		</s:BorderContainer>		

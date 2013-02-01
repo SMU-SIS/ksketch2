@@ -4,6 +4,7 @@
 		 creationComplete="init()">
 	<fx:Script>
 		<![CDATA[
+			import spark.components.Label;
 			
 			public function init():void
 			{
@@ -99,14 +100,51 @@
 			
 			public function drawMenu():void
 			{
-				var i:int =0;
+				
+				button1.graphics.lineStyle(3, 0xBDBDBD);
+				button1.graphics.moveTo(0,0);
+				button1.graphics.lineTo(-145, 140);
+				button1.graphics.lineTo(-240, 140);
+				
+				var button1Label1:Label = new Label();
+				button1Label1.text = "Group";
+				button1.addElement(button1Label1);
+				button1Label1.x = -240;
+				button1Label1.y = 105;
+				button1Label1.scaleX = 0.75;
+				button1Label1.scaleY = 0.75;
+				
+				var button1Label2:Label = new Label();
+				button1Label2.text = "Selection";
+				button1.addElement(button1Label2);
+				button1Label2.x = -230;
+				button1Label2.y = 120;
+				button1Label2.scaleX = 0.75;
+				button1Label2.scaleY = 0.75;
+				
+//////
+				
+				button2.graphics.lineStyle(3, 0xBDBDBD);
+				button2.graphics.moveTo(0,0);
+				button2.graphics.lineTo(145, -140);
+				button2.graphics.lineTo(250, -140);
+				
+				var button2Label1:Label = new Label();
+				button2Label1.text = "Add Blank Key";
+				button2.addElement(button2Label1);
+				button2Label1.x = 150;
+				button2Label1.y = -158;
+				button2Label1.scaleX = 0.75;
+				button2Label1.scaleY = 0.75;
+				
+/*				var i:int =0;
 				var nIterations:int = 60;
 				var stepValue:Number = Math.PI/180;
 				var sectorRadius:Number = 250;
 				var point:Point;
 				
-				button1.graphics.lineStyle(3, 0xBDBDBD);
-				button1.graphics.beginFill(0xFFFFFF);
+				button1.graphics.lineStyle(3, 0xBDBDBD, 0.75);
+				button1.graphics.beginFill(0xFFFFFF, 0.75);
 				button1.graphics.moveTo(0,0);
 				
 				for(i = 0; i < nIterations; i++)
@@ -120,8 +158,7 @@
 				button2.graphics.lineTo(0,0);
 				button2.graphics.endFill();
 				
-				button2.graphics.lineStyle(3, 0xBDBDBD);
-				button2.graphics.beginFill(0xFFFFFF);
+				button2.graphics.lineStyle(3, 0xBDBDBD, 0.75);
 				button2.graphics.moveTo(0,0);
 				
 				for(i = 0; i < nIterations; i++)
@@ -133,6 +170,7 @@
 				button2.graphics.lineTo(0,0);
 				button2.graphics.endFill();
 				widgetContextMenu.visible = false;
+				*/
 			}
 		]]>
 	</fx:Script>

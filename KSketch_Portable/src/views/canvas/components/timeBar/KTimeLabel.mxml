@@ -8,9 +8,8 @@
 *not distributed with this file, You can obtain one at
 *http://mozilla.org/MPL/2.0/.
 -->
-<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="100" height="40"
-		 backgroundAlpha="0" borderVisible="false">
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="100" height="40">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -48,6 +47,10 @@
 					_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _updateCurrentTime);
 				else
 					_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _updateMaxTime);
+				
+				graphics.beginFill(0xFF0000, 0);
+				graphics.drawRect(0,0,100,40);
+				graphics.endFill();
 			}
 			
 			/**
@@ -106,4 +109,4 @@
 		<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
 	</s:layout>
 	<s:Label id="timeLabel" text="12:34" fontSize="{(10/40)*width}"/>
-</s:BorderContainer>
+</s:Group>

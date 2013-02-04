@@ -2,7 +2,6 @@ package views.canvas.components.timeBar
 {
 	import flash.events.Event;
 	import flash.events.TimerEvent;
-	import flash.geom.Point;
 	import flash.utils.Timer;
 	
 	import org.gestouch.events.GestureEvent;

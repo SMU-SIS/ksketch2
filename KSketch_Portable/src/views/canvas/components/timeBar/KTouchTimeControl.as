@@ -226,5 +226,11 @@ package views.canvas.components.timeBar
 			_timer.removeEventListener(TimerEvent.TIMER, recordHandler);
 			_timer.stop();
 		}
+		
+		public function timeToX(value:int):Number
+		{
+			var currentFrame:int = value/KSketch2.ANIMATION_INTERVAL;
+			return currentFrame/(_maxFrame*1.0) * backgroundFill.width;
+		}
 	}
 }

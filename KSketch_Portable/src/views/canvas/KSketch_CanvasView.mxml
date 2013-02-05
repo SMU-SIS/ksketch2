@@ -23,6 +23,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
+			import views.canvas.components.timeBar.KMobileTimeTickControl;
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			import views.canvas.interactors.KCanvasInteractorManager;
 			import views.canvas.interactors.KTouchContextMenuInteractor;
@@ -34,6 +35,7 @@
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
 			private var _contextMenuHelper:KTouchContextMenuInteractor;
+			private var _timeTickControl:KMobileTimeTickControl;
 			
 			private var _newObjType:uint = 0;
 			
@@ -55,6 +57,7 @@
 				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay,
 											feedbackLeft, feedbackRight);
 				_contextMenuHelper = new KTouchContextMenuInteractor(widget);
+				_timeTickControl = new KMobileTimeTickControl(timeControl, _interactionControl);
 				_interactionControl.reset();
 			}
 			

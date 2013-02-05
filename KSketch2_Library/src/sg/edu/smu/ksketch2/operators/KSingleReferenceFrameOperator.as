@@ -14,8 +14,6 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrameList;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.data_structures.KReferenceFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
@@ -23,7 +21,6 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
-	import sg.edu.smu.ksketch2.operators.operations.KKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KRemoveKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation;
 	

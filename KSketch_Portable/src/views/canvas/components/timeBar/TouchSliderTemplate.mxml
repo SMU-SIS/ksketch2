@@ -26,6 +26,7 @@
 					<s:SolidColor color="0x585858"/>
 				</s:fill>
 			</s:Rect>
+			<s:Group id="markerDisplay"/>
 		</s:Group>
 	</s:Group>
 </s:Group>

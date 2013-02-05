@@ -36,6 +36,8 @@ package views.canvas.components.timeBar
 		private var _panOffset:Number;
 		private var _panGesture:PanGesture;
 		
+		public var timeList:Vector.<int>;
+		
 		public function KTouchTimeControl()
 		{
 			super();
@@ -224,10 +226,72 @@ package views.canvas.components.timeBar
 			_timer.stop();
 		}
 		
+		/**
+		 * Converts a time value to a x position;
+		 */
 		public function timeToX(value:int):Number
 		{
 			var currentFrame:int = value/KSketch2.ANIMATION_INTERVAL;
 			return currentFrame/(_maxFrame*1.0) * backgroundFill.width;
+		}
+		
+		
+		/**
+		 * Sets next closest landmark time in the given direction as the 
+		 * current time.
+		 */
+		public function jumpInDirection(direction:Number):void
+		{
+			if(!timeList)
+				return;
+			
+			var currentTime:Number = _KSketch.time;			
+			var currentIndex:int = 0;
+			
+			for(var i:int = 0; i < timeList.length; i++)
+			{
+				currentIndex = i;
+				
+				if(currentTime <= timeList[i])
+					break;
+			}
+			
+			var toTime:Number = 0;
+			
+			if(direction < 0)
+			{
+				currentIndex -= 1;
+				
+				if(currentIndex < 0)
+					toTime = 0;
+				else
+					toTime = timeList[currentIndex];
+			}
+			else
+			{
+				if(currentIndex < timeList.length)
+				{
+					var checkTime:Number = timeList[currentIndex];
+					if(checkTime == _KSketch.time)
+					{
+						while(checkTime == _KSketch.time)
+						{
+							currentIndex += 1;
+							
+							if(currentIndex < timeList.length)
+								checkTime = timeList[currentIndex];
+							else
+								break;
+						}
+					}
+					
+					toTime = checkTime;
+				}
+				else
+					toTime = _KSketch.time;
+			}
+			
+			time = toTime;
 		}
 	}
 }

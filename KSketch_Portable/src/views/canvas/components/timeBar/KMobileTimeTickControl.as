@@ -8,6 +8,7 @@ package views.canvas.components.timeBar
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.utils.SortingFunctions;
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 
@@ -56,6 +57,10 @@ package views.canvas.components.timeBar
 			var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
 			var keysHeaders:Vector.<IKeyFrame> = object.transformInterface.getAllKeyFrames();
 
+			var timings:Vector.<int> = new Vector.<int>();
+			timings.push(0);
+			timings.push(_timeControl.maximum);
+			
 			for(var i:int = 0; i<keysHeaders.length; i++)
 			{
 				var currentKey:IKeyFrame = keysHeaders[i];
@@ -65,10 +70,13 @@ package views.canvas.components.timeBar
 					var tickX:Number = _timeControl.timeToX(currentKey.time);
 					_timeTickContainer.graphics.moveTo( tickX, -5);
 					_timeTickContainer.graphics.lineTo( tickX, 25);
-
+					timings.push(currentKey.time);
 					currentKey = currentKey.next;
 				}
 			}
+
+			timings.sort(SortingFunctions._sortInt);
+			_timeControl.timeList = timings;
 		}
 	}
 }

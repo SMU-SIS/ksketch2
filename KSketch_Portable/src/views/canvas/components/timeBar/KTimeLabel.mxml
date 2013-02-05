@@ -69,10 +69,7 @@
 			 */
 			private function _handleSwipe(event:org.gestouch.events.GestureEvent):void
 			{
-				if(_swipeGesture.offsetX < 0)
-					_timeControl.time = 0;
-				else if(_swipeGesture.offsetX > 0)
-					_timeControl.time = _timeControl.maximum;
+				_timeControl.jumpInDirection(_swipeGesture.offsetX);
 			}
 			
 			private function _updateCurrentTime(event:Event):void

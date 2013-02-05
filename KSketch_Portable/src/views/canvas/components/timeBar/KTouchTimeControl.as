@@ -6,7 +6,6 @@ package views.canvas.components.timeBar
 	
 	import org.gestouch.events.GestureEvent;
 	import org.gestouch.gestures.PanGesture;
-	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.widgets.ITimeControl;
@@ -36,8 +35,6 @@ package views.canvas.components.timeBar
 		private var _prevOffset:Number;
 		private var _panOffset:Number;
 		private var _panGesture:PanGesture;
-		
-		private var _tapGesture:TapGesture;
 		
 		public function KTouchTimeControl()
 		{

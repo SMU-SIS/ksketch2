@@ -20,6 +20,7 @@ package views.canvas.interactioncontrol
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
+	
 	import views.canvas.components.timeBar.KTouchTimeControl;
 	
 	public class KMobileInteractionControl extends EventDispatcher implements IInteractionControl

@@ -1,8 +1,11 @@
 package views.canvas.components.timeBar
 {
+	import flash.events.Event;
+	
 	import mx.core.UIComponent;
 	
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
+	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
@@ -14,6 +17,9 @@ package views.canvas.components.timeBar
 		private var _timeTickContainer:UIComponent;
 		private var _interactionControl:KMobileInteractionControl;
 		
+		/**
+		 * A helper class containing the codes for generating tick marks 
+		 */
 		public function KMobileTimeTickControl(timeControl:KTouchTimeControl, interactionControl:KMobileInteractionControl)
 		{
 			
@@ -22,12 +28,23 @@ package views.canvas.components.timeBar
 			_interactionControl = interactionControl;
 
 			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateTicks);
+			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
+			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _updateTicks);
 		}
 		
-		private function _updateTicks(event:KSketchEvent):void
+		/**
+		 * Update tickmarks should be invoked when
+		 * The selection set is modified
+		 * 	-	Object composition of the selection set changed, 
+		 * 		not including changes the the composition of the selection because of visibility within selection
+		 *	-	Objects are modified by transitions (which changed the timing of the key frames)
+		 *  -	The time control's maximum time changed (Position of the tick marks will be affected by the change)
+		 */
+		private function _updateTicks(event:Event):void
 		{
 			_timeTickContainer.graphics.clear();
 			
+			//Generate ticks only if there is a selection and the selection only has one object
 			if(!_interactionControl.selection)
 				return;
 			

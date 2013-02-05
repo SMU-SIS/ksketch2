@@ -25,13 +25,15 @@
 			
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			import views.canvas.interactors.KCanvasInteractorManager;
+			import views.canvas.interactors.KTouchContextMenuInteractor;
 			import views.canvas.interactors.KWidgetInteractorManager;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KMobileInteractionControl;
 			
-			private var _transitionDelegator:KWidgetInteractorManager;
-			private var _selectionDelegator:KCanvasInteractorManager;
+			private var _transitionHelper:KWidgetInteractorManager;
+			private var _selectionHelper:KCanvasInteractorManager;
+			private var _contextMenuHelper:KTouchContextMenuInteractor;
 			
 			private var _newObjType:uint = 0;
 			
@@ -49,10 +51,10 @@
 				timeControl.init(_KSketch);
 				
 				playButton.init(timeControl);
-				_transitionDelegator = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-				_selectionDelegator = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay,
+				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
+				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay,
 											feedbackLeft, feedbackRight);
-				
+				_contextMenuHelper = new KTouchContextMenuInteractor(widget);
 				_interactionControl.reset();
 			}
 			
@@ -135,8 +137,8 @@
 						<s:SolidColor color="0x000000"/>
 					</s:fill>
 				</s:Rect>
-				<transformWidget:TouchWidgetTemplate id="widget" visible="false"/>
 			</s:Group>
+			<transformWidget:TouchWidgetTemplate id="widget" visible="false"/>
 		</s:Group>
 	</s:Group>
 	

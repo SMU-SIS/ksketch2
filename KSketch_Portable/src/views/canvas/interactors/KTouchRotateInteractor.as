@@ -9,7 +9,6 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactors.KRotateInteractor;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;

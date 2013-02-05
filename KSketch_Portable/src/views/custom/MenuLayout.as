@@ -44,6 +44,7 @@ package views.custom
 			layoutElement.setLayoutBoundsPosition((scnWidth - backBtnRadius)/2, (scnHeight - backBtnRadius)/2);
 			layoutElement.setLayoutBoundsSize(backBtnRadius, backBtnRadius);
 			(layoutElement as Button).setStyle("fontSize", 0.05*scnHeight);
+
 			
 			//Layout other buttons
 			for(var i:int=2; i<(eleCount); i++)

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark"
-		 creationComplete="init()">
+		 creationComplete="init()" xmlns:custom="views.custom.*" includeInLayout="false">
 	<fx:Script>
 		<![CDATA[
-			import spark.components.Label;
-			
+			import mx.core.UIComponent;
+
+			private var _contextMenuElement:UIComponent;
 			public var contextTrigger1:Function;
 			public var contextTrigger2:Function;
 			
@@ -14,6 +15,9 @@
 				enterInterpolateState();
 				enterInteractionState();
 				enterEnabledState();
+				
+				_contextMenuElement = widgetContextMenu;
+				hideContextMenu();
 			}
 			
 			public function enterRecordState():void
@@ -102,6 +106,7 @@
 			
 			public function drawMenu():void
 			{
+				/*
 				button1BackGround.graphics.lineStyle(3, 0xBDBDBD);
 				button1BackGround.graphics.moveTo(-19.1, 19.8);
 				button1BackGround.graphics.lineTo(-145, 140);
@@ -175,6 +180,23 @@
 				*/
 			}
 			
+			public function showContextMenu():void
+			{
+				addElement(widgetContextMenu);
+				
+				if(parent)
+				{
+					contextMenuOverlay.width = parent.width;
+					contextMenuOverlay.height = parent.height;	
+				}				
+			}
+			
+			public function hideContextMenu():void
+			{
+				if(widgetContextMenu.parent == this)
+					removeElement(widgetContextMenu)
+			}
+			
 			public function trigger1():void
 			{
 				if(contextTrigger1 != null)
@@ -191,16 +213,21 @@
 	
 	<s:Group id="rotationTrigger"/>
 	<s:Group id="freeTransformTrigger"/>
-	<s:Group>
-		<s:Group id="centroid"/>
-		<s:Group id="widgetContextMenu">
-			<s:Group id="button1" touchTap="trigger1()">
-				<s:Group id="button1BackGround"/>
-			</s:Group>
-			<s:Group id="button2" touchTap="trigger2()">
-				<s:Group id="button2BackGround"/>
-			</s:Group>
+	<s:Group id="centroid"/>
+	<s:Group id="dragTrigger"/>
+	<s:Group id="widgetContextMenu">
+		<s:Group id="contextMenuOverlay" alpha="0" x="{-x}" y="{-y}">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0x000000"/>
+				</s:fill>
+			</s:Rect>
+		</s:Group>
+		<s:Group>
+			<s:Button width="40" height="40" x="230" y="-20"/>
+			<s:Button width="40" height="40" x="-20" y="230"/>
+			<s:Button width="40" height="40" x="-270" y="-20"/>
+			<s:Button width="40" height="40" x="-20" y="-270"/>
 		</s:Group>
 	</s:Group>
-	<s:Group id="dragTrigger"/>
 </s:Group>

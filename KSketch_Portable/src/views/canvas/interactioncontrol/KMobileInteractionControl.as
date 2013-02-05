@@ -11,28 +11,16 @@ package views.canvas.interactioncontrol
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
-	
-	import mx.core.UIComponent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactionmodes.IInteractionMode;
-	import sg.edu.smu.ksketch2.controls.interactionmodes.KDrawingMode;
-	import sg.edu.smu.ksketch2.controls.widgets.IWidget;
-	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
-	import sg.edu.smu.ksketch2.view.KModelDisplay;
-	
-	import spark.core.SpriteVisualElement;
-	
 	import views.canvas.components.timeBar.KTouchTimeControl;
-	import views.canvas.interactors.KCanvasInteractorManager;
 	
 	public class KMobileInteractionControl extends EventDispatcher implements IInteractionControl
 	{

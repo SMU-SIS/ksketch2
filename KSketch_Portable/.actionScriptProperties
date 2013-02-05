@@ -46,11 +46,13 @@
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
   <buildTargets>
-    <buildTarget buildTargetName="device" iosSettingsVersion="2" isCurrent="false" platformId="com.adobe.flexide.multiplatform.ios.platform" provisioningFile="" releasePackageType="">
+    <buildTarget buildTargetName="device" iosSettingsVersion="2" isCurrent="false" platformId="com.adobe.flexide.multiplatform.ios.platform" provisioningFile="/Users/jtkhoo/Documents/Dropbox/StorySketch (1)/PlaySketchReleases/Ksketch.mobileprovision" releasePackageType="ipa-ad-hoc">
       <multiPlatformSettings enabled="true" hideAneLibSymbols="0" includePlatformLibs="false" platformID="com.adobe.flexide.multiplatform.ios.platform" reducedSizePackaging="false" version="2"/>
-      <airSettings airCertificatePath="" airTimestamp="true" anePathSet="false" version="1">
+      <airSettings airCertificatePath="/Users/jtkhoo/Documents/RCDavisIOSDeveloper.p12" airTimestamp="true" anePathSet="true" version="1">
         <airExcludes/>
-        <anePaths/>
+        <anePaths>
+          <anePathEntry path="libs/VibrationExt/com.adobe.extensions.Vibration.ane"/>
+        </anePaths>
         <newLaunchParams/>
         <modifiedLaunchParams/>
         <newPackagingParams/>
@@ -73,7 +75,6 @@
       <actionScriptSettings version="1"/>
     </buildTarget>
     <buildTarget buildTargetName="default" isCurrent="false" platformId="default">
-      <multiPlatformSettings enabled="false" hideAneLibSymbols="0" includePlatformLibs="false" platformID="default" reducedSizePackaging="false" version="2"/>
       <airSettings airCertificatePath="" airTimestamp="true" anePathSet="false" version="1">
         <airExcludes/>
         <anePaths/>
@@ -82,6 +83,7 @@
         <newPackagingParams/>
         <modifiedPackagingParams/>
       </airSettings>
+      <multiPlatformSettings enabled="false" hideAneLibSymbols="0" includePlatformLibs="false" platformID="default" reducedSizePackaging="false" version="2"/>
       <actionScriptSettings version="1"/>
     </buildTarget>
   </buildTargets>

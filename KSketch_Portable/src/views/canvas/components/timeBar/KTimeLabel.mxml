@@ -90,7 +90,7 @@
 					strSeconds = "0" + strSeconds;
 				
 				
-				var remainingMilliseconds:int = milliseconds%1000;
+				var remainingMilliseconds:int = (milliseconds%1000)/10;
 				var strMilliseconds:String = remainingMilliseconds.toString();
 				strMilliseconds = strMilliseconds.charAt(0) + strMilliseconds.charAt(1);
 				

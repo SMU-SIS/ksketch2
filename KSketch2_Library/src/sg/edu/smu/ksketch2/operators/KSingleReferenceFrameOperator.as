@@ -24,23 +24,21 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.operators.operations.KRemoveKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation;
 	
-	import spark.primitives.Path;
-	
 	public class KSingleReferenceFrameOperator implements ITransformInterface
 	{
-		private var _object:KObject;
-		private var _refFrame:KReferenceFrame;
+		protected var _object:KObject;
+		protected var _refFrame:KReferenceFrame;
 		
-		private var _TWorkingPath:KPath;
-		private var _RWorkingPath:KPath;
-		private var _SWorkingPath:KPath;
+		protected var _TWorkingPath:KPath;
+		protected var _RWorkingPath:KPath;
+		protected var _SWorkingPath:KPath;
 		
-		private var _startTime:int;
-		private var _transitionType:int;
-		private var _transitionX:Number;
-		private var _transitionY:Number;
-		private var _transitionTheta:Number;
-		private var _transitionSigma:Number;
+		protected var _startTime:int;
+		protected var _transitionType:int;
+		protected var _transitionX:Number;
+		protected var _transitionY:Number;
+		protected var _transitionTheta:Number;
+		protected var _transitionSigma:Number;
 		
 		/**
 		 * KSingleReferenceFrame is the transform interface dealing with the single reference frame model
@@ -577,7 +575,7 @@ package sg.edu.smu.ksketch2.operators
 		/**
 		 * Makes the timing for the given path linear
 		 */
-		private function _discardTransitionTiming(path:KPath):void
+		protected function _discardTransitionTiming(path:KPath):void
 		{
 			var currentTime:int = 0;
 			var currentProportion:Number = 0;
@@ -600,7 +598,7 @@ package sg.edu.smu.ksketch2.operators
 		 * Linearly adds dx and dy up to the proportion given
 		 * Linearly removes dx and dy up from that proportion onwards
 		 */
-		private function _interpolatePath(dx:Number, dy:Number, targetPath:KPath, upToProportion:Number):void
+		protected function _interpolatePath(dx:Number, dy:Number, targetPath:KPath, upToProportion:Number):void
 		{
 			var pathDuration:int = targetPath.pathDuration;
 			var currentTime:int = 0;
@@ -643,7 +641,7 @@ package sg.edu.smu.ksketch2.operators
 		 * Will split the source path to fit the time range
 		 * Replaces all current paths of given type
 		 */
-		private function _replacePathOverTime(sourcePath:KPath, startTime:int, endTime:int, transformType:int, op:KCompositeOperation):void
+		protected function _replacePathOverTime(sourcePath:KPath, startTime:int, endTime:int, transformType:int, op:KCompositeOperation):void
 		{
 			if(sourcePath.length == 0)
 				return;
@@ -722,7 +720,7 @@ package sg.edu.smu.ksketch2.operators
 		 * Makes sure the object/model is in THE MAGICAL STATE for transition
 		 * For this mode, we will need to make sure there is nothing else in the future
 		 */
-		private function _normaliseModel(time:int, transformType:int, op:KCompositeOperation):void
+		protected function _normaliseModel(time:int, transformType:int, op:KCompositeOperation):void
 		{
 			if(_transitionType != KSketch2.TRANSITION_DEMONSTRATED)
 				return;
@@ -786,7 +784,7 @@ package sg.edu.smu.ksketch2.operators
 		//Cleans up the model after a transition.
 		//Splits key frames up if a key frame has a path that does not fill its time span fully.
 		//Removes empty key frames
-		private function _clearEmptyKeys(op:KCompositeOperation):void
+		protected function _clearEmptyKeys(op:KCompositeOperation):void
 		{
 			var currentKey:KSpatialKeyFrame = _refFrame.lastKey as KSpatialKeyFrame;
 

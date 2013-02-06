@@ -45,13 +45,6 @@ package views.canvas.components.timeBar
 		{
 			_timeTickContainer.graphics.clear();
 			
-			//Generate ticks only if there is a selection and the selection only has one object
-			if(!_interactionControl.selection)
-				return;
-			
-			if(!_interactionControl.selection.objects.length() > 1)
-				return;
-			
 			_timeTickContainer.graphics.lineStyle(2, 0xFF0000);
 			
 			var object:KObject = _interactionControl.selection.objects.getObjectAt(0);

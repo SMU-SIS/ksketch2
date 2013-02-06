@@ -31,8 +31,6 @@
       <libraryPathEntry kind="3" linkType="1" path="/KSketch2_Library/bin/KSketch2_Library.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/Gestouch/bin/Gestouch.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/CollisionDetectionKit_v15/bin/CollisionDetectionKit_v15.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="libs/VibrationExt/VibrationActionScriptLibrary.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="5" linkType="2" path="libs/VibrationExt/com.adobe.extensions.Vibration.ane"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

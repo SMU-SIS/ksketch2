@@ -47,15 +47,14 @@
 				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
 				
 				currentTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_CURRENT_TIME);
-				maxTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_MAX_TIME);
+				//maxTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_MAX_TIME);
 				
 				modelDisplay.init(_KSketch);
 				timeControl.init(_KSketch);
 				
 				playButton.init(timeControl);
 				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay,
-											feedbackLeft, feedbackRight);
+				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
 				_contextMenuHelper = new KTouchContextMenuInteractor(widget);
 				_timeTickControl = new KMobileTimeTickControl(timeControl, _interactionControl);
 				_interactionControl.reset();
@@ -125,9 +124,11 @@
 				<!-- The model display displays the objects in the model -->
 				<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 									scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
-				<s:Group>
-					<s:Label id="feedbackLeft" text="Undo" x="15" y="15" visible="false"/>
-					<s:Label id="feedbackRight" text="Redo" x="{drawing_stage.width-feedbackRight.width-15}" y="15" visible="false"/>
+				<s:Group width="100%">
+					<s:layout>
+						<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+					</s:layout>
+					<s:Label id="feedbackLeft"/>
 				</s:Group>
 			</s:Group> 
 		</s:Group>
@@ -167,7 +168,7 @@
 				</s:layout>
 				<timeBar:KTouchTimeControl id="timeControl"/>
 			</s:Group>
-			<timeBar:KTimeLabel id="maxTimeLabel"/>
+			<s:BorderContainer width="130" height="40"/>
 			<timeBar:Touch_Menu_Button id="menuButton"/>
 		</s:Group>
 		

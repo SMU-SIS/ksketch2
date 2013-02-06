@@ -9,7 +9,7 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="100" height="40">
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="130" height="40">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -102,8 +102,17 @@
 			}
 		]]>
 	</fx:Script>
-	<s:layout>
-		<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
-	</s:layout>
-	<s:Label id="timeLabel" text="12:34" fontSize="{(10/40)*width}"/>
+	<s:Group width="100%" height="100%"> 
+		<s:Rect width="100%" height="100%" alpha="0">
+			<s:fill>
+				<s:SolidColor color="0x000000"/>
+			</s:fill>
+		</s:Rect>
+	</s:Group>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+		</s:layout>
+		<s:Label id="timeLabel" text="12:34" fontSize="{(8/40)*width}"/>
+	</s:Group>
 </s:Group>

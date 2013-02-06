@@ -276,8 +276,12 @@ package views.canvas.components.timeBar
 		public function jumpInDirection(direction:Number):void
 		{
 			if(!timeList)
-				return;
-			
+			{
+				timeList = new Vector.<int>();
+				timeList.push(0);
+				timeList.push(maximum);
+			}
+
 			var currentTime:Number = _KSketch.time;			
 			var currentIndex:int = 0;
 			

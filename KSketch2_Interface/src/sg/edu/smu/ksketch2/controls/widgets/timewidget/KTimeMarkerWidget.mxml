@@ -48,7 +48,6 @@
 				_interactionControl = interactionControl;
 			}
 			
-			
 			/**
 			 * Refresh updates the time marker widget.
 			 * Triggers when the model is updated

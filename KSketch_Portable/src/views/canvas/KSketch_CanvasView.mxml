@@ -47,7 +47,7 @@
 				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
 				
 				currentTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_CURRENT_TIME);
-				//maxTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_MAX_TIME);
+				maxTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_MAX_TIME);
 				
 				modelDisplay.init(_KSketch);
 				timeControl.init(_KSketch);
@@ -56,7 +56,7 @@
 				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
 				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
 				_contextMenuHelper = new KTouchContextMenuInteractor(widget);
-				_timeTickControl = new KMobileTimeTickControl(timeControl, _interactionControl);
+				_timeTickControl = new KMobileTimeTickControl(_KSketch, timeControl, _interactionControl);
 				_interactionControl.reset();
 			}
 			
@@ -168,7 +168,7 @@
 				</s:layout>
 				<timeBar:KTouchTimeControl id="timeControl"/>
 			</s:Group>
-			<s:BorderContainer width="130" height="40"/>
+			<timeBar:KTimeLabel id="maxTimeLabel"/>
 			<timeBar:Touch_Menu_Button id="menuButton"/>
 		</s:Group>
 		

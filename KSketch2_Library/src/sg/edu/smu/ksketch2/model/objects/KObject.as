@@ -130,6 +130,11 @@ package sg.edu.smu.ksketch2.model.objects
 			return hierarchyList;
 		}
 		
+		public function get maxTime():int
+		{
+			return transformInterface.lastKeyTime;
+		}
+		
 		/**
 		 * Returns the matrix of this object denoting its transformation on the screen.
 		 * This matrix is its own matrix concatenated with its parents', grandparents' great granparents', great greate grandparents...

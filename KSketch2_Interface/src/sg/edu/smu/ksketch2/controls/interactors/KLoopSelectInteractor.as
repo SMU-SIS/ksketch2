@@ -23,7 +23,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
-	import sg.edu.smu.ksketch2.operators.KSceneGraph;
+	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KFilteredLoopView;

@@ -14,6 +14,7 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KParentChangeOperation;
+	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 
 	public class KGroupingUtil
 	{

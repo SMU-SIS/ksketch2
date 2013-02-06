@@ -65,7 +65,10 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function get firstKeyTime():int
 		{
-			return _refFrame.head.time;
+			if(_refFrame.head)
+				return _refFrame.head.time;
+			else
+				throw new Error("Reference frame for "+_object.id.toString()+" doesn't have a key!");
 		}
 		
 		/**
@@ -73,7 +76,12 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function get lastKeyTime():int
 		{
-			return _refFrame.lastKey.time;
+			var key:IKeyFrame = _refFrame.lastKey;
+			
+			if(key)
+				return _refFrame.lastKey.time;
+			else
+				throw new Error("Reference frame for "+_object.id.toString()+" doesn't have a key!");
 		}
 		
 		/**

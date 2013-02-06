@@ -14,7 +14,6 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.model.data_structures.KVisibilityKey;
 	import sg.edu.smu.ksketch2.model.data_structures.KVisibilityKeyList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 
 	public class KVisibilityControl implements IVisibilityControl

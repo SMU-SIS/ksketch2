@@ -19,7 +19,7 @@
     <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KKeyFrameList"/>
     <classEntry path="sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame"/>
     <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.KSceneGraph"/>
+    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KSceneGraph"/>
     <classEntry path="sg.edu.smu.ksketch2.operators.ITransformInterface"/>
     <classEntry path="sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator"/>
     <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KReferenceFrame"/>

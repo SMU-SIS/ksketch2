@@ -15,7 +15,7 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
-	import sg.edu.smu.ksketch2.operators.KSceneGraph;
+	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 		
 	public class KIntelligentArbiter extends KSimpleArbiter
 	{

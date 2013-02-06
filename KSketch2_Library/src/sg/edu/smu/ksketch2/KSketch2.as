@@ -9,10 +9,7 @@
 package sg.edu.smu.ksketch2
 {
 	import flash.display.BitmapData;
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
-	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
@@ -26,8 +23,7 @@ package sg.edu.smu.ksketch2
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.KGroupingUtil;
-	import sg.edu.smu.ksketch2.operators.KSceneGraph;
-	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
+	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 	import sg.edu.smu.ksketch2.operators.KStaticGroupingUtil;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KEditKeyTimeOperation;
@@ -52,7 +48,7 @@ package sg.edu.smu.ksketch2
 		public static const TRANSITION_INTERPOLATED:int = 0;
 		public static const TRANSITION_DEMONSTRATED:int = 1;
 		
-		public static var ANIMATION_INTERVAL:Number = 31.25;
+		public static var ANIMATION_INTERVAL:Number = 40;
 		
 		private var _groupingUtil:KGroupingUtil;
 		
@@ -109,6 +105,11 @@ package sg.edu.smu.ksketch2
 			var timeChangedEvent:KTimeChangedEvent = new KTimeChangedEvent(KTimeChangedEvent.EVENT_TIME_CHANGED, _time, value);
 			_time = value;
 			dispatchEvent(timeChangedEvent);
+		}
+		
+		public function get maxTime():int
+		{
+			return _sceneGraph.maxTime;
 		}
 		
 		//Functions to add objects to KSketch

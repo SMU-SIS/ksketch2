@@ -11,7 +11,6 @@ package sg.edu.smu.ksketch2.model.objects
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.events.KGroupEvent;
-	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
@@ -35,6 +34,33 @@ package sg.edu.smu.ksketch2.model.objects
 		public function get children():KModelObjectList
 		{
 			return _children;
+		}
+		
+		override public function get maxTime():int
+		{
+			if(!transformInterface)
+				return 0;
+			
+			var thisMax:int = transformInterface.lastKeyTime;
+			var thisLength:int = length();
+			var i:int = 0;
+			var currentChild:KObject;
+			var childMax:int;
+
+			for(i = 0; i < thisLength; i++)
+			{
+				currentChild = _children.getObjectAt(i);
+				
+				if(currentChild)
+				{
+					childMax = currentChild.maxTime
+
+					if(thisMax < childMax)
+						thisMax = childMax;
+				}
+			}
+			
+			return thisMax;
 		}
 		
 		/**

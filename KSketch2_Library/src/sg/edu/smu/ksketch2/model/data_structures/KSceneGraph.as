@@ -6,15 +6,14 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.operators
+package sg.edu.smu.ksketch2.model.data_structures
 {
-	import mx.graphics.Stroke;
 	import mx.utils.StringUtil;
 	
-	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
+	import sg.edu.smu.ksketch2.operators.KGroupingUtil;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 
@@ -42,6 +41,31 @@ package sg.edu.smu.ksketch2.operators
 		public function get root():KGroup
 		{
 			return _root;
+		}
+		
+		public function get maxTime():int
+		{
+			var children:KModelObjectList = _root.children;
+			var thisMax:int = 0;
+			var thisLength:int = children.length();
+			var i:int = 0;
+			var currentChild:KObject;
+			var childMax:int;
+			
+			for(i = 0; i < thisLength; i++)
+			{
+				currentChild = children.getObjectAt(i);
+				
+				if(currentChild)
+				{
+					childMax = currentChild.maxTime
+					
+					if(thisMax < childMax)
+						thisMax = childMax;
+				}
+			}
+			
+			return thisMax;
 		}
 		
 		/**

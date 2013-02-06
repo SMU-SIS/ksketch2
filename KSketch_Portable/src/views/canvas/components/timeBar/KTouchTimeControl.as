@@ -25,8 +25,13 @@ package views.canvas.components.timeBar
 		private const _PAN_THRESHOLD_2:Number = 0.10;
 		private const _PAN_THRESHOLD_3:Number = 0.15;
 		
+		public static const PLAY_ALLOWANCE:int = 2000;
+		public static const MAX_ALLOWED_TIME:int = 600000; //Max allowed time of 10 mins
+		
 		private var _KSketch:KSketch2;
 		private var _timer:Timer;
+		private var _maxPlayTime:int;
+		private var _rewindToTime:int;
 		
 		private var _maxFrame:int;
 		private var _currentFrame:int;
@@ -87,11 +92,30 @@ package views.canvas.components.timeBar
 		{
 			if(value < 0)
 				value = 0;
+			if(MAX_ALLOWED_TIME < value)
+				value = MAX_ALLOWED_TIME;
 			if(maximum < value)
-				value = maximum;
+				maximum = value;
 			
-			_KSketch.time = value;
 			_currentFrame = int(Math.floor(value/KSketch2.ANIMATION_INTERVAL));
+			_KSketch.time = _currentFrame * KSketch2.ANIMATION_INTERVAL;
+			
+			if(KTimeControl.DEFAULT_MAX_TIME < time)
+			{
+				var modelMax:int = _KSketch.maxTime
+					
+				if(modelMax <= time && time <= maximum )
+						maximum = time;
+				else
+					maximum = modelMax;
+			}
+			else if(time < KTimeControl.DEFAULT_MAX_TIME && maximum != KTimeControl.DEFAULT_MAX_TIME)
+			{
+				if(_KSketch.maxTime < KTimeControl.DEFAULT_MAX_TIME)
+					maximum = KTimeControl.DEFAULT_MAX_TIME;
+			}
+				
+			
 			timeFill.percentWidth = _currentFrame/(_maxFrame*1.0)*100;
 		}
 		
@@ -161,6 +185,14 @@ package views.canvas.components.timeBar
 			_timer.delay = KSketch2.ANIMATION_INTERVAL;
 			_timer.addEventListener(TimerEvent.TIMER, playHandler);
 			_timer.start();
+			
+			if(_KSketch.maxTime < time)
+				_maxPlayTime = time + PLAY_ALLOWANCE;
+			else
+				_maxPlayTime = _KSketch.maxTime + PLAY_ALLOWANCE;
+			
+			_rewindToTime = time;
+			
 			this.dispatchEvent(new Event(KTimeControl.PLAY_START));
 		}
 		
@@ -170,10 +202,11 @@ package views.canvas.components.timeBar
 		 */
 		private function playHandler(event:TimerEvent):void 
 		{
-			if(time >= maximum)
+			if(time >= _maxPlayTime)
 			{
-				time = maximum;
+				time = _maxPlayTime;
 				stop();
+				time = _rewindToTime;
 			}
 			else
 				time = time + KSketch2.ANIMATION_INTERVAL;
@@ -211,8 +244,8 @@ package views.canvas.components.timeBar
 		 */
 		private function recordHandler(event:TimerEvent):void 
 		{
-			if((time + KSketch2.ANIMATION_INTERVAL) > maximum)
-				maximum = maximum + KTimeControl.TIME_EXTENSION;
+//			if((time + KSketch2.ANIMATION_INTERVAL) > maximum)
+//				maximum = maximum + KSketch2.ANIMATION_INTERVAL;
 			
 			time = time + KSketch2.ANIMATION_INTERVAL;
 		}

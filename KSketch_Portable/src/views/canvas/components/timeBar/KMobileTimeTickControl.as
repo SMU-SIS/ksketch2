@@ -34,7 +34,7 @@ package views.canvas.components.timeBar
 			_timeTickContainer = timeControl.markerDisplay;
 			_interactionControl = interactionControl;
 
-//			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateTicks);
+			_interactionControl.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _updateTicks);
 			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
 			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _drawTicks);
 		}
@@ -53,10 +53,8 @@ package views.canvas.components.timeBar
 		 */
 		private function _updateTicks(event:Event = null):void
 		{
-			var timings:Vector.<int> = new Vector.<int>();
 			var keys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
-			
 			
 			//This block of codes are for gathering keys
 			var i:int;
@@ -65,7 +63,6 @@ package views.canvas.components.timeBar
 			var length:int = allObjects.length();
 			var currentKey:IKeyFrame;
 			var availableKeyHeaders:Vector.<IKeyFrame>;
-			_timeControl.timeList = new Vector.<int>();
 			
 			for(i = 0; i<length; i++)
 			{
@@ -97,6 +94,7 @@ package views.canvas.components.timeBar
 			keys.sort(SortingFunctions._compareKeyTimes);
 			_markers = new Vector.<KTouchTickMark>();
 
+			var timings:Vector.<int> = new Vector.<int>();
 			var prevKey:IKeyFrame;
 			while(0 < keys.length)
 			{
@@ -108,14 +106,19 @@ package views.canvas.components.timeBar
 				newMarker.time = currentKey.time;
 				newMarker.x = _timeControl.timeToX(newMarker.time);
 				_markers.push(newMarker);
-				
+				timings.push(newMarker.time);
 				prevKey = currentKey;
 			}
 
 			_markers.sort(SortingFunctions._compare_x_property);
-			
 			_drawTicks();
 
+			timings.unshift(0);
+			timings.push(_timeControl.maximum);
+			timings.sort(SortingFunctions._sortInt);			
+
+			
+			_timeControl.timeList = timings;
 		}
 		
 		/**
@@ -126,6 +129,8 @@ package views.canvas.components.timeBar
 			if(!_markers)
 				return;
 			
+			var timings:Vector.<int> = new Vector.<int>();
+
 			_timeTickContainer.graphics.clear();
 			_timeTickContainer.graphics.lineStyle(2, 0xFF0000);
 			
@@ -143,10 +148,14 @@ package views.canvas.components.timeBar
 				if(currentX < currentMarker.x)
 				{
 					currentX = currentMarker.x;
-					_timeTickContainer.graphics.moveTo( currentX, -5);
-					_timeTickContainer.graphics.lineTo( currentX, 25);
+					
+					if(_timeTickContainer.x <= currentX)
+					{
+						_timeTickContainer.graphics.moveTo( currentX, -5);
+						_timeTickContainer.graphics.lineTo( currentX, 25);
+					}
 				}
-				
+
 				currentMarker.prev = previousMarker;
 
 				if(previousMarker)

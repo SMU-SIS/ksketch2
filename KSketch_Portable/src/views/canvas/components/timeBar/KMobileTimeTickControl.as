@@ -4,7 +4,7 @@ package views.canvas.components.timeBar
 	import flash.geom.Point;
 	
 	import mx.core.UIComponent;
-
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
@@ -22,7 +22,7 @@ package views.canvas.components.timeBar
 		private var _timeTickContainer:UIComponent;
 		private var _interactionControl:KMobileInteractionControl;
 		
-		private var _markers:Vector.<AbstractMarker>;
+		private var _markers:Vector.<KTouchTickMark>;
 		
 		/**
 		 * A helper class containing the codes for generating tick marks 
@@ -34,9 +34,9 @@ package views.canvas.components.timeBar
 			_timeTickContainer = timeControl.markerDisplay;
 			_interactionControl = interactionControl;
 
-			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateTicks);
+//			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateTicks);
 			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
-			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _updateTicks);
+			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _drawTicks);
 		}
 		
 		/**
@@ -47,47 +47,18 @@ package views.canvas.components.timeBar
 		 *	-	Objects are modified by transitions (which changed the timing of the key frames)
 		 *  -	The time control's maximum time changed (Position of the tick marks will be affected by the change)
 		 */
-/*		private function _updateTicks(event:Event):void
-		{
-			_timeTickContainer.graphics.clear();
-			_timeTickContainer.graphics.lineStyle(2, 0xFF0000);
-			
-	/*		var keysHeaders:Vector.<IKeyFrame> = object.transformInterface.getAllKeyFrames();
-
-			
-			
-			var timings:Vector.<int> = new Vector.<int>();
-			timings.push(0);
-			timings.push(_timeControl.maximum);
-			
-			for(var i:int = 0; i<keysHeaders.length; i++)
-			{
-				var currentKey:IKeyFrame = keysHeaders[i];
-				
-				while(currentKey)
-				{
-					var tickX:Number = _timeControl.timeToX(currentKey.time);
-					_timeTickContainer.graphics.moveTo( tickX, -5);
-					_timeTickContainer.graphics.lineTo( tickX, 25);
-					timings.push(currentKey.time);
-					currentKey = currentKey.next;
-				}
-			}
-
-			timings.sort(SortingFunctions._sortInt);
-			_timeControl.timeList = timings;*/
-//		}
 		
 		/**
 		 * Function to fill and instantiate the two marker vectors with usable markers
 		 */
-		private function _updateTicks(event:Event):void
+		private function _updateTicks(event:Event = null):void
 		{
 			var timings:Vector.<int> = new Vector.<int>();
-			_markers = new Vector.<AbstractMarker>();
 			var keys:Vector.<IKeyFrame> = new Vector.<IKeyFrame>();
 			var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
 			
+			
+			//This block of codes are for gathering keys
 			var i:int;
 			var j:int;
 			var currentObject:KObject;
@@ -118,50 +89,63 @@ package views.canvas.components.timeBar
 				}
 			}
 			
+			//Make marker objects
+			//As compared to desktop version, these markers will not be displayed on the screen literally
+			//Draw ticks will take these markers and draw representations on the screen.
+			//They will be redrawn whenever their timings are changed.
+			//Done for the sake of saving memory (Just trying, not sure if drawing lines are effective or not)
 			keys.sort(SortingFunctions._compareKeyTimes);
+			_markers = new Vector.<KTouchTickMark>();
+
+			var prevKey:IKeyFrame;
+			while(0 < keys.length)
+			{
+				currentKey = keys.shift();
+				
+				var newMarker:KTouchTickMark = new KTouchTickMark();
+				newMarker.key = currentKey;
+				newMarker.associatedObject = currentKey.ownerID;
+				newMarker.time = currentKey.time;
+				newMarker.x = _timeControl.timeToX(newMarker.time);
+				_markers.push(newMarker);
+				
+				prevKey = currentKey;
+			}
+
+			_markers.sort(SortingFunctions._compare_x_property);
 			
-			_drawTicks(keys);
-			
-//			_timeControl.timeList.sort(SortingFunctions._sortInt);
-//			_markers.sort(SortingFunctions._compareMarkerPosition);
+			_drawTicks();
+
 		}
 		
 		/**
 		 * Places the markers on the screen
 		 */
-		private function _drawTicks(keys:Vector.<IKeyFrame>):void
+		private function _drawTicks(event:Event = null):void
 		{
-			var prevKey:IKeyFrame;
-			var currentKey:IKeyFrame;
-			while(0 < keys.length)
-			{
-				currentKey = keys.shift();
-				
-				var newMarker:AbstractMarker = new AbstractMarker();
-				newMarker.key = currentKey;
-				newMarker.associatedObject = currentKey.ownerID;
-				newMarker.time = currentKey.time;
-//				newMarker.activityBars = new Vector.<KMarkerActivityBar>();
-				_markers.push(newMarker);
-				
-				prevKey = currentKey;
-			}
+			if(!_markers)
+				return;
 			
 			_timeTickContainer.graphics.clear();
 			_timeTickContainer.graphics.lineStyle(2, 0xFF0000);
 			
 			var i:int;
-			var currentMarker:AbstractMarker;
-			var previousMarker:AbstractMarker;
-			
+			var currentMarker:KTouchTickMark;
+			var previousMarker:KTouchTickMark;
+			var currentX:Number = Number.NEGATIVE_INFINITY;
+
 			for(i = 0; i<_markers.length; i++)
 			{
 				currentMarker = _markers[i];
 				currentMarker.x = _timeControl.timeToX(currentMarker.time);
 				currentMarker.originalPosition = currentMarker.x;
-
-				_timeTickContainer.graphics.moveTo( currentMarker.x, -5);
-				_timeTickContainer.graphics.lineTo( currentMarker.x, 25);
+				
+				if(currentX < currentMarker.x)
+				{
+					currentX = currentMarker.x;
+					_timeTickContainer.graphics.moveTo( currentX, -5);
+					_timeTickContainer.graphics.lineTo( currentX, 25);
+				}
 				
 				currentMarker.prev = previousMarker;
 

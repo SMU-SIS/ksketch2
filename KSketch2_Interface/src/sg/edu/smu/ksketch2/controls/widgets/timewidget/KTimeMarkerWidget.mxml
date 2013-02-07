@@ -129,7 +129,7 @@
 				_generateMarkers(_unselectedMarkers, unselectedKeys, false);
 				
 				_timeControl.timeList.sort(SortingFunctions._sortInt);
-				_markers.sort(SortingFunctions._compareMarkerPosition);
+				_markers.sort(SortingFunctions._compare_x_property);
 			}
 			
 			

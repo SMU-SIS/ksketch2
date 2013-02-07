@@ -8,17 +8,15 @@
  */
 package sg.edu.smu.ksketch2.utils
 {
-	import flash.display.DisplayObject;
-	
 	import sg.edu.smu.ksketch2.controls.widgets.timewidget.KTimeMarker;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 
 	public class SortingFunctions
 	{
 		/**
-		 * Function to compare x positions of display objects
+		 * Function to compare x positions of objects
 		 */
-		public static function _compareMarkerPosition(marker1:DisplayObject, marker2:DisplayObject):Number
+		public static function _compare_x_property(marker1:*, marker2:*):Number
 		{
 			if(marker1.x <= marker2.x)
 				return -1;

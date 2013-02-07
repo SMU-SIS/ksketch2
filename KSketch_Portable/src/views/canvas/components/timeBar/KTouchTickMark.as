@@ -6,7 +6,7 @@ package views.canvas.components.timeBar
 	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.IVisibilityKey;
 
-	public class AbstractMarker
+	public class KTouchTickMark
 	{
 		public var x:Number;
 		public var changeX:Number;
@@ -16,19 +16,19 @@ package views.canvas.components.timeBar
 		public var key:IKeyFrame;
 		public var associatedObject:int;
 		public var time:int;
-		public var prev:AbstractMarker;
-		public var next:AbstractMarker;
-		public var prevAssociated:AbstractMarker;
-		public var nextAssociated:AbstractMarker;
+		public var prev:KTouchTickMark;
+		public var next:KTouchTickMark;
+		public var prevAssociated:KTouchTickMark;
+		public var nextAssociated:KTouchTickMark;
 		
-		public function AbstractMarker()
+		public function KTouchTickMark()
 		{
 			
 		}
 		
 		public function updateAssociation():void
 		{
-			var prevMarker:AbstractMarker = prev;
+			var prevMarker:KTouchTickMark = prev;
 			
 			while(prevMarker)
 			{
@@ -43,7 +43,7 @@ package views.canvas.components.timeBar
 			}
 		}
 		
-		public function canStackWith(toStackMarker:AbstractMarker):Boolean
+		public function canStackWith(toStackMarker:KTouchTickMark):Boolean
 		{			
 			var toStackKey:IKeyFrame = toStackMarker.key;
 			

@@ -43,26 +43,26 @@
 				{
 					graphics.beginFill(0x000000);
 					graphics.lineStyle(1);
-					graphics.moveTo(0,0);
-					graphics.lineTo(0,40);
-					graphics.lineTo(40,20);
-					graphics.lineTo(0,0);
+					graphics.moveTo(5,5);
+					graphics.lineTo(5,35);
+					graphics.lineTo(35,20);
+					graphics.lineTo(5,5);
 					graphics.endFill();
 				}
 				else
 				{
-					graphics.lineStyle(10,0x000000);
-					graphics.moveTo(12.5,5);
-					graphics.lineTo(12.5,35);
-					graphics.moveTo(27.5,5);
-					graphics.lineTo(27.5,35);
+					graphics.lineStyle(7.5,0x000000);
+					graphics.moveTo(10,10);
+					graphics.lineTo(10,30);
+					graphics.moveTo(25,10);
+					graphics.lineTo(25,30);
 				}
 			}
 		]]>
 	</fx:Script>
-	<s:Rect width="100%" height="100%" alpha="0">
+	<s:Rect width="100%" height="100%" alpha="1">
 		<s:fill>
-			<s:SolidColor color="0x000000"/>
+			<s:SolidColor color="0x00FFFF"/>
 		</s:fill>
 	</s:Rect>
 </s:Group>

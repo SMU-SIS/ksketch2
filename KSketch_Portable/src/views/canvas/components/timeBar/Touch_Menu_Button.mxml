@@ -9,13 +9,13 @@
 				graphics.lineStyle(5,0x000000);
 				
 				graphics.moveTo(0,10);
-				graphics.lineTo(32,10);
+				graphics.lineTo(30,10);
 				
 				graphics.moveTo(0,20);
-				graphics.lineTo(32,20);
+				graphics.lineTo(30,20);
 				
 				graphics.moveTo(0,30);
-				graphics.lineTo(32,30);
+				graphics.lineTo(30,30);
 				
 			}
 		]]>

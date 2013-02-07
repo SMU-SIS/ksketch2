@@ -306,7 +306,6 @@ package views.canvas.components.timeBar
 			}
 			else
 			{
-				trace("Index vs max length",currentIndex, timeList.length);
 				if(currentIndex < timeList.length)
 				{
 					var checkTime:Number = timeList[currentIndex];
@@ -323,7 +322,6 @@ package views.canvas.components.timeBar
 						}
 					}
 					
-					trace("End of loop: Index vs max length",currentIndex, timeList.length);
 					toTime = checkTime;
 				}
 				else

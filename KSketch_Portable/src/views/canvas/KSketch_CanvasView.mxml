@@ -146,7 +146,7 @@
 		</s:Group>
 	</s:Group>
 	
-	<s:Group id="timebar_region" width="100%" height="60">
+	<s:Group id="timebar_region" width="100%" height="50">
 		<s:Rect width="100%" height="100%">
 			<s:fill>
 				<s:SolidColor color="0xD8D8D8"/>
@@ -171,23 +171,22 @@
 			<timeBar:KTimeLabel id="maxTimeLabel"/>
 			<timeBar:Touch_Menu_Button id="menuButton"/>
 		</s:Group>
-		
-		<s:Group width="100%">
+		<s:Group width="100%" alpha="0">
 			<s:layout>
 				<s:HorizontalLayout gap="0"/>
 			</s:layout>
-			<s:Group width="50" height="60" alpha="0" click="playButton.playToggle()">
+			<s:Group width="50" height="60" click="playButton.playToggle()">
 				<s:Rect width="100%" height="100%">
 					<s:fill>
-						<s:SolidColor color="0x000000"/>
+						<s:SolidColor color="0x0000FF"/>
 					</s:fill>
 				</s:Rect>
 			</s:Group>
 			<s:Group width="100%"/>
-			<s:Group width="50" height="60" alpha="0" click="_menuBtnHandler()">
+			<s:Group width="50" height="60" click="_menuBtnHandler()">
 				<s:Rect width="100%" height="100%">
 					<s:fill>
-						<s:SolidColor color="0x000000"/>
+						<s:SolidColor color="0x0000FF"/>
 					</s:fill>
 				</s:Rect>
 			</s:Group>

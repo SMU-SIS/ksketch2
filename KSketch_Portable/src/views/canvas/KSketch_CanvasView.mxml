@@ -15,8 +15,11 @@
 		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
 		xmlns:timeBar="views.canvas.components.timeBar.*"
 		destructionPolicy="never"
-		add="_addHandler(event);" xmlns:utils="starling.utils.*" 
+		add="_addHandler(event);" xmlns:utils="starling.utils.*" xmlns:menus="views.canvas.components.menus.*" 
 		>
+	<fx:Declarations>
+		<menus:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{height-cornerMenu.height-50 - 10}"/>
+	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
@@ -67,6 +70,11 @@
 			
 			private function _menuBtnHandler():void
 			{
+				if(cornerMenu.isOpen)
+					cornerMenu.close();
+				else
+					cornerMenu.open(menuButton);
+				return;
 				navigator.addEventListener("addImgToScn", _addImgHandler);
 				navigator.pushView(views.canvas.Menu, _interactionControl);
 			}

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		width="150" height="150" alpha.disabled="0.5">
+	<!-- host component -->
+	<fx:Metadata>
+		[HostComponent("spark.components.Button")]
+	</fx:Metadata>
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		
+		.PopUpMenuButtonSkin {
+			fontFamily: Helvetica, Roboto "_serif";
+			color: Black;
+			fontSize: 12;
+		}
+	</fx:Style>
+	<!-- states -->
+	<s:states>
+		<s:State name="disabled" />
+		<s:State name="down" />
+		<s:State name="over" />
+		<s:State name="up" />
+	</s:states>
+	
+	
+	
+	<s:filters>
+		<s:DropShadowFilter color="0xA4A4A4" distance="1" blurX="0" blurY="0"/>
+	</s:filters>
+	
+	<!-- layer 2: fill -->
+	<s:Rect left="1" right="1" top="1" bottom="1">
+		<s:fill>
+			<s:SolidColor color="0xD8D8D8"/>
+		</s:fill>
+		<s:filters>
+			<s:GlowFilter color="0x000000" alpha="0.7" inner="true" blurX="16" blurY="16" includeIn="down"/>
+		</s:filters>
+	</s:Rect>
+	
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"
+							  paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
+							  gap="9"/>
+		</s:layout>
+<!--		<s:BitmapImage id="iconDisplay"/> -->
+		<s:Rect width="80" height="80">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF"/>
+			</s:fill>
+		</s:Rect>
+		<s:Label id="labelDisplay" fontFamily="_sans" color="0x2E2E2E"/>
+	</s:Group>
+</s:Skin>

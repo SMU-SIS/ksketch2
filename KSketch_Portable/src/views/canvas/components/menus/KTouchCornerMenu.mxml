@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark">
+	<s:filters>
+		<s:DropShadowFilter color="0x000000" distance="3" angle="45"/>
+	</s:filters>
+	<s:Rect width="100%" height="100%" radiusX="3" radiusY="3">
+		<s:fill>
+			<s:SolidColor color="0xD8D8D8"/>
+		</s:fill>
+	</s:Rect>
+	<s:Group>
+		<s:layout>
+			<s:TileLayout horizontalGap="1" verticalGap="1"/>
+		</s:layout>
+		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Gallery"/>
+		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Camera"/>
+		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Share" enabled="false"/>
+		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Clear"/>
+		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Markers"/>
+		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Slider"/>
+	</s:Group>
+</s:SkinnablePopUpContainer>

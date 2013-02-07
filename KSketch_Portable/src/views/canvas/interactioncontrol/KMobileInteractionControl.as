@@ -181,6 +181,11 @@ package views.canvas.interactioncontrol
 			_currentInteraction.oldSelection = selection;
 		}
 		
+		public function cancel_interaction_operation():void
+		{
+			
+		}
+		
 		public function end_interaction_operation(operation:IModelOperation=null, newSelection:KSelection=null):void
 		{
 			if(currentInteraction)

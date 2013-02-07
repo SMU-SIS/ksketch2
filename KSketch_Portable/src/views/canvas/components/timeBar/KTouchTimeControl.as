@@ -15,6 +15,7 @@ package views.canvas.components.timeBar
 	public class KTouchTimeControl extends TouchSliderTemplate implements ITimeControl
 	{
 		public var recordingSpeed:Number = 1;
+		private var _editMarkers:Boolean;
 		
 		private const _PAN_SPEED_1:int = 1;
 		private const _PAN_SPEED_2:int = 2;
@@ -53,11 +54,13 @@ package views.canvas.components.timeBar
 			_KSketch = KSketchInstance;
 			maximum = KTimeControl.DEFAULT_MAX_TIME;
 			time = 0;
+			editMarkers = false;
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 			
 			_panGesture = new PanGesture(this);
 			_panGesture.maxNumTouchesRequired = 1;
+			_panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _beginPanning);
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updatePanning);
 			_panGesture.addEventListener(GestureEvent.GESTURE_ENDED, _resetPan);
 		}
@@ -66,6 +69,23 @@ package views.canvas.components.timeBar
 		{
 			maximum = KTimeControl.DEFAULT_MAX_TIME;
 			time = 0;
+			editMarkers =  false;
+		}
+		
+		public function set editMarkers(edit:Boolean):void
+		{
+			_editMarkers = edit;
+			
+			if(_editMarkers)
+			{
+				backgroundFill.alpha = 0.5;
+				timeFill.alpha = 0.2;
+			}
+			else
+			{
+				backgroundFill.alpha = 1;
+				timeFill.alpha = 1;
+			}
 		}
 		
 		/**
@@ -125,6 +145,12 @@ package views.canvas.components.timeBar
 		public function get time():int
 		{
 			return _KSketch.time
+		}
+		
+		private function _beginPanning(event:GestureEvent):void
+		{
+//			if(_editMarkers)
+				
 		}
 		
 		/**

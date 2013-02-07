@@ -35,8 +35,8 @@ package views.canvas.components.timeBar
 			_timeTickContainer = timeControl.markerDisplay;
 			_interactionControl = interactionControl;
 			
+			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _updateTicks);
 			_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, _updateTicks);
-			_interactionControl.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _updateTicks);
 			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
 			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _drawTicks);
 		}

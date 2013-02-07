@@ -75,6 +75,7 @@ package sg.edu.smu.ksketch2
 		{
 			init();
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_KSKETCH_INIT));
+			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 		}
 		
 		public function get sceneXML():XML

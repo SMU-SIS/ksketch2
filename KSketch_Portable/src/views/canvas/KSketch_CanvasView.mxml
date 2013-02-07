@@ -54,6 +54,7 @@
 				
 				modelDisplay.init(_KSketch);
 				timeControl.init(_KSketch);
+				cornerMenu.init(_interactionControl, timeControl);
 				
 				playButton.init(timeControl);
 				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);

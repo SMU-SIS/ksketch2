@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 						   xmlns:s="library://ns.adobe.com/flex/spark">
+	<fx:Script>
+		<![CDATA[
+			import views.canvas.components.timeBar.KTouchTimeControl;
+			import views.canvas.interactioncontrol.KMobileInteractionControl;
+			
+			private var _interactionControl:KMobileInteractionControl;
+			private var _timeControl:KTouchTimeControl;
+			
+			public function init(interactionControl:KMobileInteractionControl, timeControl:KTouchTimeControl):void
+			{
+				_interactionControl = interactionControl;
+				_timeControl = timeControl;
+			}
+			
+			public function activateCamera():void
+			{
+				close();
+			}
+			
+			public function activateGallery():void
+			{
+				close();
+			}
+			
+			public function clear():void
+			{
+				_interactionControl.reset();
+				close();
+			}
+			
+			public function toggleMarker():void
+			{
+				markerButton.enabled = false;
+				sliderButton.enabled = true;
+				_timeControl.editMarkers = true;
+				close();
+			}
+			
+			public function toggleSlider():void
+			{
+				markerButton.enabled = true;
+				sliderButton.enabled = false;
+				_timeControl.editMarkers = false;
+				close();
+			}
+			
+		]]>
+	</fx:Script>
+	
 	<s:filters>
 		<s:DropShadowFilter color="0x000000" distance="3" angle="45"/>
 	</s:filters>
@@ -16,8 +65,8 @@
 		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Gallery"/>
 		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Camera"/>
 		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Share" enabled="false"/>
-		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Clear"/>
-		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Markers"/>
-		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Slider"/>
+		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Clear" click="clear()"/>
+		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Markers" id="markerButton" click="toggleMarker()"/>
+		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Slider" id="sliderButton" click="toggleSlider()" enabled="false"/>
 	</s:Group>
 </s:SkinnablePopUpContainer>

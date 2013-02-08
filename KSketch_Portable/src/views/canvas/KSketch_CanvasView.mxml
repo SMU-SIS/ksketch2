@@ -19,6 +19,7 @@
 		>
 	<fx:Declarations>
 		<menus:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{height-cornerMenu.height-50 - 10}"/>
+		<components:KTouchFeedbackMessage id="feedbackMessage" x="{(drawing_stage.width/2)}" y="30"/>
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
@@ -49,9 +50,10 @@
 				_KSketch = new KSketch2();
 				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
 				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
+				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, feedbackMessage);
 				_contextMenuHelper = new KTouchContextMenuInteractor(widget);
 				_timeTickControl = new KTouchTimeTickControl(_KSketch, timeControl, _interactionControl);
+				feedbackMessage.init(drawing_stage);
 				
 				currentTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_CURRENT_TIME);
 				maxTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_MAX_TIME);
@@ -133,12 +135,7 @@
 				<!-- The model display displays the objects in the model -->
 				<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 									scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
-				<s:Group width="100%">
-					<s:layout>
-						<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
-					</s:layout>
-					<s:Label id="feedbackLeft"/>
-				</s:Group>
+	
 			</s:Group> 
 		</s:Group>
 		

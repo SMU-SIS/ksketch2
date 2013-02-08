@@ -196,7 +196,6 @@ package views.canvas.components.timeBar
 
 				//After ticks are a bit special
 				//Only add in the first degree ticks
-				trace(currentTick.x, _startX, currentTick.prev)
 				if(currentTick.x >= _startX)
 				{
 					if(!currentTick.prev )
@@ -205,8 +204,6 @@ package views.canvas.components.timeBar
 						_after.push(currentTick)
 				}
 			}
-			
-			trace("Length of after", _after.length);
 		}
 		
 		public function pan_update(location:Point):void

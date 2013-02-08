@@ -24,6 +24,7 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.controls.interactors.KLoopSelectInteractor;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	
+	import views.canvas.components.KTouchFeedbackMessage;
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
 	public class KCanvasInteractorManager extends EventDispatcher
@@ -35,7 +36,8 @@ package views.canvas.interactors
 		private var _interactionControl:KMobileInteractionControl;
 		private var _inputComponent:UIComponent;
 		private var _modelDisplay:KModelDisplay;
-
+		private var _feedbackMessage:KTouchFeedbackMessage;
+		
 		private var _tapGesture:TapGesture;
 		private var _doubleTap:TapGesture;
 		private var _drawGesture:PanGesture;
@@ -58,13 +60,14 @@ package views.canvas.interactors
 		 * 
 		 */
 		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
-											   inputComponent:UIComponent, modelDisplay:KModelDisplay)
+											   inputComponent:UIComponent, modelDisplay:KModelDisplay, feedbackMessage:KTouchFeedbackMessage)
 		{
 			super(this);
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
 			_inputComponent = inputComponent;
 			_modelDisplay = modelDisplay;
+			_feedbackMessage = feedbackMessage;
 
 			/**
 			 * Implementation is inconsistent with the transition module
@@ -101,12 +104,22 @@ package views.canvas.interactors
 			if(left)
 			{
 				if(_interactionControl.hasUndo)
+				{
 					_interactionControl.undo();
+					_feedbackMessage.showMessage("Undo");
+				}
+				else
+					_feedbackMessage.showMessage("No Undo");
 			}
 			else
 			{
 				if(_interactionControl.hasRedo)
+				{
 					_interactionControl.redo();
+					_feedbackMessage.showMessage("Redo");
+				}
+				else
+					_feedbackMessage.showMessage("No Redo");
 			}
 		}
 		

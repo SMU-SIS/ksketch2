@@ -1,116 +1,75 @@
 package views.canvas.components.timeBar
 {
-	import sg.edu.smu.ksketch2.controls.widgets.timewidget.KMarkerActivityBar;
-	import sg.edu.smu.ksketch2.controls.widgets.timewidget.KTimeMarker;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.IVisibilityKey;
 
 	public class KTouchTickMark
 	{
+		//Spatial variables used to compute this tick mark's position
 		public var x:Number;
-		public var changeX:Number;
-
 		public var originalPosition:Number;
 		
-		public var key:IKeyFrame;
-		public var associatedObject:int;
+		//Time value FOR THIS TICK ONLY. Changing this time does not change the key frame's time directly
 		public var time:int;
+
+		//Variables to reference model's objects
+		public var key:IKeyFrame;
+		public var associatedObjectID:int;
+
+		//Prev and next tick mark in the time line
 		public var prev:KTouchTickMark;
 		public var next:KTouchTickMark;
-		public var prevAssociated:KTouchTickMark;
-		public var nextAssociated:KTouchTickMark;
-		
+
 		public function KTouchTickMark()
 		{
 			
 		}
 		
-		public function updateAssociation():void
-		{
-			var prevMarker:KTouchTickMark = prev;
-			
-			while(prevMarker)
-			{
-				if(!prevMarker.canStackWith(this))
-				{
-					prevAssociated = prevMarker;
-					prevMarker.nextAssociated = this;
-					prevMarker = null;
-				}
-				else
-					prevMarker = prevMarker.prev;
-			}
-		}
 		
-		public function canStackWith(toStackMarker:KTouchTickMark):Boolean
-		{			
-			var toStackKey:IKeyFrame = toStackMarker.key;
-			
-			if(associatedObject != toStackMarker.associatedObject)
-				return true;
-			
-			if(key is IVisibilityKey && toStackKey is ISpatialKeyFrame)
-				return true;
-			
-			if(key is ISpatialKeyFrame && toStackKey is IVisibilityKey)
-				return true;
-			
-			if(key is ISpatialKeyFrame && toStackKey is ISpatialKeyFrame)
-				return !(toStackKey as ISpatialKeyFrame).hasActivityAtTime();
-			
-			return false;
-		}
-		
-		public function moveFutureMarkers(dX:Number):void
+		//Hooks up the tick mark to model references
+		public function init(refKey:IKeyFrame, initialXPos:Number):void
 		{
-			if(next)
-			{
-				var nextX:Number = next.originalPosition + dX;
-				next.updateX(nextX);
-				next.moveFutureMarkers(dX);
-			}
-		}
-		
-		public function updateX(xPos:Number):void
-		{
-			x = xPos;
+			key = refKey;
+			associatedObjectID = key.ownerID;
+			time = key.time;
+			x = initialXPos;
+			originalPosition = initialXPos;
 		}
 		
 		/**
-		 * Move marker to toXPos, taking into considerations its collisions with markers in front of it
+		 * Moves this time tick as close to the given position as possible
+		 * The time tick's range of possible position will be from 
+		 * +1 frame from prev to max container width or -1 frame from next
 		 */
-		public function moveWithStacking(toXPos:Number, pixelPerFrame:Number):void
+		public function moveToX(xPos:Number, pixelPerFrame:Number):void
 		{
-			//If there is no prev, prev associated should not exist!
+			if(xPos < 0)
+				xPos = 0;
+			
 			if(prev)
 			{
-				//Handle the prev first
-				//If prev is not associated, then we stack prev and this
-				//If prev is associated then we dont do anything first
-				if((toXPos-1) <= prev.originalPosition)
-				{
-					if(prev != prevAssociated)
-						prev.moveWithStacking(toXPos, pixelPerFrame);
-				}
-				
-				//Then we handle the bunching case
-				if(prevAssociated)
-				{
-					if((toXPos-1) <= prevAssociated.originalPosition)
-					{
-						var prevX:Number = toXPos - pixelPerFrame;
-						
-						if(prevX <= 0)
-							prevX = 0;
-						
-						prevAssociated.moveWithStacking(prevX, pixelPerFrame);
-						toXPos = prevAssociated.x + pixelPerFrame;
-					}
-				}
+				if(xPos < (prev.x + pixelPerFrame))
+					xPos = prev.x + pixelPerFrame;
 			}
+			else if(next)
+			{
+				if(xPos > (next.x - pixelPerFrame))
+					xPos = next.x - pixelPerFrame;
+			}
+
+			x = xPos
+		}
+		
+		/**
+		 * Move self to xPos and next ticks by xpos - original position
+		 */
+		public function moveSelfAndNext(xPos:Number, pixelPerFrame:Number):void
+		{
+			var dx:Number = xPos - originalPosition;
+
+			if(next)
+				next.moveSelfAndNext(next.originalPosition+dx, pixelPerFrame);
 			
-			updateX(toXPos);
+			moveToX(xPos, pixelPerFrame);
 		}
 	}
 }

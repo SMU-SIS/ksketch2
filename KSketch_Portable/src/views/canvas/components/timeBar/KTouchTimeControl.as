@@ -30,6 +30,7 @@ package views.canvas.components.timeBar
 		public static const MAX_ALLOWED_TIME:int = 600000; //Max allowed time of 10 mins
 		
 		private var _KSketch:KSketch2;
+		private var _tickmarkControl:KTouchTimeTickControl;
 		private var _timer:Timer;
 		private var _maxPlayTime:int;
 		private var _rewindToTime:int;
@@ -49,9 +50,11 @@ package views.canvas.components.timeBar
 			super();
 		}
 		
-		public function init(KSketchInstance:KSketch2):void
+		public function init(KSketchInstance:KSketch2, tickmarkControl:KTouchTimeTickControl):void
 		{
 			_KSketch = KSketchInstance;
+			_tickmarkControl = tickmarkControl;
+			
 			maximum = KTimeControl.DEFAULT_MAX_TIME;
 			time = 0;
 			editMarkers = false;
@@ -149,8 +152,8 @@ package views.canvas.components.timeBar
 		
 		private function _beginPanning(event:GestureEvent):void
 		{
-//			if(_editMarkers)
-				
+			if(_editMarkers)
+				_tickmarkControl.pan_begin(_panGesture.location);
 		}
 		
 		/**
@@ -158,6 +161,13 @@ package views.canvas.components.timeBar
 		 */
 		private function _updatePanning(event:GestureEvent):void
 		{
+			//If edit markers, rout event into the tick mark control and return
+			if(_editMarkers)
+			{
+				_tickmarkControl.pan_update(_panGesture.location);
+				return;
+			}
+			
 			//Pan Offset is the absolute distance moved during a pan gesture
 			//Need to update to see how far this pan has moved.
 			_panOffset += Math.abs(_panGesture.offsetX)/width;
@@ -194,6 +204,13 @@ package views.canvas.components.timeBar
 		 */
 		private function _resetPan(event:GestureEvent):void
 		{
+			//If edit markers, rout event into the tick mark control and return
+			if(_editMarkers)
+			{
+				_tickmarkControl.pan_end(_panGesture.location);
+				return;
+			}
+			
 			_prevOffset = 1;
 			_panOffset = 0;
 			_panSpeed = _PAN_SPEED_1;
@@ -292,6 +309,18 @@ package views.canvas.components.timeBar
 		{
 			var currentFrame:int = value/KSketch2.ANIMATION_INTERVAL;
 			return currentFrame/(_maxFrame*1.0) * backgroundFill.width;
+		}
+		
+		public function xToTime(value:Number):int
+		{
+			var currentFrame:int = Math.floor(value/pixelPerFrame);
+			
+			return currentFrame * KSketch2.ANIMATION_INTERVAL;
+		}
+		
+		public function get pixelPerFrame():Number
+		{
+			return width/_maxFrame;
 		}
 		
 		

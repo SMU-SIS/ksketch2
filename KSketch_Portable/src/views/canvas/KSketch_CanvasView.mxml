@@ -26,7 +26,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
-			import views.canvas.components.timeBar.KMobileTimeTickControl;
+			import views.canvas.components.timeBar.KTouchTimeTickControl;
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			import views.canvas.interactors.KCanvasInteractorManager;
 			import views.canvas.interactors.KTouchContextMenuInteractor;
@@ -38,7 +38,7 @@
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
 			private var _contextMenuHelper:KTouchContextMenuInteractor;
-			private var _timeTickControl:KMobileTimeTickControl;
+			private var _timeTickControl:KTouchTimeTickControl;
 			
 			private var _newObjType:uint = 0;
 			
@@ -48,19 +48,19 @@
 			{
 				_KSketch = new KSketch2();
 				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
+				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
+				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
+				_contextMenuHelper = new KTouchContextMenuInteractor(widget);
+				_timeTickControl = new KTouchTimeTickControl(_KSketch, timeControl, _interactionControl);
 				
 				currentTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_CURRENT_TIME);
 				maxTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_MAX_TIME);
 				
 				modelDisplay.init(_KSketch);
-				timeControl.init(_KSketch);
+				timeControl.init(_KSketch, _timeTickControl);
 				cornerMenu.init(_interactionControl, timeControl);
 				
 				playButton.init(timeControl);
-				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay);
-				_contextMenuHelper = new KTouchContextMenuInteractor(widget);
-				_timeTickControl = new KMobileTimeTickControl(_KSketch, timeControl, _interactionControl);
 				_interactionControl.reset();
 			}
 			

@@ -304,10 +304,10 @@ package views.canvas.components.timeBar
 			else if(KTouchTimeControl.MAX_ALLOWED_TIME < maxTime)
 				maxTime = KTouchTimeControl.MAX_ALLOWED_TIME;
 			
-			if(_timeControl.time < maxTime)
+			if(_timeControl.maximum < maxTime)
 				_timeControl.maximum = maxTime;
 			else
-				_timeControl.maximum = _timeControl.time;
+				_drawTicks();
 			
 			_timeControl.floatingLabel.x = location.x;
 			var currentTime:int = _timeControl.xToTime(currentX);
@@ -330,14 +330,22 @@ package views.canvas.components.timeBar
 			var length:int = _ticks.length;
 			var currentTick:KTouchTickMark;
 			var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
-
+			var maxTime:int = 0;
 			for(i = 0; i < _ticks.length; i++)
 			{
 				currentTick = _ticks[i];
+				if(currentTick.time > maxTime)
+					maxTime = currentTick.time;
 				_KSketch.editKeyTime(allObjects.getObjectByID(currentTick.associatedObjectID),
 																currentTick.key, currentTick.time,
 																_interactionControl.currentInteraction);
 			}
+			
+			if(KTimeControl.DEFAULT_MAX_TIME < maxTime)
+				_timeControl.maximum = maxTime;
+			else
+				_timeControl.maximum = KTimeControl.DEFAULT_MAX_TIME;
+			
 			_interactionControl.end_interaction_operation();
 		}
 	}

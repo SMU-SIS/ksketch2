@@ -32,7 +32,6 @@ package views.canvas.components.timeBar
 			associatedObjectID = key.ownerID;
 			time = key.time;
 			x = initialXPos;
-			originalPosition = initialXPos;
 		}
 		
 		/**

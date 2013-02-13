@@ -7,6 +7,7 @@ package views.canvas.components.timeBar
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
+	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
@@ -42,7 +43,7 @@ package views.canvas.components.timeBar
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _updateTicks);
 			_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, _updateTicks);
 			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
-			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _drawTicks);
+			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _recalibrateTicksAgainstMaxTime);
 		}
 		
 		/**
@@ -86,7 +87,7 @@ package views.canvas.components.timeBar
 			}
 			
 			_ticks.sort(SortingFunctions._compare_x_property);
-			_drawTicks(event);
+			_drawTicks();
 
 			//Set timings for time control's jumping function
 			_timeControl.timeList.unshift(0);
@@ -128,36 +129,51 @@ package views.canvas.components.timeBar
 			}
 		}
 			
+		//Recompute the xPositions of all available time ticks against the time control's maximum time
+		//Only updates the available time ticks' position
+		//Does not create new time ticks.
+		private function _recalibrateTicksAgainstMaxTime(event:Event = null):void
+		{
+			if(!_ticks || _ticks.length == 0)
+				return;
+			
+				var i:int = 0;
+				var length:int = _ticks.length;
+				var currentTick:KTouchTickMark;
+
+				for(i; i<length; i++)
+				{
+					currentTick = _ticks[i];
+					currentTick.x = _timeControl.timeToX(currentTick.time);
+				}
+				
+				_drawTicks();
+		}
+		
 		/**
-		 * Places the markers on the screen
+		 * Draws the markers on the screen
 		 */
-		private function _drawTicks(event:Event = null):void
+		private function _drawTicks():void
 		{
 			if(!_ticks)
 				return;
 			
-			//IF function is manually invoked
+			//Need to make sure tick.x and tick.time are in sync
+			
 			
 			var timings:Vector.<int> = new Vector.<int>();
 
 			_timeTickContainer.graphics.clear();
 			_timeTickContainer.graphics.lineStyle(2, 0xFF0000);
 			
+			var maxTime:int = _timeControl.maximum;
 			var i:int;
 			var currentMarker:KTouchTickMark;
 			var currentX:Number = Number.NEGATIVE_INFINITY;
-
+			
 			for(i = 0; i<_ticks.length; i++)
 			{
 				currentMarker = _ticks[i];
-				
-				//Special cases, markers were not generated prior to drawing.
-				if(event && event.type == KTimeChangedEvent.EVENT_MAX_TIME_CHANGED)
-				{
-					//Need to refresh the x position in case of max time change
-					currentMarker.x = _timeControl.timeToX(currentMarker.time);
-					currentMarker.originalPosition = currentMarker.x;
-				}
 				
 				if(currentX < currentMarker.x)
 				{
@@ -173,6 +189,8 @@ package views.canvas.components.timeBar
 					}
 				}
 			}
+			
+
 		}
 		
 		public function pan_begin(location:Point):void
@@ -190,7 +208,7 @@ package views.canvas.components.timeBar
 			for(i = 0; i < length; i++)
 			{
 				currentTick = _ticks[i];
-
+				currentTick.originalPosition = currentTick.x;
 				if(currentTick.x <= _startX)
 					_before.push(currentTick);
 
@@ -255,7 +273,30 @@ package views.canvas.components.timeBar
 			
 			//Update marker positions once changed
 			//Redraw markers
-			_drawTicks();
+			length = _ticks.length
+			var currentTick:KTouchTickMark;
+			var maxTime:int = 0;
+			for(i = 0; i < length; i++)
+			{
+				currentTick = _ticks[i];
+				currentTick.time = _timeControl.xToTime(currentTick.x);
+				
+				if(KTouchTimeControl.MAX_ALLOWED_TIME < currentTick.time)
+				{
+					currentTick.time = KTouchTimeControl.MAX_ALLOWED_TIME;
+					currentTick.x = _timeControl.timeToX(currentTick.time);
+				}
+
+				if(maxTime < currentTick.time)
+					maxTime = currentTick.time;
+			}
+			
+			if(maxTime < KTimeControl.DEFAULT_MAX_TIME)
+				maxTime = KTimeControl.DEFAULT_MAX_TIME;
+			else if(KTouchTimeControl.MAX_ALLOWED_TIME < maxTime)
+				maxTime = KTouchTimeControl.MAX_ALLOWED_TIME;
+			
+			_timeControl.maximum = maxTime;
 		}
 		
 		public function pan_end(location:Point):void

@@ -320,7 +320,7 @@ package views.canvas.components.timeBar
 		
 		public function get pixelPerFrame():Number
 		{
-			return width/_maxFrame;
+			return backgroundFill.width/_maxFrame;
 		}
 		
 		

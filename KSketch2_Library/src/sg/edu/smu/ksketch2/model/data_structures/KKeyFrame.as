@@ -140,7 +140,8 @@ package sg.edu.smu.ksketch2.model.data_structures
 						if(_next)
 							_next.previous = _previous;
 						
-						op.addOperation(new KRemoveKeyOperation(_previous, _next, this));
+						if(op)
+							op.addOperation(new KRemoveKeyOperation(_previous, _next, this));
 						_previous = null;
 						_next = null;
 					}

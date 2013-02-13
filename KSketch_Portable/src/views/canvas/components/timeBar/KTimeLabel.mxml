@@ -39,6 +39,8 @@
 				
 				_swipeGesture = new SwipeGesture(this);
 				_swipeGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleSwipe);
+				_swipeGesture.minOffset *= 0.9;
+				_swipeGesture.minOffset *= 0.75;
 				
 				_tapGesture = new TapGesture(this);
 				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);

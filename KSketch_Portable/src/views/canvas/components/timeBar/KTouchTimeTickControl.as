@@ -198,6 +198,7 @@ package views.canvas.components.timeBar
 			//Panning begins
 			//Split markers into two sets before/after
 			_startX = _timeControl.contentGroup.globalToLocal(location).x;
+
 			var i:int;
 			var length:int = _ticks.length;
 			var currentTick:KTouchTickMark;
@@ -296,7 +297,12 @@ package views.canvas.components.timeBar
 			else if(KTouchTimeControl.MAX_ALLOWED_TIME < maxTime)
 				maxTime = KTouchTimeControl.MAX_ALLOWED_TIME;
 			
-			_timeControl.maximum = maxTime;
+			if(_timeControl.time < maxTime)
+				_timeControl.maximum = maxTime;
+			else
+				_timeControl.maximum = _timeControl.time;
+				
+
 		}
 		
 		public function pan_end(location:Point):void

@@ -61,7 +61,7 @@ package views.canvas.components.timeBar
 		private function _updateTicks(event:Event = null):void
 		{
 			var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
-			_timeControl.timeList = new Vector.<int>();
+			_timeControl.timings = new Vector.<int>();
 			_ticks = new Vector.<KTouchTickMark>();
 			
 			//Gather the keys from objects and generate chains of markers from the keys
@@ -90,9 +90,7 @@ package views.canvas.components.timeBar
 			_drawTicks();
 
 			//Set timings for time control's jumping function
-			_timeControl.timeList.unshift(0);
-			_timeControl.timeList.push(_timeControl.maximum);
-			_timeControl.timeList.sort(SortingFunctions._sortInt);			
+			_timeControl.timings.sort(SortingFunctions._sortInt);			
 		}
 		
 		/**
@@ -115,7 +113,7 @@ package views.canvas.components.timeBar
 				newTick = new KTouchTickMark();
 				newTick.init(currentKey, _timeControl.timeToX(currentKey.time), ownerID);
 				_ticks.push(newTick);
-				_timeControl.timeList.push(newTick.time);
+				_timeControl.timings.push(newTick.time);
 				
 				if(prev)
 				{
@@ -317,9 +315,6 @@ package views.canvas.components.timeBar
 				currentTime = _timeControl.maximum;
 			
 			_timeControl.floatingLabel.showMessage(currentTime, int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)))
-			
-			if(_interactionControl.currentInteraction.length > 0)
-				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
 		}
 		
 		public function pan_end(location:Point):void
@@ -345,6 +340,9 @@ package views.canvas.components.timeBar
 				_timeControl.maximum = maxTime;
 			else
 				_timeControl.maximum = KTimeControl.DEFAULT_MAX_TIME;
+			
+			if(_interactionControl.currentInteraction.length > 0)
+				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
 			
 			_interactionControl.end_interaction_operation();
 		}

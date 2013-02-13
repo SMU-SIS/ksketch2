@@ -16,19 +16,20 @@
 	<fx:Script>
 		<![CDATA[
 			import org.gestouch.events.GestureEvent;
-			import org.gestouch.gestures.SwipeGesture;
+			import org.gestouch.gestures.PanGesture;
 			import org.gestouch.gestures.TapGesture;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 			
-			public static const LABEL_CURRENT_TIME:int = 0;
+			public static const LABEL_CURRENT_TIME:int = -1;
 			public static const LABEL_MAX_TIME:int = 1;
 			
 			private var _KSketch:KSketch2;
 			private var _type:int;
 			private var _timeControl:KTouchTimeControl;
-			private var _swipeGesture:SwipeGesture;
+		
+			private var _panGesture:PanGesture;
 			private var _tapGesture:TapGesture;
 			
 			public function init(KSketchInstance:KSketch2, timeControl:KTouchTimeControl, type:int):void
@@ -37,10 +38,9 @@
 				_timeControl = timeControl;
 				_type = type;
 				
-				_swipeGesture = new SwipeGesture(this);
-				_swipeGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleSwipe);
-				_swipeGesture.minOffset *= 0.9;
-				_swipeGesture.minOffset *= 0.75;
+				_panGesture = new PanGesture(this);
+				_panGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_CHANGED, _panUpdate);
+				_panGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_ENDED, _panEnd);
 				
 				_tapGesture = new TapGesture(this);
 				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
@@ -60,18 +60,17 @@
 			 */
 			private function _handleTap(event:org.gestouch.events.GestureEvent):void
 			{
-				if(_type == LABEL_CURRENT_TIME)
-					_timeControl.time = _timeControl.time - KSketch2.ANIMATION_INTERVAL;
-				else 
-					_timeControl.time = _timeControl.time + KSketch2.ANIMATION_INTERVAL;
+				_timeControl.jumpInDirection(_type)
 			}
 			
-			/**
-			 * Swipe handler to handle prev/next marker time
-			 */
-			private function _handleSwipe(event:org.gestouch.events.GestureEvent):void
+			private function _panUpdate(event:org.gestouch.events.GestureEvent):void
 			{
-				_timeControl.jumpInDirection(_swipeGesture.offsetX);
+				_timeControl.updateSlider(_panGesture.offsetX);
+			}
+			
+			private function _panEnd(event:org.gestouch.events.GestureEvent):void
+			{
+				_timeControl.resetSliderInteraction();
 			}
 			
 			private function _updateCurrentTime(event:Event):void

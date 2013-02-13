@@ -2,7 +2,6 @@ package views.canvas.components.timeBar
 {
 	import flash.events.Event;
 	import flash.events.TimerEvent;
-	import flash.geom.Point;
 	import flash.utils.Timer;
 	
 	import org.gestouch.events.GestureEvent;
@@ -44,7 +43,7 @@ package views.canvas.components.timeBar
 		private var _panOffset:Number;
 		private var _panGesture:PanGesture;
 		
-		public var timeList:Vector.<int>;
+		public var timings:Vector.<int>;
 		
 		public function KTouchTimeControl()
 		{
@@ -67,7 +66,7 @@ package views.canvas.components.timeBar
 			_panGesture.maxNumTouchesRequired = 1;
 			_panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _beginPanning);
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updatePanning);
-			_panGesture.addEventListener(GestureEvent.GESTURE_ENDED, _resetPan);
+			_panGesture.addEventListener(GestureEvent.GESTURE_ENDED, _endPanning);
 		}
 		
 		public function reset():void
@@ -154,30 +153,38 @@ package views.canvas.components.timeBar
 		
 		private function _beginPanning(event:GestureEvent):void
 		{
-			if(_editMarkers)
-				_tickmarkControl.pan_begin(_panGesture.location);
+			_tickmarkControl.pan_begin(_panGesture.location);
+		}
+		
+		private function _updatePanning(event:GestureEvent):void
+		{
+			//If edit markers, rout event into the tick mark control and return
+			_tickmarkControl.pan_update(_panGesture.location);
+		}
+		
+		private function _endPanning(event:GestureEvent):void
+		{
+			if(event.type == GestureEvent.GESTURE_ENDED)
+			{
+				floatingLabel.close();
+				
+				//If edit markers, rout event into the tick mark control and return
+				_tickmarkControl.pan_end(_panGesture.location);
+			}
 		}
 		
 		/**
-		 * Handles the panning gesture's change.
+		 * update slider with offsetX, subjected to speed changes
 		 */
-		private function _updatePanning(event:GestureEvent):void
+		public function updateSlider(offsetX:Number):void
 		{
-			
-			//If edit markers, rout event into the tick mark control and return
-			if(_editMarkers)
-			{
-				_tickmarkControl.pan_update(_panGesture.location);
-				return;
-			}
-			
 			//Pan Offset is the absolute distance moved during a pan gesture
 			//Need to update to see how far this pan has moved.
-			_panOffset += Math.abs(_panGesture.offsetX)/width;
+			_panOffset += Math.abs(offsetX)/width;
 			
 			//Changed direction, have to reset all pan gesture calibrations till now.
-			if((_prevOffset * _panGesture.offsetX) < 0)
-				_resetPan(event);
+			if((_prevOffset * offsetX) < 0)
+				resetSliderInteraction();
 			
 			//Speed calibration according to how far the pan gesture moved.
 			if( _panOffset < _PAN_THRESHOLD_1)
@@ -192,33 +199,21 @@ package views.canvas.components.timeBar
 			//Update the time according to the direction of the pan.
 			//Advance if it's towards the right
 			//Roll back if it's towards the left.
-			if(0 < _panGesture.offsetX)
+			if(0 < offsetX)
 				time = time + (_panSpeed*KSketch2.ANIMATION_INTERVAL);
 			else
 				time = time - (_panSpeed*KSketch2.ANIMATION_INTERVAL);
 			
 			//Save the current offset value, will need this thing to check for
 			//change in direction in the next update event
-			_prevOffset =  _panGesture.offsetX;
+			_prevOffset =  offsetX;
 		}
 		
 		/**
-		 * For resetting pan values;
+		 * For resetting slider interaction values;
 		 */
-		private function _resetPan(event:GestureEvent):void
+		public function resetSliderInteraction():void
 		{
-			if(event.type == GestureEvent.GESTURE_ENDED)
-			{
-				floatingLabel.close();
-
-				//If edit markers, rout event into the tick mark control and return
-				if(_editMarkers)
-				{
-					_tickmarkControl.pan_end(_panGesture.location);
-					return;
-				}
-			}
-			
 			_prevOffset = 1;
 			_panOffset = 0;
 			_panSpeed = _PAN_SPEED_1;
@@ -338,17 +333,23 @@ package views.canvas.components.timeBar
 		 */
 		public function jumpInDirection(direction:Number):void
 		{
-			if(!timeList)
+			var i:int;
+			var length:int = timings.length;
+			
+			var timeList:Vector.<int> = new Vector.<int>();
+			
+			for(i = 0; i<length; i++)
 			{
-				timeList = new Vector.<int>();
-				timeList.push(0);
-				timeList.push(maximum);
+				timeList.push(timings[i]);
 			}
+			
+			timeList.unshift(0);
+			timeList.push(maximum);
 
 			var currentTime:Number = _KSketch.time;			
 			var currentIndex:int = 0;
 			
-			for(var i:int = 0; i < timeList.length; i++)
+			for(i = 0; i < timeList.length; i++)
 			{
 				currentIndex = i;
 				

@@ -2,6 +2,7 @@ package views.canvas.components.timeBar
 {
 	import flash.events.Event;
 	import flash.events.TimerEvent;
+	import flash.geom.Point;
 	import flash.utils.Timer;
 	
 	import org.gestouch.events.GestureEvent;
@@ -54,6 +55,7 @@ package views.canvas.components.timeBar
 		{
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
+			floatingLabel.init(contentGroup);
 			
 			maximum = KTimeControl.DEFAULT_MAX_TIME;
 			time = 0;
@@ -161,6 +163,7 @@ package views.canvas.components.timeBar
 		 */
 		private function _updatePanning(event:GestureEvent):void
 		{
+			
 			//If edit markers, rout event into the tick mark control and return
 			if(_editMarkers)
 			{
@@ -204,11 +207,16 @@ package views.canvas.components.timeBar
 		 */
 		private function _resetPan(event:GestureEvent):void
 		{
-			//If edit markers, rout event into the tick mark control and return
-			if(_editMarkers)
+			if(event.type == GestureEvent.GESTURE_ENDED)
 			{
-				_tickmarkControl.pan_end(_panGesture.location);
-				return;
+				floatingLabel.close();
+
+				//If edit markers, rout event into the tick mark control and return
+				if(_editMarkers)
+				{
+					_tickmarkControl.pan_end(_panGesture.location);
+					return;
+				}
 			}
 			
 			_prevOffset = 1;

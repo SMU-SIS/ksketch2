@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			
+			private var _parent:UIComponent
+			
+			public function init(parent:UIComponent):void
+			{
+				_parent = parent;
+
+			}
+			
+			override public function set x(value:Number):void
+			{
+				var halfWidth:Number = width*0.5;
+				
+				var point:Point = _parent.localToGlobal(new Point(0,0));
+				
+				if(value < point.x)
+					value = point.x;
+				else if(point.x + _parent.width < value)
+					value = point.x + _parent.width;
+
+				super.x = value - halfWidth;
+			}
+			
+			public function showMessage(time:int, frameNumber:int):void
+			{
+				labelText.text = KTimeLabel.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();
+			}
+		]]>
+	</fx:Script>
+	<s:Rect width="100%" height="100%" radiusX="3" radiusY="3" alpha="0.7">
+		<s:fill>
+			<s:SolidColor color="0x848484"/>
+		</s:fill>
+	</s:Rect>
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout paddingLeft="3" paddingRight="3" paddingTop="3" verticalAlign="middle" horizontalAlign="center"/>
+		</s:layout>
+		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX"/>
+	</s:Group>
+</s:SkinnablePopUpContainer>

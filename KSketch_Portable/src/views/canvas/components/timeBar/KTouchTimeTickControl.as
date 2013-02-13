@@ -195,11 +195,16 @@ package views.canvas.components.timeBar
 		
 		public function pan_begin(location:Point):void
 		{
+		
+			_timeControl.floatingLabel.y = _timeControl.localToGlobal(new Point(0,0)).y - 40;
+			_timeControl.floatingLabel.x = location.x;
+			_timeControl.floatingLabel.open(_timeControl);
+			
 			//Panning begins
 			//Split markers into two sets before/after
 			_interactionControl.begin_interaction_operation();
 			_startX = _timeControl.contentGroup.globalToLocal(location).x;
-
+			
 			var i:int;
 			var length:int = _ticks.length;
 			var currentTick:KTouchTickMark;
@@ -228,6 +233,7 @@ package views.canvas.components.timeBar
 		
 		public function pan_update(location:Point):void
 		{
+			
 			//On Pan compute how much finger moved (_changeX)
 			var currentX:Number = _timeControl.contentGroup.globalToLocal(location).x
 			var changeX:Number = currentX - _startX;
@@ -302,17 +308,29 @@ package views.canvas.components.timeBar
 				_timeControl.maximum = maxTime;
 			else
 				_timeControl.maximum = _timeControl.time;
-				
-
+			
+			_timeControl.floatingLabel.x = location.x;
+			var currentTime:int = _timeControl.xToTime(currentX);
+			if(currentTime < 0)
+				currentTime = 0;
+			else if(currentTime > _timeControl.maximum)
+				currentTime = _timeControl.maximum;
+			
+			_timeControl.floatingLabel.showMessage(currentTime, int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)))
+			
+			if(_interactionControl.currentInteraction.length > 0)
+				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
 		}
 		
 		public function pan_end(location:Point):void
 		{
+			_timeControl.floatingLabel.close();
+			
 			var i:int;
 			var length:int = _ticks.length;
 			var currentTick:KTouchTickMark;
 			var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
-			trace(allObjects);
+
 			for(i = 0; i < _ticks.length; i++)
 			{
 				currentTick = _ticks[i];

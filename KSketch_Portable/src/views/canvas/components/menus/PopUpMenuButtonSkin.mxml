@@ -11,7 +11,7 @@
 		@namespace s "library://ns.adobe.com/flex/spark";
 		
 		.PopUpMenuButtonSkin {
-			fontFamily: Helvetica, Roboto "_serif";
+			fontFamily: Helvetica, Roboto "_sans";
 			color: Black;
 			fontSize: 12;
 		}

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="100%" height="100%">
-	
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="100%" height="100%" xmlns:timeBar="views.canvas.components.timeBar.*">
+	<fx:Declarations>
+		<timeBar:KTouchTimeControlFloatingLabel id="floatingLabel"/>
+	</fx:Declarations>
 	<s:Rect width="100%" height="100%" alpha="0">
 		<s:fill>
 			<s:SolidColor color="0x000000"/>

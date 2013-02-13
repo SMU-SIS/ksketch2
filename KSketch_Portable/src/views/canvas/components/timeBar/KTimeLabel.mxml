@@ -84,7 +84,7 @@
 				timeLabel.text = toTimeCode(_timeControl.maximum);
 			}
 			
-			public function toTimeCode(milliseconds:Number):String
+			public static function toTimeCode(milliseconds:Number):String
 			{
 				var seconds:int = Math.floor((milliseconds/1000));
 				var strSeconds:String = seconds.toString();

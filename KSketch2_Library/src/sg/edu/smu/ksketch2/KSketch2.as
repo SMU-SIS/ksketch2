@@ -292,8 +292,11 @@ package sg.edu.smu.ksketch2
 		 */
 		public function editKeyTime(object:KObject, key:IKeyFrame, newTime:int, op:KCompositeOperation):void
 		{ 
-			(key as KKeyFrame).retime(newTime, op)
-			op.addOperation(new KEditKeyTimeOperation(object, key, newTime, key.time)); 
+			if(key.time != newTime)
+			{
+				op.addOperation(new KEditKeyTimeOperation(object, key, newTime, key.time)); 
+				(key as KKeyFrame).retime(newTime, op)
+			}
 		}
 	}
 }

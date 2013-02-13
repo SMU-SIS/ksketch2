@@ -72,7 +72,7 @@ package views.canvas.components.timeBar
 			var currentObject:KObject;
 			var currentKey:IKeyFrame;
 			var transformKeyHeaders:Vector.<IKeyFrame>;
-			
+
 			for(i = 0; i<length; i++)
 			{
 				currentObject = allObjects.getObjectAt(i);
@@ -80,10 +80,10 @@ package views.canvas.components.timeBar
 				
 				//Generate markers for transform keys
 				for(j = 0; j < transformKeyHeaders.length; j++)
-					_generateTicks(transformKeyHeaders[j]);
+					_generateTicks(transformKeyHeaders[j], currentObject.id);
 					
 				//Generate markers for visibility key
-				_generateTicks(currentObject.visibilityControl.visibilityKeyHeader);
+				_generateTicks(currentObject.visibilityControl.visibilityKeyHeader, currentObject.id);
 			}
 			
 			_ticks.sort(SortingFunctions._compare_x_property);
@@ -99,7 +99,7 @@ package views.canvas.components.timeBar
 		 * Creates a chain of doubly linked markers
 		 * Pushes the set of newly created markers into _markers
 		 */
-		private function _generateTicks(headerKey:IKeyFrame):void
+		private function _generateTicks(headerKey:IKeyFrame, ownerID:int):void
 		{
 			//Make marker objects
 			//As compared to desktop version, these markers will not be displayed on the screen literally
@@ -113,7 +113,7 @@ package views.canvas.components.timeBar
 			while(currentKey)
 			{
 				newTick = new KTouchTickMark();
-				newTick.init(currentKey, _timeControl.timeToX(currentKey.time));
+				newTick.init(currentKey, _timeControl.timeToX(currentKey.time), ownerID);
 				_ticks.push(newTick);
 				_timeControl.timeList.push(newTick.time);
 				
@@ -197,6 +197,7 @@ package views.canvas.components.timeBar
 		{
 			//Panning begins
 			//Split markers into two sets before/after
+			_interactionControl.begin_interaction_operation();
 			_startX = _timeControl.contentGroup.globalToLocal(location).x;
 
 			var i:int;
@@ -307,8 +308,19 @@ package views.canvas.components.timeBar
 		
 		public function pan_end(location:Point):void
 		{
-
-//			_interactionControl.end_interaction_operation
+			var i:int;
+			var length:int = _ticks.length;
+			var currentTick:KTouchTickMark;
+			var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
+			trace(allObjects);
+			for(i = 0; i < _ticks.length; i++)
+			{
+				currentTick = _ticks[i];
+				_KSketch.editKeyTime(allObjects.getObjectByID(currentTick.associatedObjectID),
+																currentTick.key, currentTick.time,
+																_interactionControl.currentInteraction);
+			}
+			_interactionControl.end_interaction_operation();
 		}
 	}
 }

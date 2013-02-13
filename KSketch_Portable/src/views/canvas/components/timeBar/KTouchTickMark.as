@@ -26,10 +26,10 @@ package views.canvas.components.timeBar
 		
 		
 		//Hooks up the tick mark to model references
-		public function init(refKey:IKeyFrame, initialXPos:Number):void
+		public function init(refKey:IKeyFrame, initialXPos:Number, ownerID:int):void
 		{
 			key = refKey;
-			associatedObjectID = key.ownerID;
+			associatedObjectID = ownerID;
 			time = key.time;
 			x = initialXPos;
 		}

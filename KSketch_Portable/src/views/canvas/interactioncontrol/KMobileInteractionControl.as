@@ -183,7 +183,7 @@ package views.canvas.interactioncontrol
 		
 		public function cancel_interaction_operation():void
 		{
-			
+			_currentInteraction = null;
 		}
 		
 		public function end_interaction_operation(operation:IModelOperation=null, newSelection:KSelection=null):void
@@ -199,7 +199,7 @@ package views.canvas.interactioncontrol
 				if(currentInteraction.length > 0)
 					addToUndoStack(currentInteraction);
 				else
-					throw new Error("There are no operations in the current interaction operation");
+					cancel_interaction_operation();
 			}
 			_currentInteraction = null;
 		}

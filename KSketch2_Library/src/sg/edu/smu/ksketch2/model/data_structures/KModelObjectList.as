@@ -88,7 +88,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		{
 			var str:String = "";
 			for(var i:int = 0; i < _objectList.length; i++)
-				str += _objectList[i].id.toString();
+				str += _objectList[i].id.toString() +" ";
 			return str;
 		}
 		
@@ -147,7 +147,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 				if(_objectList[i].id == id)
 					return _objectList[i];
 			}
-			throw new Error("Object does not exist in this list!");
+			throw new Error("Object "+id.toString()+" does not exist in this list!");
 			return null;
 		}
 	}

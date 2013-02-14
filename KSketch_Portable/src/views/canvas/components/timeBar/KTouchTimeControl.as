@@ -20,14 +20,16 @@ package views.canvas.components.timeBar
 		public var recordingSpeed:Number = 1;
 		private var _editMarkers:Boolean;
 		
-		private const _PAN_SPEED_1:int = 1;
+		private const _PAN_SPEED_1:int = 1
 		private const _PAN_SPEED_2:int = 2;
-		private const _PAN_SPEED_3:int = 3;
-		private const _PAN_SPEED_4:int = 4;
+		private const _PAN_SPEED_3:int = 5;
+		private const _PAN_SPEED_4:int = 8;
 		
-		private const _PAN_THRESHOLD_1:Number = 0.03;
-		private const _PAN_THRESHOLD_2:Number = 0.10;
-		private const _PAN_THRESHOLD_3:Number = 0.15;
+		private const _PAN_THRESHOLD_1:Number = 3;
+		private const _PAN_THRESHOLD_2:Number = 6;
+		private const _PAN_THRESHOLD_3:Number = 8;
+		
+		private const _STEP_THRESHOLD:Number = 7;
 		
 		public static const PLAY_ALLOWANCE:int = 2000;
 		public static const MAX_ALLOWED_TIME:int = 600000; //Max allowed time of 10 mins
@@ -42,9 +44,9 @@ package views.canvas.components.timeBar
 		private var _maxFrame:int;
 		private var _currentFrame:int;
 		
-		private var _panSpeed:int;
-		private var _prevOffset:Number;
-		private var _panOffset:Number;
+		private var _panSpeed:int = _PAN_SPEED_1;
+		private var _prevOffset:Number = 1;
+		private var _panOffset:Number = 0;
 		private var _panGesture:PanGesture;
 		
 		public var timings:Vector.<int>;
@@ -187,20 +189,22 @@ package views.canvas.components.timeBar
 		 */
 		public function updateSlider(offsetX:Number):void
 		{
-			//Pan Offset is the absolute distance moved during a pan gesture
-			//Need to update to see how far this pan has moved.
-			_panOffset += Math.abs(offsetX)/width;
-			
 			//Changed direction, have to reset all pan gesture calibrations till now.
 			if((_prevOffset * offsetX) < 0)
 				resetSliderInteraction();
 			
+			var absOffsetX:Number = Math.abs(offsetX);
+			
+			//Pan Offset is the absolute distance moved during a pan gesture
+			//Need to update to see how far this pan has moved.
+			_panOffset += absOffsetX;
+			
 			//Speed calibration according to how far the pan gesture moved.
-			if( _panOffset < _PAN_THRESHOLD_1)
+			if( absOffsetX <= _PAN_THRESHOLD_1)
 				_panSpeed = _PAN_SPEED_1;
-			else if(_PAN_THRESHOLD_1 <= _panOffset < _PAN_THRESHOLD_2)
+			else if(absOffsetX <= _PAN_THRESHOLD_2)
 				_panSpeed = _PAN_SPEED_2;
-			else if(_PAN_THRESHOLD_2 <= _panOffset < _PAN_THRESHOLD_3)
+			else if(absOffsetX <= _PAN_THRESHOLD_3)
 				_panSpeed = _PAN_SPEED_3;
 			else
 				_panSpeed = _PAN_SPEED_4 * (maximum/KTimeControl.DEFAULT_MAX_TIME);
@@ -208,10 +212,15 @@ package views.canvas.components.timeBar
 			//Update the time according to the direction of the pan.
 			//Advance if it's towards the right
 			//Roll back if it's towards the left.
-			if(0 < offsetX)
-				time = time + (_panSpeed*KSketch2.ANIMATION_INTERVAL);
-			else
-				time = time - (_panSpeed*KSketch2.ANIMATION_INTERVAL);
+			if(_panOffset > _STEP_THRESHOLD)
+			{				
+				if(0 < offsetX)
+					time = time + (_panSpeed*KSketch2.ANIMATION_INTERVAL);
+				else if(offsetX < 0)
+					time = time - (_panSpeed*KSketch2.ANIMATION_INTERVAL);
+				
+				_panOffset = 0;
+			}
 			
 			//Save the current offset value, will need this thing to check for
 			//change in direction in the next update event
@@ -262,6 +271,7 @@ package views.canvas.components.timeBar
 			{
 				time = _maxPlayTime;
 				stop();
+				_isPlaying = true;
 				time = _rewindToTime;
 				_isPlaying = false;
 			}
@@ -276,6 +286,7 @@ package views.canvas.components.timeBar
 		{
 			_timer.removeEventListener(TimerEvent.TIMER, playHandler);
 			_timer.stop();
+			_isPlaying = false;
 			this.dispatchEvent(new Event(KTimeControl.PLAY_STOP));
 		}
 				

@@ -23,6 +23,7 @@ package views.canvas.interactors
 			
 			_tap = new TapGesture(widget.contextMenuOverlay);
 			_tap.addEventListener(GestureEvent.GESTURE_RECOGNIZED, hideContextMenu);
+			_tap.addEventListener(GestureEvent.GESTURE_FAILED, hideContextMenu);
 		}
 		
 		public function showContextMenu(event:GestureEvent):void

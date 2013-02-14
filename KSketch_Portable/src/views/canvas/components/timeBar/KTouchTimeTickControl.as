@@ -2,6 +2,7 @@ package views.canvas.components.timeBar
 {
 	import flash.events.Event;
 	import flash.geom.Point;
+	import flash.system.Capabilities;
 	
 	import mx.core.UIComponent;
 	
@@ -27,11 +28,12 @@ package views.canvas.components.timeBar
 		private var _ticks:Vector.<KTouchTickMark>;
 		private var _before:Vector.<KTouchTickMark>;
 		private var _after:Vector.<KTouchTickMark>;
-		
+
 		private var _startX:Number;
+		private var _grabThreshold:Number = Capabilities.screenDPI/8;
 		
 		/**
-		 * A helper class containing the codes for generating tick marks 
+		 * A helper class containing the codes for generating and moving tick marks
 		 */
 		public function KTouchTimeTickControl(KSketchInstance:KSketch2, timeControl:KTouchTimeControl, interactionControl:KMobileInteractionControl)
 		{
@@ -197,12 +199,12 @@ package views.canvas.components.timeBar
 			_timeControl.floatingLabel.y = _timeControl.localToGlobal(new Point(0,0)).y - 40;
 			_timeControl.floatingLabel.x = location.x;
 			_timeControl.floatingLabel.open(_timeControl);
-			
+
 			//Panning begins
 			//Split markers into two sets before/after
 			_interactionControl.begin_interaction_operation();
 			_startX = _timeControl.contentGroup.globalToLocal(location).x;
-			
+
 			var i:int;
 			var length:int = _ticks.length;
 			var currentTick:KTouchTickMark;
@@ -210,15 +212,37 @@ package views.canvas.components.timeBar
 			_before = new Vector.<KTouchTickMark>();
 			_after = new Vector.<KTouchTickMark>();
 			
+			//Snap the start x to the closest tick
+			var dx:Number;
+			var smallestdx:Number = Number.POSITIVE_INFINITY;
+			
+			for(i = 0; i < length; i++)
+			{
+				currentTick = _ticks[i];
+				
+				dx = Math.abs(currentTick.x - _startX);
+				
+				if(dx > _grabThreshold)
+					continue;
+				
+				if(dx < smallestdx)
+				{
+					smallestdx = dx;
+					_startX = currentTick.x;
+				}
+			}
+			
 			for(i = 0; i < length; i++)
 			{
 				currentTick = _ticks[i];
 				currentTick.originalPosition = currentTick.x;
+				
 				if(currentTick.x <= _startX)
 					_before.push(currentTick);
 
 				//After ticks are a bit special
 				//Only add in the first degree ticks
+				//because a tick will be pushed by the marker before itself
 				if(currentTick.x >= _startX)
 				{
 					if(!currentTick.prev )

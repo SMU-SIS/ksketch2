@@ -5,6 +5,8 @@ package views.canvas.components.timeBar
 	import flash.geom.Point;
 	import flash.utils.Timer;
 	
+	import mx.core.UIComponent;
+	
 	import org.gestouch.events.GestureEvent;
 	import org.gestouch.gestures.PanGesture;
 	
@@ -51,7 +53,7 @@ package views.canvas.components.timeBar
 			super();
 		}
 		
-		public function init(KSketchInstance:KSketch2, tickmarkControl:KTouchTimeTickControl):void
+		public function init(KSketchInstance:KSketch2, tickmarkControl:KTouchTimeTickControl, inputComponent:UIComponent):void
 		{
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
@@ -63,7 +65,7 @@ package views.canvas.components.timeBar
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 			
-			_panGesture = new PanGesture(this);
+			_panGesture = new PanGesture(inputComponent);
 			_panGesture.maxNumTouchesRequired = 1;
 			_panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _beginPanning);
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updatePanning);

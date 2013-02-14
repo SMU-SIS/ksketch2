@@ -30,7 +30,7 @@ package views.canvas.components.timeBar
 		private var _after:Vector.<KTouchTickMark>;
 
 		private var _startX:Number;
-		private var _grabThreshold:Number = Capabilities.screenDPI/8;
+		private var _grabThreshold:Number = Capabilities.screenDPI/7;
 		
 		/**
 		 * A helper class containing the codes for generating and moving tick marks

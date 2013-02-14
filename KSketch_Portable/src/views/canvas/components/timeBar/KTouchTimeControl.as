@@ -36,6 +36,7 @@ package views.canvas.components.timeBar
 		private var _tickmarkControl:KTouchTimeTickControl;
 		private var _timer:Timer;
 		private var _maxPlayTime:int;
+		private var _isPlaying:Boolean = false;
 		private var _rewindToTime:int;
 		
 		private var _maxFrame:int;
@@ -146,8 +147,11 @@ package views.canvas.components.timeBar
 			var pct:Number = _currentFrame/(_maxFrame*1.0);
 			timeFill.percentWidth = pct*100;
 
-			floatingLabel.x = timeFill.localToGlobal(new Point(pct*backgroundFill.width, 0)).x;
-			floatingLabel.showMessage(time, _currentFrame);
+			if(!_isPlaying)
+			{
+				floatingLabel.x = timeFill.localToGlobal(new Point(pct*backgroundFill.width, 0)).x;
+				floatingLabel.showMessage(time, _currentFrame);
+			}
 		}
 		
 		/**
@@ -233,6 +237,7 @@ package views.canvas.components.timeBar
 		 */
 		public function play():void
 		{
+			_isPlaying = true;
 			_timer.delay = KSketch2.ANIMATION_INTERVAL;
 			_timer.addEventListener(TimerEvent.TIMER, playHandler);
 			_timer.start();
@@ -258,6 +263,7 @@ package views.canvas.components.timeBar
 				time = _maxPlayTime;
 				stop();
 				time = _rewindToTime;
+				_isPlaying = false;
 			}
 			else
 				time = time + KSketch2.ANIMATION_INTERVAL;

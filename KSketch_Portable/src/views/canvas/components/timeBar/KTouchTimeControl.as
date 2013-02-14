@@ -2,6 +2,7 @@ package views.canvas.components.timeBar
 {
 	import flash.events.Event;
 	import flash.events.TimerEvent;
+	import flash.geom.Point;
 	import flash.utils.Timer;
 	
 	import org.gestouch.events.GestureEvent;
@@ -178,6 +179,14 @@ package views.canvas.components.timeBar
 		 */
 		public function updateSlider(offsetX:Number):void
 		{
+			if(!floatingLabel.isOpen)
+			{
+				floatingLabel.open(this);
+				floatingLabel.y = localToGlobal(new Point(0,0)).y - 40;
+			}
+			
+			floatingLabel.x = timeFill.localToGlobal(new Point(timeFill.width, 0)).x;
+			
 			//Pan Offset is the absolute distance moved during a pan gesture
 			//Need to update to see how far this pan has moved.
 			_panOffset += Math.abs(offsetX)/width;
@@ -203,6 +212,8 @@ package views.canvas.components.timeBar
 				time = time + (_panSpeed*KSketch2.ANIMATION_INTERVAL);
 			else
 				time = time - (_panSpeed*KSketch2.ANIMATION_INTERVAL);
+			
+			floatingLabel.showMessage(time, _currentFrame);
 			
 			//Save the current offset value, will need this thing to check for
 			//change in direction in the next update event

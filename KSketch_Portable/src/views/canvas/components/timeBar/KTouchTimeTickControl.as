@@ -198,7 +198,6 @@ package views.canvas.components.timeBar
 		
 			_timeControl.floatingLabel.y = _timeControl.localToGlobal(new Point(0,0)).y - 40;
 			_timeControl.floatingLabel.x = location.x;
-			_timeControl.floatingLabel.open(_timeControl);
 
 			//Panning begins
 			//Split markers into two sets before/after
@@ -343,8 +342,6 @@ package views.canvas.components.timeBar
 		
 		public function pan_end(location:Point):void
 		{
-			_timeControl.floatingLabel.close();
-			
 			var i:int;
 			var length:int = _ticks.length;
 			var currentTick:KTouchTickMark;

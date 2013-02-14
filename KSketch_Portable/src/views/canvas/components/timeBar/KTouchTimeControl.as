@@ -64,6 +64,7 @@ package views.canvas.components.timeBar
 			editMarkers = false;
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
+			floatingLabel.y = localToGlobal(new Point(0,0)).y - 40;
 			
 			_panGesture = new PanGesture(inputComponent);
 			_panGesture.maxNumTouchesRequired = 1;
@@ -141,9 +142,12 @@ package views.canvas.components.timeBar
 				if(_KSketch.maxTime < KTimeControl.DEFAULT_MAX_TIME)
 					maximum = KTimeControl.DEFAULT_MAX_TIME;
 			}
-				
 			
-			timeFill.percentWidth = _currentFrame/(_maxFrame*1.0)*100;
+			var pct:Number = _currentFrame/(_maxFrame*1.0);
+			timeFill.percentWidth = pct*100;
+
+			floatingLabel.x = timeFill.localToGlobal(new Point(pct*backgroundFill.width, 0)).x;
+			floatingLabel.showMessage(time, _currentFrame);
 		}
 		
 		/**
@@ -169,8 +173,6 @@ package views.canvas.components.timeBar
 		{
 			if(event.type == GestureEvent.GESTURE_ENDED)
 			{
-				floatingLabel.close();
-				
 				//If edit markers, rout event into the tick mark control and return
 				_tickmarkControl.pan_end(_panGesture.location);
 			}
@@ -181,14 +183,6 @@ package views.canvas.components.timeBar
 		 */
 		public function updateSlider(offsetX:Number):void
 		{
-			if(!floatingLabel.isOpen)
-			{
-				floatingLabel.open(this);
-				floatingLabel.y = localToGlobal(new Point(0,0)).y - 40;
-			}
-			
-			floatingLabel.x = timeFill.localToGlobal(new Point(timeFill.width, 0)).x;
-			
 			//Pan Offset is the absolute distance moved during a pan gesture
 			//Need to update to see how far this pan has moved.
 			_panOffset += Math.abs(offsetX)/width;
@@ -214,8 +208,6 @@ package views.canvas.components.timeBar
 				time = time + (_panSpeed*KSketch2.ANIMATION_INTERVAL);
 			else
 				time = time - (_panSpeed*KSketch2.ANIMATION_INTERVAL);
-			
-			floatingLabel.showMessage(time, _currentFrame);
 			
 			//Save the current offset value, will need this thing to check for
 			//change in direction in the next update event

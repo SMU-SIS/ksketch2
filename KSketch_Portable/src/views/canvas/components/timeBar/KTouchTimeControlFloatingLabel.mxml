@@ -6,11 +6,13 @@
 			import mx.core.UIComponent;
 			
 			private var _parent:UIComponent
+			private var _timer:Timer;
 			
 			public function init(parent:UIComponent):void
 			{
 				_parent = parent;
-
+				_timer = new Timer(300);
+				_timer.addEventListener(TimerEvent.TIMER, _closeLabel);
 			}
 			
 			override public function set x(value:Number):void
@@ -29,7 +31,15 @@
 			
 			public function showMessage(time:int, frameNumber:int):void
 			{
-				labelText.text = KTimeLabel.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();
+				open(_parent);
+				labelText.text = KTimeLabel.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();				
+				_timer.reset();
+				_timer.start();
+			}
+			
+			private function _closeLabel(event:TimerEvent):void
+			{
+				close();
 			}
 		]]>
 	</fx:Script>

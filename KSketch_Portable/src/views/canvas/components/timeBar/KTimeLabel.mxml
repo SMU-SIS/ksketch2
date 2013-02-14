@@ -111,7 +111,6 @@
 			
 			private function _panEnd(event:org.gestouch.events.GestureEvent):void
 			{
-				_timeControl.floatingLabel.close();
 				_timeControl.resetSliderInteraction();
 			}
 			

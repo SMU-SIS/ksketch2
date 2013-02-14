@@ -19,7 +19,7 @@
 		>
 	<fx:Declarations>
 		<menus:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{height-cornerMenu.height-50 - 10}"/>
-		<components:KTouchFeedbackMessage id="feedbackMessage" x="{(drawing_stage.width/2)}" y="30"/>
+		<components:KTouchFeedbackMessage id="feedbackMessage"/>
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[

@@ -1,76 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0.5" creationComplete="init()">
+		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0.5" creationComplete="init()" backgroundColor="0x00">
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			
 			import org.gestouch.events.GestureEvent;
+			import org.gestouch.gestures.PanGesture;
 			import org.gestouch.gestures.TapGesture;
 			
+			import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
+			import sg.edu.smu.ksketch2.utils.KMathUtil;
+			
+			private const RADIUS:Number  = 200;
+			
+			private var PIX2:Number = Math.PI*2;
 			private var _closeGesture:TapGesture;
+			private var _selectColorGesture:PanGesture;
+			private var _wheelColorMap:BitmapData;
 			
 			public function init():void
 			{
 				width = Capabilities.screenResolutionX;
 				height = Capabilities.screenResolutionY;
 
-				drawWheel();
 				_closeGesture = new TapGesture(closeComponent);
 				_closeGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_STATE_CHANGE, _closePenMenu);
+				
+				_setColor(0x000000);
+				_selectColorGesture = new PanGesture(currentColor);
+				_selectColorGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_BEGAN, _beginColor);
+				_selectColorGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_CHANGED, _updateColor);
+				_selectColorGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_ENDED, _updateColor);
+				
+				_generateSpectrum();
+			}
+			
+			private function _beginColor(event:org.gestouch.events.GestureEvent):void
+			{
+				spectrum.visible = true;
+			}
+			
+			private function _updateColor(event:org.gestouch.events.GestureEvent):void
+			{
+				var polar:Point = KMathUtil.cartesianToPolar(currentColor.globalToLocal(_selectColorGesture.location));
+				var color:uint = _getColor((polar.y+Math.PI), Math.abs(polar.x) > RADIUS? 1:Math.abs(polar.x)/RADIUS);
+				_setColor(color);
+				
+				KDrawInteractor.penColor = color;
+			}
+			
+			private function _endColor(event:org.gestouch.events.GestureEvent):void
+			{
+				spectrum.visible = false;
 			}
 			
 			private function _closePenMenu(event:org.gestouch.events.GestureEvent):void
 			{
 				close();
-				trace("closing pen menu");
 			}
 			
-			private function drawWheel():void
+			/**
+			 * retrieves a hex color given a hue value. Hue is [0,1]
+			 */
+			private function _getColor(hue:Number, value:Number):uint
 			{
-				var nRadius	   : Number = 100;
-				var nRadians   : Number;
-				var nR         : Number;
-				var nG         : Number;
-				var nB         : Number;
-				var nColor     : Number;
-				var objMatrix  : Matrix;
-				var nX         : Number;
-				var nY         : Number;
-				var iThickness : int;
+				// Calculate the RGB channels based on the angle of the line being drawn.
+				var r:Number = (Math.cos(hue)                   * 127 + 128)*value << 16;
+				var g:Number = (Math.cos(hue + 2 * Math.PI / 3) * 127 + 128)*value << 8;
+				var b:Number = (Math.cos(hue + 4 * Math.PI / 3) * 127 + 128)*value;
 				
-				// Clear the graphics container.
-				wheel.graphics.clear();
+				return (r | g | b);
+			}
+			
+			private function _setColor(color:uint):void
+			{
+				currentColor.graphics.clear();
+				currentColor.graphics.beginFill(color);
+				currentColor.graphics.drawCircle(0,0,100);
+				currentColor.graphics.endFill();
+			}
+			
+			private function _generateSpectrum():void
+			{
+				var i:int = 0;
+				var iterations:int = 360;
+				var currentColor:uint = 0;
+				var currentAngle:Number;
+				var stepSize:Number = PIX2/iterations;
+				var thickness:Number = 1 + int(RADIUS / 50);
 				
-				// Calculate the thickness of the lines which draw the colors.
-				iThickness = 1 + int(nRadius / 50);
-				
-				// Loop from '0' to '360' degrees, drawing lines from the center 
-				// of the wheel outward the length of the specified radius.
-				for(var i:int = 0; i < 360; i++)
+				var startPoint:Point;
+				var endPoint:Point;
+				for(i;	i < iterations; i++)
 				{
-					// Convert the degree to radians.
-					nRadians = i * (Math.PI / 180);
+					currentAngle = i*stepSize;
+					currentColor = _getColor(currentAngle, 1);
+					startPoint = Point.polar(150, currentAngle - Math.PI);
+					endPoint = Point.polar(200, currentAngle - Math.PI);
 					
-					// Calculate the RGB channels based on the angle of the line being drawn.
-					nR = Math.cos(nRadians)                   * 127 + 128 << 16;
-					nG = Math.cos(nRadians + 2 * Math.PI / 3) * 127 + 128 << 8;
-					nB = Math.cos(nRadians + 4 * Math.PI / 3) * 127 + 128;
-					
-					// OR the individual color channels together.
-					nColor = nR | nG | nB;
-					
-					// Calculate the coordinate in which the line should be drawn to.
-					nX = nRadius * Math.cos(nRadians);
-					nY = nRadius * Math.sin(nRadians);
-					
-					// Create a matrix for the lines gradient color.
-					objMatrix = new Matrix();
-					objMatrix.createGradientBox(nRadius * 2, nRadius * 2, nRadians, -nRadius, -nRadius);
-					
-					// Create and drawn the line.
-					wheel.graphics.lineStyle(iThickness, 0, 1, false, LineScaleMode.NONE, CapsStyle.NONE);
-					wheel.graphics.lineGradientStyle(GradientType.LINEAR, [0xFFFFFF, nColor], [100, 100], [127, 255], objMatrix);
-					wheel.graphics.moveTo(0, 0);
-					wheel.graphics.lineTo(nX, nY);
+					// Create and draw the line.
+					spectrum.graphics.lineStyle(thickness, currentColor);
+					spectrum.graphics.moveTo(startPoint.x, startPoint.y);
+					spectrum.graphics.lineTo(endPoint.x, endPoint.y);
 				}
 			}
 			
@@ -87,6 +119,7 @@
 		<s:layout>
 			<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"/>
 		</s:layout>
-		<s:Group id="wheel" width="50%" height="50%"/>
+		<s:Group id="spectrum" cacheAsBitmap="true" visible="false"/>
+		<s:Group id="currentColor"/>
 	</s:Group>
 </s:SkinnablePopUpContainer>

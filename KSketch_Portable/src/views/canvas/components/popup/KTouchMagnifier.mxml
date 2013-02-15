@@ -47,7 +47,7 @@
 			public function magnify(xPos:Number, time:int, frameNumber:int):void
 			{
 				x = xPos;
-				trace(x);
+
 				if(xPos < _parent_Minimum || _parent_Maximum < xPos)
 					return;
 				

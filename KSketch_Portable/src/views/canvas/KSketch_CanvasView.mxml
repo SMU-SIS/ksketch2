@@ -15,11 +15,12 @@
 		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
 		xmlns:timeBar="views.canvas.components.timeBar.*"
 		destructionPolicy="never"
-		add="_addHandler(event);" xmlns:utils="starling.utils.*" xmlns:menus="views.canvas.components.menus.*" 
+		add="_addHandler(event);" xmlns:utils="starling.utils.*" xmlns:popup="views.canvas.components.popup.*" 
 		>
 	<fx:Declarations>
-		<menus:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{height-cornerMenu.height-50 - 10}"/>
+		<popup:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{height-cornerMenu.height-50 - 10}"/>
 		<components:KTouchFeedbackMessage id="feedbackMessage"/>
+		<popup:KTouchPenMenu id="penMenu" width="100%" height="100%"/>
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
@@ -27,7 +28,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
-			import views.canvas.components.timeBar.KTouchTimeTickControl;
+			import views.canvas.components.timeBar.KTouchTickMarkControl;
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			import views.canvas.interactors.KCanvasInteractorManager;
 			import views.canvas.interactors.KTouchContextMenuInteractor;
@@ -39,20 +40,20 @@
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
 			private var _contextMenuHelper:KTouchContextMenuInteractor;
-			private var _timeTickControl:KTouchTimeTickControl;
+			private var _timeTickControl:KTouchTickMarkControl;
 			
 			private var _newObjType:uint = 0;
 			
 			//We probably need a load and save handler in this canvas view
 			//The xml can be passed through a data handler and the load handler will access it though {data}
 			public function initCanvas():void
-			{
+			{				
 				_KSketch = new KSketch2();
 				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
 				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
 				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, feedbackMessage);
 				_contextMenuHelper = new KTouchContextMenuInteractor(widget);
-				_timeTickControl = new KTouchTimeTickControl(_KSketch, timeControl, _interactionControl);
+				_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
 				feedbackMessage.init(drawing_stage);
 				
 				currentTimeLabel.init(_KSketch, timeControl, KTimeLabel.LABEL_CURRENT_TIME, leftPanInput);
@@ -60,7 +61,7 @@
 				
 				modelDisplay.init(_KSketch);
 				timeControl.init(_KSketch, _timeTickControl,middlePanInput);
-				cornerMenu.init(_interactionControl, timeControl);
+				cornerMenu.init(_interactionControl, timeControl, penMenu);
 				
 				playButton.init(timeControl);
 				_interactionControl.reset();

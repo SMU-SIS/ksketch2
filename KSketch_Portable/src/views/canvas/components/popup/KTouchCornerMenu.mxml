@@ -8,11 +8,13 @@
 			
 			private var _interactionControl:KMobileInteractionControl;
 			private var _timeControl:KTouchTimeControl;
+			private var _penMenu:KTouchPenMenu;
 			
-			public function init(interactionControl:KMobileInteractionControl, timeControl:KTouchTimeControl):void
+			public function init(interactionControl:KMobileInteractionControl, timeControl:KTouchTimeControl, penMenu:KTouchPenMenu):void
 			{
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
+				_penMenu = penMenu;
 			}
 			
 			public function activateCamera():void
@@ -31,19 +33,14 @@
 				close();
 			}
 			
-			public function toggleMarker():void
+			public function togglePen():void
 			{
-				markerButton.enabled = false;
-				sliderButton.enabled = true;
-				_timeControl.editMarkers = true;
+				_penMenu.open(parent);
 				close();
 			}
 			
 			public function toggleSlider():void
 			{
-				markerButton.enabled = true;
-				sliderButton.enabled = false;
-				_timeControl.editMarkers = false;
 				close();
 			}
 			
@@ -62,11 +59,11 @@
 		<s:layout>
 			<s:TileLayout horizontalGap="1" verticalGap="1"/>
 		</s:layout>
-		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Gallery"/>
-		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Camera"/>
-		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Share" enabled="false"/>
-		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Clear" click="clear()"/>
-		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Markers" id="markerButton" click="toggleMarker()"/>
-		<s:Button skinClass="views.canvas.components.menus.PopUpMenuButtonSkin" label="Slider" id="sliderButton" click="toggleSlider()" enabled="false"/>
+		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Gallery"/>
+		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Camera"/>
+		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Share" enabled="false"/>
+		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Clear" click="clear()"/>
+		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Pen" id="penButton" click="togglePen()"/>
+		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Slider" id="eraserButton" click="toggleSlider()" enabled="false"/>
 	</s:Group>
 </s:SkinnablePopUpContainer>

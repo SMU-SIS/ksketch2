@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		backgroundAlpha="0">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			
+			import views.canvas.components.timeBar.KTimeLabel;
+			
+			private const _SCALE_FACTOR:Number = 2;
+			private const _VISIBLE_TIME:Number = 250;
+			private const _ORIGIN:Point = new Point(0,0);
+	
+			private var _DPI:Number;
+			private var _halfDPI:Number;
+			private var _quarterDPI:Number;
+			private var _identity:Matrix;
+			
+			private var _parent:UIComponent;
+			private var _target:UIComponent;
+			private var _timer:Timer;
+			private var _parent_Minimum:Number;
+			private var _parent_Maximum:Number;
+			
+			private var _sourceRect:Rectangle;
+			
+			public function init(parent:UIComponent, source:UIComponent):void
+			{
+				_parent = parent;
+				_target = source;
+				_timer = new Timer(_VISIBLE_TIME);
+				_sourceRect = new Rectangle();
+				
+				_DPI = Capabilities.screenDPI;
+				_halfDPI = _DPI/2;
+				_quarterDPI = _DPI/4;
+				_identity = new Matrix();
+				_parent_Minimum = _parent.localToGlobal(_ORIGIN).x;
+				_parent_Maximum = _parent_Minimum + _parent.width;
+			}
+
+			/**
+			 * Shows the area around the given xPosition
+			 */
+			public function magnify(xPos:Number, time:int, frameNumber:int):void
+			{
+				x = xPos;
+				trace(x);
+				if(xPos < _parent_Minimum || _parent_Maximum < xPos)
+					return;
+				
+				var bd : BitmapData = new BitmapData( _target.width, _target.height );
+				bd.draw( _target, _identity );
+				
+				_sourceRect.x = _target.globalToLocal(new Point(xPos,0)).x - _quarterDPI;
+				_sourceRect.y = 0;
+				_sourceRect.width = Capabilities.screenDPI;
+				_sourceRect.height = _target.height;
+
+				var displaySource:BitmapData = new BitmapData(_halfDPI, _target.height);
+				displaySource.copyPixels(bd, _sourceRect, _ORIGIN);
+				magnifierDisplay.source = displaySource;
+				labelText.text = KTimeLabel.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();				
+			}
+			
+			override public function set x(value:Number):void
+			{
+				var halfWidth:Number = width*0.5;
+				
+				if(value < _parent_Minimum)
+					value = _parent_Minimum;
+				else if(_parent_Maximum < value)
+					value = _parent_Maximum;
+				
+				super.x = value - halfWidth;
+			}
+			
+			public function closeMagnifier(event:TimerEvent = null):void
+			{
+//				_timer.stop();
+//				_timer.removeEventListener(TimerEvent.TIMER, closeMagnifier);
+				close();
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Rect width="100%" height="100%" radiusX="3" radiusY="3" alpha="0.7">
+		<s:fill>
+			<s:SolidColor color="0x848484"/>
+		</s:fill>
+	</s:Rect>
+	<s:Group>
+		<s:layout>
+			<s:VerticalLayout paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
+							  verticalAlign="middle" horizontalAlign="center"/>
+		</s:layout>
+		<s:BitmapImage id="magnifierDisplay"/>
+		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX" fontSize="14"/>
+	</s:Group>
+</s:SkinnablePopUpContainer>

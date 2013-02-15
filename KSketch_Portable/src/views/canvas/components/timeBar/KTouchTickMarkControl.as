@@ -17,13 +17,15 @@ package views.canvas.components.timeBar
 	import sg.edu.smu.ksketch2.utils.SortingFunctions;
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
+	import views.canvas.components.popup.KTouchMagnifier;
 
-	public class KTouchTimeTickControl
+	public class KTouchTickMarkControl
 	{
 		private var _KSketch:KSketch2;
 		private var _timeControl:KTouchTimeControl;
 		private var _timeTickContainer:UIComponent;
 		private var _interactionControl:KMobileInteractionControl;
+		private var _magnifier:KTouchMagnifier;
 		
 		private var _ticks:Vector.<KTouchTickMark>;
 		private var _before:Vector.<KTouchTickMark>;
@@ -35,7 +37,7 @@ package views.canvas.components.timeBar
 		/**
 		 * A helper class containing the codes for generating and moving tick marks
 		 */
-		public function KTouchTimeTickControl(KSketchInstance:KSketch2, timeControl:KTouchTimeControl, interactionControl:KMobileInteractionControl)
+		public function KTouchTickMarkControl(KSketchInstance:KSketch2, timeControl:KTouchTimeControl, interactionControl:KMobileInteractionControl)
 		{
 			_KSketch = KSketchInstance;
 			_timeControl = timeControl;
@@ -46,6 +48,9 @@ package views.canvas.components.timeBar
 			_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, _updateTicks);
 			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
 			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _recalibrateTicksAgainstMaxTime);
+			
+			_magnifier = new KTouchMagnifier();
+			_magnifier.init(timeControl.contentGroup, timeControl);
 		}
 		
 		/**
@@ -189,15 +194,12 @@ package views.canvas.components.timeBar
 					}
 				}
 			}
-			
-
 		}
 		
 		public function pan_begin(location:Point):void
 		{
 		
-			_timeControl.floatingLabel.y = _timeControl.localToGlobal(new Point(0,0)).y - 40;
-			_timeControl.floatingLabel.x = location.x;
+			_magnifier.y = _timeControl.localToGlobal(new Point(0,0)).y - 100;
 
 			//Panning begins
 			//Split markers into two sets before/after
@@ -250,11 +252,12 @@ package views.canvas.components.timeBar
 						_after.push(currentTick)
 				}
 			}
+			
+			_magnifier.open(_timeControl.contentGroup);
 		}
 		
 		public function pan_update(location:Point):void
 		{
-			
 			//On Pan compute how much finger moved (_changeX)
 			var currentX:Number = _timeControl.contentGroup.globalToLocal(location).x
 			var changeX:Number = currentX - _startX;
@@ -330,14 +333,13 @@ package views.canvas.components.timeBar
 			else
 				_drawTicks();
 			
-			_timeControl.floatingLabel.x = location.x;
 			var currentTime:int = _timeControl.xToTime(currentX);
 			if(currentTime < 0)
 				currentTime = 0;
 			else if(currentTime > _timeControl.maximum)
 				currentTime = _timeControl.maximum;
 			
-			_timeControl.floatingLabel.showMessage(currentTime, int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)))
+			_magnifier.magnify(location.x, currentTime, int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)));
 		}
 		
 		public function pan_end(location:Point):void
@@ -364,7 +366,7 @@ package views.canvas.components.timeBar
 			
 			if(_interactionControl.currentInteraction.length > 0)
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
-			
+			_magnifier.closeMagnifier();
 			_interactionControl.end_interaction_operation();
 		}
 	}

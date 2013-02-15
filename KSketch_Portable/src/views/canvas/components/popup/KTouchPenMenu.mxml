@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0.5" creationComplete="init()">
+	<fx:Script>
+		<![CDATA[
+			import org.gestouch.events.GestureEvent;
+			import org.gestouch.gestures.TapGesture;
+			
+			private var _closeGesture:TapGesture;
+			
+			public function init():void
+			{
+				width = Capabilities.screenResolutionX;
+				height = Capabilities.screenResolutionY;
+
+				drawWheel();
+				_closeGesture = new TapGesture(closeComponent);
+				_closeGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_STATE_CHANGE, _closePenMenu);
+			}
+			
+			private function _closePenMenu(event:org.gestouch.events.GestureEvent):void
+			{
+				close();
+				trace("closing pen menu");
+			}
+			
+			private function drawWheel():void
+			{
+				var nRadius	   : Number = 100;
+				var nRadians   : Number;
+				var nR         : Number;
+				var nG         : Number;
+				var nB         : Number;
+				var nColor     : Number;
+				var objMatrix  : Matrix;
+				var nX         : Number;
+				var nY         : Number;
+				var iThickness : int;
+				
+				// Clear the graphics container.
+				wheel.graphics.clear();
+				
+				// Calculate the thickness of the lines which draw the colors.
+				iThickness = 1 + int(nRadius / 50);
+				
+				// Loop from '0' to '360' degrees, drawing lines from the center 
+				// of the wheel outward the length of the specified radius.
+				for(var i:int = 0; i < 360; i++)
+				{
+					// Convert the degree to radians.
+					nRadians = i * (Math.PI / 180);
+					
+					// Calculate the RGB channels based on the angle of the line being drawn.
+					nR = Math.cos(nRadians)                   * 127 + 128 << 16;
+					nG = Math.cos(nRadians + 2 * Math.PI / 3) * 127 + 128 << 8;
+					nB = Math.cos(nRadians + 4 * Math.PI / 3) * 127 + 128;
+					
+					// OR the individual color channels together.
+					nColor = nR | nG | nB;
+					
+					// Calculate the coordinate in which the line should be drawn to.
+					nX = nRadius * Math.cos(nRadians);
+					nY = nRadius * Math.sin(nRadians);
+					
+					// Create a matrix for the lines gradient color.
+					objMatrix = new Matrix();
+					objMatrix.createGradientBox(nRadius * 2, nRadius * 2, nRadians, -nRadius, -nRadius);
+					
+					// Create and drawn the line.
+					wheel.graphics.lineStyle(iThickness, 0, 1, false, LineScaleMode.NONE, CapsStyle.NONE);
+					wheel.graphics.lineGradientStyle(GradientType.LINEAR, [0xFFFFFF, nColor], [100, 100], [127, 255], objMatrix);
+					wheel.graphics.moveTo(0, 0);
+					wheel.graphics.lineTo(nX, nY);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group width="100%" height="100%" id="closeComponent">
+		<s:Rect width="100%" height="100%" alpha="0">
+			<s:fill>
+				<s:SolidColor color="0x000000"/>
+			</s:fill>
+		</s:Rect>	
+	</s:Group>
+	<s:Group width="100%" height="100%" id="content">
+		<s:layout>
+			<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="wheel" width="50%" height="50%"/>
+	</s:Group>
+</s:SkinnablePopUpContainer>

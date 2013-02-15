@@ -35,7 +35,7 @@ package views.canvas.components.timeBar
 		public static const MAX_ALLOWED_TIME:int = 600000; //Max allowed time of 10 mins
 		
 		private var _KSketch:KSketch2;
-		private var _tickmarkControl:KTouchTimeTickControl;
+		private var _tickmarkControl:KTouchTickMarkControl;
 		private var _timer:Timer;
 		private var _maxPlayTime:int;
 		private var _isPlaying:Boolean = false;
@@ -56,7 +56,7 @@ package views.canvas.components.timeBar
 			super();
 		}
 		
-		public function init(KSketchInstance:KSketch2, tickmarkControl:KTouchTimeTickControl, inputComponent:UIComponent):void
+		public function init(KSketchInstance:KSketch2, tickmarkControl:KTouchTickMarkControl, inputComponent:UIComponent):void
 		{
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;

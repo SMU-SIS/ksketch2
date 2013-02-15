@@ -5,14 +5,15 @@
 		<![CDATA[
 			import mx.core.UIComponent;
 			
+			private const _VISIBLE_TIME:Number = 250;
+			
 			private var _parent:UIComponent
 			private var _timer:Timer;
 			
 			public function init(parent:UIComponent):void
 			{
 				_parent = parent;
-				_timer = new Timer(300);
-				_timer.addEventListener(TimerEvent.TIMER, _closeLabel);
+				_timer = new Timer(_VISIBLE_TIME);
 			}
 			
 			override public function set x(value:Number):void
@@ -35,10 +36,13 @@
 				labelText.text = KTimeLabel.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();				
 				_timer.reset();
 				_timer.start();
+				_timer.addEventListener(TimerEvent.TIMER, _closeLabel);
 			}
 			
 			private function _closeLabel(event:TimerEvent):void
 			{
+				_timer.stop();
+				_timer.removeEventListener(TimerEvent.TIMER, _closeLabel);
 				close();
 			}
 		]]>

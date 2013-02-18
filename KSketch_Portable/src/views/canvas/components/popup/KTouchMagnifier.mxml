@@ -96,7 +96,7 @@
 			<s:VerticalLayout paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
 							  verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:BitmapImage id="magnifierDisplay"/>
-		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX" fontSize="14"/>
+		<s:BitmapImage id="magnifierDisplay" scaleX="1.2" scaleY="1.5"/>
+		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX" fontSize="18"/>
 	</s:Group>
 </s:SkinnablePopUpContainer>

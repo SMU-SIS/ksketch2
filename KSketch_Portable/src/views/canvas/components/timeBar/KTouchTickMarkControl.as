@@ -16,8 +16,8 @@ package views.canvas.components.timeBar
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.SortingFunctions;
 	
-	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	import views.canvas.components.popup.KTouchMagnifier;
+	import views.canvas.interactioncontrol.KMobileInteractionControl;
 
 	public class KTouchTickMarkControl
 	{
@@ -33,6 +33,7 @@ package views.canvas.components.timeBar
 
 		private var _startX:Number;
 		private var _grabThreshold:Number = Capabilities.screenDPI/7;
+		private var _currentFrame:int;
 		
 		/**
 		 * A helper class containing the codes for generating and moving tick marks
@@ -339,7 +340,11 @@ package views.canvas.components.timeBar
 			else if(currentTime > _timeControl.maximum)
 				currentTime = _timeControl.maximum;
 			
-			_magnifier.magnify(location.x, currentTime, int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)));
+			if(int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)) != _currentFrame)
+			{
+				_currentFrame = int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL));
+				_magnifier.magnify(location.x, currentTime, _currentFrame);
+			}
 		}
 		
 		public function pan_end(location:Point):void

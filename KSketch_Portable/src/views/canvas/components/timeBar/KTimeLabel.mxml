@@ -106,7 +106,7 @@
 			
 			private function _panUpdate(event:org.gestouch.events.GestureEvent):void
 			{
-				_timeControl.updateSlider(_panGesture.offsetX);
+				_timeControl.updateSlider(_panGesture.offsetX, _panGesture.offsetY);
 			}
 			
 			private function _panEnd(event:org.gestouch.events.GestureEvent):void

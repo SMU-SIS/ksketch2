@@ -21,13 +21,13 @@ package views.canvas.components.timeBar
 		private var _editMarkers:Boolean;
 		
 		private const _PAN_SPEED_1:int = 1
-		private const _PAN_SPEED_2:int = 2;
-		private const _PAN_SPEED_3:int = 5;
-		private const _PAN_SPEED_4:int = 8;
+		private const _PAN_SPEED_2:int = 3;
+		private const _PAN_SPEED_3:int = 9;
+		private const _PAN_SPEED_4:int = 15;
 		
-		private const _PAN_THRESHOLD_1:Number = 3;
-		private const _PAN_THRESHOLD_2:Number = 6;
-		private const _PAN_THRESHOLD_3:Number = 8;
+		private const _PAN_THRESHOLD_1:Number = 5;
+		private const _PAN_THRESHOLD_2:Number = 8;
+		private const _PAN_THRESHOLD_3:Number = 10;
 		
 		private const _STEP_THRESHOLD:Number = 7;
 		
@@ -44,6 +44,7 @@ package views.canvas.components.timeBar
 		private var _maxFrame:int;
 		private var _currentFrame:int;
 		
+		private var _panVector:Point = new Point();
 		private var _panSpeed:int = _PAN_SPEED_1;
 		private var _prevOffset:Number = 1;
 		private var _panOffset:Number = 0;
@@ -187,27 +188,31 @@ package views.canvas.components.timeBar
 		/**
 		 * update slider with offsetX, subjected to speed changes
 		 */
-		public function updateSlider(offsetX:Number):void
+		public function updateSlider(offsetX:Number, offsetY:Number):void
 		{
 			//Changed direction, have to reset all pan gesture calibrations till now.
 			if((_prevOffset * offsetX) < 0)
 				resetSliderInteraction();
 			
-			var absOffsetX:Number = Math.abs(offsetX);
+			_panVector.x = offsetX;
+			_panVector.y = offsetY;
+			
+			var absOffset:Number = _panVector.length;
+			trace(absOffset);
 			
 			//Pan Offset is the absolute distance moved during a pan gesture
 			//Need to update to see how far this pan has moved.
-			_panOffset += absOffsetX;
+			_panOffset += absOffset;
 			
 			//Speed calibration according to how far the pan gesture moved.
-			if( absOffsetX <= _PAN_THRESHOLD_1)
+			if( absOffset <= _PAN_THRESHOLD_1)
 				_panSpeed = _PAN_SPEED_1;
-			else if(absOffsetX <= _PAN_THRESHOLD_2)
+			else if(absOffset <= _PAN_THRESHOLD_2)
 				_panSpeed = _PAN_SPEED_2;
-			else if(absOffsetX <= _PAN_THRESHOLD_3)
-				_panSpeed = _PAN_SPEED_3;
+			else if(absOffset <= _PAN_THRESHOLD_3)
+				_panSpeed = _PAN_SPEED_3 * (maximum/KTimeControl.DEFAULT_MAX_TIME);
 			else
-				_panSpeed = _PAN_SPEED_4 * (maximum/KTimeControl.DEFAULT_MAX_TIME);
+				_panSpeed = absOffset * (maximum/KTimeControl.DEFAULT_MAX_TIME);
 			
 			//Update the time according to the direction of the pan.
 			//Advance if it's towards the right

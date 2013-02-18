@@ -31,7 +31,7 @@
 				_selectColorGesture = new PanGesture(currentColor);
 				_selectColorGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_BEGAN, _beginColor);
 				_selectColorGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_CHANGED, _updateColor);
-				_selectColorGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_ENDED, _updateColor);
+				_selectColorGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_ENDED, _endColor);
 				
 				_generateSpectrum();
 			}

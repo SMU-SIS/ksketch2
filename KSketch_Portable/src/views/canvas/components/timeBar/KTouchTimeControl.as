@@ -2,6 +2,7 @@ package views.canvas.components.timeBar
 {
 	import flash.events.Event;
 	import flash.events.TimerEvent;
+	import flash.events.TouchEvent;
 	import flash.geom.Point;
 	import flash.utils.Timer;
 	
@@ -70,6 +71,8 @@ package views.canvas.components.timeBar
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 			floatingLabel.y = localToGlobal(new Point(0,0)).y - 40;
 			
+			inputComponent.addEventListener(TouchEvent.TOUCH_BEGIN, _tickmarkControl.openMagnifier);
+			inputComponent.addEventListener(TouchEvent.TOUCH_END, _tickmarkControl.closeMagnifier);
 			_panGesture = new PanGesture(inputComponent);
 			_panGesture.maxNumTouchesRequired = 1;
 			_panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _beginPanning);

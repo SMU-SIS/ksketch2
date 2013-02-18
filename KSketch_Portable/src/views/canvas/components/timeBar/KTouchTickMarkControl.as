@@ -1,10 +1,15 @@
 package views.canvas.components.timeBar
 {
 	import flash.events.Event;
+	import flash.events.TouchEvent;
 	import flash.geom.Point;
 	import flash.system.Capabilities;
 	
 	import mx.core.UIComponent;
+	
+	import org.gestouch.events.GestureEvent;
+	import org.gestouch.gestures.LongPressGesture;
+	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
@@ -52,6 +57,31 @@ package views.canvas.components.timeBar
 			
 			_magnifier = new KTouchMagnifier();
 			_magnifier.init(timeControl.contentGroup, timeControl);
+			
+			
+		}
+		
+		public function openMagnifier(event:TouchEvent):void
+		{			
+			_magnifier.open(_timeControl.contentGroup);
+			var currentTime:int = _timeControl.xToTime(event.localX);
+			if(currentTime < 0)
+				currentTime = 0;
+			else if(currentTime > _timeControl.maximum)
+				currentTime = _timeControl.maximum;
+			
+			
+			_magnifier.y = _timeControl.localToGlobal(new Point(0,0)).y - 100;
+			if(int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)) != _currentFrame)
+			{
+				_currentFrame = int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL));
+				_magnifier.magnify(event.stageX, currentTime, _currentFrame);
+			}
+		}
+		
+		public function closeMagnifier(event:TouchEvent):void
+		{
+			_magnifier.closeMagnifier();
 		}
 		
 		/**
@@ -199,9 +229,6 @@ package views.canvas.components.timeBar
 		
 		public function pan_begin(location:Point):void
 		{
-		
-			_magnifier.y = _timeControl.localToGlobal(new Point(0,0)).y - 100;
-
 			//Panning begins
 			//Split markers into two sets before/after
 			_interactionControl.begin_interaction_operation();
@@ -253,8 +280,6 @@ package views.canvas.components.timeBar
 						_after.push(currentTick)
 				}
 			}
-			
-			_magnifier.open(_timeControl.contentGroup);
 		}
 		
 		public function pan_update(location:Point):void
@@ -371,7 +396,6 @@ package views.canvas.components.timeBar
 			
 			if(_interactionControl.currentInteraction.length > 0)
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
-			_magnifier.closeMagnifier();
 			_interactionControl.end_interaction_operation();
 		}
 	}

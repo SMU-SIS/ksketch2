@@ -63,7 +63,7 @@
 				timeControl.init(_KSketch, _timeTickControl,middlePanInput);
 				cornerMenu.init(_interactionControl, timeControl, penMenu);
 				
-				playButton.init(timeControl);
+				playButton.init(timeControl, _interactionControl);
 				_interactionControl.reset();
 			}
 			

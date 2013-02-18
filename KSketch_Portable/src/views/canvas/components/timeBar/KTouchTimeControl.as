@@ -256,13 +256,12 @@ package views.canvas.components.timeBar
 			_timer.addEventListener(TimerEvent.TIMER, playHandler);
 			_timer.start();
 			
-			if(_KSketch.maxTime < time)
-				_maxPlayTime = time + PLAY_ALLOWANCE;
-			else
-				_maxPlayTime = _KSketch.maxTime + PLAY_ALLOWANCE;
+			if(_KSketch.maxTime <= time)
+				time = 0;
+			
+			_maxPlayTime = _KSketch.maxTime + PLAY_ALLOWANCE;
 			
 			_rewindToTime = time;
-			
 			this.dispatchEvent(new Event(KTimeControl.PLAY_START));
 		}
 		
@@ -274,11 +273,8 @@ package views.canvas.components.timeBar
 		{
 			if(time >= _maxPlayTime)
 			{
-				time = _maxPlayTime;
-				stop();
-				_isPlaying = true;
 				time = _rewindToTime;
-				_isPlaying = false;
+				stop();
 			}
 			else
 				time = time + KSketch2.ANIMATION_INTERVAL;

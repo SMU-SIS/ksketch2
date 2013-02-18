@@ -2,7 +2,6 @@ package views.canvas.interactors
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
-	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
 	import org.gestouch.events.GestureEvent;

@@ -198,7 +198,6 @@ package views.canvas.components.timeBar
 			_panVector.y = offsetY;
 			
 			var absOffset:Number = _panVector.length;
-			trace(absOffset);
 			
 			//Pan Offset is the absolute distance moved during a pan gesture
 			//Need to update to see how far this pan has moved.

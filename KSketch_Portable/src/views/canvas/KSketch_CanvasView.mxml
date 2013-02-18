@@ -63,7 +63,7 @@
 				timeControl.init(_KSketch, _timeTickControl,middlePanInput);
 				cornerMenu.init(_interactionControl, timeControl, penMenu);
 				
-				playButton.init(timeControl, _interactionControl);
+				playButton.init(timeControl, _interactionControl,interceptor);
 				_interactionControl.reset();
 			}
 			
@@ -114,109 +114,120 @@
 			}
 		]]>
 	</fx:Script>
-	<s:layout>
-		<s:VerticalLayout gap="0"/>
-	</s:layout>
 	
 	<s:Group width="100%" height="100%">
-		<!-- For show, all the visual elements that the user wont be able to "touch"-->
+		<s:layout>
+			<s:VerticalLayout gap="0"/>
+		</s:layout>
+		
 		<s:Group width="100%" height="100%">
-			<s:layout>
-				<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
-			</s:layout>
-			<s:Group id="drawing_stage" height="95%" width="{drawing_stage.height/9*16}">
-				<s:Rect width="100%" height="100%">
-					<s:fill>
-						<s:SolidColor color="0xFFFFFF"/>
-					</s:fill>
-					<s:stroke>
-						<s:SolidColorStroke color="0xE6E6E6" weight="1.5"/>
-					</s:stroke>
-				</s:Rect>
-				<!-- The model display displays the objects in the model -->
-				<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
-									scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
-	
-			</s:Group> 
+			<!-- For show, all the visual elements that the user wont be able to "touch"-->
+			<s:Group width="100%" height="100%">
+				<s:layout>
+					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+				</s:layout>
+				<s:Group id="drawing_stage" height="95%" width="{drawing_stage.height/9*16}">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="0xFFFFFF"/>
+						</s:fill>
+						<s:stroke>
+							<s:SolidColorStroke color="0xE6E6E6" weight="1.5"/>
+						</s:stroke>
+					</s:Rect>
+					<!-- The model display displays the objects in the model -->
+					<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
+										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
+					
+				</s:Group> 
+			</s:Group>
+			
+			<!-- Things inside this group really dispatches gesture events-->
+			<s:Group width="100%" height="100%">
+				<s:Group id="canvas_region" width="100%" height="100%">
+					<s:Rect width="100%" height="100%" alpha="0">
+						<s:fill>
+							<s:SolidColor color="0x000000"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+				<transformWidget:TouchWidgetTemplate id="widget" visible="false"/>
+			</s:Group>
 		</s:Group>
 		
-		<!-- Things inside this group really dispatches gesture events-->
-		<s:Group width="100%" height="100%">
-			<s:Group id="canvas_region" width="100%" height="100%">
-				<s:Rect width="100%" height="100%" alpha="0">
-					<s:fill>
-						<s:SolidColor color="0x000000"/>
-					</s:fill>
-				</s:Rect>
+		<s:Group id="timebar_region" width="100%" height="50">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xD8D8D8"/>
+				</s:fill>
+				
+				<s:filters>
+					<s:DropShadowFilter strength="0.3" angle="270" blurY="2" distance="1.5"/>
+				</s:filters>
+			</s:Rect>
+			<s:Group width="100%" height="100%">
+				<s:layout >
+					<s:HorizontalLayout gap="0" verticalAlign="middle" paddingLeft="5"/>
+				</s:layout>
+				<timeBar:Touch_Play_Button id="playButton"/>
+				<timeBar:KTimeLabel id="currentTimeLabel"/>
+				<s:Group width="100%" height="100%">
+					<s:layout>
+						<s:VerticalLayout gap="3" verticalAlign="middle" horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
+					</s:layout>
+					<timeBar:KTouchTimeControl id="timeControl"/>
+				</s:Group>
+				<timeBar:KTimeLabel id="maxTimeLabel"/>
+				<timeBar:Touch_Menu_Button id="menuButton"/>
 			</s:Group>
-			<transformWidget:TouchWidgetTemplate id="widget" visible="false"/>
+			<s:Group width="100%" alpha="0">
+				<s:layout>
+					<s:HorizontalLayout gap="0"/>
+				</s:layout>
+				<s:Group width="50" height="60" click="playButton.playToggle()">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="0x0000FF"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+				<s:Group width="100" height="70" id="leftPanInput">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="0x00FFFF"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+				<s:Group width="100%" height="70" id="middlePanInput">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="0xFFFF00"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+				<s:Group width="100" height="70" id="rightPanInput">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="0x00FFFF"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+				<s:Group width="50" height="60" click="_menuBtnHandler()">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="0x0000FF"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+			</s:Group>
 		</s:Group>
 	</s:Group>
 	
-	<s:Group id="timebar_region" width="100%" height="50">
+	<s:Group width="100%" height="100%" visible="false" id="interceptor" alpha="0">
 		<s:Rect width="100%" height="100%">
 			<s:fill>
-				<s:SolidColor color="0xD8D8D8"/>
+				<s:SolidColor color="0x000000"/>
 			</s:fill>
-
-			<s:filters>
-				<s:DropShadowFilter strength="0.3" angle="270" blurY="2" distance="1.5"/>
-			</s:filters>
 		</s:Rect>
-		<s:Group width="100%" height="100%">
-			<s:layout >
-				<s:HorizontalLayout gap="0" verticalAlign="middle" paddingLeft="5"/>
-			</s:layout>
-			<timeBar:Touch_Play_Button id="playButton"/>
-			<timeBar:KTimeLabel id="currentTimeLabel"/>
-			<s:Group width="100%" height="100%">
-				<s:layout>
-					<s:VerticalLayout gap="3" verticalAlign="middle" horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
-				</s:layout>
-				<timeBar:KTouchTimeControl id="timeControl"/>
-			</s:Group>
-			<timeBar:KTimeLabel id="maxTimeLabel"/>
-			<timeBar:Touch_Menu_Button id="menuButton"/>
-		</s:Group>
-		<s:Group width="100%" alpha="0">
-			<s:layout>
-				<s:HorizontalLayout gap="0"/>
-			</s:layout>
-			<s:Group width="50" height="60" click="playButton.playToggle()">
-				<s:Rect width="100%" height="100%">
-					<s:fill>
-						<s:SolidColor color="0x0000FF"/>
-					</s:fill>
-				</s:Rect>
-			</s:Group>
-			<s:Group width="100" height="70" id="leftPanInput">
-				<s:Rect width="100%" height="100%">
-					<s:fill>
-						<s:SolidColor color="0x00FFFF"/>
-					</s:fill>
-				</s:Rect>
-			</s:Group>
-			<s:Group width="100%" height="70" id="middlePanInput">
-				<s:Rect width="100%" height="100%">
-					<s:fill>
-						<s:SolidColor color="0xFFFF00"/>
-					</s:fill>
-				</s:Rect>
-			</s:Group>
-			<s:Group width="100" height="70" id="rightPanInput">
-				<s:Rect width="100%" height="100%">
-					<s:fill>
-						<s:SolidColor color="0x00FFFF"/>
-					</s:fill>
-				</s:Rect>
-			</s:Group>
-			<s:Group width="50" height="60" click="_menuBtnHandler()">
-				<s:Rect width="100%" height="100%">
-					<s:fill>
-						<s:SolidColor color="0x0000FF"/>
-					</s:fill>
-				</s:Rect>
-			</s:Group>
-		</s:Group>
 	</s:Group>
 </s:View>

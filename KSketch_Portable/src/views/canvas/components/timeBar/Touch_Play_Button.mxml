@@ -8,6 +8,7 @@
 			
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			
+			private var _interceptor:DisplayObject;
 			private var _interactionControl:KMobileInteractionControl;
 			private var _timeControl:KTouchTimeControl;
 			private var _buttonState:int;
@@ -16,10 +17,11 @@
 			private const SHOW_PLAY:int = 0;
 			private const SHOW_PAUSE:int = 1;
 			
-			public function init(timeControl:KTouchTimeControl, interactionControl:KMobileInteractionControl):void
+			public function init(timeControl:KTouchTimeControl, interactionControl:KMobileInteractionControl, interceptor:DisplayObject):void
 			{
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
+				_interceptor = interceptor;
 				buttonState = SHOW_PLAY;
 				
 				timeControl.addEventListener(KTimeControl.PLAY_START, _handlePlayPause);
@@ -41,12 +43,14 @@
 					buttonState = SHOW_PAUSE;
 					_oldSelection =_interactionControl.selection;
 					_interactionControl.selection = null;
+					_interceptor.visible = true;
 				}
 				else
 				{
 					buttonState = SHOW_PLAY;	// IF IT IS PAUSING,THEN SHOW PLAY!
 					_interactionControl.selection = _oldSelection;
 					_oldSelection = null;
+					_interceptor.visible = false;
 				}
 			}
 			

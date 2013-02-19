@@ -42,6 +42,7 @@
     <classEntry path="sg.edu.smu.ksketch2.events.KTimeChangedEvent"/>
     <classEntry path="sg.edu.smu.ksketch2.operators.operations.KEditKeyTimeOperation"/>
     <classEntry path="sg.edu.smu.ksketch2.model.objects.KImage"/>
+    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KVisibilityChangedOperation"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

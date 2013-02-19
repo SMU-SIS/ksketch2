@@ -15,6 +15,8 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.model.data_structures.KVisibilityKeyList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
+	import sg.edu.smu.ksketch2.operators.operations.KVisibilityChangedOperation;
 
 	public class KVisibilityControl implements IVisibilityControl
 	{
@@ -65,6 +67,8 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(key.time == time)
 				{	
+					if(op)
+						op.addOperation(new KVisibilityChangedOperation(key, key.visible, visible));
 					key.visible = visible;
 					_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
 					return;
@@ -73,11 +77,14 @@ package sg.edu.smu.ksketch2.operators
 			
 			key = new KVisibilityKey(time);
 			_visibilityKeys.insertKey(key);
-			key.visible = visible;
+			if(op)
+				op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));
 			
 			//Set the visibility at the give time
 			key.visible = visible;
-
+			if(op)
+				op.addOperation(new KVisibilityChangedOperation(key, false, visible));
+			
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
 		}
 		

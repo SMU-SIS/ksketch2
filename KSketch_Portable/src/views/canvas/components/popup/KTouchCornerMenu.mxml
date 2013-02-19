@@ -3,18 +3,16 @@
 						   xmlns:s="library://ns.adobe.com/flex/spark">
 	<fx:Script>
 		<![CDATA[
-			import views.canvas.components.timeBar.KTouchTimeControl;
+			import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
+			
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
+			import views.canvas.interactors.KTouchDrawInteractor;
 			
 			private var _interactionControl:KMobileInteractionControl;
-			private var _timeControl:KTouchTimeControl;
-			private var _penMenu:KTouchPenMenu;
 			
-			public function init(interactionControl:KMobileInteractionControl, timeControl:KTouchTimeControl, penMenu:KTouchPenMenu):void
+			public function init(interactionControl:KMobileInteractionControl):void
 			{
 				_interactionControl = interactionControl;
-				_timeControl = timeControl;
-				_penMenu = penMenu;
 			}
 			
 			public function activateCamera():void
@@ -33,15 +31,29 @@
 				close();
 			}
 			
-			public function togglePen():void
+			public function penColor(value:uint):void
 			{
-				_penMenu.open(parent);
-				close();
+				KDrawInteractor.penColor = value;
+				(pen.skin as PopUpMenuButtonSkin).fontColor = value;
+				
+				if(!pen.visible)
+					togglePen();
 			}
 			
-			public function toggleSlider():void
+			public function togglePen():void
 			{
-				close();
+				if(pen.visible)
+				{
+					pen.visible = false;
+					eraser.visible = true;
+					KTouchDrawInteractor.eraser = true;
+				}
+				else
+				{
+					pen.visible = true;
+					eraser.visible = false;
+					KTouchDrawInteractor.eraser = false;
+				}
 			}
 			
 		]]>
@@ -50,20 +62,61 @@
 	<s:filters>
 		<s:DropShadowFilter color="0x000000" distance="3" angle="45"/>
 	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="3" radiusY="3">
+	<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
 		<s:fill>
 			<s:SolidColor color="0xD8D8D8"/>
 		</s:fill>
 	</s:Rect>
 	<s:Group>
-		<s:layout>
-			<s:TileLayout horizontalGap="1" verticalGap="1"/>
-		</s:layout>
-		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Gallery"/>
-		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Camera"/>
-		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Share" enabled="false"/>
-		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Clear" click="clear()"/>
-		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Pen" id="penButton" click="togglePen()"/>
-		<s:Button skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" label="Slider" id="eraserButton" click="toggleSlider()" enabled="false"/>
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" verticalAlign="middle" horizontalAlign="center"/>
+			</s:layout>
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
+				</s:layout>
+				<s:Button name="new" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
+			</s:Group>
+			<s:Line alpha="0.25" width="90%">
+				<s:stroke>
+					<s:SolidColorStroke weight="1" color="0x000000"/>
+				</s:stroke>
+			</s:Line>			
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
+				</s:layout>
+				<s:Group>
+					<s:Button name="pen" id="pen" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="togglePen()"/>
+					<s:Button name="eraser" id="eraser" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" visible="false" click="togglePen()"/>
+				</s:Group>
+				<s:Group id="penGroup">
+					<s:layout>
+						<s:VerticalLayout gap="1"/>
+					</s:layout>
+					<s:Button name="black" id="black" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
+							  click="penColor(0x000000)"/>
+					<s:Button name="red" id="red" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
+							  click="penColor(0xFF0000)"/>
+					<s:Button name="green" id="green" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
+							  click="penColor(0x00FF00)"/>
+					<s:Button name="blue" id="blue" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
+							  click="penColor(0x0000FF)"/>
+				</s:Group>
+			</s:Group>
+			<s:Line alpha="0.25" width="90%">
+				<s:stroke>
+					<s:SolidColorStroke weight="1" color="0x000000"/>
+				</s:stroke>
+			</s:Line>						
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
+				</s:layout>
+				<s:Button name="camera" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
+				<s:Button name="gallery" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
+			</s:Group>
+		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

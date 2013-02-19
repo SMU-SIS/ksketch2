@@ -13,7 +13,6 @@ package sg.edu.smu.ksketch2.view
 	
 	import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
-	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	

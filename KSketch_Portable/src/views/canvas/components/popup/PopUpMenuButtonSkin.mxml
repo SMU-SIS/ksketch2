@@ -1,11 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
-		width="150" height="150" alpha.disabled="0.5">
+		alpha.disabled="0.5" creationComplete="_creationCompleteHandler()">
 	<!-- host component -->
 	<fx:Metadata>
 		[HostComponent("spark.components.Button")]
 	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			private function _creationCompleteHandler():void
+			{
+				switch(parent.name)
+				{
+					case "black":
+						buttonColor = 0x000000;
+						break;
+					case "red":
+						buttonColor = 0xFF0000;
+						break;
+					case "green":
+						buttonColor = 0x00FF00;
+						break;
+					case "blue":
+						buttonColor = 0x0000FF;
+						break;
+					case "pen":
+						labelText = "P";
+						break;
+					case "eraser":
+						labelText = "E";
+						break;
+					case "new":
+						labelText = "N";
+						break;
+					case "camera":
+						labelText = "C";
+						break;
+					case "gallery":
+						labelText = "G";
+						break;
+				}
+			
+			}
+
+			public function set fontColor(value:uint):void
+			{
+				labelDisplay.setStyle("color", value);	
+			}
+			
+			private function set labelText(value:String):void
+			{
+				backgroundColor.visible = false;
+				labelDisplay.visible = true;
+				labelDisplay.text = value;
+			}
+			
+			private function set buttonColor(value:uint):void
+			{
+				labelDisplay.visible = false;
+				backgroundColor.visible = true;
+				buttonFill.color = value;
+			}			
+		]]>
+	</fx:Script>
 	
 	<fx:Style>
 		@namespace s "library://ns.adobe.com/flex/spark";
@@ -24,12 +83,6 @@
 		<s:State name="up" />
 	</s:states>
 	
-	
-	
-	<s:filters>
-		<s:DropShadowFilter color="0xA4A4A4" distance="1" blurX="0" blurY="0"/>
-	</s:filters>
-	
 	<!-- layer 2: fill -->
 	<s:Rect left="1" right="1" top="1" bottom="1">
 		<s:fill>
@@ -41,17 +94,16 @@
 	</s:Rect>
 	
 	<s:Group width="100%" height="100%">
-		<s:layout>
-			<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"
-							  paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
-							  gap="9"/>
-		</s:layout>
-<!--		<s:BitmapImage id="iconDisplay"/> -->
-		<s:Rect width="80" height="80">
+		<s:Rect width="50" height="50" id="backgroundColor">
 			<s:fill>
-				<s:SolidColor color="0xFFFFFF"/>
+				<s:SolidColor color="0xFFFFFF" id="buttonFill"/>
 			</s:fill>
 		</s:Rect>
-		<s:Label id="labelDisplay" fontFamily="_sans" color="0x2E2E2E"/>
+		<s:Group width="100%" height="100%">
+			<s:layout>
+				<s:VerticalLayout paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" verticalAlign="middle" horizontalAlign="center"/>
+			</s:layout>
+			<s:Label id="labelDisplay" fontSize="32" textAlign="center"/>
+		</s:Group>
 	</s:Group>
 </s:Skin>

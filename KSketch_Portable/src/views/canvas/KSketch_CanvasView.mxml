@@ -18,9 +18,8 @@
 		add="_addHandler(event);" xmlns:utils="starling.utils.*" xmlns:popup="views.canvas.components.popup.*" 
 		>
 	<fx:Declarations>
-		<popup:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{height-cornerMenu.height-50 - 10}"/>
+		<popup:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{(height/2)-(cornerMenu.height/2)}"/>
 		<components:KTouchFeedbackMessage id="feedbackMessage"/>
-		<popup:KTouchPenMenu id="penMenu" width="100%" height="100%"/>
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
@@ -61,7 +60,7 @@
 				
 				modelDisplay.init(_KSketch);
 				timeControl.init(_KSketch, _timeTickControl,middlePanInput);
-				cornerMenu.init(_interactionControl, timeControl, penMenu);
+				cornerMenu.init(_interactionControl);
 				
 				playButton.init(timeControl, _interactionControl,interceptor);
 				_interactionControl.reset();

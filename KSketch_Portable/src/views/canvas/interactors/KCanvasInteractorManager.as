@@ -42,7 +42,7 @@ package views.canvas.interactors
 		private var _doubleTap:TapGesture;
 		private var _drawGesture:PanGesture;
 		
-		private var _drawInteractor:KDrawInteractor;
+		private var _drawInteractor:KTouchDrawInteractor;
 		private var _loopSelectInteractor:KLoopSelectInteractor;
 		private var _tapSelectInteractor:KTouchSelectInteractor;
 		
@@ -74,7 +74,7 @@ package views.canvas.interactors
 			 * Reusing Draw and loop select interactors so implementation will feel a bit weird
 			 * These interactors are sharing gesture inputs
 			 */
-			_drawInteractor = new KDrawInteractor(_KSketch, _modelDisplay, _interactionControl);
+			_drawInteractor = new KTouchDrawInteractor(_KSketch, _modelDisplay, _interactionControl);
 			_tapSelectInteractor = new KTouchSelectInteractor(_KSketch, _interactionControl, _modelDisplay);
 			_loopSelectInteractor = new KLoopSelectInteractor(_KSketch, _modelDisplay, _interactionControl);
 			

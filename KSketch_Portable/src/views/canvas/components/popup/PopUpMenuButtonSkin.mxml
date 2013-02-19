@@ -41,6 +41,12 @@
 					case "gallery":
 						labelText = "G";
 						break;
+					case "zoomIn":
+						labelText = "+";
+						break;
+					case "zoomOut":
+						labelText = "-";
+						break;
 				}
 			
 			}

@@ -76,7 +76,7 @@
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
-				<s:Button name="new" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
+				<s:Button name="new" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="clear()"/>
 			</s:Group>
 			<s:Line alpha="0.25" width="90%">
 				<s:stroke>
@@ -116,6 +116,18 @@
 				</s:layout>
 				<s:Button name="camera" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
 				<s:Button name="gallery" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
+			</s:Group>
+			<s:Line alpha="0.25" width="90%">
+				<s:stroke>
+					<s:SolidColorStroke weight="1" color="0x000000"/>
+				</s:stroke>
+			</s:Line>						
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
+				</s:layout>
+				<s:Button name="zoomIn" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
+				<s:Button name="zoomOut" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

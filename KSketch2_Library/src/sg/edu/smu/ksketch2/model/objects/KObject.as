@@ -8,9 +8,7 @@
  */
 package sg.edu.smu.ksketch2.model.objects
 {
-	import flash.display.Sprite;
 	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.utils.getQualifiedClassName;
@@ -19,7 +17,6 @@ package sg.edu.smu.ksketch2.model.objects
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.ITransformInterface;
 	import sg.edu.smu.ksketch2.operators.IVisibilityControl;
-	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 	import sg.edu.smu.ksketch2.operators.KVisibilityControl;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	

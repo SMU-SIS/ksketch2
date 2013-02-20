@@ -192,20 +192,47 @@ package sg.edu.smu.ksketch2.operators
 		 * Checks for errors and inconsistencies and complains if the object is not in a magical state
 		 * --- THe previous operation did not clean up the object
 		 */
-		public function beginTransition(time:int, transitionType:int, transformType:int,op:KCompositeOperation):void
+		public function beginTransition(time:int, transitionType:int):void
 		{
 			_transitionType = transitionType;
-			
-			//We need to put the model into its magical state first.
-			_normaliseModel(time, transformType, op);
-
-			//Then we can find the keys we need for transition
 			_startTime = time;
+
+			//Initiate transition values and variables first
+			_transitionX = 0;
+			_transitionY = 0;
+			_transitionTheta = 0;
+			_transitionSigma = 0;
+			
+			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
+			{
+				_TWorkingPath = new KPath();
+				_RWorkingPath = new KPath();
+				_SWorkingPath = new KPath();
+			}
+		}
+		
+		public function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
+		{
+			_transitionX = dx;
+			_transitionY = dy;
+			_transitionTheta = dTheta;
+			_transitionSigma = dScale;
+			
+			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
+			{
+				var elapsedTime:int = time - _startTime;
+				
+				_TWorkingPath.push(dx, dy, elapsedTime);
+				_RWorkingPath.push(dTheta, 0, elapsedTime);
+				_SWorkingPath.push(dScale, 0, elapsedTime);			
+			}
+			else
+				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
 		}
 		
 		public function endTransition(time:int, op:KCompositeOperation):void
 		{
-			_clearEmptyKeys(op);
+			//_clearEmptyKeys(op);
 		}
 		
 		/**
@@ -217,19 +244,6 @@ package sg.edu.smu.ksketch2.operators
 				throw new Error("Transition variables are not clean, can't proceed");
 			_TWorkingPath = new KPath();
 			_TWorkingPath.push(0, 0, 0);
-		}
-		
-		public function updateTranslation(dx:Number, dy:Number, time:int):void
-		{
-			_transitionX = dx;
-			_transitionY = dy;
-			
-			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-				_TWorkingPath.push(dx, dy, time-_startTime);
-			else
-				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
-			//Dispatches event to make the interface update
-			//View should be listening to this event
 		}
 		
 		/**
@@ -262,23 +276,6 @@ package sg.edu.smu.ksketch2.operators
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
 		}
 		
-		public function beginRotation(time:int):void
-		{
-			if(_transitionTheta != 0)
-				throw new Error("Transition variables are not clean, can't proceed");
-			_RWorkingPath = new KPath();
-			_RWorkingPath.push(0, 0, 0);
-		}
-		
-		public function updateRotation(dTheta:Number, time:int):void
-		{
-			_transitionTheta = dTheta;
-			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-				_RWorkingPath.push(dTheta, 0, time-_startTime);
-			else
-				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time));
-		}
-		
 		public function endRotation(time:int, op:KCompositeOperation):void
 		{
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
@@ -295,23 +292,6 @@ package sg.edu.smu.ksketch2.operators
 			_transitionTheta = 0;
 			_RWorkingPath = null;
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
-		}
-		
-		public function beginScale(time:int):void
-		{
-			if(_transitionSigma != 0)
-				throw new Error("Transition variables are not clean, can't proceed");
-			_SWorkingPath = new KPath();
-			_SWorkingPath.push(0, 0, 0);
-		}
-		
-		public function updateScale(dSigma:Number, time:int):void
-		{
-			_transitionSigma = dSigma;
-			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-				_SWorkingPath.push(dSigma, 0, time-_startTime);
-			else
-				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time));
 		}
 		
 		public function endScale(time:int, op:KCompositeOperation):void

@@ -13,8 +13,6 @@ package sg.edu.smu.ksketch2.controls.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
-	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	public class KTranslateInteractor extends KTransitionInteractor
 	{
@@ -41,8 +39,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_startMatrices = new Vector.<Matrix>();
 			for(i; i<length; i++)
 			{
-				_KSketch.beginTransform(_toTransitObjects.getObjectAt(i),
-					_interactionControl.transitionMode, _currentOperation);
+				_KSketch.beginTransform(_toTransitObjects.getObjectAt(i), _interactionControl.transitionMode);
 			}
 		}
 		

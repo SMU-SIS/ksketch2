@@ -23,20 +23,9 @@ package sg.edu.smu.ksketch2.operators
 		function canTransform(time:int):Boolean;
 		function canInsertKey(time:int):Boolean;
 		
-		function beginTransition(time:int, transitionType:int, transformType:int, op:KCompositeOperation):void;
+		function beginTransition(time:int, transitionType:int):void;
+		function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void;
 		function endTransition(time:int, op:KCompositeOperation):void;
-		
-		function beginTranslation(time:int):void;
-		function updateTranslation(dx:Number, dy:Number, time:int):void;
-		function endTranslation(time:int, op:KCompositeOperation):void;
-		
-		function beginRotation(time:int):void;
-		function updateRotation(dTheta:Number, time:int):void;
-		function endRotation(time:int, op:KCompositeOperation):void;
-		
-		function beginScale(time:int):void;
-		function updateScale(dSigma:Number, time:int):void;
-		function endScale(time:int, op:KCompositeOperation):void;
 		
 		function insertBlankKeyFrame(time:int, op:KCompositeOperation):void;
 		

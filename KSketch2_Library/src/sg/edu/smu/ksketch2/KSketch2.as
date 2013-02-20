@@ -12,7 +12,6 @@ package sg.edu.smu.ksketch2
 	import flash.events.EventDispatcher;
 	import flash.geom.Point;
 	
-	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
@@ -185,15 +184,14 @@ package sg.edu.smu.ksketch2
 		}
 		
 		//Transform functions
-		public function beginTransform(object:KObject, transitionType:int, op:KCompositeOperation):void
+		public function beginTransform(object:KObject, transitionType:int):void
 		{
-			//object.transformInterface.beginTransition(time, transitionType, TRANSFORM_TRANSLATION,op);
-			//object.transformInterface.beginTranslation(time);	
+			object.transformInterface.beginTransition(time, transitionType);
 		}
 		
 		public function updateTransform(object:KObject, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
 		{
-			//object.transformInterface.updateTranslation(dx,dy,time);
+			object.transformInterface.updateTransition(time, dx, dy, dTheta, dScale);
 		}
 		
 		public function endTransform(object:KObject, op:KCompositeOperation):void

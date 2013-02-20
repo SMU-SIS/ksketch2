@@ -61,7 +61,7 @@ package views.canvas.interactors
 			var currentObject:KObject;
 			
 			for(i; i < length; i++)
-				_KSketch.beginTransform(_transitionObjects.getObjectAt(i), _interactionControl.transitionMode, _interactionControl.currentInteraction);
+				_KSketch.beginTransform(_transitionObjects.getObjectAt(i), _interactionControl.transitionMode);
 			
 			_transformGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Transform);
 			_transformGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			

@@ -18,12 +18,10 @@ package sg.edu.smu.ksketch2.view
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
-	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
-	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	/**
 	 * Exists to display the objects in the model
@@ -32,6 +30,7 @@ package sg.edu.smu.ksketch2.view
 	{
 		protected var _KSketch:KSketch2;
 		protected var _viewsTable:Dictionary;
+		protected var _showPath:Boolean;
 		
 		/**
 		 * KModel Display is in charge of displaying things from the scene graph
@@ -39,6 +38,8 @@ package sg.edu.smu.ksketch2.view
 		public function KModelDisplay()
 		{
 			super();
+			
+			_showPath = false;
 		}
 		
 		public function init(kSketchInstance:KSketch2):void
@@ -94,7 +95,7 @@ package sg.edu.smu.ksketch2.view
 			else
 				throw new Error("Object type "+object.toString()+" is not supported by the model display yet");
 			
-
+			view.showPath = _showPath;
 			_viewsTable[object] = view;
 			return view;
 		}
@@ -153,6 +154,14 @@ package sg.edu.smu.ksketch2.view
 				rootView.debug();
 			else
 				trace("No rootview dude!");
+		}
+		
+		public function set pathVisible(visible:Boolean):void
+		{
+			_showPath = visible;
+			
+			for(var view:Object in _viewsTable)
+				(_viewsTable[view] as IObjectView).showPath = _showPath;
 		}
 	}
 }

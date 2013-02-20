@@ -35,21 +35,21 @@ package views.canvas.components.timeBar
 		public static const PLAY_ALLOWANCE:int = 2000;
 		public static const MAX_ALLOWED_TIME:int = 600000; //Max allowed time of 10 mins
 		
-		private var _KSketch:KSketch2;
+		protected var _KSketch:KSketch2;
 		private var _tickmarkControl:KTouchTickMarkControl;
-		private var _timer:Timer;
+		protected var _timer:Timer;
 		private var _maxPlayTime:int;
-		private var _isPlaying:Boolean = false;
+		protected var _isPlaying:Boolean = false;
 		private var _rewindToTime:int;
 		
 		private var _maxFrame:int;
 		private var _currentFrame:int;
 		
-		private var _panVector:Point = new Point();
-		private var _panSpeed:int = _PAN_SPEED_1;
-		private var _prevOffset:Number = 1;
-		private var _panOffset:Number = 0;
-		private var _panGesture:PanGesture;
+		protected var _panVector:Point = new Point();
+		protected var _panSpeed:int = _PAN_SPEED_1;
+		protected var _prevOffset:Number = 1;
+		protected var _panOffset:Number = 0;
+		protected var _panGesture:PanGesture;
 		
 		public var timings:Vector.<int>;
 		
@@ -153,7 +153,7 @@ package views.canvas.components.timeBar
 			var pct:Number = _currentFrame/(_maxFrame*1.0);
 			timeFill.percentWidth = pct*100;
 
-			if(!_isPlaying)
+			if(!_isPlaying && floatingLabel.owner)
 			{
 				floatingLabel.x = timeFill.localToGlobal(new Point(pct*backgroundFill.width, 0)).x;
 				floatingLabel.showMessage(time, _currentFrame);
@@ -168,18 +168,18 @@ package views.canvas.components.timeBar
 			return _KSketch.time
 		}
 		
-		private function _beginPanning(event:GestureEvent):void
+		protected function _beginPanning(event:GestureEvent):void
 		{
 			_tickmarkControl.pan_begin(_panGesture.location);
 		}
 		
-		private function _updatePanning(event:GestureEvent):void
+		protected function _updatePanning(event:GestureEvent):void
 		{
 			//If edit markers, rout event into the tick mark control and return
 			_tickmarkControl.pan_update(_panGesture.location);
 		}
 		
-		private function _endPanning(event:GestureEvent):void
+		protected function _endPanning(event:GestureEvent):void
 		{
 			if(event.type == GestureEvent.GESTURE_ENDED)
 			{

@@ -16,6 +16,7 @@
 		xmlns:timeBar="views.canvas.components.timeBar.*"
 		destructionPolicy="never"
 		add="_addHandler(event);" xmlns:utils="starling.utils.*" xmlns:popup="views.canvas.components.popup.*" 
+		viewDeactivate="_viewDeactivateHandler()"
 		>
 	<fx:Declarations>
 		<popup:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{(height/2)-(cornerMenu.height/2)}"/>
@@ -25,6 +26,8 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			
+			import spark.events.ViewNavigatorEvent;
+			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
 			import views.canvas.components.timeBar.KTouchTickMarkControl;
@@ -32,6 +35,9 @@
 			import views.canvas.interactors.KCanvasInteractorManager;
 			import views.canvas.interactors.KTouchContextMenuInteractor;
 			import views.canvas.interactors.KWidgetInteractorManager;
+			import views.document.KSketchDocument;
+			
+			public var currentDocument:KSketchDocument;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KMobileInteractionControl;
@@ -64,6 +70,19 @@
 				
 				playButton.init(timeControl, _interactionControl,interceptor);
 				_interactionControl.reset();
+				
+				if(data is KSketchDocument)
+				{
+					currentDocument = data as KSketchDocument;
+					
+					if(currentDocument.xml.scene.children().length() > 0)
+						_KSketch.generateSceneFromXML(new XML(currentDocument.xml.scene));
+				}					
+			}
+			
+			private function _viewDeactivateHandler():void
+			{
+				cornerMenu.close();	
 			}
 			
 			private function _addHandler(e:FlexEvent):void
@@ -111,6 +130,24 @@
 				e.target.removeEventListener(Event.COMPLETE, _imgLoadedHandler);
 				_KSketch.object_Add_Image((e.target.content as Bitmap).bitmapData, _KSketch.time);
 			}
+			
+			override public function createReturnObject():Object
+			{
+				var saveXML:XML = <KSketch date=""/>;
+				var sceneXML:XML = _KSketch.sceneXML;
+				
+				if(0 < sceneXML.children().length())
+				{
+					saveXML.appendChild(sceneXML);
+					saveXML.appendChild(<log/>);
+					saveXML.@date = new Date().toString();
+					currentDocument.xml = saveXML;
+				}
+				
+				return currentDocument;
+			}
+			
+			
 		]]>
 	</fx:Script>
 	

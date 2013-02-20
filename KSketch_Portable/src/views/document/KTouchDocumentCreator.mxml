@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0.5" backgroundColor="0x000000"
+						    creationComplete="init()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexMouseEvent;
+			import mx.utils.StringUtil;
+			
+			public function init():void
+			{
+				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleCancel);
+			}
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				if(titleWarning)
+					titleWarning.visible = false;
+				if(documentTitle)
+					documentTitle.text = "";
+				if(documentDescription)
+					documentDescription.text = "";
+				
+				super.open(owner, modal);
+			}
+			
+			private function _handleCreate():void
+			{
+				var docTitle:String = StringUtil.trim(documentTitle.text);
+				
+				if(docTitle.length != 0)
+					close(true, docTitle);
+				else
+					titleWarning.visible = true;
+			}
+			
+			
+			private function _handleCancel(event:FlexMouseEvent = null):void
+			{
+				close();
+			}
+			
+		]]>
+	</fx:Script>
+
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
+		</s:layout>
+		<s:Group width="500" height="400">
+			<s:Rect width="100%" height="100%" radiusX="10" radiusY="10">
+				<s:fill>
+					<s:SolidColor color="0xFFFFFF"/>
+				</s:fill>
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000"/>
+				</s:stroke>
+			</s:Rect>
+			<s:Group width="100%" height="100%">
+				<s:layout>
+					<s:VerticalLayout paddingLeft="20" paddingRight="5" paddingTop="20" paddingBottom="20" gap="20"/>
+				</s:layout>
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+					<s:Label text="Document Title"/>
+					<s:Label text="Give this document a title!" fontSize="10" visible="false" id="titleWarning" color="0xFF0000"/>
+				</s:Group>
+				<s:TextInput width="90%"  id="documentTitle"/>
+				<s:Label text="Document Description"/>
+				<s:TextArea width="90%" height="100%" id="documentDescription"/>
+				<s:Group width="100%">
+					<s:layout>
+						<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"/>
+					</s:layout>
+					<s:Button label="Create" click="_handleCreate()"/>
+					<s:Button label="Cancel" click="close()"/>
+				</s:Group>
+			</s:Group>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

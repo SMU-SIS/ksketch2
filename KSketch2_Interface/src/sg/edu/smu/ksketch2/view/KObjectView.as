@@ -18,8 +18,6 @@ package sg.edu.smu.ksketch2.view
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
-	import spark.filters.GlowFilter;
-	
 	public class KObjectView extends Sprite implements IObjectView
 	{
 		public var ghost:Boolean;
@@ -27,6 +25,7 @@ package sg.edu.smu.ksketch2.view
 		protected var _object:KObject;
 		protected var _ghost:KObjectView;
 		protected var _originalPosition:Point;
+		protected var _showPath:Boolean;
 		
 		/**
 		 * KObjectView is the view representation of a KObject
@@ -55,6 +54,13 @@ package sg.edu.smu.ksketch2.view
 				_ghost.visible = false;
 				_ghost.alpha = 0.3;
 			}
+		}
+		
+		public function set showPath(show:Boolean):void
+		{
+			_showPath = show;
+			
+			_pathView.visible(show);
 		}
 		
 		public function get object():KObject

@@ -41,7 +41,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_startMatrices = new Vector.<Matrix>();
 			for(i; i<length; i++)
 			{
-				_KSketch.transform_Begin_Translation(_toTransitObjects.getObjectAt(i),
+				_KSketch.beginTransform(_toTransitObjects.getObjectAt(i),
 					_interactionControl.transitionMode, _currentOperation);
 			}
 		}
@@ -61,7 +61,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 				parentMatrix.ty = 0;
 				parentMatrix.invert();
 				point = parentMatrix.transformPoint(new Point(_dx, _dy));
-				_KSketch.transform_Update_Translation(_toTransitObjects.getObjectAt(i), point.x, point.y);
+				_KSketch.updateTransform(_toTransitObjects.getObjectAt(i), point.x, point.y, 0, 0);
 			}
 		}
 		
@@ -71,7 +71,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			var length:int = _toTransitObjects.length();
 			
 			for(i; i<length; i++)
-				_KSketch.transform_End_Translation(_toTransitObjects.getObjectAt(i), _currentOperation);
+				_KSketch.endTransform(_toTransitObjects.getObjectAt(i), _currentOperation);
 			
 			_endTransition();
 		}

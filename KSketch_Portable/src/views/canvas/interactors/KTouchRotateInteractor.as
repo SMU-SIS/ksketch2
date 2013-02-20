@@ -64,10 +64,8 @@ package views.canvas.interactors
 			var currentObject:KObject;
 
 			for(i; i < length; i++)
-			{
-				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_Begin_Rotation(currentObject,_interactionControl.transitionMode,  _interactionControl.currentInteraction);
-			}
+				_KSketch.beginTransform(_transitionObjects.getObjectAt(i),_interactionControl.transitionMode, 
+										_interactionControl.currentInteraction);
 			
 			_rotateGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Rotate);
 			_rotateGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			
@@ -80,10 +78,7 @@ package views.canvas.interactors
 			var currentObject:KObject;
 			
 			for(i; i < length; i++)
-			{
-				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_End_Rotation(currentObject,  _interactionControl.currentInteraction);
-			}
+				_KSketch.endTransform(_transitionObjects.getObjectAt(i),  _interactionControl.currentInteraction);
 			
 			super._interaction_end(event);
 			reset();
@@ -105,10 +100,7 @@ package views.canvas.interactors
 			var currentObject:KObject;
 			
 			for(i; i < length; i++)
-			{
-				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_Update_Rotation(currentObject, _theta);
-			}
+				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), 0, 0, _theta, 0 );
 			
 			_previousPoint = touchLocation;
 		}

@@ -7,9 +7,7 @@ package views.canvas.interactors
 	import org.gestouch.gestures.TransformGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
@@ -63,13 +61,7 @@ package views.canvas.interactors
 			var currentObject:KObject;
 			
 			for(i; i < length; i++)
-			{
-				currentObject = _transitionObjects.getObjectAt(i);
-
-				_KSketch.transform_Begin_Translation(currentObject, _interactionControl.transitionMode, _interactionControl.currentInteraction);
-				_KSketch.transform_Begin_Rotation(currentObject, _interactionControl.transitionMode, _interactionControl.currentInteraction);
-				_KSketch.transform_Begin_Scale(currentObject, _interactionControl.transitionMode, _interactionControl.currentInteraction);
-			}
+				_KSketch.beginTransform(_transitionObjects.getObjectAt(i), _interactionControl.transitionMode, _interactionControl.currentInteraction);
 			
 			_transformGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Transform);
 			_transformGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			
@@ -82,12 +74,7 @@ package views.canvas.interactors
 			var currentObject:KObject;
 			
 			for(i; i < length; i++)
-			{
-				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_End_Translation(currentObject, _interactionControl.currentInteraction);
-				_KSketch.transform_End_Rotation(currentObject, _interactionControl.currentInteraction);
-				_KSketch.transform_End_Scale(currentObject, _interactionControl.currentInteraction);
-			}
+				_KSketch.endTransform(_transitionObjects.getObjectAt(i), _interactionControl.currentInteraction);
 			
 			super._interaction_end(event);
 			reset();
@@ -105,12 +92,7 @@ package views.canvas.interactors
 			var currentObject:KObject;
 			
 			for(i; i < length; i++)
-			{
-				currentObject = _transitionObjects.getObjectAt(i);
-				_KSketch.transform_Update_Translation(currentObject, _dx, _dy);
-				_KSketch.transform_Update_Rotation(currentObject, _theta);
-				_KSketch.transform_Update_Scale(currentObject, _scale-1);
-			}			
+				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), _dx, _dy, _theta, _scale-1);
 		}
 	}
 }

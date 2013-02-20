@@ -44,7 +44,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			var length:int = _toTransitObjects.length();
 			_dTheta = 0;
 			for(i; i<length; i++)
-				_KSketch.transform_Begin_Rotation(_toTransitObjects.getObjectAt(i),
+				_KSketch.beginTransform(_toTransitObjects.getObjectAt(i),
 					_interactionControl.transitionMode, _currentOperation);
 		}
 		
@@ -63,7 +63,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_dTheta += angleChange;
 	
 			for(i; i<length; i++)
-				_KSketch.transform_Update_Rotation(_toTransitObjects.getObjectAt(i), _dTheta );
+				_KSketch.updateTransform(_toTransitObjects.getObjectAt(i), 0, 0, _dTheta, 0);
 			
 			_previousPoint = point;
 		}
@@ -74,7 +74,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			var length:int = _toTransitObjects.length();
 			
 			for(i; i<length; i++)
-				_KSketch.transform_End_Rotation(_toTransitObjects.getObjectAt(i),_currentOperation);
+				_KSketch.endTransform(_toTransitObjects.getObjectAt(i),_currentOperation);
 			
 			_endTransition();
 		}

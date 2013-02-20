@@ -40,7 +40,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			var length:int = _toTransitObjects.length();
 			_dSigma = 0;
 			for(i; i<length; i++)
-				_KSketch.transform_Begin_Scale(_toTransitObjects.getObjectAt(i),
+				_KSketch.beginTransform(_toTransitObjects.getObjectAt(i),
 					_interactionControl.transitionMode, _currentOperation);
 		}
 		
@@ -52,7 +52,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_dSigma += (KMathUtil.distanceOf(_workingCenter, point) - KMathUtil.distanceOf(_workingCenter, _previousPoint))*0.01;
 			
 			for(i; i<length; i++)
-				_KSketch.transform_Update_Scale(_toTransitObjects.getObjectAt(i), _dSigma );
+				_KSketch.updateTransform(_toTransitObjects.getObjectAt(i), 0, 0, 0, _dSigma);
 
 			_previousPoint = point;
 		}
@@ -63,7 +63,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			var length:int = _toTransitObjects.length();
 			
 			for(i; i<length; i++)
-				_KSketch.transform_End_Scale(_toTransitObjects.getObjectAt(i),_currentOperation);
+				_KSketch.endTransform(_toTransitObjects.getObjectAt(i),_currentOperation);
 			
 			_endTransition();
 		}

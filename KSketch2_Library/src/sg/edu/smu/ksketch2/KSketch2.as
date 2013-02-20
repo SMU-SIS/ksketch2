@@ -18,12 +18,12 @@ package sg.edu.smu.ksketch2
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.KGroupingUtil;
-	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 	import sg.edu.smu.ksketch2.operators.KStaticGroupingUtil;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KEditKeyTimeOperation;
@@ -185,105 +185,22 @@ package sg.edu.smu.ksketch2
 		}
 		
 		//Transform functions
-		/**
-		 * Begins a translation operation.
-		 * Prepares the object for a translation transition.
-		 * Starts an operation
-		 * Will fail if another operation is active when this function is called.
-		 */
-		public function transform_Begin_Translation(object:KObject, transitionType:int, op:KCompositeOperation):void
+		public function beginTransform(object:KObject, transitionType:int, op:KCompositeOperation):void
 		{
-			object.transformInterface.beginTransition(time, transitionType, TRANSFORM_TRANSLATION,op);
-			object.transformInterface.beginTranslation(time);
+			//object.transformInterface.beginTransition(time, transitionType, TRANSFORM_TRANSLATION,op);
+			//object.transformInterface.beginTranslation(time);	
 		}
 		
-		/**
-		 * Updates the current translation with the given dx,dy
-		 * will fail if there is no active transation
-		 */
-		public function transform_Update_Translation(object:KObject, dx:Number, dy:Number):void
+		public function updateTransform(object:KObject, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
 		{
-			object.transformInterface.updateTranslation(dx,dy,time);
+			//object.transformInterface.updateTranslation(dx,dy,time);
 		}
 		
-		/**
-		 * Ends the current translation
-		 * will fail if there are insufficient points in the current translation
-		 */
-		public function transform_End_Translation(object:KObject, op:KCompositeOperation):void
+		public function endTransform(object:KObject, op:KCompositeOperation):void
 		{
-			object.transformInterface.endTranslation(time, op);
-			object.transformInterface.endTransition(time, op);
-			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
-		}
-		
-		/**
-		 * Begins a rotation operation.
-		 * Prepares the object for a rotation transition.
-		 * Will fail if another operation is active when this function is called.
-		 */
-		public function transform_Begin_Rotation(object:KObject, transitionType:int, op:KCompositeOperation):void
-		{
-			object.transformInterface.beginTransition(time, transitionType, TRANSFORM_ROTATION, op);
-			object.transformInterface.beginRotation(time);
-			object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_BEGIN, object, time));
-		}
-		
-		/**
-		 * Updates the current rotation with the given dx,dy
-		 * will fail if there is no active rotation
-		 */
-		public function transform_Update_Rotation(object:KObject, dTheta:Number):void
-		{
-			object.transformInterface.updateRotation(dTheta,time);
-			object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, object, time));
-		}
-		
-		/**
-		 * Ends the current rotation
-		 * will fail if there are insufficient points in the current rotation
-		 */
-		public function transform_End_Rotation(object:KObject, op:KCompositeOperation):void
-		{
-			object.transformInterface.endRotation(time, op);
-			object.transformInterface.endTransition(time, op);
-			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
-			object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, object, time));
-		}
-		
-		/**
-		 * Begins a scale operation.
-		 * Prepares the object for a scale transition.
-		 * Will fail if another operation is active when this function is called.
-		 */
-		public function transform_Begin_Scale(object:KObject, transitionType:int, op:KCompositeOperation):void
-		{
-			object.transformInterface.beginTransition(time, transitionType, TRANSFORM_SCALE, op);
-			object.transformInterface.beginScale(time);
-			object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_BEGIN, object, time));
-		}
-		
-		/**
-		 * Updates the current scale with the given dx,dy
-		 * will fail if there is no active scale
-		 */
-		public function transform_Update_Scale(object:KObject, dSigma:Number):void
-		{
-			object.transformInterface.updateScale(dSigma,time);
-			object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, object, time));
-
-		}
-		
-		/**
-		 * Ends the current scale
-		 * will fail if there are insufficient points in the current scale
-		 */
-		public function transform_End_Scale(object:KObject, op:KCompositeOperation):void
-		{
-			object.transformInterface.endScale(time, op);
-			object.transformInterface.endTransition(time, op);
-			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
-			object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, object, time));
+			//object.transformInterface.endTranslation(time, op);
+			//object.transformInterface.endTransition(time, op);
+			//dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 		}
 		
 		/**

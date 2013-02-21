@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="TempDocumentView" actionBarVisible="false" xmlns:scrollerColumn="views.document.scrollerColumn.*"
+		initialize="_initData()"
+		creationComplete="_initComponents()" xmlns:view="sg.edu.smu.ksketch2.view.*" xmlns:previewer="views.document.previewer.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>	
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketch2;
+			
+			import utils.KSketchDocument;
+			
+			import views.document.scrollerColumn.KDocumentSelectedEvent;
+			import views.document.scrollerColumn.KTouchNewDocumentButtonSkin;
+			
+			private var _KSketch:KSketch2;
+			
+			private var _currentDocument:KSketchDocument;
+			private var _KSketchFiles:Vector.<File>;
+			private var _KSketchDocuments:Vector.<KSketchDocument>;
+			
+			private function _initComponents():void
+			{
+				modelDisplay.init(_KSketch);
+				timeControl.init(_KSketch, canvas_region);
+				scroller.addEventListener(KDocumentSelectedEvent.DOCUMENT_SELECTED, _documentSelectedHandler);
+			}
+			
+			private function _initData():void
+			{
+				_KSketch = new KSketch2();
+				_KSketchDocuments = new Vector.<KSketchDocument>();
+				
+				var dir:File = File.applicationDirectory;
+				dir = dir.resolvePath("tasks");
+				var allFiles:Array = dir.getDirectoryListing();
+				
+				_KSketchFiles = new Vector.<File>();
+				var currentFile:File;
+				
+				for(var i:int = 0; i < allFiles.length; i++)
+				{
+					currentFile = allFiles[i] as File;
+					
+					if(currentFile.url.search(".kmv") > -1)
+					{
+						currentFile.addEventListener(Event.COMPLETE, _loadFileComplete, false, 0, true);
+						currentFile.load();
+						_KSketchFiles.push(currentFile);
+					}
+				}
+			}
+			
+			private function _loadFileComplete(event:Event):void
+			{
+				(event.target as File).removeEventListener(Event.COMPLETE, _loadFileComplete);
+				
+				var pathParts:Array = (event.target as File).url.split("/");
+				var fileName:String = pathParts[pathParts.length-1];
+				fileName = fileName.substring(0, fileName.length-4);
+				pathParts = fileName.split("%20");
+				fileName = pathParts.join(" ");
+				
+				var xml:XML = new XML(event.target.data);
+				
+				var myDoc:KSketchDocument = new KSketchDocument(fileName, xml, (Math.random()).toString());
+				scroller.addDocument(myDoc);
+			}
+			
+			private function _documentSelectedHandler(event:KDocumentSelectedEvent):void
+			{
+				var selectedDocument:KSketchDocument = event.selectedDocument;
+				_KSketch.reset();
+				
+				var xml:XML = selectedDocument.xml;
+				if(xml.scene.children().length() > 0)
+					_KSketch.generateSceneFromXML(new XML(xml.scene));
+				
+				_currentDocument = selectedDocument;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="0xFFFFFF"/>
+		</s:fill>
+	</s:Rect>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout gap="2"/>
+		</s:layout>
+		<s:Group width="33%" height="100%">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xE7E7E7"/>
+				</s:fill>
+			</s:Rect>
+			<s:Group width="100%" height="100%">
+				<s:layout>
+					<s:VerticalLayout gap="5" paddingLeft="15" paddingRight="15" paddingTop="15"/>
+				</s:layout>
+				<s:Button skinClass="views.document.scrollerColumn.KTouchNewDocumentButtonSkin" width="100%"/>
+				<scrollerColumn:KTouchDocumentScroller width="100%" height="100%" id="scroller"/>
+			</s:Group>
+		</s:Group>
+
+		<s:Group width="67%" height="100%">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xE7E7E7"/>
+				</s:fill>
+			</s:Rect>
+			
+			<!--Previewer portion-->
+			<s:Group width="100%" height="100%">
+				<s:Rect top="15" left="15" right="15" bottom="15">
+					<s:fill>
+						<s:SolidColor color="0xFFFFFF"/>
+					</s:fill>
+					<s:filters>
+						<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
+					</s:filters>
+				</s:Rect>
+				<s:Group top="15" left="15" right="15" bottom="15">
+					<s:layout>
+						<s:VerticalLayout gap="15" paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15"/>
+					</s:layout>
+					<s:Label id="currentDocTitle" fontSize="32" text="Current Document" color="0x757474"
+							 fontWeight="bold" fontFamily="_sans"/>
+					<s:Line width="100%">
+						<s:stroke>
+							<s:SolidColorStroke color="0xdbd6d6" weight="1"/>
+						</s:stroke>
+					</s:Line>
+					<s:Group width="100%" height="100%" id="canvas_region">
+						<s:layout>
+							<s:VerticalLayout horizontalAlign="center" verticalAlign="middle" gap="10"/>
+						</s:layout>
+						<!-- For show, all the visual elements that the user wont be able to "touch"-->
+						<s:Group id="drawing_stage" height="{drawing_stage.width/16*9}" width="95%">
+							<s:Rect width="100%" height="100%">
+								<s:fill>
+									<s:SolidColor color="0xFFFFFF"/>
+								</s:fill>
+								<s:stroke>
+									<s:SolidColorStroke color="0xdbd6d6" weight="1"/>
+								</s:stroke>
+							</s:Rect>
+							<!-- The model display displays the objects in the model -->
+							<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
+												scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
+						</s:Group>
+						<previewer:KTouchPreviewTimeControl width="95%" id="timeControl"/>
+					</s:Group>
+					<s:Group width="100%">
+						<s:layout>
+							<s:HorizontalLayout gap="15"/>
+						</s:layout>
+						<s:Button label="Open" skinClass="views.document.previewer.KTouchPreviewerButtonSkin"/>
+						<s:Button label="Export" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false"/>
+						<s:Button label="Share" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false"/>
+						<s:Button label="Delete" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false"/>
+					</s:Group>
+				</s:Group>
+			</s:Group>
+		</s:Group>
+	</s:Group>
+</s:View>

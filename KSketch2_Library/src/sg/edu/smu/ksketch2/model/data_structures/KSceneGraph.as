@@ -148,7 +148,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 				}
 			}
 			
-			debug();			
+			//debug();			
 		}
 		
 		public function debug():void

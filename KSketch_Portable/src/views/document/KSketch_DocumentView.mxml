@@ -20,6 +20,10 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import views.document.previewer.KTouchPreviewTimeControl;
+			import views.document.scrollerColumn.KTouchDocumentScrollerButtonSkin;
+			import views.document.scrollerColumn.KTouchDocumentScrollerButton;
+			import utils.KSketchDocument;
 			import spark.events.PopUpEvent;
 			import spark.events.ViewNavigatorEvent;
 			
@@ -91,16 +95,16 @@
 			
 			private function _addToScroller(newDocument:KSketchDocument):void
 			{
-				var newButton:KDocumentScrollerButton = new KDocumentScrollerButton();
+				var newButton:KTouchDocumentScrollerButton = new KTouchDocumentScrollerButton();
 				newButton.ksketchDocument = newDocument;
-				newButton.setStyle("skinClass", Class(KDocumentScrollerButtonSkin));
+				newButton.setStyle("skinClass", Class(KTouchDocumentScrollerButtonSkin));
 				documentScrollerContainer.addElement(newButton);
 			}
 			
 			private function _loadFile(target:*):void
 			{
-				if(target is KDocumentScrollerButton)
-					_loadDocumentPreview((target as KDocumentScrollerButton).ksketchDocument);
+				if(target is KTouchDocumentScrollerButton)
+					_loadDocumentPreview((target as KTouchDocumentScrollerButton).ksketchDocument);
 			}
 			
 			private function _loadDocumentPreview(document:KSketchDocument):void
@@ -164,7 +168,7 @@
 					<s:layout>
 						<s:VerticalLayout gap="1" horizontalAlign="left" paddingTop="5" paddingLeft="5"/>
 					</s:layout>
-					<s:Button skinClass="views.document.NewDocumentButton" width="100%" height="70"
+					<s:Button skinClass="views.document.scrollerColumn.NewDocumentButton" width="100%" height="70"
 							   click="_showNewDocConfig()"/>
 					<s:Line width="90%" alpha="0.25">
 						<s:stroke>

@@ -1,4 +1,4 @@
-package views.document
+package utils
 {
 	[Bindable]
 	public class KSketchDocument

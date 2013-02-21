@@ -35,7 +35,7 @@
 			import views.canvas.interactors.KCanvasInteractorManager;
 			import views.canvas.interactors.KTouchContextMenuInteractor;
 			import views.canvas.interactors.KWidgetInteractorManager;
-			import views.document.KSketchDocument;
+			import utils.KSketchDocument;
 			
 			public var currentDocument:KSketchDocument;
 			

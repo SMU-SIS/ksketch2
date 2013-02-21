@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Scroller xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			xmlns:s="library://ns.adobe.com/flex/spark"
+			skinClass="views.document.scrollerColumn.KTouchDocumentScrollerSkin"
+			xmlns:scrollerColumn="views.document.scrollerColumn.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import utils.KSketchDocument;
+			
+			private var _selectedButton:KTouchDocumentScrollerButton;
+			
+			public function addDocument(document:KSketchDocument):void
+			{
+				var newButton:KTouchDocumentScrollerButton = new KTouchDocumentScrollerButton();
+				newButton.init(document);
+				documentContainer.addElement(newButton);
+			}	
+			
+			public function documentSelected(target:Object):void
+			{
+				if(target is KTouchDocumentScrollerButton)
+				{
+					if(_selectedButton)
+						_selectedButton.buttonSelected = false;
+					
+					_selectedButton = target as KTouchDocumentScrollerButton;
+					_selectedButton.buttonSelected = true;
+					dispatchEvent(
+						new KDocumentSelectedEvent(KDocumentSelectedEvent.DOCUMENT_SELECTED, _selectedButton.ksketchDocument));
+				}
+			}
+		]]>
+	</fx:Script>
+	<s:Group width="100%">
+		<s:Rect width="100%" height="{documentContainer.height}">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF"/>
+			</s:fill>
+			<s:filters>
+				<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
+			</s:filters>
+		</s:Rect>
+		<s:Group width="100%" id="documentContainer" click="documentSelected(event.target)">
+			<s:layout>
+				<s:VerticalLayout gap="10" paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"/>
+			</s:layout>
+		</s:Group>
+	</s:Group>
+</s:Scroller>

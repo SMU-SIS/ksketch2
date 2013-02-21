@@ -26,9 +26,9 @@ package sg.edu.smu.ksketch2.operators
 	
 	public class KSingleReferenceFrameOperator implements ITransformInterface
 	{
-		public static const TRANSLATE_THRESHOLD:Number = 10;
-		public static const ROTATE_THRESHOLD:Number = 0.2;
-		public static const SCALE_THRESHOLD:Number = 0.2;
+		public static const TRANSLATE_THRESHOLD:Number = 3;
+		public static const ROTATE_THRESHOLD:Number = 0.3;
+		public static const SCALE_THRESHOLD:Number = 0.1;
 		
 		protected var _object:KObject;
 		protected var _refFrame:KReferenceFrame;
@@ -38,12 +38,28 @@ package sg.edu.smu.ksketch2.operators
 		protected var _SWorkingPath:KPath;
 		
 		protected var _startTime:int;
+		protected var _startMatrix:Matrix;
 		protected var _inTransit:Boolean
 		protected var _transitionType:int;
+		
 		protected var _transitionX:Number;
 		protected var _transitionY:Number;
 		protected var _transitionTheta:Number;
 		protected var _transitionSigma:Number;
+		
+		protected var _magX:Number;
+		protected var _magY:Number;
+		protected var _magTheta:Number;
+		protected var _magSigma:Number;
+
+		protected var _cutTranslate:Boolean;
+		protected var _cutTranslateTime:int;
+		
+		protected var _cutRotate:Boolean;
+		protected var _cutRotateTime:int;
+		
+		protected var _cutScale:Boolean;
+		protected var _cutScaleTime:int;
 		
 		/**
 		 * KSingleReferenceFrame is the transform interface dealing with the single reference frame model
@@ -176,24 +192,58 @@ package sg.edu.smu.ksketch2.operators
 			var theta:Number = _transitionTheta;
 			var sigma:Number = 1 + _transitionSigma;
 			var point:KTimedPoint;
+			var proportionKeyFrame:Number;
+			var computeTime:int;
 			
 			while(currentKey)
 			{
-				if(currentKey.startTime <= _startTime)
+				if((TRANSLATE_THRESHOLD < _magX || TRANSLATE_THRESHOLD < _magY) && !_cutTranslate)
 				{
-					var proportionKeyFrame:Number = currentKey.findProportion(_startTime);
-					
+					_cutTranslate = true;
+					_cutTranslateTime = time;
+				}
+				
+				computeTime = _cutTranslate? _cutTranslateTime:time;
+				
+				if(currentKey.startTime <= computeTime)
+				{
+					proportionKeyFrame = currentKey.findProportion(computeTime);
 					point = currentKey.translatePath.find_Point(proportionKeyFrame);
 					if(point)
 					{
 						x += point.x;
 						y += point.y;
 					}
-					
+				}
+				
+				
+				if((ROTATE_THRESHOLD < _magTheta) && !_cutRotate)
+				{
+					_cutRotate = true;
+					_cutRotateTime = time;
+				}
+
+				computeTime = _cutRotate? _cutRotateTime:time;
+				
+				if(currentKey.startTime <= computeTime)
+				{
+					proportionKeyFrame = currentKey.findProportion(computeTime);
 					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
 					if(point)
 						theta += point.x;
-					
+				}
+				
+				if((SCALE_THRESHOLD < _magSigma) && !_cutScale)
+				{
+					_cutScale = true;
+					_cutScaleTime = time;
+				}
+				
+				computeTime = _cutScale? _cutScaleTime:time;
+				
+				if(currentKey.startTime <= computeTime)
+				{
+					proportionKeyFrame = currentKey.findProportion(computeTime);
 					point = currentKey.scalePath.find_Point(proportionKeyFrame);
 					if(point)
 						sigma += point.x;
@@ -264,6 +314,15 @@ package sg.edu.smu.ksketch2.operators
 			_transitionTheta = 0;
 			_transitionSigma = 0;
 			
+			_magX = 0;
+			_magY = 0;
+			_magTheta = 0;
+			_magSigma = 0;
+			
+			_cutTranslate = false;
+			_cutRotate = false;
+			_cutScale = false;
+			
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				_TWorkingPath = new KPath();
@@ -276,6 +335,11 @@ package sg.edu.smu.ksketch2.operators
 		
 		public function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
 		{
+			_magX += Math.abs(dx - _transitionX);
+			_magY += Math.abs(dy - _transitionY);
+			_magTheta += Math.abs(dTheta - _transitionTheta);
+			_magSigma += Math.abs(dScale - _transitionSigma);
+			
 			_transitionX = dx;
 			_transitionY = dy;
 			_transitionTheta = dTheta;
@@ -309,15 +373,14 @@ package sg.edu.smu.ksketch2.operators
 				//If path is valid, the object's future for that transform type will be discarded
 				_normaliseForOverwriting(_startTime, op);
 
-				
 				//Then I need to put the usable paths into the object
-				if(!_TWorkingPath.isTrivial(TRANSLATE_THRESHOLD))
+				if((TRANSLATE_THRESHOLD < _magX) || (TRANSLATE_THRESHOLD < _magY))
 					_replacePathOverTime(_TWorkingPath, _startTime, time, KSketch2.TRANSFORM_TRANSLATION, op);
 				
-				if(!_RWorkingPath.isTrivial(ROTATE_THRESHOLD))
+				if(ROTATE_THRESHOLD < _magTheta)
 					_replacePathOverTime(_RWorkingPath, _startTime, time, KSketch2.TRANSFORM_ROTATION, op);
 				
-				if(!_SWorkingPath.isTrivial(SCALE_THRESHOLD))
+				if(SCALE_THRESHOLD < _magSigma)
 					_replacePathOverTime(_SWorkingPath, _startTime, time, KSketch2.TRANSFORM_SCALE, op);
 				
 				matrix(time);
@@ -346,12 +409,6 @@ package sg.edu.smu.ksketch2.operators
 			}
 			
 			_inTransit = false;
-			
-			//Initiate transition values and variables first
-			_transitionX = 0;
-			_transitionY = 0;
-			_transitionTheta = 0;
-			_transitionSigma = 0;
 			
 			//Dispatch a transform finalised event
 			//Application level components can listen to this event to do updates
@@ -785,9 +842,9 @@ package sg.edu.smu.ksketch2.operators
 			var oldPath:KPath;
 			var newPath:KPath;
 			
-			var validTranslate:Boolean = !_TWorkingPath.isTrivial(TRANSLATE_THRESHOLD);
-			var validRotate:Boolean = !_RWorkingPath.isTrivial(ROTATE_THRESHOLD);
-			var validScale:Boolean = !_SWorkingPath.isTrivial(SCALE_THRESHOLD);
+			var validTranslate:Boolean = (TRANSLATE_THRESHOLD < _magX) || (TRANSLATE_THRESHOLD < _magY);
+			var validRotate:Boolean = ROTATE_THRESHOLD < _magTheta;
+			var validScale:Boolean = SCALE_THRESHOLD < _magSigma;
 			
 			while(currentKey.next)
 			{

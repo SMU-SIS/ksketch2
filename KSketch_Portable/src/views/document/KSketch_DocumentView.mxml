@@ -108,8 +108,6 @@
 				_KSketch.reset();
 				
 				var xml:XML = document.xml;
-				trace("loading preview");
-				trace(xml);
 				if(xml.scene.children().length() > 0)
 					_KSketch.generateSceneFromXML(new XML(xml.scene));
 				

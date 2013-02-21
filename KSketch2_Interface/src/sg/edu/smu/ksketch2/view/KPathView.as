@@ -8,7 +8,6 @@
  */
 package sg.edu.smu.ksketch2.view
 {
-	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Shape;
 	import flash.geom.Point;

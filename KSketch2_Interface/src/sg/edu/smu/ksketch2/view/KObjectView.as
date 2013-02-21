@@ -10,7 +10,6 @@ package sg.edu.smu.ksketch2.view
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
-	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
@@ -122,8 +121,11 @@ package sg.edu.smu.ksketch2.view
 			
 			transform.matrix = _object.transformMatrix(time);
 			
+//			if(_pathView && _showPath)
+//				_pathView.renderPathView(time);
+//			else
 			if(_pathView)
-				_pathView.renderPathView(time);
+				_pathView.visible(false);
 		}
 		
 		/**

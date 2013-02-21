@@ -57,9 +57,14 @@
 			
 			public function set time(value:int):void
 			{
+				if(value < 0)
+					value = 0;
+				
+				if(value > _KSketch.maxTime)
+					value = _KSketch.maxTime;
+				
 				_KSketch.time = value;
 				
-				trace(value/_KSketch.maxTime*100, value, _KSketch.maxTime);
 				timeFill.percentWidth = value/_KSketch.maxTime*100;
 			}
 			
@@ -184,7 +189,7 @@
 			</s:stroke>
 		</s:Rect>
 		
-		<s:Rect width="10%" height="100%" id="timeFill">
+		<s:Rect width="0%" height="100%" id="timeFill">
 			<s:fill>
 				<s:SolidColor color="0xdbd6d6"/>
 			</s:fill>

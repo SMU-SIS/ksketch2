@@ -196,9 +196,8 @@ package sg.edu.smu.ksketch2
 		
 		public function endTransform(object:KObject, op:KCompositeOperation):void
 		{
-			//object.transformInterface.endTranslation(time, op);
-			//object.transformInterface.endTransition(time, op);
-			//dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
+			object.transformInterface.endTransition(time, op);
+			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 		}
 		
 		/**

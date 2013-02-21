@@ -8,12 +8,9 @@
  */
 package sg.edu.smu.ksketch2.model.data_structures
 {
-	import flash.geom.Point;
-	
 	import mx.utils.StringUtil;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 
 	public class KPath
 	{
@@ -25,6 +22,38 @@ package sg.edu.smu.ksketch2.model.data_structures
 		public function KPath()
 		{
 			points = new Vector.<KTimedPoint>();
+		}
+		
+		public function isTrivial(thresholdMagnitude:Number):Boolean
+		{
+			if(points.length == 0)
+				return true;
+			
+			if(thresholdMagnitude < 0)
+				throw new Error("KPath.isTrivial: One does not simply give a negative threshold magnitude." +
+					"It is known to cause time-space distortions and can destroy the world");
+			
+			var i:int;
+			var length:int = points.length;
+			var pathMagnitude:Number = 0;
+			var previousPoint:KTimedPoint = points[0];
+			var currentPoint:KTimedPoint;
+			var dx:Number;
+			var dy:Number;
+			
+			for(i=1; i<length; i++)
+			{
+				currentPoint  = points[i];
+				dx = currentPoint.x - previousPoint.x;
+				dy = currentPoint.y - previousPoint.y;
+				pathMagnitude += Math.sqrt((dx*dx)+(dy*dy));
+				previousPoint = currentPoint;
+			}
+			
+			if(pathMagnitude <= thresholdMagnitude)
+				return true;
+			
+			return false;
 		}
 		
 		public function get pathDuration():int
@@ -121,8 +150,12 @@ package sg.edu.smu.ksketch2.model.data_structures
 				dy = currentPoint.y - previousPoint.y;
 				pathMagnitude += Math.sqrt((dx*dx)+(dy*dy));
 				magnitudeTable.push(pathMagnitude);
+				
 				previousPoint = currentPoint;
 			}
+			
+			if(pathMagnitude == 0)
+				return new KTimedPoint(0,0,0);
 			
 			var queriedMagnitude:Number = proportion * pathMagnitude;
 			

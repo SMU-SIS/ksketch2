@@ -26,6 +26,10 @@ package sg.edu.smu.ksketch2.operators
 	
 	public class KSingleReferenceFrameOperator implements ITransformInterface
 	{
+		public static const TRANSLATE_THRESHOLD:Number = 10;
+		public static const ROTATE_THRESHOLD:Number = 0.2;
+		public static const SCALE_THRESHOLD:Number = 0.2;
+		
 		protected var _object:KObject;
 		protected var _refFrame:KReferenceFrame;
 		
@@ -34,6 +38,7 @@ package sg.edu.smu.ksketch2.operators
 		protected var _SWorkingPath:KPath;
 		
 		protected var _startTime:int;
+		protected var _inTransit:Boolean
 		protected var _transitionType:int;
 		protected var _transitionX:Number;
 		protected var _transitionY:Number;
@@ -49,6 +54,8 @@ package sg.edu.smu.ksketch2.operators
 				throw new Error("Transform interface says: Dude, no object given!");
 			_refFrame = new KReferenceFrame();
 			_object = object;
+			_inTransit = false;
+			
 			//Oh yeah, since we are doing static grouping, lets create the keys at zero to make our lives easier!
 //			var headerKey:KSpatialKeyFrame = new KSpatialKeyFrame(0, object.centroid);
 //			_refFrame.insertKey(headerKey);
@@ -102,6 +109,9 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function matrix(time:int):Matrix
 		{
+			if(_inTransit)
+				return _transitionMatrix(time);
+			
 			//Extremely hardcoded matrix
 			//Iterate through the key list and add up the rotation, scale, dx dy values
 			//Pump these values into the matrix after wards
@@ -110,10 +120,10 @@ package sg.edu.smu.ksketch2.operators
 			if(!currentKey)
 				return new Matrix();
 			
-			var x:Number = _transitionX;
-			var y:Number = _transitionY;
-			var theta:Number = _transitionTheta;
-			var sigma:Number = 1 + _transitionSigma;
+			var x:Number = 0;
+			var y:Number = 0;
+			var theta:Number = 0;
+			var sigma:Number = 1;
 			var point:KTimedPoint;
 			
 			while(currentKey)
@@ -121,7 +131,7 @@ package sg.edu.smu.ksketch2.operators
 				if(currentKey.startTime <= time)
 				{
 					var proportionKeyFrame:Number = currentKey.findProportion(time);
-
+					
 					point = currentKey.translatePath.find_Point(proportionKeyFrame);
 					if(point)
 					{
@@ -147,7 +157,58 @@ package sg.edu.smu.ksketch2.operators
 			result.scale(sigma, sigma);
 			result.translate(_object.centroid.x, _object.centroid.y);
 			result.translate(x, y);
-
+			
+			return result;
+		}
+		
+		private function _transitionMatrix(time:int):Matrix
+		{
+			//Extremely hardcoded matrix
+			//Iterate through the key list and add up the rotation, scale, dx dy values
+			//Pump these values into the matrix after wards
+			var currentKey:KSpatialKeyFrame = _refFrame.head as KSpatialKeyFrame;
+			
+			if(!currentKey)
+				return new Matrix();
+			
+			var x:Number = _transitionX;
+			var y:Number = _transitionY;
+			var theta:Number = _transitionTheta;
+			var sigma:Number = 1 + _transitionSigma;
+			var point:KTimedPoint;
+			
+			while(currentKey)
+			{
+				if(currentKey.startTime <= _startTime)
+				{
+					var proportionKeyFrame:Number = currentKey.findProportion(_startTime);
+					
+					point = currentKey.translatePath.find_Point(proportionKeyFrame);
+					if(point)
+					{
+						x += point.x;
+						y += point.y;
+					}
+					
+					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
+					if(point)
+						theta += point.x;
+					
+					point = currentKey.scalePath.find_Point(proportionKeyFrame);
+					if(point)
+						sigma += point.x;
+				}
+				
+				currentKey = currentKey.next as KSpatialKeyFrame;
+			}
+			
+			var result:Matrix = new Matrix();
+			result.translate(-_object.centroid.x,-_object.centroid.y);
+			result.rotate(theta);
+			result.scale(sigma, sigma);
+			result.translate(_object.centroid.x, _object.centroid.y);
+			result.translate(x, y);
+			
 			return result;	
 		}
 		
@@ -209,6 +270,8 @@ package sg.edu.smu.ksketch2.operators
 				_RWorkingPath = new KPath();
 				_SWorkingPath = new KPath();
 			}
+			
+			_inTransit = true;
 		}
 		
 		public function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
@@ -221,7 +284,6 @@ package sg.edu.smu.ksketch2.operators
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				var elapsedTime:int = time - _startTime;
-				
 				_TWorkingPath.push(dx, dy, elapsedTime);
 				_RWorkingPath.push(dTheta, 0, elapsedTime);
 				_SWorkingPath.push(dScale, 0, elapsedTime);			
@@ -232,86 +294,70 @@ package sg.edu.smu.ksketch2.operators
 		
 		public function endTransition(time:int, op:KCompositeOperation):void
 		{
-			//_clearEmptyKeys(op);
-		}
-		
-		/**
-		 * This method currently checks for inconsistencies only.
-		 */
-		public function beginTranslation(time:int):void
-		{
-			if(_transitionX != 0 || _transitionY != 0)
-				throw new Error("Transition variables are not clean, can't proceed");
-			_TWorkingPath = new KPath();
-			_TWorkingPath.push(0, 0, 0);
-		}
-		
-		/**
-		 * Ends the translation and does path processing on the working path
-		 * All three kinds of end Transition functions are similar.
-		 * Should collapse them into one function during clean up
-		 */
-		public function endTranslation(time:int, op:KCompositeOperation):void
-		{
+			//Only two kinds of transitions, demonstrated or interpolated
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
+				//Process the paths here first
+				//Do w/e you want to the paths here!
 				if(KSketch2.discardTransitionTimings)
+				{
 					_discardTransitionTiming(_TWorkingPath);
-				_replacePathOverTime(_TWorkingPath, _startTime, time, KSketch2.TRANSFORM_TRANSLATION, op);
-				// Need to replace the path for the future keys since it is a demonstration
-			}
-			else
-			{
-				var targetKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(time-1) as KSpatialKeyFrame;
-				interpolateKey(_transitionX, _transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
-			}
-			
-			//Reset the transition values
-			_transitionX = 0;
-			_transitionY = 0;
-			_TWorkingPath = null;
-			
-			//Dispatches a transform finalised event
-			//Interface can listen to this event to do updates
-			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
-		}
-		
-		public function endRotation(time:int, op:KCompositeOperation):void
-		{
-			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-			{
-				if(KSketch2.discardTransitionTimings)
 					_discardTransitionTiming(_RWorkingPath);
-				_replacePathOverTime(_RWorkingPath, _startTime, time, KSketch2.TRANSFORM_ROTATION, op);
-			}
-			else
-			{
-				var targetKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(time-1) as KSpatialKeyFrame;
-				interpolateKey(_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
-			}
-			_transitionTheta = 0;
-			_RWorkingPath = null;
-			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
-		}
-		
-		public function endScale(time:int, op:KCompositeOperation):void
-		{
-			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-			{
-				if(KSketch2.discardTransitionTimings)
 					_discardTransitionTiming(_SWorkingPath);
-				_replacePathOverTime(_SWorkingPath, _startTime, time, KSketch2.TRANSFORM_SCALE, op);
+				}
+				//Path validity will be tested in _normaliseForOverwriting
+				//If path is valid, the object's future for that transform type will be discarded
+				_normaliseForOverwriting(_startTime, op);
+
+				
+				//Then I need to put the usable paths into the object
+				if(!_TWorkingPath.isTrivial(TRANSLATE_THRESHOLD))
+					_replacePathOverTime(_TWorkingPath, _startTime, time, KSketch2.TRANSFORM_TRANSLATION, op);
+				
+				if(!_RWorkingPath.isTrivial(ROTATE_THRESHOLD))
+					_replacePathOverTime(_RWorkingPath, _startTime, time, KSketch2.TRANSFORM_ROTATION, op);
+				
+				if(!_SWorkingPath.isTrivial(SCALE_THRESHOLD))
+					_replacePathOverTime(_SWorkingPath, _startTime, time, KSketch2.TRANSFORM_SCALE, op);
+				
+				matrix(time);
+				_clearEmptyKeys(op);
 			}
 			else
 			{
-				var targetKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(time-1) as KSpatialKeyFrame;
+				//We need a key to add the interpolation values
+				//So check if a key can be inserted
+				//A key can be inserted if there is no key at time
+				if(canInsertKey(time))
+					insertBlankKeyFrame(time, op);
+				
+				//After inserting a key, will be pretty sure there is a key at time.
+				//Just get the key at time
+				var targetKey:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
+
+				if(!targetKey)
+					throw new Error("Unable to get a key for interpolation. Please check");
+				//Errorneous status, need to find out what happened to the object's timeline
+				
+				//Then we just dump the transition values into the key
+				interpolateKey(_transitionX, _transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
+				interpolateKey(_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
 				interpolateKey(_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);
 			}
+			
+			_inTransit = false;
+			
+			//Initiate transition values and variables first
+			_transitionX = 0;
+			_transitionY = 0;
+			_transitionTheta = 0;
 			_transitionSigma = 0;
-			_SWorkingPath = null;
+			
+			//Dispatch a transform finalised event
+			//Application level components can listen to this event to do updates
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
 		}
-		
+
 		/**
 		 * Inserts a key ONLY WHEN THERE IS A KEY after time and that key HAS TRANSITIONS in it!
 		 */
@@ -473,8 +519,8 @@ package sg.edu.smu.ksketch2.operators
 		public function interpolateKey(dx:Number, dy:Number, targetKey:KSpatialKeyFrame, transformType:int, time:int,
 									   op:KCompositeOperation, followUp:Boolean = false):void
 		{
-			if(KSketch2.addInterpolationKeys && time < targetKey.time)
-				targetKey = targetKey.splitKey(time, op) as KSpatialKeyFrame;
+			if(time != targetKey.time)
+				throw new Error("Unable to interpolate a key if the interpolation time != targetKey's time");
 			
 			var proportionElapsed:Number;
 			
@@ -579,6 +625,7 @@ package sg.edu.smu.ksketch2.operators
 				currentTime += KSketch2.ANIMATION_INTERVAL;
 				currentProportion = currentTime / pathDuration;
 			}
+			
 			path.points = newPoints;
 		}
 		
@@ -705,16 +752,12 @@ package sg.edu.smu.ksketch2.operators
 		}
 		
 		/**
-		 * Makes sure the object/model is in THE MAGICAL STATE for transition
-		 * For this mode, we will need to make sure there is nothing else in the future
+		 * Makes sure the object/model is in a magical state in order for transition
+		 * paths to be added to the model
 		 */
-		protected function _normaliseModel(time:int, transformType:int, op:KCompositeOperation):void
+		protected function _normaliseForOverwriting(time:int, op:KCompositeOperation):void
 		{
-			if(_transitionType != KSketch2.TRANSITION_DEMONSTRATED)
-				return;
-			
 			var key:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
-
 			//If there's a key there. Perfect! No need to do anything right now
 			//Else we need a key here some how
 			if(!key)
@@ -734,38 +777,45 @@ package sg.edu.smu.ksketch2.operators
 			}
 
 			if(!key)
-				throw new Error("_normaliseModel's magic is failing!");
+				throw new Error("Normaliser's magic is failing! Check if your object is available for demonstration!");
 			
+			//FUTURE OVERWRITING IS DONE HERE
+			//IF YOU WANT TO CHANGE IMPLEMENTATION FOR FUTURE, DO IT HERE
 			var currentKey:KSpatialKeyFrame = key;
 			var oldPath:KPath;
 			var newPath:KPath;
+			
+			var validTranslate:Boolean = !_TWorkingPath.isTrivial(TRANSLATE_THRESHOLD);
+			var validRotate:Boolean = !_RWorkingPath.isTrivial(ROTATE_THRESHOLD);
+			var validScale:Boolean = !_SWorkingPath.isTrivial(SCALE_THRESHOLD);
+			
 			while(currentKey.next)
 			{
 				currentKey = currentKey.next as KSpatialKeyFrame;
 				
-				switch(transformType)
+				if(validTranslate)	
 				{
-					case KSketch2.TRANSFORM_TRANSLATION:
-						oldPath = currentKey.translatePath;
-						currentKey.translatePath = new KPath();
-						newPath = currentKey.translatePath;
-						break;
-					case KSketch2.TRANSFORM_ROTATION:
-						oldPath = currentKey.rotatePath;
-						currentKey.rotatePath = new KPath();
-						newPath = currentKey.rotatePath;
-						break;
-					case KSketch2.TRANSFORM_SCALE:
-						oldPath = currentKey.scalePath;
-						currentKey.scalePath = new KPath();
-						newPath = currentKey.scalePath;
-						break;
-					default:
-						throw new Error("NormaliseModel can't work its magic if you give it the wrong transform type!");
+					oldPath = currentKey.translatePath;
+					currentKey.translatePath = new KPath();
+					newPath = currentKey.translatePath;
+					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
 				}
-
-				//Create a new path replacement operation;
-				op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, transformType));
+				
+				if(validRotate)
+				{
+					oldPath = currentKey.rotatePath;
+					currentKey.rotatePath = new KPath();
+					newPath = currentKey.rotatePath;
+					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_ROTATION));
+				}
+				
+				if(validScale)
+				{
+					oldPath = currentKey.scalePath;
+					currentKey.scalePath = new KPath();
+					newPath = currentKey.scalePath;
+					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_SCALE));
+				}
 			}
 		}
 		

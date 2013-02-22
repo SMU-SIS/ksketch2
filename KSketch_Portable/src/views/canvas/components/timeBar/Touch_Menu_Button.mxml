@@ -3,10 +3,11 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" width="40" height="40" creationComplete="initImage()">
 	<fx:Script>
 		<![CDATA[
+			import views.canvas.KSketch_CanvasView;
 			
 			public function initImage():void
 			{
-				graphics.lineStyle(5,0x000000);
+				graphics.lineStyle(5, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
 				
 				graphics.moveTo(0,10);
 				graphics.lineTo(30,10);

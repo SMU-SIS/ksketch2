@@ -7,10 +7,6 @@ package views.canvas.components.timeBar
 	
 	import mx.core.UIComponent;
 	
-	import org.gestouch.events.GestureEvent;
-	import org.gestouch.gestures.LongPressGesture;
-	import org.gestouch.gestures.TapGesture;
-	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
 	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
@@ -26,6 +22,9 @@ package views.canvas.components.timeBar
 
 	public class KTouchTickMarkControl
 	{
+		private const _TICK_MARK_COLOR:uint = 0xFA5858;
+		private const _TICK_MARK_THICKNESS:Number = 2;
+		
 		private var _KSketch:KSketch2;
 		private var _timeControl:KTouchTimeControl;
 		private var _timeTickContainer:UIComponent;
@@ -200,7 +199,7 @@ package views.canvas.components.timeBar
 			var timings:Vector.<int> = new Vector.<int>();
 
 			_timeTickContainer.graphics.clear();
-			_timeTickContainer.graphics.lineStyle(2, 0xFF0000);
+			_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _TICK_MARK_COLOR);
 			
 			var maxTime:int = _timeControl.maximum;
 			var i:int;

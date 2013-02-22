@@ -4,12 +4,13 @@
 		initialize="_initData()"
 		creationComplete="_initComponents()" xmlns:view="sg.edu.smu.ksketch2.view.*" xmlns:previewer="views.document.previewer.*"
 		destructionPolicy="never"
-		viewActivate="_viewActivatedHandler()">
+		addedToStage="addedToStageHandler()">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>	
 	<fx:Script>
 		<![CDATA[
+			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
 			import utils.KSketchDocument;
@@ -28,10 +29,19 @@
 			private var _KSketchFiles:Vector.<File>;
 			private var _KSketchDocuments:Vector.<KSketchDocument>;
 			
+			public function addedToStageHandler():void
+			{
+				if(_currentDocument)
+					_openDocumentPreview(_currentDocument);
+				else
+					_openDocumentPreview(null);
+			}
+			
 			private function _initComponents():void
 			{
 				scroller.addEventListener(KDocumentSelectedEvent.DOCUMENT_SELECTED, _documentSelectedHandler);
 				previewer.init(_KSketch);
+				
 			}
 			
 			private function _initData():void
@@ -115,14 +125,6 @@
 			{
 				if(doc)
 					navigator.pushView(KSketch_CanvasView, doc);
-			}
-			
-			private function _viewActivatedHandler():void
-			{
-				if(_currentDocument)
-					_openDocumentPreview(_currentDocument);
-				else
-					_openDocumentPreview(null);
 			}
 		]]>
 	</fx:Script>

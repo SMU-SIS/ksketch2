@@ -23,6 +23,8 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
+			import views.canvas.KSketch_CanvasView;
+			
 			public static const LABEL_CURRENT_TIME:int = -1;
 			public static const LABEL_MAX_TIME:int = 1;
 			
@@ -33,6 +35,8 @@
 			private var _panGesture:PanGesture;
 			private var _tapGesture:TapGesture;
 			
+			private const _FILL1:uint = 0x000000;
+
 			public function init(KSketchInstance:KSketch2, timeControl:KTouchTimeControl, type:int , inputComponent:UIComponent):void
 			{
 				_KSketch = KSketchInstance;
@@ -46,25 +50,23 @@
 				_tapGesture = new TapGesture(inputComponent);
 				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
 				
-				graphics.lineStyle(1,0x000000);
-				
 				if(_type == LABEL_CURRENT_TIME)
 				{
-					graphics.beginFill(0x000000);
+					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
 					graphics.moveTo(20,20);
 					graphics.lineTo(40,30);
 					graphics.lineTo(40,10);
 					graphics.lineTo(20,20);
 					graphics.endFill();
 					
-					graphics.beginFill(0x000000);
+					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
 					graphics.moveTo(45,20);
 					graphics.lineTo(65,30);
 					graphics.lineTo(65,10);
 					graphics.lineTo(45,20);
 					graphics.endFill();
 					
-					graphics.beginFill(0x000000);
+					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
 					graphics.moveTo(70,20);
 					graphics.lineTo(90,30);
 					graphics.lineTo(90,10);
@@ -73,21 +75,21 @@
 				}
 				else
 				{
-					graphics.beginFill(0x000000);
+					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
 					graphics.moveTo(30,20);
 					graphics.lineTo(10,30);
 					graphics.lineTo(10,10);
 					graphics.lineTo(30,20);
 					graphics.endFill();
 					
-					graphics.beginFill(0x000000);
+					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
 					graphics.moveTo(55,20);
 					graphics.lineTo(35,30);
 					graphics.lineTo(35,10);
 					graphics.lineTo(55,20);
 					graphics.endFill();
 					
-					graphics.beginFill(0x000000);
+					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
 					graphics.moveTo(80,20);
 					graphics.lineTo(60,30);
 					graphics.lineTo(60,10);

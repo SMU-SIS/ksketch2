@@ -96,13 +96,13 @@
 						<s:VerticalLayout gap="1"/>
 					</s:layout>
 					<s:Button name="black" id="black" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(0x000000)"/>
+							  click="penColor(0x626262)"/>
 					<s:Button name="red" id="red" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(0xFF0000)"/>
+							  click="penColor(0xFF5776)"/>
 					<s:Button name="green" id="green" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(0x00FF00)"/>
+							  click="penColor(0xA4F59B)"/>
 					<s:Button name="blue" id="blue" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(0x0000FF)"/>
+							  click="penColor(0xc9ddf3)"/>
 				</s:Group>
 			</s:Group>
 			<s:Line alpha="0.25" width="90%">

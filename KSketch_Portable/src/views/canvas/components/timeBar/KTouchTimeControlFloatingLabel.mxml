@@ -33,7 +33,7 @@
 			public function showMessage(time:int, frameNumber:int):void
 			{
 				open(_parent);
-				labelText.text = KTimeLabel.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();				
+				labelText.text = KTouchTimeSliderControl.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();				
 				_timer.reset();
 				_timer.start();
 				_timer.addEventListener(TimerEvent.TIMER, _closeLabel);

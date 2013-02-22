@@ -15,16 +15,16 @@
 				switch(parent.name)
 				{
 					case "black":
-						buttonColor = 0x000000;
+						buttonColor = 0x626262;
 						break;
 					case "red":
-						buttonColor = 0xFF0000;
+						buttonColor = 0xFF5776;
 						break;
 					case "green":
-						buttonColor = 0x00FF00;
+						buttonColor = 0xA4F59B;
 						break;
 					case "blue":
-						buttonColor = 0x0000FF;
+						buttonColor = 0xc9ddf3;
 						break;
 					case "pen":
 						labelText = "P";

@@ -84,8 +84,6 @@ package views.document.previewer
 		
 		public function updateSlider(event:org.gestouch.events.GestureEvent):void
 		{
-			trace("Updating slider!");
-			
 			//Changed direction, have to reset all pan gesture calibrations till now.
 			if((_prevOffset * _panGesture.offsetX) < 0)
 				resetSliderInteraction();

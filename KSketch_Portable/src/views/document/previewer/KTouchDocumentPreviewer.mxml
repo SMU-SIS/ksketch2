@@ -88,6 +88,6 @@
 		<s:layout>
 			<s:HorizontalLayout horizontalAlign="right"/>
 		</s:layout>
-		<s:Label id="currentDocTime" color="0xe0dddd" fontSize="16"/>
+		<s:Label id="currentDocTime" color="0xb5b5b5" fontSize="16"/>
 	</s:Group>
 </s:Group>

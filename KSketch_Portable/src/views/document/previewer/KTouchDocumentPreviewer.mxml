@@ -1,6 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark">
+		xmlns:s="library://ns.adobe.com/flex/spark" xmlns:view="sg.edu.smu.ksketch2.view.*" xmlns:previewer="views.document.previewer.*">
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketch2;
+			
+			import utils.KSketchDocument;
+			
+			private var _KSketch:KSketch2;
+			private var _timeControl:KTouchPreviewerTimeControl;
+			
+			public function init(KSketchInstance:KSketch2):void
+			{
+				_KSketch = KSketchInstance;
+				modelDisplay.init(_KSketch);
+				
+				_timeControl = new KTouchPreviewerTimeControl();
+				_timeControl.init(_KSketch, previewPlayer);
+			}
+			
+			public function set currentDocument(doc:KSketchDocument):void
+			{
+				if(doc)
+				{
+					currentDocTitle.text = doc.name;
+					currentDocDescription.text = "This is a sample document with a random and very very very long and useless description";
+					currentDocTime.text = "Last edited about a day ago"
+				}
+				else
+				{
+					currentDocTitle.text = "";
+					currentDocDescription.text = "";
+					currentDocTime.text = "";
+				}
+			}
+		]]>
+	</fx:Script>
 	
+	<s:layout>
+		<s:VerticalLayout gap="10"/>
+	</s:layout>
 	
+	<s:Label id="currentDocTitle" fontSize="32" text="Current Document" color="0x757474"
+				 fontWeight="bold" fontFamily="_sans"/>
+	
+	<s:Line width="100%">
+		<s:stroke>
+			<s:SolidColorStroke color="0xdbd6d6" weight="1"/>
+		</s:stroke>
+	</s:Line>
+	<s:Group width="100%">
+		<s:layout>
+			<s:VerticalLayout paddingTop="15" paddingLeft="5"/>
+		</s:layout>
+		<s:Label color="0xb5b5b5" width="{width*0.95}" id="currentDocDescription" fontSize="24"/>
+	</s:Group>
+
+	<s:Group width="100%" height="100%" id="previewPlayer">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+		</s:layout>
+		<s:Group id="drawing_stage" height="{drawing_stage.width/16*9}" width="95%">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xFFFFFF"/>
+				</s:fill>
+				<s:stroke>
+					<s:SolidColorStroke color="0xdbd6d6" weight="1"/>
+				</s:stroke>
+			</s:Rect>
+			<!-- The model display displays the objects in the model -->
+			<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
+								scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
+			<s:mask>
+				<s:Group width="{drawing_stage.width}" height="{drawing_stage.height}">
+					<s:Rect width="100%" height="100%" alpha="0.5">
+						<s:fill>
+							<s:SolidColor color="0xFF0000"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+			</s:mask>
+		</s:Group>
+	</s:Group>
+	
+	<s:Group width="100%">
+		<s:layout>
+			<s:HorizontalLayout horizontalAlign="right"/>
+		</s:layout>
+		<s:Label id="currentDocTime" color="0xe0dddd" fontSize="16"/>
+	</s:Group>
 </s:Group>

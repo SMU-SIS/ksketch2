@@ -11,6 +11,7 @@
 			private function _creationCompleteHandler():void
 			{
 				labelDisplay.text = (parent as KTouchDocumentScrollerButton).ksketchDocument.name;
+				lastEdited.text = (parent as KTouchDocumentScrollerButton).ksketchDocument.date.toString() + " hours ago";
 			}
 			
 		]]>
@@ -54,7 +55,7 @@
 			<s:layout>
 				<s:VerticalLayout horizontalAlign="right"/>
 			</s:layout>
-			<s:Label text="21 hours ago" color="0xe0dddd" fontSize="14"/>
+			<s:Label id="lastEdited" color="0xe0dddd" fontSize="14"/>
 		</s:Group>
 		<s:Group width="100%" height="100%">
 			<s:layout>

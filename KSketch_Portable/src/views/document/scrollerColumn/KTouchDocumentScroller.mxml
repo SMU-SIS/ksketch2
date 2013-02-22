@@ -14,8 +14,29 @@
 			{
 				var newButton:KTouchDocumentScrollerButton = new KTouchDocumentScrollerButton();
 				newButton.init(document);
-				documentContainer.addElement(newButton);
-			}	
+				documentContainer.addElementAt(newButton, 0);
+			}
+			
+			public function sortByLatest():void
+			{
+				
+			}
+			
+			private function _sortDocument(doc1:KSketchDocument, doc2:KSketchDocument):int
+			{
+				if (doc1.date < doc2.date) 
+				{ 
+					return -1; 
+				} 
+				else if (doc1.date > doc2.date) 
+				{ 
+					return 1; 
+				} 
+				else 
+				{ 
+					return 0; 
+				} 
+			}
 			
 			public function documentSelected(target:Object):void
 			{

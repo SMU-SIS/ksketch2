@@ -1,81 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-*Copyright 2010-2012 Singapore Management University
-*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
-
-*This Source Code Form is subject to the terms of the
-*Mozilla Public License, v. 2.0. If a copy of the MPL was
-*not distributed with this file, You can obtain one at
-*http://mozilla.org/MPL/2.0/.
--->
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false"
-		initialize="_initData()" creationComplete="_initComponents()" xmlns:view="sg.edu.smu.ksketch2.view.*" xmlns:document="views.document.*"
+		xmlns:s="library://ns.adobe.com/flex/spark" title="TempDocumentView" actionBarVisible="false" xmlns:scrollerColumn="views.document.scrollerColumn.*"
+		initialize="_initData()"
+		creationComplete="_initComponents()" xmlns:view="sg.edu.smu.ksketch2.view.*" xmlns:previewer="views.document.previewer.*"
 		destructionPolicy="never"
-		viewActivate="_viewActivateHandler(event)">
+		viewActivate="_viewActivatedHandler()">
 	<fx:Declarations>
-		<document:KTouchDocumentCreator id="newDocConfigWindow" width="500" height="400"
-										x="{(width/2) - (newDocConfigWindow.width/2)}"
-										y="{(height/2) - (newDocConfigWindow.height/2)}"/>
-	</fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>	
 	<fx:Script>
 		<![CDATA[
-			import views.document.previewer.KTouchPreviewTimeControl;
-			import views.document.scrollerColumn.KTouchDocumentScrollerButtonSkin;
-			import views.document.scrollerColumn.KTouchDocumentScrollerButton;
-			import utils.KSketchDocument;
-			import spark.events.PopUpEvent;
-			import spark.events.ViewNavigatorEvent;
-			
 			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.view.KModelDisplay;
+			
+			import utils.KSketchDocument;
 			
 			import views.canvas.KSketch_CanvasView;
+			import views.document.previewer.KTouchPreviewerButtonSkin;
+			import views.document.scrollerColumn.KDocumentSelectedEvent;
+			import views.document.scrollerColumn.KTouchNewDocumentButtonSkin;
 			
-			private var _documentIndex:int;
+			private const FOLDER_LOCATION:String = "tasks";
+			
+			[Bindable]
+			private var _currentDocument:KSketchDocument;
+			
 			private var _KSketch:KSketch2;
 			private var _KSketchFiles:Vector.<File>;
 			private var _KSketchDocuments:Vector.<KSketchDocument>;
-			private var _timeControl:KTouchPreviewTimeControl;
-			private var _currentDocument:KSketchDocument;
+			
+			private function _initComponents():void
+			{
+				scroller.addEventListener(KDocumentSelectedEvent.DOCUMENT_SELECTED, _documentSelectedHandler);
+				previewer.init(_KSketch);
+			}
 			
 			private function _initData():void
 			{
 				_KSketch = new KSketch2();
 				_KSketchDocuments = new Vector.<KSketchDocument>();
-				_documentIndex = 0;
 				
 				var dir:File = File.applicationDirectory;
-				dir = dir.resolvePath("tasks");
+				dir = dir.resolvePath(FOLDER_LOCATION);
 				var allFiles:Array = dir.getDirectoryListing();
 				
 				_KSketchFiles = new Vector.<File>();
 				var currentFile:File;
-
+				
 				for(var i:int = 0; i < allFiles.length; i++)
 				{
 					currentFile = allFiles[i] as File;
 					
 					if(currentFile.url.search(".kmv") > -1)
 					{
-						currentFile.addEventListener(Event.COMPLETE, _loadComplete, false, 0, true);
+						currentFile.addEventListener(Event.COMPLETE, _loadFileComplete, false, 0, true);
 						currentFile.load();
 						_KSketchFiles.push(currentFile);
 					}
 				}
 			}
 			
-			private function _initComponents():void
+			//Handles completion of kmv file.
+			private function _loadFileComplete(event:Event):void
 			{
-				modelDisplay.init(_KSketch);
+				(event.target as File).removeEventListener(Event.COMPLETE, _loadFileComplete);
 				
-				_timeControl = new KTouchPreviewTimeControl();
-				_timeControl.init(_KSketch, null, canvas_region);
-				newDocConfigWindow.addEventListener(PopUpEvent.CLOSE, _newDocumentHandler);
-			}
-			
-			private function _loadComplete(event:Event):void
-			{
 				var pathParts:Array = (event.target as File).url.split("/");
 				var fileName:String = pathParts[pathParts.length-1];
 				fileName = fileName.substring(0, fileName.length-4);
@@ -84,137 +72,122 @@
 				
 				var xml:XML = new XML(event.target.data);
 				
-				var myDoc:KSketchDocument = new KSketchDocument(fileName, xml, _documentIndex.toString());
-				_KSketchDocuments.push(myDoc);
-				_addToScroller(myDoc);
-				_documentIndex ++;
-
-				//Using document index for now.
-				//Will need to sync with the server for ID
+				var myDoc:KSketchDocument = new KSketchDocument(fileName, xml,
+																Math.floor(Math.random()*10000).toString(),
+																Math.floor(Math.random()*50));
+				scroller.addDocument(myDoc);
 			}
 			
-			private function _addToScroller(newDocument:KSketchDocument):void
+			//Creates a new document
+			private function _createNewDocument():void
 			{
-				var newButton:KTouchDocumentScrollerButton = new KTouchDocumentScrollerButton();
-				newButton.ksketchDocument = newDocument;
-				newButton.setStyle("skinClass", Class(KTouchDocumentScrollerButtonSkin));
-				documentScrollerContainer.addElement(newButton);
+				_KSketch.reset();
+				var newDoc:KSketchDocument = new KSketchDocument("New Document", _KSketch.sceneXML,
+																Math.floor(Math.random()*10000).toString());
+				scroller.addDocument(newDoc);					
+				_openDocumentPreview(newDoc);
+				_openDocument(newDoc);
 			}
 			
-			private function _loadFile(target:*):void
+			//Loads the preview for the selected document
+			private function _documentSelectedHandler(event:KDocumentSelectedEvent):void
 			{
-				if(target is KTouchDocumentScrollerButton)
-					_loadDocumentPreview((target as KTouchDocumentScrollerButton).ksketchDocument);
+				_openDocumentPreview(event.selectedDocument);
 			}
 			
-			private function _loadDocumentPreview(document:KSketchDocument):void
+			private function _openDocumentPreview(doc:KSketchDocument):void
 			{
 				_KSketch.reset();
 				
-				var xml:XML = document.xml;
-				if(xml.scene.children().length() > 0)
-					_KSketch.generateSceneFromXML(new XML(xml.scene));
-				
-				_currentDocument = document;
+				if(doc)
+				{
+					var xml:XML = doc.xml;
+					if(xml.scene.children().length() > 0)
+						_KSketch.generateSceneFromXML(new XML(xml.scene));
+					
+					_currentDocument = doc;
+					previewer.currentDocument = _currentDocument;
+				}
 			}
 			
-			private function _showNewDocConfig():void
+			//Opens the given doc
+			private function _openDocument(doc:KSketchDocument):void
 			{
-				newDocConfigWindow.open(this, true);
+				if(doc)
+					navigator.pushView(KSketch_CanvasView, doc);
 			}
 			
-			private function _newDocumentHandler(event:PopUpEvent):void
-			{
-				if(!event.commit)
-					return;
-				
-				_KSketch.reset();
-				_documentIndex ++;
-				_currentDocument = new KSketchDocument(event.data, _KSketch.sceneXML, _documentIndex.toString());
-				_addToScroller(_currentDocument);
-				_loadCurrentDocument()
-			}
-			
-			private function _loadCurrentDocument():void
+			private function _viewActivatedHandler():void
 			{
 				if(_currentDocument)
-					navigator.pushView(KSketch_CanvasView, _currentDocument);
-			}
-			
-			private function _viewActivateHandler(event:ViewNavigatorEvent):void
-			{
-				if(_currentDocument)
-					_loadDocumentPreview(_currentDocument);
+					_openDocumentPreview(_currentDocument);
+				else
+					_openDocumentPreview(null);
 			}
 		]]>
 	</fx:Script>
+	
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="0xFFFFFF"/>
+		</s:fill>
+	</s:Rect>
 	<s:Group width="100%" height="100%">
 		<s:layout>
-			<s:HorizontalLayout/>
+			<s:HorizontalLayout gap="2"/>
 		</s:layout>
-		
-		<s:Scroller id="documentScroller" width="25%" height="100%">
+		<s:Group width="33%" height="100%">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xE7E7E7"/>
+				</s:fill>
+			</s:Rect>
 			<s:Group width="100%" height="100%">
-				<s:Rect width="100%" height="100%">
+				<s:layout>
+					<s:VerticalLayout gap="5" paddingLeft="15" paddingRight="15" paddingTop="15"/>
+				</s:layout>
+				<s:Button skinClass="views.document.scrollerColumn.KTouchNewDocumentButtonSkin" width="100%"
+						  click="_createNewDocument()"/>
+				<scrollerColumn:KTouchDocumentScroller width="100%" height="100%" id="scroller"/>
+			</s:Group>
+		</s:Group>
+
+		<s:Group width="67%" height="100%">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xE7E7E7"/>
+				</s:fill>
+			</s:Rect>
+			
+			<!--Previewer portion-->
+			<s:Group width="100%" height="100%">
+				<s:Rect top="15" left="15" right="15" bottom="15">
 					<s:fill>
 						<s:SolidColor color="0xFFFFFF"/>
 					</s:fill>
 					<s:filters>
-						<s:DropShadowFilter alpha="0.25" angle="0" color="0x000000" distance="0.25"/>
+						<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
 					</s:filters>
 				</s:Rect>
-				
-				<s:Group width="100%">
+				<s:Group top="15" left="15" right="15" bottom="15">
 					<s:layout>
-						<s:VerticalLayout gap="1" horizontalAlign="left" paddingTop="5" paddingLeft="5"/>
+						<s:VerticalLayout gap="15" paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15"/>
 					</s:layout>
-					<s:Button skinClass="views.document.scrollerColumn.NewDocumentButton" width="100%" height="70"
-							   click="_showNewDocConfig()"/>
-					<s:Line width="90%" alpha="0.25">
-						<s:stroke>
-							<s:SolidColorStroke weight="1" color="0x000000"/>
-						</s:stroke>
-					</s:Line>
-					<s:Group id="documentScrollerContainer" click="_loadFile(event.target)">
+					<previewer:KTouchDocumentPreviewer width="100%" height="100%" id="previewer"/>
+					<s:Group width="100%">
 						<s:layout>
-							<s:VerticalLayout gap="1" paddingLeft="15"/>
+							<s:HorizontalLayout gap="15" verticalAlign="bottom"/>
 						</s:layout>
+						<s:Button label="Open"
+								  skinClass="views.document.previewer.KTouchPreviewerButtonSkin"
+								  enabled="{_currentDocument!=null}"
+								  click="_openDocument(_currentDocument)"/>
+						<s:Button label="Export" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false"/>
+						<s:Button label="Share" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false"/>
+						<s:Button label="Delete" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false"/>
 					</s:Group>
 				</s:Group>
 			</s:Group>
-		</s:Scroller>
-		
-		<s:Group width="75%" height="100%">
-			<s:Group width="100%" height="100%">
-				<s:Group width="100%" height="100%">
-					<s:layout>
-						<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
-					</s:layout>
-					<!-- For show, all the visual elements that the user wont be able to "touch"-->
-					<s:Group id="drawing_stage" height="65%" width="{drawing_stage.height/9*16}">
-						<s:Rect width="100%" height="100%">
-							<s:fill>
-								<s:SolidColor color="0xFFFFFF"/>
-							</s:fill>
-							<s:stroke>
-								<s:SolidColorStroke color="0xE6E6E6" weight="1.5"/>
-							</s:stroke>
-						</s:Rect>
-						<!-- The model display displays the objects in the model -->
-						<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
-											scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
-					</s:Group>
-				</s:Group>
-				<!-- Things inside this group really dispatches gesture events-->
-				<s:Group id="canvas_region" width="100%" height="100%">
-					<s:Rect width="100%" height="100%" alpha="0">
-						<s:fill>
-							<s:SolidColor color="0x000000"/>
-						</s:fill>
-					</s:Rect>
-				</s:Group>	
-			</s:Group>
-			<s:Button label="open" click="_loadCurrentDocument()"/>
 		</s:Group>
 	</s:Group>
 </s:View>

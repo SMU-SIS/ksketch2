@@ -25,6 +25,7 @@ PlaySketchWebApplication/html-template/swfobject.js
 
 PlaySketch_Skins/.flexLibProperties
 
+*.kmv
 *.css
 
 *.js

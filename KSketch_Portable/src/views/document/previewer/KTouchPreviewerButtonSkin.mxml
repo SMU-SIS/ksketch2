@@ -35,7 +35,7 @@
 		<s:layout>
 			<s:HorizontalLayout paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"/>
 		</s:layout>
-		<s:Label id="labelDisplay" fontSize="24" fontFamily="_sans" color="0xdbd6d6"/>
+		<s:Label id="labelDisplay" fontSize="24" fontFamily="_sans" color="0xA8A8A8"/>
 	</s:Group>
 
 </s:Skin>

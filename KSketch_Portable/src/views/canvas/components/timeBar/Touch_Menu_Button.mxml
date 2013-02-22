@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="40" height="40" creationComplete="initImage()">
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="50" height="50" creationComplete="initImage()">
 	<fx:Script>
 		<![CDATA[
 			import views.canvas.KSketch_CanvasView;
 			
 			public function initImage():void
 			{
-				graphics.lineStyle(5, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+				graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
 				
-				graphics.moveTo(0,10);
-				graphics.lineTo(30,10);
+				graphics.drawRect(21,9,9,9);
+				graphics.drawRect(21,21,9,9);
+				graphics.drawRect(21,33,9,9);
 				
-				graphics.moveTo(0,20);
-				graphics.lineTo(30,20);
-				
-				graphics.moveTo(0,30);
-				graphics.lineTo(30,30);
-				
+				graphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
+				graphics.moveTo(3,5);
+				graphics.lineTo(3,45);
 			}
 		]]>
-	</fx:Script>
+	</fx:Script>	
 </s:Group>

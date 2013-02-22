@@ -9,7 +9,7 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="100" height="40">
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="110" height="50">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -53,48 +53,42 @@
 				if(_type == LABEL_CURRENT_TIME)
 				{
 					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(20,20);
-					graphics.lineTo(40,30);
-					graphics.lineTo(40,10);
-					graphics.lineTo(20,20);
+					graphics.moveTo(55,25);
+					graphics.lineTo(80,37.5);
+					graphics.lineTo(80,12.5);
+					graphics.lineTo(55,25);
 					graphics.endFill();
-					
+										
 					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(45,20);
-					graphics.lineTo(65,30);
-					graphics.lineTo(65,10);
-					graphics.lineTo(45,20);
+					graphics.moveTo(24,25);
+					graphics.lineTo(49,12.5);
+					graphics.lineTo(49,37.5);
+					graphics.lineTo(24,25);
 					graphics.endFill();
-					
-					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(70,20);
-					graphics.lineTo(90,30);
-					graphics.lineTo(90,10);
-					graphics.lineTo(70,20);
-					graphics.endFill();
+
+					graphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
+					graphics.moveTo(107,5);
+					graphics.lineTo(107,45);
 				}
 				else
 				{
 					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(30,20);
-					graphics.lineTo(10,30);
-					graphics.lineTo(10,10);
-					graphics.lineTo(30,20);
+					graphics.moveTo(55,25);
+					graphics.lineTo(30,12.5);
+					graphics.lineTo(30,37.5);
+					graphics.lineTo(55,25);
 					graphics.endFill();
 					
 					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(55,20);
-					graphics.lineTo(35,30);
-					graphics.lineTo(35,10);
-					graphics.lineTo(55,20);
+					graphics.moveTo(86,25);
+					graphics.lineTo(61,37.5);
+					graphics.lineTo(61,12.5);
+					graphics.lineTo(86,25);
 					graphics.endFill();
 					
-					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(80,20);
-					graphics.lineTo(60,30);
-					graphics.lineTo(60,10);
-					graphics.lineTo(80,20);
-					graphics.endFill();
+					graphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
+					graphics.moveTo(3,5);
+					graphics.lineTo(3,45);
 				}
 			}
 			
@@ -149,7 +143,7 @@
 	<s:Group width="100%" height="100%"> 
 		<s:Rect width="100%" height="100%" alpha="0">
 			<s:fill>
-				<s:SolidColor color="0xFF0000"/>
+				<s:SolidColor color="0xFFFF00"/>
 			</s:fill>
 		</s:Rect>
 	</s:Group>

@@ -62,7 +62,7 @@ package views.canvas.interactors
 			var i:int = 0;
 			var length:int = _transitionObjects.length();
 			var currentObject:KObject;
-			trace("_interaction control's transition mode", _interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED);
+
 			for(i; i < length; i++)
 				_KSketch.beginTransform(_transitionObjects.getObjectAt(i),_interactionControl.transitionMode);
 			

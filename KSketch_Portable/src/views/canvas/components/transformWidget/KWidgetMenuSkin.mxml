@@ -84,10 +84,10 @@
     </s:transitions>
         
     <!--- Defines the background and content group used by this skin. -->
-    <s:Group id="chrome" left="0" right="0" top="0" bottom="0" visible.closedGroup="false" mouseEnabled="false" mouseChildren="false">
+    <s:Group id="chrome" left="0" right="0" top="0" bottom="0" visible.closedGroup="false">
 
         <!--- Defines the appearance of the SkinnablePopUpContainer class's background. -->
-        <s:Rect id="background" left="0" right="0" top="0" bottom="0">
+        <s:Rect id="background" left="0" right="0" top="0" bottom="0" alpha="0">
             <s:fill>
                 <!--- @private -->
                 <s:SolidColor id="bgFill" color="#000000" alpha="0.5"/>

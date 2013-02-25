@@ -16,6 +16,7 @@
 			
 		]]>
 	</fx:Script>
+	<s:Group id="boundary" mouseEnabled="false" mouseChildren="false"/>
 	<s:Group id="baseTrigger"/>
 	<s:Group id="middleTrigger"/>
 	<s:Group id="topTrigger"/>

@@ -44,7 +44,7 @@ package views.canvas.interactors.widget
 			_widget = widgetBase;
 			_modelSpace = modelSpace;
 			_widgetSpace = _widget.parent;
-			_contextMenu = new KTouchWidgetMenu(KSketchInstance, interactionControl, widgetBase);
+			_contextMenu = new KTouchWidgetMenu(KSketchInstance, interactionControl, widgetBase, this);
 			
 			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget);
 			steeringMode = new KSteeringMode(_KSketch, _interactionControl, _widget);
@@ -69,6 +69,9 @@ package views.canvas.interactors.widget
 		
 		public function set activeMode(mode:ITouchWidgetMode):void
 		{
+			if(_activeMode == mode)
+				return;
+			
 			if(_activeMode)
 				_activeMode.deactivate();
 			

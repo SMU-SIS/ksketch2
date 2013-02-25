@@ -13,17 +13,20 @@ package views.canvas.interactors
 	
 	public class KTouchFreeTransformInteractor extends KTouchTransitionInteractor
 	{
-		private var _dx:Number;
-		private var _dy:Number;
-		private var _theta:Number;
-		private var _scale:Number;
+		protected var _dx:Number;
+		protected var _dy:Number;
+		protected var _theta:Number;
+		protected var _scale:Number;
 		
-		private var _center:Point;
-		private var _transformGesture:TransformGesture;
+		protected var _center:Point;
+		protected var _transformGesture:TransformGesture;
+		protected var _inputComponent:DisplayObject;
 		
 		public function KTouchFreeTransformInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, inputComponent:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl);
+			
+			_inputComponent = inputComponent;
 			_transformGesture = new TransformGesture(inputComponent);
 		}
 		
@@ -80,7 +83,7 @@ package views.canvas.interactors
 			reset();
 		}
 		
-		private function _update_Transform(event:GestureEvent):void
+		protected function _update_Transform(event:GestureEvent):void
 		{
 			_dx += _transformGesture.offsetX;
 			_dy += _transformGesture.offsetY;

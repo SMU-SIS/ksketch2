@@ -20,7 +20,6 @@ package views.canvas.interactors
 		{
 			super(KSketchInstance, interactionControl);
 			_scaleGesture = new TransformGesture(inputComponent);
-			_scaleGesture.minTouchesRequired = 2;
 		}
 		
 		override public function reset():void

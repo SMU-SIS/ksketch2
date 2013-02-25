@@ -16,7 +16,6 @@ package org.gestouch.gestures
 		protected var _touch1:Touch;
 		protected var _touch2:Touch;
 		protected var _transformVector:Point;
-		public var minTouchesRequired:int = 2;
 		
 		public function TransformGesture(target:Object = null)
 		{
@@ -102,10 +101,7 @@ package org.gestouch.gestures
 			}
 			
 			updateLocation();
-			
-			if(touchesCount < minTouchesRequired)
-				return;
-			
+
 			if (state == GestureState.BEGAN || state == GestureState.CHANGED)
 			{
 				// notify that location (and amount of touches) has changed
@@ -120,7 +116,7 @@ package org.gestouch.gestures
 			updateLocation();
 			
 			var currTransformVector:Point;
-			
+
 			if (state == GestureState.POSSIBLE)
 			{
 				if (slop > 0 && touch.locationOffset.length < slop)
@@ -142,6 +138,7 @@ package org.gestouch.gestures
 			
 			_offsetX = _location.x - prevLocation.x;
 			_offsetY = _location.y - prevLocation.y;
+			
 			if (_touch2)
 			{
 				_rotation = Math.atan2(currTransformVector.y, currTransformVector.x) - Math.atan2(_transformVector.y, _transformVector.x);

@@ -12,7 +12,16 @@
 			public static const COLOR3:uint = 0xF1CBB1;
 			public static const COLOR4:uint = 0xD96459;
 			
-			public static const BLEND_ALPHA:uint = 0.6
+			public static const BLEND_ALPHA:Number = 0.6;
+			
+			public function reset():void
+			{
+				boundary.graphics.clear();
+				baseTrigger.graphics.clear();
+				middleTrigger.graphics.clear();
+				topTrigger.graphics.clear();
+				centroid.graphics.clear();
+			}
 			
 		]]>
 	</fx:Script>

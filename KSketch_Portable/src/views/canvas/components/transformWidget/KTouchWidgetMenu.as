@@ -1,6 +1,7 @@
 package views.canvas.components.transformWidget
 {
 	import flash.display.DisplayObjectContainer;
+	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
@@ -13,6 +14,7 @@ package views.canvas.components.transformWidget
 	import sg.edu.smu.ksketch2.KSketch2;
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
+	import views.canvas.interactors.widget.KWidgetInteractorManager;
 	
 	public class KTouchWidgetMenu extends SkinnablePopUpContainer
 	{		
@@ -22,6 +24,7 @@ package views.canvas.components.transformWidget
 
 		private var _KSketch:KSketch2;
 		private var _interactionControl:KMobileInteractionControl;
+		private var _transitionHelper:KWidgetInteractorManager;
 		private var _widget:KTouchWidgetBase;
 		
 		private var button1:Button;
@@ -32,21 +35,26 @@ package views.canvas.components.transformWidget
 		//Need to find a way to display this radially
 		public function KTouchWidgetMenu(KSketchInstance:KSketch2,
 										 interactionControl:KMobileInteractionControl,
-										 widget:KTouchWidgetBase)
+										 widget:KTouchWidgetBase, transitionHelper:KWidgetInteractorManager)
 		{
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
+			_transitionHelper = transitionHelper;
 			_widget = widget;
 			
 			super();
 			setStyle("skinClass", KWidgetMenuSkin);
 			addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleClose);
 			
-			
 			button1 = new Button();
 			button2 = new Button();
 			button3 = new Button();
 			button4 = new Button();
+			button1.addEventListener(MouseEvent.CLICK, function a(event:MouseEvent):
+				void{_transitionHelper.activeMode = transitionHelper.defaultMode});
+			button2.addEventListener(MouseEvent.CLICK, function a(event:MouseEvent):
+				void{_transitionHelper.activeMode = transitionHelper.freeTransformMode});
+
 			
 			button1.width = 50;
 			button1.height = 50;

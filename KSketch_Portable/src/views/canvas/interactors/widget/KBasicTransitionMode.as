@@ -10,6 +10,10 @@ package views.canvas.interactors.widget
 	
 	public class KBasicTransitionMode extends KTouchWidgetMode
 	{
+		public static const TOP_TRIGGER_RADIUS:Number = 75;
+		public static const MIDDLE_TRIGGER_RADIUS:Number = 125;
+		public static const BASE_TRIGGER_RADIUS:Number = 200;
+		
 		private var _translateInteractor:KTouchTranslateInteractor;
 		private var _rotateInteractor:KTouchRotateInteractor;
 		private var _scaleInteractor:KTouchScaleInteractor;
@@ -20,7 +24,7 @@ package views.canvas.interactors.widget
 			
 			_translateInteractor = new KTouchTranslateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger);
 			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger);
-			_scaleInteractor = new KTouchScaleInteractor(KSketchInstance, interactionControl, widgetBase);
+			_scaleInteractor = new KTouchScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger);
 		}
 		
 		override public function activate():void
@@ -40,43 +44,40 @@ package views.canvas.interactors.widget
 		
 		override public function set demonstrationMode(value:Boolean):void
 		{
+			_widget.reset();
 			if(!value)
 			{
-				_widget.middleTrigger.graphics.clear();
-				_widget.middleTrigger.graphics.beginFill(KTouchWidgetBase.COLOR1, 0.6);
-				_widget.middleTrigger.graphics.drawCircle(0,0,200);
-				_widget.middleTrigger.graphics.drawCircle(0,0,150);
+				_widget.baseTrigger.graphics.beginFill(KTouchWidgetBase.COLOR1, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.baseTrigger.graphics.drawCircle(0,0,BASE_TRIGGER_RADIUS);
+				_widget.baseTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
+				_widget.baseTrigger.graphics.endFill();
+				
+				_widget.middleTrigger.graphics.beginFill(KTouchWidgetBase.COLOR2, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.middleTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
+				_widget.middleTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
 				_widget.middleTrigger.graphics.endFill();
 				
-				_widget.topTrigger.graphics.clear();
-				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR2, 0.6);
-				_widget.topTrigger.graphics.drawCircle(0,0,150);
-				_widget.topTrigger.graphics.drawCircle(0,0,30);
+				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR_BASE, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
 				_widget.topTrigger.graphics.endFill();
 				
-				_widget.centroid.graphics.clear()
-				_widget.centroid.graphics.beginFill(KTouchWidgetBase.COLOR_BASE, 0.6);
-				_widget.centroid.graphics.drawCircle(0,0,30);
-				_widget.centroid.graphics.endFill();
 			}
 			else
 			{
-				_widget.middleTrigger.graphics.clear();
-				_widget.middleTrigger.graphics.beginFill(KTouchWidgetBase.COLOR4, 0.6);
-				_widget.middleTrigger.graphics.drawCircle(0,0,200);
-				_widget.middleTrigger.graphics.drawCircle(0,0,150);
+				_widget.baseTrigger.graphics.beginFill(KTouchWidgetBase.COLOR4, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.baseTrigger.graphics.drawCircle(0,0,BASE_TRIGGER_RADIUS);
+				_widget.baseTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
+				_widget.baseTrigger.graphics.endFill();
+				
+				_widget.middleTrigger.graphics.beginFill(KTouchWidgetBase.COLOR3, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.middleTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
+				_widget.middleTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
 				_widget.middleTrigger.graphics.endFill();
 				
-				_widget.topTrigger.graphics.clear();
-				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR3, 0.6);
-				_widget.topTrigger.graphics.drawCircle(0,0,150);
-				_widget.topTrigger.graphics.drawCircle(0,0,30);
+				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR_BASE, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
 				_widget.topTrigger.graphics.endFill();
 				
-				_widget.centroid.graphics.clear()
-				_widget.centroid.graphics.beginFill(KTouchWidgetBase.COLOR_BASE, 0.6);
-				_widget.centroid.graphics.drawCircle(0,0,30);
-				_widget.centroid.graphics.endFill();
 			}
 		}
 	}

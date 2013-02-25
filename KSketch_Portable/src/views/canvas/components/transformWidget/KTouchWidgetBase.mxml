@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 includeInLayout="false" xmlns:transformWidget="views.canvas.components.transformWidget.*">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			public static const COLOR1:uint = 0x403D2F;
+			public static const COLOR2:uint = 0x4A8C7A;
+			public static const COLOR_BASE:uint = 0xF1E9D5;
+			public static const COLOR3:uint = 0xF1CBB1;
+			public static const COLOR4:uint = 0xD96459;
+			
+			public static const BLEND_ALPHA:uint = 0.6
+			
+		]]>
+	</fx:Script>
+	<s:Group id="baseTrigger"/>
+	<s:Group id="middleTrigger"/>
+	<s:Group id="topTrigger"/>
+	<s:Group id="centroid"/>
+</s:Group>

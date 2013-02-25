@@ -1,9 +1,9 @@
 package org.gestouch.gestures
 {
+	import flash.geom.Point;
+	
 	import org.gestouch.core.GestureState;
 	import org.gestouch.core.Touch;
-
-	import flash.geom.Point;
 
 
 	/**
@@ -16,13 +16,12 @@ package org.gestouch.gestures
 		protected var _touch1:Touch;
 		protected var _touch2:Touch;
 		protected var _transformVector:Point;
-		
+		public var minTouchesRequired:int = 2;
 		
 		public function TransformGesture(target:Object = null)
 		{
 			super(target);
 		}
-		
 		
 		protected var _offsetX:Number = 0;
 		public function get offsetX():Number
@@ -103,6 +102,9 @@ package org.gestouch.gestures
 			}
 			
 			updateLocation();
+			
+			if(touchesCount < minTouchesRequired)
+				return;
 			
 			if (state == GestureState.BEGAN || state == GestureState.CHANGED)
 			{

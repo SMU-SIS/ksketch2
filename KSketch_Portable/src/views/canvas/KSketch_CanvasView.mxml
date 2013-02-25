@@ -38,8 +38,7 @@
 			import views.canvas.components.timeBar.KTouchTickMarkControl;
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			import views.canvas.interactors.KCanvasInteractorManager;
-			import views.canvas.interactors.KTouchContextMenuInteractor;
-			import views.canvas.interactors.KWidgetInteractorManager;
+			import views.canvas.interactors.widget.KWidgetInteractorManager;
 			
 			public static const CANVAS_BUTTON_COLOR:uint = 0x000000;
 			public static const CANVAS_BUTTON_BLEND:Number = 0.55;
@@ -49,10 +48,8 @@
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KMobileInteractionControl;
-			
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
-			private var _contextMenuHelper:KTouchContextMenuInteractor;
 			private var _timeTickControl:KTouchTickMarkControl;
 			
 			private var _newObjType:uint = 0;
@@ -65,7 +62,6 @@
 				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
 				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
 				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, feedbackMessage);
-				_contextMenuHelper = new KTouchContextMenuInteractor(widget);
 				_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
 				feedbackMessage.init(drawing_stage);
 				
@@ -207,7 +203,7 @@
 						</s:fill>
 					</s:Rect>
 				</s:Group>
-				<transformWidget:TouchWidgetTemplate id="widget" visible="false"/>
+				<transformWidget:KTouchWidgetBase id="widget" visible="false"/>
 			</s:Group>
 		</s:Group>
 		

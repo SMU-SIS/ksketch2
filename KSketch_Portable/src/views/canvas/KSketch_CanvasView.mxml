@@ -72,6 +72,12 @@
 				timeControl.init(_KSketch, _timeTickControl,middlePanInput);
 				cornerMenu.init(_interactionControl);
 				
+				var playBounds:Rectangle = playButton.getBounds(this);
+				interceptor.graphics.beginFill(0x000000);
+				interceptor.graphics.drawRect(0,0, width, height);
+				interceptor.graphics.drawRect(playBounds.x, playBounds.y, playBounds.width, playBounds.height);
+				interceptor.graphics.endFill();
+				
 				playButton.init(timeControl, _interactionControl,interceptor);
 				_interactionControl.reset();
 				
@@ -271,11 +277,5 @@
 		</s:Group>
 	</s:Group>
 	
-	<s:Group width="100%" height="100%" visible="false" id="interceptor" alpha="0">
-		<s:Rect width="100%" height="100%">
-			<s:fill>
-				<s:SolidColor color="0x000000"/>
-			</s:fill>
-		</s:Rect>
-	</s:Group>
+	<s:Group width="100%" height="100%" visible="false" id="interceptor" alpha="0"/>
 </s:View>

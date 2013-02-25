@@ -153,7 +153,7 @@ package views.canvas.components.timeBar
 			var pct:Number = _currentFrame/(_maxFrame*1.0);
 			timeFill.percentWidth = pct*100;
 
-			if(!_isPlaying && floatingLabel.owner)
+			if(!_isPlaying)
 			{
 				floatingLabel.x = timeFill.localToGlobal(new Point(pct*backgroundFill.width, 0)).x;
 				floatingLabel.showMessage(time, _currentFrame);

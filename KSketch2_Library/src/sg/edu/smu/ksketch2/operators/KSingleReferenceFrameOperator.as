@@ -331,6 +331,8 @@ package sg.edu.smu.ksketch2.operators
 			}
 			
 			_inTransit = true;
+			
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _object, time));
 		}
 		
 		public function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
@@ -412,6 +414,7 @@ package sg.edu.smu.ksketch2.operators
 			
 			//Dispatch a transform finalised event
 			//Application level components can listen to this event to do updates
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
 		}
 

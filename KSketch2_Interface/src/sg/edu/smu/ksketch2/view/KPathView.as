@@ -126,7 +126,7 @@ package sg.edu.smu.ksketch2.view
 			_drawArrowHead(display, PATH_SCALE_COLOR, path);
 		}
 		
-		public function visible(visibility:Boolean):void
+		public function set visible(visibility:Boolean):void
 		{
 			_translatePath.visible = visibility;
 			_nextTranslatePath.visible = visibility;

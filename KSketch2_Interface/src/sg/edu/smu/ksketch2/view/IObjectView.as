@@ -31,8 +31,6 @@ package sg.edu.smu.ksketch2.view
 		 */
 		function removeFromParent():void;
 		
-		function set showPath(show:Boolean):void;
-		
 		function debug(debugSpacing:String=""):void;
 	}
 }

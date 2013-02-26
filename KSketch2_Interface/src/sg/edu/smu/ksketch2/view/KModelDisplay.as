@@ -95,7 +95,6 @@ package sg.edu.smu.ksketch2.view
 			else
 				throw new Error("Object type "+object.toString()+" is not supported by the model display yet");
 			
-			view.showPath = _showPath;
 			_viewsTable[object] = view;
 			return view;
 		}
@@ -154,14 +153,6 @@ package sg.edu.smu.ksketch2.view
 				rootView.debug();
 			else
 				trace("No rootview dude!");
-		}
-		
-		public function set pathVisible(visible:Boolean):void
-		{
-			_showPath = visible;
-			
-			for(var view:Object in _viewsTable)
-				(_viewsTable[view] as IObjectView).showPath = _showPath;
 		}
 	}
 }

@@ -24,7 +24,6 @@ package sg.edu.smu.ksketch2.view
 		protected var _object:KObject;
 		protected var _ghost:KObjectView;
 		protected var _originalPosition:Point;
-		protected var _showPath:Boolean;
 		
 		/**
 		 * KObjectView is the view representation of a KObject
@@ -37,13 +36,13 @@ package sg.edu.smu.ksketch2.view
 			
 			if(_object && !isGhost)
 			{
-				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _updatePathView);
-				_object.addEventListener(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _handle_object_Updated);
 				_object.addEventListener(KObjectEvent.OBJECT_SELECTION_CHANGED, _updateSelection);
+				_object.addEventListener(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _handle_object_Updated);
 				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _handle_object_Updated);
-				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _initGhost);
+
+				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _transformBegin);
 				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _updateGhost);
-				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _hideGhost);
+				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);
 				
 				_pathView = new KSingleCenterPathView(object);
 			}
@@ -53,13 +52,6 @@ package sg.edu.smu.ksketch2.view
 				_ghost.visible = false;
 				_ghost.alpha = 0.3;
 			}
-		}
-		
-		public function set showPath(show:Boolean):void
-		{
-			_showPath = show;
-			
-			_pathView.visible(show);
 		}
 		
 		public function get object():KObject
@@ -99,14 +91,6 @@ package sg.edu.smu.ksketch2.view
 		}
 		
 		/**
-		 * Draws the bounding box for this KObjectView
-		 */
-		public function drawBounds():void
-		{
-			
-		}
-		
-		/**
 		 * Updates the transform for this KObject
 		 * You can update anything related to time here
 		 */
@@ -120,12 +104,6 @@ package sg.edu.smu.ksketch2.view
 			}
 			
 			transform.matrix = _object.transformMatrix(time);
-			
-//			if(_pathView && _showPath)
-//				_pathView.renderPathView(time);
-//			else
-			if(_pathView)
-				_pathView.visible(false);
 		}
 		
 		/**
@@ -134,15 +112,17 @@ package sg.edu.smu.ksketch2.view
 		protected function _handle_object_Updated(event:KObjectEvent):void
 		{
 			updateView(event.time);
-			_updateSelection(event);
 		}
 		
-		protected function _initGhost(event:KObjectEvent):void
+		protected function _transformBegin(event:KObjectEvent):void
 		{
 			_originalPosition = _object.transformInterface.matrix(event.time).transformPoint(_object.centroid);
 			
 			if(_ghost)
 				_updateGhost(event);
+
+			if(_pathView)
+				_pathView.visible = false;
 		}
 		
 		protected function _updateGhost(event:KObjectEvent):void
@@ -164,12 +144,18 @@ package sg.edu.smu.ksketch2.view
 			}
 		}
 		
-		protected function _hideGhost(event:KObjectEvent):void
+		protected function _transformEnd(event:KObjectEvent):void
 		{
 			if(_ghost)
 			{
 				_updateGhost(event);
 				_ghost.visible = false;
+			}
+			
+			if(_pathView)
+			{
+				_pathView.visible = true;
+				_updatePathView(event)
 			}
 		}
 		
@@ -184,7 +170,7 @@ package sg.edu.smu.ksketch2.view
 		 */
 		protected function _updateSelection(event:KObjectEvent):void
 		{
-			_pathView.visible(_object.selected);
+				_pathView.visible = _object.selected;
 		}
 		
 		public function debug(debugSpacing:String=""):void

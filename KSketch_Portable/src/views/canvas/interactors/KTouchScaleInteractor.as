@@ -45,6 +45,9 @@ package views.canvas.interactors
 		
 		override protected function _interaction_begin(event:GestureEvent):void
 		{
+			if(_scaleGesture.touchesCount < 2)
+				return;
+			
 			super._interaction_begin(event);
 			
 			_scale = 1;

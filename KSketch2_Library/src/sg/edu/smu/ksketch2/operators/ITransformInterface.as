@@ -11,7 +11,6 @@ package sg.edu.smu.ksketch2.operators
 	import flash.geom.Matrix;
 	
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 
@@ -28,6 +27,7 @@ package sg.edu.smu.ksketch2.operators
 		function endTransition(time:int, op:KCompositeOperation):void;
 		
 		function insertBlankKeyFrame(time:int, op:KCompositeOperation):void;
+		function clearAllMotionsAfterTime(time:int, op:KCompositeOperation):void;
 		
 		/**
 		 * Returns all key frames that this object has as a vector

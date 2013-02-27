@@ -11,6 +11,8 @@ package views.canvas.components.transformWidget
 	import spark.components.VGroup;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.events.KSketchEvent;
+	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	import views.canvas.interactors.widget.KWidgetInteractorManager;
@@ -30,7 +32,6 @@ package views.canvas.components.transformWidget
 		
 		private var _buttonContainer:VGroup;
 		private var _insertKeyButton:Button;
-		private var _removeKeyButton:Button;
 		private var _clearMotionButton:Button;
 		private var blocker:Button;
 		
@@ -58,23 +59,20 @@ package views.canvas.components.transformWidget
 			_buttonContainer.setStyle("gap", 3);
 			
 			_insertKeyButton = new Button();
+			_insertKeyButton.label = "Insert Key";
 			_insertKeyButton.percentWidth = 100;
 			_insertKeyButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
-			_removeKeyButton = new Button();
-			_removeKeyButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
-			_removeKeyButton.percentWidth = 100;
+			_insertKeyButton.addEventListener(MouseEvent.CLICK, _insertKey); 
+
 			_clearMotionButton = new Button();
-			_clearMotionButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
-			_clearMotionButton.percentWidth = 100;
-			
-			_insertKeyButton.label = "Insert Key";
-			_removeKeyButton.label = "Remove Key";
 			_clearMotionButton.label = "Clear All Motions";
+			_clearMotionButton.percentWidth = 100;
+			_clearMotionButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
+			_clearMotionButton.addEventListener(MouseEvent.CLICK, _clearMotion); 
 			
 			addElement(blocker);
 			addElement(_buttonContainer);
 			_buttonContainer.addElement(_insertKeyButton);
-			_buttonContainer.addElement(_removeKeyButton);
 			_buttonContainer.addElement(_clearMotionButton);
 
 		}
@@ -94,11 +92,7 @@ package views.canvas.components.transformWidget
 			super.open(owner, modal);
 
 			//Check for button availability here
-			_insertKeyButton.enabled = _canInsertKey();
-			_removeKeyButton.enabled = _canRemoveKey();
-			_clearMotionButton.enabled = _canClearMotion();
-			
-			
+			_canInsertKey();
 			_layoutButtons();
 		}
 		
@@ -164,34 +158,47 @@ package views.canvas.components.transformWidget
 			close();
 		}
 		
-		private function _canInsertKey():Boolean
+		private function _canInsertKey():void
 		{
-			return false;
-		}
-		
-		private function _canRemoveKey():Boolean
-		{
-			return false;
-		}
-		
-		private function _canClearMotion():Boolean
-		{
-			return false;	
-		}
-		
-		private function _insertKey():void
-		{
+			if(!_interactionControl.selection)
+			{	
+				_insertKeyButton.enabled = false;
+				return;
+			}
 			
+			if(_interactionControl.selection.objects.length() != 1)
+			{
+				_insertKeyButton.enabled = false;
+				return;
+			}
+			
+			if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canInsertKey(_KSketch.time))
+			{
+				_insertKeyButton.enabled = true;
+				return;
+			}
+			
+			_insertKeyButton.enabled = false;
 		}
 		
-		private function _removeKey():void
+		private function _insertKey(event:MouseEvent = null):void
 		{
+			_interactionControl.begin_interaction_operation();
+			_interactionControl.selection.objects.getObjectAt(0).transformInterface.insertBlankKeyFrame(_KSketch.time, _interactionControl.currentInteraction);
+			_interactionControl.end_interaction_operation(null,_interactionControl.selection);
+			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 			
+			_canInsertKey();
 		}
 		
-		private function _clearMotion():void
+		private function _clearMotion(event:MouseEvent = null):void
 		{
+			trace("Clearing motion!");
 			
+			_interactionControl.begin_interaction_operation();
+			_interactionControl.selection.objects.getObjectAt(0).transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
+			_interactionControl.end_interaction_operation(null, _interactionControl.selection);
+			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 		}
 		
 	}

@@ -10,9 +10,7 @@ package sg.edu.smu.ksketch2.utils
 {
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.widgets.ITimeControl;
-	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
-	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
@@ -50,7 +48,7 @@ package sg.edu.smu.ksketch2.utils
 				for(i = 0; i< oldSelection.objects.length(); i++)
 				{
 					currentObject = oldSelection.objects.getObjectAt(i);
-					currentObject.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, currentObject, startTime));
+					currentObject.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, currentObject, startTime));
 				}
 			}
 		}

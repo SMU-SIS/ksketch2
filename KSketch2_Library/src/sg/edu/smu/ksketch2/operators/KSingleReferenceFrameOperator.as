@@ -14,6 +14,7 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
+	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.data_structures.KReferenceFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
@@ -438,6 +439,35 @@ package sg.edu.smu.ksketch2.operators
 				_refFrame.insertKey(key);
 				if(op)
 					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));		
+			}
+			
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
+		}
+		
+		public function clearAllMotionsAfterTime(time:int, op:KCompositeOperation):void
+		{
+			if(getActiveKey(time))
+			{
+				if(canInsertKey(time))
+					insertBlankKeyFrame(time, op);
+				
+				var currentKey:KSpatialKeyFrame = _refFrame.lastKey as KSpatialKeyFrame;
+				
+				while(currentKey)
+				{
+					if(time < currentKey.time && (currentKey != _refFrame.head))
+					{
+						var removeKeyOp:KRemoveKeyOperation = new KRemoveKeyOperation(currentKey.previous, currentKey.next, currentKey);
+						var nextCurrentKey:KSpatialKeyFrame = currentKey.previous as KSpatialKeyFrame;
+						_refFrame.removeKeyFrom(currentKey);
+						currentKey = nextCurrentKey;
+						op.addOperation(removeKeyOp);
+					}
+					else
+						currentKey = currentKey.previous as KSpatialKeyFrame;
+				}
+				
+				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 			}
 		}
 		

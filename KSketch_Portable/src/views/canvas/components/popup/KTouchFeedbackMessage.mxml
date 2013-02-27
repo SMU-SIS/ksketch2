@@ -17,10 +17,13 @@
 			
 			public function showMessage(message:String):void
 			{				
-				timer.reset();
-				timer.start();
-				open(_parentContainer);
-				messageText.text = message;
+				if(_parentContainer)
+				{
+					timer.reset();
+					timer.start();
+					open(_parentContainer);
+					messageText.text = message;
+				}
 			}
 			
 			private function _closeMessage(event:TimerEvent):void

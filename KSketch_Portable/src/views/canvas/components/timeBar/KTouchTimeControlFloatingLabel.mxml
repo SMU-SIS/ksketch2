@@ -32,11 +32,14 @@
 			
 			public function showMessage(time:int, frameNumber:int):void
 			{
-				open(_parent);
-				labelText.text = KTouchTimeSliderControl.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();				
-				_timer.reset();
-				_timer.start();
-				_timer.addEventListener(TimerEvent.TIMER, _closeLabel);
+				if(_parent)
+				{
+					open(_parent);
+					labelText.text = KTouchTimeSliderControl.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();				
+					_timer.reset();
+					_timer.start();
+					_timer.addEventListener(TimerEvent.TIMER, _closeLabel);
+				}
 			}
 			
 			private function _closeLabel(event:TimerEvent):void

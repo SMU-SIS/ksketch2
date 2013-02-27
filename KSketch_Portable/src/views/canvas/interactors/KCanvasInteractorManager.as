@@ -24,7 +24,7 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.controls.interactors.KLoopSelectInteractor;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	
-	import views.canvas.components.KTouchFeedbackMessage;
+	import views.canvas.components.popup.KTouchFeedbackMessage;
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
 	public class KCanvasInteractorManager extends EventDispatcher

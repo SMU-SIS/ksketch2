@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="50" height="50" creationComplete="initImage()">
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="{height}" height="100%" creationComplete="initImage()"
+		 skinClass="views.canvas.components.timeBar.KTouchTimebarButtonSkin">
 	<fx:Script>
 		<![CDATA[
 			import views.canvas.KSketch_CanvasView;
 			
 			public function initImage():void
 			{
-				graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+				var iconGraphics:Graphics = (skin as KTouchTimebarButtonSkin).iconGraphics.graphics;
 				
-				graphics.drawRect(21,9,9,9);
-				graphics.drawRect(21,21,9,9);
-				graphics.drawRect(21,33,9,9);
+				iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
 				
-				graphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
-				graphics.moveTo(3,5);
-				graphics.lineTo(3,45);
+				iconGraphics.drawRect(width*0.42,height*0.18,width*0.18,height*0.18);
+				iconGraphics.drawRect(width*0.42,height*0.42,width*0.18,height*0.18);
+				iconGraphics.drawRect(width*0.42,height*0.66,width*0.18,height*0.18);
+				
+				iconGraphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
+				iconGraphics.moveTo(0,height*0.1);
+				iconGraphics.lineTo(0,height*0.9);
 			}
 		]]>
 	</fx:Script>	
-</s:Group>
+</s:Button>

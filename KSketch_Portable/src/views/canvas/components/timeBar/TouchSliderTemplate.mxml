@@ -9,9 +9,9 @@
 	<fx:Declarations>
 		<timeBar:KTouchTimeControlFloatingLabel id="floatingLabel"/>
 	</fx:Declarations>
-	<s:Rect width="100%" height="100%" alpha="0">
+	<s:Rect width="100%" height="100%">
 		<s:fill>
-			<s:SolidColor color="0x000000"/>
+			<s:SolidColor color="0xE7E7E7"/>
 		</s:fill>
 	</s:Rect>
 	<s:Group width="100%" height="100%">

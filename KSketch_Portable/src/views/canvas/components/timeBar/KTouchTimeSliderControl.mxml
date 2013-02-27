@@ -8,18 +8,16 @@
 *not distributed with this file, You can obtain one at
 *http://mozilla.org/MPL/2.0/.
 -->
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="110" height="50">
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="{height*2}" height="100%"
+		 skinClass="views.canvas.components.timeBar.KTouchTimebarButtonSkin">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
-			import mx.core.UIComponent;
-			
 			import org.gestouch.events.GestureEvent;
 			import org.gestouch.gestures.PanGesture;
-			import org.gestouch.gestures.TapGesture;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
@@ -33,69 +31,67 @@
 			private var _timeControl:KTouchTimeControl;
 		
 			private var _panGesture:PanGesture;
-			private var _tapGesture:TapGesture;
 			
 			private const _FILL1:uint = 0x000000;
 
-			public function init(KSketchInstance:KSketch2, timeControl:KTouchTimeControl, type:int , inputComponent:UIComponent):void
+			public function init(KSketchInstance:KSketch2, timeControl:KTouchTimeControl, type:int):void
 			{
 				_KSketch = KSketchInstance;
 				_timeControl = timeControl;
 				_type = type;
 				
-				_panGesture = new PanGesture(inputComponent);
+				_panGesture = new PanGesture(this);
 				_panGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_CHANGED, _panUpdate);
 				_panGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_ENDED, _panEnd);
 				
-				_tapGesture = new TapGesture(inputComponent);
-				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
+				var iconGraphics:Graphics = (skin as KTouchTimebarButtonSkin).iconGraphics.graphics
 				
 				if(_type == LABEL_CURRENT_TIME)
 				{
-					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(55,25);
-					graphics.lineTo(80,37.5);
-					graphics.lineTo(80,12.5);
-					graphics.lineTo(55,25);
-					graphics.endFill();
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.moveTo(width*0.5,height*0.5);
+					iconGraphics.lineTo(width*0.727,height*0.75);
+					iconGraphics.lineTo(width*0.727,height*0.25);
+					iconGraphics.lineTo(width*0.5,height*0.5);
+					iconGraphics.endFill();
 										
-					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(24,25);
-					graphics.lineTo(49,12.5);
-					graphics.lineTo(49,37.5);
-					graphics.lineTo(24,25);
-					graphics.endFill();
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.moveTo(width*0.2181,height*0.5);
+					iconGraphics.lineTo(width*0.4454,height*0.25);
+					iconGraphics.lineTo(width*0.4454,height*0.75);
+					iconGraphics.lineTo(width*0.2181,height*0.5);
+					iconGraphics.endFill();
 
-					graphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
-					graphics.moveTo(107,5);
-					graphics.lineTo(107,45);
+					iconGraphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
+					iconGraphics.moveTo(width,height*0.1);
+					iconGraphics.lineTo(width,height*0.9);
 				}
 				else
 				{
-					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(55,25);
-					graphics.lineTo(30,12.5);
-					graphics.lineTo(30,37.5);
-					graphics.lineTo(55,25);
-					graphics.endFill();
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.moveTo(width*0.5,height*0.5);
+					iconGraphics.lineTo(width*0.2727,height*0.25);
+					iconGraphics.lineTo(width*0.2727,height*0.75);
+					iconGraphics.lineTo(width*0.5,height*0.5);
+					iconGraphics.endFill();
 					
-					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(86,25);
-					graphics.lineTo(61,37.5);
-					graphics.lineTo(61,12.5);
-					graphics.lineTo(86,25);
-					graphics.endFill();
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.moveTo(width*0.7818,height*0.5);
+					iconGraphics.lineTo(width*0.5545,height*0.75);
+					iconGraphics.lineTo(width*0.5545,height*0.25);
+					iconGraphics.lineTo(width*0.7818,height*0.5);
+					iconGraphics.endFill();
 					
-					graphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
-					graphics.moveTo(3,5);
-					graphics.lineTo(3,45);
+					iconGraphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
+					iconGraphics.moveTo(1,height*0.1);
+					iconGraphics.lineTo(1,height*0.9);
 				}
 			}
 			
 			/**
 			 * Tap handler to handle tapping to advance/roll back frames
 			 */
-			private function _handleTap(event:org.gestouch.events.GestureEvent):void
+			public function handleTap():void
 			{
 				_timeControl.jumpInDirection(_type)
 			}
@@ -140,11 +136,4 @@
 			}
 		]]>
 	</fx:Script>
-	<s:Group width="100%" height="100%"> 
-		<s:Rect width="100%" height="100%" alpha="0">
-			<s:fill>
-				<s:SolidColor color="0xFFFF00"/>
-			</s:fill>
-		</s:Rect>
-	</s:Group>
-</s:Group>
+</s:Button>

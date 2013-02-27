@@ -65,11 +65,11 @@
 				_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
 				feedbackMessage.init(drawing_stage);
 				
-				currentTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_CURRENT_TIME, leftPanInput);
-				maxTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_MAX_TIME, rightPanInput);
+				currentTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_CURRENT_TIME);
+				maxTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_MAX_TIME);
 				
 				modelDisplay.init(_KSketch);
-				timeControl.init(_KSketch, _timeTickControl,middlePanInput);
+				timeControl.init(_KSketch, _timeTickControl);
 				cornerMenu.init(_interactionControl);
 				
 				var playBounds:Rectangle = playButton.getBounds(this);
@@ -92,6 +92,8 @@
 							_KSketch.generateSceneFromXML(new XML(currentDocument.xml.scene));
 					}					
 				}
+				
+				trace(Capabilities.screenResolutionX, Capabilities.screenResolutionY, Capabilities.screenDPI);
 			}
 			
 			private function _viewDeactivateHandler():void
@@ -181,7 +183,8 @@
 				<s:layout>
 					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
-				<s:Group id="drawing_stage" height="92%" width="{drawing_stage.height/9*16}">
+				<s:Group id="drawing_stage" height="92%" maxHeight="{Capabilities.screenResolutionX*0.7}"
+						 					width="{drawing_stage.height/9*16}">
 					<s:Rect width="100%" height="100%">
 						<s:fill>
 							<s:SolidColor color="0xFFFFFF"/>
@@ -213,7 +216,8 @@
 			</s:Group>
 		</s:Group>
 		
-		<s:Group id="timebar_region" width="100%" height="60">
+		<s:Group id="timebar_region" width="100%" height="{Capabilities.screenDPI * 0.25 * (drawing_stage.height/KSketch2.CANONICAL_HEIGHT)}"
+				 								minHeight="{Capabilities.screenDPI*0.25}">
 			<s:Rect width="100%" height="100%">
 				<s:fill>
 					<s:SolidColor color="0xE7E7E7"/>
@@ -223,56 +227,16 @@
 				<s:layout >
 					<s:HorizontalLayout gap="0" verticalAlign="middle" paddingLeft="5"/>
 				</s:layout>
-				<timeBar:Touch_Play_Button id="playButton"/>
-				<timeBar:KTouchTimeSliderControl id="currentTimeLabel"/>
+				<timeBar:Touch_Play_Button id="playButton" click="playButton.playToggle()"/>
+				<timeBar:KTouchTimeSliderControl id="currentTimeLabel" click="currentTimeLabel.handleTap()"/>
 				<s:Group width="100%" height="100%">
 					<s:layout>
 						<s:VerticalLayout gap="3" verticalAlign="middle" horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
 					</s:layout>
 					<timeBar:KTouchTimeControl id="timeControl"/>
 				</s:Group>
-				<timeBar:KTouchTimeSliderControl id="maxTimeLabel"/>
-				<timeBar:Touch_Menu_Button id="menuButton"/>
-			</s:Group>
-			<s:Group width="100%" height="100%" alpha="0">
-				<s:layout>
-					<s:HorizontalLayout gap="0"/>
-				</s:layout>
-				<s:Group width="50" height="100%" click="playButton.playToggle()">
-					<s:Rect width="100%" height="100%">
-						<s:fill>
-							<s:SolidColor color="0x0000FF"/>
-						</s:fill>
-					</s:Rect>
-				</s:Group>
-				<s:Group width="110" height="100%" id="leftPanInput">
-					<s:Rect width="100%" height="100%">
-						<s:fill>
-							<s:SolidColor color="0x00FFFF"/>
-						</s:fill>
-					</s:Rect>
-				</s:Group>
-				<s:Group width="100%" height="100%" id="middlePanInput">
-					<s:Rect width="100%" height="100%">
-						<s:fill>
-							<s:SolidColor color="0xFFFF00"/>
-						</s:fill>
-					</s:Rect>
-				</s:Group>
-				<s:Group width="110" height="100%" id="rightPanInput">
-					<s:Rect width="100%" height="100%">
-						<s:fill>
-							<s:SolidColor color="0x00FFFF"/>
-						</s:fill>
-					</s:Rect>
-				</s:Group>
-				<s:Group width="50" height="100%" click="_menuBtnHandler()">
-					<s:Rect width="100%" height="100%">
-						<s:fill>
-							<s:SolidColor color="0x0000FF"/>
-						</s:fill>
-					</s:Rect>
-				</s:Group>
+				<timeBar:KTouchTimeSliderControl id="maxTimeLabel" click="maxTimeLabel.handleTap()"/>
+				<timeBar:Touch_Menu_Button id="menuButton" click="_menuBtnHandler()"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

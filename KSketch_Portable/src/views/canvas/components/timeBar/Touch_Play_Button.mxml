@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="50" height="50">
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="{height}" height="100%" skinClass="views.canvas.components.timeBar.KTouchTimebarButtonSkin">
 	<fx:Script>
 		<![CDATA[
+			import spark.components.Group;
+			
 			import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 			import sg.edu.smu.ksketch2.utils.KSelection;
 			
@@ -58,39 +60,34 @@
 			
 			private function set buttonState(value:int):void
 			{
-				graphics.clear();
+				var iconGraphics:Graphics = (skin as KTouchTimebarButtonSkin).iconGraphics.graphics;
+				
+				iconGraphics.clear();
 				_buttonState = value;
 				if(_buttonState == SHOW_PLAY)
 				{
-					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.moveTo(37.5, 25);
-					graphics.lineTo(12.5, 12.5);
-					graphics.lineTo(12.5, 37.5);
-					graphics.lineTo(37.5, 25);
-					graphics.endFill();
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.moveTo(width*0.75, height*0.5);
+					iconGraphics.lineTo(width*0.25, height*0.25);
+					iconGraphics.lineTo(width*0.25, height*0.75);
+					iconGraphics.lineTo(width*0.75, height*0.5);
+					iconGraphics.endFill();
 				}
 				else
 				{
-					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.drawRect(15,12.5,7.5,25);
-					graphics.endFill();
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.drawRect(width*0.3,height*0.25,width*0.125,height*0.5);
+					iconGraphics.endFill();
 					
-					graphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
-					graphics.drawRect(27.5,12.5,7.5,25);
-					graphics.endFill();
-					
-
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.drawRect(width*0.6,height*0.25,width*0.125,height*0.5);
+					iconGraphics.endFill();
 				}
 				
-				graphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
-				graphics.moveTo(47,5);
-				graphics.lineTo(47,45);
+				iconGraphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
+				iconGraphics.moveTo(width,height*0.1);
+				iconGraphics.lineTo(width,height*0.9);
 			}
 		]]>
 	</fx:Script>
-	<s:Rect top="1" bottom="1" right="1" left="1">
-		<s:fill>
-			<s:SolidColor color="0xFF0000"/>
-		</s:fill>
-	</s:Rect>
-</s:Group>
+</s:Button>

@@ -80,7 +80,7 @@ package views.canvas.components.timeBar
 		
 		public function closeMagnifier(event:TouchEvent):void
 		{
-			_magnifier.closeMagnifier();
+			
 		}
 		
 		/**
@@ -395,6 +395,7 @@ package views.canvas.components.timeBar
 			
 			if(_interactionControl.currentInteraction.length > 0)
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
+		
 			_interactionControl.end_interaction_operation();
 		}
 	}

@@ -5,14 +5,17 @@
 		<![CDATA[
 			import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
 			
+			import views.canvas.KSketch_CanvasView;
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			import views.canvas.interactors.KTouchDrawInteractor;
 			
 			private var _interactionControl:KMobileInteractionControl;
+			private var _canvasView:KSketch_CanvasView;
 			
-			public function init(interactionControl:KMobileInteractionControl):void
+			public function init(interactionControl:KMobileInteractionControl, canvasView:KSketch_CanvasView):void
 			{
 				_interactionControl = interactionControl;
+				_canvasView = canvasView;
 			}
 			
 			public function activateCamera():void
@@ -56,6 +59,10 @@
 				}
 			}
 			
+			public function exit():void
+			{
+				_canvasView.navigator.popView();
+			}
 		]]>
 	</fx:Script>
 	
@@ -109,8 +116,14 @@
 				<s:stroke>
 					<s:SolidColorStroke weight="1" color="0x000000"/>
 				</s:stroke>
-			</s:Line>						
+			</s:Line>
 			<s:Group>
+				<s:layout>
+					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
+				</s:layout>
+				<s:Button name="exit" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="exit()"/>
+			</s:Group>
+<!--		<s:Group>
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
@@ -128,7 +141,7 @@
 				</s:layout>
 				<s:Button name="zoomIn" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
 				<s:Button name="zoomOut" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
-			</s:Group>
+			</s:Group>-->
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

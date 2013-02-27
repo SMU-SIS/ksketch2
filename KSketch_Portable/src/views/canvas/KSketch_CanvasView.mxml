@@ -72,7 +72,7 @@
 				
 				modelDisplay.init(_KSketch);
 				timeControl.init(_KSketch, _timeTickControl);
-				cornerMenu.init(_interactionControl);
+				cornerMenu.init(_interactionControl, this);
 				
 				var playBounds:Rectangle = playButton.getBounds(this);
 				interceptor.graphics.beginFill(0x000000);

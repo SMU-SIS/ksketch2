@@ -47,6 +47,8 @@
 					case "zoomOut":
 						labelText = "-";
 						break;
+					case "exit":
+						labelText = "X";
 				}
 			
 			}

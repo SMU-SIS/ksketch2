@@ -38,6 +38,9 @@ package sg.edu.smu.ksketch2
 		public static var returnRotationInterpolationToZero:Boolean = false;
 		public static var returnScaleInterpolationToZero:Boolean = false;
 		
+		public var scaleX:Number = 1;
+		public var scaleY:Number = 1;
+		
 		public static const CANONICAL_WIDTH:Number = 1280;
 		public static const CANONICAL_HEIGHT:Number = 720;
 		public static const TRANSFORM_TRANSLATION:int = 0;

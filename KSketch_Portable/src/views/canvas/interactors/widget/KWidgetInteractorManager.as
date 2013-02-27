@@ -46,9 +46,9 @@ package views.canvas.interactors.widget
 			_widgetSpace = _widget.parent;
 			_contextMenu = new KTouchWidgetMenu(KSketchInstance, interactionControl, widgetBase, this);
 			
-			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget);
+			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace);
 			steeringMode = new KSteeringMode(_KSketch, _interactionControl, _widget);
-			freeTransformMode = new KFreeTransformMode(_KSketch, _interactionControl, _widget);
+			freeTransformMode = new KFreeTransformMode(_KSketch, _interactionControl, _widget, modelSpace);
 			activeMode = defaultMode;
 			
 			_modeGesture = new TapGesture(_widget);

@@ -1,5 +1,7 @@
 package views.canvas.interactors.widget
 {
+	import flash.display.DisplayObject;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	
 	import views.canvas.components.transformWidget.KTouchWidgetBase;
@@ -18,13 +20,14 @@ package views.canvas.interactors.widget
 		private var _rotateInteractor:KTouchRotateInteractor;
 		private var _scaleInteractor:KTouchScaleInteractor;
 		
-		public function KBasicTransitionMode(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, widgetBase:KTouchWidgetBase)
+		public function KBasicTransitionMode(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, widgetBase:KTouchWidgetBase
+											,modelSpace:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl, widgetBase);
 			
-			_translateInteractor = new KTouchTranslateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger);
-			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger);
-			_scaleInteractor = new KTouchScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger);
+			_translateInteractor = new KTouchTranslateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace);
+			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace);
+			_scaleInteractor = new KTouchScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger, modelSpace);
 		}
 		
 		override public function activate():void

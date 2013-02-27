@@ -2,6 +2,7 @@ package views.canvas.interactors
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.geom.Point;
 	
 	import org.gestouch.events.GestureEvent;
 	
@@ -16,6 +17,7 @@ package views.canvas.interactors
 		protected var _activated:Boolean = false;
 		protected var _KSketch:KSketch2;
 		protected var _interactionControl:KMobileInteractionControl;
+		protected var _modelSpace:DisplayObject;
 		
 		protected var _startTime:int;
 		protected var _endTime:int;
@@ -29,10 +31,12 @@ package views.canvas.interactors
 		 * @param InteractionControl IInteractionControl interface that this interactor gets its working selection and undo/redo stacks from.
 		 * @param inputComponent Target component that is will activate the transition gesture inputs.
 		 */
-		public function KTouchTransitionInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl)
+		public function KTouchTransitionInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+													modelSpace:DisplayObject)
 		{
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
+			_modelSpace = modelSpace;
 		}
 		
 		/**
@@ -89,6 +93,14 @@ package views.canvas.interactors
 			_interactionControl.end_interaction_operation();
 			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_END));
 
+		}
+		
+		protected function getGlobalCenter():Point
+		{
+			var selectionCenter:Point = _interactionControl.selection.centerAt(_KSketch.time);
+			selectionCenter = _modelSpace.localToGlobal(selectionCenter);
+			
+			return selectionCenter;
 		}
 	}
 }

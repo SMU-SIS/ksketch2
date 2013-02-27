@@ -18,9 +18,10 @@ package views.canvas.interactors
 		private var _previousPoint:Point;
 		private var _startPoint:Point;
 		
-		public function KTouchTranslateInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, inputComponent:DisplayObject)
+		public function KTouchTranslateInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+												  inputComponent:DisplayObject, modelSpace:DisplayObject)
 		{
-			super(KSketchInstance, interactionControl);
+			super(KSketchInstance, interactionControl, modelSpace);
 			_translateGesture = new PanGesture(inputComponent);
 			_translateGesture.maxNumTouchesRequired = 1;
 		}
@@ -82,6 +83,9 @@ package views.canvas.interactors
 			var length:int = _transitionObjects.length();
 			var currentObject:KObject;
 			var dxdy:Point = _translateGesture.location.subtract(_startPoint);
+			
+			dxdy.x /= _KSketch.scaleX;
+			dxdy.y /= _KSketch.scaleY;
 			
 			for(i; i < length; i++)
 				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), dxdy.x, dxdy.y, 0, 0 );

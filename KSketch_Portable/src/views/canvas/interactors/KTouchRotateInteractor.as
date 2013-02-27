@@ -22,9 +22,10 @@ package views.canvas.interactors
 		private var _previousPoint:Point;
 		private var _startPoint:Point;
 		
-		public function KTouchRotateInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, inputComponent:DisplayObject)
+		public function KTouchRotateInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+											   inputComponent:DisplayObject, modelSpace:DisplayObject)
 		{
-			super(KSketchInstance, interactionControl);
+			super(KSketchInstance, interactionControl, modelSpace);
 			
 			_rotateGesture = new PanGesture(inputComponent);
 			_rotateGesture.maxNumTouchesRequired = 1;
@@ -57,7 +58,7 @@ package views.canvas.interactors
 			
 			_theta = 0;
 			_previousPoint = _rotateGesture.location;
-			_center = _newSelection.centerAt(_KSketch.time);
+			_center = getGlobalCenter();
 			
 			var i:int = 0;
 			var length:int = _transitionObjects.length();

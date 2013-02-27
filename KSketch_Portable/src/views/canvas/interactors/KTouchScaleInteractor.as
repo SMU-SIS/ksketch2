@@ -16,9 +16,9 @@ package views.canvas.interactors
 		private var _scale:Number;
 		
 		public function KTouchScaleInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
-											  inputComponent:DisplayObject)
+											  inputComponent:DisplayObject, modelSpace:DisplayObject)
 		{
-			super(KSketchInstance, interactionControl);
+			super(KSketchInstance, interactionControl, modelSpace);
 			_scaleGesture = new TransformGesture(inputComponent);
 		}
 		

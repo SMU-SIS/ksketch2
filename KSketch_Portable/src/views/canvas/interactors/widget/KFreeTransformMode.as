@@ -1,5 +1,7 @@
 package views.canvas.interactors.widget
 {
+	import flash.display.DisplayObject;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	
 	import views.canvas.components.transformWidget.KTouchWidgetBase;
@@ -10,10 +12,11 @@ package views.canvas.interactors.widget
 	{
 		private var _freeTransformInteractor:KTouchFreeTransformInteractor;
 		
-		public function KFreeTransformMode(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, widgetBase:KTouchWidgetBase)
+		public function KFreeTransformMode(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+										   widgetBase:KTouchWidgetBase, modelSpace:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl, widgetBase);
-			_freeTransformInteractor = new KTouchFreeTransformInteractor(KSketchInstance, interactionControl, widgetBase);
+			_freeTransformInteractor = new KTouchFreeTransformInteractor(KSketchInstance, interactionControl, widgetBase, modelSpace);
 		}
 		
 		override public function activate():void

@@ -92,8 +92,6 @@
 							_KSketch.generateSceneFromXML(new XML(currentDocument.xml.scene));
 					}					
 				}
-				
-				trace(Capabilities.screenResolutionX, Capabilities.screenResolutionY, Capabilities.screenDPI);
 			}
 			
 			private function _viewDeactivateHandler():void

@@ -22,9 +22,10 @@ package views.canvas.interactors
 		protected var _transformGesture:TransformGesture;
 		protected var _inputComponent:DisplayObject;
 		
-		public function KTouchFreeTransformInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, inputComponent:DisplayObject)
+		public function KTouchFreeTransformInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, 
+													  inputComponent:DisplayObject, modelSpace:DisplayObject)
 		{
-			super(KSketchInstance, interactionControl);
+			super(KSketchInstance, interactionControl, modelSpace);
 			
 			_inputComponent = inputComponent;
 			_transformGesture = new TransformGesture(inputComponent);

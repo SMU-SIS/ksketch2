@@ -49,6 +49,25 @@ package sg.edu.smu.ksketch2.view
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _handler_UpdateAllViews);
 			_KSketch.addEventListener(KSketchEvent.EVENT_KSKETCH_INIT, reset);
 			reset();
+			
+			scaleX = scaleX;
+			scaleY = scaleY;
+		}
+		
+		override public function set scaleX(value:Number):void
+		{
+			super.scaleX = value;
+			
+			if(_KSketch)
+				_KSketch.scaleX = value;
+		}
+		
+		override public function set scaleY(value:Number):void
+		{
+			super.scaleY = value;
+			
+			if(_KSketch)
+				_KSketch.scaleY = value;
 		}
 		
 		public function get viewsTable():Dictionary

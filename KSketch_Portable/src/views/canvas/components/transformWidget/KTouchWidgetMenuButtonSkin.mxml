@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark"
-		alpha.disabled="0.3">
+		xmlns:s="library://ns.adobe.com/flex/spark">
 	<!-- host component -->
 	<fx:Metadata>
 		[HostComponent("spark.components.Button")]
@@ -19,13 +18,13 @@
 	name=iconDisplay, type=spark.primitives.BitmapImage, required=false
 	name=labelDisplay, type=spark.core.IDisplayText, required=false
 	-->
-	<s:Rect left="1" right="1" top="1" bottom="1" includeIn="up">
+	<s:Rect left="-5" right="-5" top="-5" bottom="-5" includeIn="up" alpha="0.5">
 		<s:fill>
 			<s:SolidColor color="0xD7D7D7"/>
 		</s:fill>
 	</s:Rect>
 	
-	<s:Rect left="1" right="1" top="1" bottom="1" radiusX="3" radiusY="3" includeIn="down">
+	<s:Rect left="-5" right="-5" top="-5" bottom="-5" radiusX="3" radiusY="3" includeIn="down" alpha="0.5">
 		<s:fill>
 			<s:SolidColor color="0xc9ddf3"/>
 		</s:fill>
@@ -34,6 +33,6 @@
 		<s:layout>
 			<s:HorizontalLayout paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"/>
 		</s:layout>
-		<s:Label id="labelDisplay" fontSize="{Capabilities.screenDPI*0.15}" fontFamily="_sans" color="0xA8A8A8"/>
+		<s:Label id="labelDisplay" fontSize="28" fontFamily="_sans" color="0xA8A8A8"/>
 	</s:Group>
 </s:Skin>

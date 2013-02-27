@@ -67,19 +67,19 @@
     <!-- Transitions for open and close -->
     <s:transitions>
         <s:Transition fromState="closed" toState="normal" autoReverse="true">
-            <s:Fade duration="0" target="{chrome}"/>
+            <s:Fade duration="100" target="{chrome}"/>
         </s:Transition>
 
         <s:Transition fromState="disabledAndClosed" toState="disabled" autoReverse="true">
-            <s:Fade duration="0" target="{chrome}"/>
+            <s:Fade duration="100" target="{chrome}"/>
         </s:Transition>
         
         <s:Transition fromState="normal" toState="closed" autoReverse="true">
-            <s:Fade duration="0" target="{chrome}"/>
+            <s:Fade duration="100" target="{chrome}"/>
         </s:Transition>
 
         <s:Transition fromState="disabled" toState="disabledAndClosed" autoReverse="true">
-            <s:Fade duration="0" target="{chrome}"/>
+            <s:Fade duration="100" target="{chrome}"/>
         </s:Transition>
     </s:transitions>
         

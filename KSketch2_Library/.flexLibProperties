@@ -1,49 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
-  <includeClasses>
-    <classEntry path="sg.edu.smu.ksketch2.KSketch2"/>
-    <classEntry path="sg.edu.smu.ksketch2.events.KSketchEvent"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.objects.KObject"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.objects.KStroke"/>
-    <classEntry path="sg.edu.smu.ksketch2.events.KObjectEvent"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.objects.KGroup"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.IModelObjectList"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KModelObjectList"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.IKeyFrame"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.IKeyFrameList"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.IReferenceFrame"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KTimedPoint"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KPath"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KKeyFrame"/>
-    <classEntry path="sg.edu.smu.ksketch2.KSketchState"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KKeyFrameList"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KSceneGraph"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.ITransformInterface"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KReferenceFrame"/>
-    <classEntry path="sg.edu.smu.ksketch2.utils.KMathUtil"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.KGroupingUtil"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.KStaticGroupingUtil"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.operations.IModelOperation"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KParentChangeOperation"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KCompositeOperation"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KKeyOperation"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KRemoveKeyOperation"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KVisibilityKeyList"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.IVisibilityKey"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.IVisibilityControl"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.KVisibilityControl"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.data_structures.KVisibilityKey"/>
-    <classEntry path="sg.edu.smu.ksketch2.events.KGroupEvent"/>
-    <classEntry path="sg.edu.smu.ksketch2.events.KTimeChangedEvent"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KEditKeyTimeOperation"/>
-    <classEntry path="sg.edu.smu.ksketch2.model.objects.KImage"/>
-    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KVisibilityChangedOperation"/>
-  </includeClasses>
+  <includeClasses/>
   <includeResources/>
   <namespaceManifests/>
 </flexLibProperties>

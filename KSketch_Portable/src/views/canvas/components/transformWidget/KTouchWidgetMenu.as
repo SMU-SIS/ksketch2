@@ -15,6 +15,8 @@ package views.canvas.components.transformWidget
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	import views.canvas.interactors.widget.KWidgetInteractorManager;
+	import views.document.previewer.KTouchPreviewerButtonSkin;
+	import views.document.scrollerColumn.KTouchDocumentScrollerButtonSkin;
 	
 	public class KTouchWidgetMenu extends SkinnablePopUpContainer
 	{		
@@ -30,7 +32,7 @@ package views.canvas.components.transformWidget
 		private var button1:Button;
 		private var button2:Button;
 		private var button3:Button;
-		private var button4:Button;
+		private var blocker:Button;
 		
 		//Need to find a way to display this radially
 		public function KTouchWidgetMenu(KSketchInstance:KSketch2,
@@ -44,17 +46,17 @@ package views.canvas.components.transformWidget
 			
 			super();
 			setStyle("skinClass", KWidgetMenuSkin);
-			addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleClose);
+			
+			blocker = new Button();
+			blocker.setStyle("skinClass", Class(KTouchPreviewerButtonSkin));
+			blocker.width = Capabilities.screenResolutionX > Capabilities.screenResolutionY?Capabilities.screenResolutionX:Capabilities.screenResolutionY;
+			blocker.height= Capabilities.screenResolutionX > Capabilities.screenResolutionY?Capabilities.screenResolutionY:Capabilities.screenResolutionX;
+			blocker.addEventListener(MouseEvent.CLICK , _handleClose);
+			blocker.alpha = 0;
 			
 			button1 = new Button();
 			button2 = new Button();
 			button3 = new Button();
-			button4 = new Button();
-			button1.addEventListener(MouseEvent.CLICK, function a(event:MouseEvent):
-				void{_transitionHelper.activeMode = transitionHelper.defaultMode});
-			button2.addEventListener(MouseEvent.CLICK, function a(event:MouseEvent):
-				void{_transitionHelper.activeMode = transitionHelper.freeTransformMode});
-
 			
 			button1.width = 50;
 			button1.height = 50;
@@ -65,18 +67,14 @@ package views.canvas.components.transformWidget
 			button3.width = 50;
 			button3.height = 50;
 			
-			button4.width = 50;
-			button4.height = 50;
-			
 			button1.label = "1";
 			button2.label = "2";
 			button3.label = "3";
-			button4.label = "4";
 			
+			addElement(blocker);
 			addElement(button1);
 			addElement(button2);
 			addElement(button3);
-			addElement(button4);
 		}
 		
 		/**
@@ -89,6 +87,8 @@ package views.canvas.components.transformWidget
 			x = xPos;
 			y = yPos;
 			
+			blocker.x = -x;
+			blocker.y = -y;
 			super.open(owner, modal);
 
 			_layoutButtons();
@@ -129,10 +129,6 @@ package views.canvas.components.transformWidget
 					point = Point.polar(275, 55/180*Math.PI);
 					button3.x = point.x;
 					button3.y = point.y;
-					
-					point = Point.polar(275, 70/180*Math.PI);
-					button4.x = point.x;
-					button4.y = point.y;
 				}
 				else
 				{
@@ -147,10 +143,6 @@ package views.canvas.components.transformWidget
 					point = Point.polar(275, -40/180*Math.PI);
 					button3.x = point.x;
 					button3.y = point.y;
-					
-					point = Point.polar(275, -25/180*Math.PI);
-					button4.x = point.x;
-					button4.y = point.y;
 				}
 				
 			}
@@ -170,10 +162,6 @@ package views.canvas.components.transformWidget
 					point = Point.polar(275, 135/180*Math.PI);
 					button3.x = point.x;
 					button3.y = point.y;
-					
-					point = Point.polar(275, 120/180*Math.PI);
-					button4.x = point.x;
-					button4.y = point.y;
 				}
 				else
 				{
@@ -189,21 +177,11 @@ package views.canvas.components.transformWidget
 					point = Point.polar(275, -150/180*Math.PI);
 					button3.x = point.x;
 					button3.y = point.y;
-					
-					point = Point.polar(275, -165/180*Math.PI);
-					button4.x = point.x;
-					button4.y = point.y;
 				}
-			}
-			
-			//find layout direction first
-			//Left/right
-			//Top/bottom
-			//top?left? topleft?
-			
+			}			
 		}
 		
-		private function _handleClose(event:FlexMouseEvent):void
+		private function _handleClose(event:MouseEvent):void
 		{
 			close();
 		}

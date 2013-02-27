@@ -21,8 +21,7 @@
 				middleTrigger.graphics.clear();
 				topTrigger.graphics.clear();
 				centroid.graphics.clear();
-			}
-			
+			}			
 		]]>
 	</fx:Script>
 	<s:Group id="boundary" mouseEnabled="false" mouseChildren="false"/>

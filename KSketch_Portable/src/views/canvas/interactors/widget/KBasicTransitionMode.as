@@ -1,6 +1,7 @@
 package views.canvas.interactors.widget
 {
 	import flash.display.DisplayObject;
+	import flash.system.Capabilities;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	
@@ -12,9 +13,9 @@ package views.canvas.interactors.widget
 	
 	public class KBasicTransitionMode extends KTouchWidgetMode
 	{
-		public static const TOP_TRIGGER_RADIUS:Number = 75;
-		public static const MIDDLE_TRIGGER_RADIUS:Number = 125;
-		public static const BASE_TRIGGER_RADIUS:Number = 200;
+		public static const TOP_TRIGGER_RADIUS:Number = Capabilities.screenDPI * 0.5;
+		public static const MIDDLE_TRIGGER_RADIUS:Number = Capabilities.screenDPI * 0.75;
+		public static const BASE_TRIGGER_RADIUS:Number = Capabilities.screenDPI;
 		
 		private var _translateInteractor:KTouchTranslateInteractor;
 		private var _rotateInteractor:KTouchRotateInteractor;
@@ -35,14 +36,14 @@ package views.canvas.interactors.widget
 			demonstrationMode = false;
 			_translateInteractor.activate();
 			_rotateInteractor.activate();
-			_scaleInteractor.activate();
+			//_scaleInteractor.activate();
 		}
 		
 		override public function deactivate():void
 		{
 			_translateInteractor.deactivate();
 			_rotateInteractor.deactivate();
-			_scaleInteractor.deactivate();
+			//_scaleInteractor.deactivate();
 		}
 		
 		override public function set demonstrationMode(value:Boolean):void
@@ -50,34 +51,34 @@ package views.canvas.interactors.widget
 			_widget.reset();
 			if(!value)
 			{
-				_widget.baseTrigger.graphics.beginFill(KTouchWidgetBase.COLOR1, KTouchWidgetBase.BLEND_ALPHA);
-				_widget.baseTrigger.graphics.drawCircle(0,0,BASE_TRIGGER_RADIUS);
-				_widget.baseTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
-				_widget.baseTrigger.graphics.endFill();
+				//_widget.baseTrigger.graphics.beginFill(KTouchWidgetBase.COLOR1, KTouchWidgetBase.BLEND_ALPHA);
+				//_widget.baseTrigger.graphics.drawCircle(0,0,BASE_TRIGGER_RADIUS);
+				//_widget.baseTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
+				//_widget.baseTrigger.graphics.endFill();
 				
 				_widget.middleTrigger.graphics.beginFill(KTouchWidgetBase.COLOR2, KTouchWidgetBase.BLEND_ALPHA);
 				_widget.middleTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
 				_widget.middleTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
 				_widget.middleTrigger.graphics.endFill();
 				
-				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR_BASE, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR1, KTouchWidgetBase.BLEND_ALPHA);
 				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
 				_widget.topTrigger.graphics.endFill();
 				
 			}
 			else
 			{
-				_widget.baseTrigger.graphics.beginFill(KTouchWidgetBase.COLOR4, KTouchWidgetBase.BLEND_ALPHA);
-				_widget.baseTrigger.graphics.drawCircle(0,0,BASE_TRIGGER_RADIUS);
-				_widget.baseTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
-				_widget.baseTrigger.graphics.endFill();
+				//_widget.baseTrigger.graphics.beginFill(KTouchWidgetBase.COLOR4, KTouchWidgetBase.BLEND_ALPHA);
+				//_widget.baseTrigger.graphics.drawCircle(0,0,BASE_TRIGGER_RADIUS);
+				//_widget.baseTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
+				//_widget.baseTrigger.graphics.endFill();
 				
-				_widget.middleTrigger.graphics.beginFill(KTouchWidgetBase.COLOR3, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.middleTrigger.graphics.beginFill(KTouchWidgetBase.COLOR4, KTouchWidgetBase.BLEND_ALPHA);
 				_widget.middleTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
 				_widget.middleTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
 				_widget.middleTrigger.graphics.endFill();
 				
-				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR_BASE, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR3, KTouchWidgetBase.BLEND_ALPHA);
 				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
 				_widget.topTrigger.graphics.endFill();
 				

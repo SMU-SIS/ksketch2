@@ -7,7 +7,6 @@ package views.canvas.components.transformWidget
 	import flash.system.Capabilities;
 	
 	import spark.components.Button;
-	import spark.components.Group;
 	import spark.components.SkinnablePopUpContainer;
 	import spark.components.VGroup;
 	
@@ -22,7 +21,7 @@ package views.canvas.components.transformWidget
 		public const MAX_WIDGET_WIDTH:Number = 600;
 		public const MAX_WIDGET_HEIGHT:Number = 600;
 		public const MAX_WIDGET_RADIUS:Number = 300;
-		public const BASE_BUTTON_RADIUS:Number = 250;
+		public const BASE_BUTTON_RADIUS:Number = 220;
 		
 		private var _KSketch:KSketch2;
 		private var _interactionControl:KMobileInteractionControl;
@@ -95,6 +94,11 @@ package views.canvas.components.transformWidget
 			super.open(owner, modal);
 
 			//Check for button availability here
+			_insertKeyButton.enabled = _canInsertKey();
+			_removeKeyButton.enabled = _canRemoveKey();
+			_clearMotionButton.enabled = _canClearMotion();
+			
+			
 			_layoutButtons();
 		}
 		
@@ -159,5 +163,36 @@ package views.canvas.components.transformWidget
 		{
 			close();
 		}
+		
+		private function _canInsertKey():Boolean
+		{
+			return false;
+		}
+		
+		private function _canRemoveKey():Boolean
+		{
+			return false;
+		}
+		
+		private function _canClearMotion():Boolean
+		{
+			return false;	
+		}
+		
+		private function _insertKey():void
+		{
+			
+		}
+		
+		private function _removeKey():void
+		{
+			
+		}
+		
+		private function _clearMotion():void
+		{
+			
+		}
+		
 	}
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark">
+		xmlns:s="library://ns.adobe.com/flex/spark" alpha.disabled="0.2">
 	<!-- host component -->
 	<fx:Metadata>
 		[HostComponent("spark.components.Button")]
@@ -18,7 +18,7 @@
 	name=iconDisplay, type=spark.primitives.BitmapImage, required=false
 	name=labelDisplay, type=spark.core.IDisplayText, required=false
 	-->
-	<s:Rect left="-5" right="-5" top="-5" bottom="-5" includeIn="up" alpha="0.5">
+	<s:Rect left="-5" right="-5" top="-5" bottom="-5" includeIn="up,disabled" alpha="0.5">
 		<s:fill>
 			<s:SolidColor color="0xD7D7D7"/>
 		</s:fill>

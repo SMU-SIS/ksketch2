@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark">
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" xmlns:canvas="views.canvas.*"
+						   creationComplete="setUpToggles()">
 	<fx:Script>
 		<![CDATA[
 			import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
@@ -11,11 +12,18 @@
 			
 			private var _interactionControl:KMobileInteractionControl;
 			private var _canvasView:KSketch_CanvasView;
+			private var _isPen:Boolean
 			
 			public function init(interactionControl:KMobileInteractionControl, canvasView:KSketch_CanvasView):void
 			{
 				_interactionControl = interactionControl;
 				_canvasView = canvasView;
+				_isPen = true;
+			}
+			
+			public function setUpToggles():void
+			{
+				isPen = _isPen;	
 			}
 			
 			public function activateCamera():void
@@ -36,27 +44,30 @@
 			
 			public function penColor(value:uint):void
 			{
+				isPen = true;
 				KDrawInteractor.penColor = value;
-				(pen.skin as PopUpMenuButtonSkin).fontColor = value;
-				
-				if(!pen.visible)
-					togglePen();
+				(penBtn.skin as PopUpMenuButtonSkin).penColor = value;
 			}
 			
-			public function togglePen():void
+			public function set isPen(value:Boolean):void
 			{
-				if(pen.visible)
+				_isPen = value;
+				
+				if(!penBtn.skin || !eraserBtn.skin)
+					return;
+
+				if(_isPen)
 				{
-					pen.visible = false;
-					eraser.visible = true;
-					KTouchDrawInteractor.eraser = true;
+					penBtn.skin.setCurrentState("selected");
+					eraserBtn.skin.setCurrentState("unselected");
 				}
 				else
 				{
-					pen.visible = true;
-					eraser.visible = false;
-					KTouchDrawInteractor.eraser = false;
+					penBtn.skin.setCurrentState("unselected");
+					eraserBtn.skin.setCurrentState("selected");
 				}
+				
+				KTouchDrawInteractor.eraser = !_isPen;
 			}
 			
 			public function exit():void
@@ -67,13 +78,14 @@
 	</fx:Script>
 	
 	<s:filters>
-		<s:DropShadowFilter color="0x000000" distance="3" angle="45"/>
+		<s:DropShadowFilter color="0xA4A4A4" distance="2" blurX="8" blurY="8" strength="2" angle="90"/>
 	</s:filters>
 	<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
 		<s:fill>
-			<s:SolidColor color="0xD8D8D8"/>
+			<s:SolidColor color="0xE7E7E7"/>
 		</s:fill>
 	</s:Rect>
+
 	<s:Group>
 		<s:Group>
 			<s:layout>
@@ -85,19 +97,17 @@
 				</s:layout>
 				<s:Button name="new" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="clear()"/>
 			</s:Group>
-			<s:Line alpha="0.25" width="90%">
+			<s:Line alpha="{KSketch_CanvasView.CANVAS_DIVIDER_BLEND}" width="90%">
 				<s:stroke>
-					<s:SolidColorStroke weight="1" color="0x000000"/>
+					<s:SolidColorStroke weight="1" color="{KSketch_CanvasView.CANVAS_BUTTON_COLOR}"/>
 				</s:stroke>
 			</s:Line>			
 			<s:Group>
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
-				<s:Group>
-					<s:Button name="pen" id="pen" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="togglePen()"/>
-					<s:Button name="eraser" id="eraser" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" visible="false" click="togglePen()"/>
-				</s:Group>
+				<s:Button name="pen" id="penBtn" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" mouseUp="{isPen = true}"/>
+				<s:Button name="eraser" id="eraserBtn" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" mouseUp="{isPen = false}"/>
 				<s:Group id="penGroup">
 					<s:layout>
 						<s:VerticalLayout gap="1"/>
@@ -112,9 +122,9 @@
 							  click="penColor(0xc9ddf3)"/>
 				</s:Group>
 			</s:Group>
-			<s:Line alpha="0.25" width="90%">
+			<s:Line alpha="{KSketch_CanvasView.CANVAS_DIVIDER_BLEND}" width="90%">
 				<s:stroke>
-					<s:SolidColorStroke weight="1" color="0x000000"/>
+					<s:SolidColorStroke weight="1" color="{KSketch_CanvasView.CANVAS_BUTTON_COLOR}"/>
 				</s:stroke>
 			</s:Line>
 			<s:Group>

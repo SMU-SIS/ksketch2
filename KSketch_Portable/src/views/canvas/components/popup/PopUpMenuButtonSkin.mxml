@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
-		alpha.disabled="0.5" creationComplete="_creationCompleteHandler()">
+		alpha.disabled="0.5" creationComplete="_creationCompleteHandler()"
+		width="{Capabilities.screenDPI*0.25}"
+		height="{Capabilities.screenDPI*0.25}"
+		>
 	<!-- host component -->
 	<fx:Metadata>
 		[HostComponent("spark.components.Button")]
@@ -9,6 +12,7 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import views.canvas.KSketch_CanvasView;
 			
 			private function _creationCompleteHandler():void
 			{
@@ -27,13 +31,44 @@
 						buttonColor = 0xc9ddf3;
 						break;
 					case "pen":
-						labelText = "P";
+						
+						penColor = 0x626262;
+						
 						break;
 					case "eraser":
-						labelText = "E";
+	
+						iconGraphics.graphics.beginFill(0x626262);
+						iconGraphics.graphics.lineStyle(3, KSketch_CanvasView.CANVAS_BUTTON_COLOR);
+						iconGraphics.graphics.moveTo(0.35*width, 0.2*height);
+						iconGraphics.graphics.lineTo(0.35*width, 0.5*height);
+						iconGraphics.graphics.lineTo(0.65*width, 0.5*height);
+						iconGraphics.graphics.lineTo(0.65*width, 0.2*height);
+						iconGraphics.graphics.lineTo(0.35*width, 0.2*height);
+						iconGraphics.graphics.endFill();
+						
+						iconGraphics.graphics.moveTo(0.35*width, 0.5*height);
+						iconGraphics.graphics.lineTo(0.35*width, 0.8*height);
+						iconGraphics.graphics.lineTo(0.65*width, 0.8*height);
+						iconGraphics.graphics.lineTo(0.65*width, 0.5*height);
+						
+						backgroundColor.visible = false;
+						
 						break;
 					case "new":
-						labelText = "N";
+						
+						iconGraphics.graphics.lineStyle(3, 0x626262);
+						iconGraphics.graphics.moveTo(0.25*width, 0.2*height);
+						iconGraphics.graphics.lineTo(0.25*width, 0.8*height);
+						iconGraphics.graphics.lineTo(0.75*width, 0.8*height);
+						iconGraphics.graphics.lineTo(0.75*width, 0.3*height);
+						iconGraphics.graphics.lineTo(0.65*width, 0.2*height);
+						iconGraphics.graphics.lineTo(0.25*width, 0.2*height);
+						
+						iconGraphics.graphics.moveTo(0.65*width, 0.2*height);
+						iconGraphics.graphics.lineTo(0.65*width, 0.3*height);
+						iconGraphics.graphics.lineTo(0.75*width, 0.3*height);
+						backgroundColor.visible = false;
+						
 						break;
 					case "camera":
 						labelText = "C";
@@ -48,14 +83,67 @@
 						labelText = "-";
 						break;
 					case "exit":
-						labelText = "X";
+						iconGraphics.graphics.lineStyle(3, 0x626262);
+						iconGraphics.graphics.moveTo(0.35*width, 0.65*height);
+						iconGraphics.graphics.lineTo(0.20*width, 0.5*height);
+						iconGraphics.graphics.lineTo(0.35*width, 0.35*height);
+						iconGraphics.graphics.moveTo(0.20*width, 0.5*height);
+						iconGraphics.graphics.lineTo(0.6*width, 0.5*height);
+
+						iconGraphics.graphics.moveTo(0.50*width, 0.4*height);
+						iconGraphics.graphics.lineTo(0.50*width, 0.25*height);
+						iconGraphics.graphics.lineTo(0.80*width, 0.25*height);
+						iconGraphics.graphics.lineTo(0.80*width, 0.75*height);
+						iconGraphics.graphics.lineTo(0.50*width, 0.75*height);
+						iconGraphics.graphics.lineTo(0.50*width, 0.6*height);
+						
+						backgroundColor.visible = false;
 				}
+			}
 			
+			override public function setCurrentState(stateName:String, playTransition:Boolean=true):void
+			{
+				if(stateName == "selected")
+				{
+					super.setCurrentState("down", playTransition);
+					if(parent && parent.name == "pen")
+						backgroundColor.visible = true;
+					else
+						backgroundColor.visible = false;
+				}
+				else if(stateName == "unselected")
+				{
+					super.setCurrentState("up", playTransition);
+					backgroundColor.visible = false;
+				}
+				else if(parent)
+				{
+					switch(parent.name)
+					{
+						case "black":
+						case "red":
+						case "green":
+						case "blue":
+						case "pen":
+						case "eraser":
+							break;
+						default:
+							super.setCurrentState(stateName, playTransition);
+					}
+				}					
 			}
 
-			public function set fontColor(value:uint):void
+			public function set penColor(value:uint):void
 			{
-				labelDisplay.setStyle("color", value);	
+				buttonFill.color = value;
+				iconGraphics.graphics.clear();
+				iconGraphics.graphics.lineStyle(3, KSketch_CanvasView.CANVAS_BUTTON_COLOR);
+				iconGraphics.graphics.moveTo(0.45*width, 0.2*height);
+				iconGraphics.graphics.lineTo(0.45*width, 0.65*height);
+				iconGraphics.graphics.lineTo(0.50*width, 0.85*height);
+				iconGraphics.graphics.lineTo(0.55*width, 0.65*height);
+				iconGraphics.graphics.lineTo(0.55*width, 0.2*height);
+				iconGraphics.graphics.lineTo(0.45*width, 0.2*height);
 			}
 			
 			private function set labelText(value:String):void
@@ -92,17 +180,20 @@
 	</s:states>
 	
 	<!-- layer 2: fill -->
-	<s:Rect left="1" right="1" top="1" bottom="1">
+	<s:Rect left="1" right="1" top="1" bottom="1" includeIn="up">
 		<s:fill>
-			<s:SolidColor color="0xD8D8D8"/>
+			<s:SolidColor color="0xE7E7E7"/>
 		</s:fill>
-		<s:filters>
-			<s:GlowFilter color="0x000000" alpha="0.7" inner="true" blurX="16" blurY="16" includeIn="down"/>
-		</s:filters>
+	</s:Rect>
+	
+	<s:Rect left="1" right="1" top="1" bottom="1" radiusX="3" radiusY="3" includeIn="down">
+		<s:fill>
+			<s:SolidColor color="0xc9ddf3"/>
+		</s:fill>
 	</s:Rect>
 	
 	<s:Group width="100%" height="100%">
-		<s:Rect width="50" height="50" id="backgroundColor">
+		<s:Rect left="1" right="1" top="1" bottom="1" id="backgroundColor">
 			<s:fill>
 				<s:SolidColor color="0xFFFFFF" id="buttonFill"/>
 			</s:fill>
@@ -113,5 +204,6 @@
 			</s:layout>
 			<s:Label id="labelDisplay" fontSize="32" textAlign="center"/>
 		</s:Group>
+		<s:Group id="iconGraphics"/>
 	</s:Group>
 </s:Skin>

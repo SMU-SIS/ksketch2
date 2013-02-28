@@ -1,10 +1,13 @@
 package views.canvas.components.transformWidget
 {
 	import flash.display.DisplayObjectContainer;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
+	
+	import mx.events.FlexEvent;
 	
 	import spark.components.Button;
 	import spark.components.SkinnablePopUpContainer;
@@ -12,7 +15,6 @@ package views.canvas.components.transformWidget
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
-	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	import views.canvas.interactors.widget.KWidgetInteractorManager;
@@ -75,6 +77,8 @@ package views.canvas.components.transformWidget
 			_buttonContainer.addElement(_insertKeyButton);
 			_buttonContainer.addElement(_clearMotionButton);
 
+			addEventListener(FlexEvent.CREATION_COMPLETE, _updateMenu);
+
 		}
 		
 		/**
@@ -86,12 +90,15 @@ package views.canvas.components.transformWidget
 		{
 			x = xPos;
 			y = yPos;
-			
 			blocker.x = -x;
 			blocker.y = -y;
 			super.open(owner, modal);
-
+		}
+		
+		private function _updateMenu(event:Event):void
+		{
 			//Check for button availability here
+			trace(width);
 			_canInsertKey();
 			_layoutButtons();
 		}
@@ -125,12 +132,14 @@ package views.canvas.components.transformWidget
 					point = Point.polar(BASE_BUTTON_RADIUS, 15/180*Math.PI)
 					_buttonContainer.x = point.x;
 					_buttonContainer.y = point.y;
+					trace("bottom right", _buttonContainer.x, _buttonContainer.y);
 				}
 				else
 				{
 					point = Point.polar(BASE_BUTTON_RADIUS, -15/180*Math.PI)
 					_buttonContainer.x = point.x;
 					_buttonContainer.y = point.y - _buttonContainer.height;
+					trace("top right", _buttonContainer.x, _buttonContainer.y);
 				}
 				
 			}
@@ -143,14 +152,17 @@ package views.canvas.components.transformWidget
 					point = Point.polar(BASE_BUTTON_RADIUS, 165/180*Math.PI)
 					_buttonContainer.x = point.x - _buttonContainer.width;
 					_buttonContainer.y = point.y;
+					trace("bottom left", _buttonContainer.x, _buttonContainer.y);
+					trace("bottom left", point, _buttonContainer.width);
 				}
 				else
 				{
 					point = Point.polar(BASE_BUTTON_RADIUS, -165/180*Math.PI)
 					_buttonContainer.x = point.x - _buttonContainer.width;
 					_buttonContainer.y = point.y - _buttonContainer.height;
+					trace("top left", _buttonContainer.x, _buttonContainer.y);
 				}
-			}			
+			}
 		}
 		
 		private function _handleClose(event:MouseEvent):void
@@ -189,16 +201,16 @@ package views.canvas.components.transformWidget
 			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 			
 			_canInsertKey();
+			close();
 		}
 		
 		private function _clearMotion(event:MouseEvent = null):void
 		{
-			trace("Clearing motion!");
-			
 			_interactionControl.begin_interaction_operation();
 			_interactionControl.selection.objects.getObjectAt(0).transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
 			_interactionControl.end_interaction_operation(null, _interactionControl.selection);
 			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
+			close();
 		}
 		
 	}

@@ -70,7 +70,7 @@ package views.canvas.components.timeBar
 				currentTime = _timeControl.maximum;
 			
 			
-			_magnifier.y = _timeControl.localToGlobal(new Point(0,0)).y - 100;
+			_magnifier.y = _timeControl.localToGlobal(new Point(0,0)).y - (Capabilities.screenDPI*0.75);
 			if(int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)) != _currentFrame)
 			{
 				_currentFrame = int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL));
@@ -80,7 +80,7 @@ package views.canvas.components.timeBar
 		
 		public function closeMagnifier(event:TouchEvent):void
 		{
-			
+			_magnifier.close();
 		}
 		
 		/**
@@ -397,6 +397,7 @@ package views.canvas.components.timeBar
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
 		
 			_interactionControl.end_interaction_operation();
+			_magnifier.close();
 		}
 	}
 }

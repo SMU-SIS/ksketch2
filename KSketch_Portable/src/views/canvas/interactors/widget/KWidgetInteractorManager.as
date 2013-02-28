@@ -90,7 +90,8 @@ package views.canvas.interactors.widget
 		private function _handleOpenMenu(event:GestureEvent):void
 		{
 			var point:Point = _widget.parent.localToGlobal(new Point(_widget.x, _widget.y));
-			_contextMenu.showMenu(_widget, false, point.x, point.y);
+			if(_widget.visible)
+				_contextMenu.showMenu(_widget, false, point.x, point.y);
 		}
 		
 		public function updateWidget(event:Event):void
@@ -108,6 +109,7 @@ package views.canvas.interactors.widget
 				!_interactionControl.selection.isVisible(_KSketch.time))
 			{
 				_widget.visible = false;
+				_contextMenu.close();
 				return;
 			}
 			

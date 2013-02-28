@@ -64,9 +64,9 @@
 				magnifierDisplay.source = displaySource;
 				labelText.text = KTouchTimeSliderControl.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();		
 				
-				_timer.reset();
-				_timer.start();
-				_timer.addEventListener(TimerEvent.TIMER, closeMagnifier);
+//				_timer.reset();
+//				_timer.start();
+//				_timer.addEventListener(TimerEvent.TIMER, closeMagnifier);
 			}
 			
 			override public function set x(value:Number):void
@@ -100,7 +100,7 @@
 			<s:VerticalLayout paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
 							  verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:BitmapImage id="magnifierDisplay" scaleX="1.2" scaleY="1.5"/>
-		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX" fontSize="18"/>
+		<s:BitmapImage id="magnifierDisplay" scaleX="1.5" scaleY="1.5"/>
+		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX" fontSize="{Capabilities.screenDPI*0.1}"/>
 	</s:Group>
 </s:SkinnablePopUpContainer>

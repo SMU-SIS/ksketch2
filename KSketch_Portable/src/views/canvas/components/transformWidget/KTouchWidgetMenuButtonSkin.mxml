@@ -18,13 +18,13 @@
 	name=iconDisplay, type=spark.primitives.BitmapImage, required=false
 	name=labelDisplay, type=spark.core.IDisplayText, required=false
 	-->
-	<s:Rect left="-5" right="-5" top="-5" bottom="-5" includeIn="up,disabled" alpha="0.5">
+	<s:Rect left="-5" right="-5" top="-5" bottom="-5" includeIn="up,disabled" alpha="0.8 ">
 		<s:fill>
-			<s:SolidColor color="0xD7D7D7"/>
+			<s:SolidColor color="0xA7A7A7"/>
 		</s:fill>
 	</s:Rect>
 	
-	<s:Rect left="-5" right="-5" top="-5" bottom="-5" radiusX="3" radiusY="3" includeIn="down" alpha="0.5">
+	<s:Rect left="-5" right="-5" top="-5" bottom="-5" radiusX="3" radiusY="3" includeIn="down" alpha="0.8">
 		<s:fill>
 			<s:SolidColor color="0xc9ddf3"/>
 		</s:fill>
@@ -33,6 +33,6 @@
 		<s:layout>
 			<s:HorizontalLayout paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"/>
 		</s:layout>
-		<s:Label id="labelDisplay" fontSize="28" fontFamily="_sans" color="0xA8A8A8"/>
+		<s:Label id="labelDisplay" fontSize="28" fontFamily="_sans" color="0xFFFFFF"/>
 	</s:Group>
 </s:Skin>

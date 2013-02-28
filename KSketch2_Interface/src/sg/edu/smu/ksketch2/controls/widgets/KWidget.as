@@ -8,26 +8,16 @@
  */
 package sg.edu.smu.ksketch2.controls.widgets
 {
-	import flash.display.Bitmap;
-	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filters.ColorMatrixFilter;
 	import flash.filters.GlowFilter;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
-	import flash.system.System;
-	
-	import mx.controls.Button;
-	import mx.core.UIComponent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
-	
-	import spark.components.ToggleButton;
 	
 	public class KWidget extends KWidgetAsset implements IWidget
 	{

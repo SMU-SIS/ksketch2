@@ -59,6 +59,6 @@
 		<s:layout>
 			<s:HorizontalLayout paddingLeft="3" paddingRight="3" paddingTop="3" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX"/>
+		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX" fontSize="{Capabilities.screenDPI*0.1}"/>
 	</s:Group>
 </s:SkinnablePopUpContainer>

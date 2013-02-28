@@ -26,11 +26,11 @@ package sg.edu.smu.ksketch2.view
 		/**
 		 * Object view representing strokes
 		 */
-		public function KStrokeView(object:KStroke, isGhost:Boolean = false)
+		public function KStrokeView(object:KStroke, isGhost:Boolean = false, showPath:Boolean = true)
 		{
 			if(!isGhost)
-				_ghost = new KStrokeView(object, true);
-			super(object, isGhost);
+				_ghost = new KStrokeView(object, true, showPath);
+			super(object, isGhost, showPath);
 			
 			if(object)
 			{

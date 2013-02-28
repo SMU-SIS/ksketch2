@@ -30,7 +30,7 @@ package sg.edu.smu.ksketch2.view
 	{
 		protected var _KSketch:KSketch2;
 		protected var _viewsTable:Dictionary;
-		protected var _showPath:Boolean;
+		public var showPath:Boolean;
 		
 		/**
 		 * KModel Display is in charge of displaying things from the scene graph
@@ -38,12 +38,11 @@ package sg.edu.smu.ksketch2.view
 		public function KModelDisplay()
 		{
 			super();
-			
-			_showPath = false;
 		}
 		
-		public function init(kSketchInstance:KSketch2):void
+		public function init(kSketchInstance:KSketch2, showPath:Boolean):void
 		{
+			this.showPath = showPath;
 			_KSketch = kSketchInstance;
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _handler_UpdateAllViews);
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _handler_UpdateAllViews);
@@ -100,16 +99,16 @@ package sg.edu.smu.ksketch2.view
 			
 			if(object is KGroup)
 			{
-				view = new KGroupView(object);
+				view = new KGroupView(object,false, showPath);
 				//Need to listen to children changes so as to handle their addition/removal on the view side
 				object.addEventListener(KGroupEvent.OBJECT_ADDED, _handler_ObjectParented);
 				object.addEventListener(KGroupEvent.OBJECT_REMOVED, _handler_ObjectDiscarded);
 			}
 			else if(object is KStroke)
-				view = new KStrokeView(object as KStroke);
+				view = new KStrokeView(object as KStroke,false, showPath);
 			else if (object is KImage)
 			{
-				view = new KImageView(object as KImage);
+				view = new KImageView(object as KImage, false,showPath);
 			}
 			else
 				throw new Error("Object type "+object.toString()+" is not supported by the model display yet");

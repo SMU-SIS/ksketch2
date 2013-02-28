@@ -12,11 +12,11 @@ package sg.edu.smu.ksketch2.view
 
 	public class KGroupView extends KObjectView
 	{
-		public function KGroupView(object:KObject, isGhost:Boolean = false)
+		public function KGroupView(object:KObject, isGhost:Boolean, showPath:Boolean = true)
 		{
 			if(!isGhost)
-				_ghost = new KGroupView(object, true);	
-			super(object, isGhost);
+				_ghost = new KGroupView(object, true, showPath);	
+			super(object, isGhost, showPath);
 		}
 	}
 }

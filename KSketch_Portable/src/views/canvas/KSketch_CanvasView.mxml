@@ -70,7 +70,7 @@
 				currentTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_CURRENT_TIME);
 				maxTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_MAX_TIME);
 				
-				modelDisplay.init(_KSketch);
+				modelDisplay.init(_KSketch, true);
 				timeControl.init(_KSketch, _timeTickControl);
 				cornerMenu.init(_interactionControl, this);
 				

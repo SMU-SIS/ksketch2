@@ -30,7 +30,7 @@ package sg.edu.smu.ksketch2.view
 		 * KObjectView is the view representation of a KObject
 		 * It listens to some changes to the KObject's state and updates itself accordingly
 		 */
-		public function KObjectView(object:KObject, isGhost:Boolean = false)
+		public function KObjectView(object:KObject, isGhost:Boolean, showPath:Boolean)
 		{
 			super();
 			_object = object;
@@ -43,9 +43,9 @@ package sg.edu.smu.ksketch2.view
 				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _handle_object_Updated);
 				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _transformBegin);
 				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);
-
 				
-				_pathView = new KSingleCenterPathView(object);
+				if(showPath)
+					_pathView = new KSingleCenterPathView(object);
 			}
 			ghost = isGhost;
 			if(_ghost)
@@ -76,7 +76,8 @@ package sg.edu.smu.ksketch2.view
 		public function updateParent(newParent:IObjectView):void
 		{
 			(newParent as KObjectView).addChild(this);
-			_pathView.setDrawingArea(newParent as KGroupView, newParent as KGroupView, newParent as KGroupView);
+			if(_pathView)
+				_pathView.setDrawingArea(newParent as KGroupView, newParent as KGroupView, newParent as KGroupView);
 			if(_ghost)
 				(newParent as KObjectView).addChild(_ghost as KObjectView);
 		}
@@ -100,7 +101,8 @@ package sg.edu.smu.ksketch2.view
 			alpha = _object.visibilityControl.alpha(time);
 			if(alpha <= 0)
 			{
-				_pathView.clearPoints();
+				if(_pathView)
+					_pathView.clearPoints();
 				return;
 			}
 			
@@ -167,8 +169,11 @@ package sg.edu.smu.ksketch2.view
 		
 		protected function _updatePathView(time:int):void
 		{
-			_pathView.recomputePathPoints(time);
-			_pathView.renderPathView(time);
+			if(_pathView)
+			{
+				_pathView.recomputePathPoints(time);
+				_pathView.renderPathView(time);
+			}
 		}
 		
 		/**
@@ -176,7 +181,8 @@ package sg.edu.smu.ksketch2.view
 		 */
 		protected function _updateSelection(event:KObjectEvent):void
 		{
-			_pathView.visible = _object.selected;
+			if(_pathView)
+				_pathView.visible = _object.selected;
 		}
 		
 		public function debug(debugSpacing:String=""):void

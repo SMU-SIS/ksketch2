@@ -77,6 +77,7 @@
 			
 			public function exit():void
 			{
+				close();
 				_canvasView.navigator.popView();
 			}
 		]]>

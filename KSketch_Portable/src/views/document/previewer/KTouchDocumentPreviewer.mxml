@@ -13,7 +13,7 @@
 			public function init(KSketchInstance:KSketch2):void
 			{
 				_KSketch = KSketchInstance;
-				modelDisplay.init(_KSketch);
+				modelDisplay.init(_KSketch,false);
 				
 				_timeControl = new KTouchPreviewerTimeControl();
 				_timeControl.init(_KSketch, previewPlayer);
@@ -41,7 +41,7 @@
 		<s:VerticalLayout gap="10"/>
 	</s:layout>
 	
-	<s:Label id="currentDocTitle" fontSize="32" text="Current Document" color="0x757474"
+	<s:Label id="currentDocTitle" fontSize="{Capabilities.screenDPI*0.2}" text="Current Document" color="0x757474"
 				 fontWeight="bold" fontFamily="_sans"/>
 	
 	<s:Line width="100%">
@@ -53,7 +53,7 @@
 		<s:layout>
 			<s:VerticalLayout paddingTop="15" paddingLeft="5"/>
 		</s:layout>
-		<s:Label color="0x9F9F9F" width="{width*0.95}" id="currentDocDescription" fontSize="24"/>
+		<s:Label color="0x9F9F9F" width="{width*0.95}" id="currentDocDescription" fontSize="{Capabilities.screenDPI*0.15}"/>
 	</s:Group>
 
 	<s:Group width="100%" height="100%" id="previewPlayer">
@@ -88,6 +88,6 @@
 		<s:layout>
 			<s:HorizontalLayout horizontalAlign="right"/>
 		</s:layout>
-		<s:Label id="currentDocTime" color="0xb5b5b5" fontSize="16"/>
+		<s:Label id="currentDocTime" color="0xb5b5b5" fontSize="{Capabilities.screenDPI*0.15}"/>
 	</s:Group>
 </s:Group>

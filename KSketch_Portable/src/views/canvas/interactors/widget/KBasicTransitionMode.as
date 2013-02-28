@@ -37,6 +37,8 @@ package views.canvas.interactors.widget
 			_translateInteractor.activate();
 			_rotateInteractor.activate();
 			//_scaleInteractor.activate();
+			
+			super.activate();
 		}
 		
 		override public function deactivate():void
@@ -44,6 +46,16 @@ package views.canvas.interactors.widget
 			_translateInteractor.deactivate();
 			_rotateInteractor.deactivate();
 			//_scaleInteractor.deactivate();
+			
+			super.deactivate();
+		}
+		
+		override public function set enabled(value:Boolean):void
+		{
+			if(value)
+				_widget.alpha = 1;
+			else
+				_widget.alpha = 0.2;
 		}
 		
 		override public function set demonstrationMode(value:Boolean):void

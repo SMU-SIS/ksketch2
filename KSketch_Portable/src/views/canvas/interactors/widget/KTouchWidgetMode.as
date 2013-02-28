@@ -12,6 +12,7 @@ package views.canvas.interactors.widget
 		protected var _widget:KTouchWidgetBase
 		protected var _demoMode:Boolean;
 		protected var _enabled:Boolean;
+		protected var _activated:Boolean;
 		
 		public function KTouchWidgetMode(KSketchInstance:KSketch2,
 										 interactionControl:KMobileInteractionControl, 
@@ -23,6 +24,7 @@ package views.canvas.interactors.widget
 			
 			_demoMode = false;
 			_enabled = false;
+			_activated = false;
 		}
 		
 		public function init():void
@@ -32,12 +34,18 @@ package views.canvas.interactors.widget
 		
 		public function activate():void
 		{
-			
+			if(_activated)
+				return;
+			else
+				_activated = true;
 		}
 		
 		public function deactivate():void
 		{
-			
+			if(!_activated)
+				return;
+			else
+				_activated = false;
 		}
 		
 		public function set demonstrationMode(value:Boolean):void
@@ -47,7 +55,7 @@ package views.canvas.interactors.widget
 		
 		public function set enabled(value:Boolean):void
 		{
-			_enabled = value;
+									
 		}
 	}
 }

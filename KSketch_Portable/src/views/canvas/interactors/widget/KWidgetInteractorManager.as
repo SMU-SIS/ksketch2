@@ -152,18 +152,22 @@ package views.canvas.interactors.widget
 		
 		public function set enabled(isEnabled:Boolean):void
 		{
-			_enabled = isEnabled
+			if(_enabled.valueOf() == isEnabled)
+				return;
+
+			_enabled = isEnabled;	
 			
 			if(isEnabled)
 			{
 				_activeMode.activate();
-
 				if(!_modeGesture.hasEventListener(GestureEvent.GESTURE_RECOGNIZED))
 					_modeGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
 			}
 			else
-				_activeMode.deactivate()
+				_activeMode.deactivate();
 				
+			if(_activeMode)
+				_activeMode.enabled = _enabled;
 		}
 	}
 }

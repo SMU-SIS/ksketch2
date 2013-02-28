@@ -59,8 +59,9 @@ package sg.edu.smu.ksketch2.controls.interactors
 		
 		override public function interaction_End():void
 		{
-			if(_points.length <= 2)
+			if(_points.length < 2)
 			{
+				reset();
 				_interactionControl.end_interaction_operation();
 				return;
 			}

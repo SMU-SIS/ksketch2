@@ -14,7 +14,6 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.data_structures.KReferenceFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
@@ -30,6 +29,7 @@ package sg.edu.smu.ksketch2.operators
 		public static const TRANSLATE_THRESHOLD:Number = 3;
 		public static const ROTATE_THRESHOLD:Number = 0.3;
 		public static const SCALE_THRESHOLD:Number = 0.1;
+		public static const EPSILON:Number = 0.05;
 		
 		protected var _object:KObject;
 		protected var _refFrame:KReferenceFrame;
@@ -408,10 +408,14 @@ package sg.edu.smu.ksketch2.operators
 					throw new Error("Unable to get a key for interpolation. Please check");
 				//Errorneous status, need to find out what happened to the object's timeline
 				
+
 				//Then we just dump the transition values into the key
-				interpolateKey(_transitionX, _transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
-				interpolateKey(_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
-				interpolateKey(_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);
+				if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
+					interpolateKey(_transitionX, _transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
+				if(Math.abs(_transitionTheta) > EPSILON)
+					interpolateKey(_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
+				if(Math.abs(_transitionSigma) > EPSILON)
+					interpolateKey(_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);
 			}
 			
 			_inTransit = false;

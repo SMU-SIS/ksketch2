@@ -12,33 +12,33 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import views.canvas.KSketch_CanvasView;
+			
+			public static const POP_UP_MENU_BUTTON_GREY:uint = 0x626262;
+			public static const POP_UP_MENU_BUTTON_THICKNESS:Number = 3;
 			
 			private function _creationCompleteHandler():void
 			{
 				switch(parent.name)
 				{
 					case "black":
-						buttonColor = 0x626262;
+						buttonColor = KTouchCornerMenu.BLACK_PEN_COLOR;
 						break;
 					case "red":
-						buttonColor = 0xFF5776;
+						buttonColor = KTouchCornerMenu.RED_PEN_COLOR;
 						break;
 					case "green":
-						buttonColor = 0xA4F59B;
+						buttonColor = KTouchCornerMenu.GREEN_PEN_COLOR;
 						break;
 					case "blue":
-						buttonColor = 0xc9ddf3;
+						buttonColor = KTouchCornerMenu.BLUE_PEN_COLOR;
 						break;
 					case "pen":
-						
-						penColor = 0x626262;
-						
+						penColor = KTouchCornerMenu.BLACK_PEN_COLOR;
 						break;
 					case "eraser":
 	
-						iconGraphics.graphics.beginFill(0x626262);
-						iconGraphics.graphics.lineStyle(3, KSketch_CanvasView.CANVAS_BUTTON_COLOR);
+						iconGraphics.graphics.beginFill(POP_UP_MENU_BUTTON_GREY);
+						iconGraphics.graphics.lineStyle(POP_UP_MENU_BUTTON_THICKNESS, POP_UP_MENU_BUTTON_GREY);
 						iconGraphics.graphics.moveTo(0.35*width, 0.2*height);
 						iconGraphics.graphics.lineTo(0.35*width, 0.5*height);
 						iconGraphics.graphics.lineTo(0.65*width, 0.5*height);
@@ -56,7 +56,7 @@
 						break;
 					case "new":
 						
-						iconGraphics.graphics.lineStyle(3, 0x626262);
+						iconGraphics.graphics.lineStyle(POP_UP_MENU_BUTTON_THICKNESS, POP_UP_MENU_BUTTON_GREY);
 						iconGraphics.graphics.moveTo(0.25*width, 0.2*height);
 						iconGraphics.graphics.lineTo(0.25*width, 0.8*height);
 						iconGraphics.graphics.lineTo(0.75*width, 0.8*height);
@@ -83,7 +83,7 @@
 						labelText = "-";
 						break;
 					case "exit":
-						iconGraphics.graphics.lineStyle(3, 0x626262);
+						iconGraphics.graphics.lineStyle(POP_UP_MENU_BUTTON_THICKNESS, POP_UP_MENU_BUTTON_GREY);
 						iconGraphics.graphics.moveTo(0.35*width, 0.65*height);
 						iconGraphics.graphics.lineTo(0.20*width, 0.5*height);
 						iconGraphics.graphics.lineTo(0.35*width, 0.35*height);
@@ -137,7 +137,7 @@
 			{
 				buttonFill.color = value;
 				iconGraphics.graphics.clear();
-				iconGraphics.graphics.lineStyle(3, KSketch_CanvasView.CANVAS_BUTTON_COLOR);
+				iconGraphics.graphics.lineStyle(POP_UP_MENU_BUTTON_THICKNESS, POP_UP_MENU_BUTTON_GREY);
 				iconGraphics.graphics.moveTo(0.45*width, 0.2*height);
 				iconGraphics.graphics.lineTo(0.45*width, 0.65*height);
 				iconGraphics.graphics.lineTo(0.50*width, 0.85*height);

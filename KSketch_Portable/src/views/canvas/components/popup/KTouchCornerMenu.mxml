@@ -14,6 +14,11 @@
 			private var _canvasView:KSketch_CanvasView;
 			private var _isPen:Boolean
 			
+			public static const BLACK_PEN_COLOR:uint = 0xBDBDBD;
+			public static const RED_PEN_COLOR:uint = 0xFA5882;
+			public static const GREEN_PEN_COLOR:uint = 0x82FA58;
+			public static const BLUE_PEN_COLOR:uint = 0x58ACFA;
+			
 			public function init(interactionControl:KMobileInteractionControl, canvasView:KSketch_CanvasView):void
 			{
 				_interactionControl = interactionControl;
@@ -113,13 +118,13 @@
 						<s:VerticalLayout gap="1"/>
 					</s:layout>
 					<s:Button name="black" id="black" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(0x626262)"/>
+							  click="penColor(BLACK_PEN_COLOR)"/>
 					<s:Button name="red" id="red" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(0xFF5776)"/>
+							  click="penColor(RED_PEN_COLOR)"/>
 					<s:Button name="green" id="green" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(0xA4F59B)"/>
+							  click="penColor(GREEN_PEN_COLOR)"/>
 					<s:Button name="blue" id="blue" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(0xc9ddf3)"/>
+							  click="penColor(BLUE_PEN_COLOR)"/>
 				</s:Group>
 			</s:Group>
 			<s:Line alpha="{KSketch_CanvasView.CANVAS_DIVIDER_BLEND}" width="90%">

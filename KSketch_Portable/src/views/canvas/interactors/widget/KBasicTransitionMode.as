@@ -77,6 +77,10 @@ package views.canvas.interactors.widget
 				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
 				_widget.topTrigger.graphics.endFill();
 				
+				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR_BASE, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS*0.1);
+				_widget.topTrigger.graphics.endFill();
+				
 			}
 			else
 			{
@@ -92,6 +96,10 @@ package views.canvas.interactors.widget
 				
 				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR3, KTouchWidgetBase.BLEND_ALPHA);
 				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
+				_widget.topTrigger.graphics.endFill();
+				
+				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR_BASE, KTouchWidgetBase.BLEND_ALPHA);
+				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS*0.1);
 				_widget.topTrigger.graphics.endFill();
 				
 			}

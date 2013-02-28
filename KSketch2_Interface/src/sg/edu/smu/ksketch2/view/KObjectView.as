@@ -24,6 +24,7 @@ package sg.edu.smu.ksketch2.view
 		protected var _object:KObject;
 		protected var _ghost:KObjectView;
 		protected var _originalPosition:Point;
+		protected var _isTransiting:Boolean;
 		
 		/**
 		 * KObjectView is the view representation of a KObject
@@ -33,6 +34,7 @@ package sg.edu.smu.ksketch2.view
 		{
 			super();
 			_object = object;
+			_isTransiting = false;
 			
 			if(_object && !isGhost)
 			{
@@ -103,6 +105,9 @@ package sg.edu.smu.ksketch2.view
 			}
 			
 			transform.matrix = _object.transformMatrix(time);
+			
+			if(!_isTransiting)
+				_updatePathView(time);
 		}
 		
 		/**
@@ -116,13 +121,13 @@ package sg.edu.smu.ksketch2.view
 		protected function _transformBegin(event:KObjectEvent):void
 		{
 			_originalPosition = _object.transformInterface.matrix(event.time).transformPoint(_object.centroid);
-			
 			if(_ghost)
 				_updateGhost(event);
 
 			if(_pathView)
 				_pathView.visible = false;
 			
+			_isTransiting = true;
 			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _updateGhost);
 		}
 		
@@ -153,16 +158,17 @@ package sg.edu.smu.ksketch2.view
 			if(_pathView)
 			{
 				_pathView.visible = true;
-				_updatePathView(event)
+				_updatePathView(event.time)
 			}
 			
+			_isTransiting = false;
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _updateGhost);
 		}
 		
-		protected function _updatePathView(event:KObjectEvent):void
+		protected function _updatePathView(time:int):void
 		{
-			_pathView.recomputePathPoints(event.time);
-			_pathView.renderPathView(event.time);
+			_pathView.recomputePathPoints(time);
+			_pathView.renderPathView(time);
 		}
 		
 		/**

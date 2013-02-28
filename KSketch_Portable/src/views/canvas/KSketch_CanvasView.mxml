@@ -227,14 +227,14 @@
 					<s:HorizontalLayout gap="0" verticalAlign="middle" paddingLeft="5"/>
 				</s:layout>
 				<timeBar:Touch_Play_Button id="playButton" click="playButton.playToggle()"/>
-				<timeBar:KTouchTimeSliderControl id="currentTimeLabel" click="currentTimeLabel.handleTap()"/>
+				<timeBar:KTouchTimeSliderControl id="currentTimeLabel"/>
 				<s:Group width="100%" height="100%">
 					<s:layout>
 						<s:VerticalLayout gap="3" verticalAlign="middle" horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
 					</s:layout>
 					<timeBar:KTouchTimeControl id="timeControl"/>
 				</s:Group>
-				<timeBar:KTouchTimeSliderControl id="maxTimeLabel" click="maxTimeLabel.handleTap()"/>
+				<timeBar:KTouchTimeSliderControl id="maxTimeLabel"/>
 				<timeBar:Touch_Menu_Button id="menuButton" click="_menuBtnHandler()"/>
 			</s:Group>
 		</s:Group>

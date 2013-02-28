@@ -18,6 +18,7 @@
 		<![CDATA[
 			import org.gestouch.events.GestureEvent;
 			import org.gestouch.gestures.PanGesture;
+			import org.gestouch.gestures.TapGesture;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
@@ -31,6 +32,7 @@
 			private var _timeControl:KTouchTimeControl;
 		
 			private var _panGesture:PanGesture;
+			private var _tapGesture:TapGesture;
 			
 			private const _FILL1:uint = 0x000000;
 
@@ -40,9 +42,15 @@
 				_timeControl = timeControl;
 				_type = type;
 				
+				_tapGesture = new TapGesture(this);
+				_tapGesture.maxTapDuration = 200;
+				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
+				
 				_panGesture = new PanGesture(this);
 				_panGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_CHANGED, _panUpdate);
 				_panGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_ENDED, _panEnd);
+				
+				
 				
 				var iconGraphics:Graphics = (skin as KTouchTimebarButtonSkin).iconGraphics.graphics
 				
@@ -91,7 +99,7 @@
 			/**
 			 * Tap handler to handle tapping to advance/roll back frames
 			 */
-			public function handleTap():void
+			private function _handleTap(event:org.gestouch.events.GestureEvent):void
 			{
 				_timeControl.jumpInDirection(_type)
 			}

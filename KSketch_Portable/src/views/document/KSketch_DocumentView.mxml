@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark" title="TempDocumentView" actionBarVisible="false" xmlns:scrollerColumn="views.document.scrollerColumn.*"
-		initialize="_initData()"
 		creationComplete="_initComponents()" xmlns:view="sg.edu.smu.ksketch2.view.*" xmlns:previewer="views.document.previewer.*"
 		destructionPolicy="never"
-		addedToStage="addedToStageHandler()">
+		addedToStage="addedToStageHandler()" xmlns:utils="utils.*" xmlns:document="views.document.*">
 	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<utils:ParticipantChooser width="{width}" height="{height}" id="participantChooser"/>
+		<document:DocumentProperties width="{width}" height="{height}" id="docProperties"/>
 	</fx:Declarations>	
 	<fx:Script>
 		<![CDATA[
+			import spark.events.PopUpEvent;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
 			import utils.KSketchDocument;
+			import utils.StudyIO;
 			
 			import views.canvas.KSketch_CanvasView;
 			import views.document.previewer.KTouchPreviewerButtonSkin;
 			import views.document.scrollerColumn.KDocumentSelectedEvent;
 			import views.document.scrollerColumn.KTouchNewDocumentButtonSkin;
-			
-			private const FOLDER_LOCATION:String = "tasks";
 			
 			[Bindable]
 			private var _currentDocument:KSketchDocument;
@@ -29,44 +29,66 @@
 			private var _KSketchFiles:Vector.<File>;
 			private var _KSketchDocuments:Vector.<KSketchDocument>;
 			
+			[Bindable]
+			private var _currentParticipant:String = "No Participant";
+			
 			public function addedToStageHandler():void
 			{
 				if(_currentDocument)
+				{
+					StudyIO.save(_currentParticipant, _currentDocument);
 					_openDocumentPreview(_currentDocument);
+				}
 				else
 					_openDocumentPreview(null);
 			}
 			
 			private function _initComponents():void
 			{
+				_KSketch = new KSketch2();
+				participantChooser.addEventListener(PopUpEvent.CLOSE, _updateParticipant);
+				docProperties.addEventListener(PopUpEvent.CLOSE, _createNewDocument);
 				scroller.addEventListener(KDocumentSelectedEvent.DOCUMENT_SELECTED, _documentSelectedHandler);
-				previewer.init(_KSketch);
-				
+				previewer.init(_KSketch);				
 			}
 			
-			private function _initData():void
+			private function _loadTasks():void
 			{
-				_KSketch = new KSketch2();
 				_KSketchDocuments = new Vector.<KSketchDocument>();
 				
-				var dir:File = File.applicationDirectory;
-				dir = dir.resolvePath(FOLDER_LOCATION);
-				var allFiles:Array = dir.getDirectoryListing();
+				var dir:File;
 				
-				_KSketchFiles = new Vector.<File>();
-				var currentFile:File;
-				
-				for(var i:int = 0; i < allFiles.length; i++)
+				if(StudyIO.participantAvailable(_currentParticipant))
 				{
-					currentFile = allFiles[i] as File;
+					dir = File.applicationStorageDirectory;
+					dir = dir.resolvePath(StudyIO.STUDY_DIRECTORY+_currentParticipant);
+				}
+				else
+				{
+					dir = File.applicationDirectory;
+					dir = dir.resolvePath(StudyIO.TASK_DIRECTORY);
+				}
+				
+				if(dir.isDirectory)
+				{
+					var allFiles:Array = dir.getDirectoryListing();
 					
-					if(currentFile.url.search(".kmv") > -1)
+					_KSketchFiles = new Vector.<File>();
+					var currentFile:File;
+					
+					for(var i:int = 0; i < allFiles.length; i++)
 					{
-						currentFile.addEventListener(Event.COMPLETE, _loadFileComplete, false, 0, true);
-						currentFile.load();
-						_KSketchFiles.push(currentFile);
+						currentFile = allFiles[i] as File;
+						
+						if(currentFile.url.search(".kmv") > -1)
+						{
+							currentFile.addEventListener(Event.COMPLETE, _loadFileComplete, false, 0, true);
+							currentFile.load();
+							_KSketchFiles.push(currentFile);
+						}
 					}
 				}
+
 			}
 			
 			//Handles completion of kmv file.
@@ -89,14 +111,17 @@
 			}
 			
 			//Creates a new document
-			private function _createNewDocument():void
+			private function _createNewDocument(event:PopUpEvent):void
 			{
-				_KSketch.reset();
-				var newDoc:KSketchDocument = new KSketchDocument("New Document", _KSketch.sceneXML,
-																Math.floor(Math.random()*10000).toString());
-				scroller.addDocument(newDoc);					
-				_openDocumentPreview(newDoc);
-				_openDocument(newDoc);
+				if(event.commit)
+				{
+					_KSketch.reset();
+					var newDoc:KSketchDocument = new KSketchDocument(event.data as String, _KSketch.sceneXML,
+																	Math.floor(Math.random()*10000).toString());
+					scroller.addDocument(newDoc);					
+					_openDocumentPreview(newDoc);
+					_openDocument(newDoc);
+				}
 			}
 			
 			//Loads the preview for the selected document
@@ -126,6 +151,21 @@
 				if(doc)
 					navigator.pushView(KSketch_CanvasView, doc);
 			}
+			
+			private function _showParticipantList():void
+			{
+				participantChooser.open(this);
+			}
+			
+			private function _updateParticipant(event:PopUpEvent):void
+			{
+				if(event.commit)
+				{
+					scroller.resetDocuments();
+					_currentParticipant = event.data as String
+					_loadTasks();
+				}
+			}
 		]]>
 	</fx:Script>
 	
@@ -149,7 +189,9 @@
 					<s:VerticalLayout gap="5" paddingLeft="15" paddingRight="15" paddingTop="15"/>
 				</s:layout>
 				<s:Button skinClass="views.document.scrollerColumn.KTouchNewDocumentButtonSkin" width="100%"
-						  click="_createNewDocument()"/>
+						  click="{docProperties.open(this)}" label="New Document"/>
+				<s:Button skinClass="views.document.scrollerColumn.KTouchNewDocumentButtonSkin" width="100%" id="partID"
+						  click="_showParticipantList()" label="{_currentParticipant}"/>
 				<scrollerColumn:KTouchDocumentScroller width="100%" height="100%" id="scroller"/>
 			</s:Group>
 		</s:Group>

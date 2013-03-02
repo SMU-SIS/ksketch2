@@ -13,6 +13,7 @@ package views.canvas.components.timeBar
 
 		//Variables to reference model's objects
 		public var key:IKeyFrame;
+		public var selected:Boolean;
 		public var associatedObjectID:int;
 
 		//Prev and next tick mark in the time line

@@ -51,6 +51,11 @@
 						new KDocumentSelectedEvent(KDocumentSelectedEvent.DOCUMENT_SELECTED, _selectedButton.ksketchDocument));
 				}
 			}
+			
+			public function resetDocuments():void
+			{
+				documentContainer.removeAllElements();
+			}
 		]]>
 	</fx:Script>
 	<s:Group width="100%">

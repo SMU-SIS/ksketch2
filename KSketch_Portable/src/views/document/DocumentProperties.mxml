@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0.4" backgroundColor="0x000000">
+	<s:layout>
+		<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Group>
+		<s:Rect left="1" right="1" top="1" bottom="1" radiusX="3" radiusY="3">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF"/>
+			</s:fill>
+			<s:stroke>
+				<s:SolidColorStroke color="0xE7E7E7"/>
+			</s:stroke>
+			<s:filters>
+				<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
+			</s:filters>
+		</s:Rect>
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout gap="3" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+			</s:layout>
+			<s:Label text="Document Name:"/>
+			<s:TextInput id="docName" width="100%"/>
+			<s:Button label="Create" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" click="close(true,docName.text)"/>
+		</s:Group>
+	</s:Group>	
+</s:SkinnablePopUpContainer>

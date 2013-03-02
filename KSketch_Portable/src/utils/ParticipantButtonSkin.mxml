@@ -18,28 +18,34 @@
 	name=iconDisplay, type=spark.primitives.BitmapImage, required=false
 	name=labelDisplay, type=spark.core.IDisplayText, required=false
 	-->
-	<s:Rect left="1" right="1" top="1" bottom="1" radiusX="3" radiusY="3" includeIn="up">
+	
+	<s:Rect left="5" right="5" top="1" bottom="10" includeIn="up">
 		<s:fill>
 			<s:SolidColor color="0xFFFFFF"/>
 		</s:fill>
-		<s:filters>
-			<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
-		</s:filters>
 	</s:Rect>
 	
-	<s:Rect left="1" right="1" top="1" bottom="1" radiusX="3" radiusY="3" excludeFrom="up">
+	<s:Rect left="5" right="5" top="1" bottom="10" radiusX="3" radiusY="3" includeIn="down">
 		<s:fill>
 			<s:SolidColor color="0xc9ddf3"/>
 		</s:fill>
-		<s:filters>
-			<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
-		</s:filters>
 	</s:Rect>
+	
 	<s:Group width="100%" height="100%">
 		<s:layout>
-			<s:HorizontalLayout paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="10" verticalAlign="middle" horizontalAlign="left"/>
+			<s:VerticalLayout paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="10" verticalAlign="middle" horizontalAlign="left"/>
 		</s:layout>
-		<s:Label id="plus" fontSize="24" text="+" color="0x757474" fontFamily="_sans"/>
-		<s:Label id="labelDisplay" fontSize="32" textAlign="center" color="0x757474" fontFamily="_sans"/>
+		<s:Label id="labelDisplay" fontSize="{Capabilities.screenDPI*0.2}" text="Document!" color="0x757474" fontFamily="_sans" fontWeight="bold"/>
+		<s:Group width="100%" height="100%">
+			<s:layout>
+				<s:VerticalLayout verticalAlign="middle" horizontalAlign="center" paddingTop="5"/>
+			</s:layout>
+			<s:Line width="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="0xdbd6d6" weight="1"/>
+				</s:stroke>
+			</s:Line>
+		</s:Group>
 	</s:Group>
+	
 </s:Skin>

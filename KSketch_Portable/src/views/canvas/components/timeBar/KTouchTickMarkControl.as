@@ -37,6 +37,7 @@ package views.canvas.components.timeBar
 
 		private var _startX:Number;
 		private var _grabThreshold:Number = Capabilities.screenDPI/7;
+		public var grabbedTick:KTouchTickMark;
 		private var _currentFrame:int;
 		
 		/**
@@ -64,11 +65,11 @@ package views.canvas.components.timeBar
 		{			
 			_magnifier.open(_timeControl.contentGroup);
 			var currentTime:int = _timeControl.xToTime(event.localX);
+			
 			if(currentTime < 0)
 				currentTime = 0;
 			else if(currentTime > _timeControl.maximum)
 				currentTime = _timeControl.maximum;
-			
 			
 			_magnifier.y = _timeControl.localToGlobal(new Point(0,0)).y - (Capabilities.screenDPI*0.75);
 			if(int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)) != _currentFrame)
@@ -78,7 +79,7 @@ package views.canvas.components.timeBar
 			}
 		}
 		
-		public function closeMagnifier(event:TouchEvent):void
+		public function closeMagnifier(event:TouchEvent = null):void
 		{
 			_magnifier.close();
 		}
@@ -226,13 +227,12 @@ package views.canvas.components.timeBar
 			}
 		}
 		
-		public function pan_begin(location:Point):void
+		public function grabTick(location:Point):void
 		{
 			//Panning begins
 			//Split markers into two sets before/after
-			_interactionControl.begin_interaction_operation();
 			_startX = _timeControl.contentGroup.globalToLocal(location).x;
-
+			
 			var i:int;
 			var length:int = _ticks.length;
 			var currentTick:KTouchTickMark;
@@ -257,8 +257,14 @@ package views.canvas.components.timeBar
 				{
 					smallestdx = dx;
 					_startX = currentTick.x;
+					grabbedTick = currentTick;
 				}
 			}
+			
+			if(grabbedTick)
+				_interactionControl.begin_interaction_operation();
+			else
+				return;
 			
 			for(i = 0; i < length; i++)
 			{
@@ -267,7 +273,7 @@ package views.canvas.components.timeBar
 				
 				if(currentTick.x <= _startX)
 					_before.push(currentTick);
-
+				
 				//After ticks are a bit special
 				//Only add in the first degree ticks
 				//because a tick will be pushed by the marker before itself
@@ -279,9 +285,24 @@ package views.canvas.components.timeBar
 						_after.push(currentTick)
 				}
 			}
+			
+//			_magnifier.open(_timeControl.contentGroup);
+//			var currentTime:int = _timeControl.xToTime(_timeControl.globalToLocal(location).x);
+//			if(currentTime < 0)
+//				currentTime = 0;
+//			else if(currentTime > _timeControl.maximum)
+//				currentTime = _timeControl.maximum;
+//			
+//			
+//			_magnifier.y = _timeControl.localToGlobal(new Point(0,0)).y - (Capabilities.screenDPI*0.75);
+//			if(int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)) != _currentFrame)
+//			{
+//				_currentFrame = int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL));
+//				_magnifier.magnify(location.x, currentTime, _currentFrame);
+//			}
 		}
 		
-		public function pan_update(location:Point):void
+		public function move_markers(location:Point):void
 		{
 			//On Pan compute how much finger moved (_changeX)
 			var currentX:Number = _timeControl.contentGroup.globalToLocal(location).x
@@ -371,7 +392,7 @@ package views.canvas.components.timeBar
 			}
 		}
 		
-		public function pan_end(location:Point):void
+		public function end_move_markers(location:Point):void
 		{
 			var i:int;
 			var length:int = _ticks.length;

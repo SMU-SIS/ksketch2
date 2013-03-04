@@ -69,11 +69,10 @@ package views.canvas.components.timeBar
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 			floatingLabel.y = localToGlobal(new Point(0,0)).y - 40;
 			
-			addEventListener(TouchEvent.TOUCH_BEGIN, _tickmarkControl.openMagnifier);
+			addEventListener(TouchEvent.TOUCH_BEGIN, this._touchDown);
 			addEventListener(TouchEvent.TOUCH_END, _tickmarkControl.closeMagnifier);
 			_panGesture = new PanGesture(this);
 			_panGesture.maxNumTouchesRequired = 1;
-			_panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _beginPanning);
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updatePanning);
 			_panGesture.addEventListener(GestureEvent.GESTURE_ENDED, _endPanning);
 		}
@@ -166,23 +165,37 @@ package views.canvas.components.timeBar
 			return _KSketch.time
 		}
 		
-		protected function _beginPanning(event:GestureEvent):void
+		protected function _touchDown(event:TouchEvent):void
 		{
-			_tickmarkControl.pan_begin(_panGesture.location);
+			_tickmarkControl.grabTick(new Point(event.stageX, event.stageY));
+			
+			if(!_tickmarkControl.grabbedTick)
+				time = xToTime(globalToLocal(_panGesture.location).x);
+			else
+				_tickmarkControl.openMagnifier(event);
 		}
 		
 		protected function _updatePanning(event:GestureEvent):void
 		{
-			//If edit markers, rout event into the tick mark control and return
-			_tickmarkControl.pan_update(_panGesture.location);
+			if(_tickmarkControl.grabbedTick)
+				_tickmarkControl.move_markers(_panGesture.location);
+			else
+			{
+				time = xToTime(globalToLocal(_panGesture.location).x);
+			}
 		}
 		
 		protected function _endPanning(event:GestureEvent):void
 		{
-			if(event.type == GestureEvent.GESTURE_ENDED)
+			if(event.type == GestureEvent.GESTURE_ENDED && _tickmarkControl.grabbedTick)
 			{
 				//If edit markers, rout event into the tick mark control and return
-				_tickmarkControl.pan_end(_panGesture.location);
+				_tickmarkControl.end_move_markers(_panGesture.location);
+				_tickmarkControl.grabbedTick = null;
+			}
+			else
+			{
+				time = xToTime(globalToLocal(_panGesture.location).x);
 			}
 		}
 		
@@ -348,7 +361,6 @@ package views.canvas.components.timeBar
 		{
 			return backgroundFill.width/_maxFrame;
 		}
-		
 		
 		/**
 		 * Sets next closest landmark time in the given direction as the 

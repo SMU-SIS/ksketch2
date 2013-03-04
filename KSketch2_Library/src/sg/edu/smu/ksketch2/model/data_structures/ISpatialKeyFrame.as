@@ -11,8 +11,6 @@ package sg.edu.smu.ksketch2.model.data_structures
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
-	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
-
 	public interface ISpatialKeyFrame extends IKeyFrame
 	{
 		/**

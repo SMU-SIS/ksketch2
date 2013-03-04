@@ -32,8 +32,13 @@ package sg.edu.smu.ksketch2
 	 */
 	public class KSketch2 extends EventDispatcher
 	{
+		public static const STUDY_I:int = 0;
+		public static const STUDY_D:int = 1;
+		public static const STUDY_DI:int = 2;
+		
+		public static var studyMode:int = STUDY_D;
 		public static var discardTransitionTimings:Boolean = false;
-		public static var addInterpolationKeys:Boolean = true;
+		public static var addInterpolationKeys:Boolean = false;
 		public static var returnTranslationInterpolationToZero:Boolean = true;
 		public static var returnRotationInterpolationToZero:Boolean = false;
 		public static var returnScaleInterpolationToZero:Boolean = false;

@@ -19,7 +19,7 @@ package sg.edu.smu.ksketch2.operators
 		function matrix(time:int):Matrix;
 		function get firstKeyTime():int;
 		function get lastKeyTime():int;
-		function canTransform(time:int):Boolean;
+		function canInterpolate(time:int):Boolean;
 		function canInsertKey(time:int):Boolean;
 		
 		function beginTransition(time:int, transitionType:int):void;

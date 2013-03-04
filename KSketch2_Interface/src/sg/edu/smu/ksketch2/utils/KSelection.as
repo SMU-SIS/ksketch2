@@ -123,7 +123,7 @@ package sg.edu.smu.ksketch2.utils
 		public function selectionTransformable(time:int):Boolean
 		{
 			if(objects.length() == 1)
-				return objects.getObjectAt(0).transformInterface.canTransform(time);
+				return objects.getObjectAt(0).transformInterface.canInterpolate(time);
 			else
 				return false;
 		}

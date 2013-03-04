@@ -14,6 +14,7 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
+	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.data_structures.KReferenceFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
@@ -23,6 +24,7 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KRemoveKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation;
+	import sg.edu.smu.ksketch2.utils.KPathProcessing;
 	
 	public class KSingleReferenceFrameOperator implements ITransformInterface
 	{
@@ -267,17 +269,34 @@ package sg.edu.smu.ksketch2.operators
 		 * Identifies if the object has active transforms at given time
 		 * Returns true if there is a transform
 		 */
-		public function canTransform(time:int):Boolean
+		public function canInterpolate(time:int):Boolean
 		{
-			var activeKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(time-1) as KSpatialKeyFrame;
+			var activeKey:ISpatialKeyFrame;
 			
-			if(!activeKey)
-				return false;
-			
-			if(activeKey.time == time)
-				return true;
-			
-			return activeKey.hasActivityAtTime();
+			switch(KSketch2.studyMode)
+			{
+				case KSketch2.STUDY_I:
+				case KSketch2.STUDY_DI:
+				case KSketch2.STUDY_D:
+					//We just need the object to exist
+					if(_refFrame.head)
+					{
+						if(_refFrame.head.time <= time)
+							return true;
+					}
+					break;
+				default:
+					//Allow interpolation only if there is a key present of if there are transitions
+					activeKey = _refFrame.getKeyAftertime(time-1) as ISpatialKeyFrame;
+					if(activeKey)
+					{
+						if(activeKey.time == time)
+							return true;
+						
+						return activeKey.hasActivityAtTime();
+					}
+			}
+			return false;
 		}
 		
 		/**
@@ -286,17 +305,19 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function canInsertKey(time:int):Boolean
 		{
-			var activeKey:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
-			
-			if(activeKey)
+			var hasKeyAtTime:Boolean = (_refFrame.getKeyAtTime(time) as KSpatialKeyFrame != null);
+		
+			if(hasKeyAtTime)
 				return false;
 			
-			activeKey = _refFrame.getKeyAftertime(time-1) as KSpatialKeyFrame;
+			if(KSketch2.studyMode == KSketch2.STUDY_D)
+			{
+				var activeKey:ISpatialKeyFrame = _refFrame.getKeyAftertime(time) as ISpatialKeyFrame;
+				
+				return activeKey.hasActivityAtTime();
+			}
 			
-			if(!activeKey)
-				return false;
-			
-			return activeKey.hasActivityAtTime();
+			return false;
 		}
 		
 		/**
@@ -364,60 +385,20 @@ package sg.edu.smu.ksketch2.operators
 		
 		public function endTransition(time:int, op:KCompositeOperation):void
 		{
-			//Only two kinds of transitions, demonstrated or interpolated
-			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
+			switch(KSketch2.studyMode)
 			{
-				//Process the paths here first
-				//Do w/e you want to the paths here!
-				if(KSketch2.discardTransitionTimings)
-				{
-					_discardTransitionTiming(_TWorkingPath);
-					_discardTransitionTiming(_RWorkingPath);
-					_discardTransitionTiming(_SWorkingPath);
-				}
-				//Path validity will be tested in _normaliseForOverwriting
-				//If path is valid, the object's future for that transform type will be discarded
-				_normaliseForOverwriting(_startTime, op);
-
-				//Then I need to put the usable paths into the object
-				if((TRANSLATE_THRESHOLD < _magX) || (TRANSLATE_THRESHOLD < _magY))
-					_replacePathOverTime(_TWorkingPath, _startTime, time, KSketch2.TRANSFORM_TRANSLATION, op);
+				case KSketch2.STUDY_D:
+					this._endTransition_process_ModeD(time, op);
+					break;
+				case KSketch2.STUDY_I:
+					
+					break;
 				
-				if(ROTATE_THRESHOLD < _magTheta)
-					_replacePathOverTime(_RWorkingPath, _startTime, time, KSketch2.TRANSFORM_ROTATION, op);
-				
-				if(SCALE_THRESHOLD < _magSigma)
-					_replacePathOverTime(_SWorkingPath, _startTime, time, KSketch2.TRANSFORM_SCALE, op);
-				
-				matrix(time);
-				_clearEmptyKeys(op);
+				case KSketch2.STUDY_DI:
+					
+					break;
 			}
-			else
-			{
-				//We need a key to add the interpolation values
-				//So check if a key can be inserted
-				//A key can be inserted if there is no key at time
-				if(canInsertKey(time))
-					insertBlankKeyFrame(time, op);
-				
-				//After inserting a key, will be pretty sure there is a key at time.
-				//Just get the key at time
-				var targetKey:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
 
-				if(!targetKey)
-					throw new Error("Unable to get a key for interpolation. Please check");
-				//Errorneous status, need to find out what happened to the object's timeline
-				
-
-				//Then we just dump the transition values into the key
-				if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
-					interpolateKey(_transitionX, _transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
-				if(Math.abs(_transitionTheta) > EPSILON)
-					interpolateKey(_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
-				if(Math.abs(_transitionSigma) > EPSILON)
-					interpolateKey(_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);
-			}
-			
 			_inTransit = false;
 			
 			//Dispatch a transform finalised event
@@ -426,6 +407,210 @@ package sg.edu.smu.ksketch2.operators
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
 		}
 
+		//End transition processing
+		private function _endTransition_process_ModeI(time:int, op:KCompositeOperation):void
+		{
+			//Interpolate previous and next span
+			//Interpolate spans without inserting key
+			//Interpolating empty span adds interpolation to the empty span
+		}
+		
+		private function _endTransition_process_ModeD(time:int, op:KCompositeOperation):void
+		{
+			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
+			{
+				_demonstrate(time, op);	
+			}
+			else
+			{
+				//We need a key to add the interpolation values
+				//So check if a key can be inserted
+				//A key can be inserted if there is no key at time
+				if(KSketch2.addInterpolationKeys)
+				{
+					if(canInsertKey(time))
+						insertBlankKeyFrame(time, op);
+				}
+				
+				//After inserting a key, will be pretty sure there is a key at time.
+				//Just get the key at time
+				var targetKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(time-1) as KSpatialKeyFrame;
+				
+				//Only 1 case, where time is greater than the reference frame's end time
+				//Use the last key if this happens
+				if(!targetKey)
+				{
+					targetKey = _refFrame.lastKey as KSpatialKeyFrame;
+
+					//Actually, the only case when this happens is during D mode
+					//D mode doesn't require keys to interpolate
+					//D mode interpolates the last eligible key for interpolation, instead of the key at time
+				}
+				
+				//Then we just dump the transition values into the key
+				if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
+					_interpolate(_transitionX, _transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
+				if(Math.abs(_transitionTheta) > EPSILON)
+					_interpolate(_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
+				if(Math.abs(_transitionSigma) > EPSILON)
+					_interpolate(_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);
+			}
+		}
+		
+		private function _endTransition_process_ModeDI(time:int, op:KCompositeOperation):void
+		{
+			
+		}
+		
+		private function _demonstrate(time:int, op:KCompositeOperation):void
+		{
+			//Process the paths here first
+			//Do w/e you want to the paths here!
+			if(KSketch2.discardTransitionTimings)
+			{
+				KPathProcessing.discardPathTimings(_TWorkingPath);
+				KPathProcessing.discardPathTimings(_RWorkingPath);
+				KPathProcessing.discardPathTimings(_SWorkingPath);
+			}
+
+			//Path validity will be tested in _normaliseForOverwriting
+			//If path is valid, the object's future for that transform type will be discarded
+			_normaliseForOverwriting(_startTime, op);
+			
+			//Then I need to put the usable paths into the object
+			if((TRANSLATE_THRESHOLD < _magX) || (TRANSLATE_THRESHOLD < _magY))
+				_replacePathOverTime(_TWorkingPath, _startTime, time, KSketch2.TRANSFORM_TRANSLATION, op); //Optimise replace algo
+			
+			if(ROTATE_THRESHOLD < _magTheta)
+				_replacePathOverTime(_RWorkingPath, _startTime, time, KSketch2.TRANSFORM_ROTATION, op);
+			
+			if(SCALE_THRESHOLD < _magSigma)
+				_replacePathOverTime(_SWorkingPath, _startTime, time, KSketch2.TRANSFORM_SCALE, op);
+			
+			matrix(time);
+			_clearEmptyKeys(op);
+		}
+		
+		private function lastKeyWithTransformType(targetKey:KSpatialKeyFrame, transformType:int):KSpatialKeyFrame
+		{
+			var targetPath:KPath;
+			
+			//Loop through everything before time to find the correct key with a transform
+			while(targetKey)
+			{
+				switch(transformType)
+				{
+					case KSketch2.TRANSFORM_TRANSLATION:
+						targetPath = targetKey.translatePath;
+						break;
+					case KSketch2.TRANSFORM_ROTATION:
+						targetPath = targetKey.rotatePath;
+						break;
+					case KSketch2.TRANSFORM_SCALE:
+						targetPath = targetKey.scalePath;
+						break;
+					default:
+						throw new Error("Unable to replace path because an unknown transform type is given");
+				}
+				
+				//Return if this path contains some sort of transform for given type
+				if(!targetPath.isTrivial(EPSILON))
+					return targetKey;
+				
+				targetKey = targetKey.previous as KSpatialKeyFrame;
+			}
+			
+			//Return the reference frame's header if there's nothing.
+			return _refFrame.head as KSpatialKeyFrame;
+		}
+		
+		/**
+		 * Adds a dx, dy interpolation to targetKey
+		 * target key should be a key at or before time;
+		 */
+		private function _interpolate(dx:Number, dy:Number, targetKey:KSpatialKeyFrame, 
+										 transformType:int, time:int, op:KCompositeOperation):void
+		{
+			if((time > targetKey.time) && (KSketch2.studyMode != KSketch2.STUDY_D))
+				throw new Error("Unable to interpolate a key if the interpolation time is greater than targetKey's time");
+		
+			//Handle study mode case for D
+			if(KSketch2.studyMode == KSketch2.STUDY_D)
+			{
+				targetKey = lastKeyWithTransformType(targetKey, transformType);
+
+				if(targetKey.time < time)
+						time = targetKey.time;
+			}
+			
+			var targetPath:KPath;
+			
+			switch(transformType)
+			{
+				case KSketch2.TRANSFORM_TRANSLATION:
+					targetPath = targetKey.translatePath;
+					break;
+				case KSketch2.TRANSFORM_ROTATION:
+					targetPath = targetKey.rotatePath;
+					break;
+				case KSketch2.TRANSFORM_SCALE:
+					targetPath = targetKey.scalePath;
+					break;
+				default:
+					throw new Error("Unable to replace path because an unknown transform type is given");
+			}
+			
+			var proportionElapsed:Number;
+			
+			if(targetKey.duration == 0)
+				proportionElapsed = 1;
+			else
+			{
+				proportionElapsed = (time-targetKey.startTime)/targetKey.duration;
+				
+				if(proportionElapsed > 1)
+					proportionElapsed = 1;
+			}
+			
+			var unInterpolate:Boolean = false;
+			var oldPath:KPath = targetPath.clone();
+			
+			//Case 1
+			//Key frames without transition paths of required type
+			if(targetPath.length < 2)
+			{
+				if(targetPath.length != 0)
+					throw new Error("Someone created a path with 1 point somehow! Better check out the path functions");
+				
+				//Provide the empty path with the positive interpolation first
+				targetPath.push(0,0,0);
+				targetPath.push(dx,dy,targetKey.duration * proportionElapsed);
+				
+				//If the interpolation is performed in the middle of a key, "uninterpolate" it to 0 interpolation
+				//D mode will never reach this case because it requires paths with transition
+				//or an interpolation on the key itself (ie. proportionElapsed = 1);
+				if(time != targetKey.time)
+					targetPath.push(0,0,targetKey.duration);
+				
+				//Should fill the paths with points here
+			}
+			else
+			{
+				if(targetKey.time == time) //Case 2:interpolate at key time
+					KPathProcessing.interpolateSpan(targetPath, 0,proportionElapsed,dx, dy);
+				else
+				{
+					//case 3:interpolate between two keys
+					KPathProcessing.interpolateSpan(targetPath,0,proportionElapsed,dx, dy);
+					
+					if(KSketch2.studyMode != KSketch2.STUDY_D)
+						KPathProcessing.interpolateSpan(targetPath,proportionElapsed,1,dx, dy);
+				}
+			}
+			
+			op.addOperation(new KReplacePathOperation(targetKey, targetPath, oldPath, transformType));			
+		}
+		
 		/**
 		 * Inserts a key ONLY WHEN THERE IS A KEY after time and that key HAS TRANSITIONS in it!
 		 */
@@ -602,170 +787,12 @@ package sg.edu.smu.ksketch2.operators
 				positionAfter = matrixAfter.transformPoint(_object.centroid);
 				
 				positionDifference = positionBefore.subtract(positionAfter);
-				interpolateKey(positionDifference.x, positionDifference.y, currentKey, KSketch2.TRANSFORM_TRANSLATION, currentKey.time, op, true);
+				//_interpolateKey(positionDifference.x, positionDifference.y, currentKey, KSketch2.TRANSFORM_TRANSLATION, currentKey.time, op, true);
 				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
 			
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, stopMergeTime));
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, stopMergeTime));
-		}
-		
-		/**
-		 * Adds a dx, dy interpolation to targetKey
-		 */
-		public function interpolateKey(dx:Number, dy:Number, targetKey:KSpatialKeyFrame, transformType:int, time:int,
-									   op:KCompositeOperation, followUp:Boolean = false):void
-		{
-			if(time != targetKey.time)
-				throw new Error("Unable to interpolate a key if the interpolation time != targetKey's time");
-			
-			var proportionElapsed:Number;
-			
-			if(targetKey.duration == 0)
-				proportionElapsed = 1;
-			else
-				proportionElapsed = (time-targetKey.startTime)/targetKey.duration;
-			
-			var targetPath:KPath;
-			var unInterpolate:Boolean = false;
-			
-			//Case 1: No path
-			switch(transformType)
-			{
-				case KSketch2.TRANSFORM_TRANSLATION:
-					targetPath = targetKey.translatePath;
-					unInterpolate = KSketch2.returnTranslationInterpolationToZero;
-					break;
-				case KSketch2.TRANSFORM_ROTATION:
-					targetPath = targetKey.rotatePath;
-					unInterpolate = KSketch2.returnRotationInterpolationToZero;
-					break;
-				case KSketch2.TRANSFORM_SCALE:
-					targetPath = targetKey.scalePath;
-					unInterpolate = KSketch2.returnScaleInterpolationToZero;
-					break;
-				default:
-					throw new Error("Unable to replace path because an unknown transform type is given");
-			}
-			
-			var oldPath:KPath = targetPath.clone();
-			//Only case, adjusting an object's transform when that transform does not exist
-			if(targetPath.length < 2)
-			{
-				if(targetPath.length != 0)
-					throw new Error("Someone created a path with 1 point somehow! Better check out the path functions");
-				
-				targetPath.push(0,0,0);
-				targetPath.push(dx,dy,targetKey.duration * proportionElapsed);
-				
-				if(targetKey.duration != 0)
-				{
-					if(unInterpolate && time != targetKey.time)
-						targetPath.push(0,0,targetKey.duration);
-
-					var pathDuration:int = targetPath.pathDuration;
-					var currentTime:int = 0;
-					var currentProportion:Number = 0;
-					var currentPoint:KTimedPoint;
-					var newPoints:Vector.<KTimedPoint> = new Vector.<KTimedPoint>();
-					
-					while(currentProportion <= 1)
-					{
-						currentPoint = targetPath.find_Point(currentProportion);
-						currentPoint.time = currentTime;
-						newPoints.push(currentPoint);
-						currentTime += KSketch2.ANIMATION_INTERVAL;
-						currentProportion = currentTime / pathDuration;
-					}
-					
-					targetPath.points = newPoints;
-				}
-				
-				op.addOperation(new KReplacePathOperation(targetKey, targetPath, oldPath, transformType));
-				if(unInterpolate&&!followUp && targetKey.next)
-					interpolateKey(-dx, -dy, targetKey.next as KSpatialKeyFrame, transformType, targetKey.next.time, op, true);
-				return;
-			}
-
-			if(targetKey.time == time) //Case 2:interpolate at key time
-			{
-				_interpolatePath(dx,dy,targetPath,proportionElapsed);
-				op.addOperation(new KReplacePathOperation(targetKey, targetPath, oldPath, transformType));
-
-				if(unInterpolate&&!followUp && targetKey.next)
-					interpolateKey(-dx, -dy, targetKey.next as KSpatialKeyFrame, transformType, targetKey.next.time, op, true);
-			}
-			else
-			{
-				//case 3:interpolate between two keys
-				_interpolatePath(dx,dy,targetPath, proportionElapsed);
-				op.addOperation(new KReplacePathOperation(targetKey, targetPath, oldPath, transformType));
-			}
-		}
-		
-		/**
-		 * Makes the timing for the given path linear
-		 */
-		protected function _discardTransitionTiming(path:KPath):void
-		{
-			var currentTime:int = 0;
-			var currentProportion:Number = 0;
-			var currentPoint:KTimedPoint;
-			var pathDuration:int = path.pathDuration;
-			var newPoints:Vector.<KTimedPoint> = new Vector.<KTimedPoint>();
-
-			while(currentProportion <= 1)
-			{
-				currentPoint = path.find_Point_By_Magnitude(currentProportion);
-				currentPoint.time = currentTime;
-				newPoints.push(currentPoint);
-				currentTime += KSketch2.ANIMATION_INTERVAL;
-				currentProportion = currentTime / pathDuration;
-			}
-			
-			path.points = newPoints;
-		}
-		
-		/**
-		 * Linearly adds dx and dy up to the proportion given
-		 * Linearly removes dx and dy up from that proportion onwards
-		 */
-		protected function _interpolatePath(dx:Number, dy:Number, targetPath:KPath, upToProportion:Number):void
-		{
-			var pathDuration:int = targetPath.pathDuration;
-			var currentTime:int = 0;
-			var currentProportion:Number = 0;
-			var refinedPoints:Vector.<KTimedPoint> = new Vector.<KTimedPoint>;
-			var currentPoint:KTimedPoint;
-			var pathPoints:Vector.<KTimedPoint> = targetPath.points;;
-			
-			for(var i:int = 0; i < pathPoints.length; i++)
-			{
-				currentPoint = pathPoints[i].clone();
-				
-				if(pathDuration == 0)
-					currentProportion = 1;
-				else
-					currentProportion = currentPoint.time/pathDuration;
-				
-				if(currentProportion <= upToProportion)
-				{
-					//Adding dx and dy linearly up to proportion
-					currentPoint.x += dx * currentProportion/upToProportion;
-					currentPoint.y += dy * currentProportion/upToProportion;
-				}
-				else
-				{
-					//Removing dx and dy linearly for the rest of the path
-					currentPoint.x += dx+(dx *(upToProportion - currentProportion)/(1-upToProportion));
-					currentPoint.y += dy+(dy *(upToProportion - currentProportion)/(1-upToProportion));
-				}
-
-				refinedPoints.push(currentPoint);
-				currentProportion = currentTime / pathDuration;
-			}
-			
-			targetPath.points = refinedPoints;
 		}
 		
 		/**

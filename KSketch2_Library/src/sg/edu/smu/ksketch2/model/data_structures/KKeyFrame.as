@@ -10,9 +10,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 {
 	import flash.utils.getQualifiedClassName;
 	
-	import sg.edu.smu.ksketch2.KSketchState;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
-	import sg.edu.smu.ksketch2.operators.operations.KEditKeyTimeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KRemoveKeyOperation;
 	
 	public class KKeyFrame implements IKeyFrame

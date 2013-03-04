@@ -79,7 +79,7 @@ package sg.edu.smu.ksketch2.utils
 			
 			var duration:int = path.pathDuration;
 			
-			if(duration == 0)//nothing to be done here
+			if(duration == 0)//nothing to be done here // maybe make sure that there are at least 2 points at 0
 				return;
 			
 			//Round the duration to the nearest frame
@@ -94,7 +94,7 @@ package sg.edu.smu.ksketch2.utils
 			for(currentTime; currentTime <= duration; currentTime += KSketch2.ANIMATION_INTERVAL)
 			{
 				currentPoint = path.find_Point(currentTime/duration);
-				currentPoint.time = currentTime;
+				refinedPoints.push(currentPoint);
 			}
 			
 			path.points = refinedPoints;

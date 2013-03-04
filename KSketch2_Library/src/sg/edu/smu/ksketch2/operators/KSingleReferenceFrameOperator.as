@@ -388,14 +388,13 @@ package sg.edu.smu.ksketch2.operators
 			switch(KSketch2.studyMode)
 			{
 				case KSketch2.STUDY_D:
-					this._endTransition_process_ModeD(time, op);
+					_endTransition_process_ModeD(time, op);
 					break;
 				case KSketch2.STUDY_I:
-					
+					_endTransition_process_ModeI(time,op);
 					break;
-				
 				case KSketch2.STUDY_DI:
-					
+					_endTransition_process_ModeDI(time, op);
 					break;
 			}
 
@@ -410,9 +409,44 @@ package sg.edu.smu.ksketch2.operators
 		//End transition processing
 		private function _endTransition_process_ModeI(time:int, op:KCompositeOperation):void
 		{
-			//Interpolate previous and next span
-			//Interpolate spans without inserting key
-			//Interpolating empty span adds interpolation to the empty span
+			if(_transitionType == KSketch2.TRANSITION_INTERPOLATED)
+			{
+				//After inserting a key, will be pretty sure there is a key at time.
+				//Just get the key at time
+				var targetKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(time-1) as KSpatialKeyFrame;
+				
+				//Only 1 case, where time is greater than the reference frame's end time
+				//Use the last key if this happens
+				if(!targetKey)
+				{
+					insertBlankKeyFrame(time, op);
+					targetKey = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
+				}
+				
+				//Then we just dump the transition values into the key
+				if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
+					_interpolate(_transitionX, _transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
+				if(Math.abs(_transitionTheta) > EPSILON)
+					_interpolate(_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
+				if(Math.abs(_transitionSigma) > EPSILON)
+					_interpolate(_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);
+				
+				if(time == targetKey.time)
+				{
+					if(targetKey.next)
+					{
+						targetKey = targetKey.next as KSpatialKeyFrame;
+						time = targetKey.time;
+						if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
+							_interpolate(-_transitionX,-_transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
+						if(Math.abs(_transitionTheta) > EPSILON)
+							_interpolate(-_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
+						if(Math.abs(_transitionSigma) > EPSILON)
+							_interpolate(-_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);	
+					}					
+				}
+			}
+			
 		}
 		
 		private function _endTransition_process_ModeD(time:int, op:KCompositeOperation):void
@@ -459,7 +493,47 @@ package sg.edu.smu.ksketch2.operators
 		
 		private function _endTransition_process_ModeDI(time:int, op:KCompositeOperation):void
 		{
-			
+			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
+			{
+				_demonstrate(time, op);	
+			}
+			else
+			{
+				//After inserting a key, will be pretty sure there is a key at time.
+				//Just get the key at time
+				var targetKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(time-1) as KSpatialKeyFrame;
+				
+				//Only 1 case, where time is greater than the reference frame's end time
+				//Use the last key if this happens
+				if(!targetKey)
+				{
+					insertBlankKeyFrame(time, op);
+					targetKey = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
+				}
+				
+				//Then we just dump the transition values into the key
+				if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
+					_interpolate(_transitionX, _transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
+				if(Math.abs(_transitionTheta) > EPSILON)
+					_interpolate(_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
+				if(Math.abs(_transitionSigma) > EPSILON)
+					_interpolate(_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);
+				
+				if(time == targetKey.time)
+				{
+					if(targetKey.next)
+					{
+						targetKey = targetKey.next as KSpatialKeyFrame;
+						time = targetKey.time;
+						if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
+							_interpolate(-_transitionX,-_transitionY, targetKey, KSketch2.TRANSFORM_TRANSLATION, time, op);
+						if(Math.abs(_transitionTheta) > EPSILON)
+							_interpolate(-_transitionTheta, 0, targetKey, KSketch2.TRANSFORM_ROTATION, time, op);
+						if(Math.abs(_transitionSigma) > EPSILON)
+							_interpolate(-_transitionSigma, 0, targetKey, KSketch2.TRANSFORM_SCALE, time, op);	
+					}					
+				}
+			}
 		}
 		
 		private function _demonstrate(time:int, op:KCompositeOperation):void
@@ -498,23 +572,26 @@ package sg.edu.smu.ksketch2.operators
 			//Loop through everything before time to find the correct key with a transform
 			while(targetKey)
 			{
-				switch(transformType)
-				{
-					case KSketch2.TRANSFORM_TRANSLATION:
-						targetPath = targetKey.translatePath;
-						break;
-					case KSketch2.TRANSFORM_ROTATION:
-						targetPath = targetKey.rotatePath;
-						break;
-					case KSketch2.TRANSFORM_SCALE:
-						targetPath = targetKey.scalePath;
-						break;
-					default:
-						throw new Error("Unable to replace path because an unknown transform type is given");
-				}
+//				switch(transformType)
+//				{
+//					case KSketch2.TRANSFORM_TRANSLATION:
+//						targetPath = targetKey.translatePath;
+//						break;
+//					case KSketch2.TRANSFORM_ROTATION:
+//						targetPath = targetKey.rotatePath;
+//						break;
+//					case KSketch2.TRANSFORM_SCALE:
+//						targetPath = targetKey.scalePath;
+//						break;
+//					default:
+//						throw new Error("Unable to replace path because an unknown transform type is given");
+//				}
+//				
+//				//Return if this path contains some sort of transform for given type
+//				if(!targetPath.isTrivial(EPSILON))
+//					return targetKey;
 				
-				//Return if this path contains some sort of transform for given type
-				if(!targetPath.isTrivial(EPSILON))
+				if(targetKey.hasActivityAtTime())
 					return targetKey;
 				
 				targetKey = targetKey.previous as KSpatialKeyFrame;
@@ -587,12 +664,18 @@ package sg.edu.smu.ksketch2.operators
 				targetPath.push(dx,dy,targetKey.duration * proportionElapsed);
 				
 				//If the interpolation is performed in the middle of a key, "uninterpolate" it to 0 interpolation
-				//D mode will never reach this case because it requires paths with transition
-				//or an interpolation on the key itself (ie. proportionElapsed = 1);
 				if(time != targetKey.time)
-					targetPath.push(0,0,targetKey.duration);
+				{
+					if(KSketch2.studyMode != KSketch2.STUDY_D)
+					{
+						targetPath.push(0,0,targetKey.duration);
+					}
+					else
+						targetPath.push(dx, dy, targetKey.duration);
+				}
 				
 				//Should fill the paths with points here
+				KPathProcessing.normalisePathDensity(targetPath);
 			}
 			else
 			{
@@ -604,7 +687,7 @@ package sg.edu.smu.ksketch2.operators
 					KPathProcessing.interpolateSpan(targetPath,0,proportionElapsed,dx, dy);
 					
 					if(KSketch2.studyMode != KSketch2.STUDY_D)
-						KPathProcessing.interpolateSpan(targetPath,proportionElapsed,1,dx, dy);
+						KPathProcessing.interpolateSpan(targetPath,proportionElapsed,1, -dx, -dy);
 				}
 			}
 			

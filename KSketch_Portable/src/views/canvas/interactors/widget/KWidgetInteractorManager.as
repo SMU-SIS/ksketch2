@@ -134,6 +134,14 @@ package views.canvas.interactors.widget
 		
 		public function set transitionMode(mode:int):void
 		{
+			if(KSketch2.studyMode == KSketch2.STUDY_I)
+			{
+				_interactionControl.transitionMode = KSketch2.TRANSITION_INTERPOLATED;
+				enabled = true;
+				_activeMode.demonstrationMode = false;
+				return;
+			}
+			
 			_interactionControl.transitionMode = mode;
 			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)

@@ -162,7 +162,16 @@
 				if(event.commit)
 				{
 					scroller.resetDocuments();
-					_currentParticipant = event.data as String
+					
+					if(event.data.studyMode == "Mode D")
+						KSketch2.studyMode = KSketch2.STUDY_D;
+					else if(event.data.studyMode == "Mode I")
+						KSketch2.studyMode = KSketch2.STUDY_I;
+					else if(event.data.studyMode == "Mode DI")
+						KSketch2.studyMode = KSketch2.STUDY_DI;
+					
+					_currentParticipant = event.data.participant;
+					
 					_loadTasks();
 				}
 			}

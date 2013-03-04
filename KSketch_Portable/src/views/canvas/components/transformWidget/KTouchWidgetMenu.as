@@ -61,7 +61,12 @@ package views.canvas.components.transformWidget
 			_buttonContainer.setStyle("gap", 3);
 			
 			_insertKeyButton = new Button();
-			_insertKeyButton.label = "Insert Key";
+			
+			if(KSketch2.studyMode == KSketch2.STUDY_D)
+				_insertKeyButton.label = "Break Motion";
+			else
+				_insertKeyButton.label = "Insert Key";
+			
 			_insertKeyButton.percentWidth = 100;
 			_insertKeyButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
 			_insertKeyButton.addEventListener(MouseEvent.CLICK, _insertKey); 
@@ -98,7 +103,6 @@ package views.canvas.components.transformWidget
 		private function _updateMenu(event:Event):void
 		{
 			//Check for button availability here
-			trace(width);
 			_canInsertKey();
 			_layoutButtons();
 		}
@@ -132,14 +136,12 @@ package views.canvas.components.transformWidget
 					point = Point.polar(BASE_BUTTON_RADIUS, 15/180*Math.PI)
 					_buttonContainer.x = point.x;
 					_buttonContainer.y = point.y;
-					trace("bottom right", _buttonContainer.x, _buttonContainer.y);
 				}
 				else
 				{
 					point = Point.polar(BASE_BUTTON_RADIUS, -15/180*Math.PI)
 					_buttonContainer.x = point.x;
 					_buttonContainer.y = point.y - _buttonContainer.height;
-					trace("top right", _buttonContainer.x, _buttonContainer.y);
 				}
 				
 			}
@@ -152,15 +154,12 @@ package views.canvas.components.transformWidget
 					point = Point.polar(BASE_BUTTON_RADIUS, 165/180*Math.PI)
 					_buttonContainer.x = point.x - _buttonContainer.width;
 					_buttonContainer.y = point.y;
-					trace("bottom left", _buttonContainer.x, _buttonContainer.y);
-					trace("bottom left", point, _buttonContainer.width);
 				}
 				else
 				{
 					point = Point.polar(BASE_BUTTON_RADIUS, -165/180*Math.PI)
 					_buttonContainer.x = point.x - _buttonContainer.width;
 					_buttonContainer.y = point.y - _buttonContainer.height;
-					trace("top left", _buttonContainer.x, _buttonContainer.y);
 				}
 			}
 		}

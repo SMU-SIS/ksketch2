@@ -23,9 +23,7 @@
 		>
 	<fx:Declarations>
 		<popup:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{(height/2)-(cornerMenu.height/2)}"/>
-		<popup:KTouchFeedbackMessage id="feedbackMessage" mouseChildren="false"
-		x="{((Capabilities.screenResolutionX > Capabilities.screenResolutionY)?Capabilities.screenResolutionX/2:Capabilities.screenResolutionY/2)}"
-		y="{((Capabilities.screenResolutionX > Capabilities.screenResolutionY)?Capabilities.screenResolutionY/2:Capabilities.screenResolutionX)/2}"/>
+		<popup:KTouchFeedbackMessage id="feedbackMessage" mouseChildren="false"/>
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
@@ -65,7 +63,7 @@
 				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
 				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, feedbackMessage);
 				_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
-				feedbackMessage.init(drawing_stage);
+				feedbackMessage.init(this);
 				
 				currentTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_CURRENT_TIME);
 				maxTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_MAX_TIME);

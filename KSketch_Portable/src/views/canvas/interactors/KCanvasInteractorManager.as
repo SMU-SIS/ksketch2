@@ -82,7 +82,7 @@ package views.canvas.interactors
 			
 			_doubleTap = new TapGesture(_inputComponent);
 			_doubleTap.numTapsRequired = 2;
-			_doubleTap.maxTapDelay = 100;
+			_doubleTap.maxTapDelay = 125;
 			_doubleTap.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _recogniseDoubleTap);
 			
 			_tapGesture = new TapGesture(_inputComponent);
@@ -108,20 +108,20 @@ package views.canvas.interactors
 				if(_interactionControl.hasUndo)
 				{
 					_interactionControl.undo();
-					_feedbackMessage.showMessage("Undo");
+					_feedbackMessage.showMessage("Undo", _doubleTap.location);
 				}
 				else
-					_feedbackMessage.showMessage("No Undo");
+					_feedbackMessage.showMessage("No Undo", _doubleTap.location);
 			}
 			else
 			{
 				if(_interactionControl.hasRedo)
 				{
 					_interactionControl.redo();
-					_feedbackMessage.showMessage("Redo");
+					_feedbackMessage.showMessage("Redo", _doubleTap.location);
 				}
 				else
-					_feedbackMessage.showMessage("No Redo");
+					_feedbackMessage.showMessage("No Redo", _doubleTap.location);
 			}
 		}
 		

@@ -13,6 +13,7 @@ package views.canvas.components.timeBar
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
+	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.SortingFunctions;
@@ -22,7 +23,8 @@ package views.canvas.components.timeBar
 
 	public class KTouchTickMarkControl
 	{
-		private const _TICK_MARK_COLOR:uint = 0xFA5858;
+		private const _UNSELECTED_TICK_MARK_COLOR:uint = 0xD7D7D7;
+		private const _SELECTED_TICK_MARK_COLOR:uint = 0xFA5858;
 		private const _TICK_MARK_THICKNESS:Number = 2;
 		
 		private var _KSketch:KSketch2;
@@ -52,6 +54,7 @@ package views.canvas.components.timeBar
 			
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _updateTicks);
 			_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, _updateTicks);
+			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateTicks);
 			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
 			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _recalibrateTicksAgainstMaxTime);
 			
@@ -118,10 +121,10 @@ package views.canvas.components.timeBar
 				
 				//Generate markers for transform keys
 				for(j = 0; j < transformKeyHeaders.length; j++)
-					_generateTicks(transformKeyHeaders[j], currentObject.id);
+					_generateTicks(transformKeyHeaders[j], currentObject.id, currentObject.selected);
 					
 				//Generate markers for visibility key
-				_generateTicks(currentObject.visibilityControl.visibilityKeyHeader, currentObject.id);
+				_generateTicks(currentObject.visibilityControl.visibilityKeyHeader, currentObject.id, currentObject.selected);
 			}
 			
 			_ticks.sort(SortingFunctions._compare_x_property);
@@ -135,7 +138,7 @@ package views.canvas.components.timeBar
 		 * Creates a chain of doubly linked markers
 		 * Pushes the set of newly created markers into _markers
 		 */
-		private function _generateTicks(headerKey:IKeyFrame, ownerID:int):void
+		private function _generateTicks(headerKey:IKeyFrame, ownerID:int, objectSelected:Boolean):void
 		{
 			//Make marker objects
 			//As compared to desktop version, these markers will not be displayed on the screen literally
@@ -150,6 +153,7 @@ package views.canvas.components.timeBar
 			{
 				newTick = new KTouchTickMark();
 				newTick.init(currentKey, _timeControl.timeToX(currentKey.time), ownerID);
+				newTick.selected = objectSelected;
 				_ticks.push(newTick);
 				_timeControl.timings.push(newTick.time);
 				
@@ -194,13 +198,13 @@ package views.canvas.components.timeBar
 			if(!_ticks)
 				return;
 			
-			//Need to make sure tick.x and tick.time are in sync
-			
-			
 			var timings:Vector.<int> = new Vector.<int>();
 
 			_timeTickContainer.graphics.clear();
-			_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _TICK_MARK_COLOR);
+			
+			//Brute force occurring here. JT was just too lazy to make a better algorithm!
+			//First pass to draw unselected tick marks
+			_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _UNSELECTED_TICK_MARK_COLOR);
 			
 			var maxTime:int = _timeControl.maximum;
 			var i:int;
@@ -222,6 +226,47 @@ package views.canvas.components.timeBar
 					{
 						_timeTickContainer.graphics.moveTo( currentX, -5);
 						_timeTickContainer.graphics.lineTo( currentX, 25);
+					}
+				}
+			}
+			
+			//Second pass to draw selected markers and activity bars
+			if(!_interactionControl.selection || _interactionControl.selection.objects.length() != 1)
+				return;
+			
+			currentX = Number.NEGATIVE_INFINITY;
+			_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _SELECTED_TICK_MARK_COLOR);
+			
+			for(i = 0; i<_ticks.length; i++)
+			{
+				currentMarker = _ticks[i];
+				if(!currentMarker.selected)
+					continue;
+				
+				if(currentX < currentMarker.x)
+				{
+					currentX = currentMarker.x;
+					
+					if(currentX < 0 || _timeControl.backgroundFill.width < currentX)
+						continue;
+					
+					if(_timeTickContainer.x <= currentX)
+					{
+						_timeTickContainer.graphics.moveTo( currentX, -5);
+						_timeTickContainer.graphics.lineTo( currentX, 25);
+						
+						if(currentMarker.prev)
+						{
+							if(currentMarker.key is ISpatialKeyFrame)
+							{
+								if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
+								{
+									_timeTickContainer.graphics.beginFill(_SELECTED_TICK_MARK_COLOR, 0.4);
+									_timeTickContainer.graphics.drawRect(currentMarker.prev.x, -5, currentMarker.x - currentMarker.prev.x, 30);	
+									_timeTickContainer.graphics.endFill();	
+								}
+							}
+						}
 					}
 				}
 			}

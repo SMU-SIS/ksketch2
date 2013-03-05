@@ -18,7 +18,6 @@ package views.canvas.components.timeBar
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.SortingFunctions;
 	
-	import views.canvas.components.popup.KTouchMagnifier;
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 
 	public class KTouchTickMarkControl
@@ -31,7 +30,6 @@ package views.canvas.components.timeBar
 		private var _timeControl:KTouchTimeControl;
 		private var _timeTickContainer:UIComponent;
 		private var _interactionControl:KMobileInteractionControl;
-		private var _magnifier:KTouchMagnifier;
 		
 		private var _ticks:Vector.<KTouchTickMark>;
 		private var _before:Vector.<KTouchTickMark>;
@@ -57,34 +55,10 @@ package views.canvas.components.timeBar
 			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateTicks);
 			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
 			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _recalibrateTicksAgainstMaxTime);
-			
-			_magnifier = new KTouchMagnifier();
-			_magnifier.init(timeControl.contentGroup, timeControl);
-			
-			
-		}
-		
-		public function openMagnifier(event:TouchEvent):void
-		{			
-			_magnifier.open(_timeControl.contentGroup);
-			var currentTime:int = _timeControl.xToTime(event.localX);
-			
-			if(currentTime < 0)
-				currentTime = 0;
-			else if(currentTime > _timeControl.maximum)
-				currentTime = _timeControl.maximum;
-			
-			_magnifier.y = _timeControl.localToGlobal(new Point(0,0)).y - (Capabilities.screenDPI*0.75);
-			if(int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)) != _currentFrame)
-			{
-				_currentFrame = int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL));
-				_magnifier.magnify(event.stageX, currentTime, _currentFrame);
-			}
 		}
 		
 		public function endInteraction(event:TouchEvent = null):void
 		{
-			_magnifier.close();
 			_interactionControl.end_interaction_operation();
 		}
 		
@@ -431,12 +405,6 @@ package views.canvas.components.timeBar
 				currentTime = 0;
 			else if(currentTime > _timeControl.maximum)
 				currentTime = _timeControl.maximum;
-			
-			if(int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)) != _currentFrame)
-			{
-				_currentFrame = int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL));
-				_magnifier.magnify(location.x, currentTime, _currentFrame);
-			}
 		}
 		
 		public function end_move_markers(location:Point):void
@@ -463,8 +431,6 @@ package views.canvas.components.timeBar
 			
 			if(_interactionControl.currentInteraction.length > 0)
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
-		
-			_magnifier.close();
 		}
 	}
 }

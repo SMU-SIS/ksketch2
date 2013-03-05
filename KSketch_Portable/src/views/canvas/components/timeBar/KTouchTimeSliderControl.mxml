@@ -107,6 +107,7 @@
 			private function _panUpdate(event:org.gestouch.events.GestureEvent):void
 			{
 				_timeControl.updateSlider(_panGesture.offsetX, _panGesture.offsetY);
+				_timeControl.floatingLabel.showMessage(_timeControl.time);
 			}
 			
 			private function _panEnd(event:org.gestouch.events.GestureEvent):void

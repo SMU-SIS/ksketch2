@@ -3,39 +3,33 @@
 		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
 	<fx:Script>
 		<![CDATA[
-			import mx.core.UIComponent;
-			
 			private const _VISIBLE_TIME:Number = 250;
 			
-			private var _parent:UIComponent
+			private var _timeControl:KTouchTimeControl
 			private var _timer:Timer;
 			
-			public function init(parent:UIComponent):void
+			public function init(parent:KTouchTimeControl):void
 			{
-				_parent = parent;
+				_timeControl = parent;
 				_timer = new Timer(_VISIBLE_TIME);
 			}
 			
 			override public function set x(value:Number):void
 			{
 				var halfWidth:Number = width*0.5;
+				var xPos:Number = _timeControl.timeToX(value);
+				var point:Point = _timeControl.contentGroup.localToGlobal(new Point(xPos,0));
 				
-				var point:Point = _parent.localToGlobal(new Point(0,0));
-				
-				if(value < point.x)
-					value = point.x;
-				else if(point.x + _parent.width < value)
-					value = point.x + _parent.width;
-
-				super.x = value - halfWidth;
+				super.x = point.x - halfWidth;
 			}
 			
-			public function showMessage(time:int, frameNumber:int):void
+			public function showMessage(time:int):void
 			{
-				if(_parent)
+				if(_timeControl)
 				{
-					open(_parent);
-					labelText.text = KTouchTimeSliderControl.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();				
+					x = time;
+					open(_timeControl);
+					labelText.text = KTouchTimeSliderControl.toTimeCode(time).toString();				
 					_timer.reset();
 					_timer.start();
 					_timer.addEventListener(TimerEvent.TIMER, _closeLabel);

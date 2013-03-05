@@ -45,7 +45,7 @@
 			 * Shows the area around the given xPosition
 			 */
 			public function magnify(xPos:Number, time:int, frameNumber:int):void
-			{
+			{				
 				x = xPos;
 
 				if(xPos < _parent_Minimum || _parent_Maximum < xPos)
@@ -95,7 +95,7 @@
 			<s:SolidColor color="0x848484"/>
 		</s:fill>
 	</s:Rect>
-	<s:Group>
+	<s:Group id="contentGroup">
 		<s:layout>
 			<s:VerticalLayout paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
 							  verticalAlign="middle" horizontalAlign="center"/>

@@ -4,6 +4,7 @@ package views.canvas.components.timeBar
 	import flash.events.TimerEvent;
 	import flash.events.TouchEvent;
 	import flash.geom.Point;
+	import flash.system.Capabilities;
 	import flash.utils.Timer;
 	
 	import org.gestouch.events.GestureEvent;
@@ -13,6 +14,8 @@ package views.canvas.components.timeBar
 	import sg.edu.smu.ksketch2.controls.widgets.ITimeControl;
 	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
+	
+	import views.canvas.components.popup.KTouchMagnifier;
 
 	public class KTouchTimeControl extends TouchSliderTemplate implements ITimeControl
 	{
@@ -51,6 +54,8 @@ package views.canvas.components.timeBar
 		
 		public var timings:Vector.<int>;
 		
+		private var _magnifier:KTouchMagnifier;
+
 		public function KTouchTimeControl()
 		{
 			super();
@@ -60,7 +65,7 @@ package views.canvas.components.timeBar
 		{
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
-			floatingLabel.init(contentGroup);
+			floatingLabel.init(this);
 			
 			maximum = KTimeControl.DEFAULT_MAX_TIME;
 			time = 0;
@@ -69,12 +74,17 @@ package views.canvas.components.timeBar
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 			floatingLabel.y = localToGlobal(new Point(0,0)).y - 40;
 			
-			addEventListener(TouchEvent.TOUCH_BEGIN, this._touchDown);
-			addEventListener(TouchEvent.TOUCH_END, _tickmarkControl.endInteraction);
+			addEventListener(TouchEvent.TOUCH_BEGIN, _touchDown);
+			addEventListener(TouchEvent.TOUCH_END, _touchUp);
+
+			
 			_panGesture = new PanGesture(this);
 			_panGesture.maxNumTouchesRequired = 1;
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updatePanning);
 			_panGesture.addEventListener(GestureEvent.GESTURE_ENDED, _endPanning);
+			
+			_magnifier = new KTouchMagnifier();
+			_magnifier.init(contentGroup, this);
 		}
 		
 		public function reset():void
@@ -149,12 +159,11 @@ package views.canvas.components.timeBar
 			
 			var pct:Number = _currentFrame/(_maxFrame*1.0);
 			timeFill.percentWidth = pct*100;
-
-			if(!_isPlaying)
-			{
-				floatingLabel.x = timeFill.localToGlobal(new Point(pct*backgroundFill.width, 0)).x;
-				floatingLabel.showMessage(time, _currentFrame);
-			}
+			timeLine.graphics.clear();
+			timeLine.graphics.lineStyle(3,0x000000);
+			var anchor:Point = contentGroup.globalToLocal(localToGlobal(new Point(0,0)));
+			timeLine.graphics.moveTo(pct*backgroundFill.width,anchor.y);
+			timeLine.graphics.lineTo(pct*backgroundFill.width,anchor.y+height);
 		}
 		
 		/**
@@ -167,22 +176,41 @@ package views.canvas.components.timeBar
 		
 		protected function _touchDown(event:TouchEvent):void
 		{
-			_tickmarkControl.grabTick(new Point(event.stageX, event.stageY));
+			var stagePoint:Point
+			var touchX:Number = contentGroup.globalToLocal(new Point(event.stageX, event.stageY)).x;
+			var dx:Number = Math.abs(touchX - timeToX(time));
+
+			if(dx > Capabilities.screenDPI/7)
+				_tickmarkControl.grabTick(new Point(event.stageX, event.stageY));
 			
-			if(!_tickmarkControl.grabbedTick)
-				time = xToTime(globalToLocal(_panGesture.location).x);
+			if(_tickmarkControl.grabbedTick)
+			{
+				var tickGlobal:Point = markerDisplay.localToGlobal(new Point(_tickmarkControl.grabbedTick.x, 0));
+				var global:Point = localToGlobal(new Point(0,0));
+//				stagePoint = globalToLocal(new Point(tickGlobal.x, global.y));
+			}
 			else
-				_tickmarkControl.openMagnifier(event);
+			{
+				time = xToTime(globalToLocal(_panGesture.location).x);
+//				stagePoint = localToGlobal(new Point(timeX,0));
+			}
+			
+//			_magnifier.open(contentGroup);
+//			_magnifier.y = stagePoint.y;
+//			_magnifier.magnify(stagePoint.x, time, _currentFrame);
+		}
+		
+		protected function _touchUp(event:TouchEvent):void
+		{
+			_magnifier.close();
 		}
 		
 		protected function _updatePanning(event:GestureEvent):void
 		{
-			if(_tickmarkControl.grabbedTick)
-				_tickmarkControl.move_markers(_panGesture.location);
-			else
-			{
+			if(!_tickmarkControl.grabbedTick)
 				time = xToTime(globalToLocal(_panGesture.location).x);
-			}
+			else
+				_tickmarkControl.move_markers(_panGesture.location);
 		}
 		
 		protected function _endPanning(event:GestureEvent):void

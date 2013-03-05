@@ -317,7 +317,7 @@ package sg.edu.smu.ksketch2.operators
 				return activeKey.hasActivityAtTime();
 			}
 			
-			return false;
+			return true;
 		}
 		
 		/**

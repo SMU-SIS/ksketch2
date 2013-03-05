@@ -82,9 +82,10 @@ package views.canvas.components.timeBar
 			}
 		}
 		
-		public function closeMagnifier(event:TouchEvent = null):void
+		public function endInteraction(event:TouchEvent = null):void
 		{
 			_magnifier.close();
+			_interactionControl.end_interaction_operation();
 		}
 		
 		/**
@@ -306,9 +307,7 @@ package views.canvas.components.timeBar
 				}
 			}
 			
-			if(grabbedTick)
-				_interactionControl.begin_interaction_operation();
-			else
+			if(!grabbedTick)
 				return;
 			
 			for(i = 0; i < length; i++)
@@ -349,6 +348,9 @@ package views.canvas.components.timeBar
 		
 		public function move_markers(location:Point):void
 		{
+			if(!_interactionControl.currentInteraction)
+				_interactionControl.begin_interaction_operation();
+			
 			//On Pan compute how much finger moved (_changeX)
 			var currentX:Number = _timeControl.contentGroup.globalToLocal(location).x
 			var changeX:Number = currentX - _startX;
@@ -462,7 +464,6 @@ package views.canvas.components.timeBar
 			if(_interactionControl.currentInteraction.length > 0)
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
 		
-			_interactionControl.end_interaction_operation();
 			_magnifier.close();
 		}
 	}

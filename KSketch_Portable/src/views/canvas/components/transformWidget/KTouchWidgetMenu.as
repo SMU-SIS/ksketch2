@@ -36,6 +36,7 @@ package views.canvas.components.transformWidget
 		private var _insertKeyButton:Button;
 		private var _clearMotionButton:Button;
 		private var blocker:Button;
+		private var _initiated:Boolean = false;
 		
 		//Need to find a way to display this radially
 		public function KTouchWidgetMenu(KSketchInstance:KSketch2,
@@ -82,8 +83,13 @@ package views.canvas.components.transformWidget
 			_buttonContainer.addElement(_insertKeyButton);
 			_buttonContainer.addElement(_clearMotionButton);
 
-			addEventListener(FlexEvent.CREATION_COMPLETE, _updateMenu);
-
+			addEventListener(FlexEvent.CREATION_COMPLETE, _initiateMenu);
+		}
+		
+		private function _initiateMenu(event:Event):void
+		{
+			_initiated = true;
+			removeEventListener(FlexEvent.CREATION_COMPLETE, _initiateMenu);
 		}
 		
 		/**
@@ -98,12 +104,16 @@ package views.canvas.components.transformWidget
 			blocker.x = -x;
 			blocker.y = -y;
 			super.open(owner, modal);
+			_updateMenu();
 		}
 		
-		private function _updateMenu(event:Event):void
+		private function _updateMenu():void
 		{
-			//Check for button availability here
 			_canInsertKey();
+			
+			if(!_initiated)
+				return;
+			
 			_layoutButtons();
 		}
 		

@@ -70,7 +70,7 @@ package views.canvas.components.timeBar
 			floatingLabel.y = localToGlobal(new Point(0,0)).y - 40;
 			
 			addEventListener(TouchEvent.TOUCH_BEGIN, this._touchDown);
-			addEventListener(TouchEvent.TOUCH_END, _tickmarkControl.closeMagnifier);
+			addEventListener(TouchEvent.TOUCH_END, _tickmarkControl.endInteraction);
 			_panGesture = new PanGesture(this);
 			_panGesture.maxNumTouchesRequired = 1;
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updatePanning);

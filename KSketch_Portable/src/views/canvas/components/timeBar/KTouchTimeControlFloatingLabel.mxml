@@ -29,7 +29,7 @@
 				{
 					x = time;
 					open(_timeControl);
-					labelText.text = KTouchTimeSliderControl.toTimeCode(time).toString();				
+					labelText.text = KTouchTimeControl.toTimeCode(time).toString();				
 					_timer.reset();
 					_timer.start();
 					_timer.addEventListener(TimerEvent.TIMER, _closeLabel);

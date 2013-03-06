@@ -293,72 +293,23 @@ package views.canvas.components.timeBar
 			return backgroundFill.width/_maxFrame;
 		}
 		
-		/**
-		 * Sets next closest landmark time in the given direction as the 
-		 * current time.
-		 */
-		public function jumpInDirection(direction:Number):void
+		public static function toTimeCode(milliseconds:Number):String
 		{
-			var i:int;
-			var length:int = timings.length;
+			var seconds:int = Math.floor((milliseconds/1000));
+			var strSeconds:String = seconds.toString();
+			if(seconds < 10)
+				strSeconds = "0" + strSeconds;
 			
-			var timeList:Vector.<int> = new Vector.<int>();
 			
-			for(i = 0; i<length; i++)
-			{
-				timeList.push(timings[i]);
-			}
+			var remainingMilliseconds:int = (milliseconds%1000)/10;
+			var strMilliseconds:String = remainingMilliseconds.toString();
+			strMilliseconds = strMilliseconds.charAt(0) + strMilliseconds.charAt(1);
 			
-			timeList.unshift(0);
-			timeList.push(maximum);
-
-			var currentTime:Number = _KSketch.time;			
-			var currentIndex:int = 0;
+			if(remainingMilliseconds < 10)
+				strMilliseconds = "0" + strMilliseconds;
 			
-			for(i = 0; i < timeList.length; i++)
-			{
-				currentIndex = i;
-				
-				if(currentTime <= timeList[i])
-					break;
-			}
-			
-			var toTime:Number = 0;
-			
-			if(direction < 0)
-			{
-				currentIndex -= 1;
-				
-				if(currentIndex < 0)
-					toTime = 0;
-				else
-					toTime = timeList[currentIndex];
-			}
-			else
-			{
-				if(currentIndex < timeList.length)
-				{
-					var checkTime:Number = timeList[currentIndex];
-					if(checkTime == _KSketch.time)
-					{
-						while(checkTime == _KSketch.time)
-						{
-							currentIndex += 1;
-							
-							if(currentIndex < timeList.length)
-								checkTime = timeList[currentIndex];
-							else
-								break;
-						}
-					}
-					
-					toTime = checkTime;
-				}
-				else
-					toTime = _KSketch.time;
-			}
-			
-			time = toTime;
+			var timeCode:String = strSeconds + ':' + strMilliseconds;
+			return timeCode;
 		}
 	}
 }

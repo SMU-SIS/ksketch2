@@ -7,6 +7,7 @@
 		<![CDATA[
 			import mx.core.UIComponent;
 			
+			import views.canvas.components.timeBar.KTouchTimeControl;
 			import views.canvas.components.timeBar.KTouchTimeSliderControl;
 			
 			private const _SCALE_FACTOR:Number = 2;
@@ -62,7 +63,7 @@
 				var displaySource:BitmapData = new BitmapData(_halfDPI, _target.height);
 				displaySource.copyPixels(bd, _sourceRect, _ORIGIN);
 				magnifierDisplay.source = displaySource;
-				labelText.text = KTouchTimeSliderControl.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();		
+				labelText.text = KTouchTimeControl.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();		
 				
 //				_timer.reset();
 //				_timer.start();

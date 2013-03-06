@@ -65,8 +65,8 @@
 				_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
 				feedbackMessage.init(this);
 				
-				currentTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_CURRENT_TIME);
-				maxTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LABEL_MAX_TIME);
+				currentTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LEFT);
+				maxTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.RIGHT);
 				
 				modelDisplay.init(_KSketch, true);
 				timeControl.init(_KSketch, _timeTickControl);

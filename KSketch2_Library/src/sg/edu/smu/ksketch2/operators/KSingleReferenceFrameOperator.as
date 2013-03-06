@@ -10,6 +10,7 @@ package sg.edu.smu.ksketch2.operators
 {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
+	import flash.utils.getTimer;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
@@ -55,9 +56,14 @@ package sg.edu.smu.ksketch2.operators
 		protected var _magTheta:Number;
 		protected var _magSigma:Number;
 
-		protected var _cutTranslate:Boolean;
-		protected var _cutTranslateTime:int;
+		protected var _cachedX:Number;
+		protected var _cachedY:Number;
+		protected var _cachedTheta:Number;
+		protected var _cachedScale:Number;
 		
+		protected var _cutTranslateTime:int;
+		protected var _cutTranslate:Boolean;
+				
 		protected var _cutRotate:Boolean;
 		protected var _cutRotateTime:int;
 		
@@ -123,6 +129,7 @@ package sg.edu.smu.ksketch2.operators
 			return activeKey;
 		}
 		
+	
 		/**
 		 * Returns the transform matrix of the reference frame that this interface provides access to
 		 */
@@ -182,14 +189,6 @@ package sg.edu.smu.ksketch2.operators
 		
 		private function _transitionMatrix(time:int):Matrix
 		{
-			//Extremely hardcoded matrix
-			//Iterate through the key list and add up the rotation, scale, dx dy values
-			//Pump these values into the matrix after wards
-			var currentKey:KSpatialKeyFrame = _refFrame.head as KSpatialKeyFrame;
-			
-			if(!currentKey)
-				return new Matrix();
-			
 			var x:Number = _transitionX;
 			var y:Number = _transitionY;
 			var theta:Number = _transitionTheta;
@@ -198,58 +197,70 @@ package sg.edu.smu.ksketch2.operators
 			var proportionKeyFrame:Number;
 			var computeTime:int;
 			
+			var currentKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(_startTime) as KSpatialKeyFrame;
+			
 			while(currentKey)
 			{
-				if((TRANSLATE_THRESHOLD < _magX || TRANSLATE_THRESHOLD < _magY) && !_cutTranslate)
-				{
-					_cutTranslate = true;
-					_cutTranslateTime = time;
-				}
+				if(currentKey.time < time)
+					break;
 				
-				computeTime = _cutTranslate? _cutTranslateTime:time;
+				proportionKeyFrame = currentKey.findProportion(time);
 				
-				if(currentKey.startTime <= computeTime)
+				if(!_cutTranslate)
 				{
-					proportionKeyFrame = currentKey.findProportion(computeTime);
 					point = currentKey.translatePath.find_Point(proportionKeyFrame);
-					if(point)
+					if(TRANSLATE_THRESHOLD < _transitionX || TRANSLATE_THRESHOLD < _transitionY)
 					{
-						x += point.x;
-						y += point.y;
+						if(point)
+						{
+							x += point.x;
+							y += point.y;
+						}
+					}
+					else
+					{
+						if(point)
+						{
+							_cachedX += point.x;
+							_cachedY += point.y;
+						}
+						
+						_cutTranslate = true;
 					}
 				}
 				
-				
-				if((ROTATE_THRESHOLD < _magTheta) && !_cutRotate)
+				if(!_cutRotate)
 				{
-					_cutRotate = true;
-					_cutRotateTime = time;
-				}
-
-				computeTime = _cutRotate? _cutRotateTime:time;
-				
-				if(currentKey.startTime <= computeTime)
-				{
-					proportionKeyFrame = currentKey.findProportion(computeTime);
 					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
-					if(point)
-						theta += point.x;
+					if(ROTATE_THRESHOLD < _magTheta)
+					{
+						if(point)
+							theta += point.x;
+					}
+					else
+					{
+						if(point)
+							_cachedTheta += point.x;
+						
+						_cutRotate = true;
+					}
 				}
 				
-				if((SCALE_THRESHOLD < _magSigma) && !_cutScale)
+				if(!_cutScale)
 				{
-					_cutScale = true;
-					_cutScaleTime = time;
-				}
-				
-				computeTime = _cutScale? _cutScaleTime:time;
-				
-				if(currentKey.startTime <= computeTime)
-				{
-					proportionKeyFrame = currentKey.findProportion(computeTime);
-					point = currentKey.scalePath.find_Point(proportionKeyFrame);
-					if(point)
-						sigma += point.x;
+					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
+					if(SCALE_THRESHOLD < _magSigma)
+					{
+						if(point)
+							sigma += point.x;
+					}
+					else
+					{
+						if(point)
+							_cachedScale += point.x;
+						
+						_cutScale = true;
+					}
 				}
 				
 				currentKey = currentKey.next as KSpatialKeyFrame;
@@ -257,10 +268,10 @@ package sg.edu.smu.ksketch2.operators
 			
 			var result:Matrix = new Matrix();
 			result.translate(-_object.centroid.x,-_object.centroid.y);
-			result.rotate(theta);
-			result.scale(sigma, sigma);
+			result.rotate(theta+_cachedTheta);
+			result.scale(sigma+_cachedScale, sigma+_cachedScale);
 			result.translate(_object.centroid.x, _object.centroid.y);
-			result.translate(x, y);
+			result.translate(x+_cachedX, y+_cachedY);
 			
 			return result;	
 		}
@@ -341,16 +352,51 @@ package sg.edu.smu.ksketch2.operators
 			_magTheta = 0;
 			_magSigma = 0;
 			
-			_cutTranslate = false;
-			_cutRotate = false;
-			_cutScale = false;
-			
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				_TWorkingPath = new KPath();
 				_RWorkingPath = new KPath();
 				_SWorkingPath = new KPath();
 			}
+			
+			//Because all transform values before start time will remain the same
+			//Cache them to avoid unnecessary computations
+			
+			_cachedX = 0;
+			_cachedY = 0;
+			_cachedTheta = 0;
+			_cachedScale = 0;
+			
+			var currentProportion:Number = 1;
+			var point:KTimedPoint;
+			var currentKey:KSpatialKeyFrame = _refFrame.head as KSpatialKeyFrame;
+			
+			while(currentKey)
+			{
+				if( _startTime < currentKey.time)
+					break;
+				
+				point = currentKey.translatePath.find_Point(1);
+				if(point)
+				{
+					_cachedX += point.x;
+					_cachedY += point.y;
+				}
+
+				point = currentKey.rotatePath.find_Point(1);
+				if(point)
+					_cachedTheta += point.x;
+				
+				point = currentKey.scalePath.find_Point(1);
+				if(point)
+					_cachedScale += point.x;
+				
+				currentKey = currentKey.next as KSpatialKeyFrame;
+			}
+			
+			_cutTranslate = false;
+			_cutScale = false;
+			_cutRotate = false;
 			
 			_inTransit = true;
 			

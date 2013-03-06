@@ -324,7 +324,10 @@ package sg.edu.smu.ksketch2.operators
 			{
 				var activeKey:ISpatialKeyFrame = _refFrame.getKeyAftertime(time) as ISpatialKeyFrame;
 				
-				return activeKey.hasActivityAtTime();
+				if(activeKey)
+					return activeKey.hasActivityAtTime();
+				else
+					return false;
 			}
 			
 			return true;

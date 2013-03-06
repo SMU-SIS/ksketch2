@@ -10,7 +10,6 @@ package sg.edu.smu.ksketch2.operators
 {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
-	import flash.utils.getTimer;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
@@ -248,7 +247,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(!_cutScale)
 				{
-					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
+					point = currentKey.scalePath.find_Point(proportionKeyFrame);
 					if(SCALE_THRESHOLD < _magSigma)
 					{
 						if(point)

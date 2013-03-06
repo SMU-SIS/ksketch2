@@ -41,6 +41,7 @@ package sg.edu.smu.ksketch2.view
 			_nextTranslatePath = new Shape();
 			_rotatePath = new Shape();
 			_scalePath = new Shape();
+			visible = false;
 		}
 		
 		public function setDrawingArea(translateHost:DisplayObjectContainer, rotateHost:DisplayObjectContainer, scaleHost:DisplayObjectContainer):void

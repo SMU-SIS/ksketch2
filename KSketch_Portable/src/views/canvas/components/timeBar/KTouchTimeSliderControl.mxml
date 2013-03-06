@@ -21,11 +21,21 @@
 			import org.gestouch.gestures.TapGesture;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 			
 			import views.canvas.KSketch_CanvasView;
 			
 			public static const LABEL_CURRENT_TIME:int = -1;
 			public static const LABEL_MAX_TIME:int = 1;
+			
+			private const _PAN_SPEED_1:int = 1
+			private const _PAN_SPEED_2:int = 3;
+			private const _PAN_SPEED_3:int = 9;
+			private const _PAN_SPEED_4:int = 15;
+			private const _PAN_THRESHOLD_1:Number = 5;
+			private const _PAN_THRESHOLD_2:Number = 8;
+			private const _PAN_THRESHOLD_3:Number = 10;
+			private const _STEP_THRESHOLD:Number = 7;
 			
 			private var _KSketch:KSketch2;
 			private var _type:int;
@@ -33,6 +43,11 @@
 		
 			private var _panGesture:PanGesture;
 			private var _tapGesture:TapGesture;
+			
+			private var _panVector:Point = new Point();
+			private var _panSpeed:int = _PAN_SPEED_1;
+			private var _prevOffset:Number = 1;
+			private var _panOffset:Number = 0;
 			
 			private const _FILL1:uint = 0x000000;
 
@@ -106,23 +121,69 @@
 			
 			private function _panUpdate(event:org.gestouch.events.GestureEvent):void
 			{
-				_timeControl.updateSlider(_panGesture.offsetX, _panGesture.offsetY);
+				updateSlider(_panGesture.offsetX, _panGesture.offsetY);
 				_timeControl.floatingLabel.showMessage(_timeControl.time);
 			}
 			
 			private function _panEnd(event:org.gestouch.events.GestureEvent):void
 			{
-				_timeControl.resetSliderInteraction();
+				resetSliderInteraction();
 			}
 			
-			private function _updateCurrentTime(event:Event):void
+			/**
+			 * update slider with offsetX, subjected to speed changes
+			 */
+			public function updateSlider(offsetX:Number, offsetY:Number):void
 			{
-				//timeLabel.text = toTimeCode(_KSketch.time);
+				//Changed direction, have to reset all pan gesture calibrations till now.
+				if((_prevOffset * offsetX) < 0)
+					resetSliderInteraction();
+				
+				_panVector.x = offsetX;
+				_panVector.y = offsetY;
+				
+				var absOffset:Number = _panVector.length;
+				
+				//Pan Offset is the absolute distance moved during a pan gesture
+				//Need to update to see how far this pan has moved.
+				_panOffset += absOffset;
+				
+				//Speed calibration according to how far the pan gesture moved.
+				if( absOffset <= _PAN_THRESHOLD_1)
+					_panSpeed = _PAN_SPEED_1;
+				else if(absOffset <= _PAN_THRESHOLD_2)
+					_panSpeed = _PAN_SPEED_2;
+				else if(absOffset <= _PAN_THRESHOLD_3)
+					_panSpeed = _PAN_SPEED_3 * (_timeControl.maximum/KTimeControl.DEFAULT_MAX_TIME);
+				else
+					_panSpeed = absOffset * (_timeControl.maximum/KTimeControl.DEFAULT_MAX_TIME);
+				
+				//Update the time according to the direction of the pan.
+				//Advance if it's towards the right
+				//Roll back if it's towards the left.
+				if(_panOffset > _STEP_THRESHOLD)
+				{				
+					if(0 < offsetX)
+						_timeControl.time = _timeControl.time + (_panSpeed*KSketch2.ANIMATION_INTERVAL);
+					else if(offsetX < 0)
+						_timeControl.time = _timeControl.time - (_panSpeed*KSketch2.ANIMATION_INTERVAL);
+					
+					_panOffset = 0;
+				}
+				
+				//Save the current offset value, will need this thing to check for
+				//change in direction in the next update event
+				_prevOffset =  offsetX;
 			}
 			
-			private function _updateMaxTime(event:Event):void
+			/**
+			 * For resetting slider interaction values;
+			 */
+			public function resetSliderInteraction():void
 			{
-				//timeLabel.text = toTimeCode(_timeControl.maximum);
+				_prevOffset = 1;
+				_panOffset = 0;
+				_panSpeed = _PAN_SPEED_1;
 			}
 			
 			public static function toTimeCode(milliseconds:Number):String

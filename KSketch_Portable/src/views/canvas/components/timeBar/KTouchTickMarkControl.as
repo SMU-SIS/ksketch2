@@ -22,9 +22,11 @@ package views.canvas.components.timeBar
 
 	public class KTouchTickMarkControl
 	{
-		private const _UNSELECTED_TICK_MARK_COLOR:uint = 0xD7D7D7;
+		private const _UNSELECTED_TICK_MARK_COLOR:uint = 0x000000;
 		private const _SELECTED_TICK_MARK_COLOR:uint = 0xFA5858;
-		private const _TICK_MARK_THICKNESS:Number = 2;
+		private const _TICK_MARK_BLEND:Number = 0.55;
+		private const _INTERPOLATE_MARK_THICKNESS:Number = 1;
+		private const _DEMO_TICK_MARK_THICKNESS:Number = 3;
 		
 		private var _KSketch:KSketch2;
 		private var _timeControl:KTouchTimeControl;
@@ -179,7 +181,10 @@ package views.canvas.components.timeBar
 			
 			//Brute force occurring here. JT was just too lazy to make a better algorithm!
 			//First pass to draw unselected tick marks
-			_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _UNSELECTED_TICK_MARK_COLOR);
+			if(KSketch2.studyMode == KSketch2.STUDY_D)
+				_timeTickContainer.graphics.lineStyle(_DEMO_TICK_MARK_THICKNESS, _UNSELECTED_TICK_MARK_COLOR, _TICK_MARK_BLEND);
+			else
+				_timeTickContainer.graphics.lineStyle(_INTERPOLATE_MARK_THICKNESS, _UNSELECTED_TICK_MARK_COLOR);
 			
 			var maxTime:int = _timeControl.maximum;
 			var i:int;
@@ -199,8 +204,8 @@ package views.canvas.components.timeBar
 					
 					if(_timeTickContainer.x <= currentX)
 					{
-						_timeTickContainer.graphics.moveTo( currentX, -5);
-						_timeTickContainer.graphics.lineTo( currentX, 25);
+						_timeTickContainer.graphics.moveTo( currentX, 0);
+						_timeTickContainer.graphics.lineTo( currentX, _timeTickContainer.height);
 					}
 				}
 			}
@@ -210,7 +215,11 @@ package views.canvas.components.timeBar
 				return;
 			
 			currentX = Number.NEGATIVE_INFINITY;
-			_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _SELECTED_TICK_MARK_COLOR);
+			
+			if(KSketch2.studyMode == KSketch2.STUDY_D)
+				_timeTickContainer.graphics.lineStyle(_DEMO_TICK_MARK_THICKNESS, _SELECTED_TICK_MARK_COLOR, _TICK_MARK_BLEND);
+			else
+				_timeTickContainer.graphics.lineStyle(_INTERPOLATE_MARK_THICKNESS, _SELECTED_TICK_MARK_COLOR);
 			
 			for(i = 0; i<_ticks.length; i++)
 			{
@@ -227,8 +236,8 @@ package views.canvas.components.timeBar
 					
 					if(_timeTickContainer.x <= currentX)
 					{
-						_timeTickContainer.graphics.moveTo( currentX, -5);
-						_timeTickContainer.graphics.lineTo( currentX, 25);
+						_timeTickContainer.graphics.moveTo( currentX, 0);
+						_timeTickContainer.graphics.lineTo( currentX, _timeTickContainer.height);
 						
 						if(currentMarker.prev)
 						{
@@ -236,8 +245,8 @@ package views.canvas.components.timeBar
 							{
 								if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
 								{
-									_timeTickContainer.graphics.beginFill(_SELECTED_TICK_MARK_COLOR, 0.4);
-									_timeTickContainer.graphics.drawRect(currentMarker.prev.x, -5, currentMarker.x - currentMarker.prev.x, 30);	
+									_timeTickContainer.graphics.beginFill(_SELECTED_TICK_MARK_COLOR, _TICK_MARK_BLEND);
+									_timeTickContainer.graphics.drawRect(currentMarker.prev.x, 0, currentMarker.x - currentMarker.prev.x, _timeTickContainer.height);	
 									_timeTickContainer.graphics.endFill();	
 								}
 							}
@@ -407,7 +416,7 @@ package views.canvas.components.timeBar
 				currentTime = _timeControl.maximum;
 		}
 		
-		public function end_move_markers(location:Point):void
+		public function end_move_markers():void
 		{
 			var i:int;
 			var length:int = _ticks.length;

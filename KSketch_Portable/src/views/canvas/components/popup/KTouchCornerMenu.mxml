@@ -137,7 +137,7 @@
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
-				<s:Button name="exit" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="exit()"/>
+				<s:Button name="exit" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="exit()" enabled="false"/>
 			</s:Group>
 <!--		<s:Group>
 				<s:layout>

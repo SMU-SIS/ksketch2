@@ -3,7 +3,7 @@
 		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
 	<fx:Script>
 		<![CDATA[
-			private const _VISIBLE_TIME:Number = 250;
+			private const _VISIBLE_TIME:Number = 500;
 			
 			private var _timeControl:KTouchTimeControl
 			private var _timer:Timer;

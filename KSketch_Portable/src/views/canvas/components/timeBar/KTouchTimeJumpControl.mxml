@@ -56,6 +56,7 @@
 				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
 				
 				_swipeGesture = new SwipeGesture(this);
+				_swipeGesture.minOffset = this.width*0.75;
 				_swipeGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleSwipe);
 				
 				var iconGraphics:Graphics = (skin as KTouchTimebarButtonSkin).iconGraphics.graphics
@@ -111,6 +112,8 @@
 					_timeControl.time -= KSketch2.ANIMATION_INTERVAL;
 				else
 					_timeControl.time += KSketch2.ANIMATION_INTERVAL;
+				
+				_timeControl.floatingLabel.showMessage(_timeControl.time);
 			}
 			
 			/**
@@ -178,16 +181,7 @@
 				}
 				
 				_timeControl.time = toTime;
-			}
-			
-			
-			/**
-			 * Sets next closest landmark time in the given direction as the 
-			 * current time.
-			 */
-			public function jumpInDirection(direction:Number):void
-			{
-				
+				_timeControl.floatingLabel.showMessage(toTime);
 			}
 		]]>
 	</fx:Script>

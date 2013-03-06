@@ -1,7 +1,6 @@
 package views.canvas.components.timeBar
 {
 	import flash.events.Event;
-	import flash.events.TouchEvent;
 	import flash.geom.Point;
 	import flash.system.Capabilities;
 	
@@ -22,10 +21,13 @@ package views.canvas.components.timeBar
 
 	public class KTouchTickMarkControl
 	{
-		private const _UNSELECTED_TICK_MARK_COLOR:uint = 0x000000;
-		private const _SELECTED_TICK_MARK_COLOR:uint = 0xFA5858;
-		private const _INTERPOLATE_MARK_THICKNESS:Number = 1;
-		private const _DEMO_TICK_MARK_THICKNESS:Number = 3;
+		private const _ACTIVITY_COLOR:uint = 0x58ACFA;
+		private const _TICK_MARK_THICKNESS:Number = 3;
+		
+		private const _D_UNSELECTED_TICK_MARK_COLOR:uint = 0xE7E7E7;
+		private const _D_SELECTED_TICK_MARK_COLOR:uint = 0x999999;
+		private const _I_UNSELECTED_TICK_MARK_COLOR:uint = 0x999999;
+		private const _I_SELECTED_TICK_MARK_COLOR:uint = 0x404040;
 		
 		private var _KSketch:KSketch2;
 		private var _timeControl:KTouchTimeControl;
@@ -176,9 +178,9 @@ package views.canvas.components.timeBar
 			//Brute force occurring here. JT was just too lazy to make a better algorithm!
 			//First pass to draw unselected tick marks
 			if(KSketch2.studyMode == KSketch2.STUDY_D)
-				_timeTickContainer.graphics.lineStyle(_DEMO_TICK_MARK_THICKNESS, _UNSELECTED_TICK_MARK_COLOR);
+				_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _D_UNSELECTED_TICK_MARK_COLOR);
 			else
-				_timeTickContainer.graphics.lineStyle(_INTERPOLATE_MARK_THICKNESS, _UNSELECTED_TICK_MARK_COLOR);
+				_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _I_UNSELECTED_TICK_MARK_COLOR);
 			
 			var maxTime:int = _timeControl.maximum;
 			var i:int;
@@ -211,9 +213,9 @@ package views.canvas.components.timeBar
 			currentX = Number.NEGATIVE_INFINITY;
 			
 			if(KSketch2.studyMode == KSketch2.STUDY_D)
-				_timeTickContainer.graphics.lineStyle(_DEMO_TICK_MARK_THICKNESS, _SELECTED_TICK_MARK_COLOR);
+				_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _D_SELECTED_TICK_MARK_COLOR);
 			else
-				_timeTickContainer.graphics.lineStyle(_INTERPOLATE_MARK_THICKNESS, _SELECTED_TICK_MARK_COLOR);
+				_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _I_SELECTED_TICK_MARK_COLOR);
 			
 			for(i = 0; i<_ticks.length; i++)
 			{
@@ -239,7 +241,7 @@ package views.canvas.components.timeBar
 							{
 								if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
 								{
-									_timeTickContainer.graphics.beginFill(_SELECTED_TICK_MARK_COLOR);
+									_timeTickContainer.graphics.beginFill(_ACTIVITY_COLOR);
 									_timeTickContainer.graphics.drawRect(currentMarker.prev.x, 0, currentMarker.x - currentMarker.prev.x, _timeTickContainer.height);	
 									_timeTickContainer.graphics.endFill();	
 								}

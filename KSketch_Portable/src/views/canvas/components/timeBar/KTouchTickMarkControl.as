@@ -26,7 +26,7 @@ package views.canvas.components.timeBar
 		
 		private const _D_UNSELECTED_TICK_MARK_COLOR:uint = 0xE7E7E7;
 		private const _D_SELECTED_TICK_MARK_COLOR:uint = 0x999999;
-		private const _I_UNSELECTED_TICK_MARK_COLOR:uint = 0x999999;
+		private const _I_UNSELECTED_TICK_MARK_COLOR:uint = 0xE7E7E7;
 		private const _I_SELECTED_TICK_MARK_COLOR:uint = 0x404040;
 		
 		private var _KSketch:KSketch2;

@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark"
-		backgroundAlpha="0">
+		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
 	
 	<fx:Script>
 		<![CDATA[
 			import mx.core.UIComponent;
 			
-			import views.canvas.components.timeBar.KTouchTimeControl;
-			import views.canvas.components.timeBar.KTouchTimeSliderControl;
+			import sg.edu.smu.ksketch2.KSketch2;
 			
-			private const _SCALE_FACTOR:Number = 2;
 			private const _VISIBLE_TIME:Number = 500;
 			private const _ORIGIN:Point = new Point(0,0);
 	
@@ -20,54 +17,57 @@
 			private var _identity:Matrix;
 			
 			private var _parent:UIComponent;
-			private var _target:UIComponent;
-			private var _timer:Timer;
+			private var _timeControl:KTouchTimeControl;
 			private var _parent_Minimum:Number;
 			private var _parent_Maximum:Number;
 			
 			private var _sourceRect:Rectangle;
 			
-			public function init(parent:UIComponent, source:UIComponent):void
+			public function init(parent:UIComponent, timeControl:KTouchTimeControl):void
 			{
 				_parent = parent;
-				_target = source;
-				_timer = new Timer(_VISIBLE_TIME);
+				_timeControl = timeControl;
 				_sourceRect = new Rectangle();
 				
 				_DPI = Capabilities.screenDPI;
 				_halfDPI = _DPI/2;
 				_quarterDPI = _DPI/4;
 				_identity = new Matrix();
-				_parent_Minimum = _parent.localToGlobal(_ORIGIN).x;
+				var globalOrigin:Point = _parent.localToGlobal(_ORIGIN);
+				_parent_Minimum = globalOrigin.x;
 				_parent_Maximum = _parent_Minimum + _parent.width;
 			}
-
+			
 			/**
-			 * Shows the area around the given xPosition
+			 * Magnifies the area around given position
+			 * Given xPos must be global X;
 			 */
-			public function magnify(xPos:Number, time:int, frameNumber:int):void
+			public function magnify(xPos:Number):void
 			{				
 				x = xPos;
+				var localX:Number = _parent.globalToLocal(new Point(xPos, 0)).x;
 
 				if(xPos < _parent_Minimum || _parent_Maximum < xPos)
 					return;
 				
-				var bd : BitmapData = new BitmapData( _target.width, _target.height );
-				bd.draw( _target, _identity );
+				//Create the magnified area of interest
+				var bd : BitmapData = new BitmapData( _timeControl.width, _timeControl.height );
+				bd.draw( _timeControl, _identity );
 				
-				_sourceRect.x = _target.globalToLocal(new Point(xPos,0)).x - _quarterDPI;
+				_sourceRect.x = _timeControl.globalToLocal(new Point(xPos,0)).x - _quarterDPI;
 				_sourceRect.y = 0;
 				_sourceRect.width = Capabilities.screenDPI;
-				_sourceRect.height = _target.height;
+				_sourceRect.height = _timeControl.height;
 
-				var displaySource:BitmapData = new BitmapData(_halfDPI, _target.height);
+				var displaySource:BitmapData = new BitmapData(_halfDPI, _timeControl.height);
 				displaySource.copyPixels(bd, _sourceRect, _ORIGIN);
 				magnifierDisplay.source = displaySource;
-				labelText.text = KTouchTimeControl.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();		
 				
-//				_timer.reset();
-//				_timer.start();
-//				_timer.addEventListener(TimerEvent.TIMER, closeMagnifier);
+				//Find time and frame number at area of interest
+				var targetTime:int = _timeControl.xToTime(localX);
+				var frameNumber:int = int(Math.floor(targetTime/KSketch2.ANIMATION_INTERVAL));	
+							
+				labelText.text = KTouchTimeControl.toTimeCode(targetTime).toString() + " - Frame "+frameNumber.toString();	
 			}
 			
 			override public function set x(value:Number):void
@@ -84,8 +84,6 @@
 			
 			public function closeMagnifier(event:TimerEvent = null):void
 			{
-				_timer.stop();
-				_timer.removeEventListener(TimerEvent.TIMER, closeMagnifier);
 				close();
 			}
 			
@@ -96,7 +94,7 @@
 			<s:SolidColor color="0x848484"/>
 		</s:fill>
 	</s:Rect>
-	<s:Group id="contentGroup">
+	<s:Group id="magnifierContents">
 		<s:layout>
 			<s:VerticalLayout paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
 							  verticalAlign="middle" horizontalAlign="center"/>

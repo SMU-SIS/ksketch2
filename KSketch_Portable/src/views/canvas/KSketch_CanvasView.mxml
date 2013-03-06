@@ -65,8 +65,8 @@
 				_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
 				feedbackMessage.init(this);
 				
-				currentTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.LEFT);
-				maxTimeLabel.init(_KSketch, timeControl, KTouchTimeSliderControl.RIGHT);
+				currentTimeLabel.init(_KSketch, timeControl, KTouchTimeJumpControl.LEFT);
+				maxTimeLabel.init(_KSketch, timeControl, KTouchTimeJumpControl.RIGHT);
 				
 				modelDisplay.init(_KSketch, true);
 				timeControl.init(_KSketch, _timeTickControl);
@@ -225,14 +225,14 @@
 					<s:HorizontalLayout gap="0" verticalAlign="middle" paddingLeft="5"/>
 				</s:layout>
 				<timeBar:Touch_Play_Button id="playButton" click="playButton.playToggle()"/>
-				<timeBar:KTouchTimeSliderControl id="currentTimeLabel"/>
+				<timeBar:KTouchTimeJumpControl id="currentTimeLabel"/>
 				<s:Group width="100%" height="100%">
 					<s:layout>
 						<s:VerticalLayout gap="3" verticalAlign="middle" horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
 					</s:layout>
 					<timeBar:KTouchTimeControl id="timeControl"/>
 				</s:Group>
-				<timeBar:KTouchTimeSliderControl id="maxTimeLabel"/>
+				<timeBar:KTouchTimeJumpControl id="maxTimeLabel"/>
 				<timeBar:Touch_Menu_Button id="menuButton" click="_menuBtnHandler()"/>
 			</s:Group>
 		</s:Group>

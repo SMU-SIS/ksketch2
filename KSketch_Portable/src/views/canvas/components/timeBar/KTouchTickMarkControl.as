@@ -24,7 +24,6 @@ package views.canvas.components.timeBar
 	{
 		private const _UNSELECTED_TICK_MARK_COLOR:uint = 0x000000;
 		private const _SELECTED_TICK_MARK_COLOR:uint = 0xFA5858;
-		private const _TICK_MARK_BLEND:Number = 0.55;
 		private const _INTERPOLATE_MARK_THICKNESS:Number = 1;
 		private const _DEMO_TICK_MARK_THICKNESS:Number = 3;
 		
@@ -57,11 +56,6 @@ package views.canvas.components.timeBar
 			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateTicks);
 			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
 			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _recalibrateTicksAgainstMaxTime);
-		}
-		
-		public function endInteraction(event:TouchEvent = null):void
-		{
-			_interactionControl.end_interaction_operation();
 		}
 		
 		/**
@@ -182,7 +176,7 @@ package views.canvas.components.timeBar
 			//Brute force occurring here. JT was just too lazy to make a better algorithm!
 			//First pass to draw unselected tick marks
 			if(KSketch2.studyMode == KSketch2.STUDY_D)
-				_timeTickContainer.graphics.lineStyle(_DEMO_TICK_MARK_THICKNESS, _UNSELECTED_TICK_MARK_COLOR, _TICK_MARK_BLEND);
+				_timeTickContainer.graphics.lineStyle(_DEMO_TICK_MARK_THICKNESS, _UNSELECTED_TICK_MARK_COLOR);
 			else
 				_timeTickContainer.graphics.lineStyle(_INTERPOLATE_MARK_THICKNESS, _UNSELECTED_TICK_MARK_COLOR);
 			
@@ -217,7 +211,7 @@ package views.canvas.components.timeBar
 			currentX = Number.NEGATIVE_INFINITY;
 			
 			if(KSketch2.studyMode == KSketch2.STUDY_D)
-				_timeTickContainer.graphics.lineStyle(_DEMO_TICK_MARK_THICKNESS, _SELECTED_TICK_MARK_COLOR, _TICK_MARK_BLEND);
+				_timeTickContainer.graphics.lineStyle(_DEMO_TICK_MARK_THICKNESS, _SELECTED_TICK_MARK_COLOR);
 			else
 				_timeTickContainer.graphics.lineStyle(_INTERPOLATE_MARK_THICKNESS, _SELECTED_TICK_MARK_COLOR);
 			
@@ -231,7 +225,7 @@ package views.canvas.components.timeBar
 				{
 					currentX = currentMarker.x;
 					
-					if(currentX < 0 || _timeControl.backgroundFill.width < currentX)
+					if(currentX < 0)
 						continue;
 					
 					if(_timeTickContainer.x <= currentX)
@@ -245,7 +239,7 @@ package views.canvas.components.timeBar
 							{
 								if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
 								{
-									_timeTickContainer.graphics.beginFill(_SELECTED_TICK_MARK_COLOR, _TICK_MARK_BLEND);
+									_timeTickContainer.graphics.beginFill(_SELECTED_TICK_MARK_COLOR);
 									_timeTickContainer.graphics.drawRect(currentMarker.prev.x, 0, currentMarker.x - currentMarker.prev.x, _timeTickContainer.height);	
 									_timeTickContainer.graphics.endFill();	
 								}
@@ -338,6 +332,7 @@ package views.canvas.components.timeBar
 			var currentX:Number = _timeControl.contentGroup.globalToLocal(location).x
 			var changeX:Number = currentX - _startX;
 			var pixelPerFrame:Number = _timeControl.pixelPerFrame;			
+			changeX = Math.floor(changeX/pixelPerFrame)*pixelPerFrame;
 			
 			//If _changeX -ve use before
 			//If _changeX +ve use after
@@ -399,21 +394,21 @@ package views.canvas.components.timeBar
 					maxTime = currentTick.time;
 			}
 			
-			if(maxTime < KTimeControl.DEFAULT_MAX_TIME)
-				maxTime = KTimeControl.DEFAULT_MAX_TIME;
-			else if(KTouchTimeControl.MAX_ALLOWED_TIME < maxTime)
-				maxTime = KTouchTimeControl.MAX_ALLOWED_TIME;
+//			if(maxTime < KTimeControl.DEFAULT_MAX_TIME)
+//				maxTime = KTimeControl.DEFAULT_MAX_TIME;
+//			else if(KTouchTimeControl.MAX_ALLOWED_TIME < maxTime)
+//				maxTime = KTouchTimeControl.MAX_ALLOWED_TIME;
+//			
+//			if(_timeControl.maximum != maxTime)
+//				_timeControl.maximum = maxTime;
+//			else
+			_drawTicks();
 			
-			if(_timeControl.maximum < maxTime)
-				_timeControl.maximum = maxTime;
-			else
-				_drawTicks();
-			
-			var currentTime:int = _timeControl.xToTime(currentX);
-			if(currentTime < 0)
-				currentTime = 0;
-			else if(currentTime > _timeControl.maximum)
-				currentTime = _timeControl.maximum;
+//			var currentTime:int = _timeControl.xToTime(currentX);
+//			if(currentTime < 0)
+//				currentTime = 0;
+//			else if(currentTime > _timeControl.maximum)
+//				currentTime = _timeControl.maximum;
 		}
 		
 		public function end_move_markers():void
@@ -438,8 +433,15 @@ package views.canvas.components.timeBar
 			else
 				_timeControl.maximum = KTimeControl.DEFAULT_MAX_TIME;
 			
-			if(_interactionControl.currentInteraction.length > 0)
-				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
+			if(_interactionControl.currentInteraction)
+			{
+				if(_interactionControl.currentInteraction.length > 0)
+					_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
+				
+				_interactionControl.end_interaction_operation();
+			}
+			else
+				_interactionControl.cancel_interaction_operation();
 		}
 	}
 }

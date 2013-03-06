@@ -357,8 +357,11 @@ package sg.edu.smu.ksketch2.operators
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				_TWorkingPath = new KPath();
+				_TWorkingPath.push(0,0,0);
 				_RWorkingPath = new KPath();
+				_RWorkingPath.push(0,0,0);
 				_SWorkingPath = new KPath();
+				_SWorkingPath.push(0,0,0);
 			}
 			
 			//Because all transform values before start time will remain the same

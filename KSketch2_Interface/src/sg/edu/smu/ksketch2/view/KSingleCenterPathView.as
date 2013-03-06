@@ -10,9 +10,7 @@ package sg.edu.smu.ksketch2.view
 {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
-	
-	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.KPath;
+
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -62,7 +60,7 @@ package sg.edu.smu.ksketch2.view
 		
 		private function createPathPoints(origin:Point, transformPoints:Vector.<KTimedPoint>, targetKey:KSpatialKeyFrame):Vector.<KTimedPoint>
 		{
-			if(!transformPoints || !targetKey)
+			if(!transformPoints || !targetKey ||transformPoints.length == 0)
 				return null;
 			
 			var i:int;

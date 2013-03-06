@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch2.view
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
@@ -108,7 +109,7 @@ package sg.edu.smu.ksketch2.view
 			
 			transform.matrix = _object.transformMatrix(time);
 			
-			if(!_isTransiting)
+			if(_pathView.visible && !_isTransiting)
 				_updatePathView(time);
 		}
 		
@@ -127,7 +128,12 @@ package sg.edu.smu.ksketch2.view
 				_updateGhost(event);
 
 			if(_pathView)
-				_pathView.visible = false;
+			{
+				if(object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
+					_pathView.visible = false;
+				else
+					_pathView.visible = true;
+			}
 			
 			_isTransiting = true;
 			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _updateGhost);
@@ -167,6 +173,7 @@ package sg.edu.smu.ksketch2.view
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _updateGhost);
 		}
 		
+		public var myI:int = 0;
 		protected function _updatePathView(time:int):void
 		{
 			if(_pathView)

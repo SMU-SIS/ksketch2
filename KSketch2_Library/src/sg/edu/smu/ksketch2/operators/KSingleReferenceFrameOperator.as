@@ -91,6 +91,11 @@ package sg.edu.smu.ksketch2.operators
 
 		}
 		
+		public function get transitionType():int
+		{
+			return _transitionType;
+		}
+		
 		/**
 		 * Returns the time value of the first key in the reference frame this transform operator handles
 		 */
@@ -366,7 +371,7 @@ package sg.edu.smu.ksketch2.operators
 			
 			//Because all transform values before start time will remain the same
 			//Cache them to avoid unnecessary computations
-			
+			//Future matrix will only need to compute the active key's transforms
 			_cachedX = 0;
 			_cachedY = 0;
 			_cachedTheta = 0;
@@ -402,10 +407,10 @@ package sg.edu.smu.ksketch2.operators
 			_cutTranslate = false;
 			_cutScale = false;
 			_cutRotate = false;
-			
 			_inTransit = true;
 			
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _object, time));
+
 		}
 		
 		public function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void

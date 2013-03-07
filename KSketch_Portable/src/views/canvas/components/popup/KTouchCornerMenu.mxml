@@ -45,7 +45,6 @@
 			public function clear():void
 			{
 				_interactionControl.reset();
-				close();
 			}
 			
 			public function penColor(value:uint):void

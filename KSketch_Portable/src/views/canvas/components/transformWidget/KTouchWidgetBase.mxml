@@ -9,7 +9,7 @@
 			public static const COLOR1:uint = 0x403D2F;
 			public static const COLOR2:uint = 0x4A8C7A;
 			public static const COLOR_BASE:uint = 0xF1E9D5;
-			public static const COLOR3:uint = 0xF1CBB1;
+			public static const COLOR3:uint = 0xFFFFFF;
 			public static const COLOR4:uint = 0xD96459;
 			
 			public static const BLEND_ALPHA:Number = 0.6;

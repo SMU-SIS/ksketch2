@@ -78,7 +78,8 @@ package views.canvas.interactors
 			_tapSelectInteractor = new KTouchSelectInteractor(_KSketch, _interactionControl, _modelDisplay);
 			_loopSelectInteractor = new KLoopSelectInteractor(_KSketch, _modelDisplay, _interactionControl);
 			
-			KDrawInteractor.penColor = 0xBDBDBD;
+			KDrawInteractor.penColor = 0x000000;
+			KDrawInteractor.penThickness = 7;
 			
 			_doubleTap = new TapGesture(_inputComponent);
 			_doubleTap.numTapsRequired = 2;

@@ -63,11 +63,6 @@ package views.canvas.components.transformWidget
 			
 			_insertKeyButton = new Button();
 			
-			if(KSketch2.studyMode == KSketch2.STUDY_D)
-				_insertKeyButton.label = "Break Motion";
-			else
-				_insertKeyButton.label = "Insert Key";
-			
 			_insertKeyButton.percentWidth = 100;
 			_insertKeyButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
 			_insertKeyButton.addEventListener(MouseEvent.CLICK, _insertKey); 
@@ -89,6 +84,7 @@ package views.canvas.components.transformWidget
 		private function _initiateMenu(event:Event):void
 		{
 			_initiated = true;
+			_updateMenu();
 			removeEventListener(FlexEvent.CREATION_COMPLETE, _initiateMenu);
 		}
 		
@@ -103,6 +99,12 @@ package views.canvas.components.transformWidget
 			y = yPos;
 			blocker.x = -x;
 			blocker.y = -y;
+			
+			if(KSketch2.studyMode == KSketch2.STUDY_D)
+				_insertKeyButton.label = "Break Motion";
+			else
+				_insertKeyButton.label = "Insert Key";
+			
 			super.open(owner, modal);
 			_updateMenu();
 		}

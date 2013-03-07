@@ -4,7 +4,7 @@ package views.canvas.components.timeBar
 	import flash.geom.Point;
 	import flash.system.Capabilities;
 	
-	import mx.core.UIComponent;
+	import spark.components.Group;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
@@ -21,17 +21,17 @@ package views.canvas.components.timeBar
 
 	public class KTouchTickMarkControl
 	{
-		private const _ACTIVITY_COLOR:uint = 0x58ACFA;
-		private const _TICK_MARK_THICKNESS:Number = 3;
+		private const _UNSELECTED_TICK_MARK_COLOR:uint = 0xCBCBCB;
+		private const _SELECTED_TICK_MARK_COLOR:uint = 0x777777;
 		
-		private const _D_UNSELECTED_TICK_MARK_COLOR:uint = 0xE7E7E7;
-		private const _D_SELECTED_TICK_MARK_COLOR:uint = 0x999999;
-		private const _I_UNSELECTED_TICK_MARK_COLOR:uint = 0xE7E7E7;
-		private const _I_SELECTED_TICK_MARK_COLOR:uint = 0x404040;
+		private const _D_ACTIVITY_COLOR:uint = 0x58ACFA;
+		private const _D_TICK_MARK_THICKNESS:Number = 3;
+		
+		private const _I_ACTIVITY_COLOR:uint = 0xE2EFFB;
+		private const _I_TICK_MARK_THICKNESS:Number = 6;
 		
 		private var _KSketch:KSketch2;
 		private var _timeControl:KTouchTimeControl;
-		private var _timeTickContainer:UIComponent;
 		private var _interactionControl:KMobileInteractionControl;
 		
 		private var _ticks:Vector.<KTouchTickMark>;
@@ -39,9 +39,12 @@ package views.canvas.components.timeBar
 		private var _after:Vector.<KTouchTickMark>;
 
 		private var _startX:Number;
+		private var _pixelPerFrame:Number;
+		private var _thresholdPixelPerFrame:Number;
 		private var _grabThreshold:Number = Capabilities.screenDPI/7;
+
 		public var grabbedTick:KTouchTickMark;
-		private var _currentFrame:int;
+		
 		
 		/**
 		 * A helper class containing the codes for generating and moving tick marks
@@ -50,7 +53,6 @@ package views.canvas.components.timeBar
 		{
 			_KSketch = KSketchInstance;
 			_timeControl = timeControl;
-			_timeTickContainer = timeControl.markerDisplay;
 			_interactionControl = interactionControl;
 			
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _updateTicks);
@@ -171,22 +173,84 @@ package views.canvas.components.timeBar
 			if(!_ticks)
 				return;
 			
-			var timings:Vector.<int> = new Vector.<int>();
-
-			_timeTickContainer.graphics.clear();
-			
-			//Brute force occurring here. JT was just too lazy to make a better algorithm!
-			//First pass to draw unselected tick marks
-			if(KSketch2.studyMode == KSketch2.STUDY_D)
-				_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _D_UNSELECTED_TICK_MARK_COLOR);
-			else
-				_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _I_UNSELECTED_TICK_MARK_COLOR);
-			
 			var maxTime:int = _timeControl.maximum;
 			var i:int;
 			var currentMarker:KTouchTickMark;
 			var currentX:Number = Number.NEGATIVE_INFINITY;
+			var timings:Vector.<int> = new Vector.<int>();
 			
+			_timeControl.selectedTickMarkDisplay.graphics.clear();
+			_timeControl.unselectedTickMarkDisplay.graphics.clear();
+			_timeControl.activityDisplay.graphics.clear();
+			
+			var drawTarget:Group;
+			
+			if(_interactionControl.selection && _interactionControl.selection.objects.length() == 1)
+			{
+				if(KSketch2.studyMode == KSketch2.STUDY_D)
+				{
+					_timeControl.selectedTickMarkDisplay.graphics.lineStyle(_D_TICK_MARK_THICKNESS,_SELECTED_TICK_MARK_COLOR);
+					_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(_D_TICK_MARK_THICKNESS,_UNSELECTED_TICK_MARK_COLOR);
+				}
+				else
+				{
+					_timeControl.selectedTickMarkDisplay.graphics.lineStyle(_I_TICK_MARK_THICKNESS,_SELECTED_TICK_MARK_COLOR);
+					_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(_I_TICK_MARK_THICKNESS,_UNSELECTED_TICK_MARK_COLOR);
+				}
+				
+				drawTarget = _timeControl.activityDisplay;
+
+				for(i = 0; i<_ticks.length; i++)
+				{
+					currentMarker = _ticks[i];
+					
+					if(!currentMarker.selected)
+						continue;
+					
+					if(currentX < currentMarker.x)
+					{
+						currentX = currentMarker.x;
+						
+						if(currentX < 0)
+							continue;
+						
+						if(drawTarget.x <= currentX)
+						{
+							_timeControl.selectedTickMarkDisplay.graphics.moveTo( currentX, 0);
+							_timeControl.selectedTickMarkDisplay.graphics.lineTo( currentX, drawTarget.height);
+							
+							if(currentMarker.prev)
+							{
+								if(currentMarker.key is ISpatialKeyFrame)
+								{
+									if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
+									{
+										if(KSketch2.studyMode == KSketch2.STUDY_D)
+											drawTarget.graphics.beginFill(_D_ACTIVITY_COLOR);
+										else
+											drawTarget.graphics.beginFill(_I_ACTIVITY_COLOR);
+										
+										drawTarget.graphics.drawRect(currentMarker.prev.x, 0, currentMarker.x - currentMarker.prev.x, drawTarget.height);	
+										drawTarget.graphics.endFill();	
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				if(KSketch2.studyMode == KSketch2.STUDY_D)
+					_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(_D_TICK_MARK_THICKNESS,_SELECTED_TICK_MARK_COLOR);
+				else
+					_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(_I_TICK_MARK_THICKNESS,_SELECTED_TICK_MARK_COLOR);
+			}
+			
+			//Brute force occurring here. JT was just too lazy to make a better algorithm!
+			//First pass to draw unselected tick marks
+			currentX = Number.NEGATIVE_INFINITY;
+			drawTarget = _timeControl.unselectedTickMarkDisplay;
 			for(i = 0; i<_ticks.length; i++)
 			{
 				currentMarker = _ticks[i];
@@ -198,65 +262,20 @@ package views.canvas.components.timeBar
 					if(currentX < 0 || _timeControl.backgroundFill.width < currentX)
 						continue;
 					
-					if(_timeTickContainer.x <= currentX)
+					if(drawTarget.x <= currentX)
 					{
-						_timeTickContainer.graphics.moveTo( currentX, 0);
-						_timeTickContainer.graphics.lineTo( currentX, _timeTickContainer.height);
-					}
-				}
-			}
-			
-			//Second pass to draw selected markers and activity bars
-			if(!_interactionControl.selection || _interactionControl.selection.objects.length() != 1)
-				return;
-			
-			currentX = Number.NEGATIVE_INFINITY;
-			
-			if(KSketch2.studyMode == KSketch2.STUDY_D)
-				_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _D_SELECTED_TICK_MARK_COLOR);
-			else
-				_timeTickContainer.graphics.lineStyle(_TICK_MARK_THICKNESS, _I_SELECTED_TICK_MARK_COLOR);
-			
-			for(i = 0; i<_ticks.length; i++)
-			{
-				currentMarker = _ticks[i];
-				if(!currentMarker.selected)
-					continue;
-				
-				if(currentX < currentMarker.x)
-				{
-					currentX = currentMarker.x;
-					
-					if(currentX < 0)
-						continue;
-					
-					if(_timeTickContainer.x <= currentX)
-					{
-						_timeTickContainer.graphics.moveTo( currentX, 0);
-						_timeTickContainer.graphics.lineTo( currentX, _timeTickContainer.height);
-						
-						if(currentMarker.prev)
-						{
-							if(currentMarker.key is ISpatialKeyFrame)
-							{
-								if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
-								{
-									_timeTickContainer.graphics.beginFill(_ACTIVITY_COLOR);
-									_timeTickContainer.graphics.drawRect(currentMarker.prev.x, 0, currentMarker.x - currentMarker.prev.x, _timeTickContainer.height);	
-									_timeTickContainer.graphics.endFill();	
-								}
-							}
-						}
+						drawTarget.graphics.moveTo( currentX, 0);
+						drawTarget.graphics.lineTo( currentX, drawTarget.height);
 					}
 				}
 			}
 		}
 		
-		public function grabTick(location:Point):void
+		public function grabTick(locationX:Number):void
 		{
 			//Panning begins
 			//Split markers into two sets before/after
-			_startX = _timeControl.contentGroup.globalToLocal(location).x;
+			_startX = locationX;
 			
 			var i:int;
 			var length:int = _ticks.length;
@@ -273,6 +292,10 @@ package views.canvas.components.timeBar
 			{
 				currentTick = _ticks[i];
 				
+				if(_interactionControl.selection)
+					if(!currentTick.selected)
+						continue;
+
 				dx = Math.abs(currentTick.x - _startX);
 				
 				if(dx > _grabThreshold)
@@ -309,32 +332,19 @@ package views.canvas.components.timeBar
 				}
 			}
 			
-//			_magnifier.open(_timeControl.contentGroup);
-//			var currentTime:int = _timeControl.xToTime(_timeControl.globalToLocal(location).x);
-//			if(currentTime < 0)
-//				currentTime = 0;
-//			else if(currentTime > _timeControl.maximum)
-//				currentTime = _timeControl.maximum;
-//			
-//			
-//			_magnifier.y = _timeControl.localToGlobal(new Point(0,0)).y - (Capabilities.screenDPI*0.75);
-//			if(int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL)) != _currentFrame)
-//			{
-//				_currentFrame = int(Math.floor(currentTime/KSketch2.ANIMATION_INTERVAL));
-//				_magnifier.magnify(location.x, currentTime, _currentFrame);
-//			}
+			_pixelPerFrame = _timeControl.pixelPerFrame;
+			_thresholdPixelPerFrame = 1.5*_pixelPerFrame;
 		}
 		
-		public function move_markers(location:Point):void
+		public function move_markers(locationX:Number):void
 		{
 			if(!_interactionControl.currentInteraction)
 				_interactionControl.begin_interaction_operation();
 			
 			//On Pan compute how much finger moved (_changeX)
-			var currentX:Number = _timeControl.contentGroup.globalToLocal(location).x
+			var currentX:Number = locationX;
 			var changeX:Number = currentX - _startX;
-			var pixelPerFrame:Number = _timeControl.pixelPerFrame;			
-			changeX = Math.floor(changeX/pixelPerFrame)*pixelPerFrame;
+			changeX = Math.floor(changeX/_pixelPerFrame)*_pixelPerFrame;
 			
 			//If _changeX -ve use before
 			//If _changeX +ve use after
@@ -351,10 +361,10 @@ package views.canvas.components.timeBar
 				for(i = 0; i < length; i++)
 				{
 					tick = _before[i];	
-					tickChangeX = Math.floor((currentX - tick.originalPosition)/pixelPerFrame)*pixelPerFrame;
+					tickChangeX = Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
 
 					if(tickChangeX < 0)
-						tick.moveToX(tick.originalPosition + tickChangeX, pixelPerFrame);
+						tick.moveToX(tick.originalPosition + tickChangeX, _pixelPerFrame);
 					else
 						tick.x = tick.originalPosition;
 				}
@@ -367,12 +377,12 @@ package views.canvas.components.timeBar
 				for(i = 0; i < length; i++)
 				{
 					tick = _after[i];	
-					tickChangeX = Math.floor((currentX - tick.originalPosition)/pixelPerFrame)*pixelPerFrame;
+					tickChangeX = Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
 					
 					if(tickChangeX > 0)
-						tick.moveSelfAndNext(tick.originalPosition + tickChangeX, pixelPerFrame);
+						tick.moveSelfAndNext(tick.originalPosition + tickChangeX, _pixelPerFrame);
 					else
-						tick.moveSelfAndNext(tick.originalPosition, pixelPerFrame);
+						tick.moveSelfAndNext(tick.originalPosition, _pixelPerFrame);
 				}
 			}
 			
@@ -395,22 +405,8 @@ package views.canvas.components.timeBar
 				if(maxTime < currentTick.time)
 					maxTime = currentTick.time;
 			}
-			
-//			if(maxTime < KTimeControl.DEFAULT_MAX_TIME)
-//				maxTime = KTimeControl.DEFAULT_MAX_TIME;
-//			else if(KTouchTimeControl.MAX_ALLOWED_TIME < maxTime)
-//				maxTime = KTouchTimeControl.MAX_ALLOWED_TIME;
-//			
-//			if(_timeControl.maximum != maxTime)
-//				_timeControl.maximum = maxTime;
-//			else
+
 			_drawTicks();
-			
-//			var currentTime:int = _timeControl.xToTime(currentX);
-//			if(currentTime < 0)
-//				currentTime = 0;
-//			else if(currentTime > _timeControl.maximum)
-//				currentTime = _timeControl.maximum;
 		}
 		
 		public function end_move_markers():void

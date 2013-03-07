@@ -113,7 +113,7 @@
 				else
 					_timeControl.time += KSketch2.ANIMATION_INTERVAL;
 				
-				_timeControl.floatingLabel.showMessage(_timeControl.time);
+//				_timeControl.floatingLabel.showMessage(_timeControl.time);
 			}
 			
 			/**
@@ -181,7 +181,7 @@
 				}
 				
 				_timeControl.time = toTime;
-				_timeControl.floatingLabel.showMessage(toTime);
+//				_timeControl.floatingLabel.showMessage(toTime);
 			}
 		]]>
 	</fx:Script>

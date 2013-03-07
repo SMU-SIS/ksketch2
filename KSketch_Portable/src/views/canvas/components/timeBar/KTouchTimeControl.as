@@ -48,9 +48,6 @@ package views.canvas.components.timeBar
 			_tickmarkControl = tickmarkControl;
 			floatingLabel.init(this);
 			
-			maximum = KTimeControl.DEFAULT_MAX_TIME;
-			time = 0;
-			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 			floatingLabel.y = localToGlobal(new Point(0,0)).y - 40;
 			
@@ -58,12 +55,16 @@ package views.canvas.components.timeBar
 
 			_magnifier = new KTouchTimeSliderMagnifier();
 			_magnifier.init(contentGroup, this);
-			_magnifier.y = localToGlobal(new Point(0,0)).y - (Capabilities.screenDPI*0.75);
 			
-			timeDisplay.graphics.lineStyle(3,0x000000);
+			timeDisplay.graphics.lineStyle(6,0x000000, 0.25);
 			var anchor:Point = contentGroup.globalToLocal(localToGlobal(new Point(0,0)));
 			timeDisplay.graphics.moveTo(0,anchor.y);
 			timeDisplay.graphics.lineTo(0,anchor.y+height);
+			
+			maximum = KTimeControl.DEFAULT_MAX_TIME;
+			time = 0;
+			
+			_magnifier.open(contentGroup);
 		}
 		
 		public function reset():void
@@ -101,7 +102,7 @@ package views.canvas.components.timeBar
 			if(maximum < value)
 				maximum = value;
 			
-			_currentFrame = int(Math.floor(value/KSketch2.ANIMATION_INTERVAL));
+			_currentFrame = timeToFrame(value);
 			_KSketch.time = _currentFrame * KSketch2.ANIMATION_INTERVAL;
 			
 			if(KTimeControl.DEFAULT_MAX_TIME < time)
@@ -121,6 +122,9 @@ package views.canvas.components.timeBar
 			
 			var pct:Number = _currentFrame/(_maxFrame*1.0);
 			timeDisplay.x = pct*backgroundFill.width;
+			
+			_magnifier.x = timeToX(time);
+			_magnifier.showTime(time, _currentFrame);
 		}
 		
 		/**
@@ -140,25 +144,28 @@ package views.canvas.components.timeBar
 		{
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
-			var touchX:Number = contentGroup.globalToLocal(_touchStage).x;
+			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			
-			var dx:Number = Math.abs(touchX - timeToX(time));
+			var dx:Number = Math.abs(xPos - timeToX(time));
 
 			if(dx > Capabilities.screenDPI/7)
-				_tickmarkControl.grabTick(_touchStage);
-			
-			_magnifier.open(contentGroup);
+				_tickmarkControl.grabTick(xPos);
 			
 			if(_tickmarkControl.grabbedTick)
 			{
-				var tickGlobal:Point = markerDisplay.localToGlobal(new Point(_tickmarkControl.grabbedTick.x, 0));
-				_magnifier.magnify(tickGlobal.x);
+				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
+				_magnifier.x = _tickmarkControl.grabbedTick.x;
+				_magnifier.showTime(toShowTime, timeToFrame(toShowTime));
+				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
 			}
 			else
 			{
-				time = xToTime(touchX);
-				var globalX:Number = contentGroup.localToGlobal(new Point(timeToX(time),0)).x;
-				_magnifier.magnify(globalX);
+				var timeX:Number = timeToX(time);
+				
+				if(Math.abs(xPos - timeX) > Capabilities.screenDPI/7)
+					time = xToTime(xPos);
+				
+				_magnifier.magnify(timeToX(time));
 			}
 			
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
@@ -168,20 +175,25 @@ package views.canvas.components.timeBar
 		
 		protected function _touchMove(event:MouseEvent):void
 		{
+			if(Math.abs(event.stageX - _touchStage.x) < (pixelPerFrame*0.5))
+				return;
+			
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
+			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			
-			if(!_tickmarkControl.grabbedTick)
+			if(_tickmarkControl.grabbedTick)
 			{
-				time = xToTime(contentGroup.globalToLocal(_touchStage).x);
-				var globalX:Number = contentGroup.localToGlobal(new Point(timeToX(time),0)).x;
-				_magnifier.magnify(globalX);
+				_tickmarkControl.move_markers(xPos);
+				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
+				_magnifier.x = _tickmarkControl.grabbedTick.x;
+				_magnifier.showTime(toShowTime, timeToFrame(toShowTime));
+				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
 			}
 			else
 			{
-				_tickmarkControl.move_markers(_touchStage);
-				var tickGlobal:Point = markerDisplay.localToGlobal(new Point(_tickmarkControl.grabbedTick.x, 0));
-				_magnifier.magnify(tickGlobal.x);
+				time = xToTime(xPos);
+				_magnifier.magnify(timeToX(time));
 			}
 		}
 		
@@ -190,7 +202,7 @@ package views.canvas.components.timeBar
 			if(_tickmarkControl.grabbedTick)
 				_tickmarkControl.end_move_markers();
 			
-			_magnifier.close();
+			_magnifier.closeMagnifier();
 			_tickmarkControl.grabbedTick = null;
 			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
@@ -281,12 +293,19 @@ package views.canvas.components.timeBar
 		}
 		
 		/**
+		 * Converts a time value to frame value
+		 */
+		public function timeToFrame(value:int):int
+		{
+			return int(Math.floor(value/KSketch2.ANIMATION_INTERVAL));
+		}
+		
+		/**
 		 * Converts a time value to a x position;
 		 */
 		public function timeToX(value:int):Number
 		{
-			var currentFrame:int = value/KSketch2.ANIMATION_INTERVAL;
-			return currentFrame/(_maxFrame*1.0) * backgroundFill.width;
+			return timeToFrame(value)/(_maxFrame*1.0) * backgroundFill.width;
 		}
 		
 		public function xToTime(value:Number):int

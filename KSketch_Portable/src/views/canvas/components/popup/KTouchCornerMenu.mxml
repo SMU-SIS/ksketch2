@@ -15,7 +15,7 @@
 			private var _canvasView:KSketch_CanvasView;
 			private var _isPen:Boolean
 			
-			public static const BLACK_PEN_COLOR:uint = 0xBDBDBD;
+			public static const BLACK_PEN_COLOR:uint = 0x000000;
 			public static const RED_PEN_COLOR:uint = 0xFA5882;
 			public static const GREEN_PEN_COLOR:uint = 0x82FA58;
 			public static const BLUE_PEN_COLOR:uint = 0x58ACFA;

@@ -41,7 +41,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_dSigma = 0;
 			for(i; i<length; i++)
 				_KSketch.beginTransform(_toTransitObjects.getObjectAt(i),
-					_interactionControl.transitionMode);
+					_interactionControl.transitionMode, _interactionControl.currentInteraction);
 		}
 		
 		override public function interaction_Update(point:Point):void

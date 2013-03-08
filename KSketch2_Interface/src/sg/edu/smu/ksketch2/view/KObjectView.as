@@ -109,7 +109,7 @@ package sg.edu.smu.ksketch2.view
 			
 			transform.matrix = _object.transformMatrix(time);
 			
-			if(_pathView.visible && !_isTransiting)
+			if(_pathView.visible)
 				_updatePathView(time);
 		}
 		

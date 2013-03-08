@@ -23,7 +23,7 @@ package sg.edu.smu.ksketch2.operators
 		function canInterpolate(time:int):Boolean;
 		function canInsertKey(time:int):Boolean;
 		
-		function beginTransition(time:int, transitionType:int):void;
+		function beginTransition(time:int, transitionType:int, op:KCompositeOperation):void;
 		function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void;
 		function endTransition(time:int, op:KCompositeOperation):void;
 		

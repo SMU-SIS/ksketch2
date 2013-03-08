@@ -192,9 +192,9 @@ package sg.edu.smu.ksketch2
 		}
 		
 		//Transform functions
-		public function beginTransform(object:KObject, transitionType:int):void
+		public function beginTransform(object:KObject, transitionType:int, op:KCompositeOperation):void
 		{
-			object.transformInterface.beginTransition(time, transitionType);
+			object.transformInterface.beginTransition(time, transitionType, op);
 		}
 		
 		public function updateTransform(object:KObject, dx:Number, dy:Number, dTheta:Number, dScale:Number):void

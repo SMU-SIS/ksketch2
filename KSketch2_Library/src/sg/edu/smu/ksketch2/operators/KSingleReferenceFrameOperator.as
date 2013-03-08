@@ -170,7 +170,6 @@ package sg.edu.smu.ksketch2.operators
 				if(currentKey.startTime <= time)
 				{
 					var proportionKeyFrame:Number = currentKey.findProportion(time);
-					
 					point = currentKey.translatePath.find_Point(proportionKeyFrame);
 					if(point)
 					{
@@ -214,12 +213,14 @@ package sg.edu.smu.ksketch2.operators
 			
 			while(currentKey)
 			{
+				
+				
 				proportionKeyFrame = currentKey.findProportion(time);
 				
 				if(!_cutTranslate)
 				{
 					point = currentKey.translatePath.find_Point(proportionKeyFrame);
-					if(_transitionX <=TRANSLATE_THRESHOLD || _transitionY <= TRANSLATE_THRESHOLD )
+					if(Math.abs(_transitionX) <= EPSILON || Math.abs(_transitionY) <= EPSILON)
 					{
 						if(point)
 						{
@@ -234,7 +235,7 @@ package sg.edu.smu.ksketch2.operators
 							_cachedX += point.x;
 							_cachedY += point.y;
 						}
-						
+
 						_cutTranslate = true;
 					}
 				}
@@ -242,7 +243,7 @@ package sg.edu.smu.ksketch2.operators
 				if(!_cutRotate)
 				{
 					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
-					if(_magTheta <= ROTATE_THRESHOLD)
+					if(_magTheta <= EPSILON)
 					{
 						if(point)
 							theta += point.x;
@@ -259,7 +260,7 @@ package sg.edu.smu.ksketch2.operators
 				if(!_cutScale)
 				{
 					point = currentKey.scalePath.find_Point(proportionKeyFrame);
-					if(_magSigma <= SCALE_THRESHOLD)
+					if(_magSigma <= EPSILON)
 					{
 						if(point)
 							sigma += point.x;
@@ -526,14 +527,19 @@ package sg.edu.smu.ksketch2.operators
 					_interpolationKey = lastKeyWithTransform(_interpolationKey);
 				else
 				{
-					_nextInterpolationKey = _interpolationKey.next as KSpatialKeyFrame;
-					
-					if(_nextInterpolationKey)
+					if(_interpolationKey.time == time)
 					{
-						_TStoredPath2 = _nextInterpolationKey.translatePath.clone();
-						_RStoredPath2 = _nextInterpolationKey.rotatePath.clone();
-						_SStoredPath2 = _nextInterpolationKey.scalePath.clone();
+						_nextInterpolationKey = _interpolationKey.next as KSpatialKeyFrame;
+						
+						if(_nextInterpolationKey)
+						{
+							_TStoredPath2 = _nextInterpolationKey.translatePath.clone();
+							_RStoredPath2 = _nextInterpolationKey.rotatePath.clone();
+							_SStoredPath2 = _nextInterpolationKey.scalePath.clone();
+						}
 					}
+					else
+						_nextInterpolationKey = null;
 				}
 				
 				_TStoredPath = _interpolationKey.translatePath.clone();
@@ -546,7 +552,6 @@ package sg.edu.smu.ksketch2.operators
 		{
 			if(_transitionType == KSketch2.TRANSITION_INTERPOLATED)
 			{
-				trace("Adding op");
 				op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.translatePath, _TStoredPath, KSketch2.TRANSFORM_TRANSLATION));
 				op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.rotatePath, _RStoredPath, KSketch2.TRANSFORM_ROTATION));
 				op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.scalePath, _SStoredPath, KSketch2.TRANSFORM_SCALE));
@@ -564,12 +569,16 @@ package sg.edu.smu.ksketch2.operators
 		{
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 				_demonstrate(time, op);	
+			else
+				_endTransition_process_interpolation(time, op);
 		}
 		
 		private function _endTransition_process_ModeDI(time:int, op:KCompositeOperation):void
 		{
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 				_demonstrate(time, op);	
+			else
+				_endTransition_process_interpolation(time, op);
 		}
 		
 		private function _demonstrate(time:int, op:KCompositeOperation):void

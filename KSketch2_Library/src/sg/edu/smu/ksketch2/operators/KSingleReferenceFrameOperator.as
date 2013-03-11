@@ -296,9 +296,7 @@ package sg.edu.smu.ksketch2.operators
 			
 			switch(KSketch2.studyMode)
 			{
-				case KSketch2.STUDY_I:
-				case KSketch2.STUDY_DI:
-				case KSketch2.STUDY_D:
+				case KSketch2.STUDY_P:
 					//We just need the object to exist
 					if(_refFrame.head)
 					{
@@ -306,7 +304,9 @@ package sg.edu.smu.ksketch2.operators
 							return true;
 					}
 					break;
-				default:
+				case KSketch2.STUDY_K:
+				case KSketch2.STUDY_PK:
+
 					//Allow interpolation only if there is a key present of if there are transitions
 					activeKey = _refFrame.getKeyAftertime(time-1) as ISpatialKeyFrame;
 					if(activeKey)
@@ -331,7 +331,7 @@ package sg.edu.smu.ksketch2.operators
 			if(hasKeyAtTime)
 				return false;
 			
-			if(KSketch2.studyMode == KSketch2.STUDY_D)
+			if(KSketch2.studyMode == KSketch2.STUDY_P)
 			{
 				var activeKey:ISpatialKeyFrame = _refFrame.getKeyAftertime(time) as ISpatialKeyFrame;
 				
@@ -481,11 +481,11 @@ package sg.edu.smu.ksketch2.operators
 		{
 			switch(KSketch2.studyMode)
 			{
-				case KSketch2.STUDY_D:
+				case KSketch2.STUDY_P:
 					_endTransition_process_ModeD(time, op);
 					break;
-				case KSketch2.STUDY_I:
-				case KSketch2.STUDY_DI:
+				case KSketch2.STUDY_K:
+				case KSketch2.STUDY_PK:
 					_endTransition_process_ModeDI(time, op);
 					break;
 			}
@@ -511,7 +511,7 @@ package sg.edu.smu.ksketch2.operators
 				if(!_interpolationKey)
 				{
 					//Handle study mode case for D
-					if(KSketch2.studyMode == KSketch2.STUDY_D)
+					if(KSketch2.studyMode == KSketch2.STUDY_P)
 					{
 						_interpolationKey = _refFrame.lastKey as KSpatialKeyFrame;
 					}
@@ -523,7 +523,7 @@ package sg.edu.smu.ksketch2.operators
 				}
 				
 				//Handle study mode case for D
-				if(KSketch2.studyMode == KSketch2.STUDY_D)
+				if(KSketch2.studyMode == KSketch2.STUDY_P)
 					_interpolationKey = lastKeyWithTransform(_interpolationKey);
 				else
 				{
@@ -637,7 +637,7 @@ package sg.edu.smu.ksketch2.operators
 			if(!targetKey)
 				throw new Error("No Key to interpolate!");
 			
-			if((time > targetKey.time) && (KSketch2.studyMode != KSketch2.STUDY_D))
+			if((time > targetKey.time) && (KSketch2.studyMode != KSketch2.STUDY_P))
 				throw new Error("Unable to interpolate a key if the interpolation time is greater than targetKey's time");
 			
 			var targetPath:KPath;
@@ -686,7 +686,7 @@ package sg.edu.smu.ksketch2.operators
 				//If the interpolation is performed in the middle of a key, "uninterpolate" it to 0 interpolation
 				if(time != targetKey.time)
 				{
-					if(KSketch2.studyMode != KSketch2.STUDY_D)
+					if(KSketch2.studyMode != KSketch2.STUDY_P)
 					{
 						targetPath.push(0,0,targetKey.duration);
 					}
@@ -706,7 +706,7 @@ package sg.edu.smu.ksketch2.operators
 					//case 3:interpolate between two keys
 					KPathProcessing.interpolateSpan(targetPath,0,proportionElapsed,dx, dy);
 					
-					if(KSketch2.studyMode != KSketch2.STUDY_D)
+					if(KSketch2.studyMode != KSketch2.STUDY_P)
 						KPathProcessing.interpolateSpan(targetPath,proportionElapsed,1, -dx, -dy);
 				}
 			}	

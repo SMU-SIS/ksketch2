@@ -187,7 +187,7 @@ package views.canvas.components.timeBar
 			
 			if(_interactionControl.selection && _interactionControl.selection.objects.length() == 1)
 			{
-				if(KSketch2.studyMode == KSketch2.STUDY_D)
+				if(KSketch2.studyMode == KSketch2.STUDY_P)
 				{
 					_timeControl.selectedTickMarkDisplay.graphics.lineStyle(_D_TICK_MARK_THICKNESS,_SELECTED_TICK_MARK_COLOR);
 					_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(_D_TICK_MARK_THICKNESS,_UNSELECTED_TICK_MARK_COLOR);
@@ -225,7 +225,7 @@ package views.canvas.components.timeBar
 								{
 									if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
 									{
-										if(KSketch2.studyMode == KSketch2.STUDY_D)
+										if(KSketch2.studyMode == KSketch2.STUDY_P)
 											drawTarget.graphics.beginFill(_D_ACTIVITY_COLOR);
 										else
 											drawTarget.graphics.beginFill(_I_ACTIVITY_COLOR);
@@ -241,7 +241,7 @@ package views.canvas.components.timeBar
 			}
 			else
 			{
-				if(KSketch2.studyMode == KSketch2.STUDY_D)
+				if(KSketch2.studyMode == KSketch2.STUDY_P)
 					_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(_D_TICK_MARK_THICKNESS,_SELECTED_TICK_MARK_COLOR);
 				else
 					_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(_I_TICK_MARK_THICKNESS,_SELECTED_TICK_MARK_COLOR);

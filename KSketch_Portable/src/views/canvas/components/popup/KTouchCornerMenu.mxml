@@ -148,9 +148,9 @@
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
-				<s:Button name="modeI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_I}"/>
-				<s:Button name="modeD" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_D}"/>
-				<s:Button name="modeDI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_DI}"/>
+				<s:Button name="modeI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_K}"/>
+				<s:Button name="modeD" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_P}"/>
+				<s:Button name="modeDI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_PK}"/>
 			</s:Group>
 <!--		<s:Group>
 				<s:layout>

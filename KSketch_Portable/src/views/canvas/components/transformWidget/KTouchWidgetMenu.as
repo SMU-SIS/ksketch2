@@ -100,7 +100,7 @@ package views.canvas.components.transformWidget
 			blocker.x = -x;
 			blocker.y = -y;
 			
-			if(KSketch2.studyMode == KSketch2.STUDY_D)
+			if(KSketch2.studyMode == KSketch2.STUDY_P)
 			{
 				_insertKeyButton.label = "Break motion";
 				_clearMotionButton.label = "Delete motions after "+ KTouchTimeControl.toTimeCode(_KSketch.time)

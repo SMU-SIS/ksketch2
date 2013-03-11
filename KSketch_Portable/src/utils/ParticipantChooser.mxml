@@ -28,14 +28,11 @@
 			</s:layout>
 			<s:VGroup height="80%">
 				<s:RadioButton groupName="studyMode" 
-							   id="modeD"
-							   label="Mode D" fontSize="{Capabilities.screenDPI*0.2}"/>
+							   label="Mode P" fontSize="{Capabilities.screenDPI*0.2}"/>
 				<s:RadioButton groupName="studyMode" 
-							   id="modeI"
-							   label="Mode I" fontSize="{Capabilities.screenDPI*0.2}"/>
+							   label="Mode K" fontSize="{Capabilities.screenDPI*0.2}"/>
 				<s:RadioButton groupName="studyMode" 
-							   id="modeDI"
-							   label="Mode DI" fontSize="{Capabilities.screenDPI*0.2}"/>        
+							   label="Mode PK" fontSize="{Capabilities.screenDPI*0.2}"/>        
 			</s:VGroup>
 			<s:Scroller height="80%">
 				<s:Group width="100%" id="documentContainer" click="submit(event)">

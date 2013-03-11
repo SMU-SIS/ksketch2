@@ -83,13 +83,13 @@
 						labelText = "-";
 						break;
 					case "modeI":
-						labelText = "I";
+						labelText = "K";
 						break;
 					case "modeD":
-						labelText = "D";
+						labelText = "P";
 						break;
 					case "modeDI":
-						labelText = "DI";
+						labelText = "PK";
 						break;
 					case "exit":
 						iconGraphics.graphics.lineStyle(POP_UP_MENU_BUTTON_THICKNESS, POP_UP_MENU_BUTTON_GREY);

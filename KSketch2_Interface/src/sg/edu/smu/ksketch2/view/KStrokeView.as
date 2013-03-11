@@ -42,7 +42,7 @@ package sg.edu.smu.ksketch2.view
 				_points = new Vector.<Point>();
 			
 
-			var filter:GlowFilter = new GlowFilter(_color, 1,3,3,2,1,true, true);
+			var filter:GlowFilter = new GlowFilter(_color, 1,6,6,8,1,true, true);
 			_glowFilter = [filter];
 			_render_DrawStroke();
 			cacheAsBitmap = true;

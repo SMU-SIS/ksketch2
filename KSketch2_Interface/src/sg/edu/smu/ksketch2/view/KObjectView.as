@@ -109,8 +109,9 @@ package sg.edu.smu.ksketch2.view
 			
 			transform.matrix = _object.transformMatrix(time);
 			
-			if(_pathView.visible)
-				_updatePathView(time);
+			if(_pathView)
+				if(_pathView.visible)
+					_updatePathView(time);
 		}
 		
 		/**

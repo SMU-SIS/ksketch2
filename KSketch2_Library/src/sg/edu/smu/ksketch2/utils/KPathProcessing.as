@@ -125,5 +125,97 @@ package sg.edu.smu.ksketch2.utils
 			
 			path.points = newPoints;
 		}
+		
+		/**
+		 * Replace straight line between points with Catmull Rom Spline
+		 */
+		public static function CatmullRomSpline(path:KPath):void
+		{
+			var points:Vector.<KTimedPoint> = path.points;
+			
+			//Check there is at least 4 control points
+			var pCtr:int = points.length;
+			
+			if(pCtr < 4)
+				return;
+			
+			//Set tangent for all points
+			var m:Array = new Array(pCtr);
+			
+			//Tangent for first control point
+			m[0] = PointTangent(points[1], points[0]);
+			pCtr--;
+			
+			//Tangent for the rest of control points
+			for(var i:int = 1; i<pCtr; i++)
+			{
+				m[i] = PointTangent(points[i + 1], points[i - 1]);
+			}
+			
+			//Tangent for last control point
+			m[pCtr] = PointTangent(points[pCtr], points[pCtr - 1]);
+			
+			//Create new points for Catmull Rom Spline
+			var newPoints:Vector.<KTimedPoint> = new Vector.<KTimedPoint>();
+			
+			var nxtJ:int;
+			var p0:KTimedPoint;
+			var p1:KTimedPoint;
+			var m0:KTimedPoint;
+			var m1:KTimedPoint;
+			
+			for(var j:int = 0; j < pCtr; j++)
+			{
+				nxtJ = j + 1;
+				p0 = points[j];
+				p1 = points[nxtJ];
+				m0 = m[j];
+				m1 = m[nxtJ];
+				
+				//Set resolution to maximum update every 1 pixel
+				var res:Number = 1/(1 + distance(p0, p1))*3;
+				
+				for(var t:Number = 0; t < 1; t+=res)
+				{
+					var t2:Number = t * t;
+					var OneMinusT:Number = 1 - t;
+					var twoT:Number = 2*t;
+					
+					var h00:Number = (1 + twoT)*OneMinusT*OneMinusT;
+					var h10:Number = t*OneMinusT*OneMinusT;
+					var h01:Number = t2*(3 - twoT);
+					var h11:Number = t2*(t - 1);					
+					
+					var xCoord:Number = h00 * p0.x + h10 * m0.x + h01 * p1.x + h11 * m1.x;
+					var yCoord:Number = h00 * p0.y + h10 * m0.y + h01 * p1.y + h11 * m1.y;
+					
+					newPoints.push(new KTimedPoint(xCoord, yCoord));
+				}		
+			}
+			
+			//Add last control point to Catmull Rom Spline
+			newPoints.push(new KTimedPoint(points[pCtr].x, points[pCtr].y));
+			var myPoint:KTimedPoint;
+			for(var a:int = 0; a < newPoints.length; a++)
+			{
+				myPoint = newPoints[a];
+				myPoint.time = a/newPoints.length*path.pathDuration;
+			}
+			
+			path.points = newPoints;
+		}
+		
+		public static function distance(p1:KTimedPoint, p2:KTimedPoint):Number
+		{
+			return Math.sqrt(((p1.x-p2.x)*(p1.x-p2.x))+((p1.y-p2.y)*(p1.y-p2.y)));
+		}
+		
+		/**
+		 * Used to calculate tangent of control points in Catmull Rom Spline
+		 */
+		public static function PointTangent(prevPt:KTimedPoint, nxtPt:KTimedPoint):KTimedPoint
+		{
+			return new KTimedPoint((prevPt.x - nxtPt.x)/2, (prevPt.y - nxtPt.y)/2);
+		}
 	}
 }

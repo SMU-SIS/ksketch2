@@ -46,10 +46,8 @@ package views.canvas.components.timeBar
 		{
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
-			floatingLabel.init(this);
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
-			floatingLabel.y = localToGlobal(new Point(0,0)).y - 40;
 			
 			addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 
@@ -71,6 +69,15 @@ package views.canvas.components.timeBar
 		{
 			maximum = KTimeControl.DEFAULT_MAX_TIME;
 			time = 0;
+		}
+		
+		public function dispose():void
+		{
+			if(_magnifier)
+			{
+				_magnifier.visible = false;
+				_magnifier.close();
+			}
 		}
 		
 		/**

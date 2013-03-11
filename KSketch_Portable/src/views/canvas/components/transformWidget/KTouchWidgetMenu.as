@@ -68,7 +68,7 @@ package views.canvas.components.transformWidget
 			_insertKeyButton.addEventListener(MouseEvent.CLICK, _insertKey); 
 
 			_clearMotionButton = new Button();
-			_clearMotionButton.label = "Clear All Motions";
+			_clearMotionButton.label = "Delete Future Motions";
 			_clearMotionButton.percentWidth = 100;
 			_clearMotionButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
 			_clearMotionButton.addEventListener(MouseEvent.CLICK, _clearMotion); 

@@ -17,7 +17,7 @@
 		xmlns:transformWidget="views.canvas.components.transformWidget.*"
 		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
 		xmlns:timeBar="views.canvas.components.timeBar.*"
-		destructionPolicy="never"
+		destructionPolicy="auto"
 		add="_addHandler(event);" xmlns:utils="starling.utils.*" xmlns:popup="views.canvas.components.popup.*" 
 		viewDeactivate="_viewDeactivateHandler()"
 		>
@@ -28,7 +28,6 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
-			
 			import spark.events.ViewNavigatorEvent;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
@@ -58,27 +57,34 @@
 			//The xml can be passed through a data handler and the load handler will access it though {data}
 			public function initCanvas():void
 			{				
-				_KSketch = new KSketch2();
-				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
-				_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-				_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, feedbackMessage);
-				_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
-				feedbackMessage.init(this);
+				if(!_KSketch)
+				{
+					_KSketch = new KSketch2();
+
+					_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
+
+					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
 				
-				currentTimeLabel.init(_KSketch, timeControl, KTouchTimeJumpControl.LEFT);
-				maxTimeLabel.init(_KSketch, timeControl, KTouchTimeJumpControl.RIGHT);
+					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, feedbackMessage);
+
+					_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
 				
-				modelDisplay.init(_KSketch, true);
-				timeControl.init(_KSketch, _timeTickControl);
-				cornerMenu.init(_interactionControl, this);
-				
-				var playBounds:Rectangle = playButton.getBounds(this);
-				interceptor.graphics.beginFill(0x000000);
-				interceptor.graphics.drawRect(0,0, width, height);
-				interceptor.graphics.drawRect(playBounds.x, playBounds.y, playBounds.width, playBounds.height);
-				interceptor.graphics.endFill();
-				
-				playButton.init(timeControl, _interactionControl,interceptor);
+					feedbackMessage.init(this);
+					leftTimeJumper.init(_KSketch, timeControl, KTouchTimeJumpControl.LEFT);
+					rightTimeJumper.init(_KSketch, timeControl, KTouchTimeJumpControl.RIGHT);
+					
+					modelDisplay.init(_KSketch, true);
+					timeControl.init(_KSketch, _timeTickControl);
+					cornerMenu.init(_interactionControl, this);
+					
+					var playBounds:Rectangle = playButton.getBounds(this);
+					interceptor.graphics.beginFill(0x000000);
+					interceptor.graphics.drawRect(0,0, width, height);
+					interceptor.graphics.drawRect(playBounds.x, playBounds.y, playBounds.width, playBounds.height);
+					interceptor.graphics.endFill();
+					playButton.init(timeControl, _interactionControl,interceptor);
+				}
+					
 				_interactionControl.reset();
 				
 				if(data)
@@ -95,6 +101,7 @@
 			
 			private function _viewDeactivateHandler():void
 			{
+				timeControl.dispose();
 				cornerMenu.close();	
 			}
 			
@@ -159,8 +166,6 @@
 				
 				return currentDocument;
 			}
-			
-			
 		]]>
 	</fx:Script>
 	
@@ -225,14 +230,14 @@
 					<s:HorizontalLayout gap="0" verticalAlign="middle" paddingLeft="5"/>
 				</s:layout>
 				<timeBar:Touch_Play_Button id="playButton" click="playButton.playToggle()"/>
-				<timeBar:KTouchTimeJumpControl id="currentTimeLabel"/>
+				<timeBar:KTouchTimeJumpControl id="leftTimeJumper"/>
 				<s:Group width="100%" height="100%">
 					<s:layout>
 						<s:VerticalLayout gap="3" verticalAlign="middle" horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
 					</s:layout>
 					<timeBar:KTouchTimeControl id="timeControl"/>
 				</s:Group>
-				<timeBar:KTouchTimeJumpControl id="maxTimeLabel"/>
+				<timeBar:KTouchTimeJumpControl id="rightTimeJumper"/>
 				<timeBar:Touch_Menu_Button id="menuButton" click="_menuBtnHandler()"/>
 			</s:Group>
 		</s:Group>

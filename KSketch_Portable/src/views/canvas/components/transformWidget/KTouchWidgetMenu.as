@@ -16,6 +16,7 @@ package views.canvas.components.transformWidget
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	
+	import views.canvas.components.timeBar.KTouchTimeControl;
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	import views.canvas.interactors.widget.KWidgetInteractorManager;
 	import views.document.previewer.KTouchPreviewerButtonSkin;
@@ -68,7 +69,6 @@ package views.canvas.components.transformWidget
 			_insertKeyButton.addEventListener(MouseEvent.CLICK, _insertKey); 
 
 			_clearMotionButton = new Button();
-			_clearMotionButton.label = "Delete Future Motions";
 			_clearMotionButton.percentWidth = 100;
 			_clearMotionButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
 			_clearMotionButton.addEventListener(MouseEvent.CLICK, _clearMotion); 
@@ -101,9 +101,15 @@ package views.canvas.components.transformWidget
 			blocker.y = -y;
 			
 			if(KSketch2.studyMode == KSketch2.STUDY_D)
-				_insertKeyButton.label = "Break Motion";
+			{
+				_insertKeyButton.label = "Break motion";
+				_clearMotionButton.label = "Delete motions after "+ KTouchTimeControl.toTimeCode(_KSketch.time)
+			}
 			else
-				_insertKeyButton.label = "Insert Key";
+			{
+				_insertKeyButton.label = "Insert key";
+				_clearMotionButton.label = "Clear keys after "+ KTouchTimeControl.toTimeCode(_KSketch.time);
+			}
 			
 			super.open(owner, modal);
 			_updateMenu();

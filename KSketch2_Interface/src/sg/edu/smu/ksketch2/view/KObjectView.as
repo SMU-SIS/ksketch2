@@ -15,6 +15,8 @@ package sg.edu.smu.ksketch2.view
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
+	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
+	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
@@ -125,8 +127,6 @@ package sg.edu.smu.ksketch2.view
 		protected function _transformBegin(event:KObjectEvent):void
 		{
 			_originalPosition = _object.transformInterface.matrix(event.time).transformPoint(_object.centroid);
-			if(_ghost)
-				_updateGhost(event);
 
 			if(_pathView)
 			{
@@ -144,17 +144,33 @@ package sg.edu.smu.ksketch2.view
 		{
 			if(_object && _ghost)
 			{
+				_ghost.visible = true;
 				var currentMatrix:Matrix = _object.transformInterface.matrix(event.time);
-				var currentPosition:Point = currentMatrix.transformPoint(_object.centroid);
-				var positionDifferences:Point = currentPosition.subtract(_originalPosition);
 				
-				if(positionDifferences.x < 1 && positionDifferences.y < 1)
-					_ghost.visible = false;
+				if(object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
+				{
+					currentMatrix = _object.transformInterface.matrix(event.time);
+					var currentPosition:Point = currentMatrix.transformPoint(_object.centroid);
+					var positionDifferences:Point = currentPosition.subtract(_originalPosition);
+					
+					if(positionDifferences.x > 1 || positionDifferences.y > 1)
+					{
+						currentMatrix.translate(-positionDifferences.x, -positionDifferences.y);
+						_ghost.transform.matrix = currentMatrix;
+					}
+				}
 				else
 				{
-					_ghost.visible = true;
-					currentMatrix.translate(-positionDifferences.x, -positionDifferences.y);
-					_ghost.transform.matrix = currentMatrix;
+					var activeKey:IKeyFrame = _object.transformInterface.getActiveKey(event.time);
+					
+					if(activeKey.time == event.time)
+						activeKey = activeKey.next;
+					
+					if(activeKey)
+					{
+						currentMatrix = _object.transformInterface.matrix(activeKey.time);
+						_ghost.transform.matrix = currentMatrix;
+					}
 				}
 			}
 		}

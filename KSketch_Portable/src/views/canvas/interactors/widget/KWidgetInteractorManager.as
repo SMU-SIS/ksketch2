@@ -136,14 +136,10 @@ package views.canvas.interactors.widget
 		public function set transitionMode(mode:int):void
 		{
 			if(KSketch2.studyMode == KSketch2.STUDY_K)
-			{
-				_interactionControl.transitionMode = KSketch2.TRANSITION_INTERPOLATED;
-				enabled = true;
-				_activeMode.demonstrationMode = false;
-				return;
-			}
+				mode = KSketch2.TRANSITION_INTERPOLATED
 			
 			_interactionControl.transitionMode = mode;
+			
 			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 			{
@@ -155,6 +151,8 @@ package views.canvas.interactors.widget
 			}
 			else if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
 			{
+				if(KSketch2.studyMode == KSketch2.STUDY_K && KSketch2.studyMode == KSketch2.STUDY_PK)
+					enabled = _interactionControl.selection.selectionTransformable(_KSketch.time);
 				_activeMode.demonstrationMode = false;
 			}
 			else

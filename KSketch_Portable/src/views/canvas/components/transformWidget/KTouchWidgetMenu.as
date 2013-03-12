@@ -102,12 +102,12 @@ package views.canvas.components.transformWidget
 			
 			if(KSketch2.studyMode == KSketch2.STUDY_P)
 			{
-				_insertKeyButton.label = "Break motion";
+				_insertKeyButton.label = "Break motion at "+ KTouchTimeControl.toTimeCode(_KSketch.time);
 				_clearMotionButton.label = "Delete motions after "+ KTouchTimeControl.toTimeCode(_KSketch.time)
 			}
 			else
 			{
-				_insertKeyButton.label = "Insert key";
+				_insertKeyButton.label = "Insert key at "+ KTouchTimeControl.toTimeCode(_KSketch.time);
 				_clearMotionButton.label = "Clear keys after "+ KTouchTimeControl.toTimeCode(_KSketch.time);
 			}
 			

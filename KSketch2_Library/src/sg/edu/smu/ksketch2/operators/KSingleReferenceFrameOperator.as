@@ -446,9 +446,6 @@ package sg.edu.smu.ksketch2.operators
 				_TStoredPath.push(dx, dy, elapsedTime);
 				_RStoredPath.push(dTheta, 0, elapsedTime);
 				_SStoredPath.push(dScale, 0, elapsedTime);			
-				
-				if(ROTATE_THRESHOLD < _magTheta || SCALE_THRESHOLD < _magSigma)
-					_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
 			}
 			else
 			{
@@ -474,6 +471,7 @@ package sg.edu.smu.ksketch2.operators
 				}					
 				
 				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
+				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
 			}
 		}
 		

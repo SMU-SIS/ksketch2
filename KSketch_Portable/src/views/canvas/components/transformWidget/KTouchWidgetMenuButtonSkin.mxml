@@ -20,7 +20,7 @@
 	-->
 	<s:Rect left="-5" right="-5" top="-5" bottom="-5" includeIn="up,disabled" alpha="0.8 ">
 		<s:fill>
-			<s:SolidColor color="0xA7A7A7"/>
+			<s:SolidColor color="0xA0A0A"/>
 		</s:fill>
 	</s:Rect>
 	

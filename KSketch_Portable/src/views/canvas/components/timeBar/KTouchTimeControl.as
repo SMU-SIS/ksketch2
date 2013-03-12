@@ -207,7 +207,11 @@ package views.canvas.components.timeBar
 		protected function _touchEnd(event:MouseEvent):void
 		{
 			if(_tickmarkControl.grabbedTick)
+			{
 				_tickmarkControl.end_move_markers();
+				_magnifier.showTime(time, _currentFrame);
+				_magnifier.x = timeToX(time);
+			}
 			
 			_magnifier.closeMagnifier();
 			_tickmarkControl.grabbedTick = null;

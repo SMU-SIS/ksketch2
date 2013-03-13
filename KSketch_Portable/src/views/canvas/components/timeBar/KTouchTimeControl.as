@@ -216,6 +216,14 @@ package views.canvas.components.timeBar
 			_magnifier.closeMagnifier();
 			_tickmarkControl.grabbedTick = null;
 			
+			var log:XML = <op/>;
+			var date:Date = new Date();
+			
+			log.@category = "Timeline";
+			log.@type = "Scroll";
+			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			_KSketch.log.appendChild(log);
+			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);
 			addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
@@ -346,7 +354,7 @@ package views.canvas.components.timeBar
 			if(remainingMilliseconds < 10)
 				strMilliseconds = "0" + strMilliseconds;
 			
-			var timeCode:String = strSeconds + ':' + strMilliseconds;
+			var timeCode:String = strSeconds + '.' + strMilliseconds;
 			return timeCode;
 		}
 	}

@@ -39,6 +39,7 @@ package views.canvas.components.timeBar
 		private var _after:Vector.<KTouchTickMark>;
 
 		private var _startX:Number;
+		private var _changeX:Number;
 		private var _pixelPerFrame:Number;
 		private var _thresholdPixelPerFrame:Number;
 		private var _grabThreshold:Number = Capabilities.screenDPI/7;
@@ -407,6 +408,7 @@ package views.canvas.components.timeBar
 			}
 
 			_drawTicks();
+			_changeX = changeX;
 		}
 		
 		public function end_move_markers():void
@@ -437,6 +439,16 @@ package views.canvas.components.timeBar
 					_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
 				
 				_interactionControl.end_interaction_operation();
+				
+				var log:XML = <op/>;
+				var date:Date = new Date();
+				
+				log.@category = "Tickmark";
+				log.@type = "Move Tickmark";
+				log.@moveFrom = KTouchTimeControl.toTimeCode(_timeControl.xToTime(_startX));
+				log.@moveTo = KTouchTimeControl.toTimeCode(_timeControl.xToTime(_startX+_changeX));
+				log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+				_KSketch.log.appendChild(log);
 			}
 			else
 				_interactionControl.cancel_interaction_operation();

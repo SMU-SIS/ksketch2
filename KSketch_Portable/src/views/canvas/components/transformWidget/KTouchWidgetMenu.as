@@ -215,6 +215,16 @@ package views.canvas.components.transformWidget
 			_interactionControl.begin_interaction_operation();
 			_interactionControl.selection.objects.getObjectAt(0).transformInterface.insertBlankKeyFrame(_KSketch.time, _interactionControl.currentInteraction);
 			_interactionControl.end_interaction_operation(null,_interactionControl.selection);
+			
+			var log:XML = <op/>;
+			var date:Date = new Date();
+			
+			log.@category = "Context";
+			log.@type = "Insert Key";
+			log.@triggeredTime = KTouchTimeControl.toTimeCode(_KSketch.time);
+			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			_KSketch.log.appendChild(log);
+			
 			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 			
 			_canInsertKey();
@@ -226,6 +236,16 @@ package views.canvas.components.transformWidget
 			_interactionControl.begin_interaction_operation();
 			_interactionControl.selection.objects.getObjectAt(0).transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
 			_interactionControl.end_interaction_operation(null, _interactionControl.selection);
+			
+			var log:XML = <op/>;
+			var date:Date = new Date();
+			
+			log.@category = "Context";
+			log.@type = "Clear Future Keys";
+			log.@triggeredTime = KTouchTimeControl.toTimeCode(_KSketch.time);
+			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			_KSketch.log.appendChild(log);
+			
 			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 			close();
 		}

@@ -3,8 +3,7 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" width="{height}" height="100%" skinClass="views.canvas.components.timeBar.KTouchTimebarButtonSkin">
 	<fx:Script>
 		<![CDATA[
-			import spark.components.Group;
-			
+			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 			import sg.edu.smu.ksketch2.utils.KSelection;
 			
@@ -12,6 +11,7 @@
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			
 			private const _FILL:uint = 0x000000;
+			private var _KSketch:KSketch2;
 			private var _interceptor:DisplayObject;
 			private var _interactionControl:KMobileInteractionControl;
 			private var _timeControl:KTouchTimeControl;
@@ -21,8 +21,10 @@
 			private const SHOW_PLAY:int = 0;
 			private const SHOW_PAUSE:int = 1;
 			
-			public function init(timeControl:KTouchTimeControl, interactionControl:KMobileInteractionControl, interceptor:DisplayObject):void
+			public function init(timeControl:KTouchTimeControl, interactionControl:KMobileInteractionControl, interceptor:DisplayObject
+								, KSketchInstance:KSketch2):void
 			{
+				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
 				_interceptor = interceptor;
@@ -48,6 +50,14 @@
 					_oldSelection =_interactionControl.selection;
 					_interactionControl.selection = null;
 					_interceptor.visible = true;
+					
+					var log:XML = <op/>;
+					var date:Date = new Date();
+					
+					log.@category = "Timeline";
+					log.@type = "Play";
+					log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+					_KSketch.log.appendChild(log);
 				}
 				else
 				{
@@ -55,6 +65,14 @@
 					_interactionControl.selection = _oldSelection;
 					_oldSelection = null;
 					_interceptor.visible = false;
+					
+					var log2:XML = <op/>;
+					var date2:Date = new Date();
+					
+					log2.@category = "Timeline";
+					log2.@type = "Pause";
+					log2.@elapsedTime = KTouchTimeControl.toTimeCode(date2.time - _KSketch.logStartTime);
+					_KSketch.log.appendChild(log2);
 				}
 			}
 			

@@ -62,6 +62,9 @@ package sg.edu.smu.ksketch2
 		private var _sceneGraph:KSceneGraph;
 		private var _time:int;
 		
+		public var log:XML;
+		public var logStartTime:Number;
+		
 		public function KSketch2()
 		{
 			//This super statement is important, do not miss it for goodness's sake
@@ -88,6 +91,36 @@ package sg.edu.smu.ksketch2
 		public function get sceneXML():XML
 		{
 			return _sceneGraph.serialize();
+		}
+		
+		public function beginSession():void
+		{
+			log = <session/>;
+			
+			var date:Date = new Date();
+			logStartTime = date.time;
+			log.@date = date.toString();
+			
+			switch(studyMode)
+			{	
+				case STUDY_K:
+					log.@mode = "K"
+					break;
+				case STUDY_P:
+					log.@mode = "P"
+					break;
+				case STUDY_PK:
+					log.@mode = "PK"
+					break;
+			}
+		}
+		
+		public function get sessionLog():XML
+		{
+			if(!log)
+				throw new Error("Session not initiated");
+			
+			return log;
 		}
 		
 		public function generateSceneFromXML(xml:XML):void

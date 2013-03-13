@@ -131,6 +131,15 @@ package views.canvas.interactioncontrol
 			var undoOp:IModelOperation = _undoStack.pop();
 			undoOp.undo();
 			_redoStack.push(undoOp);
+			
+			var log:XML = <op/>;
+			var date:Date = new Date();
+			
+			log.@category = "Undo";
+			log.@type = "Undo";
+			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			_KSketch.log.appendChild(log);
+			
 			dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
 		}
 		
@@ -139,6 +148,15 @@ package views.canvas.interactioncontrol
 			var redoOp:IModelOperation = _redoStack.pop();
 			redoOp.redo();
 			_undoStack.push(redoOp);
+			
+			var log:XML = <op/>;
+			var date:Date = new Date();
+			
+			log.@category = "Undo";
+			log.@type = "Redo";
+			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			_KSketch.log.appendChild(log);
+			
 			dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
 		}
 		

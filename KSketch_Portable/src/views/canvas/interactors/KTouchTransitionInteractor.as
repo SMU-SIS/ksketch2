@@ -71,6 +71,7 @@ package views.canvas.interactors
 		{
 			//Begin an Interaction Operation here.
 			//Keep values required.
+			_startTime = _KSketch.time;
 			_oldSelection = _interactionControl.selection;
 		
 			//Handle general interaction implicit grouping here in this class

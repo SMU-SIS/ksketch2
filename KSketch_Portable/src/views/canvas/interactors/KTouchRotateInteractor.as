@@ -11,6 +11,7 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
+	import views.canvas.components.timeBar.KTouchTimeControl;
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
 	public class KTouchRotateInteractor extends KTouchTransitionInteractor
@@ -81,6 +82,20 @@ package views.canvas.interactors
 				_KSketch.endTransform(_transitionObjects.getObjectAt(i),  _interactionControl.currentInteraction);
 			
 			super._interaction_end(event);
+
+			var log:XML = <op/>;
+			var date:Date = new Date();
+			
+			log.@category = "Transition";
+			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
+				log.@type = "Perform Rotate";
+			else
+				log.@type = "Interpolate Rotate";
+			
+			log.@KSketchDuration = KTouchTimeControl.toTimeCode(_KSketch.time - _startTime);
+			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			_KSketch.log.appendChild(log);
+			
 			reset();
 		}
 		

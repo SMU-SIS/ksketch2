@@ -28,6 +28,7 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
+			
 			import spark.events.ViewNavigatorEvent;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
@@ -82,7 +83,7 @@
 					interceptor.graphics.drawRect(0,0, width, height);
 					interceptor.graphics.drawRect(playBounds.x, playBounds.y, playBounds.width, playBounds.height);
 					interceptor.graphics.endFill();
-					playButton.init(timeControl, _interactionControl,interceptor);
+					playButton.init(timeControl, _interactionControl,interceptor, _KSketch);
 				}
 					
 				_interactionControl.reset();
@@ -95,6 +96,8 @@
 						
 						if(currentDocument.xml.scene.children().length() > 0)
 							_KSketch.generateSceneFromXML(new XML(currentDocument.xml.scene));
+						
+						_KSketch.beginSession();
 					}					
 				}
 			}
@@ -153,14 +156,18 @@
 			
 			override public function createReturnObject():Object
 			{
-				var saveXML:XML = <KSketch date=""/>;
+				
+				var saveXML:XML = currentDocument.xml;
+				
+				delete(saveXML.scene);
+
 				var sceneXML:XML = _KSketch.sceneXML;
+				var logXML:XML = _KSketch.sessionLog;
 				
 				if(0 < sceneXML.children().length())
 				{
 					saveXML.appendChild(sceneXML);
-					saveXML.appendChild(<log/>);
-					saveXML.@date = new Date().toString();
+					saveXML.log.appendChild(logXML);
 					currentDocument.xml = saveXML;
 				}
 				

@@ -21,11 +21,11 @@ package utils
 		
 		public static function save(participantID:String, doc:KSketchDocument):void
 		{
-			var toWriteXMl:String = doc.xml.toXMLString();
+			var toWriteXML:String = doc.xml.toXMLString();
 			var currentFile:File = File.applicationStorageDirectory.resolvePath("study/"+participantID+"/"+participantID+" "+doc.name+".kmv"); 
 			var stream:FileStream = new FileStream();
 			stream.open(currentFile, FileMode.WRITE);                
-			stream.writeUTFBytes(toWriteXMl);
+			stream.writeUTFBytes(toWriteXML);
 			stream.close();
 		}
 	}

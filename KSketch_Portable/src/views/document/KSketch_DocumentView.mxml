@@ -139,7 +139,7 @@
 					var xml:XML = doc.xml;
 					if(xml.scene.children().length() > 0)
 						_KSketch.generateSceneFromXML(new XML(xml.scene));
-					
+
 					_currentDocument = doc;
 					previewer.currentDocument = _currentDocument;
 				}

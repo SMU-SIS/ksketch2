@@ -171,13 +171,23 @@ package sg.edu.smu.ksketch2.view
 					else
 						_ghost.visible = true;
 					
-					if(activeKey.time == event.time || !activeKey.hasActivityAtTime())
+					if(activeKey.time == event.time||!activeKey.hasActivityAtTime())
+					{
 						activeKey = activeKey.next;
+						
+						if(!activeKey)
+							_ghost.visible = false;
+					}
 
 					if(activeKey)
 					{
-						currentMatrix = _object.transformInterface.matrix(activeKey.time);
-						_ghost.transform.matrix = currentMatrix;
+						if(activeKey.hasActivityAtTime())
+						{
+							currentMatrix = _object.transformInterface.matrix(activeKey.time);
+							_ghost.transform.matrix = currentMatrix;
+						}
+						else
+							_ghost.visible = false;
 					}
 					else
 						_ghost.visible = false;

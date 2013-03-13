@@ -217,7 +217,8 @@ package sg.edu.smu.ksketch2
 			if(key.time != newTime)
 			{
 				op.addOperation(new KEditKeyTimeOperation(object, key, newTime, key.time)); 
-				(key as KKeyFrame).retime(newTime, op)
+				(key as KKeyFrame).retime(newTime, op);
+				object.transformInterface.dirty = true;
 			}
 		}
 	}

@@ -16,7 +16,7 @@ package sg.edu.smu.ksketch2.view
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
+	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
@@ -171,7 +171,7 @@ package sg.edu.smu.ksketch2.view
 					else
 						_ghost.visible = true;
 					
-					if(activeKey.time == event.time)
+					if(activeKey.time == event.time || !activeKey.hasActivityAtTime())
 						activeKey = activeKey.next;
 
 					if(activeKey)

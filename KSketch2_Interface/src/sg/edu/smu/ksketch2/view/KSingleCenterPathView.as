@@ -53,7 +53,7 @@ package sg.edu.smu.ksketch2.view
 				_scalePoints = null;
 			}
 			
-			if(time == _activeKey.time)
+			if(time == _activeKey.time || !_activeKey.hasActivityAtTime())
 			{
 				if(_activeKey.next)
 				{
@@ -174,6 +174,7 @@ package sg.edu.smu.ksketch2.view
 		override public function renderPathView(time:int):void
 		{
 			_activeKey =  (_object.transformInterface as KSingleReferenceFrameOperator).getActiveKey(time) as KSpatialKeyFrame;
+			
 			recomputePathPoints(time);
 			super.renderPathView(time);
 		}

@@ -101,6 +101,11 @@ package sg.edu.smu.ksketch2.operators
 
 		}
 		
+		public function set dirty(value:Boolean):void
+		{
+			_dirty = value;
+		}
+		
 		public function get transitionType():int
 		{
 			return _transitionType;
@@ -156,11 +161,8 @@ package sg.edu.smu.ksketch2.operators
 			}
 			
 
-			if(_lastQueryTime == time)
-			{
-				if(!_dirty)
-					return _cachedMatrix.clone();
-			}
+			if(!_dirty && _lastQueryTime == time)
+				return _cachedMatrix.clone();
 			
 			//Extremely hardcoded matrix
 			//Iterate through the key list and add up the rotation, scale, dx dy values

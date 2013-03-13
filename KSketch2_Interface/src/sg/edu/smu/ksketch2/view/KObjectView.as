@@ -163,6 +163,14 @@ package sg.edu.smu.ksketch2.view
 				{
 					var activeKey:IKeyFrame = _object.transformInterface.getActiveKey(event.time);
 					
+					if(!activeKey)
+					{
+						_ghost.visible = false;
+						return;
+					}
+					else
+						_ghost.visible = true;
+					
 					if(activeKey.time == event.time)
 						activeKey = activeKey.next;
 					

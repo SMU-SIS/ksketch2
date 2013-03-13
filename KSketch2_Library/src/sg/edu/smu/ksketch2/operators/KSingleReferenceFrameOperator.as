@@ -35,6 +35,9 @@ package sg.edu.smu.ksketch2.operators
 		
 		protected var _object:KObject;
 		protected var _refFrame:KReferenceFrame;
+		protected var _dirty:Boolean = true;
+		protected var _lastQueryTime:int;
+		protected var _cachedMatrix:Matrix = new Matrix();
 		
 		protected var _interpolationKey:KSpatialKeyFrame;
 		protected var _TStoredPath:KPath;
@@ -90,6 +93,7 @@ package sg.edu.smu.ksketch2.operators
 //			var headerKey:KSpatialKeyFrame = new KSpatialKeyFrame(0, object.centroid);
 //			_refFrame.insertKey(headerKey);
 			
+			_lastQueryTime = 0;
 			_transitionX = 0;
 			_transitionY = 0;
 			_transitionTheta = 0;
@@ -151,6 +155,13 @@ package sg.edu.smu.ksketch2.operators
 					return _transitionMatrix(time);
 			}
 			
+
+			if(_lastQueryTime == time)
+			{
+				if(!_dirty)
+					return _cachedMatrix.clone();
+			}
+			
 			//Extremely hardcoded matrix
 			//Iterate through the key list and add up the rotation, scale, dx dy values
 			//Pump these values into the matrix after wards
@@ -195,6 +206,10 @@ package sg.edu.smu.ksketch2.operators
 			result.scale(sigma, sigma);
 			result.translate(_object.centroid.x, _object.centroid.y);
 			result.translate(x, y);
+			
+			_cachedMatrix = result.clone();
+			_lastQueryTime = time;
+			_dirty = false;
 			
 			return result;
 		}
@@ -419,6 +434,7 @@ package sg.edu.smu.ksketch2.operators
 			_cutRotate = false;
 			_inTransit = true;
 			
+			_dirty = true;
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _object, time));
 
 		}
@@ -470,6 +486,7 @@ package sg.edu.smu.ksketch2.operators
 						_interpolate(-changeScale, 0, _nextInterpolationKey, KSketch2.TRANSFORM_SCALE, _nextInterpolationKey.time);	
 				}					
 				
+				_dirty = true;
 				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
 				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
 			}
@@ -477,6 +494,8 @@ package sg.edu.smu.ksketch2.operators
 		
 		public function endTransition(time:int, op:KCompositeOperation):void
 		{
+			_dirty = true;
+			
 			switch(KSketch2.studyMode)
 			{
 				case KSketch2.STUDY_P:
@@ -489,7 +508,7 @@ package sg.edu.smu.ksketch2.operators
 			}
 
 			_inTransit = false;
-			
+			_dirty = true;
 			//Dispatch a transform finalised event
 			//Application level components can listen to this event to do updates
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
@@ -604,7 +623,6 @@ package sg.edu.smu.ksketch2.operators
 			if(SCALE_THRESHOLD < _magSigma)
 				_replacePathOverTime(_SStoredPath, _startTime, time, KSketch2.TRANSFORM_SCALE, op);
 			
-			matrix(time);
 			_clearEmptyKeys(op);
 		}
 		
@@ -728,7 +746,7 @@ package sg.edu.smu.ksketch2.operators
 				if(op)
 					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));		
 			}
-			
+			_dirty = true;
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 		}
 		
@@ -754,7 +772,7 @@ package sg.edu.smu.ksketch2.operators
 					else
 						currentKey = currentKey.previous as KSpatialKeyFrame;
 				}
-				
+				_dirty = true;
 				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 			}
 		}

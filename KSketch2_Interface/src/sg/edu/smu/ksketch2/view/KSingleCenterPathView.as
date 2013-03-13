@@ -10,10 +10,7 @@ package sg.edu.smu.ksketch2.view
 {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
-	import flash.utils.getTimer;
-	
-	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
+
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -86,7 +83,7 @@ package sg.edu.smu.ksketch2.view
 			{
 				var currentMatrix:Matrix = _activeKey?_object.fullPathMatrix(key.startTime):new Matrix();
 				var currentPosition:Point = currentMatrix.transformPoint(_object.centroid);
-				
+
 				if(!transformPoints)
 					transformPoints = new Vector.<KTimedPoint>();
 				

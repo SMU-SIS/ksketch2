@@ -108,10 +108,24 @@
 			 */
 			private function _handleTap(event:org.gestouch.events.GestureEvent):void
 			{
+				var log:XML = <op/>;
+				var date:Date = new Date();
+				
+				log.@category = "Timeline";
+				
 				if(_type == LEFT)
+				{
 					_timeControl.time -= KSketch2.ANIMATION_INTERVAL;
+					log.@type = "Prev Frame";
+				}
 				else
+				{
 					_timeControl.time += KSketch2.ANIMATION_INTERVAL;
+					log.@type = "Next Frame";
+				}
+				
+				log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+				_KSketch.log.appendChild(log);
 				
 //				_timeControl.floatingLabel.showMessage(_timeControl.time);
 			}
@@ -125,6 +139,11 @@
 				var length:int = _timeControl.timings.length;
 				
 				var timeList:Vector.<int> = new Vector.<int>();
+				
+				var log:XML = <op/>;
+				var date:Date = new Date();
+				
+				log.@category = "Timeline";
 				
 				for(i = 0; i<length; i++)
 				{
@@ -155,6 +174,9 @@
 						toTime = 0;
 					else
 						toTime = timeList[currentIndex];
+					
+					log.@type = "Prev Key";
+
 				}
 				else
 				{
@@ -178,9 +200,15 @@
 					}
 					else
 						toTime = _KSketch.time;
+					
+					log.@type = "Next Key";
 				}
 				
 				_timeControl.time = toTime;
+
+				log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+				_KSketch.log.appendChild(log);
+				
 //				_timeControl.floatingLabel.showMessage(toTime);
 			}
 		]]>

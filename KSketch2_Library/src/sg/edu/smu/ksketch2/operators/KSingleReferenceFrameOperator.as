@@ -628,7 +628,7 @@ package sg.edu.smu.ksketch2.operators
 			_clearEmptyKeys(op);
 		}
 		
-		private function lastKeyWithTransform(targetKey:KSpatialKeyFrame):KSpatialKeyFrame
+		public function lastKeyWithTransform(targetKey:KSpatialKeyFrame):KSpatialKeyFrame
 		{
 			var targetPath:KPath;
 			

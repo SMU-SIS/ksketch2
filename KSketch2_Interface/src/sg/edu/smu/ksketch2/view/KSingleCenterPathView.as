@@ -10,7 +10,8 @@ package sg.edu.smu.ksketch2.view
 {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
-
+	
+	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -51,6 +52,18 @@ package sg.edu.smu.ksketch2.view
 				_translatePoints = null;
 				_rotatePoints = null;
 				_scalePoints = null;
+			}
+			
+			if(!_activeKey.hasActivityAtTime())
+			{
+				if(KSketch2.studyMode == KSketch2.STUDY_P)
+				{
+					var currentKey:KSpatialKeyFrame = (_object.transformInterface as KSingleReferenceFrameOperator).lastKeyWithTransform(_activeKey);
+					_translatePoints = generatePath(currentKey, currentKey.translatePath.points, _translatePoints);
+					_rotatePoints = generatePath(currentKey, currentKey.rotatePath.points, _rotatePoints);
+					generateRotationMotionPath(_rotatePoints);			
+					_scalePoints = generatePath(currentKey, currentKey.scalePath.points, _scalePoints);
+				}
 			}
 			
 			if(time == _activeKey.time || !_activeKey.hasActivityAtTime())
@@ -174,6 +187,8 @@ package sg.edu.smu.ksketch2.view
 		override public function renderPathView(time:int):void
 		{
 			_activeKey =  (_object.transformInterface as KSingleReferenceFrameOperator).getActiveKey(time) as KSpatialKeyFrame;
+		
+			
 			
 			recomputePathPoints(time);
 			super.renderPathView(time);

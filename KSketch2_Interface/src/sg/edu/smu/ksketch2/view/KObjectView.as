@@ -173,12 +173,14 @@ package sg.edu.smu.ksketch2.view
 					
 					if(activeKey.time == event.time)
 						activeKey = activeKey.next;
-					
+
 					if(activeKey)
 					{
 						currentMatrix = _object.transformInterface.matrix(activeKey.time);
 						_ghost.transform.matrix = currentMatrix;
 					}
+					else
+						_ghost.visible = false;
 				}
 			}
 		}

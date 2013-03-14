@@ -163,11 +163,11 @@
 				{
 					scroller.resetDocuments();
 					
-					if(event.data.studyMode == "Mode D")
+					if(event.data.studyMode == "Mode P")
 						KSketch2.studyMode = KSketch2.STUDY_P;
-					else if(event.data.studyMode == "Mode I")
+					else if(event.data.studyMode == "Mode K")
 						KSketch2.studyMode = KSketch2.STUDY_K;
-					else if(event.data.studyMode == "Mode DI")
+					else if(event.data.studyMode == "Mode PK")
 						KSketch2.studyMode = KSketch2.STUDY_PK;
 					
 					_currentParticipant = event.data.participant;

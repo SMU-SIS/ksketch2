@@ -48,7 +48,8 @@ package sg.edu.smu.ksketch2.utils
 				for(i = 0; i< oldSelection.objects.length(); i++)
 				{
 					currentObject = oldSelection.objects.getObjectAt(i);
-					currentObject.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, currentObject, startTime));
+					currentObject.transformInterface.dirty = true;
+					currentObject.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, currentObject, startTime));
 				}
 			}
 		}
@@ -68,7 +69,8 @@ package sg.edu.smu.ksketch2.utils
 				for(i = 0; i< newSelection.objects.length(); i++)
 				{
 					currentObject = newSelection.objects.getObjectAt(i);
-					currentObject.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, currentObject, endTime));
+					currentObject.transformInterface.dirty = true;
+					currentObject.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, currentObject, endTime));
 				}
 			}
 		}

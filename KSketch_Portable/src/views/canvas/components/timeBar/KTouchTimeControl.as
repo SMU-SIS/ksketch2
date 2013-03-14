@@ -54,7 +54,7 @@ package views.canvas.components.timeBar
 			_magnifier = new KTouchTimeSliderMagnifier();
 			_magnifier.init(contentGroup, this);
 			
-			timeDisplay.graphics.lineStyle(6,0x000000, 0.25);
+			timeDisplay.graphics.lineStyle(6,0xFF0000, 0.4);
 			var anchor:Point = contentGroup.globalToLocal(localToGlobal(new Point(0,0)));
 			timeDisplay.graphics.moveTo(0,anchor.y);
 			timeDisplay.graphics.lineTo(0,anchor.y+height);

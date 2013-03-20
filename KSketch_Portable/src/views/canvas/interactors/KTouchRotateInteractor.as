@@ -74,15 +74,6 @@ package views.canvas.interactors
 		
 		override protected function _interaction_end(event:GestureEvent):void
 		{
-			var i:int = 0;
-			var length:int = _transitionObjects.length();
-			var currentObject:KObject;
-			
-			for(i; i < length; i++)
-				_KSketch.endTransform(_transitionObjects.getObjectAt(i),  _interactionControl.currentInteraction);
-			
-			super._interaction_end(event);
-
 			var log:XML = <op/>;
 			var date:Date = new Date();
 			
@@ -95,6 +86,15 @@ package views.canvas.interactors
 			log.@KSketchDuration = KTouchTimeControl.toTimeCode(_KSketch.time - _startTime);
 			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 			_KSketch.log.appendChild(log);
+			
+			var i:int = 0;
+			var length:int = _transitionObjects.length();
+			var currentObject:KObject;
+			
+			for(i; i < length; i++)
+				_KSketch.endTransform(_transitionObjects.getObjectAt(i),  _interactionControl.currentInteraction);
+			
+			super._interaction_end(event);
 			
 			reset();
 		}

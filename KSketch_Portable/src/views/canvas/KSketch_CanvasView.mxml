@@ -167,6 +167,7 @@
 				if(0 < sceneXML.children().length())
 				{
 					saveXML.appendChild(sceneXML);
+					saveXML.appendChild(<log/>);
 					saveXML.log.appendChild(logXML);
 					currentDocument.xml = saveXML;
 				}

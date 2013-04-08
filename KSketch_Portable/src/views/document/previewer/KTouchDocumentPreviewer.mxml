@@ -20,12 +20,12 @@
 			}
 			
 			public function set currentDocument(doc:KSketchDocument):void
-			{
+			{				
 				if(doc)
 				{
 					currentDocTitle.text = doc.name;
-					currentDocDescription.text = "This is a sample document with a random and very very very long and useless description";
-					currentDocTime.text = "Last edited about a day ago"
+					currentDocDescription.text = doc.description;
+					currentDocTime.text = ""
 				}
 				else
 				{

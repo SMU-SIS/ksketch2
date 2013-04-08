@@ -14,8 +14,8 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			
+			import utils.IO;
 			import utils.KSketchDocument;
-			import utils.StudyIO;
 			
 			import views.canvas.KSketch_CanvasView;
 			import views.document.previewer.KTouchPreviewerButtonSkin;
@@ -29,45 +29,37 @@
 			private var _KSketchFiles:Vector.<File>;
 			private var _KSketchDocuments:Vector.<KSketchDocument>;
 			
-			[Bindable]
-			private var _currentParticipant:String = "No Participant";
-			
-			public function addedToStageHandler():void
-			{
-				if(_currentDocument)
-				{
-					StudyIO.save(_currentParticipant, _currentDocument);
-					_openDocumentPreview(_currentDocument);
-				}
-				else
-					_openDocumentPreview(null);
-			}
-			
 			private function _initComponents():void
 			{
 				_KSketch = new KSketch2();
-				participantChooser.addEventListener(PopUpEvent.CLOSE, _updateParticipant);
 				docProperties.addEventListener(PopUpEvent.CLOSE, _createNewDocument);
 				scroller.addEventListener(KDocumentSelectedEvent.DOCUMENT_SELECTED, _documentSelectedHandler);
 				previewer.init(_KSketch);				
 			}
 			
-			private function _loadTasks():void
+			public function addedToStageHandler():void
 			{
-				_KSketchDocuments = new Vector.<KSketchDocument>();
-				
-				var dir:File;
-				
-				if(StudyIO.participantAvailable(_currentParticipant))
+				if(_currentDocument)
 				{
-					dir = File.applicationStorageDirectory;
-					dir = dir.resolvePath(StudyIO.STUDY_DIRECTORY+_currentParticipant);
+					IO.saveLocal(_currentDocument);
+					_refreshDocumentList();
+					_openDocumentPreview(_currentDocument);
 				}
 				else
 				{
-					dir = File.applicationDirectory;
-					dir = dir.resolvePath(StudyIO.TASK_DIRECTORY);
+					_refreshDocumentList();
+					_openDocumentPreview(null);
 				}
+			}
+			
+			private function _refreshDocumentList():void
+			{
+				_KSketchDocuments = new Vector.<KSketchDocument>();
+				scroller.resetDocuments();
+				
+				var dir:File;
+				dir = File.applicationStorageDirectory;
+				dir = dir.resolvePath(IO.KMV_DIRECTORY);
 				
 				if(dir.isDirectory)
 				{
@@ -88,7 +80,6 @@
 						}
 					}
 				}
-
 			}
 			
 			//Handles completion of kmv file.
@@ -106,7 +97,9 @@
 				
 				var myDoc:KSketchDocument = new KSketchDocument(fileName, xml,
 																Math.floor(Math.random()*10000).toString(),
-																Math.floor(Math.random()*50));
+																Number(xml.lastEdited.@time),
+																xml.description.@text);
+				
 				scroller.addDocument(myDoc);
 			}
 			
@@ -117,7 +110,8 @@
 				{
 					_KSketch.reset();
 					var newDoc:KSketchDocument = new KSketchDocument(event.data as String, _KSketch.sceneXML,
-																	Math.floor(Math.random()*10000).toString());
+																	Math.floor(Math.random()*10000).toString(), new Date().time,
+																	"Document description here");
 					scroller.addDocument(newDoc);					
 					_openDocumentPreview(newDoc);
 					_openDocument(newDoc);
@@ -152,29 +146,6 @@
 					navigator.pushView(KSketch_CanvasView, doc);
 			}
 			
-			private function _showParticipantList():void
-			{
-				participantChooser.open(this);
-			}
-			
-			private function _updateParticipant(event:PopUpEvent):void
-			{
-				if(event.commit)
-				{
-					scroller.resetDocuments();
-					
-					if(event.data.studyMode == "Mode P")
-						KSketch2.studyMode = KSketch2.STUDY_P;
-					else if(event.data.studyMode == "Mode K")
-						KSketch2.studyMode = KSketch2.STUDY_K;
-					else if(event.data.studyMode == "Mode PK")
-						KSketch2.studyMode = KSketch2.STUDY_PK;
-					
-					_currentParticipant = event.data.participant;
-					
-					_loadTasks();
-				}
-			}
 		]]>
 	</fx:Script>
 	
@@ -199,8 +170,6 @@
 				</s:layout>
 				<s:Button skinClass="views.document.scrollerColumn.KTouchNewDocumentButtonSkin" width="100%"
 						  click="{docProperties.open(this)}" label="New Document"/>
-				<s:Button skinClass="views.document.scrollerColumn.KTouchNewDocumentButtonSkin" width="100%" id="partID"
-						  click="_showParticipantList()" label="{_currentParticipant}"/>
 				<scrollerColumn:KTouchDocumentScroller width="100%" height="100%" id="scroller"/>
 			</s:Group>
 		</s:Group>
@@ -235,9 +204,9 @@
 								  skinClass="views.document.previewer.KTouchPreviewerButtonSkin"
 								  enabled="{_currentDocument!=null}"
 								  click="_openDocument(_currentDocument)"/>
-						<s:Button label="Export" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false"/>
-						<s:Button label="Share" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false"/>
-						<s:Button label="Delete" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false"/>
+						<s:Button label="Delete" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false" visible="false"/>
+						<s:Button label="Export" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false" visible="false"/>
+						<s:Button label="Share" skinClass="views.document.previewer.KTouchPreviewerButtonSkin" enabled="false" visible="false"/>
 					</s:Group>
 				</s:Group>
 			</s:Group>

@@ -8,10 +8,36 @@
 	<fx:Script>
 		<![CDATA[
 			
+			public static const JUST_NOW:Number = 1200000;
+			public static const HOUR:Number = 3600000;
+			public static const DAY:Number = 86400000;
+			
 			private function _creationCompleteHandler():void
 			{
 				labelDisplay.text = (parent as KTouchDocumentScrollerButton).ksketchDocument.name;
-				lastEdited.text = (parent as KTouchDocumentScrollerButton).ksketchDocument.date.toString() + " hours ago";
+				
+				descriptionText.text = (parent as KTouchDocumentScrollerButton).ksketchDocument.description;
+				
+				var timeDiff:Number = new Date().time - (parent as KTouchDocumentScrollerButton).ksketchDocument.lastEdited;
+				
+				if(timeDiff < JUST_NOW)
+					lastEdited.text = "A while ago";
+				else if(timeDiff < HOUR)
+					lastEdited.text = "Within the last hour";
+				else if(timeDiff < DAY)
+				{
+					var hourDiff:int = timeDiff/HOUR;
+					lastEdited.text = hourDiff.toString()+" hours ago";
+				}
+				else if(DAY < timeDiff)
+				{
+					var dayDiff:int = timeDiff/DAY;
+					
+					if(dayDiff == 1)
+						lastEdited.text = "Yesterday"
+					else
+						lastEdited.text = dayDiff.toString()+" days ago";
+				}
 			}
 			
 		]]>
@@ -48,8 +74,7 @@
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10" horizontalAlign="left" verticalAlign="middle"/>
 			</s:layout>
-			<s:Label color="0x9F9F9F" width="{width*0.75}" text="This is a sample document with a random and very long description"
-					 fontSize="{Capabilities.screenDPI*0.1}"/>
+			<s:Label id="descriptionText" color="0x9F9F9F" width="{width*0.75}" fontSize="{Capabilities.screenDPI*0.1}"/>
 		</s:Group>
 		
 		<s:Group width="100%" height="100%">

@@ -269,7 +269,7 @@ package sg.edu.smu.ksketch2.operators
 					{
 						if(point)
 							_cachedTheta += point.x;
-						
+
 						_cutRotate = true;
 					}
 				}
@@ -293,7 +293,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
-			
+
 			var result:Matrix = new Matrix();
 			result.translate(-_object.centroid.x,-_object.centroid.y);
 			result.rotate(theta+_cachedTheta);

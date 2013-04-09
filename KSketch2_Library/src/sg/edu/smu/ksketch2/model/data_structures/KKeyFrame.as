@@ -189,6 +189,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 			if(time <= atTime)
 				return 1;
 			
+			if(atTime <= startTime)
+				return 0;
+			
 			var timeElapsed:Number = (atTime-startTime);
 			var duration:Number = time - startTime;
 			var proportionKeyframe:Number;

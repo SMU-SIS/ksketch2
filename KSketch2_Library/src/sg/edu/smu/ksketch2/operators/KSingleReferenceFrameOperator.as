@@ -458,7 +458,7 @@ package sg.edu.smu.ksketch2.operators
 				var elapsedTime:int = time - _startTime;
 				_TStoredPath.push(dx, dy, elapsedTime);
 				_RStoredPath.push(dTheta, 0, elapsedTime);
-				_SStoredPath.push(dScale, 0, elapsedTime);			
+				_SStoredPath.push(dScale, 0, elapsedTime);
 			}
 			else
 			{
@@ -599,6 +599,13 @@ package sg.edu.smu.ksketch2.operators
 		{
 			//Process the paths here first
 			//Do w/e you want to the paths here!
+			
+			//Make sure there is only one point at one frame
+			KPathProcessing.normalisePathDensity(_TStoredPath);
+			KPathProcessing.normalisePathDensity(_RStoredPath);
+			KPathProcessing.normalisePathDensity(_SStoredPath);
+			
+			
 			if(KSketch2.discardTransitionTimings)
 			{
 				KPathProcessing.discardPathTimings(_TStoredPath);

@@ -36,7 +36,7 @@ package sg.edu.smu.ksketch2
 		public static const STUDY_P:int = 1;
 		public static const STUDY_PK:int = 2;
 		
-		public static var studyMode:int = STUDY_P;
+		public static var studyMode:int = STUDY_PK;
 		public static var discardTransitionTimings:Boolean = false;
 		public static var addInterpolationKeys:Boolean = false;
 		public static var returnTranslationInterpolationToZero:Boolean = true;

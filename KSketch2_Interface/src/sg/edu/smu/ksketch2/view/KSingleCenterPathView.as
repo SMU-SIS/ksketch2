@@ -92,38 +92,50 @@ package sg.edu.smu.ksketch2.view
 				return null;
 			
 			var length:int = targetPoints.length;
+
 			if(length != 0)
 			{
 				var currentMatrix:Matrix = _activeKey?_object.fullPathMatrix(key.startTime):new Matrix();
 				var currentPosition:Point = currentMatrix.transformPoint(_object.centroid);
 
-				if(!transformPoints)
-					transformPoints = new Vector.<KTimedPoint>();
-				
-				if(transformPoints.length < length)
-				{
-					while(transformPoints.length < length)
-						transformPoints.push(new KTimedPoint());
-				}
-				else if(transformPoints.length > length)
-				{
-					while(transformPoints.length > length)
-						transformPoints.shift();
-				}
-				
 				var i:int;
 				var currentPoint:KTimedPoint;
 				var targetPoint:KTimedPoint;
+				var transformIndex:int = 1;
 				
-				for(i = 0; i < length; i++)
+				if(!transformPoints)
+					transformPoints = new Vector.<KTimedPoint>();
+				
+				if(transformPoints.length == 0) //We want to make sure the shown path will always start at the centrods
 				{
-					currentPoint = transformPoints[i];
+					currentPoint = new KTimedPoint(currentPosition.x, currentPosition.y, 0);
+					transformPoints.push(currentPoint);
+				}
+				
+				for(i = 1; i < length; i++)
+				{
 					targetPoint = targetPoints[i];
+
+					if(transformPoints.length <= transformIndex)
+					{
+						currentPoint = new KTimedPoint();
+						transformPoints.push(currentPoint);
+					}
+					else
+						currentPoint = transformPoints[transformIndex];
+				
 					currentPoint.x = currentPosition.x + targetPoint.x;
 					currentPoint.y = currentPosition.y + targetPoint.y;
 					currentPoint.time = targetPoint.time;
+					transformIndex++;
 				}
-		
+				
+				while(transformIndex < transformPoints.length)
+					transformPoints.pop();
+				
+				currentMatrix = _activeKey?_object.fullPathMatrix(key.time):new Matrix();
+				currentPosition = currentMatrix.transformPoint(_object.centroid);
+				
 				return transformPoints;
 			}
 			
@@ -187,8 +199,6 @@ package sg.edu.smu.ksketch2.view
 		override public function renderPathView(time:int):void
 		{
 			_activeKey =  (_object.transformInterface as KSingleReferenceFrameOperator).getActiveKey(time) as KSpatialKeyFrame;
-		
-			
 			
 			recomputePathPoints(time);
 			super.renderPathView(time);

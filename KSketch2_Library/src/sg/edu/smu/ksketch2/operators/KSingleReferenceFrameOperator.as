@@ -69,14 +69,9 @@ package sg.edu.smu.ksketch2.operators
 		protected var _cachedTheta:Number;
 		protected var _cachedScale:Number;
 		
-		protected var _cutTranslateTime:int;
-		protected var _cutTranslate:Boolean;
-				
-		protected var _cutRotate:Boolean;
-		protected var _cutRotateTime:int;
-		
-		protected var _cutScale:Boolean;
-		protected var _cutScaleTime:int;
+		public var hasTranslate:Boolean;
+		public var hasRotate:Boolean;
+		public var hasScale:Boolean;
 		
 		/**
 		 * KSingleReferenceFrame is the transform interface dealing with the single reference frame model
@@ -234,7 +229,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				proportionKeyFrame = currentKey.findProportion(time);
 				
-				if(!_cutTranslate)
+				if(!hasTranslate)
 				{
 					point = currentKey.translatePath.find_Point(proportionKeyFrame);
 					if(Math.abs(_transitionX) <= EPSILON || Math.abs(_transitionY) <= EPSILON)
@@ -253,11 +248,11 @@ package sg.edu.smu.ksketch2.operators
 							_cachedY += point.y;
 						}
 
-						_cutTranslate = true;
+						hasTranslate = true;
 					}
 				}
 				
-				if(!_cutRotate)
+				if(!hasRotate)
 				{
 					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
 					if(_magTheta <= EPSILON)
@@ -270,11 +265,11 @@ package sg.edu.smu.ksketch2.operators
 						if(point)
 							_cachedTheta += point.x;
 
-						_cutRotate = true;
+						hasRotate = true;
 					}
 				}
 				
-				if(!_cutScale)
+				if(!hasScale)
 				{
 					point = currentKey.scalePath.find_Point(proportionKeyFrame);
 					if(_magSigma <= EPSILON)
@@ -287,7 +282,7 @@ package sg.edu.smu.ksketch2.operators
 						if(point)
 							_cachedScale += point.x;
 						
-						_cutScale = true;
+						hasScale = true;
 					}
 				}
 				
@@ -431,9 +426,9 @@ package sg.edu.smu.ksketch2.operators
 				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
 			
-			_cutTranslate = false;
-			_cutScale = false;
-			_cutRotate = false;
+			hasTranslate = false;
+			hasScale = false;
+			hasRotate = false;
 			_inTransit = true;
 			
 			_dirty = true;
@@ -487,11 +482,11 @@ package sg.edu.smu.ksketch2.operators
 					if(Math.abs(_transitionSigma) > EPSILON)
 						_interpolate(-changeScale, 0, _nextInterpolationKey, KSketch2.TRANSFORM_SCALE, _nextInterpolationKey.time);	
 				}					
-				
-				_dirty = true;
-				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
-				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
 			}
+			
+			_dirty = true;
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
 		}
 		
 		public function endTransition(time:int, op:KCompositeOperation):void

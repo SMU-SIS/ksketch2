@@ -17,6 +17,7 @@ package sg.edu.smu.ksketch2.view
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
 	public class KObjectView extends Sprite implements IObjectView
@@ -148,12 +149,24 @@ package sg.edu.smu.ksketch2.view
 				
 				if(object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 				{
+					if((_object.transformInterface as KSingleReferenceFrameOperator).hasRotate
+						||(_object.transformInterface as KSingleReferenceFrameOperator).hasScale)
+					{
+						_ghost.visible = true;
+					}
+					else
+					{
+						_ghost.visible = false;
+						return;
+					}
+					
 					currentMatrix = _object.transformInterface.matrix(event.time);
 					var currentPosition:Point = currentMatrix.transformPoint(_object.centroid);
 					var positionDifferences:Point = currentPosition.subtract(_originalPosition);
-					
+
 					if(positionDifferences.x > 1 || positionDifferences.y > 1)
 					{
+						_ghost.visible = true;
 						currentMatrix.translate(-positionDifferences.x, -positionDifferences.y);
 						_ghost.transform.matrix = currentMatrix;
 					}

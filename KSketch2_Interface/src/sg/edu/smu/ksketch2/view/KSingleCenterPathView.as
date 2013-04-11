@@ -95,27 +95,35 @@ package sg.edu.smu.ksketch2.view
 
 			if(length != 0)
 			{
-				var currentMatrix:Matrix = _activeKey?_object.fullPathMatrix(key.startTime):new Matrix();
+				
+				var currentMatrix:Matrix
+				
+				if(_activeKey)
+					currentMatrix =  _object.fullPathMatrix(key.startTime);
+				else
+					currentMatrix = new Matrix();
+				
 				var currentPosition:Point = currentMatrix.transformPoint(_object.centroid);
 
 				var i:int;
 				var currentPoint:KTimedPoint;
+				var startPoint:KTimedPoint;
 				var targetPoint:KTimedPoint;
-				var transformIndex:int = 1;
-				
+
+				var transformIndex:int = 0;
 				if(!transformPoints)
 					transformPoints = new Vector.<KTimedPoint>();
 				
-				if(transformPoints.length == 0) //We want to make sure the shown path will always start at the centrods
-				{
-					currentPoint = new KTimedPoint(currentPosition.x, currentPosition.y, 0);
-					transformPoints.push(currentPoint);
-				}
+				if(transformPoints.length == 0)
+					transformPoints.push(new KTimedPoint(0,0,0));
 				
-				for(i = 1; i < length; i++)
+				for(i = 0; i < length; i++)
 				{
 					targetPoint = targetPoints[i];
-
+					
+					if(i == 0)
+						startPoint = targetPoint;
+						
 					if(transformPoints.length <= transformIndex)
 					{
 						currentPoint = new KTimedPoint();
@@ -123,19 +131,16 @@ package sg.edu.smu.ksketch2.view
 					}
 					else
 						currentPoint = transformPoints[transformIndex];
-				
-					currentPoint.x = currentPosition.x + targetPoint.x;
-					currentPoint.y = currentPosition.y + targetPoint.y;
+					
+					currentPoint.x = currentPosition.x + targetPoint.x - startPoint.x;
+					currentPoint.y = currentPosition.y + targetPoint.y - startPoint.y;
 					currentPoint.time = targetPoint.time;
 					transformIndex++;
 				}
 				
 				while(transformIndex < transformPoints.length)
 					transformPoints.pop();
-				
-				currentMatrix = _activeKey?_object.fullPathMatrix(key.time):new Matrix();
-				currentPosition = currentMatrix.transformPoint(_object.centroid);
-				
+
 				return transformPoints;
 			}
 			

@@ -248,15 +248,13 @@ package views.canvas.components.timeBar
 					_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(_I_TICK_MARK_THICKNESS,_SELECTED_TICK_MARK_COLOR);
 			}
 			
-			//Brute force occurring here. JT was just too lazy to make a better algorithm!
-			//First pass to draw unselected tick marks
 			currentX = Number.NEGATIVE_INFINITY;
 			drawTarget = _timeControl.unselectedTickMarkDisplay;
 			for(i = 0; i<_ticks.length; i++)
 			{
 				currentMarker = _ticks[i];
-				
-				if(currentX < currentMarker.x)
+
+				if(!currentMarker.selected)
 				{
 					currentX = currentMarker.x;
 					
@@ -319,17 +317,23 @@ package views.canvas.components.timeBar
 				currentTick.originalPosition = currentTick.x;
 				
 				if(currentTick.x <= _startX)
-					_before.push(currentTick);
+				{
+					if(grabbedTick.selected == currentTick.selected)
+						_before.push(currentTick);
+				}
 				
 				//After ticks are a bit special
 				//Only add in the first degree ticks
 				//because a tick will be pushed by the marker before itself
 				if(currentTick.x >= _startX)
 				{
-					if(!currentTick.prev )
-						_after.push(currentTick);
-					else if(currentTick.prev.x < _startX)
-						_after.push(currentTick)
+					if(grabbedTick.selected == currentTick.selected)
+					{
+						if(!currentTick.prev )
+							_after.push(currentTick);
+						else if(currentTick.prev.x < _startX)
+							_after.push(currentTick)
+					}
 				}
 			}
 			
@@ -362,6 +366,7 @@ package views.canvas.components.timeBar
 				for(i = 0; i < length; i++)
 				{
 					tick = _before[i];	
+					
 					tickChangeX = Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
 
 					if(tickChangeX < 0)
@@ -378,6 +383,7 @@ package views.canvas.components.timeBar
 				for(i = 0; i < length; i++)
 				{
 					tick = _after[i];	
+					
 					tickChangeX = Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
 					
 					if(tickChangeX > 0)
@@ -396,7 +402,6 @@ package views.canvas.components.timeBar
 			{
 				currentTick = _ticks[i];
 				currentTick.time = _timeControl.xToTime(currentTick.x);
-				
 				if(KTouchTimeControl.MAX_ALLOWED_TIME < currentTick.time)
 				{
 					currentTick.time = KTouchTimeControl.MAX_ALLOWED_TIME;

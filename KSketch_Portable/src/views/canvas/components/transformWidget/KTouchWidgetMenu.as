@@ -36,6 +36,8 @@ package views.canvas.components.transformWidget
 		private var _buttonContainer:VGroup;
 		private var _insertKeyButton:Button;
 		private var _clearMotionButton:Button;
+		private var _groupButton:Button
+		private var _ungroupButton:Button;
 		private var blocker:Button;
 		private var _initiated:Boolean = false;
 		
@@ -73,10 +75,22 @@ package views.canvas.components.transformWidget
 			_clearMotionButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
 			_clearMotionButton.addEventListener(MouseEvent.CLICK, _clearMotion); 
 			
+			_groupButton = new Button();
+			_groupButton.percentWidth = 100;
+			_groupButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
+			_groupButton.addEventListener(MouseEvent.CLICK, _group); 
+			
+			_ungroupButton = new Button();
+			_ungroupButton.percentWidth = 100;
+			_ungroupButton.setStyle("skinClass", Class(KTouchWidgetMenuButtonSkin));
+			_ungroupButton.addEventListener(MouseEvent.CLICK, _ungroup); 
+			
 			addElement(blocker);
 			addElement(_buttonContainer);
 			_buttonContainer.addElement(_insertKeyButton);
 			_buttonContainer.addElement(_clearMotionButton);
+			_buttonContainer.addElement(_groupButton);
+			_buttonContainer.addElement(_ungroupButton);
 
 			addEventListener(FlexEvent.CREATION_COMPLETE, _initiateMenu);
 		}
@@ -111,6 +125,9 @@ package views.canvas.components.transformWidget
 				_clearMotionButton.label = "Clear keys after "+ KTouchTimeControl.toTimeCode(_KSketch.time);
 			}
 			
+			_groupButton.label = "Group Selection";
+			_ungroupButton.label = "Ungroup Selection";
+			
 			super.open(owner, modal);
 			_updateMenu();
 		}
@@ -118,6 +135,8 @@ package views.canvas.components.transformWidget
 		private function _updateMenu():void
 		{
 			_canInsertKey();
+			_canGroup();
+			_canUngroup();
 			
 			if(!_initiated)
 				return;
@@ -248,6 +267,25 @@ package views.canvas.components.transformWidget
 			
 			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 			close();
+		}
+		
+		private function _canGroup():void
+		{
+			_groupButton.enabled = false;
+		}
+		
+		private function _group(event:MouseEvent = null):void
+		{
+			
+		}
+		
+		private function _canUngroup():void
+		{
+			_ungroupButton.enabled = false;
+		}
+		private function _ungroup(event:MouseEvent = null):void
+		{
+			
 		}
 		
 	}

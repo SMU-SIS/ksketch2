@@ -31,8 +31,9 @@
 	</s:Rect>
 	<s:Group width="100%" height="100%">
 		<s:layout>
-			<s:HorizontalLayout paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>
+			<s:HorizontalLayout paddingLeft="{Capabilities.screenDPI*0.1}" paddingRight="{Capabilities.screenDPI*0.1}"
+								paddingTop="{Capabilities.screenDPI*0.1}" paddingBottom="{Capabilities.screenDPI*0.1}"/>
 		</s:layout>
-		<s:Label id="labelDisplay" fontSize="28" fontFamily="_sans" color="0xFFFFFF"/>
+		<s:Label id="labelDisplay" fontSize="{Capabilities.screenDPI*0.1}" fontFamily="_sans" color="0xFFFFFF"/>
 	</s:Group>
 </s:Skin>

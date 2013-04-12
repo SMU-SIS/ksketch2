@@ -801,7 +801,8 @@ package sg.edu.smu.ksketch2.operators
 			var toMergeRefFrame:KReferenceFrame = new KReferenceFrame();
 			var toModifyKey:KSpatialKeyFrame;
 			var currentKey:KSpatialKeyFrame = sourceInterface.getActiveKey(-1) as KSpatialKeyFrame;
-
+			var dummyOp:KCompositeOperation = new KCompositeOperation();
+			
 			//Clone the source object's reference frame and modify the this operator's reference frame 
 			//Such that it is the same as the source reference frame
 			//The following loop makes sure that this operator's reference frame
@@ -853,7 +854,6 @@ package sg.edu.smu.ksketch2.operators
 			}
 			
 			currentKey = _refFrame.head as KSpatialKeyFrame;			
-			var dummyOp:KCompositeOperation = new KCompositeOperation();
 			//Modify the source key list to be the same as this operator's key list
 			while(currentKey && currentKey.time <= stopMergeTime)
 			{

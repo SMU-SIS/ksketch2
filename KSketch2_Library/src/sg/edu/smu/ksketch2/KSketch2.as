@@ -192,7 +192,7 @@ package sg.edu.smu.ksketch2
 				commonParent = _sceneGraph.root;
 			
 			//Do grouping first
-			var groupResult:KObject = _groupingUtil.group(objects,commonParent, groupTime, _sceneGraph, op);
+			var groupResult:KObject = _groupingUtil.group(objects,_sceneGraph.root, groupTime, _sceneGraph, op);
 
 			_groupingUtil.removeSingletonGroups(root, _sceneGraph, op);
 			
@@ -204,7 +204,6 @@ package sg.edu.smu.ksketch2
 				dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 			}
 			
-				
 			return result;
 		}
 		

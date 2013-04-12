@@ -8,10 +8,8 @@
  */
 package sg.edu.smu.ksketch2.operators
 {
-	import flash.display.Scene;
 	import flash.geom.Matrix;
 	
-	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
@@ -66,7 +64,7 @@ package sg.edu.smu.ksketch2.operators
 			for(var i:int = 0; i < numChildren; i++)
 				result.add(toUngroup.getObjectAt(i));
 			
-			_static_CollapseHierarchy(toUngroup.children, grandParent, ungroupTime, scene, op);
+			_static_CollapseHierarchy(toUngroup.children, scene.root, ungroupTime, scene, op);
 			
 			return result;
 		}
@@ -91,7 +89,6 @@ package sg.edu.smu.ksketch2.operators
 			for(var i:int = 0; i<objects.length(); i++)
 			{
 				currentObject = objects.getObjectAt(i);
-				
 				//Merge objects' ancestors powers into itself unutil stopParent or root is reached
 				while(currentObject.parent != stopParent && currentObject.parent != scene.root)
 				{

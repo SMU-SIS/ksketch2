@@ -3,7 +3,7 @@
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		alpha.disabled="0.5" creationComplete="_creationCompleteHandler()"
 		width="{Capabilities.screenDPI*0.25}"
-		height="{Capabilities.screenDPI*0.25}"
+		height="{width}"
 		>
 	<!-- host component -->
 	<fx:Metadata>

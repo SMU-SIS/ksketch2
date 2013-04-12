@@ -11,7 +11,7 @@
 			<s:VerticalLayout paddingLeft="3" paddingRight="3" paddingTop="10" paddingBottom="10"
 							  verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:Group width="92%" height="35" id="contentGroup" mouseChildren="false">
+		<s:Group width="92%" height="{height*0.35}" id="contentGroup" mouseChildren="false">
 			<s:Rect width="101%" height="100%" id="backgroundFill">
 				<s:fill>
 					<s:SolidColor color="0xFFFFFF"/>

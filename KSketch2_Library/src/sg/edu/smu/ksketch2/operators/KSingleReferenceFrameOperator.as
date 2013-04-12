@@ -807,7 +807,7 @@ package sg.edu.smu.ksketch2.operators
 			//Such that it is the same as the source reference frame
 			//The following loop makes sure that this operator's reference frame
 			//Has keys at the key times of the source key list
-			while(currentKey && currentKey.time <= stopMergeTime)
+			while(currentKey)
 			{
 				//To Merge Ref Frame is a new reference frame
 				//This insert key op is basically adding a cloned key from the source into it
@@ -836,26 +836,9 @@ package sg.edu.smu.ksketch2.operators
 				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
 			
-			//Deal with the keys that may be missed if the source key list has a time after
-			//This operator's last time
-			toModifyKey = _refFrame.getKeyAtTime(stopMergeTime) as KSpatialKeyFrame;
-			if(!toModifyKey)
-			{
-				toModifyKey = _refFrame.getKeyAftertime(stopMergeTime) as KSpatialKeyFrame;
-				
-				if(toModifyKey)
-					toModifyKey.splitKey(currentKey.time, dummyOp);
-				else
-				{
-					toModifyKey = new KSpatialKeyFrame(stopMergeTime, _object.centroid);
-					op.addOperation(new KInsertKeyOperation(_refFrame.getKeyAtBeforeTime(stopMergeTime), null, toModifyKey));
-					_refFrame.insertKey(toModifyKey);
-				}
-			}
-			
 			currentKey = _refFrame.head as KSpatialKeyFrame;			
 			//Modify the source key list to be the same as this operator's key list
-			while(currentKey && currentKey.time <= stopMergeTime)
+			while(currentKey)
 			{
 				toModifyKey = toMergeRefFrame.getKeyAtTime(currentKey.time) as KSpatialKeyFrame;
 				if(!toModifyKey)
@@ -876,6 +859,13 @@ package sg.edu.smu.ksketch2.operators
 			{
 				toModifyKey = _refFrame.getKeyAtTime(currentKey.time) as KSpatialKeyFrame;
 				
+				if(!toModifyKey)
+				{
+					toModifyKey = new KSpatialKeyFrame(currentKey.time, _object.centroid);
+					op.addOperation(new KInsertKeyOperation(_refFrame.getKeyAtBeforeTime(currentKey.time), null, toModifyKey));
+					_refFrame.insertKey(toModifyKey);
+				}
+				
 				oldPath = toModifyKey.rotatePath.clone();
 				toModifyKey.rotatePath.mergePath(currentKey.rotatePath);
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.rotatePath, oldPath, KSketch2.TRANSFORM_ROTATION));
@@ -888,7 +878,16 @@ package sg.edu.smu.ksketch2.operators
 				toModifyKey.translatePath.mergePath(currentKey.translatePath);
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
 				
+				if(currentKey.time == stopMergeTime)
+					break;
+				
 				currentKey = currentKey.next as KSpatialKeyFrame;
+				
+				if(currentKey)
+				{
+					if(stopMergeTime < currentKey.time)
+						currentKey = currentKey.splitKey(stopMergeTime,op) as KSpatialKeyFrame;
+				}
 			}
 			
 			//Now correct the path that resulted from the difference between different rotation and scale centers.

@@ -867,7 +867,7 @@ package sg.edu.smu.ksketch2.operators
 			var centroidDiff:Point = sourceObject.centroid.subtract(_object.centroid);
 			var alteredPath:KPath;
 			var centroidPath:KPath;
-			trace("Merge", _object.id,"and", sourceObject.id);
+			
 			while(currentKey && currentKey.time <= stopMergeTime)
 			{
 				toModifyKey = _refFrame.getKeyAtTime(currentKey.time) as KSpatialKeyFrame;

@@ -13,6 +13,8 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	
+	import spark.core.SpriteVisualElement;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.selectors.ISelectionArbiter;
@@ -23,12 +25,9 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
-	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KFilteredLoopView;
-	
-	import spark.core.SpriteVisualElement;
 	
 	public class KLoopSelectInteractor extends KInteractor
 	{
@@ -113,6 +112,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			//Selection happens here
 			//A new set of selection is gather on every update.
 			var selectedObjects:KModelObjectList = (_arbiter as KSimpleArbiter).bestGuess(_portions, _KSketch.time, _root);
+			trace(selectedObjects);
 			_interactionControl.selection = new KSelection(selectedObjects);
 		}
 		

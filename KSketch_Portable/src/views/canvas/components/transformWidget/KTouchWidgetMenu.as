@@ -128,8 +128,8 @@ package views.canvas.components.transformWidget
 				_clearMotionButton.label = "Clear keys after "+ KTouchTimeControl.toTimeCode(_KSketch.time);
 			}
 			
-			_groupButton.label = "Group Selection";
-			_ungroupButton.label = "Ungroup Selection";
+			_groupButton.label = "Group";
+			_ungroupButton.label = "Ungroup";
 			
 			super.open(owner, modal);
 			_updateMenu();
@@ -287,7 +287,7 @@ package views.canvas.components.transformWidget
 			var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(_interactionControl.selection.objects, _KSketch.time, false, op);	
 			_interactionControl.selection = new KSelection(newObjectList);
 			_interactionControl.end_interaction_operation(op, _interactionControl.selection);
-			_updateMenu();
+			close();
 		}
 		
 		private function _canUngroup():void

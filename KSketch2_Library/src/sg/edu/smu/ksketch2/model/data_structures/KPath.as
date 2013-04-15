@@ -328,11 +328,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return;
 			
 			var offSetTime:int = points[0].time;
-			var endPoint:KTimedPoint = find_Point(1).clone();
 			var duration:int = pathDuration - offSetTime;
 			var currentPoint:KTimedPoint;	
 			var proportion:Number;
-			
 			for(var i:int = 0; i<length; i++)
 			{
 				currentPoint = points[i];

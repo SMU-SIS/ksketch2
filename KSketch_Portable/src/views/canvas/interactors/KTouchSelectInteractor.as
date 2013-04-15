@@ -15,17 +15,18 @@ package views.canvas.interactors
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
 	
+	import spark.core.SpriteVisualElement;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.KInteractor;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.IObjectView;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.view.KObjectView;
 	import sg.edu.smu.ksketch2.view.KStrokeView;
-	
-	import spark.core.SpriteVisualElement;
 	
 	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
@@ -122,7 +123,11 @@ package views.canvas.interactors
 				//After we are done with processing the selection, dump the results into the
 				//List below and make a new selection
 				var selectedObjectList:KModelObjectList = new KModelObjectList();
-				selectedObjectList.add(objectView.object);
+				var object:KObject = objectView.object;
+				if(object.parent != _KSketch.root)
+					selectedObjectList.add(object.parent);
+				else
+					selectedObjectList.add(object);					
 				newSelection = new KSelection(selectedObjectList);
 			}
 	

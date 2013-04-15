@@ -855,6 +855,19 @@ package sg.edu.smu.ksketch2.operators
 			//Merge the two key lists
 			currentKey = toMergeRefFrame.head as KSpatialKeyFrame;
 			var oldPath:KPath;
+			var keyStartTime:int;
+			var currentTime:int;
+			var oldMatrix:Matrix;
+			var newMatrix:Matrix;
+			var oldPosition:Point;
+			var newPosition:Point;
+			var difference:Point;
+			
+			var centroid:Point = _object.centroid;
+			var centroidDiff:Point = sourceObject.centroid.subtract(_object.centroid);
+			var alteredPath:KPath;
+			var centroidPath:KPath;
+			trace("Merge", _object.id,"and", sourceObject.id);
 			while(currentKey && currentKey.time <= stopMergeTime)
 			{
 				toModifyKey = _refFrame.getKeyAtTime(currentKey.time) as KSpatialKeyFrame;
@@ -875,9 +888,25 @@ package sg.edu.smu.ksketch2.operators
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.scalePath, oldPath, KSketch2.TRANSFORM_SCALE));
 
 				oldPath = toModifyKey.translatePath.clone();
-				toModifyKey.translatePath.mergePath(currentKey.translatePath);
-				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
+				//toModifyKey.translatePath.mergePath(currentKey.translatePath);
 				
+				currentTime = toModifyKey.startTime;
+				keyStartTime = currentTime;
+				alteredPath = new KPath();
+
+				while(currentTime <= toModifyKey.time)
+				{
+					oldPosition = oldInterface.matrix(currentTime).transformPoint(centroid);
+					oldPosition = sourceInterface.matrix(currentTime).transformPoint(oldPosition);
+					newMatrix = matrix(currentTime);
+					newPosition = newMatrix.transformPoint(centroid);
+					difference = oldPosition.subtract(newPosition); //We want to go from new to old!
+					alteredPath.push(difference.x, difference.y, currentTime-keyStartTime);
+					currentTime += KSketch2.ANIMATION_INTERVAL;
+				}				
+
+				toModifyKey.translatePath.mergePath(alteredPath);
+				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
 				if(currentKey.time == stopMergeTime)
 					break;
 				
@@ -888,27 +917,6 @@ package sg.edu.smu.ksketch2.operators
 					if(stopMergeTime < currentKey.time)
 						currentKey = currentKey.splitKey(stopMergeTime,op) as KSpatialKeyFrame;
 				}
-			}
-			
-			//Now correct the path that resulted from the difference between different rotation and scale centers.
-			currentKey = toMergeRefFrame.head as KSpatialKeyFrame;
-			var matrixBefore:Matrix;
-			var matrixAfter:Matrix;
-			var positionBefore:Point;
-			var positionAfter:Point;
-			var positionDifference:Point;
-			while(currentKey && currentKey.time <= stopMergeTime)
-			{
-				toModifyKey = _refFrame.getKeyAtTime(currentKey.time) as KSpatialKeyFrame;
-				matrixBefore = oldInterface.matrix(currentKey.time);
-				matrixBefore.concat(sourceInterface.matrix(currentKey.time));
-				matrixAfter = matrix(currentKey.time);
-				positionBefore = matrixBefore.transformPoint(_object.centroid);
-				positionAfter = matrixAfter.transformPoint(_object.centroid);
-				
-				positionDifference = positionBefore.subtract(positionAfter);
-				//_interpolateKey(positionDifference.x, positionDifference.y, currentKey, KSketch2.TRANSFORM_TRANSLATION, currentKey.time, op, true);
-				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
 			
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, stopMergeTime));

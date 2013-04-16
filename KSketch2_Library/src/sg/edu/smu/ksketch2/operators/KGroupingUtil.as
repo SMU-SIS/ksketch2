@@ -9,12 +9,12 @@
 package sg.edu.smu.ksketch2.operators
 {
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KParentChangeOperation;
-	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 
 	public class KGroupingUtil
 	{
@@ -51,9 +51,9 @@ package sg.edu.smu.ksketch2.operators
 		 * Objects that were not ungrouped will not be returned.
 		 * Returned result will not be ordered according to their ids.
 		 */
-		public function ungroup(toUngroup:KGroup, ungroupTime:int, scene:KSceneGraph, op:KCompositeOperation):KModelObjectList
+		public function ungroup(toUngroupList:KModelObjectList, ungroupTime:int, scene:KSceneGraph, op:KCompositeOperation):KModelObjectList
 		{
-			return _ungroupObjects(toUngroup, op)
+			return _ungroupObjects(toUngroupList, ungroupTime, scene, op)
 		}
 		
 		/**
@@ -112,22 +112,14 @@ package sg.edu.smu.ksketch2.operators
 		 * Actual ungrouping function. Dumps the children of the given group into the grand parent.
 		 * Objects ungrouped in this manner loses all of its parent's transform
 		 */
-		protected function _ungroupObjects(toUngroup:KGroup, op:KCompositeOperation):KModelObjectList
+		protected function _ungroupObjects(toUngroupList:KModelObjectList, ungroupTime:int, scene:KSceneGraph,
+										   op:KCompositeOperation):KModelObjectList
 		{
-			if(toUngroup.id == 0)
-				throw new Error("You Don't Ungroup the root bro");
+			//Add the objects in the given list to the new parent 
+			for(var i:int = 0; i< toUngroupList.length(); i++)
+				op.addOperation(addObjectToParent(toUngroupList.getObjectAt(i), scene.root));
 			
-			var grandParent:KGroup = toUngroup.parent;
-			var numChildren:int = toUngroup.length();
-			var result:KModelObjectList = new KModelObjectList();
-			for(var i:int = 0; i < numChildren ; i++)
-			{
-				var currentChild:KObject = toUngroup.getObjectAt(i);
-				result.add(currentChild);
-				op.addOperation(addObjectToParent(currentChild, grandParent));
-			}
-			
-			return result;
+			return toUngroupList;
 		}
 	}
 }

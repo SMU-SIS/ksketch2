@@ -16,6 +16,7 @@ package views.canvas.components.transformWidget
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
@@ -93,7 +94,7 @@ package views.canvas.components.transformWidget
 			_buttonContainer.addElement(_insertKeyButton);
 			_buttonContainer.addElement(_clearMotionButton);
 			_buttonContainer.addElement(_groupButton);
-//			_buttonContainer.addElement(_ungroupButton);
+			_buttonContainer.addElement(_ungroupButton);
 
 			addEventListener(FlexEvent.CREATION_COMPLETE, _initiateMenu);
 		}
@@ -293,10 +294,26 @@ package views.canvas.components.transformWidget
 		private function _canUngroup():void
 		{
 			_ungroupButton.enabled = false;
+			
+			if(_interactionControl.selection.objects.length() > 0)
+			{
+				var objects:KModelObjectList = _interactionControl.selection.objects;
+				
+				for(var i:int = 0; i<objects.length(); i++)
+				{
+					if(objects.getObjectAt(i).parent != _KSketch.root || objects.getObjectAt(i) is KGroup)
+						_ungroupButton.enabled = true;
+				}
+			}
 		}
 		private function _ungroup(event:MouseEvent = null):void
 		{
-			
+			_interactionControl.begin_interaction_operation();
+			var op:KCompositeOperation = new KCompositeOperation();
+			var newObjectList:KModelObjectList = _KSketch.hierarchy_Ungroup(_interactionControl.selection.objects, _KSketch.time, op);	
+			_interactionControl.selection = new KSelection(newObjectList);
+			_interactionControl.end_interaction_operation(op, _interactionControl.selection);
+			close();
 		}
 		
 	}

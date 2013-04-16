@@ -116,8 +116,7 @@ package sg.edu.smu.ksketch2.utils
 		{
 			_interactionControl.begin_interaction_operation();
 			var op:KCompositeOperation = new KCompositeOperation();
-			var ungroupedObjectList:KModelObjectList = _KSketch.hierarchy_Ungroup(_interactionControl.selection.objects.getObjectAt(0) as KGroup
-																					, _KSketch.time, op);
+			var ungroupedObjectList:KModelObjectList = _KSketch.hierarchy_Ungroup(_interactionControl.selection.objects, _KSketch.time, op);
 			_interactionControl.selection = new KSelection(ungroupedObjectList);
 			_interactionControl.end_interaction_operation(op, _interactionControl.selection);
 		}

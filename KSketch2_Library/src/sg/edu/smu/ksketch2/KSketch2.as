@@ -214,9 +214,9 @@ package sg.edu.smu.ksketch2
 		 * Objects that were not ungrouped will not be returned.
 		 * Returns a list of ungrouped objects
 		 */
-		public function hierarchy_Ungroup(toUngroup:KGroup, ungroupTime:int, op:KCompositeOperation):KModelObjectList
+		public function hierarchy_Ungroup(toUngroupList:KModelObjectList, ungroupTime:int, op:KCompositeOperation):KModelObjectList
 		{
-			var result:KModelObjectList = _groupingUtil.ungroup(toUngroup, ungroupTime, _sceneGraph, op);
+			var result:KModelObjectList = _groupingUtil.ungroup(toUngroupList, ungroupTime, _sceneGraph, op);
 			_groupingUtil.removeSingletonGroups(root, _sceneGraph, op);
 			
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));

@@ -12,11 +12,11 @@ package sg.edu.smu.ksketch2.operators
 	
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
+	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
-	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 
 	public class KStaticGroupingUtil extends KGroupingUtil
 	{
@@ -89,13 +89,18 @@ package sg.edu.smu.ksketch2.operators
 			for(var i:int = 0; i<objects.length(); i++)
 			{
 				currentObject = objects.getObjectAt(i);
-				//Merge objects' ancestors powers into itself unutil stopParent or root is reached
-				while(currentObject.parent != stopParent && currentObject.parent != scene.root)
-				{
-					parent = currentObject.parent;
-					currentObject.transformInterface.mergeTransform(parent, stopCollapseTime, op);
-					op.addOperation(KGroupingUtil.addObjectToParent(currentObject, parent.parent));
-				}
+				_topDownCollapse(currentObject, stopParent, stopCollapseTime,scene, op)
+			}
+		}
+		
+		private function _topDownCollapse(object:KObject, stopParent:KGroup, stopCollapseTime:int,
+										  scene:KSceneGraph, op:KCompositeOperation):void
+		{
+			if(object.parent != stopParent && object.parent != scene.root)
+			{
+				_topDownCollapse(object.parent, stopParent, stopCollapseTime,scene, op);
+				object.transformInterface.mergeTransform(object.parent, stopCollapseTime, op);
+				op.addOperation(KGroupingUtil.addObjectToParent(object, object.parent.parent));
 			}
 		}
 		

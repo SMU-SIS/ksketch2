@@ -888,25 +888,27 @@ package sg.edu.smu.ksketch2.operators
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.scalePath, oldPath, KSketch2.TRANSFORM_SCALE));
 
 				oldPath = toModifyKey.translatePath.clone();
-				//toModifyKey.translatePath.mergePath(currentKey.translatePath);
-				
-				currentTime = toModifyKey.startTime;
-				keyStartTime = currentTime;
-				alteredPath = new KPath();
 
+				keyStartTime = toModifyKey.startTime;
+				currentTime = toModifyKey.startTime+ KSketch2.ANIMATION_INTERVAL;
+				
+				alteredPath = new KPath();
+				alteredPath.push(0,0,0);
 				while(currentTime <= toModifyKey.time)
 				{
 					oldPosition = oldInterface.matrix(currentTime).transformPoint(centroid);
 					oldPosition = sourceInterface.matrix(currentTime).transformPoint(oldPosition);
-					newMatrix = matrix(currentTime);
-					newPosition = newMatrix.transformPoint(centroid);
-					difference = oldPosition.subtract(newPosition); //We want to go from new to old!
+					newPosition = matrix(currentTime).transformPoint(centroid);
+					difference = oldPosition.subtract(newPosition);
 					alteredPath.push(difference.x, difference.y, currentTime-keyStartTime);
+					
 					currentTime += KSketch2.ANIMATION_INTERVAL;
-				}				
+				}
 
 				toModifyKey.translatePath.mergePath(alteredPath);
+				
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
+				
 				if(currentKey.time == stopMergeTime)
 					break;
 				

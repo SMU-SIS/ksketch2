@@ -112,7 +112,6 @@ package sg.edu.smu.ksketch2.controls.interactors
 			//Selection happens here
 			//A new set of selection is gather on every update.
 			var selectedObjects:KModelObjectList = (_arbiter as KSimpleArbiter).bestGuess(_portions, _KSketch.time, _root);
-			trace(selectedObjects);
 			_interactionControl.selection = new KSelection(selectedObjects);
 		}
 		

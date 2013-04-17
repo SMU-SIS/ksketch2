@@ -68,11 +68,16 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(object is KGroup)
 				{
-					var subList:KModelObjectList = ungroup((object as KGroup).children, ungroupTime, scene, op);
+					var children:KModelObjectList = new KModelObjectList();
 					var j:int;
+
+					for(j = 0; j < (object as KGroup).length(); j++)
+						children.add((object as KGroup).getObjectAt(j));
 					
-					for(j = 0; j < subList.length(); j++)
-						result.add(subList.getObjectAt(j));
+					var sublist:KModelObjectList = ungroup(children, ungroupTime, scene, op);
+					
+					for(j = 0; j < sublist.length(); j++)
+						result.add(sublist.getObjectAt(j));
 				}
 				else
 				{

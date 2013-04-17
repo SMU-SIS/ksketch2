@@ -42,7 +42,7 @@ package sg.edu.smu.ksketch2.view
 				_points = new Vector.<Point>();
 			
 
-			var filter:GlowFilter = new GlowFilter(_color, 1,10,10,8,1,true, true);
+			var filter:GlowFilter = new GlowFilter(_color, 1,5,5,8,1,true, true);
 			_glowFilter = [filter];
 			_render_DrawStroke();
 			cacheAsBitmap = true;
@@ -123,7 +123,9 @@ package sg.edu.smu.ksketch2.view
 		override protected function _updateSelection(event:KObjectEvent):void
 		{
 			if(_object.selected)
+			{
 				filters = _glowFilter;
+			}
 			else
 				filters = [];
 			

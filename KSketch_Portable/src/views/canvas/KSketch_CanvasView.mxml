@@ -31,7 +31,6 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			
-			import spark.components.supportClasses.ViewReturnObject;
 			import spark.events.ViewNavigatorEvent;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
@@ -149,10 +148,8 @@
 				}
 				
 				if(0 < sceneXML.children().length())
-				{
 					saveXML.appendChild(sceneXML);
-				}
-				
+
 				currentDocument.xml = saveXML;
 				return currentDocument;
 			}

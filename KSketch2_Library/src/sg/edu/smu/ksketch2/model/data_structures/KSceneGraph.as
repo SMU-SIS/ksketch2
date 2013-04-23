@@ -11,6 +11,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 	import mx.utils.StringUtil;
 	
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
+	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.KGroupingUtil;
@@ -122,6 +123,8 @@ package sg.edu.smu.ksketch2.model.data_structures
 					case "group":
 						deserializedObject = KGroup.groupFromXML(currentSerial);
 						break;
+					case "image":
+						deserializedObject = KImage.imageFromXML(currentSerial);
 				}
 				deserializedObject.deserialize(currentSerial);
 				objectInfo.object = deserializedObject;

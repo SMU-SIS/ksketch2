@@ -13,7 +13,6 @@ package sg.edu.smu.ksketch2.model.objects
 	import mx.utils.StringUtil;
 	
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
-	import sg.edu.smu.ksketch2.operators.KVisibilityControl;
 
 	public class KStroke extends KObject
 	{

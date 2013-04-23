@@ -46,7 +46,6 @@
 			
 			override public function createReturnObject():Object
 			{
-				trace("Returning image document");
 				return imageDocument;
 			}
 		]]>

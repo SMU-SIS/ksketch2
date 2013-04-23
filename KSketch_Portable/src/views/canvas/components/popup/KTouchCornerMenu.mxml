@@ -86,7 +86,6 @@
 			
 			public function exit():void
 			{
-				trace("Exiting");
 				close();
 				_canvasView.navigator.popView();
 			}

@@ -145,7 +145,6 @@
 				if(doc)
 					navigator.pushView(KSketch_CanvasView, doc);
 			}
-			
 		]]>
 	</fx:Script>
 	

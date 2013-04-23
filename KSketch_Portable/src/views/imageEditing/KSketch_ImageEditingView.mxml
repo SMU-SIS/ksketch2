@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="KSketch_ImageEditingView" addedToStage="_init()" actionBarVisible="false">
+	<fx:Script>
+		<![CDATA[
+			
+			public var imageDocument:KTouchImageDocument
+			private var _imageLoader:Loader;
+
+			[Bindable]
+			private var _originalBitmapData:BitmapData;
+			
+			//Called on visible
+			//Loads the confirmed image and displays it on the view for editing
+			//Should set all variables ehre
+			private function _init():void
+			{
+				if(data)
+				{
+					if(!(data is KTouchImageDocument))
+						throw new Error("Given data is not a valid image file!");
+				}
+				else
+					throw new Error("No file is given by the previous view");
+				
+				
+				imageDocument = data as KTouchImageDocument;
+				_imageLoader = new Loader();
+				_imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, _onImageLoadComplete);
+				_imageLoader.load(new URLRequest(imageDocument.imageFile.url));
+			}
+			
+			//Listener for loading completion
+			//Should clone the bitmap data for editing here
+			private function _onImageLoadComplete(event:Event):void
+			{
+				_originalBitmapData = Bitmap(LoaderInfo(event.target).content).bitmapData;
+			}
+			
+			//Exits the view
+			public function exit():void
+			{
+				imageDocument.imageObject = _originalBitmapData; //Should change this if another bitmapdata object is to be used
+				navigator.popView();	
+			}
+			
+			override public function createReturnObject():Object
+			{
+				trace("Returning image document");
+				return imageDocument;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:VGroup width="100%" height="100%">	
+		<s:Image source="{_originalBitmapData}" width="75%" height="75%"/>
+		<s:Button label="Back" id="btn_exitEditing" click="exit()"/>
+	</s:VGroup>
+</s:View>

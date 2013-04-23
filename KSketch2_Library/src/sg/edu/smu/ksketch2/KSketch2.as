@@ -220,7 +220,6 @@ package sg.edu.smu.ksketch2
 			_groupingUtil.removeSingletonGroups(root, _sceneGraph, op);
 			
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
-			root.debug();
 			return result;
 		}
 		

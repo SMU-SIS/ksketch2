@@ -53,14 +53,9 @@ package sg.edu.smu.ksketch2.utils
 		{
 			var i:int = 0;
 			var length:int = objects.length();
-			trace("Deselecting", objects);
+
 			for(i; i < length; i++)
-			{
-				trace("triggering deselected for", _objects.getObjectAt(i).id);
 				_objects.getObjectAt(i).selected = false;
-			}
-			
-			trace("=================");
 		}
 		
 		/**

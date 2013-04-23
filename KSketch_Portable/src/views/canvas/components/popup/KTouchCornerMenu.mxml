@@ -4,11 +4,15 @@
 						   creationComplete="setUpToggles()">
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			
 			import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
 			
 			import views.canvas.KSketch_CanvasView;
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			import views.canvas.interactors.KTouchDrawInteractor;
+			import views.imageEditing.KSketch_ImageEditingView;
+			import views.imageEditing.KTouchImageDocument;
 			
 			private var _interactionControl:KMobileInteractionControl;
 			private var _canvasView:KSketch_CanvasView;
@@ -31,13 +35,19 @@
 				isPen = _isPen;	
 			}
 			
-			public function activateCamera():void
+			private function _activateCamera():void
 			{
+				var camera:CameraUI = new CameraUI();
+				camera.addEventListener(MediaEvent.COMPLETE, _imageConfirmed);
+				camera.launch(MediaType.IMAGE);
 				close();
 			}
 			
-			public function activateGallery():void
+			private function _activateGallery():void
 			{
+				var gallery:CameraRoll = new CameraRoll();
+				gallery.addEventListener(MediaEvent.SELECT, _imageConfirmed);
+				gallery.browseForImage();
 				close();
 			}
 			
@@ -76,8 +86,25 @@
 			
 			public function exit():void
 			{
+				trace("Exiting");
 				close();
 				_canvasView.navigator.popView();
+			}
+			
+			private function _imageConfirmed(event:MediaEvent):void
+			{
+				var mediaPromise:MediaPromise = event.data;
+				if(mediaPromise)
+				{
+					if(!mediaPromise.file)
+						trace("No media promise file!");
+					else
+					{
+						var imageDocument:KTouchImageDocument = new KTouchImageDocument(mediaPromise.file);
+
+						_canvasView.navigator.pushView(KSketch_ImageEditingView, imageDocument);
+					}
+				}
 			}
 		]]>
 	</fx:Script>
@@ -152,18 +179,19 @@
 				<s:Button name="modeD" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_P}"/>
 				<s:Button name="modeDI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_PK}"/>
 			</s:Group>-->
-<!--		<s:Group>
+			<s:Group>
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
-				<s:Button name="camera" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
-				<s:Button name="gallery" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin"/>
+				<s:Button name="camera" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="_activateCamera()" enabled="{CameraUI.isSupported}"/>
+				<s:Button name="gallery" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="_activateGallery()" enabled="{CameraRoll.supportsBrowseForImage}"/>
 			</s:Group>
 			<s:Line alpha="0.25" width="90%">
 				<s:stroke>
 					<s:SolidColorStroke weight="1" color="0x000000"/>
 				</s:stroke>
-			</s:Line>						
+			</s:Line>
+		<!--
 			<s:Group>
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>

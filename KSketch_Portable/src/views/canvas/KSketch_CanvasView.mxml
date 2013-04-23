@@ -13,13 +13,15 @@
 		xmlns:components="views.canvas.components.*" 
 		xmlns:buttondrawer="views.canvas.components.buttondrawer.*" 
 		xmlns:view="sg.edu.smu.ksketch2.view.*"
-	    creationComplete="initCanvas()"
 		xmlns:transformWidget="views.canvas.components.transformWidget.*"
 		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
 		xmlns:timeBar="views.canvas.components.timeBar.*"
-		destructionPolicy="auto"
-		add="_addHandler(event);" xmlns:utils="starling.utils.*" xmlns:popup="views.canvas.components.popup.*" 
+		destructionPolicy="never"
+		xmlns:utils="starling.utils.*" xmlns:popup="views.canvas.components.popup.*" 
 		viewDeactivate="_viewDeactivateHandler()"
+		viewActivate="_viewActivateHandler()"
+		creationComplete="initCanvas()"
+		add="_addHandler()"
 		>
 	<fx:Declarations>
 		<popup:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{(height/2)-(cornerMenu.height/2)}"/>
@@ -29,6 +31,7 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			
+			import spark.components.supportClasses.ViewReturnObject;
 			import spark.events.ViewNavigatorEvent;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
@@ -39,6 +42,7 @@
 			import views.canvas.interactioncontrol.KMobileInteractionControl;
 			import views.canvas.interactors.KCanvasInteractorManager;
 			import views.canvas.interactors.widget.KWidgetInteractorManager;
+			import views.imageEditing.KTouchImageDocument;
 			
 			public static const CANVAS_BUTTON_COLOR:uint = 0x000000;
 			public static const CANVAS_BUTTON_BLEND:Number = 0.55;
@@ -51,15 +55,15 @@
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
 			private var _timeTickControl:KTouchTickMarkControl;
-			
-			private var _newObjType:uint = 0;
+			private var _imageData:KTouchImageDocument;
 			
 			//We probably need a load and save handler in this canvas view
 			//The xml can be passed through a data handler and the load handler will access it though {data}
 			public function initCanvas():void
-			{				
+			{	
 				if(!_KSketch)
 				{
+
 					_KSketch = new KSketch2();
 
 					_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
@@ -84,11 +88,30 @@
 					interceptor.graphics.drawRect(playBounds.x, playBounds.y, playBounds.width, playBounds.height);
 					interceptor.graphics.endFill();
 					playButton.init(timeControl, _interactionControl,interceptor, _KSketch);
+					_interactionControl.reset();
 				}
-					
-				_interactionControl.reset();
+			}
+			
+			private function _addHandler():void
+			{
+				if(navigator.poppedViewReturnedObject)
+					_imageData = navigator.poppedViewReturnedObject.object as KTouchImageDocument;
+			}
+			
+			private function _viewActivateHandler():void
+			{
+				if(!_KSketch)
+					initCanvas();
 				
-				if(data)
+				if(_imageData)
+				{
+					//Add image here
+					if(_imageData.imageObject)
+						_KSketch.object_Add_Image(_imageData.imageObject, _KSketch.time);
+					
+					_imageData = null;
+				}
+				else if(data)
 				{
 					if(data is KSketchDocument)
 					{
@@ -96,9 +119,10 @@
 						
 						if(currentDocument.xml.scene.children().length() > 0)
 							_KSketch.generateSceneFromXML(new XML(currentDocument.xml.scene));
-						
+
+						data = null;
 						_KSketch.beginSession();
-					}					
+					}	
 				}
 			}
 			
@@ -108,9 +132,29 @@
 				cornerMenu.close();	
 			}
 			
-			private function _addHandler(e:FlexEvent):void
+			override public function createReturnObject():Object
 			{
-				_addObjHandler();
+				var saveXML:XML = currentDocument.xml;
+				delete(saveXML.scene);
+
+				var sceneXML:XML = _KSketch.sceneXML;
+				var logXML:XML = _KSketch.sessionLog;
+				
+				if(0 < logXML.children().length())
+				{
+					if(!saveXML.log)
+						saveXML.appendChild(<log/>);
+					
+					saveXML.appendChild(logXML);
+				}
+				
+				if(0 < sceneXML.children().length())
+				{
+					saveXML.appendChild(sceneXML);
+				}
+				
+				currentDocument.xml = saveXML;
+				return currentDocument;
 			}
 			
 			private function _menuBtnHandler():void
@@ -120,59 +164,6 @@
 				else
 					cornerMenu.open(menuButton);
 				return;
-				navigator.addEventListener("addImgToScn", _addImgHandler);
-				navigator.pushView(views.canvas.Menu, _interactionControl);
-			}
-			
-			private function _addImgHandler(e:Event):void
-			{
-				_removeMenuBtnHandler();
-				_newObjType = 1;
-			}
-			
-			private function _removeMenuBtnHandler():void
-			{
-				navigator.removeEventListener("addImgToScn", _addImgHandler);
-			}
-			
-			private function _addObjHandler():void
-			{
-				if(_newObjType == 1)
-				{
-					//Add image
-					var myImg:Loader = new Loader();
-					
-					myImg.load(new URLRequest(navigator.poppedViewReturnedObject.object as String));
-					myImg.contentLoaderInfo.addEventListener(Event.COMPLETE, _imgLoadedHandler);
-					_newObjType = 0;
-				}
-			}
-			
-			private function _imgLoadedHandler(e:Event):void
-			{				
-				e.target.removeEventListener(Event.COMPLETE, _imgLoadedHandler);
-				_KSketch.object_Add_Image((e.target.content as Bitmap).bitmapData, _KSketch.time);
-			}
-			
-			override public function createReturnObject():Object
-			{
-				
-				var saveXML:XML = currentDocument.xml;
-				
-				delete(saveXML.scene);
-
-				var sceneXML:XML = _KSketch.sceneXML;
-				var logXML:XML = _KSketch.sessionLog;
-				
-				if(0 < sceneXML.children().length())
-				{
-					saveXML.appendChild(sceneXML);
-					saveXML.appendChild(<log/>);
-					saveXML.log.appendChild(logXML);
-					currentDocument.xml = saveXML;
-				}
-				
-				return currentDocument;
 			}
 		]]>
 	</fx:Script>

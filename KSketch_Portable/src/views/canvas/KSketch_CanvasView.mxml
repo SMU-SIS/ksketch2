@@ -66,11 +66,8 @@
 					_KSketch = new KSketch2();
 
 					_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
-
 					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-				
 					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, feedbackMessage);
-
 					_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
 				
 					feedbackMessage.init(this);

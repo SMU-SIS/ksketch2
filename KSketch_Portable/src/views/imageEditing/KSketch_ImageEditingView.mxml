@@ -3,6 +3,7 @@
 		xmlns:s="library://ns.adobe.com/flex/spark" title="KSketch_ImageEditingView" addedToStage="_init()" actionBarVisible="false">
 	<fx:Script>
 		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketch2;
 			
 			public var imageDocument:KTouchImageDocument;
 			private var _originalImageDocument:KTouchImageDocument;
@@ -43,7 +44,23 @@
 			public function exit():void
 			{
 				imageDocument = _originalImageDocument;
-				imageDocument.imageObject = _originalBitmapData; //Should change this if another bitmapdata object is to be used
+
+				var scaleWidth:Number = 1;
+				var scaleHeight:Number = 1;
+				if(_originalBitmapData.width > 720)
+					scaleWidth = 720/_originalBitmapData.width;
+				
+				if(_originalBitmapData.height > 405)
+					scaleHeight = 405/_originalBitmapData.height;
+				
+				var scale:Number = Math.min(scaleWidth, scaleHeight);
+				var matrix:Matrix = new Matrix();
+				matrix.scale(scale, scale);
+				
+				var resized:BitmapData = new BitmapData(_originalBitmapData.width * scale, _originalBitmapData.height * scale, true, 0x000000);
+				resized.draw(_originalBitmapData, matrix, null, null, null, true);
+				
+				imageDocument.imageObject = resized;
 				navigator.popView();	
 			}
 			

@@ -10,12 +10,9 @@ package views.canvas.interactors
 {
 	import com.coreyoneil.collision.CollisionList;
 	
-	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
-	
-	import spark.core.SpriteVisualElement;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
@@ -24,11 +21,10 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.IObjectView;
+	import sg.edu.smu.ksketch2.view.KImageView;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.view.KObjectView;
 	import sg.edu.smu.ksketch2.view.KStrokeView;
-	
-	import views.canvas.interactioncontrol.KMobileInteractionControl;
 	
 	public class KTouchSelectInteractor extends KInteractor
 	{
@@ -78,7 +74,7 @@ package views.canvas.interactors
 			{
 				var display:KObjectView = view.displayable();
 				
-				if(display is KStrokeView)
+				if(display is KStrokeView || display is KImageView)
 					collisionList.addItem(display);
 			}
 			

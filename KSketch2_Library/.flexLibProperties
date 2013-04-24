@@ -2,7 +2,6 @@
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
     <classEntry path="sg.edu.smu.ksketch2.utils.KPathProcessing"/>
-    <classEntry path="sg.edu.smu.ksketch2.utils.Encoding"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

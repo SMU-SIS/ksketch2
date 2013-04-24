@@ -5,12 +5,10 @@ package sg.edu.smu.ksketch2.model.objects
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
-	import mx.graphics.codec.PNGEncoder;
 	import mx.utils.Base64Decoder;
 	import mx.utils.Base64Encoder;
 	
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
-	import sg.edu.smu.ksketch2.utils.Encoding;
 
 	public class KImage extends KObject
 	{

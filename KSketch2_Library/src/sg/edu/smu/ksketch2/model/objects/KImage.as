@@ -15,13 +15,17 @@ package sg.edu.smu.ksketch2.model.objects
 		protected var _points:Vector.<Point>;
 		
 		private var _imgData:BitmapData;
+		public var x:Number;
+		public var y:Number;
 		
-		public function KImage(id:int, newImgData:BitmapData)
+		
+		public function KImage(id:int, newImgData:BitmapData, imgX:Number, imgY:Number)
 		{
 			super(id);
-			
+			x = imgX;
+			y = imgY;
 			_imgData = newImgData;
-			this._center = new Point(_imgData.width/2, _imgData.height/2);
+			this._center = new Point(x+_imgData.width/2, y+_imgData.height/2);
 			_points = new Vector.<Point>;
 			_points.push(this._center.clone());
 			transformInterface = new KSingleReferenceFrameOperator(this);
@@ -59,6 +63,8 @@ package sg.edu.smu.ksketch2.model.objects
 			objectXML.appendChild(imageXML);
 			encoder.encodeBytes(data);
 			imageXML.@data = encoder.toString();
+			imageXML.@x = x.toString();
+			imageXML.@y = y.toString();
 			imageXML.@width = _imgData.width.toString();
 			imageXML.@height = _imgData.height.toString();			
 			
@@ -80,7 +86,7 @@ package sg.edu.smu.ksketch2.model.objects
 			var x:Number = xml.imageData.@x;
 			var y:Number = xml.imageData.@y;
 			
-			return new KImage(int(xml.@id), bitmapData);
+			return new KImage(int(xml.@id), bitmapData,x,y);
 		}
 		
 		override public function clone(newObjectID:int, withMotions:Boolean = false):KObject

@@ -78,11 +78,6 @@ package views.canvas.components.timeBar
 				_magnifier.visible = false;
 				_magnifier.close();
 			}
-			
-			if(_KSketch)
-				_KSketch.time = 0;
-			
-			time = 0;
 		}
 		
 		/**

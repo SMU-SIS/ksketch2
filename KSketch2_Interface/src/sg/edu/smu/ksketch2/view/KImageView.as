@@ -1,7 +1,8 @@
 package sg.edu.smu.ksketch2.view
 {	
-	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import flash.display.Bitmap;
+	
+	import sg.edu.smu.ksketch2.model.objects.KImage;
 	
 	public class KImageView extends KObjectView
 	{
@@ -12,6 +13,8 @@ package sg.edu.smu.ksketch2.view
 			super(object, isGhost, showPath);
 			
 			_imgDisplay.bitmapData = object.imgData;
+			_imgDisplay.x = (object as KImage).x;
+			_imgDisplay.y = (object as KImage).y;
 			addChild(_imgDisplay);			
 		}
 	}

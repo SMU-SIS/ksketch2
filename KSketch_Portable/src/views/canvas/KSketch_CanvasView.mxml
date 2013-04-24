@@ -117,6 +117,7 @@
 							_KSketch.generateSceneFromXML(new XML(currentDocument.xml.scene));
 
 						data = null;
+						_KSketch.time = 0;
 						_KSketch.beginSession();
 					}	
 				}

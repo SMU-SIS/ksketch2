@@ -169,7 +169,12 @@ package sg.edu.smu.ksketch2
 	
 		public function object_Add_Image(imgData:BitmapData, time:int):KImage
 		{
-			var newImage:KImage = new KImage(_sceneGraph.nextHighestID, imgData);
+			var centerX:Number = (KSketch2.CANONICAL_WIDTH * scaleX)/2;
+			var centerY:Number = (KSketch2.CANONICAL_HEIGHT * scaleY)/2;
+			var imgX:Number = centerX - (imgData.width/2);
+			var imgY:Number = centerY - (imgData.height/2);
+			
+			var newImage:KImage = new KImage(_sceneGraph.nextHighestID, imgData, imgX, imgY);
 			_sceneGraph.registerObject(newImage, null);
 			newImage.init(time, null);
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));

@@ -95,8 +95,15 @@
 				var mediaPromise:MediaPromise = event.data;
 				if(mediaPromise)
 				{
+
 					if(!mediaPromise.file)
-						trace("No media promise file!");
+					{
+						if(mediaPromise.isAsync)
+						{
+							var eventSource:IEventDispatcher = mediaPromise.open() as IEventDispatcher;            
+							eventSource.addEventListener( Event.COMPLETE, _onMediaLoaded ); 
+						}
+					}
 					else
 					{
 						var imageDocument:KTouchImageDocument = new KTouchImageDocument(mediaPromise.file);
@@ -104,6 +111,21 @@
 						_canvasView.navigator.pushView(KSketch_ImageEditingView, imageDocument);
 					}
 				}
+			}
+			
+			private function _onMediaLoaded(event:Event):void
+			{
+				var dataSource:IDataInput = event.target as IDataInput;
+				var imageBytes:ByteArray = new ByteArray();
+				dataSource.readBytes( imageBytes );
+
+				var now:Date = new Date();
+				var filename:String = "IMG" + now.fullYear + now.month + now.day + now.hours + now.minutes + now.seconds + ".jpg";
+				var imgFile:File = File.applicationStorageDirectory.resolvePath( filename );
+				
+				var imageDocument:KTouchImageDocument = new KTouchImageDocument(imgFile);
+				
+				_canvasView.navigator.pushView(KSketch_ImageEditingView, imageDocument);
 			}
 		]]>
 	</fx:Script>

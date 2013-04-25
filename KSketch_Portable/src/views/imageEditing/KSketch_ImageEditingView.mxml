@@ -63,20 +63,22 @@
 				var scaleHeight:Number = 1;
 				
 				if(img.source.width > 720)
-					scaleWidth = 720/img.source.width;
+					scaleWidth = 720/img.bitmapData.width;
 				
 				if(img.source.height > 405)
-					scaleHeight = 405/img.source.height;
+					scaleHeight = 405/img.bitmapData.height;
 				
 				if(scaleWidth != 1 || scaleHeight != 1)
 				{
 					var scale:Number = Math.min(scaleWidth, scaleHeight);
+					scale = Math.abs(scale);
+					var width:int = (img.bitmapData.width * scale) || 1;
+					var height:int = (img.bitmapData.height * scale) || 1;
+					var result:BitmapData = new BitmapData(width, height, true, 0x00000000);
 					var matrix:Matrix = new Matrix();
 					matrix.scale(scale, scale);
-					
-					var resized:BitmapData = new BitmapData(img.source.width * scale, img.source.height * scale, true, 0x000000);
-					resized.draw(img, matrix, null, null, null, true);
-					imageDocument.imageObject = resized;
+					result.draw(new Bitmap(img.bitmapData), matrix);
+					imageDocument.imageObject = result;
 				}
 				else
 					imageDocument.imageObject = img.bitmapData;
@@ -116,7 +118,6 @@
 				drawMat = new Matrix(1,0,0,1,-(rect.x)+img.x, -(rect.y)+img.y);
 				fullBitmapData.draw(img,drawMat);				
 				preProcessed = _sobelOperation(fullBitmapData);
-				img.source = preProcessed;
 			}
 			
 			private function _startLasso(event:MouseEvent):void

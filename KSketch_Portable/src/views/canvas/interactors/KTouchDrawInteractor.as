@@ -7,9 +7,9 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
-	import sg.edu.smu.ksketch2.view.IObjectView;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
-	import sg.edu.smu.ksketch2.view.KObjectView;
+	import sg.edu.smu.ksketch2.view.objects.IObjectView;
+	import sg.edu.smu.ksketch2.view.objects.KObjectView;
 	
 	public class KTouchDrawInteractor extends KDrawInteractor
 	{

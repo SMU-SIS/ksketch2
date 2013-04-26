@@ -20,11 +20,11 @@ package views.canvas.interactors
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KSelection;
-	import sg.edu.smu.ksketch2.view.IObjectView;
-	import sg.edu.smu.ksketch2.view.KImageView;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
-	import sg.edu.smu.ksketch2.view.KObjectView;
-	import sg.edu.smu.ksketch2.view.KStrokeView;
+	import sg.edu.smu.ksketch2.view.objects.IObjectView;
+	import sg.edu.smu.ksketch2.view.objects.KImageView;
+	import sg.edu.smu.ksketch2.view.objects.KObjectView;
+	import sg.edu.smu.ksketch2.view.objects.KStrokeView;
 	
 	public class KTouchSelectInteractor extends KInteractor
 	{

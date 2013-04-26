@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.view
+package sg.edu.smu.ksketch2.view.objects
 {
 	import flash.filters.GlowFilter;
 	import flash.geom.Point;
@@ -26,11 +26,9 @@ package sg.edu.smu.ksketch2.view
 		/**
 		 * Object view representing strokes
 		 */
-		public function KStrokeView(object:KStroke, isGhost:Boolean = false, showPath:Boolean = true)
+		public function KStrokeView(object:KStroke)
 		{
-			if(!isGhost)
-				_ghost = new KStrokeView(object, true, showPath);
-			super(object, isGhost, showPath);
+			super(object);
 			
 			if(object)
 			{
@@ -111,10 +109,6 @@ package sg.edu.smu.ksketch2.view
 			var i:int;
 			for(i = 1; i < length; i++)
 				graphics.lineTo(_points[i].x, _points[i].y);
-			
-			//For debug!
-			//if(_object && _object.centroid)
-				//graphics.drawCircle(_object.centroid.x, _object.centroid.y, 3);
 		}
 		
 		/**

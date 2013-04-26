@@ -14,9 +14,9 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
-	import sg.edu.smu.ksketch2.view.IObjectView;
+	import sg.edu.smu.ksketch2.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
-	import sg.edu.smu.ksketch2.view.KObjectView;
+	import sg.edu.smu.ksketch2.view.objects.KObjectView;
 	
 	public class KEraserInteractor extends KInteractor
 	{

@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.view
+package sg.edu.smu.ksketch2.view.objects
 {
 	import flash.display.DisplayObject;
 	import flash.filters.GlowFilter;
@@ -18,11 +18,9 @@ package sg.edu.smu.ksketch2.view
 	{
 		private var _glowFilter:Array;
 		
-		public function KGroupView(object:KObject, isGhost:Boolean, showPath:Boolean = true)
+		public function KGroupView(object:KObject)
 		{
-			if(!isGhost)
-				_ghost = new KGroupView(object, true, showPath);	
-			super(object, isGhost, showPath);
+			super(object);
 		}
 		
 		override protected function _updateSelection(event:KObjectEvent):void

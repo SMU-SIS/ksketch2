@@ -18,20 +18,13 @@
 		 >
 	<fx:Script>
 		<![CDATA[
-			import mx.controls.Image;
-			import mx.resources.ResourceManager;
-			
 			import sg.edu.smu.ksketch2.controls.inputmethods.IInteractionMethod;
 			import sg.edu.smu.ksketch2.controls.inputmethods.KDesktopInput;
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
-			import sg.edu.smu.ksketch2.model.data_structures.KPath;
-			import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 			import sg.edu.smu.ksketch2.utils.KButtonCommandExecutor;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			
-			import spark.components.Image;
-
 			private var _KSketch:KSketch2;
 			private var _inputMethod:IInteractionMethod;
 			private var _interactionControl:IInteractionControl;
@@ -48,6 +41,7 @@
 			private function _initStates():void
 			{
 				modelDisplay.init(_KSketch, true);
+				motionDisplay.init(_KSketch, _interactionControl);
 				interactionWidget.init(_interactionControl);
 				timeSlider.init(_KSketch);
 				timeWidget.init(_KSketch, timeSlider, _interactionControl);
@@ -148,6 +142,8 @@
 				</s:layout>
 				<s:BorderContainer backgroundColor="0xFFFFFF" id="drawing_stage" borderColor="0x0000" borderWeight="2"
 								   width="{drawing_stage.height/9*16}" height="90%">
+					<view:KMotionDisplay id="motionDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
+										 scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
 					<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
 				</s:BorderContainer>

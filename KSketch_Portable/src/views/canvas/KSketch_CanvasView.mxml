@@ -75,6 +75,7 @@
 					rightTimeJumper.init(_KSketch, timeControl, KTouchTimeJumpControl.RIGHT);
 					
 					modelDisplay.init(_KSketch, true);
+					motionDisplay.init(_KSketch, _interactionControl);
 					timeControl.init(_KSketch, _timeTickControl);
 					cornerMenu.init(_interactionControl, this);
 					
@@ -214,9 +215,10 @@
 						</s:filters>
 					</s:Rect>
 					<!-- The model display displays the objects in the model -->
+					<view:KMotionDisplay id="motionDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
+										 scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
 					<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
-										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
-					
+										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>					
 				</s:Group> 
 			</s:Group>
 			

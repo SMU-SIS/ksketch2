@@ -28,9 +28,12 @@ package sg.edu.smu.ksketch2.view.objects
 			super();
 			_object = object;
 			
-			_object.addEventListener(KObjectEvent.OBJECT_SELECTION_CHANGED, _updateSelection);
-			_object.addEventListener(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _handle_object_Updated);
-			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _handle_object_Updated);
+			if(_object)
+			{
+				_object.addEventListener(KObjectEvent.OBJECT_SELECTION_CHANGED, _updateSelection);
+				_object.addEventListener(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _handle_object_Updated);
+				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _handle_object_Updated);
+			}
 		}
 		
 		public function get object():KObject

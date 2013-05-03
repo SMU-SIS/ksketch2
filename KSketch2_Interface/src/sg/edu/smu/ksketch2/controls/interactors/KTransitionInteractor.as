@@ -41,7 +41,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			
 			_toTransitObjects = _interactionControl.selection.objects;
 			_currentOperation = new KCompositeOperation();
-			_interactionControl.selection = null;
+//			_interactionControl.selection = null;
 		}
 		
 		//Compute transitions here

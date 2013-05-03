@@ -1,5 +1,6 @@
 package sg.edu.smu.ksketch2.view
 {
+	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
 	import spark.core.SpriteVisualElement;
@@ -28,6 +29,8 @@ package sg.edu.smu.ksketch2.view
 			_visibleMotionDisplays = new Dictionary(true);
 			_motionDisplays = new Dictionary(true);
 			_objectsWithPath = new KModelObjectList();
+			mouseChildren = false;
+			mouseEnabled = false;
 		}
 		
 		public function init(KSketchInstance:KSketch2, interactionControl:IInteractionControl):void
@@ -36,7 +39,9 @@ package sg.edu.smu.ksketch2.view
 			_interactionControl = interactionControl;
 			
 			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _turnOnMotionDisplays);
-			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _updateMotionDisplays);
+			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _handler_UpdateAllViews);
+			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _handler_UpdateAllViews);
+			_KSketch.addEventListener(KSketchEvent.EVENT_KSKETCH_INIT, reset);
 		}
 		
 		/**
@@ -48,7 +53,7 @@ package sg.edu.smu.ksketch2.view
 			var newObjectMotion:KObjectMotions = new KObjectMotions();
 			newObjectMotion.object = object;
 			addChild(newObjectMotion);
-			_motionDisplays[object] = newObjectMotion	
+			_motionDisplays[object] = newObjectMotion;
 		}
 		
 		/**
@@ -104,25 +109,24 @@ package sg.edu.smu.ksketch2.view
 		}
 		
 		/**
-		 * Asks all visible motion displays to update themselves
-		 * with shading, ghost movments or whatever.
+		 * Updates the view of each object in the views table.
 		 */
-		private function _updateMotionDisplays(event:KTimeChangedEvent):void		
+		private function _handler_UpdateAllViews(event:Event):void
 		{
-			if(!_objectsWithPath)
-				return;
-			
-			var i:int;
-			//for(i = 0; i < _objectsWithPath.length(); i++)
-			//	_usedMotionDisplays[_objectsWithPath.getObjectAt(i)].updateObjectMotion(event.from, event.to);
+			for(var view:Object in _visibleMotionDisplays)
+				_visibleMotionDisplays[view]._updateObjectMotion(_KSketch.time);
 		}
 		
-		/**
-		 * Sets and initiates the object's motion display on the screen (not rendered)
-		 */
-		private function generateObjectMotion(object:KObject):void
+		public function reset(event:KSketchEvent = null):void
 		{
+			while(numChildren!=0)
+				removeChildAt(0);
 			
+			mouseChildren = false;
+			mouseEnabled = false;
+			_visibleMotionDisplays = new Dictionary(true);
+			_motionDisplays = new Dictionary(true);
+			_objectsWithPath = new KModelObjectList();
 		}
 	}
 }

@@ -16,7 +16,7 @@ package sg.edu.smu.ksketch2.view
 		private var _object:KObject;
 		private var _pathPoints:Dictionary;
 		private var _motionPath:Shape;
-		private var _ghostHost:Sprite;			
+		private var _ghostHost:Sprite;
 		
 		/**
 		 *	Display class for motion paths and ghosts.
@@ -85,6 +85,14 @@ package sg.edu.smu.ksketch2.view
 			if(_object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				_motionPath.visible = false;
+				
+				var currentKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(event.time) as KSpatialKeyFrame;			
+				
+				while(currentKey)
+				{
+					delete(_pathPoints[currentKey]);
+					currentKey = currentKey.next as KSpatialKeyFrame;
+				}
 			}
 			else
 			{
@@ -102,6 +110,7 @@ package sg.edu.smu.ksketch2.view
 			{
 				var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(event.time) as KSpatialKeyFrame;			
 				_generateMotionPath(activeKey);
+				_updateMotionPath(event.time);
 			}
 			
 			if(_ghostHost.visible)
@@ -111,8 +120,7 @@ package sg.edu.smu.ksketch2.view
 		}
 		
 		private function _transformEnd(event:KObjectEvent):void
-		{
-			
+		{				
 			_motionPath.visible = true;
 			_ghostHost.visible = false;
 			
@@ -127,13 +135,35 @@ package sg.edu.smu.ksketch2.view
 		private function _updateMotionPath(time:int):void
 		{
 			var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(time) as KSpatialKeyFrame;			
+			
+			if(!activeKey)
+				return;
+			
+			_motionPath.graphics.clear();
+			
 			var path:Vector.<Point> = _pathPoints[activeKey];
 			
 			if(!path)
 				path = _generateMotionPath(activeKey);
 			
-			_motionPath.graphics.clear();
+			if(path)
+				_drawPath(path);
 			
+			if(activeKey.next)
+			{
+				path = null;				
+				path = _pathPoints[activeKey];
+				
+				if(!path)
+					path = _generateMotionPath(activeKey);
+
+				if(path)
+					_drawPath(path);
+			}
+		}
+		
+		private function _drawPath(path:Vector.<Point>):void
+		{
 			if(0 < path.length)
 			{
 				var currentPoint:Point = path[0];
@@ -153,13 +183,16 @@ package sg.edu.smu.ksketch2.view
 		
 		private function _generateMotionPath(key:KSpatialKeyFrame):Vector.<Point>
 		{
+			if(!key)
+				throw new Error("Unable to generate a motion path if there is no active key");
+			
 			var path:Vector.<Point>= new Vector.<Point>();			
 			var matrix:Matrix;
 			var currentTime:int = key.startTime;
 			var centroid:Point = _object.centroid;
 			var position:Point;
 			
-			while(currentTime < key.time)
+			while(currentTime <= key.time)
 			{
 				matrix = _object.fullPathMatrix(currentTime);
 				position = matrix.transformPoint(centroid);
@@ -167,9 +200,13 @@ package sg.edu.smu.ksketch2.view
 				currentTime += KSketch2.ANIMATION_INTERVAL;
 			}
 			
-			_pathPoints[key] = path;			
-			
-			return path;	
+			if(path.length > 0)
+			{
+				_pathPoints[key] = path;				
+				return path;	
+			}
+			else
+				return null;
 		}
 		
 		private function _updateGhosts(time:int):void

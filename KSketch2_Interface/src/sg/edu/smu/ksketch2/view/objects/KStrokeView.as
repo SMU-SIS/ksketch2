@@ -35,6 +35,7 @@ package sg.edu.smu.ksketch2.view.objects
 				points = object.points;
 				_color = object.color;
 				_thickness = object.thickness;
+				_ghost = new KStrokeGhost(object.points, object.color, object.thickness);
 			}
 			else
 				_points = new Vector.<Point>();

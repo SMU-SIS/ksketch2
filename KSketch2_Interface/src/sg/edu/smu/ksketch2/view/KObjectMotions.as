@@ -13,26 +13,32 @@ package sg.edu.smu.ksketch2.view
 	
 	public class KObjectMotions extends Sprite
 	{
+		public static var transformer:Sprite = new Sprite();
+		
 		private var _object:KObject;
 		private var _pathPoints:Dictionary;
+		private var _rotations:Dictionary;
 		private var _motionPath:Shape;
-		private var _ghostHost:Sprite;
 		
 		/**
-		 *	Display class for motion paths and ghosts.
+		 *	Display class for motion paths and static ghosts.
 		 *	Supposed to help in micromanaging object motion paths
+		 * 	Static ghosts show the objects' position, orientation and size
+		 *	at the end of the active key frame.
 		 */
 		public function KObjectMotions()
 		{
+			//So in essence, the object's motions are represented by a ghost and a motion path
+			//The motion path will show the user how the object gets to the ghost
+			//While the ghostill show how to t
+			
 			super();
 			
 			_motionPath = new Shape();
 			addChild(_motionPath);
 			
-			_ghostHost = new Sprite();
-			addChild(_ghostHost);
-			
 			_pathPoints = new Dictionary(true);
+			_rotations = new Dictionary(true);
 		}
 		
 		public function set object(newObject:KObject):void
@@ -80,7 +86,7 @@ package sg.edu.smu.ksketch2.view
 		private function _transformBegin(event:KObjectEvent):void
 		{
 			//If performance, need to hide paths
-			//Init ghosts here
+			//Init ghosts here?
 			
 			if(_object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
@@ -112,17 +118,11 @@ package sg.edu.smu.ksketch2.view
 				_generateMotionPath(activeKey);
 				_updateMotionPath(event.time);
 			}
-			
-			if(_ghostHost.visible)
-			{
-				
-			}
 		}
 		
 		private function _transformEnd(event:KObjectEvent):void
 		{				
 			_motionPath.visible = true;
-			_ghostHost.visible = false;
 			
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);	
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _transformUpdating);
@@ -141,11 +141,11 @@ package sg.edu.smu.ksketch2.view
 			
 			_motionPath.graphics.clear();
 			
+			if(!_pathPoints[activeKey])
+				_generateMotionPath(activeKey);
+			
 			var path:Vector.<Point> = _pathPoints[activeKey];
-			
-			if(!path)
-				path = _generateMotionPath(activeKey);
-			
+
 			if(path)
 				_drawPath(path);
 			
@@ -189,15 +189,21 @@ package sg.edu.smu.ksketch2.view
 			var path:Vector.<Point>= new Vector.<Point>();			
 			var matrix:Matrix;
 			var currentTime:int = key.startTime;
+			var currentKeyElapsedTime:int = 0;
 			var centroid:Point = _object.centroid;
 			var position:Point;
+			
+			var proportion:int;
+			var accumulatedRotation:Number = 0;
+			var currentRotation:Number;
+			var prevRotation:Number = 0;
 			
 			while(currentTime <= key.time)
 			{
 				matrix = _object.fullPathMatrix(currentTime);
 				position = matrix.transformPoint(centroid);
-				path.push(position);				
-				currentTime += KSketch2.ANIMATION_INTERVAL;
+				path.push(position);
+				currentTime += KSketch2.ANIMATION_INTERVAL;	
 			}
 			
 			if(path.length > 0)
@@ -207,11 +213,6 @@ package sg.edu.smu.ksketch2.view
 			}
 			else
 				return null;
-		}
-		
-		private function _updateGhosts(time:int):void
-		{
-			
 		}
 	}
 }

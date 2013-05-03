@@ -16,6 +16,8 @@ package sg.edu.smu.ksketch2.view.objects
 			imgDisplay.x = (object as KImage).x;
 			imgDisplay.y = (object as KImage).y;
 			addChild(imgDisplay);			
+			
+			_ghost = new KImageGhost(imgDisplay.bitmapData, imgDisplay.x, imgDisplay.y);
 		}
 	}
 }

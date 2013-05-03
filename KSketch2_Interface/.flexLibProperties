@@ -3,6 +3,9 @@
   <includeClasses>
     <classEntry path="sg.edu.smu.ksketch2.view.KMotionDisplay"/>
     <classEntry path="sg.edu.smu.ksketch2.view.KObjectMotions"/>
+    <classEntry path="sg.edu.smu.ksketch2.view.objects.KStrokeGhost"/>
+    <classEntry path="sg.edu.smu.ksketch2.view.objects.KImageGhost"/>
+    <classEntry path="sg.edu.smu.ksketch2.view.objects.KGroupGhost"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

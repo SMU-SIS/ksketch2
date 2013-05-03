@@ -8,9 +8,6 @@
  */
 package sg.edu.smu.ksketch2.view.objects
 {
-	import flash.display.DisplayObject;
-	import flash.filters.GlowFilter;
-	
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 
@@ -21,34 +18,13 @@ package sg.edu.smu.ksketch2.view.objects
 		public function KGroupView(object:KObject)
 		{
 			super(object);
+			_ghost = new KGroupGhost();
+			addChild(_ghost);
 		}
 		
 		override protected function _updateSelection(event:KObjectEvent):void
 		{
 			super._updateSelection(event);
-			
-			var filter:GlowFilter = new GlowFilter(0x9EF7A0,1,10,10,16,1);
-			_glowFilter = [filter];
-			
-			for(var i:int = 0; i< this.numChildren; i++)
-			{
-				var child:DisplayObject = this.getChildAt(i);
-				
-				if(_object.selected)
-				{
-					if(child is KGroupView)
-						(child as KGroupView)._updateSelection(event);
-					else if(child is KStrokeView)
-						(child as KStrokeView).filters = [new GlowFilter(0x9EF7A0,1,10,10,16,1)];
-				}
-				else
-				{
-					if(child is KGroupView)
-						(child as KGroupView)._updateSelection(event);
-					else if(child is KObjectView)
-						(child as KObjectView).object.selected = (child as KObjectView).object.selected;
-				}
-			}
 		}
 	}
 }

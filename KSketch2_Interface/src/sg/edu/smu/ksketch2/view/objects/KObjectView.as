@@ -17,7 +17,10 @@ package sg.edu.smu.ksketch2.view.objects
 	
 	public class KObjectView extends Sprite implements IObjectView
 	{
+		public static const GHOST_ALPHA:Number = 0.4
+		
 		protected var _object:KObject;
+		protected var _ghost:Sprite;
 		
 		/**
 		 * KObjectView is the view representation of a KObject
@@ -57,6 +60,14 @@ package sg.edu.smu.ksketch2.view.objects
 		public function updateParent(newParent:IObjectView):void
 		{
 			(newParent as KObjectView).addChild(this);
+			if(_ghost)
+				(newParent as KObjectView).addGhost(_ghost);
+		}
+		
+		public function addGhost(childGhost:Sprite):void
+		{
+			if(_ghost)
+				_ghost.addChild(childGhost);
 		}
 		
 		/**
@@ -65,6 +76,12 @@ package sg.edu.smu.ksketch2.view.objects
 		public function removeFromParent():void
 		{
 			this.parent.removeChild(this);
+			
+			if(_ghost)
+			{
+				if(_ghost.parent)
+					_ghost.parent.removeChild(_ghost);
+			}
 		}
 		
 		/**

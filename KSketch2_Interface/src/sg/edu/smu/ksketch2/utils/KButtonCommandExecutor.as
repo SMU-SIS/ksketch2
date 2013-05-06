@@ -8,11 +8,16 @@
  */
 package sg.edu.smu.ksketch2.utils
 {
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
+	
+	import mx.core.FlexGlobals;
+	import mx.core.IFlexDisplayObject;
+	import mx.managers.PopUpManager;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.controls.ImageInput.ImageEditWindow;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactionmodes.KDrawingMode;
@@ -20,7 +25,6 @@ package sg.edu.smu.ksketch2.utils
 	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
-	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
@@ -74,8 +78,9 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		public function importImage():void
-		{
-			_KSketch.root.debug();
+		{	
+			var window:IFlexDisplayObject = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject, ImageEditWindow, true);
+			PopUpManager.centerPopUp(window);
 		}
 		
 		public function cut():void

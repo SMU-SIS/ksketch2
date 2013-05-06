@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   windowMoving="titleWin_windowMovingHandler(event);"
+			   close="titleWin_closeHandler(event)"
+			   creationComplete="creationCompleteHandler()"
+			   resize="handleResize()"
+			   >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.IFlexDisplayObject;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import spark.components.VideoDisplay;
+			import spark.components.mediaClasses.DynamicStreamingVideoItem;
+			import spark.components.mediaClasses.DynamicStreamingVideoSource;
+			import spark.events.TitleWindowBoundsEvent;
+			
+			import org.osmf.net.StreamType;
+			
+			public static const IMAGE_MAX_HEIGHT:Number = 600;
+			public static const CAMERA_FPS:int = 16;
+			
+			protected function titleWin_closeHandler(evt:CloseEvent):void
+			{
+				// Remove the pop up window.
+				PopUpManager.removePopUp(evt.currentTarget as IFlexDisplayObject);
+			}
+			
+			protected function titleWin_windowMovingHandler(evt:TitleWindowBoundsEvent):void
+			{
+				
+				// Before moving the TitleWindow container, check to see whether it should be draggable.
+				evt.stopImmediatePropagation();
+				evt.preventDefault();
+			}
+			
+			protected function handleResize():void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function creationCompleteHandler():void
+			{
+				removeElement(videoDisplayGroup);
+				removeElement(imageDisplayGroup);
+			}
+			
+			
+			protected function startCamera():void
+			{
+				var camera:Camera = Camera.getCamera();
+				if(camera)
+				{
+					var videoSource:DynamicStreamingVideoSource = new DynamicStreamingVideoSource();
+					var videoItems:Vector.<DynamicStreamingVideoItem>;
+					videoItems=new Vector.<DynamicStreamingVideoItem>();
+					videoItems[0]=new DynamicStreamingVideoItem();
+					
+					videoSource.host = "";
+					videoSource.streamType = StreamType.LIVE;
+					videoSource.streamItems = videoItems;
+					
+					var aspectRatio:Number = camera.width/camera.height;
+					
+					camera.setMode(IMAGE_MAX_HEIGHT * aspectRatio, IMAGE_MAX_HEIGHT, CAMERA_FPS);
+					var reflectionMatrix:Matrix = new Matrix();
+					reflectionMatrix.scale(-1,1);
+					videoDisplay.transform.matrix= reflectionMatrix;
+					videoDisplay.source = videoSource;
+					videoDisplay.videoObject.attachCamera(camera);
+					imageSelectionOption.visible = false;
+					addElement(videoDisplayGroup);
+				}	
+			}
+			
+			protected function chooseImage():void
+			{
+				
+			}	
+			
+			protected function takePicture():void
+			{
+				var snapShot:BitmapData = new BitmapData(videoDisplay.width, videoDisplay.height);
+				snapShot.draw(videoDisplay.videoObject);
+				trace(snapShot.width, snapShot.height);
+				imageDisplay.source = snapShot;
+				
+				removeElement(videoDisplayGroup);
+				addElement(imageDisplayGroup);
+			}
+			
+			protected function cancelCamera():void
+			{
+				removeElement(videoDisplayGroup);
+				imageSelectionOption.visible = true;
+			}
+			
+			protected function cancelImage():void
+			{
+				removeElement(imageDisplayGroup);
+				imageSelectionOption.visible = true;
+			}
+		]]>
+	</fx:Script>
+	<s:Group id="imageSelectionOption" width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		<s:Button width="100%" height="100%" label="Take a picture" click="startCamera()"/>
+		<s:Button width="100%" height="100%" label="Choose image from hardisk" click="chooseImage()"/>
+	</s:Group>
+	<s:Group id="videoDisplayGroup">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VideoDisplay id="videoDisplay"/>
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout horizontalAlign="center"/>
+			</s:layout>
+			<s:Button label="Take Picture" click="takePicture()"/>
+			<s:Button label="Cancel" click="cancelCamera()"/>
+		</s:Group>
+	</s:Group>
+	<s:Group id="imageDisplayGroup">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Image id="imageDisplay"/>
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout horizontalAlign="center"/>
+			</s:layout>
+			<s:Button label="Cancel" click="cancelImage()"/>
+		</s:Group>
+	</s:Group>
+</s:TitleWindow>

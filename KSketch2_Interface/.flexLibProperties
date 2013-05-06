@@ -7,6 +7,7 @@
     <classEntry path="sg.edu.smu.ksketch2.view.objects.KImageGhost"/>
     <classEntry path="sg.edu.smu.ksketch2.view.objects.KGroupGhost"/>
     <classEntry path="sg.edu.smu.ksketch2.controls.ImageInput.ImageEditWindow"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.ImageInput.HeaderlessSkin"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

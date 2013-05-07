@@ -4,7 +4,6 @@ package sg.edu.smu.ksketch2.view
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
-	import flash.utils.Dictionary;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
@@ -14,11 +13,14 @@ package sg.edu.smu.ksketch2.view
 	public class KObjectMotions extends Sprite
 	{
 		public static var transformer:Sprite = new Sprite();
+		public static const PATH_RADII:Number = 150;
+		
 		
 		private var _object:KObject;
-		private var _pathPoints:Dictionary;
-		private var _rotations:Dictionary;
 		private var _motionPath:Shape;
+		private var _rotationMotionPath:Shape;
+		private var _prevActiveKey:KSpatialKeyFrame;
+
 		
 		/**
 		 *	Display class for motion paths and static ghosts.
@@ -37,8 +39,8 @@ package sg.edu.smu.ksketch2.view
 			_motionPath = new Shape();
 			addChild(_motionPath);
 			
-			_pathPoints = new Dictionary(true);
-			_rotations = new Dictionary(true);
+			_rotationMotionPath = new Shape();
+			addChild(_rotationMotionPath);
 		}
 		
 		public function set object(newObject:KObject):void
@@ -57,6 +59,9 @@ package sg.edu.smu.ksketch2.view
 		override public function set visible(value:Boolean):void
 		{
 			super.visible = value;
+			
+			if(!value)
+				_prevActiveKey = null;
 		}
 		
 		public function _visibilityChanged(event:KObjectEvent):void
@@ -79,8 +84,7 @@ package sg.edu.smu.ksketch2.view
 		 */
 		public function _updateObjectMotion(time:int):void	
 		{
-			if(_motionPath.visible)
-				_updateMotionPath(time);
+			_updateMotionPath(time);
 		}
 		
 		private function _transformBegin(event:KObjectEvent):void
@@ -91,18 +95,12 @@ package sg.edu.smu.ksketch2.view
 			if(_object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				_motionPath.visible = false;
-				
-				var currentKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(event.time) as KSpatialKeyFrame;			
-				
-				while(currentKey)
-				{
-					delete(_pathPoints[currentKey]);
-					currentKey = currentKey.next as KSpatialKeyFrame;
-				}
+				_rotationMotionPath.visible = false;
 			}
 			else
 			{
 				_motionPath.visible = true;
+				_rotationMotionPath.visible = true;
 			}
 			
 			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);
@@ -112,17 +110,21 @@ package sg.edu.smu.ksketch2.view
 		
 		private function _transformUpdating(event:KObjectEvent):void
 		{
-			if(_motionPath.visible)
+			if(_motionPath.visible && _rotationMotionPath.visible)
 			{
 				var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(event.time) as KSpatialKeyFrame;			
-				_generateMotionPath(activeKey);
-				_updateMotionPath(event.time);
+				
+				if(activeKey)
+					_determineAndGeneratePaths(activeKey);				
 			}
 		}
 		
 		private function _transformEnd(event:KObjectEvent):void
 		{				
 			_motionPath.visible = true;
+			_rotationMotionPath.visible = true;
+			
+			_updateMotionPath(event.time);
 			
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);	
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _transformUpdating);
@@ -134,59 +136,47 @@ package sg.edu.smu.ksketch2.view
 		 */
 		private function _updateMotionPath(time:int):void
 		{
-			var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(time) as KSpatialKeyFrame;			
-			
-			if(!activeKey)
+			if(!(_rotationMotionPath.visible && _motionPath.visible))
 				return;
 			
+			var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(time) as KSpatialKeyFrame;			
+		
+			if(!activeKey)
+			{
+				_prevActiveKey = null;
+				_motionPath.graphics.clear();
+				return;
+			}
+			
+			if(activeKey != _prevActiveKey)
+				_determineAndGeneratePaths(activeKey);
+			
+			var position:Point = _object.fullPathMatrix(time).transformPoint(_object.centroid);
+			_rotationMotionPath.x = position.x;
+			_rotationMotionPath.y = position.y;
+		}
+		
+		private function _determineAndGeneratePaths(activeKey:KSpatialKeyFrame):void
+		{
+			_prevActiveKey = activeKey;
+			var path:Vector.<Point>;
+			
 			_motionPath.graphics.clear();
-			
-			if(!_pathPoints[activeKey])
-				_generateMotionPath(activeKey);
-			
-			var path:Vector.<Point> = _pathPoints[activeKey];
-
-			if(path)
-				_drawPath(path);
+			_generateMotionPath(activeKey);
 			
 			if(activeKey.next)
-			{
-				path = null;				
-				path = _pathPoints[activeKey];
-				
-				if(!path)
-					path = _generateMotionPath(activeKey);
-
-				if(path)
-					_drawPath(path);
-			}
+				_generateMotionPath(activeKey.next as KSpatialKeyFrame);
 		}
 		
-		private function _drawPath(path:Vector.<Point>):void
-		{
-			if(0 < path.length)
-			{
-				var currentPoint:Point = path[0];
-				_motionPath.graphics.lineStyle(2, 0x2E9AFE);
-				_motionPath.graphics.moveTo(currentPoint.x, currentPoint.y);
-				
-				var i:int = 1;
-				var length:int = path.length;
-				
-				for(i; i<length; i++)
-				{
-					currentPoint = path[i];
-					_motionPath.graphics.lineTo(currentPoint.x, currentPoint.y);
-				}
-			}	
-		}
-		
-		private function _generateMotionPath(key:KSpatialKeyFrame):Vector.<Point>
-		{
+		private function _generateMotionPath(key:KSpatialKeyFrame):void
+		{			
 			if(!key)
 				throw new Error("Unable to generate a motion path if there is no active key");
 			
-			var path:Vector.<Point>= new Vector.<Point>();			
+			var translatePath:Vector.<Point>= new Vector.<Point>();	
+			var rotatePath:Vector.<Number> = new Vector.<Number>();
+			var scalePath:Vector.<Number> = new Vector.<Number>();
+			
 			var matrix:Matrix;
 			var currentTime:int = key.startTime;
 			var currentKeyElapsedTime:int = 0;
@@ -202,17 +192,59 @@ package sg.edu.smu.ksketch2.view
 			{
 				matrix = _object.fullPathMatrix(currentTime);
 				position = matrix.transformPoint(centroid);
-				path.push(position);
-				currentTime += KSketch2.ANIMATION_INTERVAL;	
+				translatePath.push(position);
+
+				transformer.transform.matrix = matrix;
+				
+				rotatePath.push(transformer.rotation);
+				scalePath.push(transformer.scaleX);
+					
+				currentTime += KSketch2.ANIMATION_INTERVAL;
 			}
 			
-			if(path.length > 0)
+			_drawTranslatePath(translatePath);
+			
+			if(key == _prevActiveKey)
+				_drawRotatePath(rotatePath);
+		}
+		
+		private function _drawTranslatePath(path:Vector.<Point>):void
+		{
+			if(1 < path.length)
 			{
-				_pathPoints[key] = path;				
-				return path;	
-			}
-			else
-				return null;
+				var currentPoint:Point = path[0];
+				_motionPath.graphics.lineStyle(2, 0x2E9AFE);
+				_motionPath.graphics.moveTo(currentPoint.x, currentPoint.y);
+				
+				var i:int = 1;
+				var length:int = path.length;
+				
+				for(i; i<length-1; i++)
+				{
+					currentPoint = path[i];
+					_motionPath.graphics.lineTo(currentPoint.x, currentPoint.y);
+				}
+			}	
+		}
+		
+		private function _drawRotatePath(path:Vector.<Number>):void
+		{
+			if(0 < path.length)
+			{
+				_rotationMotionPath.graphics.clear();
+				var currentPoint:Point = Point.polar(PATH_RADII, path[0]/180*Math.PI)
+				_rotationMotionPath.graphics.lineStyle(2, 0x9FF781);
+				_rotationMotionPath.graphics.moveTo(currentPoint.x, currentPoint.y);
+				
+				var i:int = 1;
+				var length:int = path.length;
+				
+				for(i; i<length; i++)
+				{
+					currentPoint = Point.polar(PATH_RADII+(PATH_RADII*(i/length)), path[i]/180*Math.PI)
+					_rotationMotionPath.graphics.lineTo(currentPoint.x, currentPoint.y);
+				}
+			}	
 		}
 	}
 }

@@ -209,7 +209,6 @@ package sg.edu.smu.ksketch2.view.objects
 		
 		protected function _transformEnd(event:KObjectEvent):void
 		{
-			trace("Transform for object ended", _object.id);
 			if(_ghost)
 				_ghost.visible = false;
 			

@@ -20,6 +20,9 @@ package sg.edu.smu.ksketch2.view.objects
 			super(object);
 			_ghost = new KGroupGhost();
 			addChild(_ghost);
+			
+			if(_object.id == 0)
+				_ghost.visible = true;
 		}
 		
 		override protected function _updateSelection(event:KObjectEvent):void

@@ -16,6 +16,7 @@ package sg.edu.smu.ksketch2.view.objects
 			image.y = y;
 			addChild(image);
 			alpha = KObjectView.GHOST_ALPHA;
+			visible = false;
 		}
 	}
 }

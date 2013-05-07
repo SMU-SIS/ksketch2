@@ -22,6 +22,7 @@ package sg.edu.smu.ksketch2.view.objects
 			}
 			
 			alpha = KObjectView.GHOST_ALPHA;
+			visible = false;
 		}
 	}
 }

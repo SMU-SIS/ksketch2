@@ -7,6 +7,7 @@ package sg.edu.smu.ksketch2.view.objects
 		public function KGroupGhost()
 		{
 			super();
+			visible = false;
 		}
 	}
 }

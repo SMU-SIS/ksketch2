@@ -10,17 +10,23 @@ package sg.edu.smu.ksketch2.view.objects
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
+	import flash.geom.Matrix;
+	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
+	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
 	public class KObjectView extends Sprite implements IObjectView
 	{
-		public static const GHOST_ALPHA:Number = 0.4
+		public static const GHOST_ALPHA:Number = 0.4;
 		
 		protected var _object:KObject;
 		protected var _ghost:Sprite;
+		protected var _originalPosition:Point;
 		
 		/**
 		 * KObjectView is the view representation of a KObject
@@ -36,6 +42,7 @@ package sg.edu.smu.ksketch2.view.objects
 				_object.addEventListener(KObjectEvent.OBJECT_SELECTION_CHANGED, _updateSelection);
 				_object.addEventListener(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _handle_object_Updated);
 				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _handle_object_Updated);
+				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _transformBegin);
 			}
 		}
 		
@@ -124,6 +131,89 @@ package sg.edu.smu.ksketch2.view.objects
 				if(child is IObjectView)
 					(child as IObjectView).debug(debugSpacing);
 			}
+		}
+		
+		
+		protected function _transformBegin(event:KObjectEvent):void
+		{
+			_originalPosition = _object.transformInterface.matrix(event.time).transformPoint(_object.centroid);			
+			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _updateGhost);
+			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);
+		}
+		
+		protected function _updateGhost(event:KObjectEvent):void
+		{
+			if(_object && _ghost)
+			{
+				_ghost.visible = true;
+				var currentMatrix:Matrix = _object.transformInterface.matrix(event.time);
+				if(object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
+				{
+					if((_object.transformInterface as KSingleReferenceFrameOperator).hasRotate
+						||(_object.transformInterface as KSingleReferenceFrameOperator).hasScale)
+					{
+						_ghost.visible = true;
+					}
+					else
+					{
+						_ghost.visible = false;
+						return;
+					}
+					
+					currentMatrix = _object.transformInterface.matrix(event.time);
+					var currentPosition:Point = currentMatrix.transformPoint(_object.centroid);
+					var positionDifferences:Point = currentPosition.subtract(_originalPosition);
+					
+					if(positionDifferences.x > 1 || positionDifferences.y > 1)
+					{
+						_ghost.visible = true;
+						currentMatrix.translate(-positionDifferences.x, -positionDifferences.y);
+						_ghost.transform.matrix = currentMatrix;
+					}
+				}
+				else
+				{
+					var activeKey:IKeyFrame = _object.transformInterface.getActiveKey(event.time);
+					
+					if(!activeKey)
+					{
+						_ghost.visible = false;
+						return;
+					}
+					else
+						_ghost.visible = true;
+					
+					if(activeKey.time == event.time||!activeKey.hasActivityAtTime())
+					{
+						activeKey = activeKey.next;
+						
+						if(!activeKey)
+							_ghost.visible = false;
+					}
+					
+					if(activeKey)
+					{
+						if(activeKey.hasActivityAtTime())
+						{
+							currentMatrix = _object.transformInterface.matrix(activeKey.time);
+							_ghost.transform.matrix = currentMatrix;
+						}
+						else
+							_ghost.visible = false;
+					}
+					else
+						_ghost.visible = false;
+				}
+			}
+		}
+		
+		protected function _transformEnd(event:KObjectEvent):void
+		{
+			trace("Transform for object ended", _object.id);
+			if(_ghost)
+				_ghost.visible = false;
+			
+			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _updateGhost);
 		}
 	}
 }

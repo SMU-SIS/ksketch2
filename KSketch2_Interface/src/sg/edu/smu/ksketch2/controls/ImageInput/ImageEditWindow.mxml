@@ -24,6 +24,7 @@
 			
 			import org.osmf.net.StreamType;
 			
+			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.utils.ImageProcessing;
 			
 			private static const DIRECTION_STRENGTH:Number = Capabilities.screenDPI/2;
@@ -51,6 +52,13 @@
 			
 			private var _fileRef:FileReference;
 			private var _correction:Point
+			
+			private var _KSketch:KSketch2;
+			
+			public function init(KSketchInstance:KSketch2):void
+			{
+				_KSketch = KSketchInstance;	
+			}
 			
 			protected function titleWin_closeHandler(evt:CloseEvent):void
 			{
@@ -141,8 +149,12 @@
 				
 				var bitmapData:BitmapData = new BitmapData(imageWidth,imageHeight);
 				bitmapData.draw(loaderInfo.content, myMatrix);
-				
-				imageDisplay.source = bitmapData;
+				setBitmapData(bitmapData);
+			}
+			
+			protected function setBitmapData(data:BitmapData):void
+			{
+				imageDisplay.source = data;
 				imageSelectionOption.visible = false;
 				addElement(imageDisplayGroup);
 			}
@@ -150,14 +162,10 @@
 			protected function takePicture():void
 			{
 				var snapShot:BitmapData = new BitmapData(videoDisplay.width, videoDisplay.height);
-				snapShot.draw(videoDisplay);
-				imageDisplay.width = snapShot.width;
-				imageDisplay.height = snapShot.height;
-				imageDisplay.transform.matrix = videoDisplay.transform.matrix;
-				imageDisplay.source = snapShot;
+				snapShot.draw(videoDisplay, videoDisplay.transform.matrix);
 				videoDisplay.videoObject.attachCamera(null);
 				removeElement(videoDisplayGroup);
-				addElement(imageDisplayGroup);
+				setBitmapData(snapShot);
 			}
 			
 			protected function cancelCamera():void
@@ -187,12 +195,11 @@
 				imgRight = rect.right - imageDisplay.x;
 				imgTop = rect.top;
 				imgBottom = rect.bottom;
-				
+
 				//Do pre processing of the image here
 				fullBitmapData = new BitmapData(rect.width, rect.height);
 				fullBitmapData.draw(imageDisplay);				
 				preProcessed = ImageProcessing.sobelOperation(fullBitmapData);			
-				imageDisplay.source = preProcessed;
 			}
 			
 			private function _startLasso(event:MouseEvent):void
@@ -292,6 +299,11 @@
 			
 			private function _exitLasso():void
 			{
+				imageDisplay.removeEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+				removeEventListener(MouseEvent.MOUSE_MOVE, _updateLasso);
+				removeEventListener(MouseEvent.MOUSE_UP, _endLasso);
+				drawLayer.graphics.clear();
+				
 				cropMenu.visible = false;
 				cropMenu.includeInLayout = false;
 				
@@ -301,7 +313,8 @@
 			
 			private function useImage():void
 			{
-				
+				_KSketch.object_Add_Image(imageDisplay.bitmapData, _KSketch.time);
+				closeImageInsertion();
 			}
 			
 			private function _magneticLasso(point:Point):Point
@@ -352,6 +365,11 @@
 				
 				return point;
 			}
+			
+			public function closeImageInsertion():void
+			{
+				PopUpManager.removePopUp(this);
+			}
 		]]>
 	</fx:Script>
 	<s:Group id="imageSelectionOption" width="100%" height="100%">
@@ -360,6 +378,7 @@
 		</s:layout>
 		<s:Button width="100%" height="100%" label="Take a picture" click="startCamera()"/>
 		<s:Button width="100%" height="100%" label="Choose image from hardisk" click="chooseImage()"/>
+		<s:Button width="100%" height="100%" label="Cancel" click="closeImageInsertion()"/>
 	</s:Group>
 	<s:Group id="videoDisplayGroup">
 		<s:layout>

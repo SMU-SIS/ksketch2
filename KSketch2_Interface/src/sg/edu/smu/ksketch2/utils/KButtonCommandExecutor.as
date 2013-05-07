@@ -80,6 +80,7 @@ package sg.edu.smu.ksketch2.utils
 		public function importImage():void
 		{	
 			var window:IFlexDisplayObject = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject, ImageEditWindow, true);
+			(window as ImageEditWindow).init(_KSketch);
 			PopUpManager.centerPopUp(window);
 		}
 		

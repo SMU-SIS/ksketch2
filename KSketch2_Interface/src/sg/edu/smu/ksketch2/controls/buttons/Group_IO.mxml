@@ -16,6 +16,7 @@
 		<![CDATA[
 			import sg.edu.smu.ksketch2.KSketch2Interface;
 			import sg.edu.smu.ksketch2.utils.KButtonCommandExecutor;
+			import sg.edu.smu.ksketch2.utils.KExportEvent;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			
 			private var _hostInterface:KSketch2Interface;
@@ -39,6 +40,17 @@
 			{
 				_hostInterface.dispatchEvent(new KIOEvent(KIOEvent.EVENT_LOAD));
 			}
+			
+			private function _export():void
+			{
+				var frames:Vector.<BitmapData> = _commandExecutor.export(_hostInterface.modelDisplay);
+				
+				if(frames)
+				{
+					if(frames.length > 0)
+						_hostInterface.dispatchEvent(new KExportEvent(KExportEvent.EVENT_EXPORT, frames));
+				}
+			}
 		]]>
 	</fx:Script>
 	<s:Rect width="100%" height="100%" radiusX="15">
@@ -58,7 +70,7 @@
 		<local:Button_New id="btn_new" click="_commandExecutor.newFile()"/>
 		<local:Button_LoadFile id="btn_load" click="_loadFile()"/>
 		<local:Button_Save id="btn_save" click="_saveFile()"/>
-		<local:Button_Export id="btn_FLV" click="_commandExecutor.export()"/>
+		<local:Button_Export id="btn_FLV" click="_export()"/>
 		<local:Button_WebCam id="btn_IMG" click="_commandExecutor.importImage()"/>
 	</s:Group>
 </s:Group>

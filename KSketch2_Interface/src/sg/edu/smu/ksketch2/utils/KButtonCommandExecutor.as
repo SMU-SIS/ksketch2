@@ -8,9 +8,11 @@
  */
 package sg.edu.smu.ksketch2.utils
 {
+	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.utils.ByteArray;
 	
 	import mx.core.FlexGlobals;
 	import mx.core.IFlexDisplayObject;
@@ -72,9 +74,9 @@ package sg.edu.smu.ksketch2.utils
 				return null;
 		}
 		
-		public function export():void
+		public function export(display:KModelDisplay):Vector.<BitmapData>
 		{
-			debugDisplay.debug();
+			return ExportUtil.convertSceneToFLVBytes(display, _KSketch);
 		}
 		
 		public function importImage():void

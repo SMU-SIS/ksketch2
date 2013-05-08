@@ -11,6 +11,7 @@
       </libraryPathEntry>
       <libraryPathEntry kind="3" linkType="1" path="/KSketch2_Library/bin/KSketch2_Library.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="1" linkType="1" path="lib"/>
+      <libraryPathEntry kind="3" linkType="1" path="/FLV Encoder/bin/FLV Encoder.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

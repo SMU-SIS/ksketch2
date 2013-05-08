@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" 
+						   xmlns:mx="library://ns.adobe.com/flex/mx"
+						   width="720"
+						   >
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import leelib.util.flvEncoder.ByteArrayFlvEncoder;
+			
+			import sg.edu.smu.ksketch2.KSketch2;
+			
+			public var videoBuffer:ByteArray;
+			public var encoder:ByteArrayFlvEncoder;
+			
+			private var frameNumber:int;
+			private var frameList:Vector.<BitmapData>;
+			private var interfaceUpdated:Boolean = false;
+			
+			public function encode(frames:Vector.<BitmapData>,videoWidth:Number, videoHeight:Number):void
+			{
+				progressFill.addEventListener(FlexEvent.UPDATE_COMPLETE, _encodeFrame);
+				exportStage.text = "Encoding Frames..."
+			
+				frameList = frames;
+
+				frameNumber = 0;
+				encoder = new ByteArrayFlvEncoder(1000/KSketch2.ANIMATION_INTERVAL);
+				encoder.setVideoProperties(videoWidth, videoHeight);
+				encoder.start();
+				frameNumber += 1;
+				_update_Bar();
+
+			}
+			
+			private function _encodeFrame(event:FlexEvent):void
+			{
+				if(!frameList)
+				{
+					videoBuffer = null;
+					close();
+					return;
+				}
+				
+				if(frameList.length == 0)
+				{
+					videoBuffer = null;
+					close();
+					return;
+				}
+				
+				if(frameNumber >= frameList.length)
+				{
+					videoBuffer = encoder.byteArray;
+					encoder.updateDurationMetadata();
+					close();
+					return;
+				}
+
+				var frame:BitmapData = frameList[frameNumber];
+				encoder.addFrame(frame, null);
+				frameNumber += 1;
+				_update_Bar();
+			}
+			
+			private function _update_Bar():void
+			{
+				exportStage.text = "Exporting... "+int(frameNumber/frameList.length * 100).toString()+"% done.";
+				progressFill.percentWidth = frameNumber/frameList.length * 100;
+			}
+			
+			private function cancel():void
+			{
+				close();
+				return;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Group width="100%" height="100%">
+		<s:Rect width="100%" height="100%">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF"/>
+			</s:fill>
+		</s:Rect>
+		<s:Group width="100%" height="100%">
+			<s:layout>
+				<s:VerticalLayout verticalAlign="middle" horizontalAlign="center" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"/>
+			</s:layout>
+			<mx:Text id="exportStage" text="Drawing Frames..."/>
+			<s:Group width="80%" height="{Capabilities.screenDPI/2}">
+				<s:Rect id="backgroundFill" radiusX="5" radiusY="5" width="100%" height="100%">
+					<s:fill>
+						<s:SolidColor color="0x000000"/>
+					</s:fill>
+				</s:Rect>
+				<s:Group id="progressFill" width="0%" height="100%">
+					<s:Rect radiusX="5" radiusY="5" width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="0xFFBF00"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+			</s:Group>
+			<s:Button label="Cancel Export" clear="cancel()"/>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

@@ -9,7 +9,6 @@
 package sg.edu.smu.ksketch2.operators.operations
 {
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrameList;
 	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 
 	public class KKeyOperation implements IModelOperation

@@ -23,7 +23,7 @@
 			import mx.managers.PopUpManager;
 			
 			import sg.edu.smu.ksketch2.utils.ExportUtil;
-			import sg.edu.smu.ksketch2.utils.ExportViewer;
+			import sg.edu.smu.ksketch2.controls.widgets.ExportProgressBar;
 			import sg.edu.smu.ksketch2.utils.KExportEvent;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			
@@ -91,7 +91,7 @@
 			{
 				if(event.data)
 				{
-					var viewer:ExportViewer = new ExportViewer();
+					var viewer:ExportProgressBar = new ExportProgressBar();
 					viewer.open(this, true);
 					
 					PopUpManager.centerPopUp(viewer);

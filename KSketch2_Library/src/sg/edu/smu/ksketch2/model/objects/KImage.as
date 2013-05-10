@@ -18,7 +18,9 @@ package sg.edu.smu.ksketch2.model.objects
 		public var x:Number;
 		public var y:Number;
 		
-		
+		/**
+		 * KObject implementation for images
+		 */		
 		public function KImage(id:int, newImgData:BitmapData, imgX:Number, imgY:Number)
 		{
 			super(id);
@@ -31,6 +33,9 @@ package sg.edu.smu.ksketch2.model.objects
 			transformInterface = new KSingleReferenceFrameOperator(this);
 		}
 		
+		/**
+		 * Centroid for this KImage. As of now, it is center of the image
+		 */
 		override public function get centroid():Point
 		{
 			return _center.clone();
@@ -52,6 +57,9 @@ package sg.edu.smu.ksketch2.model.objects
 			return _points;
 		}
 		
+		/**
+		 * Serializes th eKImage and encodes it in base 64
+		 */
 		override public function serialize():XML
 		{
 			var objectXML:XML = super.serialize();

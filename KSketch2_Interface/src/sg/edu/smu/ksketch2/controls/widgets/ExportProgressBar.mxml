@@ -19,8 +19,17 @@
 			private var frameList:Vector.<BitmapData>;
 			private var interfaceUpdated:Boolean = false;
 			
+			/**
+			 * Progress bar for the exporting process
+			 */
 			public function encode(frames:Vector.<BitmapData>,videoWidth:Number, videoHeight:Number):void
 			{
+				//Because of Flex's single threaded nonsense, we need to update and go through the
+				//Rendering process step by step.
+				
+				//The idea is to update the progress bar's width
+				//Once flex gets the progress bar updated, then we will do the encoding in _encodeFrame
+				//Rinse and repeat
 				progressFill.addEventListener(FlexEvent.UPDATE_COMPLETE, _encodeFrame);
 				exportStage.text = "Encoding Frames..."
 			
@@ -32,9 +41,23 @@
 				encoder.start();
 				frameNumber += 1;
 				_update_Bar();
-
 			}
 			
+			/**
+			 * Refreshes the progress bar and the text above the progress bar
+			 */
+			private function _update_Bar():void
+			{
+				exportStage.text = "Exporting... "+int(frameNumber/frameList.length * 100).toString()+"% done.";
+				progressFill.percentWidth = frameNumber/frameList.length * 100;
+				
+				//Flex will do the update cycle, once the update cycle ends, _encode frame will be triggered
+			}
+			
+			/**
+			 * Triggers the encoding of the current frame
+			 * Either encodes the current frame or turns off the encoder when there is nothing else to encode
+			 */
 			private function _encodeFrame(event:FlexEvent):void
 			{
 				if(!frameList)
@@ -63,12 +86,6 @@
 				encoder.addFrame(frame, null);
 				frameNumber += 1;
 				_update_Bar();
-			}
-			
-			private function _update_Bar():void
-			{
-				exportStage.text = "Exporting... "+int(frameNumber/frameList.length * 100).toString()+"% done.";
-				progressFill.percentWidth = frameNumber/frameList.length * 100;
 			}
 			
 			private function cancel():void

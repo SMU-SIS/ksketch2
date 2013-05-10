@@ -64,7 +64,7 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Adds all of the group's children (all the way down to the leaves) into the given vector allChildren
+		 * Adds all of the group's non-KGroup children (all the way down to the leaves) into the given vector allChildren
 		 * the result is not sorted
 		 */
 		public function getAllNonGroupObjects(allChildren:KModelObjectList = null):KModelObjectList
@@ -87,6 +87,9 @@ package sg.edu.smu.ksketch2.model.objects
 			return allChildren;
 		}
 		
+		/**
+		 * Returns a list of all of this object's children
+		 */
 		public function getAllChildren(allChildren:KModelObjectList = null):KModelObjectList
 		{
 			if(!allChildren)

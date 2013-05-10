@@ -27,6 +27,9 @@ package sg.edu.smu.ksketch2.operators.operations
 			return operationStack.length;
 		}
 		
+		/**
+		 * Adds operation to this KCompositeOperation's stack
+		 */
 		public function addOperation(operation:IModelOperation):void
 		{
 			if(operation)

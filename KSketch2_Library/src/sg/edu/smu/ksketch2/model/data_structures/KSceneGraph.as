@@ -44,6 +44,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return _root;
 		}
 		
+		/**
+		 * Maximum time that this scenegraph will reach
+		 */
 		public function get maxTime():int
 		{
 			var children:KModelObjectList = _root.children;
@@ -150,8 +153,6 @@ package sg.edu.smu.ksketch2.model.data_structures
 					}
 				}
 			}
-			
-			//debug();			
 		}
 		
 		public function debug():void

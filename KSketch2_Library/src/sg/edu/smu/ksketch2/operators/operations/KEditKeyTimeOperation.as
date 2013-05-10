@@ -8,7 +8,6 @@
  */
 package sg.edu.smu.ksketch2.operators.operations
 {
-	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -20,6 +19,9 @@ package sg.edu.smu.ksketch2.operators.operations
 		private var _newTime:int;
 		private var _oldTime:int;
 		
+		/**
+		 * Operation for changing a key's time (ie. when moving markers)
+		 */
 		public function KEditKeyTimeOperation(object:KObject, key:IKeyFrame, newTime:int, oldTime:int)
 		{
 			_object = object;

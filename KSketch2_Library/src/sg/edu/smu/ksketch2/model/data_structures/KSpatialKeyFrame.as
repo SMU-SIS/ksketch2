@@ -14,7 +14,6 @@ package sg.edu.smu.ksketch2.model.data_structures
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
-	import sg.edu.smu.ksketch2.operators.operations.KRemoveKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation;
 	
 	public class KSpatialKeyFrame extends KKeyFrame implements ISpatialKeyFrame
@@ -124,7 +123,6 @@ package sg.edu.smu.ksketch2.model.data_structures
 			matrix.translate(_center.x, _center.y);
 			return matrix;
 		}
-		
 		
 		private function _findTransforms(getTime:int):Array
 		{

@@ -9,7 +9,7 @@
     <classEntry path="sg.edu.smu.ksketch2.controls.ImageInput.ImageEditWindow"/>
     <classEntry path="sg.edu.smu.ksketch2.controls.ImageInput.HeaderlessSkin"/>
     <classEntry path="sg.edu.smu.ksketch2.utils.ExportUtil"/>
-    <classEntry path="sg.edu.smu.ksketch2.utils.ExportViewer"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.widgets.ExportProgressBar"/>
     <classEntry path="sg.edu.smu.ksketch2.utils.KExportEvent"/>
     <classEntry path="sg.edu.smu.ksketch2.utils.KProgressEvent"/>
   </includeClasses>

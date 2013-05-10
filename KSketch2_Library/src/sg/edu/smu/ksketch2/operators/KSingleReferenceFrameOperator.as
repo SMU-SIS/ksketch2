@@ -26,6 +26,7 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation;
 	import sg.edu.smu.ksketch2.utils.KPathProcessing;
 	
+	//Yay monster class! Good luck reading this
 	public class KSingleReferenceFrameOperator implements ITransformInterface
 	{
 		public static const TRANSLATE_THRESHOLD:Number = 3;
@@ -83,10 +84,6 @@ package sg.edu.smu.ksketch2.operators
 			_refFrame = new KReferenceFrame();
 			_object = object;
 			_inTransit = false;
-			
-			//Oh yeah, since we are doing static grouping, lets create the keys at zero to make our lives easier!
-//			var headerKey:KSpatialKeyFrame = new KSpatialKeyFrame(0, object.centroid);
-//			_refFrame.insertKey(headerKey);
 			
 			_lastQueryTime = 0;
 			_transitionX = 0;
@@ -211,6 +208,12 @@ package sg.edu.smu.ksketch2.operators
 			return result;
 		}
 		
+		/**
+		 * The matrix that is give during a performance operation
+		 * Caches the values up till transition start time
+		 * Will not incorporate a new transform value into the matrix
+		 * unless it passes the threshold value
+		 */
 		private function _transitionMatrix(time:int):Matrix
 		{
 			var x:Number = _transitionX;
@@ -225,8 +228,6 @@ package sg.edu.smu.ksketch2.operators
 			
 			while(currentKey)
 			{
-				
-				
 				proportionKeyFrame = currentKey.findProportion(time);
 				
 				if(!hasTranslate)
@@ -436,6 +437,9 @@ package sg.edu.smu.ksketch2.operators
 
 		}
 		
+		/**
+		 * Updates the object during transition
+		 */
 		public function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
 		{
 			var changeX:Number = dx - _transitionX;
@@ -455,6 +459,7 @@ package sg.edu.smu.ksketch2.operators
 			
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
+				//Just dump the new values in for demonstrated transitions
 				var elapsedTime:int = time - _startTime;
 				_TStoredPath.push(dx, dy, elapsedTime);
 				_RStoredPath.push(dTheta, 0, elapsedTime);
@@ -465,7 +470,7 @@ package sg.edu.smu.ksketch2.operators
 				if(!_interpolationKey)
 					throw new Error("No Keys to interpolate!");
 				
-				//Then we just dump the transition values into the key
+				//We need to interpolate the relevant keys during every update for interpolated transitions
 				if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
 					_interpolate(changeX, changeY, _interpolationKey, KSketch2.TRANSFORM_TRANSLATION, time);
 				if(Math.abs(_transitionTheta) > EPSILON)
@@ -754,6 +759,11 @@ package sg.edu.smu.ksketch2.operators
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 		}
 		
+		/**
+		 * Removes all motions after time.
+		 * If there is no active key at time, motions wont be cleared (no keys after that point in time)
+		 * If there is an active key at time, a key frame will be inserted at time (if there is not key frame)
+		 */
 		public function clearAllMotionsAfterTime(time:int, op:KCompositeOperation):void
 		{
 			if(getActiveKey(time))

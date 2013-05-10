@@ -10,10 +10,8 @@ package sg.edu.smu.ksketch2.operators.operations
 {
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
-	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
-	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 
 	public class KReplacePathOperation implements IModelOperation
 	{

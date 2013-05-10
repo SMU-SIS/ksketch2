@@ -4,6 +4,7 @@ package sg.edu.smu.ksketch2.utils
 
 	public class ImageProcessing
 	{
+		//Edge generator
 		public static function sobelOperation(targetBMD:BitmapData):BitmapData
 		{
 			var edgeData:BitmapData = new BitmapData(targetBMD.width, targetBMD.height);

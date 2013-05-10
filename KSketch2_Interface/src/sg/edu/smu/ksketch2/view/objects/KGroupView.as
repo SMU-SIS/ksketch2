@@ -55,8 +55,12 @@ package sg.edu.smu.ksketch2.view.objects
 			}
 		}
 		
+		/**
+		 * Draws a dotted line from the left to right, top to bottom (flash coordinate space!) direction
+		 */
 		private function _dottedLine(fromX:Number, fromY:Number, toX:Number, toY:Number):void
 		{
+			//Figure out where to start and end
 			var startX:Number = Math.min(fromX, toX);
 			var startY:Number = Math.min(fromY, toY);
 			var endX:Number = Math.max(fromX, toX);
@@ -66,6 +70,7 @@ package sg.edu.smu.ksketch2.view.objects
 			var currentX:Number = startX;
 			var currentY:Number = startY;
 			
+			//Loop and draw the dotted line!
 			while(currentX < endX || currentY < endY)
 			{
 				if(draw)

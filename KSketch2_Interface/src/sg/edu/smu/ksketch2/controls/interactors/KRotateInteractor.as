@@ -12,9 +12,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
-	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	public class KRotateInteractor extends KTransitionInteractor
 	{

@@ -13,6 +13,12 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			
+			/**
+			 * Image editing window for the non-portable versions.
+			 * Do not confuse this component with the image editing view in the portable version
+			 */
+			
 			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
@@ -85,12 +91,15 @@
 				removeElement(imageDisplayGroup);
 			}
 			
-			
+			/**
+			 * Switch to camera input mode
+			 */
 			protected function startCamera():void
 			{
 				var camera:Camera = Camera.getCamera();
 				if(camera)
 				{
+					//Standard camera codes grabbed off the internet tutorial
 					var videoSource:DynamicStreamingVideoSource = new DynamicStreamingVideoSource();
 					var videoItems:Vector.<DynamicStreamingVideoItem>;
 					videoItems=new Vector.<DynamicStreamingVideoItem>();
@@ -100,12 +109,17 @@
 					videoSource.streamType = StreamType.LIVE;
 					videoSource.streamItems = videoItems;
 					
-					var aspectRatio:Number = camera.width/camera.height;
-					
+					var aspectRatio:Number = camera.width/camera.height;					
 					camera.setMode(IMAGE_MAX_WIDTH, IMAGE_MAX_WIDTH/aspectRatio, CAMERA_FPS);
+					
+					//This reflection matrix shows how the image is being displayed
+					//I'm making the camera output resemble a mirror here.
+					//TO make it record what it sees without the lateral inversion, 
+					//Use an identity matrix
 					var reflectionMatrix:Matrix = new Matrix();
 					reflectionMatrix.scale(-1,1);
 					videoDisplay.transform.matrix= reflectionMatrix;
+
 					videoDisplay.source = videoSource;
 					videoDisplay.videoObject.attachCamera(camera);
 					imageSelectionOption.visible = false;
@@ -117,7 +131,6 @@
 			{
 				_fileRef = new FileReference();
 				_fileRef.browse([IMAGE_FILE_FILTER]);
-				
 				_fileRef.addEventListener(Event.SELECT, selectPicture);						
 			}	
 			
@@ -135,6 +148,10 @@
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, generateBitmap);
 			}
 			
+			/**
+			 * Generates the easy to manage flash equivalent of an image's data
+			 * This data will be displayed on the screen
+			 */
 			protected function generateBitmap(event:Event):void
 			{
 				var loaderInfo:LoaderInfo = (event.target as LoaderInfo);
@@ -145,7 +162,7 @@
 				var imageHeight:Number = imageWidth/aspectRatio
 				var myScale:Number = imageWidth/loaderInfo.content.width;
 				var myMatrix:Matrix = new Matrix();
-				myMatrix.scale(myScale, myScale);
+				myMatrix.scale(myScale, myScale); //Matrix used to draw the final bitmap data in case teh original one is too big
 				
 				var bitmapData:BitmapData = new BitmapData(imageWidth,imageHeight);
 				bitmapData.draw(loaderInfo.content, myMatrix);
@@ -180,6 +197,10 @@
 				imageSelectionOption.visible = true;
 			}
 			
+			/**
+			 * Sets up the interface for cropping images
+			 * Also processes the image to get the edges
+			 */
 			private function _initCrop():void
 			{
 				cropMenu.visible = true;
@@ -237,6 +258,7 @@
 				
 				if(!prevPoint.equals(imgPoint))
 				{
+					//Magnetic lasso can be turned off here
 					imgPoint = _magneticLasso(imgPoint);
 					
 					if(cropPoints.length == 0)
@@ -311,6 +333,9 @@
 				mainMenu.includeInLayout = true;
 			}
 			
+			/**
+			 * Adds the image into the model
+			 */
 			private function useImage():void
 			{
 				_KSketch.object_Add_Image(imageDisplay.bitmapData, _KSketch.time);
@@ -321,8 +346,15 @@
 			{
 				var direction:Point = point.subtract(prevPoint);
 				
+				//Don't do anything if the distance from the previous point is too big.
+				//Means the user is dragging very fast
+				//We shouldn't snap in this case
 				if(direction.length <= DIRECTION_STRENGTH)
 				{
+					//Cicular search algorithm, not interesting
+					//Searches from the interior of the circle outwards
+					//Should probably do something that uses heuristics
+					//Remember to use the edge image for the search
 					var imageX:int = point.x - imgLeft;
 					var imageY:int = point.y - imgTop;
 					

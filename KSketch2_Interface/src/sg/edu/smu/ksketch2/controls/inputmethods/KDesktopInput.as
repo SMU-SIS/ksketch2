@@ -10,13 +10,9 @@ package sg.edu.smu.ksketch2.controls.inputmethods
 {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
-	import flash.display.MovieClip;
-	import flash.display.Stage;
-	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
 	import flash.ui.Keyboard;
 	import flash.ui.Mouse;
@@ -26,7 +22,6 @@ package sg.edu.smu.ksketch2.controls.inputmethods
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.widgets.IWidget;
 	import sg.edu.smu.ksketch2.controls.widgets.KWidget;
 	import sg.edu.smu.ksketch2.utils.KMouseCursorEvent;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
@@ -59,6 +54,7 @@ package sg.edu.smu.ksketch2.controls.inputmethods
 		/**
 		 * Desktopinput adds keyboard and mouse listeners to the application's input
 		 */
+		//Nothing much to do here, I'm just doing what's required to get the correct input from desktop/web versions
 		public function KDesktopInput()
 		{
 			_keyAlreadyDown = false;

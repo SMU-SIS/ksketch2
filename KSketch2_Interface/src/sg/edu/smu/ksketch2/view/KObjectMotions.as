@@ -78,10 +78,6 @@ package sg.edu.smu.ksketch2.view
 				visible = true;
 		}
 		
-		/**
-		 * This thing becomes updated when transform changes
-		 * motion paths do not update themselves. They just get retrieved from the motion path cache
-		 */
 		public function _updateObjectMotion(time:int):void	
 		{
 			_updateMotionPath(time);
@@ -90,8 +86,7 @@ package sg.edu.smu.ksketch2.view
 		private function _transformBegin(event:KObjectEvent):void
 		{
 			//If performance, need to hide paths
-			//Init ghosts here?
-			
+			//Init ghosts here?			
 			if(_object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				_motionPath.visible = false;
@@ -188,13 +183,15 @@ package sg.edu.smu.ksketch2.view
 			var currentRotation:Number;
 			var prevRotation:Number = 0;
 			
+			//Just iterate and generate all the values for each frame
+			//This iteration generates an object's position and transform values
 			while(currentTime <= key.time)
 			{
 				matrix = _object.fullPathMatrix(currentTime);
 				position = matrix.transformPoint(centroid);
 				translatePath.push(position);
 
-				transformer.transform.matrix = matrix;
+				transformer.transform.matrix = matrix;// Dont bother computing the values ourselves, just let flash do it
 				
 				rotatePath.push(transformer.rotation);
 				scalePath.push(transformer.scaleX);
@@ -208,6 +205,7 @@ package sg.edu.smu.ksketch2.view
 				_drawRotatePath(rotatePath);
 		}
 		
+		//Translate paths are just hte points themselves, shown on the screen
 		private function _drawTranslatePath(path:Vector.<Point>):void
 		{
 			if(1 < path.length)
@@ -227,6 +225,7 @@ package sg.edu.smu.ksketch2.view
 			}	
 		}
 		
+		//Rotate paths are the polar representations of the rotation values
 		private function _drawRotatePath(path:Vector.<Number>):void
 		{
 			if(0 < path.length)

@@ -4,6 +4,9 @@ package sg.edu.smu.ksketch2.view.objects
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
 
+	/**
+	 * Ghost for KImageView
+	 */
 	public class KImageGhost extends Sprite
 	{
 		private var image:Bitmap;

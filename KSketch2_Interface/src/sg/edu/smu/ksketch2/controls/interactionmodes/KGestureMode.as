@@ -9,12 +9,10 @@
 package sg.edu.smu.ksketch2.controls.interactionmodes
 {
 	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.KLoopSelectInteractor;
 	
 	import spark.core.SpriteVisualElement;

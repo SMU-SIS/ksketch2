@@ -8,7 +8,6 @@
  */
 package sg.edu.smu.ksketch2.controls.interactors
 {
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.geom.Point;
 	

@@ -5,6 +5,9 @@ package sg.edu.smu.ksketch2.view.objects
 	
 	public class KStrokeGhost extends Sprite
 	{
+		/**
+		 * Ghost for KStrokeView
+		 */
 		public function KStrokeGhost(strokePoints:Vector.<Point>, color:uint, thickness:Number)
 		{
 			super();

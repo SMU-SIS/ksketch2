@@ -12,7 +12,6 @@ package sg.edu.smu.ksketch2.utils
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.utils.ByteArray;
 	
 	import mx.core.FlexGlobals;
 	import mx.core.IFlexDisplayObject;

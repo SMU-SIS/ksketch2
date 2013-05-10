@@ -9,7 +9,6 @@
 package sg.edu.smu.ksketch2.controls.interactors
 {
 	import flash.geom.Point;
-	import flash.utils.Dictionary;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;

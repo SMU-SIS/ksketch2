@@ -11,9 +11,7 @@ package sg.edu.smu.ksketch2.controls.interactors.selectors
 	import flash.utils.Dictionary;
 	
 	import sg.edu.smu.ksketch2.controls.interactors.selectors.KPortion;
-	import sg.edu.smu.ksketch2.model.data_structures.IModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
-	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	

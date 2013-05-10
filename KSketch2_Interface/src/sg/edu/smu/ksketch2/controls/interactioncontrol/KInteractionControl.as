@@ -10,10 +10,7 @@ package sg.edu.smu.ksketch2.controls.interactioncontrol
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
-	
-	import mx.core.UIComponent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactionmodes.IInteractionMode;
@@ -31,8 +28,6 @@ package sg.edu.smu.ksketch2.controls.interactioncontrol
 	import sg.edu.smu.ksketch2.utils.KMouseCursorEvent;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
-	
-	import spark.core.SpriteVisualElement;
 	
 	public class KInteractionControl extends EventDispatcher implements IInteractionControl
 	{

@@ -9,10 +9,7 @@
 package sg.edu.smu.ksketch2.controls.interactionmodes
 {
 	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
-	
-	import mx.core.UIComponent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
@@ -20,8 +17,6 @@ package sg.edu.smu.ksketch2.controls.interactionmodes
 	import sg.edu.smu.ksketch2.controls.interactors.KEraserInteractor;
 	import sg.edu.smu.ksketch2.controls.interactors.KInteractor;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
-	
-	import spark.core.SpriteVisualElement;
 	
 	public class KDrawingMode extends EventDispatcher implements IInteractionMode
 	{

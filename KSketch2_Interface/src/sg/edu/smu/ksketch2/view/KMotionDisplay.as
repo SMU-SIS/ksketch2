@@ -23,6 +23,10 @@ package sg.edu.smu.ksketch2.view
 		private var _visibleMotionDisplays:Dictionary;
 		private var _motionDisplays:Dictionary;
 		
+		/**
+		 * Class that manages and displays motion paths
+		 * Determines which motion paths to show and creates/draws them
+		 */
 		public function KMotionDisplay()
 		{
 			super();

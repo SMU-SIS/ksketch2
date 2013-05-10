@@ -8,8 +8,6 @@
  */
 package sg.edu.smu.ksketch2.controls.inputmethods
 {
-	import flash.events.Event;
-	
 	import mx.core.UIComponent;
 	
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;

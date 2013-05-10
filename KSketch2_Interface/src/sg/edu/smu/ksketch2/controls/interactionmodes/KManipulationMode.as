@@ -9,7 +9,6 @@
 package sg.edu.smu.ksketch2.controls.interactionmodes
 {
 	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.KSketch2;

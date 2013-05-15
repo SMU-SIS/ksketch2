@@ -30,7 +30,7 @@
 			
 			private function _saveFile():void
 			{
-				var xml:XML = _commandExecutor.saveFile();
+				var xml:XML = _commandExecutor.saveFile(_hostInterface.modelDisplay.getThumbnail(0));
 				
 				if(xml)
 					_hostInterface.dispatchEvent(new KIOEvent(KIOEvent.EVENT_SAVE, xml));

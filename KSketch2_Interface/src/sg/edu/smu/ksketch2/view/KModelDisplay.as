@@ -8,10 +8,15 @@
  */
 package sg.edu.smu.ksketch2.view
 {
+	import flash.display.BitmapData;
 	import flash.events.Event;
+	import flash.geom.Matrix;
+	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
 	import spark.core.SpriteVisualElement;
+	
+	import org.osmf.events.TimeEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KGroupEvent;
@@ -22,6 +27,7 @@ package sg.edu.smu.ksketch2.view
 	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
+	import sg.edu.smu.ksketch2.utils.ExportUtil;
 	import sg.edu.smu.ksketch2.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.view.objects.KGroupView;
 	import sg.edu.smu.ksketch2.view.objects.KImageView;
@@ -171,6 +177,29 @@ package sg.edu.smu.ksketch2.view
 				rootView.debug();
 			else
 				trace("No rootview dude!");
+		}
+		
+		/**
+		 * Returns a thumbnail sized image (160x90) of the display at time
+		 */
+		public function getThumbnail(time:int):BitmapData
+		{
+			//Size of the area to be captured to be determined here
+			var captureArea:Rectangle = new Rectangle(0,0,160,90);
+			
+			//Generate the matrix to scale
+			var toScaleX:Number = KSketch2.CANONICAL_WIDTH/captureArea.width;
+			var toScaleY:Number = KSketch2.CANONICAL_HEIGHT/captureArea.height;
+			var matrix:Matrix = new Matrix();
+			matrix.scale(1/toScaleX, 1/toScaleY);
+			
+			var savedTime:int = _KSketch.time;
+			
+			_KSketch.time = time;
+			var bitmapData:BitmapData = new BitmapData(captureArea.width, captureArea.height, false, 0xFFFFFF);	
+			bitmapData.draw(this, matrix);				
+			_KSketch.time = savedTime;
+			return bitmapData;
 		}
 	}
 }

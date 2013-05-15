@@ -15,7 +15,10 @@ package sg.edu.smu.ksketch2.utils
 	
 	import mx.core.FlexGlobals;
 	import mx.core.IFlexDisplayObject;
+	import mx.graphics.codec.JPEGEncoder;
+	import mx.graphics.codec.PNGEncoder;
 	import mx.managers.PopUpManager;
+	import mx.utils.Base64Encoder;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.ImageInput.ImageEditWindow;
@@ -57,15 +60,27 @@ package sg.edu.smu.ksketch2.utils
 			
 		}
 		
-		public function saveFile():XML
+		/**
+		 * BitmapData is the thumbnail to be displayed on the save file
+		 */
+		public function saveFile(bitmapData:BitmapData):XML
 		{
 			var saveXML:XML = <KSketch date=""/>;
 			var sceneXML:XML = _KSketch.sceneXML;
 			
 			if(0 < sceneXML.children().length())
 			{
+				var encoder:JPEGEncoder = new JPEGEncoder();
+				var base64Encoder:Base64Encoder = new Base64Encoder();
+				base64Encoder.encodeBytes(encoder.encode(bitmapData));
+				
+				var thumbnailNode:XML = <thumbnail data=""/>;
+				thumbnailNode.@data = base64Encoder.toString();							
+				
+				saveXML.appendChild(thumbnailNode);
 				saveXML.appendChild(sceneXML);
 				saveXML.appendChild(<log/>);
+				
 				saveXML.@date = new Date().toString();
 				return saveXML;
 			}

@@ -82,7 +82,7 @@
 			
 			public function triggerSave():void
 			{
-				var xml:XML = _commandInterface.saveFile();
+				var xml:XML = _commandInterface.saveFile(modelDisplay.getThumbnail(0));
 				if(xml)
 					dispatchEvent(new KIOEvent(KIOEvent.EVENT_SAVE, xml, true));
 			}

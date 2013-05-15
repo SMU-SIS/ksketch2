@@ -5,14 +5,18 @@
 		destructionPolicy="never"
 		addedToStage="addedToStageHandler()" xmlns:utils="utils.*" xmlns:document="views.document.*">
 	<fx:Declarations>
-		<utils:ParticipantChooser width="{width}" height="{height}" id="participantChooser"/>
 		<document:DocumentProperties width="{width}" height="{height}" id="docProperties"/>
 	</fx:Declarations>	
 	<fx:Script>
 		<![CDATA[
+			import mx.managers.PopUpManager;
+			
 			import spark.events.PopUpEvent;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.controls.widgets.ExportProgressBar;
+			import sg.edu.smu.ksketch2.utils.ExportUtil;
+			import sg.edu.smu.ksketch2.utils.KExportEvent;
 			
 			import utils.IO;
 			import utils.KSketchDocument;
@@ -162,12 +166,38 @@
 			{
 				if(doc)
 				{
-					trace("Deleting document!");
 					IO.deleteDocument(doc);
 					currentDocument = null;
 					_refreshDocumentList();
 				}
+			}
+			
+			private function _export():void
+			{
+
+				var frames:Vector.<BitmapData> = previewer.exportFrames();
 				
+				if(frames)
+				{
+					var viewer:ExportProgressBar = new ExportProgressBar();
+					viewer.open(this);
+					
+					PopUpManager.centerPopUp(viewer);
+					viewer.addEventListener(Event.REMOVED_FROM_STAGE, 
+						function handleExportComplete(event:Event):void
+						{
+							trace("Export completed!");
+//							var fileRef:FileReference = new FileReference();
+//							var date:Date = new Date();
+//							fileRef.save(viewer.videoBuffer, date.fullYear.toString()+"_"+(date.month+1).toString()+"_"+date.date.toString()
+//								+"_"+date.hours.toString()+date.minutes.toString()+".flv");
+						}
+						,false
+						,0
+						,true);
+					
+					viewer.encode(frames, ExportUtil.WIDTH_480P, ExportUtil.HEIGHT_480P);
+				}				
 			}
 		]]>
 	</fx:Script>
@@ -229,7 +259,8 @@
 								  click="_openDocument(_currentDocument)"/>
 						<s:Button label="Export"
 								  skinClass="views.document.previewer.KTouchPreviewerButtonSkin"
-								  enabled="{_currentDocument != null}"/>
+								  enabled="{_currentDocument != null}"
+								  click="_export()"/>
 						<s:Group width="100%"/>
 						<s:Button label="Delete"
 								  skinClass="views.document.previewer.KTouchPreviewerButtonSkin"

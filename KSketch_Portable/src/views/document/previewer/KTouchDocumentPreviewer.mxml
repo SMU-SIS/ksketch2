@@ -4,6 +4,7 @@
 	<fx:Script>
 		<![CDATA[
 			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.utils.ExportUtil;
 			
 			import utils.KSketchDocument;
 			
@@ -33,6 +34,11 @@
 					currentDocDescription.text = "";
 					currentDocTime.text = "";
 				}
+			}
+			
+			public function exportFrames():Vector.<BitmapData>
+			{
+				return ExportUtil.convertSceneToFLVBytes(modelDisplay, _KSketch);
 			}
 		]]>
 	</fx:Script>

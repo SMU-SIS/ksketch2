@@ -106,7 +106,7 @@
 			<s:layout>
 				<s:VerticalLayout verticalAlign="middle" horizontalAlign="center" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"/>
 			</s:layout>
-			<mx:Text id="exportStage" text="Drawing Frames..."/>
+			<s:Label id="exportStage" fontSize="{Capabilities.screenDPI*0.2}" text="Drawing Frames..." fontFamily="_sans"/>
 			<s:Group width="80%" height="{Capabilities.screenDPI/2}">
 				<s:Rect id="backgroundFill" radiusX="5" radiusY="5" width="100%" height="100%">
 					<s:fill>
@@ -121,7 +121,7 @@
 					</s:Rect>
 				</s:Group>
 			</s:Group>
-			<s:Button label="Cancel Export" clear="cancel()"/>
+			<s:Button label="Cancel Export" click="cancel()"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

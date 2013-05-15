@@ -64,6 +64,14 @@
 				_commandExecutor.insertKey(_interactionControl.selection.objects.getObjectAt(0), _KSketch.time);
 				_canInsertKey = false;
 			}
+			
+			private function _fullScreen():void
+			{
+				if(stage.displayState == StageDisplayState.FULL_SCREEN)
+					stage.displayState = StageDisplayState.NORMAL;
+				else
+					stage.displayState = StageDisplayState.FULL_SCREEN;
+			}
 		]]>
 	</fx:Script>
 	<s:Rect width="100%" height="100%" radiusX="15">
@@ -81,5 +89,6 @@
 		</s:layout>
 		<s:Button id="button_insertKey" height="30" label="Insert Key" click="_insertKey()"/>
 		<s:Button id="button_select" height="30" label="Select" click="_interactionControl.enterSelectionMode()"/>
+		<s:Button id="fullScreen" height="30" label="Full Screen" click="_fullScreen()"/>
 	</s:Group>	
 </s:Group>

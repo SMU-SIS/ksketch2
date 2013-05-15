@@ -24,18 +24,17 @@ package utils
 		{
 			var saveXML:XML = doc.xml;
 			
-			if(!saveXML.lastEdited)
-				saveXML.appendChild(<lastEdited time=""/>);
-			
-			saveXML.lastEdited.@time = doc.lastEdited.toString();
-
-			if(!saveXML.description)
-				saveXML.appendChild(<description text=""/>);
-			
-			saveXML.description.@text = doc.description;
+			trace("Num document properties",saveXML.documentProperties.length());
+			if(saveXML.documentProperties.length() == 0)
+			{
+				saveXML.appendChild(<documentProperties name="" time="" description=""/>);
+				saveXML.documentProperties.@name = doc.name.toString();
+				saveXML.documentProperties.@time = doc.lastEdited.toString();
+				saveXML.documentProperties.@description = doc.description;
+			}
 			
 			var toWriteXML:String = doc.xml.toXMLString();
-			var currentFile:File = File.applicationStorageDirectory.resolvePath("kmvs/"+doc.name+".kmv"); 
+			var currentFile:File = File.applicationStorageDirectory.resolvePath("kmvs/"+doc.id+".kmv"); 
 			var stream:FileStream = new FileStream();
 			stream.open(currentFile, FileMode.WRITE);                
 			stream.writeUTFBytes(toWriteXML);
@@ -45,7 +44,10 @@ package utils
 		//Delete Locally
 		public static function deleteDocument(doc:KSketchDocument):void
 		{
+			var currentFile:File = File.applicationStorageDirectory.resolvePath("kmvs/"+doc.id+".kmv");
 			
+			if(currentFile)
+				currentFile.deleteFile();
 		}
 		
 		public static function saveToAccount(doc:KSketchDocument):void

@@ -30,6 +30,8 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
+			import mx.graphics.codec.JPEGEncoder;
+			import mx.utils.Base64Encoder;
 			
 			import spark.events.ViewNavigatorEvent;
 			
@@ -138,6 +140,20 @@
 				var sceneXML:XML = _KSketch.sceneXML;
 				var logXML:XML = _KSketch.sessionLog;
 				
+				if(0 < sceneXML.children().length())
+				{
+					var thumbnailData:BitmapData = modelDisplay.getThumbnail(0);
+					var encoder:JPEGEncoder = new JPEGEncoder();
+					var base64Encoder:Base64Encoder = new Base64Encoder();
+					base64Encoder.encodeBytes(encoder.encode(thumbnailData));
+					
+					var thumbnailNode:XML = <thumbnail data=""/>;
+					thumbnailNode.@data = base64Encoder.toString();	
+					saveXML.appendChild(thumbnailNode);
+					
+					saveXML.appendChild(sceneXML);
+				}
+				
 				if(0 < logXML.children().length())
 				{
 					if(!saveXML.log)
@@ -145,9 +161,6 @@
 					
 					saveXML.appendChild(logXML);
 				}
-				
-				if(0 < sceneXML.children().length())
-					saveXML.appendChild(sceneXML);
 
 				currentDocument.xml = saveXML;
 				return currentDocument;

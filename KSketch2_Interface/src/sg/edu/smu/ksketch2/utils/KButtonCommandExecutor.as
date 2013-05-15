@@ -16,7 +16,6 @@ package sg.edu.smu.ksketch2.utils
 	import mx.core.FlexGlobals;
 	import mx.core.IFlexDisplayObject;
 	import mx.graphics.codec.JPEGEncoder;
-	import mx.graphics.codec.PNGEncoder;
 	import mx.managers.PopUpManager;
 	import mx.utils.Base64Encoder;
 	

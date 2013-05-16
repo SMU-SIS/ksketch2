@@ -12,22 +12,33 @@ package sg.edu.smu.ksketch2.utils
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
 
 	public class KSelection
 	{
-		private var _objects:KModelObjectList;
+		private var _visibleSelection:KModelObjectList;
+		private var _completeSelection:KModelObjectList;
 		
 		public function KSelection(selectedObjects:KModelObjectList)
 		{
-			_objects = selectedObjects;
+			_visibleSelection = selectedObjects;
+			_completeSelection = selectedObjects.clone();
 		}
 		
 		/**
-		 * Returns the KModelObjectList of objcets for this selection
+		 * Returns the current set of visible objects at their highest order of composition
 		 */
 		public function get objects():KModelObjectList
 		{
-			return _objects;
+			return _visibleSelection;
+		}
+		
+		/**
+		 * Returns the entire set of objects
+		 */
+		public function get completeSelection():KModelObjectList
+		{
+			return _completeSelection;
 		}
 		
 		/**
@@ -37,11 +48,11 @@ package sg.edu.smu.ksketch2.utils
 		public function triggerSelected():void
 		{
 			var i:int = 0;
-			var length:int = objects.length();
+			var length:int = _completeSelection.length();
 			
 			for(i; i < length; i++)
 			{
-				_objects.getObjectAt(i).selected = true;
+				_completeSelection.getObjectAt(i).selected = true;
 			}
 		}
 		
@@ -52,10 +63,10 @@ package sg.edu.smu.ksketch2.utils
 		public function triggerDeselected():void
 		{
 			var i:int = 0;
-			var length:int = objects.length();
+			var length:int = _completeSelection.length();
 
 			for(i; i < length; i++)
-				_objects.getObjectAt(i).selected = false;
+				_completeSelection.getObjectAt(i).selected = false;
 		}
 		
 		/**
@@ -63,56 +74,56 @@ package sg.edu.smu.ksketch2.utils
 		 */
 		public function centerAt(time:int):Point
 		{
-			var nVisible:int = numVisibleObjects(time);
+			if(!_visibleSelection)
+				return null;
 			
-			if(nVisible == 0)
-				return new Point();
+			if(_visibleSelection.length() == 0)
+				return null;
 			
 			var i:int = 0;
-			var length:int = objects.length();
+			var length:int = _visibleSelection.length();
 			var centroid:Point = new Point();
 			var objectCentroid:Point;
 			var matrix:Matrix;
-			var objectsComputed:int = 0;
-
+			var currentObject:KObject;
+			
 			for(i; i<length; i++)
 			{
-				if(0 < objects.getObjectAt(i).visibilityControl.alpha(time))
-				{
-					matrix = objects.getObjectAt(i).fullPathMatrix(time);
-					objectCentroid = matrix.transformPoint(objects.getObjectAt(i).centroid);
-					
-					centroid.x += objectCentroid.x;
-					centroid.y += objectCentroid.y;
-					objectsComputed ++;
-				}
+				currentObject = _visibleSelection.getObjectAt(i);
+				matrix = currentObject.fullPathMatrix(time);
+				objectCentroid = matrix.transformPoint(currentObject.centroid);
+				
+				centroid.x += objectCentroid.x;
+				centroid.y += objectCentroid.y;
 			}
 			
-			if(objectsComputed != 0)
-			{
-				centroid.x = centroid.x/objectsComputed;
-				centroid.y = centroid.y/objectsComputed;
-			}
+			centroid.x = centroid.x/length;
+			centroid.y = centroid.y/length;
 			
 			return centroid;
 		}
 		
 		public function isVisible(time:int):Boolean
 		{
-			return numVisibleObjects(time) > 0;
+			return _visibleSelection.length() > 0;
 		}
 		
-		public function numVisibleObjects(time:int):int
+		public function updateSelectionComposition(time:int):void
 		{
-			var nVisible:int = 0;
+			var i:int =0 ;
+			var length:int = _completeSelection.length();
+			var currentObject:KObject;
+			var visibleList:KModelObjectList = new KModelObjectList;
 			
-			for(var i:int = 0; i<length; i++)
+			for(i; i < length; i++)
 			{
-				if(0 < objects.getObjectAt(i).visibilityControl.alpha(time))
-					nVisible++;
+				currentObject = _completeSelection.getObjectAt(i);
+				
+				if(0 < currentObject.visibilityControl.alpha(time))
+					visibleList.add(currentObject);
 			}
 			
-			return nVisible;
+			_visibleSelection = visibleList;
 		}
 		
 		/**
@@ -121,7 +132,7 @@ package sg.edu.smu.ksketch2.utils
 		public function selectionTransformable(time:int):Boolean
 		{
 			if(objects.length() == 1)
-				return objects.getObjectAt(0).transformInterface.canInterpolate(time);
+				return _visibleSelection.getObjectAt(0).transformInterface.canInterpolate(time);
 			else
 				return false;
 		}
@@ -131,12 +142,13 @@ package sg.edu.smu.ksketch2.utils
 			if(!anotherSelection)
 				return true;
 			
-			return _objects.isDifferent(anotherSelection.objects);
+			return completeSelection.isDifferent(anotherSelection.completeSelection);
 		}
 		
 		public function debug():void
 		{
-			trace(_objects);
+			trace("visible selection:", objects);
+			trace("Complete Selection:", completeSelection);
 		}
 	}
 }

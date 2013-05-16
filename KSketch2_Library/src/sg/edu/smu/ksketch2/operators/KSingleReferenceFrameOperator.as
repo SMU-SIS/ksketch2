@@ -746,7 +746,9 @@ package sg.edu.smu.ksketch2.operators
 			
 			//if there's a key after time, we need to split it
 			if(key)
-				key = key.splitKey(time, op) as KSpatialKeyFrame;
+			{
+				key = _refFrame.split(key,time, op) as KSpatialKeyFrame;
+			}
 			else
 			{
 				//Else we will need to insert a key at time
@@ -833,7 +835,7 @@ package sg.edu.smu.ksketch2.operators
 					toModifyKey = _refFrame.getKeyAftertime(currentKey.time) as KSpatialKeyFrame;
 					
 					if(toModifyKey)
-						toModifyKey.splitKey(currentKey.time, dummyOp);
+						_refFrame.split(toModifyKey,currentKey.time, dummyOp);
 					else
 					{
 						//Else we just insert a new one at time
@@ -973,7 +975,7 @@ package sg.edu.smu.ksketch2.operators
 			while(currentKey && sourceKey != toMergeKey)
 			{
 				if(sourceKey.time < currentKey.time)
-					currentKey = currentKey.splitKey(sourceKey.time, op) as KSpatialKeyFrame;
+					currentKey = _refFrame.split(currentKey,sourceKey.time, op) as KSpatialKeyFrame;
 				
 				if(currentKey.time <= sourceKey.time)
 				{
@@ -1030,7 +1032,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				//if there's a key after time, we need to split it
 				if(key)
-					key = key.splitKey(time, op) as KSpatialKeyFrame;
+					key = _refFrame.split(key,time, op) as KSpatialKeyFrame;
 				else
 				{
 					//Else we will need to insert a key at time

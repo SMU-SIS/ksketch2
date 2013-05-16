@@ -256,6 +256,12 @@ package views.canvas.components.transformWidget
 		
 		private function _clearMotion(event:MouseEvent = null):void
 		{
+			if(!_interactionControl.selection.objects)
+				return;
+			
+			if(_interactionControl.selection.objects.length() == 0)
+				return;
+			
 			_interactionControl.begin_interaction_operation();
 			_interactionControl.selection.objects.getObjectAt(0).transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
 			_interactionControl.end_interaction_operation(null, _interactionControl.selection);

@@ -150,5 +150,15 @@ package sg.edu.smu.ksketch2.model.data_structures
 			throw new Error("Object "+id.toString()+" does not exist in this list!");
 			return null;
 		}
+		
+		public function clone():KModelObjectList
+		{
+			var newList:KModelObjectList = new KModelObjectList();
+			
+			for(var i:int = 0; i<_objectList.length; i++)
+				newList.add(_objectList[i]);
+			
+			return newList;
+		}
 	}
 }

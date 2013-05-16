@@ -8,6 +8,8 @@
  */
 package sg.edu.smu.ksketch2.model.data_structures
 {
+	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+
 	public class KKeyFrameList implements IKeyFrameList
 	{
 		protected var _head:KKeyFrame;
@@ -220,6 +222,20 @@ package sg.edu.smu.ksketch2.model.data_structures
 				trace(debugString);
 			else
 				trace("There are no keys in this list");
+		}
+		
+		/**
+		 * Splits given key at time and returns the front portion
+		 * Throws an error if given key does not exist in this list
+		 */
+		public function split(key:IKeyFrame, time:int, op:KCompositeOperation):IKeyFrame
+		{
+			var frontKey:IKeyFrame = key.splitKey(time, op);
+			
+			if(key == _head)
+				_head = frontKey as KKeyFrame;
+			
+			return frontKey
 		}
 	}
 }

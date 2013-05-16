@@ -337,6 +337,9 @@ package sg.edu.smu.ksketch2.controls.interactioncontrol
 		{
 			if(_activeMode is KManipulationMode)
 			{
+				if(_selection)
+					_selection.updateSelectionComposition(event.to);
+				
 				(_activeMode as KManipulationMode).updateManipulationMode();
 				dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_SELECTION_SET_CHANGED));
 			}

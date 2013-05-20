@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" alpha.disabled="0.2">
+	<!-- host component -->
+	<fx:Metadata>
+		[HostComponent("spark.components.Button")]
+	</fx:Metadata>
+	
+	<!-- states -->
+	<s:states>
+		<s:State name="disabled" />
+		<s:State name="down" />
+		<s:State name="over" />
+		<s:State name="up" />
+	</s:states>
+	
+	<!-- SkinParts
+	name=iconDisplay, type=spark.primitives.BitmapImage, required=false
+	name=labelDisplay, type=spark.core.IDisplayText, required=false
+	-->
+	<s:Rect left="-5" right="-5" top="-5" bottom="-5" includeIn="up,disabled" alpha="0.8 ">
+		<s:fill>
+			<s:SolidColor color="0xA0A0A"/>
+		</s:fill>
+	</s:Rect>
+	
+	<s:Rect left="-5" right="-5" top="-5" bottom="-5" radiusX="3" radiusY="3" includeIn="down" alpha="0.8">
+		<s:fill>
+			<s:SolidColor color="0xc9ddf3"/>
+		</s:fill>
+	</s:Rect>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout paddingLeft="{Capabilities.screenDPI*0.1}" paddingRight="{Capabilities.screenDPI*0.1}"
+								paddingTop="{Capabilities.screenDPI*0.1}" paddingBottom="{Capabilities.screenDPI*0.1}"/>
+		</s:layout>
+		<s:Label id="labelDisplay" fontSize="{Capabilities.screenDPI*0.1}" fontFamily="_sans" color="0xFFFFFF"/>
+	</s:Group>
+</s:Skin>

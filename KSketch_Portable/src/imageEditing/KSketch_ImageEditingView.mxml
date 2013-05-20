@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="KSketch_ImageEditingView" addedToStage="_init()" actionBarVisible="false">
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.utils.ImageProcessing;
+			private static const DIRECTION_STRENGTH:Number = Capabilities.screenDPI/2;
+			private static const WHITE:uint = 0xFFFFFF;
+			private static const SEARCH_RADIUS:int = Capabilities.screenDPI/4;
+			
+			private var cropPoints:Vector.<Number>;
+			private var pointCommand:Vector.<int>;
+			private var touchPoint:Point = new Point();
+			private var prevPoint:Point;
+			private var prevRecordedPoint:Point;
+			
+			private var imgLeft:Number;
+			private var imgRight:Number;
+			private var imgTop:Number;
+			private var imgBottom:Number;
+			
+			private var fullBitmapData:BitmapData;
+			private var preProcessed:BitmapData;
+			private var drawMat:Matrix;
+			
+			public var imageDocument:KTouchImageDocument;
+			private var _originalImageDocument:KTouchImageDocument;
+			private var _imageLoader:Loader;
+
+			//Called on visible
+			//Loads the confirmed image and displays it on the view for editing
+			//Should set all variables ehre
+			private function _init():void
+			{
+				if(data)
+				{
+					if(!(data is KTouchImageDocument))
+						throw new Error("Given data is not a valid image file!");
+				}
+				else
+					throw new Error("No file is given by the previous view");
+				
+				imageDocument = null;
+				var newImageDocument:KTouchImageDocument = data as KTouchImageDocument;
+				_originalImageDocument = newImageDocument;
+				_imageLoader = new Loader();
+				_imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, _onImageLoadComplete);
+				_imageLoader.load(new URLRequest(newImageDocument.imageFile.url));
+			}
+			
+			//Listener for loading completion
+			//Should clone the bitmap data for editing here
+			private function _onImageLoadComplete(event:Event):void
+			{
+				img.source = Bitmap(LoaderInfo(event.target).content).bitmapData;
+			}
+			
+			//Exits the view
+			public function exit():void
+			{
+				imageDocument = _originalImageDocument;
+
+				var scaleWidth:Number = 1;
+				var scaleHeight:Number = 1;
+				
+				if(img.source.width > 720)
+					scaleWidth = 720/img.bitmapData.width;
+				
+				if(img.source.height > 405)
+					scaleHeight = 405/img.bitmapData.height;
+				
+				if(scaleWidth != 1 || scaleHeight != 1)
+				{
+					var scale:Number = Math.min(scaleWidth, scaleHeight);
+					scale = Math.abs(scale);
+					var width:int = (img.bitmapData.width * scale) || 1;
+					var height:int = (img.bitmapData.height * scale) || 1;
+					var result:BitmapData = new BitmapData(width, height, true, 0x00000000);
+					var matrix:Matrix = new Matrix();
+					matrix.scale(scale, scale);
+					result.draw(new Bitmap(img.bitmapData), matrix);
+					imageDocument.imageObject = result;
+				}
+				else
+					imageDocument.imageObject = img.bitmapData;
+				navigator.popView();	
+			}
+			
+			//Exits the view
+			public function back():void
+			{
+				imageDocument = null; //Should change this if another bitmapdata object is to be used
+				navigator.popView();	
+			}
+			
+			override public function createReturnObject():Object
+			{
+				return imageDocument.imageObject;
+			}
+			
+			private function _initCrop():void
+			{
+				cropMenu.visible = true;
+				cropMenu.includeInLayout = true;
+				
+				mainMenu.visible = false;
+				mainMenu.includeInLayout = false;
+				
+				img.addEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+				
+				var rect:Rectangle = img.getRect(this);
+				imgLeft = rect.left - img.x;
+				imgRight = rect.right - img.x;
+				imgTop = rect.top - img.y;
+				imgBottom = rect.bottom - img.y;
+				
+				//Do pre processing of the image here
+				fullBitmapData = new BitmapData(rect.width, rect.height);
+				drawMat = new Matrix(1,0,0,1,-(rect.x)+img.x, -(rect.y)+img.y);
+				fullBitmapData.draw(img,drawMat);				
+				preProcessed = ImageProcessing.sobelOperation(fullBitmapData);			
+			}
+			
+			private function _startLasso(event:MouseEvent):void
+			{
+				prevPoint = null;
+				cropPoints = new Vector.<Number>();
+				pointCommand = new Vector.<int>();
+				
+				addEventListener(MouseEvent.MOUSE_MOVE, _updateLasso);
+				addEventListener(MouseEvent.MOUSE_UP, _endLasso);
+				img.removeEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+			}
+			
+			private function _updateLasso(event:MouseEvent):void
+			{
+				touchPoint.x = event.stageX;
+				touchPoint.y = event.stageY;
+				var imgPoint:Point = img.globalToLocal(touchPoint);
+				
+				if(imgPoint.x < imgLeft)
+					imgPoint.x = imgLeft;
+				else if(imgPoint.x > imgRight)
+					imgPoint.x = imgRight;
+				
+				if(imgPoint.y < imgTop)
+					imgPoint.y = imgTop;
+				else if(imgPoint.y > imgBottom)
+					imgPoint.y = imgBottom;
+				
+				if(!prevPoint)
+				{
+					prevPoint = imgPoint.clone();
+					return;
+				}
+				
+				if(!prevPoint.equals(imgPoint))
+				{
+					imgPoint = _magneticLasso(imgPoint);
+					
+					if(cropPoints.length == 0)
+						pointCommand.push(GraphicsPathCommand.MOVE_TO);
+					else
+						pointCommand.push(GraphicsPathCommand.LINE_TO);
+					
+					cropPoints.push(imgPoint.x);
+					cropPoints.push(imgPoint.y);
+				}
+				
+				_drawLasso();
+				
+				prevPoint = imgPoint;
+			}
+			
+			private function _endLasso(event:MouseEvent):void
+			{
+				removeEventListener(MouseEvent.MOUSE_MOVE, _updateLasso);
+				removeEventListener(MouseEvent.MOUSE_UP, _endLasso);
+				img.addEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+			}
+			
+			private function _drawLasso():void
+			{
+				drawLayer.graphics.clear();
+				drawLayer.graphics.lineStyle(4, 0xFFFF00);
+				drawLayer.graphics.drawPath(pointCommand, cropPoints,GraphicsPathWinding.NON_ZERO);
+			}
+			
+			private function _setLasso():void
+			{
+				_processLasso();
+				drawLayer.graphics.clear();
+				img.removeEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+				_exitLasso()	
+			}
+			
+			private function _processLasso():void
+			{
+				drawLayer.graphics.clear();
+				drawLayer.graphics.lineStyle(1, 0xFFFF00);
+				drawLayer.graphics.beginFill(0xFFFF00);
+				drawLayer.graphics.drawPath(pointCommand, cropPoints,GraphicsPathWinding.NON_ZERO);
+				drawLayer.graphics.endFill();
+				
+				var mask:BitmapData = new BitmapData(preProcessed.width, preProcessed.height, true, 0x00000000);
+				mask.draw(drawLayer,drawMat);
+				
+				var temp:BitmapData = new BitmapData(preProcessed.width, preProcessed.height, true, 0x00000000);
+				
+				temp.copyPixels(fullBitmapData, new Rectangle(0,0,preProcessed.width, preProcessed.height), new Point(),mask, new Point(), true);
+				
+				var rect:Rectangle = mask.getColorBoundsRect(0xFF000000,0x00000000,false);			
+				var product:BitmapData = new BitmapData(rect.width, rect.height,true, 0x00000000);
+				var mat:Matrix = new Matrix(1,0,0,1,-rect.x, -rect.y);
+				product.draw(temp, mat);
+				img.source = product;
+			}
+			
+			private function _exitLasso():void
+			{
+				cropMenu.visible = false;
+				cropMenu.includeInLayout = false;
+				
+				mainMenu.visible = true;
+				mainMenu.includeInLayout = true;
+			}
+			
+			private function _magneticLasso(point:Point):Point
+			{
+				var direction:Point = point.subtract(prevPoint);
+				
+				if(direction.length <= DIRECTION_STRENGTH)
+				{
+					var imageX:int = point.x - imgLeft;
+					var imageY:int = point.y - imgTop;
+					
+					var xMin:int = imageX - SEARCH_RADIUS;
+					var yMin:int = imageY - SEARCH_RADIUS;
+					var xMax:int = imageX + SEARCH_RADIUS;
+					var yMax:int = imageY + SEARCH_RADIUS;
+					var i:int;
+					var j:int;
+					var pixelValue:uint;
+					
+					var searchDistance:int = 1;
+					
+					while(searchDistance < SEARCH_RADIUS)
+					{
+						xMin = imageX - searchDistance;
+						yMin = imageY - searchDistance;
+						xMax = imageX + searchDistance;
+						yMax = imageY + searchDistance;
+						
+						for(i = xMin; i < xMax; i++)
+						{
+							if(i < 0 || preProcessed.width <= xMax)
+								continue;
+							
+							for(j = yMin; j < yMax; j++)
+							{
+								if(j < 0 || preProcessed.height <= xMax)
+									continue;
+								
+								pixelValue = preProcessed.getPixel(i,j);
+								if(Math.round(pixelValue/WHITE) == 1)
+									return new Point(i+imgLeft,j+imgTop); 
+							}
+						}
+						
+						searchDistance += 1;
+					}
+				}
+				
+				return point;
+			}
+			
+			
+			
+			
+		]]>
+	</fx:Script>
+	
+	<s:Image id="img" smooth="true" smoothingQuality="high" fillMode="scale" verticalCenter="0" horizontalCenter="0"
+			 left="20" right="20" top="20" bottom="20"/>
+	<s:Group x="{img.x}" y="{img.y}" width="{img.width}" height="{img.height}" id="drawLayer" mouseChildren="false" mouseEnabled="false"/>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle" horizontalAlign="right"/>
+		</s:layout>
+		<s:Group height="100%" id="mainMenu" visible="true">
+			<s:layout>
+				<s:VerticalLayout gap="0"/>
+			</s:layout>
+			<s:Button width="100" height="100%" label="crop" click="_initCrop()"/>
+			<s:Button width="100" height="100%" label="ok" click="exit()"/>
+			<s:Button width="100" height="100%" label="back" click="back()"/>
+		</s:Group>
+		<s:Group height="100%" id="cropMenu" visible="false" includeInLayout="false">
+			<s:layout>
+				<s:VerticalLayout gap="0"/>
+			</s:layout>
+			<s:Button width="100" height="100%" label="ok" click="_setLasso()"/>
+			<s:Button width="100" height="100%" label="back" click="_exitLasso()"/>
+		</s:Group>
+	</s:Group>
+</s:View>

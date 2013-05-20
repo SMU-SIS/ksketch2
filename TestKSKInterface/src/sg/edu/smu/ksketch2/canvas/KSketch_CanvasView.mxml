@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false" 
+		xmlns:view="sg.edu.smu.ksketch2.view.*"
+		xmlns:transformWidget="sg.edu.smu.ksketch2.controls.widgets.transformWidget.*"
+		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
+		destructionPolicy="never"
+		viewDeactivate="_viewDeactivateHandler()"
+		viewActivate="_viewActivateHandler()"
+		creationComplete="initCanvas()"
+		add="_addHandler()" xmlns:timeBar1="sg.edu.smu.ksketch2.controls.components.timeBar.*" xmlns:popup1="sg.edu.smu.ksketch2.controls.components.popup.*" xmlns:transformWidget1="sg.edu.smu.ksketch2.controls.components.transformWidget.*"
+		>
+	<fx:Declarations>
+		<popup1:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{(height/2)-(cornerMenu.height/2)}"/>
+		<popup1:KTouchFeedbackMessage id="feedbackMessage" mouseChildren="false"/>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.graphics.codec.JPEGEncoder;
+			import mx.utils.Base64Encoder;
+			
+			import spark.events.ViewNavigatorEvent;
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.controls.components.timeBar.KTouchTickMarkControl;
+			import sg.edu.smu.ksketch2.controls.components.timeBar.KTouchTimeJumpControl;
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.controls.interactors.KCanvasInteractorManager;
+			import sg.edu.smu.ksketch2.controls.interactors.widgetstates.KWidgetInteractorManager;
+			import sg.edu.smu.ksketch2.imageEditing.KTouchImageDocument;
+			import sg.edu.smu.ksketch2.utils.KSketchDocument;
+			
+			
+			public static const CANVAS_BUTTON_COLOR:uint = 0x000000;
+			public static const CANVAS_BUTTON_BLEND:Number = 0.55;
+			public static const CANVAS_DIVIDER_BLEND:Number = 0.1;
+			
+			public var currentDocument:KSketchDocument;
+			
+			private var _KSketch:KSketch2;
+			private var _interactionControl:KMobileInteractionControl;
+			private var _transitionHelper:KWidgetInteractorManager;
+			private var _selectionHelper:KCanvasInteractorManager;
+			private var _timeTickControl:KTouchTickMarkControl;
+			private var _imageData:KTouchImageDocument;
+			
+			//We probably need a load and save handler in this canvas view
+			//The xml can be passed through a data handler and the load handler will access it though {data}
+			public function initCanvas():void
+			{	
+				if(!_KSketch)
+				{
+
+					_KSketch = new KSketch2();
+
+					_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
+					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
+					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, feedbackMessage);
+					_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
+				
+					feedbackMessage.init(this);
+					leftTimeJumper.init(_KSketch, timeControl, KTouchTimeJumpControl.LEFT);
+					rightTimeJumper.init(_KSketch, timeControl, KTouchTimeJumpControl.RIGHT);
+					
+					modelDisplay.init(_KSketch, true);
+					motionDisplay.init(_KSketch, _interactionControl);
+					timeControl.init(_KSketch, _timeTickControl);
+					cornerMenu.init(_interactionControl, this);
+					
+					var playBounds:Rectangle = playButton.getBounds(this);
+					interceptor.graphics.beginFill(0x000000);
+					interceptor.graphics.drawRect(0,0, width, height);
+					interceptor.graphics.drawRect(playBounds.x, playBounds.y, playBounds.width, playBounds.height);
+					interceptor.graphics.endFill();
+					playButton.init(timeControl, _interactionControl,interceptor, _KSketch);
+					_interactionControl.reset();
+				}
+			}
+			
+			private function _addHandler():void
+			{
+				if(navigator.poppedViewReturnedObject)
+					_imageData = navigator.poppedViewReturnedObject.object as KTouchImageDocument;
+			}
+			
+			private function _viewActivateHandler():void
+			{
+				if(!_KSketch)
+					initCanvas();
+				
+				if(_imageData)
+				{
+					//Add image here
+					if(_imageData.imageObject)
+						_KSketch.object_Add_Image(_imageData.imageObject, _KSketch.time);
+					
+					_imageData = null;
+				}
+				else if(data)
+				{
+					if(data is KSketchDocument)
+					{
+						currentDocument = data as KSketchDocument;
+						
+						if(currentDocument.xml.scene.children().length() > 0)
+							_KSketch.generateSceneFromXML(new XML(currentDocument.xml.scene));
+
+						data = null;
+						_KSketch.time = 0;
+						_KSketch.beginSession();
+					}	
+				}
+			}
+			
+			private function _viewDeactivateHandler():void
+			{
+				timeControl.dispose();
+				cornerMenu.close();	
+			}
+			
+			override public function createReturnObject():Object
+			{
+				var saveXML:XML = currentDocument.xml;
+				delete(saveXML.scene);
+
+				var sceneXML:XML = _KSketch.sceneXML;
+				var logXML:XML = _KSketch.sessionLog;
+				
+				if(0 < sceneXML.children().length())
+				{
+					var thumbnailData:BitmapData = modelDisplay.getThumbnail(0);
+					var encoder:JPEGEncoder = new JPEGEncoder();
+					var base64Encoder:Base64Encoder = new Base64Encoder();
+					base64Encoder.encodeBytes(encoder.encode(thumbnailData));
+					
+					var thumbnailNode:XML = <thumbnail data=""/>;
+					thumbnailNode.@data = base64Encoder.toString();	
+					saveXML.appendChild(thumbnailNode);
+					
+					saveXML.appendChild(sceneXML);
+				}
+				
+				if(0 < logXML.children().length())
+				{
+					if(!saveXML.log)
+						saveXML.appendChild(<log/>);
+					
+					saveXML.appendChild(logXML);
+				}
+
+				currentDocument.xml = saveXML;
+				return currentDocument;
+			}
+			
+			private function _menuBtnHandler():void
+			{
+				if(cornerMenu.isOpen)
+					cornerMenu.close();
+				else
+					cornerMenu.open(menuButton);
+				return;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout gap="2"/>
+		</s:layout>
+		<s:Group id="timebar_region" width="100%" height="{Capabilities.screenDPI*0.4}">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xE7E7E7"/>
+				</s:fill>
+			</s:Rect>
+			<s:Group width="100%" height="100%">
+				<s:layout >
+					<s:HorizontalLayout gap="0" verticalAlign="middle" paddingLeft="5"/>
+				</s:layout>
+				<timeBar1:Touch_Play_Button id="playButton" click="playButton.playToggle()"/>
+				<timeBar1:KTouchTimeJumpControl id="leftTimeJumper"/>
+				<s:Group width="100%" height="100%">
+					<s:layout>
+						<s:VerticalLayout gap="3" verticalAlign="middle" horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
+					</s:layout>
+					<timeBar1:KTouchTimeControl id="timeControl"/>
+				</s:Group>
+				<timeBar1:KTouchTimeJumpControl id="rightTimeJumper"/>
+				<timeBar1:Touch_Menu_Button id="menuButton" click="_menuBtnHandler()"/>
+			</s:Group>
+		</s:Group>
+		<s:Group width="100%" height="100%">
+			<s:Rect left="1" right="1" top="1" bottom="1">
+				<s:fill>
+					<s:SolidColor color="0xE7E7E7"/>
+				</s:fill>
+			</s:Rect>
+			<!-- For show, all the visual elements that the user wont be able to "touch"-->
+			<s:Group width="100%" height="100%">
+				<s:layout>
+					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+				</s:layout>
+				<s:Group id="drawing_stage" height="92%" maxHeight="{Capabilities.screenResolutionX*0.7}"
+						 					width="{drawing_stage.height/9*16}">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="0xFFFFFF"/>
+						</s:fill>
+						<s:stroke>
+							<s:SolidColorStroke color="0xdbd6d6" weight="1.5"/>
+						</s:stroke>
+						<s:filters>
+							<s:DropShadowFilter color="0xdfdfdf" angle="90" distance="1"/>
+						</s:filters>
+					</s:Rect>
+					<!-- The model display displays the objects in the model -->
+					<view:KMotionDisplay id="motionDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
+										 scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
+					<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
+										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>					
+				</s:Group> 
+			</s:Group>
+			
+			<!-- Things inside this group really dispatches gesture events-->
+			<s:Group width="100%" height="100%">
+				<s:Group id="canvas_region" width="100%" height="100%">
+					<s:Rect width="100%" height="100%" alpha="0">
+						<s:fill>
+							<s:SolidColor color="0x000000"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+				<transformWidget1:KTouchWidgetBase id="widget" visible="false"/>
+			</s:Group>
+		</s:Group>
+	</s:Group>
+	
+	<s:Group width="100%" height="100%" visible="false" id="interceptor" alpha="0"/>
+</s:View>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			
+			private const _VISIBLE_TIME:Number = 500;
+			private const _ORIGIN:Point = new Point(0,0);
+
+			private var _globalOrigin:Point;
+			private var _noMagnificationY:Number;
+			private var _magnificationY:Number;
+			
+			
+			private var _DPI:Number;
+			private var _halfDPI:Number;
+			private var _quarterDPI:Number;
+			private var _identity:Matrix;
+			
+			private var _parent:UIComponent;
+			private var _timeControl:KTouchTimeControl;
+			private var _parent_Minimum:Number;
+			private var _parent_Maximum:Number;
+			
+			private var _sourceRect:Rectangle;
+			
+			public function init(parent:UIComponent, timeControl:KTouchTimeControl):void
+			{
+				_parent = parent;
+				_timeControl = timeControl;
+				_sourceRect = new Rectangle();
+				
+				_DPI = Capabilities.screenDPI;
+				_halfDPI = _DPI/2;
+				_quarterDPI = _DPI/4;
+				_identity = new Matrix();
+				_globalOrigin = _parent.localToGlobal(_ORIGIN);
+				_parent_Minimum = _globalOrigin.x;
+				_parent_Maximum = _parent_Minimum + _parent.width;
+				
+				if(magnifierContents)
+					magnifierContents.removeElement(magnifierDisplay);
+
+				_noMagnificationY = _globalOrigin.y + _parent.height + (Capabilities.screenDPI)*0.2;
+				y = _noMagnificationY;
+			}
+			
+			/**
+			 * Magnifies the area around given position
+			 * Given xPos must be global X;
+			 */
+			public function magnify(xPos:Number):void
+			{				
+				if(xPos < 0 || _parent.width < xPos)
+					return;
+				
+				//Create the magnified area of interest
+				var bd : BitmapData = new BitmapData( _timeControl.width, _timeControl.height );
+				bd.draw( _timeControl, _identity );
+				
+				_sourceRect.x = xPos;
+				_sourceRect.y = 0;
+				_sourceRect.width = Capabilities.screenDPI;
+				_sourceRect.height = _timeControl.height;
+				
+				var displaySource:BitmapData = new BitmapData(_halfDPI, _timeControl.height);
+				displaySource.copyPixels(bd, _sourceRect, _ORIGIN);
+				magnifierDisplay.source = displaySource;
+				
+				if(!magnifierDisplay.parent)
+					magnifierContents.addElementAt(magnifierDisplay,0);
+			}
+			
+			public function showTime(time:int, frameNumber:int):void
+			{
+				if(labelText)
+					labelText.text = KTouchTimeControl.toTimeCode(time).toString() + " - Frame "+frameNumber.toString();
+			}
+			
+			override public function set x(value:Number):void
+			{
+				if(value < 0)
+					value = 0;
+				else if(_parent.width < value)
+					value = _parent.width;
+
+				value = _globalOrigin.x + value + 5;
+				super.x = value;
+			}
+			
+			public function closeMagnifier(event:TimerEvent = null):void
+			{
+				if(magnifierDisplay.parent)
+					magnifierContents.removeElement(magnifierDisplay);
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group x="{-magnifierContents.width/2}">
+		<s:Rect width="100%" height="100%" radiusX="3" radiusY="3" alpha="0.7">
+			<s:fill>
+				<s:SolidColor color="0x848484"/>
+			</s:fill>
+		</s:Rect>
+		<s:Group id="magnifierContents">
+			<s:layout>
+				<s:VerticalLayout paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
+								  verticalAlign="middle" horizontalAlign="center"/>
+			</s:layout>
+			<s:BitmapImage id="magnifierDisplay" scaleX="1.5" scaleY="1.5"/>
+			<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX" fontSize="{Capabilities.screenDPI*0.1}"/>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

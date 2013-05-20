@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   windowMoving="titleWin_windowMovingHandler(event);"
+			   close="titleWin_closeHandler(event)"
+			   creationComplete="creationCompleteHandler()"
+			   resize="handleResize()"
+			   skinClass="sg.edu.smu.ksketch2.controls.ImageInput.HeaderlessSkin"
+			   >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			
+			/**
+			 * Image editing window for the non-portable versions.
+			 * Do not confuse this component with the image editing view in the portable version
+			 */
+			
+			import mx.core.IFlexDisplayObject;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import spark.components.VideoDisplay;
+			import spark.components.mediaClasses.DynamicStreamingVideoItem;
+			import spark.components.mediaClasses.DynamicStreamingVideoSource;
+			import spark.events.TitleWindowBoundsEvent;
+			
+			import org.osmf.net.StreamType;
+			
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.utils.ImageProcessing;
+			
+			private static const DIRECTION_STRENGTH:Number = Capabilities.screenDPI/2;
+			private static const WHITE:uint = 0xFFFFFF;
+			private static const SEARCH_RADIUS:int = Capabilities.screenDPI/4;
+			
+			public static const IMAGE_FILE_FILTER:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png");
+			public static const IMAGE_MAX_WIDTH:Number = 480;
+			public static const CAMERA_FPS:int = 16;
+			
+			private var cropPoints:Vector.<Number>;
+			private var pointCommand:Vector.<int>;
+			private var touchPoint:Point = new Point();
+			private var prevPoint:Point;
+			private var prevRecordedPoint:Point;
+			
+			private var imgLeft:Number;
+			private var imgRight:Number;
+			private var imgTop:Number;
+			private var imgBottom:Number;
+			
+			private var fullBitmapData:BitmapData;
+			private var preProcessed:BitmapData;
+			private var drawMat:Matrix;
+			
+			private var _fileRef:FileReference;
+			private var _correction:Point
+			
+			private var _KSketch:KSketch2;
+			
+			public function init(KSketchInstance:KSketch2):void
+			{
+				_KSketch = KSketchInstance;	
+			}
+			
+			protected function titleWin_closeHandler(evt:CloseEvent):void
+			{
+				// Remove the pop up window.
+				PopUpManager.removePopUp(evt.currentTarget as IFlexDisplayObject);
+			}
+			
+			protected function titleWin_windowMovingHandler(evt:TitleWindowBoundsEvent):void
+			{
+				
+				// Before moving the TitleWindow container, check to see whether it should be draggable.
+				evt.stopImmediatePropagation();
+				evt.preventDefault();
+			}
+			
+			protected function handleResize():void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function creationCompleteHandler():void
+			{
+				removeElement(videoDisplayGroup);
+				removeElement(imageDisplayGroup);
+			}
+			
+			/**
+			 * Switch to camera input mode
+			 */
+			protected function startCamera():void
+			{
+				var camera:Camera = Camera.getCamera();
+				if(camera)
+				{
+					//Standard camera codes grabbed off the internet tutorial
+					var videoSource:DynamicStreamingVideoSource = new DynamicStreamingVideoSource();
+					var videoItems:Vector.<DynamicStreamingVideoItem>;
+					videoItems=new Vector.<DynamicStreamingVideoItem>();
+					videoItems[0]=new DynamicStreamingVideoItem();
+					
+					videoSource.host = "";
+					videoSource.streamType = StreamType.LIVE;
+					videoSource.streamItems = videoItems;
+					
+					var aspectRatio:Number = camera.width/camera.height;					
+					camera.setMode(IMAGE_MAX_WIDTH, IMAGE_MAX_WIDTH/aspectRatio, CAMERA_FPS);
+					
+					//This reflection matrix shows how the image is being displayed
+					//I'm making the camera output resemble a mirror here.
+					//TO make it record what it sees without the lateral inversion, 
+					//Use an identity matrix
+					var reflectionMatrix:Matrix = new Matrix();
+					reflectionMatrix.scale(-1,1);
+					videoDisplay.transform.matrix= reflectionMatrix;
+
+					videoDisplay.source = videoSource;
+					videoDisplay.videoObject.attachCamera(camera);
+					imageSelectionOption.visible = false;
+					addElement(videoDisplayGroup);
+				}	
+			}
+			
+			protected function chooseImage():void
+			{
+				_fileRef = new FileReference();
+				_fileRef.browse([IMAGE_FILE_FILTER]);
+				_fileRef.addEventListener(Event.SELECT, selectPicture);						
+			}	
+			
+			protected function selectPicture(event:Event):void
+			{
+				_fileRef.load();
+				_fileRef.addEventListener(Event.COMPLETE, loadSelection, false, 0, true);
+			}
+			
+			protected function loadSelection(event:Event):void
+			{
+				_fileRef.removeEventListener(Event.COMPLETE, loadSelection);
+				var loader:Loader = new Loader();
+				loader.loadBytes(_fileRef.data);
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, generateBitmap);
+			}
+			
+			/**
+			 * Generates the easy to manage flash equivalent of an image's data
+			 * This data will be displayed on the screen
+			 */
+			protected function generateBitmap(event:Event):void
+			{
+				var loaderInfo:LoaderInfo = (event.target as LoaderInfo);
+				loaderInfo.removeEventListener(Event.COMPLETE, generateBitmap);
+				
+				var aspectRatio:Number = loaderInfo.content.width/loaderInfo.content.height;
+				var imageWidth:Number = loaderInfo.content.width > IMAGE_MAX_WIDTH? IMAGE_MAX_WIDTH:loaderInfo.content.width;
+				var imageHeight:Number = imageWidth/aspectRatio
+				var myScale:Number = imageWidth/loaderInfo.content.width;
+				var myMatrix:Matrix = new Matrix();
+				myMatrix.scale(myScale, myScale); //Matrix used to draw the final bitmap data in case teh original one is too big
+				
+				var bitmapData:BitmapData = new BitmapData(imageWidth,imageHeight);
+				bitmapData.draw(loaderInfo.content, myMatrix);
+				setBitmapData(bitmapData);
+			}
+			
+			protected function setBitmapData(data:BitmapData):void
+			{
+				imageDisplay.source = data;
+				imageSelectionOption.visible = false;
+				addElement(imageDisplayGroup);
+			}
+			
+			protected function takePicture():void
+			{
+				var snapShot:BitmapData = new BitmapData(videoDisplay.width, videoDisplay.height);
+				snapShot.draw(videoDisplay, videoDisplay.transform.matrix);
+				videoDisplay.videoObject.attachCamera(null);
+				removeElement(videoDisplayGroup);
+				setBitmapData(snapShot);
+			}
+			
+			protected function cancelCamera():void
+			{
+				removeElement(videoDisplayGroup);
+				imageSelectionOption.visible = true;
+			}
+			
+			protected function cancelImage():void
+			{
+				removeElement(imageDisplayGroup);
+				imageSelectionOption.visible = true;
+			}
+			
+			/**
+			 * Sets up the interface for cropping images
+			 * Also processes the image to get the edges
+			 */
+			private function _initCrop():void
+			{
+				cropMenu.visible = true;
+				cropMenu.includeInLayout = true;
+				
+				mainMenu.visible = false;
+				mainMenu.includeInLayout = false;
+				
+				imageDisplay.addEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+				
+				var rect:Rectangle = imageDisplay.getRect(this);
+				imgLeft = rect.left - imageDisplay.x;
+				imgRight = rect.right - imageDisplay.x;
+				imgTop = rect.top;
+				imgBottom = rect.bottom;
+
+				//Do pre processing of the image here
+				fullBitmapData = new BitmapData(rect.width, rect.height);
+				fullBitmapData.draw(imageDisplay);				
+				preProcessed = ImageProcessing.sobelOperation(fullBitmapData);			
+			}
+			
+			private function _startLasso(event:MouseEvent):void
+			{
+				prevPoint = null;
+				cropPoints = new Vector.<Number>();
+				pointCommand = new Vector.<int>();
+				
+				addEventListener(MouseEvent.MOUSE_MOVE, _updateLasso);
+				addEventListener(MouseEvent.MOUSE_UP, _endLasso);
+				imageDisplay.removeEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+			}
+			
+			private function _updateLasso(event:MouseEvent):void
+			{
+				touchPoint.x = event.stageX;
+				touchPoint.y = event.stageY;
+				var imgPoint:Point = imageDisplay.globalToLocal(touchPoint);
+
+				if(imgPoint.x < imgLeft)
+					imgPoint.x = imgLeft;
+				else if(imgPoint.x > imgRight)
+					imgPoint.x = imgRight;
+				
+				if(imgPoint.y < imgTop)
+					imgPoint.y = imgTop;
+				else if(imgPoint.y > imgBottom)
+					imgPoint.y = imgBottom;
+				
+				if(!prevPoint)
+				{
+					prevPoint = imgPoint.clone();
+					return;
+				}
+				
+				if(!prevPoint.equals(imgPoint))
+				{
+					//Magnetic lasso can be turned off here
+					imgPoint = _magneticLasso(imgPoint);
+					
+					if(cropPoints.length == 0)
+						pointCommand.push(GraphicsPathCommand.MOVE_TO);
+					else
+						pointCommand.push(GraphicsPathCommand.LINE_TO);
+					
+					cropPoints.push(imgPoint.x);
+					cropPoints.push(imgPoint.y);
+				}
+				
+				_drawLasso();
+				
+				prevPoint = imgPoint;
+			}
+			
+			private function _endLasso(event:MouseEvent):void
+			{
+				removeEventListener(MouseEvent.MOUSE_MOVE, _updateLasso);
+				removeEventListener(MouseEvent.MOUSE_UP, _endLasso);
+				imageDisplay.addEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+			}
+			
+			private function _drawLasso():void
+			{
+				drawLayer.graphics.clear();
+				drawLayer.graphics.lineStyle(4, 0xFFFF00);
+				drawLayer.graphics.drawPath(pointCommand, cropPoints,GraphicsPathWinding.NON_ZERO);
+			}
+			
+			private function _setLasso():void
+			{
+				_processLasso();
+				drawLayer.graphics.clear();
+				imageDisplay.removeEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+				_exitLasso()	
+			}
+			
+			private function _processLasso():void
+			{
+				drawLayer.graphics.clear();
+				drawLayer.graphics.lineStyle(1, 0xFFFF00);
+				drawLayer.graphics.beginFill(0xFFFF00);
+				drawLayer.graphics.drawPath(pointCommand, cropPoints,GraphicsPathWinding.NON_ZERO);
+				drawLayer.graphics.endFill();
+				
+				var mask:BitmapData = new BitmapData(preProcessed.width, preProcessed.height, true, 0x00000000);
+				mask.draw(drawLayer,drawMat);
+				
+				var temp:BitmapData = new BitmapData(preProcessed.width, preProcessed.height, true, 0x00000000);
+				
+				temp.copyPixels(fullBitmapData, new Rectangle(0,0,preProcessed.width, preProcessed.height), new Point(),mask, new Point(), true);
+				
+				var rect:Rectangle = mask.getColorBoundsRect(0xFF000000,0x00000000,false);			
+				var product:BitmapData = new BitmapData(rect.width, rect.height,true, 0x00000000);
+				var mat:Matrix = new Matrix(1,0,0,1,-rect.x, -rect.y);
+				product.draw(temp, mat);
+				imageDisplay.source = product;
+			}
+			
+			private function _exitLasso():void
+			{
+				imageDisplay.removeEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
+				removeEventListener(MouseEvent.MOUSE_MOVE, _updateLasso);
+				removeEventListener(MouseEvent.MOUSE_UP, _endLasso);
+				drawLayer.graphics.clear();
+				
+				cropMenu.visible = false;
+				cropMenu.includeInLayout = false;
+				
+				mainMenu.visible = true;
+				mainMenu.includeInLayout = true;
+			}
+			
+			/**
+			 * Adds the image into the model
+			 */
+			private function useImage():void
+			{
+				_KSketch.object_Add_Image(imageDisplay.bitmapData, _KSketch.time);
+				closeImageInsertion();
+			}
+			
+			private function _magneticLasso(point:Point):Point
+			{
+				var direction:Point = point.subtract(prevPoint);
+				
+				//Don't do anything if the distance from the previous point is too big.
+				//Means the user is dragging very fast
+				//We shouldn't snap in this case
+				if(direction.length <= DIRECTION_STRENGTH)
+				{
+					//Cicular search algorithm, not interesting
+					//Searches from the interior of the circle outwards
+					//Should probably do something that uses heuristics
+					//Remember to use the edge image for the search
+					var imageX:int = point.x - imgLeft;
+					var imageY:int = point.y - imgTop;
+					
+					var xMin:int = imageX - SEARCH_RADIUS;
+					var yMin:int = imageY - SEARCH_RADIUS;
+					var xMax:int = imageX + SEARCH_RADIUS;
+					var yMax:int = imageY + SEARCH_RADIUS;
+					var i:int;
+					var j:int;
+					var pixelValue:uint;
+					
+					var searchDistance:int = 1;
+					
+					while(searchDistance < SEARCH_RADIUS)
+					{
+						xMin = imageX - searchDistance;
+						yMin = imageY - searchDistance;
+						xMax = imageX + searchDistance;
+						yMax = imageY + searchDistance;
+						
+						for(i = xMin; i < xMax; i++)
+						{
+							if(i < 0 || preProcessed.width <= xMax)
+								continue;
+							
+							for(j = yMin; j < yMax; j++)
+							{
+								if(j < 0 || preProcessed.height <= xMax)
+									continue;
+								
+								pixelValue = preProcessed.getPixel(i,j);
+								if(Math.round(pixelValue/WHITE) == 1)
+									return new Point(i+imgLeft,j+imgTop); 
+							}
+						}
+						
+						searchDistance += 1;
+					}
+				}
+				
+				return point;
+			}
+			
+			public function closeImageInsertion():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</fx:Script>
+	<s:Group id="imageSelectionOption" width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		<s:Button width="100%" height="100%" label="Take a picture" click="startCamera()"/>
+		<s:Button width="100%" height="100%" label="Choose image from hardisk" click="chooseImage()"/>
+		<s:Button width="100%" height="100%" label="Cancel" click="closeImageInsertion()"/>
+	</s:Group>
+	<s:Group id="videoDisplayGroup">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VideoDisplay id="videoDisplay"/>
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout horizontalAlign="center"/>
+			</s:layout>
+			<s:Button label="Take Picture" click="takePicture()"/>
+			<s:Button label="Cancel" click="cancelCamera()"/>
+		</s:Group>
+	</s:Group>
+	<s:Group id="imageDisplayGroup">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Group id="imageContent">
+			<s:Image id="imageDisplay"/>
+			<s:Group id="drawLayer" mouseEnabled="false" mouseChildren="false"/>
+		</s:Group>
+		<s:Group id="mainMenu" width="100%">
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout horizontalAlign="center"/>
+				</s:layout>
+				<s:Button label="Use Image" click="useImage()"/>
+				<s:Button label="Crop Image" click="_initCrop()"/>
+				<s:Button label="Cancel" click="cancelImage()"/>
+			</s:Group>
+		</s:Group>
+		<s:Group id="cropMenu" width="100%" visible="false">
+			<s:layout>
+				<s:HorizontalLayout horizontalAlign="center"/>
+			</s:layout>
+			<s:Button label="Ok" click="_setLasso()"/>
+			<s:Button label="Cancel" click="_exitLasso()"/>
+		</s:Group>	
+	</s:Group>
+</s:TitleWindow>

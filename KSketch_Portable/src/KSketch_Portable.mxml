@@ -9,7 +9,7 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:ViewNavigatorApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
-							xmlns:s="library://ns.adobe.com/flex/spark" firstView="views.document.KSketch_DocumentView" width="100%" height="100%">
+							xmlns:s="library://ns.adobe.com/flex/spark" firstView="sg.edu.smu.ksketch2.document.KSketch_DocumentView" width="100%" height="100%">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>

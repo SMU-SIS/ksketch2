@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="{height}" height="100%" skinClass="sg.edu.smu.ksketch2.controls.components.timeBar.KTouchTimebarButtonSkin">
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.utils.KSelection;
+			
+			
+			private const _FILL:uint = 0x000000;
+			private var _KSketch:KSketch2;
+			private var _interceptor:DisplayObject;
+			private var _interactionControl:KMobileInteractionControl;
+			private var _timeControl:KTouchTimeControl;
+			private var _buttonState:int;
+			private var _oldSelection:KSelection;
+			
+			private const SHOW_PLAY:int = 0;
+			private const SHOW_PAUSE:int = 1;
+			
+			public function init(timeControl:KTouchTimeControl, interactionControl:KMobileInteractionControl, interceptor:DisplayObject
+								, KSketchInstance:KSketch2):void
+			{
+				_KSketch = KSketchInstance;
+				_interactionControl = interactionControl;
+				_timeControl = timeControl;
+				_interceptor = interceptor;
+				buttonState = SHOW_PLAY;
+				
+				timeControl.addEventListener(KTouchTimeControl.PLAY_START, _handlePlayPause);
+				timeControl.addEventListener(KTouchTimeControl.PLAY_STOP, _handlePlayPause);
+			}
+			
+			public function playToggle():void
+			{
+				if(_buttonState == SHOW_PLAY)
+					_timeControl.play();
+				else
+					_timeControl.stop();
+			}
+			
+			private function _handlePlayPause(event:Event):void
+			{
+				if(event.type == KTouchTimeControl.PLAY_START)
+				{
+					buttonState = SHOW_PAUSE;
+					_oldSelection =_interactionControl.selection;
+					_interactionControl.selection = null;
+					_interceptor.visible = true;
+					
+					var log:XML = <op/>;
+					var date:Date = new Date();
+					
+					log.@category = "Timeline";
+					log.@type = "Play";
+					log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+					_KSketch.log.appendChild(log);
+				}
+				else
+				{
+					buttonState = SHOW_PLAY;	// IF IT IS PAUSING,THEN SHOW PLAY!
+					_interactionControl.selection = _oldSelection;
+					_oldSelection = null;
+					_interceptor.visible = false;
+					
+					var log2:XML = <op/>;
+					var date2:Date = new Date();
+					
+					log2.@category = "Timeline";
+					log2.@type = "Pause";
+					log2.@elapsedTime = KTouchTimeControl.toTimeCode(date2.time - _KSketch.logStartTime);
+					_KSketch.log.appendChild(log2);
+				}
+			}
+			
+			private function set buttonState(value:int):void
+			{
+				var iconGraphics:Graphics = (skin as KTouchTimebarButtonSkin).iconGraphics.graphics;
+				
+				iconGraphics.clear();
+				_buttonState = value;
+				if(_buttonState == SHOW_PLAY)
+				{
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.moveTo(width*0.75, height*0.5);
+					iconGraphics.lineTo(width*0.25, height*0.25);
+					iconGraphics.lineTo(width*0.25, height*0.75);
+					iconGraphics.lineTo(width*0.75, height*0.5);
+					iconGraphics.endFill();
+				}
+				else
+				{
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.drawRect(width*0.3,height*0.25,width*0.125,height*0.5);
+					iconGraphics.endFill();
+					
+					iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+					iconGraphics.drawRect(width*0.6,height*0.25,width*0.125,height*0.5);
+					iconGraphics.endFill();
+				}
+
+				iconGraphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
+				iconGraphics.moveTo(width,height*0.1);
+				iconGraphics.lineTo(width,height*0.9);
+			}
+		]]>
+	</fx:Script>
+</s:Button>

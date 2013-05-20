@@ -9,7 +9,7 @@
 package sg.edu.smu.ksketch2.utils
 {
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.widgets.ITimeControl;
+	import sg.edu.smu.ksketch2.controls.components.ITimeControl;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;

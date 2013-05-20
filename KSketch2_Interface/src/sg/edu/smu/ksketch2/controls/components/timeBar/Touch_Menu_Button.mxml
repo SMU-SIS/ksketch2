@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="{height}" height="100%" creationComplete="initImage()"
+		 skinClass="sg.edu.smu.ksketch2.controls.components.timeBar.KTouchTimebarButtonSkin">
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+			
+			public function initImage():void
+			{
+				var iconGraphics:Graphics = (skin as KTouchTimebarButtonSkin).iconGraphics.graphics;
+
+				iconGraphics.beginFill(KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_BUTTON_BLEND);
+				
+				iconGraphics.drawRect(width*0.42,height*0.18,width*0.18,height*0.18);
+				iconGraphics.drawRect(width*0.42,height*0.42,width*0.18,height*0.18);
+				iconGraphics.drawRect(width*0.42,height*0.66,width*0.18,height*0.18);
+				
+				iconGraphics.lineStyle(1, KSketch_CanvasView.CANVAS_BUTTON_COLOR, KSketch_CanvasView.CANVAS_DIVIDER_BLEND);
+				iconGraphics.moveTo(0,height*0.1);
+				iconGraphics.lineTo(0,height*0.9);
+			}
+		]]>
+	</fx:Script>	
+</s:Button>

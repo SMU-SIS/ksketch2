@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundColor="0x000000" backgroundAlpha="0.4">
+	<fx:Declarations>
+		<s:RadioButtonGroup id="studyMode"/>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			public var buttonHeight:Number = Capabilities.screenDPI * 0.25;
+			
+			public function submit(event:MouseEvent):void
+			{
+				var object:Object = new Object();
+				object.participant = event.target.name;
+				object.studyMode = studyMode.selectedValue;
+				
+				close(true, object);
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group width="100%" height="100%">
+		<s:Group width="100%" height="100%">
+			<s:layout>
+				<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+			</s:layout>
+			<s:VGroup height="80%">
+				<s:RadioButton groupName="studyMode" 
+							   label="Mode P" fontSize="{Capabilities.screenDPI*0.2}"/>
+				<s:RadioButton groupName="studyMode" 
+							   label="Mode K" fontSize="{Capabilities.screenDPI*0.2}"/>
+				<s:RadioButton groupName="studyMode" 
+							   label="Mode PK" fontSize="{Capabilities.screenDPI*0.2}"/>        
+			</s:VGroup>
+			<s:Scroller height="80%">
+				<s:Group width="100%" id="documentContainer" click="submit(event)">
+					<s:layout>
+						<s:VerticalLayout gap="10" paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"/>
+					</s:layout>
+					<s:Button name="Participant 1" label="Participant 1" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 2" label="Participant 2" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 3" label="Participant 3" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 4" label="Participant 4" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 5" label="Participant 5" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 6" label="Participant 6" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 7" label="Participant 7" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 8" label="Participant 8" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 9" label="Participant 9" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 10" label="Participant 10" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 11" label="Participant 11" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 12" label="Participant 12" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 13" label="Participant 13" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 14" label="Participant 14" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 15" label="Participant 15" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 16" label="Participant 16" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 17" label="Participant 17" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 18" label="Participant 18" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 19" label="Participant 19" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 20" label="Participant 10" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 21" label="Participant 21" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 22" label="Participant 22" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 23" label="Participant 23" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 24" label="Participant 24" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 25" label="Participant 25" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 26" label="Participant 26" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 27" label="Participant 27" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 28" label="Participant 28" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 29" label="Participant 29" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 30" label="Participant 30" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 31" label="Participant 31" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 32" label="Participant 32" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 33" label="Participant 33" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 34" label="Participant 34" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 35" label="Participant 35" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+					<s:Button name="Participant 36" label="Participant 36" width="100%" height="{buttonHeight}" skinClass="sg.edu.smu.ksketch2.utils.ParticipantButtonSkin"/>
+				</s:Group>
+			</s:Scroller>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

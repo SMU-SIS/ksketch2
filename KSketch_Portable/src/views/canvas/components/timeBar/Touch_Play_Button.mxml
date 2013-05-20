@@ -4,7 +4,6 @@
 	<fx:Script>
 		<![CDATA[
 			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 			import sg.edu.smu.ksketch2.utils.KSelection;
 			
 			import views.canvas.KSketch_CanvasView;
@@ -30,8 +29,8 @@
 				_interceptor = interceptor;
 				buttonState = SHOW_PLAY;
 				
-				timeControl.addEventListener(KTimeControl.PLAY_START, _handlePlayPause);
-				timeControl.addEventListener(KTimeControl.PLAY_STOP, _handlePlayPause);
+				timeControl.addEventListener(KTouchTimeControl.PLAY_START, _handlePlayPause);
+				timeControl.addEventListener(KTouchTimeControl.PLAY_STOP, _handlePlayPause);
 			}
 			
 			public function playToggle():void
@@ -44,7 +43,7 @@
 			
 			private function _handlePlayPause(event:Event):void
 			{
-				if(event.type == KTimeControl.PLAY_START)
+				if(event.type == KTouchTimeControl.PLAY_START)
 				{
 					buttonState = SHOW_PAUSE;
 					_oldSelection =_interactionControl.selection;

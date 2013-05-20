@@ -9,12 +9,19 @@ package views.canvas.components.timeBar
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.widgets.ITimeControl;
-	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
 
 	public class KTouchTimeControl extends TouchSliderTemplate implements ITimeControl
 	{
+		public static const PLAY_START:String = "Start Playing";
+		public static const PLAY_STOP:String = "Stop Playing";
+		public static const RECORD_START:String = "Start Recording";
+		public static const RECORD_STOP:String = "Stop Recording";
+		public static const DEFAULT_MAX_TIME:int = 5000;
+		public static const TIME_EXTENSION:int = 5000;
+		public static var recordingSpeed:Number = 1;
+		
 		public var recordingSpeed:Number = 1;
 		private var _editMarkers:Boolean;
 		
@@ -59,7 +66,7 @@ package views.canvas.components.timeBar
 			timeDisplay.graphics.moveTo(0,anchor.y);
 			timeDisplay.graphics.lineTo(0,anchor.y+height);
 			
-			maximum = KTimeControl.DEFAULT_MAX_TIME;
+			maximum = KTouchTimeControl.DEFAULT_MAX_TIME;
 			time = 0;
 			
 			_magnifier.open(contentGroup);
@@ -67,7 +74,7 @@ package views.canvas.components.timeBar
 		
 		public function reset():void
 		{
-			maximum = KTimeControl.DEFAULT_MAX_TIME;
+			maximum = KTouchTimeControl.DEFAULT_MAX_TIME;
 			time = 0;
 		}
 		
@@ -112,7 +119,7 @@ package views.canvas.components.timeBar
 			_currentFrame = timeToFrame(value);
 			_KSketch.time = _currentFrame * KSketch2.ANIMATION_INTERVAL;
 			
-			if(KTimeControl.DEFAULT_MAX_TIME < time)
+			if(KTouchTimeControl.DEFAULT_MAX_TIME < time)
 			{
 				var modelMax:int = _KSketch.maxTime
 					
@@ -121,10 +128,10 @@ package views.canvas.components.timeBar
 				else
 					maximum = modelMax;
 			}
-			else if(time < KTimeControl.DEFAULT_MAX_TIME && maximum != KTimeControl.DEFAULT_MAX_TIME)
+			else if(time < KTouchTimeControl.DEFAULT_MAX_TIME && maximum != KTouchTimeControl.DEFAULT_MAX_TIME)
 			{
-				if(_KSketch.maxTime < KTimeControl.DEFAULT_MAX_TIME)
-					maximum = KTimeControl.DEFAULT_MAX_TIME;
+				if(_KSketch.maxTime < KTouchTimeControl.DEFAULT_MAX_TIME)
+					maximum = KTouchTimeControl.DEFAULT_MAX_TIME;
 			}
 			
 			var pct:Number = _currentFrame/(_maxFrame*1.0);
@@ -247,7 +254,7 @@ package views.canvas.components.timeBar
 			_maxPlayTime = _KSketch.maxTime + PLAY_ALLOWANCE;
 			
 			_rewindToTime = time;
-			this.dispatchEvent(new Event(KTimeControl.PLAY_START));
+			this.dispatchEvent(new Event(KTouchTimeControl.PLAY_START));
 		}
 		
 		/**
@@ -273,7 +280,7 @@ package views.canvas.components.timeBar
 			_timer.removeEventListener(TimerEvent.TIMER, playHandler);
 			_timer.stop();
 			_isPlaying = false;
-			this.dispatchEvent(new Event(KTimeControl.PLAY_STOP));
+			this.dispatchEvent(new Event(KTouchTimeControl.PLAY_STOP));
 		}
 				
 		/**

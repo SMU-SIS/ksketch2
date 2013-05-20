@@ -12,7 +12,7 @@ package sg.edu.smu.ksketch2.view.objects
 	import flash.geom.Point;
 	import flash.system.Capabilities;
 	
-	import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;

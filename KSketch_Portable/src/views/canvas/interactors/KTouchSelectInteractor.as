@@ -16,7 +16,7 @@ package views.canvas.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactors.KInteractor;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.KInteractor;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KSelection;

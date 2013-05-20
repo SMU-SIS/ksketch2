@@ -6,7 +6,7 @@ package views.canvas.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.view.objects.KObjectView;

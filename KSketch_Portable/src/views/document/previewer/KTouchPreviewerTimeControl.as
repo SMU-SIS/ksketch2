@@ -4,19 +4,16 @@ package views.document.previewer
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.utils.Timer;
+	
+	import views.canvas.components.timeBar.KTouchTimeControl;
 
 	public class KTouchPreviewerTimeControl
 	{
-		public function KTouchPreviewerTimeControl()
-		{
-		}
-		
 		import org.gestouch.events.GestureEvent;
 		import org.gestouch.gestures.PanGesture;
 		import org.gestouch.gestures.TapGesture;
 		
 		import sg.edu.smu.ksketch2.KSketch2;
-		import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 		
 		private const _PAN_SPEED_1:int = 1
 		private const _PAN_SPEED_2:int = 3;
@@ -43,6 +40,10 @@ package views.document.previewer
 		protected var _panSpeed:int = _PAN_SPEED_1;
 		protected var _prevOffset:Number = 1;
 		protected var _panOffset:Number = 0;
+		
+		public function KTouchPreviewerTimeControl()
+		{
+		}
 		
 		public function init(KSketchInstance:KSketch2, inputComponent:DisplayObject):void
 		{
@@ -103,9 +104,9 @@ package views.document.previewer
 			else if(absOffset <= _PAN_THRESHOLD_2)
 				_panSpeed = _PAN_SPEED_2;
 			else if(absOffset <= _PAN_THRESHOLD_3)
-				_panSpeed = _PAN_SPEED_3 * (_KSketch.maxTime/KTimeControl.DEFAULT_MAX_TIME);
+				_panSpeed = _PAN_SPEED_3 * (_KSketch.maxTime/KTouchTimeControl.DEFAULT_MAX_TIME);
 			else
-				_panSpeed = absOffset * (_KSketch.maxTime/KTimeControl.DEFAULT_MAX_TIME);
+				_panSpeed = absOffset * (_KSketch.maxTime/KTouchTimeControl.DEFAULT_MAX_TIME);
 			
 			//Update the time according to the direction of the pan.
 			//Advance if it's towards the right

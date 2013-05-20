@@ -8,7 +8,6 @@ package views.canvas.interactors.widget
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
@@ -65,7 +64,7 @@ package views.canvas.interactors.widget
 			interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, updateWidget);
 			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_BEGIN, updateWidget);
 			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, updateWidget);
-			interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, updateWidget);
+			interactionControl.addEventListener(KMobileInteractionControl.EVENT_UNDO_REDO, updateWidget);
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, updateWidget);
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, updateWidget);
 		}

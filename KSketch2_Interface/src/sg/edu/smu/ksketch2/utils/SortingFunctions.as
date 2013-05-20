@@ -8,7 +8,6 @@
  */
 package sg.edu.smu.ksketch2.utils
 {
-	import sg.edu.smu.ksketch2.controls.widgets.timewidget.KTimeMarker;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 
 	public class SortingFunctions
@@ -19,14 +18,6 @@ package sg.edu.smu.ksketch2.utils
 		public static function _compare_x_property(marker1:*, marker2:*):Number
 		{
 			if(marker1.x <= marker2.x)
-				return -1;
-			else
-				return 1;				
-		}
-		
-		public static function _compareMarkerInitTime(marker1:KTimeMarker, marker2:KTimeMarker):Number
-		{
-			if(marker1.time <= marker2.time)
 				return -1;
 			else
 				return 1;				

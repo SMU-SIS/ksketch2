@@ -6,11 +6,11 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.controls.interactors.selectors
+package sg.edu.smu.ksketch2.controls.interactors.draw.selectors
 {
 	import flash.utils.Dictionary;
 	
-	import sg.edu.smu.ksketch2.controls.interactors.selectors.KPortion;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.selectors.KPortion;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;

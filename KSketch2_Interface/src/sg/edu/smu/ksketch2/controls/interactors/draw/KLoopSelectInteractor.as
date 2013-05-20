@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.controls.interactors
+package sg.edu.smu.ksketch2.controls.interactors.draw
 {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
@@ -17,9 +17,9 @@ package sg.edu.smu.ksketch2.controls.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactors.selectors.ISelectionArbiter;
-	import sg.edu.smu.ksketch2.controls.interactors.selectors.KPortion;
-	import sg.edu.smu.ksketch2.controls.interactors.selectors.KSimpleArbiter;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.selectors.ISelectionArbiter;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.selectors.KPortion;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.selectors.KSimpleArbiter;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KImage;

@@ -7,7 +7,6 @@ package views.canvas.interactors
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactors.KRotateInteractor;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
@@ -16,6 +15,7 @@ package views.canvas.interactors
 	
 	public class KTouchRotateInteractor extends KTouchTransitionInteractor
 	{
+		public static const PIx2:Number = 6.283185307;
 		private var _rotateGesture:PanGesture;
 		private var _theta:Number;
 		
@@ -106,7 +106,7 @@ package views.canvas.interactors
 			var angleChange:Number = KMathUtil.angleOf(_previousPoint.subtract(_center), touchLocation.subtract(_center));
 			
 			if(angleChange > Math.PI)
-				angleChange = angleChange - KRotateInteractor.PIx2;
+				angleChange = angleChange - PIx2;
 			
 			_theta += angleChange;
 			

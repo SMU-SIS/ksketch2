@@ -15,7 +15,6 @@ package views.canvas.interactioncontrol
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
@@ -27,6 +26,8 @@ package views.canvas.interactioncontrol
 	{
 		public static const EVENT_INTERACTION_BEGIN:String = "Interaction Begin";
 		public static const EVENT_INTERACTION_END:String = "Interaction End";
+		public static const EVENT_UNDO_REDO:String = "Undo Redo";
+		public static const EVENT_TRANSITION_MODE_CHANGED:String = "Transition Mode Changed";
 		
 		private var _KSketch:KSketch2;
 		private var _transitionMode:int;
@@ -123,7 +124,7 @@ package views.canvas.interactioncontrol
 			if(hasRedo)
 				_redoStack = new Vector.<IModelOperation>();
 
-			dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
+			dispatchEvent(new Event(EVENT_UNDO_REDO));
 		}
 		
 		public function undo():void
@@ -140,7 +141,7 @@ package views.canvas.interactioncontrol
 			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 			_KSketch.log.appendChild(log);
 			
-			dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
+			dispatchEvent(new Event(EVENT_UNDO_REDO));
 		}
 		
 		public function redo():void
@@ -157,7 +158,7 @@ package views.canvas.interactioncontrol
 			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 			_KSketch.log.appendChild(log);
 			
-			dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
+			dispatchEvent(new Event(EVENT_UNDO_REDO));
 		}
 		
 		public function get hasUndo():Boolean

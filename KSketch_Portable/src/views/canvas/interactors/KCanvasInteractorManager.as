@@ -19,9 +19,9 @@ package views.canvas.interactors
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactors.IInteractor;
-	import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
-	import sg.edu.smu.ksketch2.controls.interactors.KLoopSelectInteractor;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.IInteractor;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
+	import sg.edu.smu.ksketch2.controls.interactors.draw.KLoopSelectInteractor;
 	import sg.edu.smu.ksketch2.view.KModelDisplay;
 	
 	import views.canvas.components.popup.KTouchFeedbackMessage;

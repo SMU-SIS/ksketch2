@@ -6,7 +6,7 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			
-			import sg.edu.smu.ksketch2.controls.interactors.KDrawInteractor;
+			import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
 			
 			import views.canvas.KSketch_CanvasView;
 			import views.canvas.interactioncontrol.KMobileInteractionControl;

@@ -1,14 +1,11 @@
 package views.canvas.components.timeBar
 {
 	import flash.events.Event;
-	import flash.geom.Point;
 	import flash.system.Capabilities;
 	
 	import spark.components.Group;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KInteractionControl;
-	import sg.edu.smu.ksketch2.controls.widgets.KTimeControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
@@ -57,7 +54,7 @@ package views.canvas.components.timeBar
 			_interactionControl = interactionControl;
 			
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _updateTicks);
-			_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, _updateTicks);
+			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_UNDO_REDO, _updateTicks);
 			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateTicks);
 			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
 			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _recalibrateTicksAgainstMaxTime);
@@ -433,10 +430,10 @@ package views.canvas.components.timeBar
 																_interactionControl.currentInteraction);
 			}
 			
-			if(KTimeControl.DEFAULT_MAX_TIME < maxTime)
+			if(KTouchTimeControl.DEFAULT_MAX_TIME < maxTime)
 				_timeControl.maximum = maxTime;
 			else
-				_timeControl.maximum = KTimeControl.DEFAULT_MAX_TIME;
+				_timeControl.maximum = KTouchTimeControl.DEFAULT_MAX_TIME;
 			
 			if(_interactionControl.currentInteraction)
 			{

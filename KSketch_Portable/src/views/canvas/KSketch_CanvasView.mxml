@@ -17,7 +17,7 @@
 		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
 		xmlns:timeBar="views.canvas.components.timeBar.*"
 		destructionPolicy="never"
-		xmlns:utils="starling.utils.*" xmlns:popup="views.canvas.components.popup.*" 
+		xmlns:popup="views.canvas.components.popup.*" 
 		viewDeactivate="_viewDeactivateHandler()"
 		viewActivate="_viewActivateHandler()"
 		creationComplete="initCanvas()"

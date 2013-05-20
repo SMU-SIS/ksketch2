@@ -27,6 +27,8 @@ package sg.edu.smu.ksketch2.utils
 		
 		/**
 		 * Returns the current set of visible objects at their highest order of composition
+		 * Groups that are partially visible will still be counted as fully visible (their children objects should not be in the selection)
+		 * 
 		 */
 		public function get objects():KModelObjectList
 		{

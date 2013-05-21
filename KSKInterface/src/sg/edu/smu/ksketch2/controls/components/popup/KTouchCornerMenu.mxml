@@ -4,9 +4,14 @@
 						   creationComplete="setUpToggles()">
 	<fx:Script>
 		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.core.IFlexDisplayObject;
 			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
 			
+			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.controls.ImageInput.ImageEditWindow;
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
 			import sg.edu.smu.ksketch2.controls.interactors.KTouchDrawInteractor;
 			import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
@@ -14,18 +19,21 @@
 			
 			private var _interactionControl:KMobileInteractionControl;
 			private var _canvasView:KSketch_CanvasView;
+			private var _KSketch:KSketch2;
 			private var _isPen:Boolean
 			
+			public static const PLUG_IN:String = "PlugIn";
 			public static const BLACK_PEN_COLOR:uint = 0x000000;
 			public static const RED_PEN_COLOR:uint = 0xFA5882;
 			public static const GREEN_PEN_COLOR:uint = 0x82FA58;
 			public static const BLUE_PEN_COLOR:uint = 0x58ACFA;
 			
-			public function init(interactionControl:KMobileInteractionControl, canvasView:KSketch_CanvasView):void
+			public function init(interactionControl:KMobileInteractionControl, canvasView:KSketch_CanvasView, KSketchInstance:KSketch2):void
 			{
 				_interactionControl = interactionControl;
 				_canvasView = canvasView;
 				_isPen = true;
+				_KSketch = KSketchInstance;
 			}
 			
 			public function setUpToggles():void
@@ -35,10 +43,31 @@
 			
 			private function _activateCamera():void
 			{
-//				var camera:CameraUI = new CameraUI();
-//				camera.addEventListener(MediaEvent.COMPLETE, _imageConfirmed);
-//				camera.launch(MediaType.IMAGE);
-//				close();
+				var window:IFlexDisplayObject;
+				if(Capabilities.playerType == "PlugIn")
+				{
+					//Fire Camera Function
+					window = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject, ImageEditWindow, true);
+					(window as ImageEditWindow).init(_KSketch, _interactionControl);
+					PopUpManager.centerPopUp(window);
+				}
+				else
+				{
+					if(CameraUI.isSupported)
+					{
+						var camera:CameraUI = new CameraUI();
+						camera.addEventListener(MediaEvent.COMPLETE, _imageConfirmed);
+						camera.launch(MediaType.IMAGE);
+						close();
+					}
+					else
+					{
+						//Fire Camera Function
+						window = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject, ImageEditWindow, true);
+						(window as ImageEditWindow).init(_KSketch, _interactionControl);
+						PopUpManager.centerPopUp(window);
+					}
+				}
 			}
 			
 			private function _activateGallery():void
@@ -102,6 +131,27 @@
 //
 //				_canvasView.navigator.pushView(KSketch_ImageEditingView, imageDocument);
 			}
+			
+			private function _imageConfirmed(event:MediaEvent):void
+			{
+		        var mediaPromise:MediaPromise = event.data;
+		        if(mediaPromise)
+		        {
+					if(!mediaPromise.file)
+					{
+						if(mediaPromise.isAsync)
+						{
+							var eventSource:IEventDispatcher = mediaPromise.open() as IEventDispatcher;            
+							eventSource.addEventListener( Event.COMPLETE, _onMediaLoaded ); 
+						}
+					}
+					else
+					{
+//						var imageDocument:KTouchImageDocument = new KTouchImageDocument(mediaPromise.file);
+//						_canvasView.navigator.pushView(KSketch_ImageEditingView, imageDocument);
+					}
+				}
+			}
 		]]>
 	</fx:Script>
 	
@@ -155,17 +205,6 @@
 					<s:SolidColorStroke weight="1" color="{KSketch_CanvasView.CANVAS_BUTTON_COLOR}"/>
 				</s:stroke>
 			</s:Line>
-			<s:Group>
-				<s:layout>
-					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
-				</s:layout>
-				<s:Button name="exit" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="exit()"/>
-			</s:Group>
-			<s:Line alpha="0.25" width="90%">
-				<s:stroke>
-					<s:SolidColorStroke weight="1" color="0x000000"/>
-				</s:stroke>
-			</s:Line>
 			<!--
 			<s:Group>
 				<s:layout>
@@ -175,18 +214,24 @@
 				<s:Button name="modeD" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_P}"/>
 				<s:Button name="modeDI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_PK}"/>
 			</s:Group>-->
-<!--			<s:Group>
+			<s:Group>
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
-				<s:Button name="camera" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="_activateCamera()" enabled="{CameraUI.isSupported}"/>
-				<s:Button name="gallery" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="_activateGallery()" enabled="{CameraRoll.supportsBrowseForImage}"/>
+				<s:Button name="camera" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="_activateCamera()"/>
+				<s:Button name="gallery" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="_activateGallery()"/>
 			</s:Group>
 			<s:Line alpha="0.25" width="90%">
 				<s:stroke>
 					<s:SolidColorStroke weight="1" color="0x000000"/>
 				</s:stroke>
-			</s:Line>-->
+			</s:Line>
+			<s:Group visible="{Capabilities.playerType != PLUG_IN}" includeInLayout="{Capabilities.playerType != PLUG_IN}">
+				<s:layout>
+					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
+				</s:layout>
+				<s:Button name="exit" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="exit()"/>
+			</s:Group>
 		<!--
 			<s:Group>
 				<s:layout>

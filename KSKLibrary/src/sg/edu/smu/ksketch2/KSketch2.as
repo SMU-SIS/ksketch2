@@ -167,7 +167,7 @@ package sg.edu.smu.ksketch2
 			return newStroke;
 		}
 	
-		public function object_Add_Image(imgData:BitmapData, time:int):KImage
+		public function object_Add_Image(imgData:BitmapData, time:int, op:KCompositeOperation):KImage
 		{
 			var centerX:Number = (KSketch2.CANONICAL_WIDTH * scaleX)/2;
 			var centerY:Number = (KSketch2.CANONICAL_HEIGHT * scaleY)/2;
@@ -175,8 +175,8 @@ package sg.edu.smu.ksketch2
 			var imgY:Number = centerY - (imgData.height/2);
 			
 			var newImage:KImage = new KImage(_sceneGraph.nextHighestID, imgData, imgX, imgY);
-			_sceneGraph.registerObject(newImage, null);
-			newImage.init(time, null);
+			_sceneGraph.registerObject(newImage, op);
+			newImage.init(time, op);
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 			
 			return newImage;

@@ -37,6 +37,7 @@
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
 			import sg.edu.smu.ksketch2.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.controls.interactors.widgetstates.KWidgetInteractorManager;
+			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			
 			
@@ -74,7 +75,7 @@
 					modelDisplay.init(_KSketch, true);
 					motionDisplay.init(_KSketch, _interactionControl);
 					timeControl.init(_KSketch, _timeTickControl);
-					cornerMenu.init(_interactionControl, this);
+					cornerMenu.init(_interactionControl, this, _KSketch);
 					
 					var playBounds:Rectangle = playButton.getBounds(this);
 					interceptor.graphics.beginFill(0x000000);
@@ -101,7 +102,11 @@
 				{
 					//Add image here
 					if(_imageData)
-						_KSketch.object_Add_Image(_imageData, _KSketch.time);
+					{
+						var op:KCompositeOperation = new KCompositeOperation();
+						_KSketch.object_Add_Image(_imageData, _KSketch.time, op);
+						_interactionControl.addToUndoStack(op);
+					}
 					
 					_imageData = null;
 				}

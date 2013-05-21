@@ -13,12 +13,6 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
-			
-			/**
-			 * Image editing window for the non-portable versions.
-			 * Do not confuse this component with the image editing view in the portable version
-			 */
-			
 			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
@@ -31,6 +25,8 @@
 			import org.osmf.net.StreamType;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.ImageProcessing;
 			
 			private static const DIRECTION_STRENGTH:Number = Capabilities.screenDPI/2;
@@ -60,10 +56,12 @@
 			private var _correction:Point
 			
 			private var _KSketch:KSketch2;
+			private var _interactionControl:KMobileInteractionControl;
 			
-			public function init(KSketchInstance:KSketch2):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl):void
 			{
 				_KSketch = KSketchInstance;	
+				_interactionControl = interactionControl
 			}
 			
 			protected function titleWin_closeHandler(evt:CloseEvent):void
@@ -338,7 +336,9 @@
 			 */
 			private function useImage():void
 			{
-				_KSketch.object_Add_Image(imageDisplay.bitmapData, _KSketch.time);
+				var op:KCompositeOperation = new KCompositeOperation();
+				_KSketch.object_Add_Image(imageDisplay.bitmapData, _KSketch.time, op);
+				_interactionControl.addToUndoStack(op);
 				closeImageInsertion();
 			}
 			

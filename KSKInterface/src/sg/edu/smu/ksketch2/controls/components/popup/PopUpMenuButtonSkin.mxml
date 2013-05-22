@@ -76,6 +76,9 @@
 					case "gallery":
 						labelText = "G";
 						break;
+					case "image":
+						labelText = "I";
+						break;
 					case "zoomIn":
 						labelText = "+";
 						break;

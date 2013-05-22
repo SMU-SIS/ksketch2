@@ -23,29 +23,20 @@
 			private var preProcessed:BitmapData;
 			private var drawMat:Matrix;
 			
-			public var imageDocument:KTouchImageDocument;
-			private var _originalImageDocument:KTouchImageDocument;
 			private var _imageLoader:Loader;
+			private var _imageData:BitmapData;
 
 			//Called on visible
 			//Loads the confirmed image and displays it on the view for editing
 			//Should set all variables ehre
 			private function _init():void
 			{
-				if(data)
-				{
-					if(!(data is KTouchImageDocument))
-						throw new Error("Given data is not a valid image file!");
-				}
-				else
-					throw new Error("No file is given by the previous view");
+				if(!data)
+					throw new Error("No data is given by the previous view");
 				
-				imageDocument = null;
-				var newImageDocument:KTouchImageDocument = data as KTouchImageDocument;
-				_originalImageDocument = newImageDocument;
 				_imageLoader = new Loader();
 				_imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, _onImageLoadComplete);
-				_imageLoader.load(new URLRequest(newImageDocument.imageFile.url));
+				_imageLoader.loadBytes(data as ByteArray);
 			}
 			
 			//Listener for loading completion
@@ -58,8 +49,6 @@
 			//Exits the view
 			public function exit():void
 			{
-				imageDocument = _originalImageDocument;
-
 				var scaleWidth:Number = 1;
 				var scaleHeight:Number = 1;
 				
@@ -79,23 +68,23 @@
 					var matrix:Matrix = new Matrix();
 					matrix.scale(scale, scale);
 					result.draw(new Bitmap(img.bitmapData), matrix);
-					imageDocument.imageObject = result;
+					_imageData = result;
 				}
 				else
-					imageDocument.imageObject = img.bitmapData;
+					_imageData = img.bitmapData;
 				navigator.popView();	
 			}
 			
 			//Exits the view
 			public function back():void
 			{
-				imageDocument = null; //Should change this if another bitmapdata object is to be used
+				_imageData = null; //Should change this if another bitmapdata object is to be used
 				navigator.popView();	
 			}
 			
 			override public function createReturnObject():Object
 			{
-				return imageDocument.imageObject;
+				return _imageData
 			}
 			
 			private function _initCrop():void

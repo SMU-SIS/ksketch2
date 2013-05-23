@@ -8,6 +8,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 	import flash.utils.Timer;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.controls.components.ITimeControl;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
@@ -161,11 +162,12 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			
 			var dx:Number = Math.abs(xPos - timeToX(time));
-
-			if(dx > Capabilities.screenDPI/7)
+			
+			
+			if(!KSketch_CanvasView.isPlayer && dx > Capabilities.screenDPI/7)
 				_tickmarkControl.grabTick(xPos);
 			
-			if(_tickmarkControl.grabbedTick)
+			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
 				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
 				_magnifier.x = _tickmarkControl.grabbedTick.x;
@@ -196,7 +198,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			_touchStage.y = event.stageY;
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			
-			if(_tickmarkControl.grabbedTick)
+			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
 				_tickmarkControl.move_markers(xPos);
 				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
@@ -213,7 +215,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 		
 		protected function _touchEnd(event:MouseEvent):void
 		{
-			if(_tickmarkControl.grabbedTick)
+			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
 				_tickmarkControl.end_move_markers();
 				_magnifier.showTime(time, _currentFrame);
@@ -231,7 +233,9 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			}
 			
 			_magnifier.closeMagnifier();
-			_tickmarkControl.grabbedTick = null;
+			
+			if(_tickmarkControl)
+				_tickmarkControl.grabbedTick = null;
 			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);

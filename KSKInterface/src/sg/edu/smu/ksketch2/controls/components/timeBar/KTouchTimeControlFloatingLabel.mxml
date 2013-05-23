@@ -3,6 +3,9 @@
 		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
 	<fx:Script>
 		<![CDATA[
+			[Bindable]
+			private var _fontSize:Number = 25;
+			
 			private const _VISIBLE_TIME:Number = 500;
 			
 			private var _timeControl:KTouchTimeControl
@@ -53,6 +56,6 @@
 		<s:layout>
 			<s:HorizontalLayout paddingLeft="3" paddingRight="3" paddingTop="3" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX" fontSize="{Capabilities.screenDPI*0.1}"/>
+		<s:Label fontFamily="_sans" id="labelText" text="SSS:SS - Frame XXXX" fontSize="{_fontSize}"/>
 	</s:Group>
 </s:SkinnablePopUpContainer>

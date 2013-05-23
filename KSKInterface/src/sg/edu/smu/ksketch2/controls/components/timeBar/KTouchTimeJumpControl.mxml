@@ -52,7 +52,7 @@
 				
 				_tapGesture = new TapGesture(this);
 				_tapGesture.maxTapDuration = 200;
-				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
+				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleSwipe);
 				
 				_swipeGesture = new SwipeGesture(this);
 				_swipeGesture.minOffset = this.width*0.75;
@@ -134,6 +134,9 @@
 			 */
 			private function _handleSwipe(event:org.gestouch.events.GestureEvent):void
 			{
+				if(!_timeControl.timings)
+					return;
+				
 				var i:int;
 				var length:int = _timeControl.timings.length;
 				

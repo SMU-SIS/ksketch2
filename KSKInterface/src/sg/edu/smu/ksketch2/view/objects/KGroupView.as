@@ -9,7 +9,6 @@
 package sg.edu.smu.ksketch2.view.objects
 {
 	import flash.geom.Rectangle;
-	import flash.system.Capabilities;
 	
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -17,8 +16,8 @@ package sg.edu.smu.ksketch2.view.objects
 	public class KGroupView extends KObjectView
 	{
 		private var _glowFilter:Array;
-		public static const BOUNDS_THICKNESS:Number = Capabilities.screenDPI/25;
-		public static const DOT_LENGTH:Number = Capabilities.screenDPI/6;
+		public static const BOUNDS_THICKNESS:Number = 7;
+		public static const DOT_LENGTH:Number = 28;
 		
 		public function KGroupView(object:KObject)
 		{

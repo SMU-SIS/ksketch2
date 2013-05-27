@@ -1,7 +1,6 @@
 package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 {
 	import flash.display.DisplayObject;
-	import flash.system.Capabilities;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.controls.components.transformWidget.KTouchWidgetBase;
@@ -12,9 +11,9 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 	
 	public class KBasicTransitionMode extends KTouchWidgetMode
 	{
-		public static const TOP_TRIGGER_RADIUS:Number = Capabilities.screenDPI * 0.5;
-		public static const MIDDLE_TRIGGER_RADIUS:Number = Capabilities.screenDPI * 0.75;
-		public static const BASE_TRIGGER_RADIUS:Number = Capabilities.screenDPI;
+		public static const TOP_TRIGGER_RADIUS:Number = 80;
+		public static const MIDDLE_TRIGGER_RADIUS:Number = 120;
+		public static const BASE_TRIGGER_RADIUS:Number = 160;
 		
 		private var _translateInteractor:KTouchTranslateInteractor;
 		private var _rotateInteractor:KTouchRotateInteractor;

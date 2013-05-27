@@ -4,7 +4,6 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
-	import flash.system.Capabilities;
 	import flash.utils.Timer;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
@@ -71,6 +70,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			time = 0;
 			
 			_magnifier.open(contentGroup);
+			_magnifier.closeMagnifier();
 		}
 		
 		public function reset():void
@@ -163,8 +163,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			
 			var dx:Number = Math.abs(xPos - timeToX(time));
 			
-			
-			if(!KSketch_CanvasView.isPlayer && dx > Capabilities.screenDPI/7)
+			if(!KSketch_CanvasView.isPlayer && dx > KTouchTickMarkControl.GRAB_THRESHOLD)
 				_tickmarkControl.grabTick(xPos);
 			
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
@@ -178,7 +177,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			{
 				var timeX:Number = timeToX(time);
 				
-				if(Math.abs(xPos - timeX) > Capabilities.screenDPI/7)
+				if(Math.abs(xPos - timeX) >KTouchTickMarkControl.GRAB_THRESHOLD)
 					time = xToTime(xPos);
 				
 				_magnifier.magnify(timeToX(time));

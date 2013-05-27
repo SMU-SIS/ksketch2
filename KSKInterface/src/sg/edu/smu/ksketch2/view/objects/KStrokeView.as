@@ -10,7 +10,6 @@ package sg.edu.smu.ksketch2.view.objects
 {
 	import flash.filters.GlowFilter;
 	import flash.geom.Point;
-	import flash.system.Capabilities;
 	
 	import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
@@ -42,7 +41,7 @@ package sg.edu.smu.ksketch2.view.objects
 				_points = new Vector.<Point>();
 
 			
-			var filter:GlowFilter = new GlowFilter(_color, 1,Capabilities.screenDPI/12,Capabilities.screenDPI/12,32,1, false, true);
+			var filter:GlowFilter = new GlowFilter(_color, 1,14,14,32,1, false, true);
 			_glowFilter = [filter];
 			_render_DrawStroke();
 			cacheAsBitmap = true;

@@ -34,6 +34,6 @@
 			}
 		]]>
 	</fx:Script>
-	<s:Label id="messageText" fontSize="{Capabilities.screenDPI/3}" fontFamily="_sans"
+	<s:Label id="messageText" fontSize="{60}" fontFamily="_sans"
 			 x="{-messageText.width/2}" y="{-(messageText.height*1.25)}"/>
 </s:SkinnablePopUpContainer>

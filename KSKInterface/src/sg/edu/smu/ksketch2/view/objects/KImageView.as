@@ -2,7 +2,6 @@ package sg.edu.smu.ksketch2.view.objects
 {	
 	import flash.display.Bitmap;
 	import flash.filters.GlowFilter;
-	import flash.system.Capabilities;
 	
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.objects.KImage;
@@ -23,7 +22,7 @@ package sg.edu.smu.ksketch2.view.objects
 			
 			_ghost = new KImageGhost(imgDisplay.bitmapData, imgDisplay.x, imgDisplay.y);
 			
-			var filter:GlowFilter = new GlowFilter(0xFF0000, 1,Capabilities.screenDPI/12,Capabilities.screenDPI/12,32);
+			var filter:GlowFilter = new GlowFilter(0xFF0000, 1,14,14,32);
 			_glowFilter = [filter];
 			cacheAsBitmap = true;
 		}

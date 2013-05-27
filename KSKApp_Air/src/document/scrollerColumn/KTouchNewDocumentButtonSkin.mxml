@@ -39,7 +39,7 @@
 		<s:layout>
 			<s:HorizontalLayout paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="10" verticalAlign="middle" horizontalAlign="left"/>
 		</s:layout>
-		<s:Label id="plus" fontSize="24" text="+" color="0x757474" fontFamily="_sans"/>
-		<s:Label id="labelDisplay" fontSize="32" textAlign="center" color="0x757474" fontFamily="_sans"/>
+		<s:Label id="plus" fontSize="18" text="+" color="0x757474" fontFamily="_sans"/>
+		<s:Label id="labelDisplay" fontSize="24" textAlign="center" color="0x757474" fontFamily="_sans"/>
 	</s:Group>
 </s:Skin>

@@ -1,7 +1,6 @@
 package sg.edu.smu.ksketch2.controls.components.timeBar
 {
 	import flash.events.Event;
-	import flash.system.Capabilities;
 	
 	import spark.components.Group;
 	
@@ -39,7 +38,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 		private var _changeX:Number;
 		private var _pixelPerFrame:Number;
 		private var _thresholdPixelPerFrame:Number;
-		private var _grabThreshold:Number = Capabilities.screenDPI/7;
+		public static const GRAB_THRESHOLD:Number = 24;
 
 		public var grabbedTick:KTouchTickMark;
 		
@@ -294,7 +293,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 
 				dx = Math.abs(currentTick.x - _startX);
 				
-				if(dx > _grabThreshold)
+				if(dx > GRAB_THRESHOLD)
 					continue;
 				
 				if(dx < smallestdx)

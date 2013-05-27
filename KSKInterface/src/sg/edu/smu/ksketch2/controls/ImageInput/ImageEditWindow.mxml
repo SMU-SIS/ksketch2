@@ -29,9 +29,9 @@
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.ImageProcessing;
 			
-			private static const DIRECTION_STRENGTH:Number = Capabilities.screenDPI/2;
+			private static const DIRECTION_STRENGTH:Number = 20;
 			private static const WHITE:uint = 0xFFFFFF;
-			private static const SEARCH_RADIUS:int = Capabilities.screenDPI/4;
+			private static const SEARCH_RADIUS:int = 18;
 			
 			public static const IMAGE_FILE_FILTER:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png");
 			public static const IMAGE_MAX_WIDTH:Number = 480;

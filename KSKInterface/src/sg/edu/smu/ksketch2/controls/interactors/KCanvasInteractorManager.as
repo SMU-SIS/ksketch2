@@ -10,8 +10,11 @@ package sg.edu.smu.ksketch2.controls.interactors
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.KeyboardEvent;
 	import flash.geom.Point;
+	import flash.ui.Keyboard;
 	
+	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
 	
 	import org.gestouch.events.GestureEvent;
@@ -47,7 +50,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 		
 		private var _activeInteractor:IInteractor;
 		private var _startPoint:Point;
-
+		private var _keyDown:Boolean;
 		/**
 		 * KMobileSelection mode is the state machine that switches between
 		 * drawing, tap selection and loop selection interactors.
@@ -67,6 +70,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_inputComponent = inputComponent;
 			_modelDisplay = modelDisplay;
 			_feedbackMessage = feedbackMessage;
+			_keyDown = false;
 
 			/**
 			 * Implementation is inconsistent with the transition module
@@ -94,6 +98,24 @@ package sg.edu.smu.ksketch2.controls.interactors
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
 			_drawGesture.maxNumTouchesRequired = 2;
 			
+			FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_DOWN, _keyTrigger);
+		}
+		
+		private function _keyTrigger(event:KeyboardEvent):void
+		{
+			if(event.keyCode == Keyboard.COMMAND || event.keyCode == Keyboard.CONTROL || event.keyCode == Keyboard.SPACE)
+				_keyDown = event.type == KeyboardEvent.KEY_DOWN;
+			
+			if(_keyDown)
+			{
+				FlexGlobals.topLevelApplication.removeEventListener(KeyboardEvent.KEY_DOWN, _keyTrigger);
+				FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_UP, _keyTrigger);
+			}
+			else
+			{
+				FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_DOWN, _keyTrigger);
+				FlexGlobals.topLevelApplication.removeEventListener(KeyboardEvent.KEY_UP, _keyTrigger);
+			}
 		}
 		
 		/**
@@ -147,12 +169,10 @@ package sg.edu.smu.ksketch2.controls.interactors
 				return;
 			
 			//Switches interactor based on draw gesture's nTouches
-			if(_drawGesture.touchesCount == 1)
+			if(_keyDown || _drawGesture.touchesCount == 2)
+				_activeInteractor = _loopSelectInteractor;	
+			else if(_drawGesture.touchesCount == 1)
 				_activeInteractor = _drawInteractor;
-			else if(_drawGesture.touchesCount == 2)
-			{
-				_activeInteractor = _loopSelectInteractor;
-			}
 			
 			_interactionControl.selection = null;
 
@@ -171,7 +191,10 @@ package sg.edu.smu.ksketch2.controls.interactors
 		private function _updateDraw(event:GestureEvent):void
 		{
 			//Gesture change updates. A loop interactor should have two fingers
-			if((_drawGesture.touchesCount == 1 && _activeInteractor is KLoopSelectInteractor)||
+			if(((
+				(_drawGesture.touchesCount == 1) && !_keyDown) &&
+				(_activeInteractor is KLoopSelectInteractor))
+				||
 				(_drawGesture.touchesCount == 2 && _activeInteractor is KDrawInteractor)) 
 			{
 				_endDraw(event);

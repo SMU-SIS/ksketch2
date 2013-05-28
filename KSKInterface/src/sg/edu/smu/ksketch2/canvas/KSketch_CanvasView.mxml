@@ -76,6 +76,8 @@
 					_timeTickControl = new KTouchTickMarkControl(_KSketch, timeControl, _interactionControl);
 					
 					feedbackMessage.init(this);
+					leftFrame.init(_KSketch, timeControl, KTouchTimeJumpControl.LEFT);
+					rightFrame.init(_KSketch, timeControl, KTouchTimeJumpControl.RIGHT);
 					leftTimeJumper.init(_KSketch, timeControl, KTouchTimeJumpControl.LEFT);
 					rightTimeJumper.init(_KSketch, timeControl, KTouchTimeJumpControl.RIGHT);
 					
@@ -200,6 +202,7 @@
 					<s:HorizontalLayout gap="0" verticalAlign="middle" paddingLeft="5"/>
 				</s:layout>
 				<timeBar1:Touch_Play_Button id="playButton" click="playButton.playToggle()"/>
+				<timeBar1:KTouchFrameControl id="leftFrame"/>
 				<timeBar1:KTouchTimeJumpControl id="leftTimeJumper"/>
 				<s:Group width="100%" height="100%">
 					<s:layout>
@@ -208,6 +211,7 @@
 					<timeBar1:KTouchTimeControl id="timeControl"/>
 				</s:Group>
 				<timeBar1:KTouchTimeJumpControl id="rightTimeJumper"/>
+				<timeBar1:KTouchFrameControl id="rightFrame"/>
 				<timeBar1:Touch_Menu_Button id="menuButton" click="_menuBtnHandler()" visible="{!isPlayer}" includeInLayout="{!isPlayer}"/>
 			</s:Group>
 		</s:Group>

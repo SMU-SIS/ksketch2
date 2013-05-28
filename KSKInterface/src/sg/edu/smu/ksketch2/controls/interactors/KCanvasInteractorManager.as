@@ -22,6 +22,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.controls.components.popup.KTouchFeedbackMessage;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.IInteractor;
@@ -84,21 +85,24 @@ package sg.edu.smu.ksketch2.controls.interactors
 			KDrawInteractor.penColor = 0x000000;
 			KDrawInteractor.penThickness = 9;
 			
-			_doubleTap = new TapGesture(_inputComponent);
-			_doubleTap.numTapsRequired = 2;
-			_doubleTap.maxTapDelay = 125;
-			_doubleTap.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _recogniseDoubleTap);
-			
 			_tapGesture = new TapGesture(_inputComponent);
 			_tapGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _recogniseTap);
-			_tapGesture.requireGestureToFail(_doubleTap);
 			_tapGesture.maxTapDuration = 200;
 			
 			_drawGesture = new PanGesture(_inputComponent);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
 			_drawGesture.maxNumTouchesRequired = 2;
 			
-			FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_DOWN, _keyTrigger);
+			if(!KSketch_CanvasView.isMobile)
+				FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_DOWN, _keyTrigger);
+			else
+			{
+				_doubleTap = new TapGesture(_inputComponent);
+				_doubleTap.numTapsRequired = 2;
+				_doubleTap.maxTapDelay = 125;
+				_doubleTap.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _recogniseDoubleTap);
+				_tapGesture.requireGestureToFail(_doubleTap);
+			}
 		}
 		
 		private function _keyTrigger(event:KeyboardEvent):void

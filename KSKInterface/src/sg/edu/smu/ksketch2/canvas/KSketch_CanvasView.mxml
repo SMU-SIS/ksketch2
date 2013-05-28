@@ -43,6 +43,9 @@
 			[Bindable]
 			public static var isPlayer:Boolean = false;
 			
+			[Bindable]
+			public static var isMobile:Boolean = true;
+			
 			public static const CANVAS_BUTTON_COLOR:uint = 0x000000;
 			public static const CANVAS_BUTTON_BLEND:Number = 0.55;
 			public static const CANVAS_DIVIDER_BLEND:Number = 0.1;
@@ -61,6 +64,13 @@
 			//The xml can be passed through a data handler and the load handler will access it though {data}
 			public function initCanvas():void
 			{	
+				if ((Capabilities.os.toLowerCase().indexOf("mac") == -1) &&
+					(Capabilities.os.toLowerCase().indexOf("windows") == -1)
+				)
+					isMobile = true;
+				else
+					isMobile = false;
+				
 				if(!_KSketch)
 				{
 					_KSketch = new KSketch2();
@@ -187,11 +197,11 @@
 		]]>
 	</fx:Script>
 	
-	<s:Group width="100%" height="100%">
+	<s:Group width="100%" height="100%" id="mainCanvas">
 		<s:layout>
-			<s:VerticalLayout gap="2"/>
+			<s:VerticalLayout gap="2" id="mainCanvasLayout"/>
 		</s:layout>
-		<s:Group id="timebar_region" width="100%" height="{TIME_BAR_HEIGHT}">
+		<s:Group id="timebar_component" width="100%" height="{TIME_BAR_HEIGHT}">
 			<s:Rect width="100%" height="100%">
 				<s:fill>
 					<s:SolidColor color="0xE7E7E7"/>
@@ -215,7 +225,7 @@
 				<timeBar1:Touch_Menu_Button id="menuButton" click="_menuBtnHandler()" visible="{!isPlayer}" includeInLayout="{!isPlayer}"/>
 			</s:Group>
 		</s:Group>
-		<s:Group width="100%" height="100%">
+		<s:Group id="canvas_component" width="100%" height="100%">
 			<s:Rect left="1" right="1" top="1" bottom="1">
 				<s:fill>
 					<s:SolidColor color="0xE7E7E7"/>

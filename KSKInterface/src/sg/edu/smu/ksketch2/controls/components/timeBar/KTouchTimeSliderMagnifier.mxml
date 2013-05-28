@@ -6,8 +6,6 @@
 		<![CDATA[
 			import mx.core.UIComponent;
 			
-			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
-			
 			private const _VISIBLE_TIME:Number = 500;
 			private const _ORIGIN:Point = new Point(0,0);
 			private const _MagnificationWidth:Number = 160;
@@ -47,9 +45,6 @@
 				
 				if(magnifierContents)
 					magnifierContents.removeElement(magnifierDisplay);
-
-				_noMagnificationY = _globalOrigin.y + _parent.height + KSketch_CanvasView.TIME_BAR_HEIGHT*0.4;
-				y = _noMagnificationY;
 			}
 			
 			/**

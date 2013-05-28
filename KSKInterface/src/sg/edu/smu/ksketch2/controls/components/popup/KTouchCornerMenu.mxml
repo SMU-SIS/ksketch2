@@ -222,14 +222,14 @@
 				<s:Button name="modeD" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_P}"/>
 				<s:Button name="modeDI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_PK}"/>
 			</s:Group>-->
-			<s:Group visible="{Capabilities.playerType != PLUG_IN}" includeInLayout="{Capabilities.playerType != PLUG_IN}">
+			<s:Group visible="{KSketch_CanvasView.isMobile}" includeInLayout="{KSketch_CanvasView.isMobile}">
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
 				<s:Button name="camera" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="_activateCamera()"/>
 				<s:Button name="gallery" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="_activateGallery()"/>
 			</s:Group>
-			<s:Group visible="{Capabilities.playerType == PLUG_IN}" includeInLayout="{Capabilities.playerType == PLUG_IN}">
+			<s:Group visible="{!KSketch_CanvasView.isMobile}" includeInLayout="{!KSketch_CanvasView.isMobile}">
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>

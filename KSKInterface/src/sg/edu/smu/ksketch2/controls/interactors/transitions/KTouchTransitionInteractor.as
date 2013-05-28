@@ -86,8 +86,7 @@ package sg.edu.smu.ksketch2.controls.interactors.transitions
 		
 		protected function _interaction_end(event:GestureEvent):void
 		{
-			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
-				_interactionControl.stopRecording();
+			_interactionControl.stopRecording();
 			
 			//Handle interaction operation wrap up here in this class
 			_interactionControl.end_interaction_operation();

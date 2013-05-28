@@ -2,12 +2,17 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.geom.Point;
+	import flash.ui.Keyboard;
+	
+	import mx.core.FlexGlobals;
 	
 	import org.gestouch.events.GestureEvent;
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.controls.components.transformWidget.KTouchWidgetBase;
 	import sg.edu.smu.ksketch2.controls.components.transformWidget.KTouchWidgetMenu;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
@@ -28,6 +33,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 
 		private var _enabled:Boolean;
 		private var _isInteracting:Boolean;
+		private var _keyDown:Boolean;
 		
 		private var _activeMode:ITouchWidgetMode;
 		public var defaultMode:ITouchWidgetMode;
@@ -40,6 +46,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 		{
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
+			_keyDown = false;
 			_widget = widgetBase;
 			_modelSpace = modelSpace;
 			_widgetSpace = _widget.parent;
@@ -66,6 +73,9 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			interactionControl.addEventListener(KMobileInteractionControl.EVENT_UNDO_REDO, updateWidget);
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, updateWidget);
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, updateWidget);
+			
+			if(!KSketch_CanvasView.isMobile)
+				FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_DOWN, _keyTrigger);
 		}
 		
 		public function set activeMode(mode:ITouchWidgetMode):void
@@ -80,7 +90,30 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			_activeMode.activate();
 		}
 		
-		private function _handleModeSwitch(event:GestureEvent):void
+		private function _keyTrigger(event:KeyboardEvent):void
+		{
+			if(event.keyCode == Keyboard.COMMAND || event.keyCode == Keyboard.CONTROL
+				|| event.keyCode == Keyboard.SPACE)
+				_keyDown = event.type == KeyboardEvent.KEY_DOWN;
+			
+			if(_keyDown)
+				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
+			else
+				transitionMode = KSketch2.TRANSITION_INTERPOLATED;
+			
+			if(_keyDown)
+			{
+				FlexGlobals.topLevelApplication.removeEventListener(KeyboardEvent.KEY_DOWN, _keyTrigger);
+				FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_UP, _keyTrigger);
+			}
+			else
+			{
+				FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_DOWN, _keyTrigger);
+				FlexGlobals.topLevelApplication.removeEventListener(KeyboardEvent.KEY_UP, _keyTrigger);
+			}
+		}
+		
+		private function _handleModeSwitch(event:Event):void
 		{
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;

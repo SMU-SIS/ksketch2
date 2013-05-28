@@ -168,7 +168,7 @@
 				
 				var toTime:Number = 0;
 				
-				if(_swipeGesture.offsetX < 0)
+				if(_type == LEFT)
 				{
 					currentIndex -= 1;
 					

@@ -103,8 +103,17 @@ package sg.edu.smu.ksketch2.controls.interactors
 		
 		private function _keyTrigger(event:KeyboardEvent):void
 		{
-			if(event.keyCode == Keyboard.COMMAND || event.keyCode == Keyboard.CONTROL || event.keyCode == Keyboard.SPACE)
+			trace(event);
+			
+			if(event.keyCode == Keyboard.COMMAND || event.keyCode == Keyboard.CONTROL
+				|| event.keyCode == Keyboard.SPACE)
 				_keyDown = event.type == KeyboardEvent.KEY_DOWN;
+			
+			if(event.ctrlKey&&(event.keyCode == Keyboard.Z))
+				_interactionControl.undo();
+			
+			if(event.ctrlKey&&(event.keyCode == Keyboard.Y))
+				_interactionControl.redo();
 			
 			if(_keyDown)
 			{

@@ -128,6 +128,12 @@ package sg.edu.smu.ksketch2.controls.interactioncontrol
 		
 		public function undo():void
 		{
+			if(!_undoStack)
+				_undoStack = new Vector.<IModelOperation>();
+			
+			if(_undoStack.length == 0)
+				return;
+			
 			var undoOp:IModelOperation = _undoStack.pop();
 			undoOp.undo();
 			_redoStack.push(undoOp);
@@ -145,6 +151,12 @@ package sg.edu.smu.ksketch2.controls.interactioncontrol
 		
 		public function redo():void
 		{
+			if(!_redoStack)
+				_redoStack = new Vector.<IModelOperation>();
+			
+			if(_redoStack.length == 0)
+				return;
+			
 			var redoOp:IModelOperation = _redoStack.pop();
 			redoOp.redo();
 			_undoStack.push(redoOp);

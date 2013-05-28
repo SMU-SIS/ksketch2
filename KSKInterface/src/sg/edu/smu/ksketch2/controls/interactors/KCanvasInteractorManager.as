@@ -103,8 +103,6 @@ package sg.edu.smu.ksketch2.controls.interactors
 		
 		private function _keyTrigger(event:KeyboardEvent):void
 		{
-			trace(event);
-			
 			if(event.keyCode == Keyboard.COMMAND || event.keyCode == Keyboard.CONTROL
 				|| event.keyCode == Keyboard.SPACE)
 				_keyDown = event.type == KeyboardEvent.KEY_DOWN;
@@ -200,11 +198,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 		private function _updateDraw(event:GestureEvent):void
 		{
 			//Gesture change updates. A loop interactor should have two fingers
-			if(((
-				(_drawGesture.touchesCount == 1) && !_keyDown) &&
-				(_activeInteractor is KLoopSelectInteractor))
-				||
-				(_drawGesture.touchesCount == 2 && _activeInteractor is KDrawInteractor)) 
+			if(_drawGesture.touchesCount == 2 && _activeInteractor is KDrawInteractor)
 			{
 				_endDraw(event);
 				return;

@@ -3,7 +3,10 @@
 						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.controls.components.timeBar.KTouchTimeControl;
 
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KTouchCornerMenu;
@@ -18,8 +21,9 @@
 			{
 				if(_canvasView.mainCanvas.getElementIndex(_canvasView.timebar_component) <= _canvasView.mainCanvas.getElementIndex(_canvasView.canvas_component))
 					return;
-				
+
 				_canvasView.mainCanvas.swapElements(_canvasView.timebar_component, _canvasView.canvas_component);
+				_canvasView.timebar_component.addEventListener(FlexEvent.UPDATE_COMPLETE, _updateCanvas);
 			}
 			
 			private function _timebarBottom():void
@@ -28,6 +32,13 @@
 					return;
 				
 				_canvasView.mainCanvas.swapElements(_canvasView.timebar_component, _canvasView.canvas_component);
+				_canvasView.timebar_component.addEventListener(FlexEvent.UPDATE_COMPLETE, _updateCanvas);
+			}
+			
+			private function _updateCanvas(event:FlexEvent):void
+			{
+				_canvasView.timeControl.updatePosition();
+				_canvasView.timebar_component.removeEventListener(FlexEvent.UPDATE_COMPLETE, _updateCanvas);
 			}
 			
 			private function _menuLeft():void

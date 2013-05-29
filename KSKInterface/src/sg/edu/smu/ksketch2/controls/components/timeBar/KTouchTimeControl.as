@@ -42,6 +42,9 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 		
 		public var timings:Vector.<int>;
 		
+		public static const BAR_TOP:int = 0;
+		public static const BAR_BOTTOM:int = 1;
+		
 		private var _touchStage:Point = new Point(0,0);
 
 		public function KTouchTimeControl()
@@ -70,6 +73,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			time = 0;
 			
 			_magnifier.open(contentGroup);
+			_magnifier.updatePosition();
 			_magnifier.closeMagnifier();
 		}
 		
@@ -77,6 +81,11 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 		{
 			maximum = KTouchTimeControl.DEFAULT_MAX_TIME;
 			time = 0;
+		}
+		
+		public function updatePosition():void
+		{
+			_magnifier.updatePosition();
 		}
 		
 		public function dispose():void

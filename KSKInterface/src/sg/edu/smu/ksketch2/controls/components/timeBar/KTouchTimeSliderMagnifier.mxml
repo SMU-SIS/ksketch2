@@ -81,6 +81,7 @@
 					value = _parent.width;
 
 				super.x = _globalOrigin.x + value;
+				updatePosition();
 			}
 			
 			public function closeMagnifier(event:TimerEvent = null):void
@@ -89,9 +90,21 @@
 					magnifierContents.removeElement(magnifierDisplay);
 			}
 			
+			public function updatePosition():void		
+			{
+				var parentOrigin:Point = _timeControl.localToGlobal(_ORIGIN);
+				if(parentOrigin.y < height)
+				{
+					y = parentOrigin.y + _timeControl.height + 10;
+				}
+				else
+				{
+					y = parentOrigin.y - height - 10;
+				}
+			}
 		]]>
 	</fx:Script>
-	<s:Group x="{-magnifierContents.width/2}">
+	<s:Group id="floatingTag" x="{-magnifierContents.width/2}" >
 		<s:Rect width="100%" height="100%" radiusX="3" radiusY="3" alpha="0.7">
 			<s:fill>
 				<s:SolidColor color="0x848484"/>

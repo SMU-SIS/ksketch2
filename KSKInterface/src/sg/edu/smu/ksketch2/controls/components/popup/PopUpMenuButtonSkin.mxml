@@ -110,6 +110,10 @@
 						iconGraphics.graphics.lineTo(0.50*width, 0.6*height);
 						
 						backgroundColor.visible = false;
+						break;
+					case "option":
+						labelText = "O"
+						break;
 				}
 			}
 			

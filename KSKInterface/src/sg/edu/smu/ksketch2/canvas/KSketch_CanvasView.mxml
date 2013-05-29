@@ -20,7 +20,7 @@
 		add="_addHandler()" xmlns:timeBar1="sg.edu.smu.ksketch2.controls.components.timeBar.*" xmlns:popup1="sg.edu.smu.ksketch2.controls.components.popup.*" xmlns:transformWidget1="sg.edu.smu.ksketch2.controls.components.transformWidget.*"
 		>
 	<fx:Declarations>
-		<popup1:KTouchCornerMenu id="cornerMenu" x="{width-cornerMenu.width - 10}" y="{(height/2)-(cornerMenu.height/2)}"/>
+		<popup1:KTouchCornerMenu id="cornerMenu" y="{(height/2)-(cornerMenu.height/2)}"/>
 		<popup1:KTouchFeedbackMessage id="feedbackMessage" mouseChildren="false"/>
 	</fx:Declarations>
 	<fx:Script>
@@ -191,7 +191,11 @@
 				if(cornerMenu.isOpen)
 					cornerMenu.close();
 				else
+				{
 					cornerMenu.open(menuButton);
+					if(cornerMenu.x == 0)
+						cornerMenu.x=width-cornerMenu.width - 10;
+				}
 				return;
 			}
 		]]>

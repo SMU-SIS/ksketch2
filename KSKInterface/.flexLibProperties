@@ -2,6 +2,7 @@
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="true" version="3">
   <includeClasses>
     <classEntry path="sg.edu.smu.ksketch2.imageEditing.KSketch_ImageEditingView"/>
+    <classEntry path="sg.edu.smu.ksketch2.controls.components.popup.KTouchOptionsMenu"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

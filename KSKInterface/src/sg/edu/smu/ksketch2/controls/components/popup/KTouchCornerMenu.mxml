@@ -9,6 +9,8 @@
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
+			import spark.components.ViewNavigatorApplication;
+			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.controls.ImageInput.ImageEditWindow;
@@ -159,7 +161,14 @@
 				_canvasView.navigator.pushView(KSketch_ImageEditingView, imageBytes);
 			}
 			
-
+			public function openOption():void
+			{
+				var optionsWindow:IFlexDisplayObject = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as ViewNavigatorApplication,
+					KTouchOptionsMenu, true);
+				(optionsWindow as KTouchOptionsMenu).init(_canvasView, this);
+				PopUpManager.centerPopUp(optionsWindow);
+				(optionsWindow as KTouchOptionsMenu).open(FlexGlobals.topLevelApplication as ViewNavigatorApplication);
+			}
 		]]>
 	</fx:Script>
 	
@@ -244,6 +253,7 @@
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
+				<s:Button name="option" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="openOption()"/>
 				<s:Button name="exit" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="exit()"/>
 			</s:Group>
 		<!--

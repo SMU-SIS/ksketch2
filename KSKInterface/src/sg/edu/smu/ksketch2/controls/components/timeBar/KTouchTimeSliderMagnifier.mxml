@@ -94,13 +94,9 @@
 			{
 				var parentOrigin:Point = _timeControl.localToGlobal(_ORIGIN);
 				if(parentOrigin.y < height)
-				{
 					y = parentOrigin.y + _timeControl.height + 10;
-				}
 				else
-				{
 					y = parentOrigin.y - height - 10;
-				}
 			}
 		]]>
 	</fx:Script>

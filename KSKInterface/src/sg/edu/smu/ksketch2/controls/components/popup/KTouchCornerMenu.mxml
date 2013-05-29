@@ -9,7 +9,7 @@
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
-			import spark.components.ViewNavigatorApplication;
+			import spark.layouts.HorizontalLayout;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
@@ -25,6 +25,9 @@
 			private var _KSketch:KSketch2;
 			private var _isPen:Boolean
 			private var dataSource:IDataInput;
+
+			private var vert:VerticalLayout;
+			private var hori:HorizontalLayout;
 			
 			public static const PLUG_IN:String = "PlugIn";
 			public static const BLACK_PEN_COLOR:uint = 0x000000;
@@ -38,6 +41,20 @@
 				_canvasView = canvasView;
 				_isPen = true;
 				_KSketch = KSketchInstance;
+				
+				vert = new VerticalLayout();
+				vert.gap = 1;
+				vert.paddingLeft = 3;
+				vert.paddingRight = 3;
+				vert.paddingBottom = 3;
+				vert.paddingTop = 3;
+				
+				hori = new HorizontalLayout();
+				hori.gap = 1;
+				hori.paddingLeft = 3;
+				hori.paddingRight = 3;
+				hori.paddingBottom = 3;
+				hori.paddingTop = 3;
 			}
 			
 			public function setUpToggles():void
@@ -163,11 +180,51 @@
 			
 			public function openOption():void
 			{
-				var optionsWindow:IFlexDisplayObject = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as ViewNavigatorApplication,
+				var optionsWindow:IFlexDisplayObject = PopUpManager.createPopUp(_canvasView,
 					KTouchOptionsMenu, true);
 				(optionsWindow as KTouchOptionsMenu).init(_canvasView, this);
 				PopUpManager.centerPopUp(optionsWindow);
-				(optionsWindow as KTouchOptionsMenu).open(FlexGlobals.topLevelApplication as ViewNavigatorApplication);
+				(optionsWindow as KTouchOptionsMenu).open(_canvasView);
+			}
+			
+			public function verticalMenu():void
+			{
+				menuContainer.layout = vert;
+				
+				for(var i:int =0; i< menuContainer.numElements; i++)
+				{
+					if(menuContainer.getElementAt(i) is Group)
+					{
+						var newVert:VerticalLayout = new VerticalLayout();
+						newVert.gap = 1;
+						newVert.paddingLeft = 3;
+						newVert.paddingRight = 3;
+						newVert.paddingBottom = 3;
+						newVert.paddingTop = 3;
+						
+						(menuContainer.getElementAt(i) as Group).layout = newVert;
+					}
+				}
+			}
+			
+			public function horizontalMenu():void
+			{
+				menuContainer.layout = hori;
+
+				for(var i:int =0; i< menuContainer.numElements; i++)
+				{
+					if(menuContainer.getElementAt(i) is Group)
+					{
+						var newHori:HorizontalLayout = new HorizontalLayout();
+						newHori.gap = 1;
+						newHori.paddingLeft = 3;
+						newHori.paddingRight = 3;
+						newHori.paddingBottom = 3;
+						newHori.paddingTop = 3;
+						
+						(menuContainer.getElementAt(i) as Group).layout = newHori;
+					}
+				}
 			}
 		]]>
 	</fx:Script>
@@ -182,7 +239,7 @@
 	</s:Rect>
 
 	<s:Group>
-		<s:Group>
+		<s:Group id="menuContainer">
 			<s:layout>
 				<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" verticalAlign="middle" horizontalAlign="center"/>
 			</s:layout>
@@ -203,34 +260,29 @@
 				</s:layout>
 				<s:Button name="pen" id="penBtn" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" mouseUp="{isPen = true}"/>
 				<s:Button name="eraser" id="eraserBtn" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" mouseUp="{isPen = false}"/>
-				<s:Group id="penGroup">
-					<s:layout>
-						<s:VerticalLayout gap="1"/>
-					</s:layout>
-					<s:Button name="black" id="black" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(BLACK_PEN_COLOR)"/>
-					<s:Button name="red" id="red" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(RED_PEN_COLOR)"/>
-					<s:Button name="green" id="green" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(GREEN_PEN_COLOR)"/>
-					<s:Button name="blue" id="blue" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin"
-							  click="penColor(BLUE_PEN_COLOR)"/>
-				</s:Group>
+				<s:Button name="black" id="black" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin"
+						  click="penColor(BLACK_PEN_COLOR)"/>
+				<s:Button name="red" id="red" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin"
+						  click="penColor(RED_PEN_COLOR)"/>
+				<s:Button name="green" id="green" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin"
+						  click="penColor(GREEN_PEN_COLOR)"/>
+				<s:Button name="blue" id="blue" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin"
+						  click="penColor(BLUE_PEN_COLOR)"/>
 			</s:Group>
 			<s:Line alpha="{KSketch_CanvasView.CANVAS_DIVIDER_BLEND}" width="90%">
 				<s:stroke>
 					<s:SolidColorStroke weight="1" color="{KSketch_CanvasView.CANVAS_BUTTON_COLOR}"/>
 				</s:stroke>
 			</s:Line>
-			<!--
 			<s:Group>
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
-				<s:Button name="modeI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_K}"/>
+				<s:Button name="option" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="openOption()"/>
+				<!--<s:Button name="modeI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_K}"/>
 				<s:Button name="modeD" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_P}"/>
-				<s:Button name="modeDI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_PK}"/>
-			</s:Group>-->
+				<s:Button name="modeDI" skinClass="views.canvas.components.popup.PopUpMenuButtonSkin" click="{KSketch2.studyMode = KSketch2.STUDY_PK}"/>-->
+			</s:Group>
 			<s:Group visible="{KSketch_CanvasView.isMobile}" includeInLayout="{KSketch_CanvasView.isMobile}">
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
@@ -253,7 +305,6 @@
 				<s:layout>
 					<s:VerticalLayout gap="1" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
 				</s:layout>
-				<s:Button name="option" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="openOption()"/>
 				<s:Button name="exit" skinClass="sg.edu.smu.ksketch2.controls.components.popup.PopUpMenuButtonSkin" click="exit()"/>
 			</s:Group>
 		<!--

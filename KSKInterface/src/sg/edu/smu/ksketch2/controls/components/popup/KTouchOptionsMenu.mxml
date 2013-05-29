@@ -6,7 +6,6 @@
 			import mx.events.FlexEvent;
 			
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
-			import sg.edu.smu.ksketch2.controls.components.timeBar.KTouchTimeControl;
 
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KTouchCornerMenu;
@@ -15,6 +14,12 @@
 			{
 				_canvasView = canvasView;
 				_menu = menu;
+			}
+			
+			public function applyPreferences():void
+			{
+				_timebarTop();
+				_menuRight();
 			}
 			
 			private function _timebarTop():void
@@ -41,14 +46,30 @@
 				_canvasView.timebar_component.removeEventListener(FlexEvent.UPDATE_COMPLETE, _updateCanvas);
 			}
 			
+			private function _menuTop():void
+			{
+				var topPosition:Point = _canvasView.canvas_component.localToGlobal(new Point(0,0));
+				_menu.x = 10;
+				_menu.y = topPosition.y + 10;
+				_menu.horizontalMenu();
+
+			}
+			
 			private function _menuLeft():void
 			{
-				_menu.x= 10
+				var topPosition:Point = _canvasView.canvas_component.localToGlobal(new Point(0,0));
+				_menu.x= 10;
+				_menu.y= topPosition.y + 10;
+				_menu.verticalMenu();
+				
 			}
 		
 			private function _menuRight():void
 			{
-				_menu.x= _canvasView.width-_menu.width - 10
+				var topPosition:Point = _canvasView.canvas_component.localToGlobal(new Point(0,0));
+				_menu.x= _canvasView.width - 70;		
+				_menu.y= topPosition.y + 10;
+				_menu.verticalMenu();
 			}
 		]]>
 	</fx:Script>
@@ -98,6 +119,7 @@
 				<s:layout>
 					<s:HorizontalLayout/>
 				</s:layout>
+				<s:Button label="Top" click="_menuTop()"/>
 				<s:Button label="Left" click="_menuLeft()"/>
 				<s:Button label="Right" click="_menuRight()"/>
 			</s:Group>
@@ -106,7 +128,7 @@
 			<s:layout>
 				<s:VerticalLayout paddingLeft="5" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button label="Apply" click="close()"/>
+			<s:Button label="Close" click="close()"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

@@ -26,6 +26,9 @@
 			[Bindable]
 			private var _displaySource:BitmapData;
 			
+			[Bindable]
+			private var _top:Boolean;
+			
 			public function init(parent:UIComponent, timeControl:KTouchTimeControl):void
 			{
 				_parent = parent;
@@ -50,7 +53,7 @@
 			public function _setListeners():void
 			{
 				magnifierDisplay.addEventListener(Event.ADDED_TO_STAGE, function fx(event:Event):void{updatePosition()});
-				magnifierDisplay.addEventListener(Event.REMOVED, function fy(event:Event):void{updatePosition()});
+				magnifierDisplay.addEventListener(Event.REMOVED_FROM_STAGE, function fy(event:Event):void{updatePosition()});
 			}
 			
 			/**
@@ -96,17 +99,25 @@
 					magnifierContents.removeElement(magnifierDisplay);
 			}
 			
-			public function updatePosition():void		
+			public function updatePosition():void
 			{
 				var parentOrigin:Point = _timeControl.localToGlobal(_ORIGIN);
 				if(parentOrigin.y < height)
+				{
+					_top = true;
 					y = parentOrigin.y + _timeControl.height + 10;
+				}
 				else
-					y = parentOrigin.y - height - 10;
+				{
+					_top = false;
+					y = parentOrigin.y - 10;
+				}
+				
+				trace("is Top True?",_top,floatingTag.y)
 			}
 		]]>
 	</fx:Script>
-	<s:Group id="floatingTag" x="{-magnifierContents.width/2}" >
+	<s:Group id="floatingTag" x="{-magnifierContents.width/2}" y="{(_top?0:-1)*magnifierContents.height}">
 		<s:Rect width="100%" height="100%" radiusX="3" radiusY="3" alpha="0.7">
 			<s:fill>
 				<s:SolidColor color="0x848484"/>

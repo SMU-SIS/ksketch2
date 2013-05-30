@@ -112,8 +112,6 @@
 					_top = false;
 					y = parentOrigin.y - 10;
 				}
-				
-				trace("is Top True?",_top,floatingTag.y)
 			}
 		]]>
 	</fx:Script>

@@ -20,6 +20,10 @@ package sg.edu.smu.ksketch2.operators
 
 	public class KVisibilityControl implements IVisibilityControl
 	{
+		public static const VISIBLE_ALPHA:Number = 1;
+		public static const GHOST_ALPHA:Number = 0.2;
+		public static const INVISIBLE_ALPHA:Number = 0;
+		
 		private var _object:KObject;
 		private var _visibilityKeys:KVisibilityKeyList;
 		
@@ -98,12 +102,17 @@ package sg.edu.smu.ksketch2.operators
 			if(key)
 			{
 				if(key.visible)
-					return 1.0;
+					return VISIBLE_ALPHA;
 				else
-					return 0.0;
+				{
+					if(key.time ==time)
+						return GHOST_ALPHA;
+					else
+						return INVISIBLE_ALPHA;
+				}
 			}
 			else
-				return 0.0;
+				return INVISIBLE_ALPHA;
 		}
 		
 		public function serializeVisibility():XML

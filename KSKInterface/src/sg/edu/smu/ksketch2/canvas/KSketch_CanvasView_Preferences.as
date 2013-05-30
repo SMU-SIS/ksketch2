@@ -12,6 +12,8 @@ package sg.edu.smu.ksketch2.canvas
 		public static const POS_BOTTOM:String = "BOTTOM";
 		public static const OPEN:String = "OPEN";
 		public static const CLOSE:String = "CLOSE";
+		public static const AUTO:String = "AUTO";
+		public static const NOT_AUTO:String = "NOT AUTO";
 		
 		public static function getSharedObject():SharedObject
 		{
@@ -66,6 +68,22 @@ package sg.edu.smu.ksketch2.canvas
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
 			prefs.data.menuOpen = value;
+			prefs.flush();
+		}
+		
+		public static function get autoInsert():String
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.autoInsert)
+				return prefs.data.autoInsert;
+			else
+				return CLOSE;
+		}
+		
+		public static function set autoInsert(value:String):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.autoInsert = value;
 			prefs.flush();
 		}
 	}

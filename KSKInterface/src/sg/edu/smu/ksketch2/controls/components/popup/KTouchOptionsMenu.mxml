@@ -7,6 +7,7 @@
 			
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
+			import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KTouchCornerMenu;
@@ -28,6 +29,15 @@
 						break;
 					default:
 						menuOpen.selected = false;
+				}
+				
+				switch(KSketch_CanvasView_Preferences.autoInsert)
+				{
+					case KSketch_CanvasView_Preferences.AUTO:
+						autoInsertKey.selected = true;
+						break;
+					default:
+						autoInsertKey.selected = false;
 				}
 			}
 			
@@ -62,6 +72,17 @@
 					default:
 						menuOpen.selected = false;
 						_menuOpen(false);
+				}
+				
+				switch(KSketch_CanvasView_Preferences.autoInsert)
+				{
+					case KSketch_CanvasView_Preferences.AUTO:
+						autoInsertKey.selected = true;
+						_autoInsertKey(true);
+						break;
+					default:
+						autoInsertKey.selected = false;
+						_autoInsertKey(false);
 				}
 			}
 			
@@ -128,6 +149,20 @@
 				else
 					KSketch_CanvasView_Preferences.menuOpen = KSketch_CanvasView_Preferences.CLOSE;
 			}
+			
+			private function _autoInsertKey(value:Boolean):void
+			{
+				if(value)
+				{
+					KSingleReferenceFrameOperator.always_allow_interpolate = true;
+					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.AUTO;
+				}
+				else
+				{
+					KSingleReferenceFrameOperator.always_allow_interpolate = false;
+					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.NOT_AUTO;
+				}
+			}
 		]]>
 	</fx:Script>
 	<s:filters>
@@ -190,8 +225,13 @@
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="5" verticalAlign="middle"/>
 			</s:layout>
-			<s:Label text="Menu Auto Open" fontSize="24"/>
-			<s:CheckBox id="menuOpen" click="_menuOpen(menuOpen.selected)"/>
+			<s:CheckBox label="Menu Auto Open" id="menuOpen" click="_menuOpen(menuOpen.selected)"/>
+		</s:Group>
+		<s:Group>
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="5" verticalAlign="middle"/>
+			</s:layout>
+			<s:CheckBox id="autoInsertKey" label="Auto Insert Key" click="_autoInsertKey(autoInsertKey.selected)"/>
 		</s:Group>
 		<s:Group width="100%">
 			<s:layout>

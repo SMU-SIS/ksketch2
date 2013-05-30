@@ -33,6 +33,7 @@ package sg.edu.smu.ksketch2.operators
 		public static const ROTATE_THRESHOLD:Number = 0.3;
 		public static const SCALE_THRESHOLD:Number = 0.1;
 		public static const EPSILON:Number = 0.05;
+		public static var always_allow_interpolate:Boolean = false;
 		
 		protected var _object:KObject;
 		protected var _refFrame:KReferenceFrame;
@@ -305,31 +306,20 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function canInterpolate(time:int):Boolean
 		{
+			if(always_allow_interpolate)
+				return true;
+			
 			var activeKey:ISpatialKeyFrame;
 			
-			switch(KSketch2.studyMode)
+			activeKey = _refFrame.getKeyAftertime(time-1) as ISpatialKeyFrame;
+			if(activeKey)
 			{
-				case KSketch2.STUDY_P:
-					//We just need the object to exist
-					if(_refFrame.head)
-					{
-						if(_refFrame.head.time <= time)
-							return true;
-					}
-					break;
-				case KSketch2.STUDY_K:
-				case KSketch2.STUDY_PK:
-
-					//Allow interpolation only if there is a key present of if there are transitions
-					activeKey = _refFrame.getKeyAftertime(time-1) as ISpatialKeyFrame;
-					if(activeKey)
-					{
-						if(activeKey.time == time)
-							return true;
-						
-						return activeKey.hasActivityAtTime();
-					}
+				if(activeKey.time == time)
+					return true;
+				
+				return activeKey.hasActivityAtTime();
 			}
+			
 			return false;
 		}
 		
@@ -340,21 +330,8 @@ package sg.edu.smu.ksketch2.operators
 		public function canInsertKey(time:int):Boolean
 		{
 			var hasKeyAtTime:Boolean = (_refFrame.getKeyAtTime(time) as KSpatialKeyFrame != null);
-		
-			if(hasKeyAtTime)
-				return false;
 			
-			if(KSketch2.studyMode == KSketch2.STUDY_P)
-			{
-				var activeKey:ISpatialKeyFrame = _refFrame.getKeyAftertime(time) as ISpatialKeyFrame;
-				
-				if(activeKey)
-					return activeKey.hasActivityAtTime();
-				else
-					return false;
-			}
-			
-			return true;
+			return !hasKeyAtTime;
 		}
 		
 		/**
@@ -497,20 +474,10 @@ package sg.edu.smu.ksketch2.operators
 		public function endTransition(time:int, op:KCompositeOperation):void
 		{
 			_dirty = true;
-			
-			switch(KSketch2.studyMode)
-			{
-				case KSketch2.STUDY_P:
-					_endTransition_process_ModeD(time, op);
-					break;
-				case KSketch2.STUDY_K:
-				case KSketch2.STUDY_PK:
-					_endTransition_process_ModeDI(time, op);
-					break;
-			}
-
+			_endTransition_process_ModeDI(time, op);
 			_inTransit = false;
 			_dirty = true;
+
 			//Dispatch a transform finalised event
 			//Application level components can listen to this event to do updates
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
@@ -521,45 +488,28 @@ package sg.edu.smu.ksketch2.operators
 		{
 			if(_transitionType == KSketch2.TRANSITION_INTERPOLATED)
 			{
-				//After inserting a key, will be pretty sure there is a key at time.
-				//Just get the key at time
-				_interpolationKey = _refFrame.getKeyAftertime(time-1) as KSpatialKeyFrame;
+				//For interpolation, there will always be a key inserted at given time
+				//So we just insert a key at time, if there is a need to insert key
+				if(canInsertKey(time))
+					insertBlankKeyFrame(time, op);
 				
-				//Only 1 case, where time is greater than the reference frame's end time
-				//Use the last key if this happens
-				if(!_interpolationKey)
+				//Then we grab that key
+				_interpolationKey = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
+				
+				//Then we deal with the interpolation
+				if(_interpolationKey.time == time)
 				{
-					//Handle study mode case for D
-					if(KSketch2.studyMode == KSketch2.STUDY_P)
+					_nextInterpolationKey = _interpolationKey.next as KSpatialKeyFrame;
+					
+					if(_nextInterpolationKey)
 					{
-						_interpolationKey = _refFrame.lastKey as KSpatialKeyFrame;
-					}
-					else
-					{
-						insertBlankKeyFrame(time, op);
-						_interpolationKey = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
+						_TStoredPath2 = _nextInterpolationKey.translatePath.clone();
+						_RStoredPath2 = _nextInterpolationKey.rotatePath.clone();
+						_SStoredPath2 = _nextInterpolationKey.scalePath.clone();
 					}
 				}
-				
-				//Handle study mode case for D
-				if(KSketch2.studyMode == KSketch2.STUDY_P)
-					_interpolationKey = lastKeyWithTransform(_interpolationKey);
 				else
-				{
-					if(_interpolationKey.time == time)
-					{
-						_nextInterpolationKey = _interpolationKey.next as KSpatialKeyFrame;
-						
-						if(_nextInterpolationKey)
-						{
-							_TStoredPath2 = _nextInterpolationKey.translatePath.clone();
-							_RStoredPath2 = _nextInterpolationKey.rotatePath.clone();
-							_SStoredPath2 = _nextInterpolationKey.scalePath.clone();
-						}
-					}
-					else
-						_nextInterpolationKey = null;
-				}
+					_nextInterpolationKey = null;
 				
 				_TStoredPath = _interpolationKey.translatePath.clone();
 				_RStoredPath = _interpolationKey.rotatePath.clone();
@@ -711,12 +661,7 @@ package sg.edu.smu.ksketch2.operators
 				//If the interpolation is performed in the middle of a key, "uninterpolate" it to 0 interpolation
 				if(time != targetKey.time)
 				{
-					if(KSketch2.studyMode != KSketch2.STUDY_P)
-					{
-						targetPath.push(0,0,targetKey.duration);
-					}
-					else
-						targetPath.push(dx, dy, targetKey.duration);
+					targetPath.push(dx, dy, targetKey.duration);
 				}
 				
 				//Should fill the paths with points here
@@ -730,9 +675,6 @@ package sg.edu.smu.ksketch2.operators
 				{
 					//case 3:interpolate between two keys
 					KPathProcessing.interpolateSpan(targetPath,0,proportionElapsed,dx, dy);
-					
-					if(KSketch2.studyMode != KSketch2.STUDY_P)
-						KPathProcessing.interpolateSpan(targetPath,proportionElapsed,1, -dx, -dy);
 				}
 			}	
 		}

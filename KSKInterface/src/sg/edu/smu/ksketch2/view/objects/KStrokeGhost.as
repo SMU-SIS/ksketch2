@@ -3,6 +3,8 @@ package sg.edu.smu.ksketch2.view.objects
 	import flash.display.Sprite;
 	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch2.operators.KVisibilityControl;
+	
 	public class KStrokeGhost extends Sprite
 	{
 		/**
@@ -24,7 +26,7 @@ package sg.edu.smu.ksketch2.view.objects
 				}
 			}
 			
-			alpha = KObjectView.GHOST_ALPHA;
+			alpha = KVisibilityControl.GHOST_ALPHA;
 			visible = false;
 		}
 	}

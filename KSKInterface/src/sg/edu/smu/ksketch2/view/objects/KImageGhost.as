@@ -3,6 +3,8 @@ package sg.edu.smu.ksketch2.view.objects
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
+	
+	import sg.edu.smu.ksketch2.operators.KVisibilityControl;
 
 	/**
 	 * Ghost for KImageView
@@ -18,7 +20,7 @@ package sg.edu.smu.ksketch2.view.objects
 			image.x = x;
 			image.y = y;
 			addChild(image);
-			alpha = KObjectView.GHOST_ALPHA;
+			alpha = KVisibilityControl.GHOST_ALPHA;
 			visible = false;
 		}
 	}

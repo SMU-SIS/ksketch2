@@ -21,9 +21,7 @@ package sg.edu.smu.ksketch2.view.objects
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
 	public class KObjectView extends Sprite implements IObjectView
-	{
-		public static const GHOST_ALPHA:Number = 0.4;
-		
+	{		
 		protected var _object:KObject;
 		protected var _ghost:Sprite;
 		protected var _originalPosition:Point;

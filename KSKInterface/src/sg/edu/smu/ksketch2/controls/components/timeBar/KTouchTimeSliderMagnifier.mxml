@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+		xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" creationComplete="_setListeners()">
 	
 	<fx:Script>
 		<![CDATA[
@@ -45,6 +45,12 @@
 				
 				if(magnifierContents)
 					magnifierContents.removeElement(magnifierDisplay);
+			}
+			
+			public function _setListeners():void
+			{
+				magnifierDisplay.addEventListener(Event.ADDED_TO_STAGE, function fx(event:Event):void{updatePosition()});
+				magnifierDisplay.addEventListener(Event.REMOVED, function fy(event:Event):void{updatePosition()});
 			}
 			
 			/**

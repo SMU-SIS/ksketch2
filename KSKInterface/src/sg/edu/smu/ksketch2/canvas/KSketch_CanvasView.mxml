@@ -21,6 +21,7 @@
 		>
 	<fx:Declarations>
 		<popup1:KTouchCornerMenu id="cornerMenu"/>
+		<popup1:KTouchOptionsMenu id="optionsMenu"/>
 		<popup1:KTouchFeedbackMessage id="feedbackMessage" mouseChildren="false"/>
 	</fx:Declarations>
 	<fx:Script>
@@ -96,7 +97,8 @@
 					motionDisplay.init(_KSketch, _interactionControl);
 					
 					timeControl.init(_KSketch, _timeTickControl);
-					cornerMenu.init(_interactionControl, this, _KSketch);
+					optionsMenu.init(this, cornerMenu);
+					cornerMenu.init(_interactionControl, this, optionsMenu, _KSketch);
 
 					
 					var playBounds:Rectangle = playButton.getBounds(this);
@@ -108,10 +110,10 @@
 					_interactionControl.reset();
 					
 					cornerMenu.open(this);
-					var temp:KTouchOptionsMenu = new KTouchOptionsMenu();
-					temp.init(this, cornerMenu);
-					temp.applyPreferences();
+					optionsMenu.open(this);
+					optionsMenu.close();
 					cornerMenu.close();
+					optionsMenu.applyPreferences();
 				}
 			}
 			
@@ -158,6 +160,7 @@
 			{
 				timeControl.dispose();
 				cornerMenu.close();	
+				optionsMenu.close();
 			}
 			
 			override public function createReturnObject():Object

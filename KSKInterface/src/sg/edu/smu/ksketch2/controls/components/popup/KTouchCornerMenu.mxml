@@ -22,6 +22,7 @@
 			
 			private var _interactionControl:KMobileInteractionControl;
 			private var _canvasView:KSketch_CanvasView;
+			private var _options:KTouchOptionsMenu;
 			private var _KSketch:KSketch2;
 			private var _isPen:Boolean
 			private var dataSource:IDataInput;
@@ -35,10 +36,13 @@
 			public static const GREEN_PEN_COLOR:uint = 0x82FA58;
 			public static const BLUE_PEN_COLOR:uint = 0x58ACFA;
 			
-			public function init(interactionControl:KMobileInteractionControl, canvasView:KSketch_CanvasView, KSketchInstance:KSketch2):void
+			public function init(interactionControl:KMobileInteractionControl,
+								 canvasView:KSketch_CanvasView, options:KTouchOptionsMenu,
+								 KSketchInstance:KSketch2):void
 			{
 				_interactionControl = interactionControl;
 				_canvasView = canvasView;
+				_options = options;
 				_isPen = true;
 				_KSketch = KSketchInstance;
 				
@@ -143,6 +147,7 @@
 			public function exit():void
 			{
 				close();
+				_options.close();
 				_canvasView.navigator.popView();
 			}
 			
@@ -180,11 +185,8 @@
 			
 			public function openOption():void
 			{
-				var optionsWindow:IFlexDisplayObject = PopUpManager.createPopUp(_canvasView,
-					KTouchOptionsMenu, true);
-				(optionsWindow as KTouchOptionsMenu).init(_canvasView, this);
-				PopUpManager.centerPopUp(optionsWindow);
-				(optionsWindow as KTouchOptionsMenu).open(_canvasView);
+				PopUpManager.centerPopUp(_options);
+				_options.open(_canvasView);
 			}
 			
 			public function verticalMenu():void

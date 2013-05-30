@@ -3,6 +3,7 @@
   <includeClasses>
     <classEntry path="sg.edu.smu.ksketch2.imageEditing.KSketch_ImageEditingView"/>
     <classEntry path="sg.edu.smu.ksketch2.controls.components.popup.KTouchOptionsMenu"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

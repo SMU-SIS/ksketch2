@@ -23,7 +23,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
-	import sg.edu.smu.ksketch2.canvas.components.popup.KTouchFeedbackMessage;
+	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
@@ -39,7 +39,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 		private var _interactionControl:KMobileInteractionControl;
 		private var _inputComponent:UIComponent;
 		private var _modelDisplay:KModelDisplay;
-		private var _feedbackMessage:KTouchFeedbackMessage;
+		private var _feedbackMessage:KSketch_Feedback_Message;
 		
 		private var _tapGesture:TapGesture;
 		private var _doubleTap:TapGesture;
@@ -63,7 +63,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 		 * 
 		 */
 		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
-											   inputComponent:UIComponent, modelDisplay:KModelDisplay, feedbackMessage:KTouchFeedbackMessage)
+											   inputComponent:UIComponent, modelDisplay:KModelDisplay, feedbackMessage:KSketch_Feedback_Message)
 		{
 			super(this);
 			_KSketch = KSketchInstance;

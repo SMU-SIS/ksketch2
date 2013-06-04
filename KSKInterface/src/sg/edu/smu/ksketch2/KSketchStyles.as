@@ -6,6 +6,16 @@ package sg.edu.smu.ksketch2
 		public static const APP_BACKGROUND_COLOR:uint = 0xD0D2D3;
 		public static const APP_FONT_FAMILY:String = "Arial, Helvetica";
 
+		//Canvas
+		public static const CANVAS_BUTTON_NORMAL:uint = 0xC8CCCE;
+		public static const CANVAS_BUTTON_ACTIVATED:uint = 0xDD1F26;
+		public static const CANVAS_BUTTON_SHADOW_COLOR:uint = 0x000000;
+		public static const CANVAS_BUTTON_SHADOW_STRENGTH:Number = 0.5;
+		public static const CANVAS_BUTTON_SHADOW_ALPHA:Number = 0.6;
+		public static const CANVAS_BUTTON_SHADOW_DISTANCE:Number = 3;
+		public static const CANVAS_BUTTON_SHADOW_ANGLE:Number = 50;
+		public static const CANVAS_BUTTON_CORNER_RADIUS:Number = 5;
+		
 		//Timebar Stuffs
 		public static const TIMEBAR_LAYOUT_GAP:Number = 7;
 		public static const TIMEBAR_LAYOUT_PADDING_HORIZONTAL:Number = 5;
@@ -22,14 +32,6 @@ package sg.edu.smu.ksketch2
 		public static const TIMEBAR_PLAY_BUTTON_HEIGHT:Number = 65;
 		public static const TIMEBAR_BUTTON_WIDTH:Number = 60;
 		public static const TIMEBAR_BUTTON_HEIGHT:Number = 60;
-		public static const TIMEBAR_BUTTON_NORMAL:uint = 0xC8CCCE;
-		public static const TIMEBAR_BUTTON_ACTIVATED:uint = 0xDD1F26;
-		public static const TIMEBAR_BUTTON_SHADOW_COLOR:uint = 0x000000;
-		public static const TIMEBAR_BUTTON_SHADOW_STRENGTH:Number = 0.5;
-		public static const TIMEBAR_BUTTON_SHADOW_ALPHA:Number = 0.6;
-		public static const TIMEBAR_BUTTON_SHADOW_DISTANCE:Number = 3;
-		public static const TIMEBAR_BUTTON_SHADOW_ANGLE:Number = 50;
-		public static const TIMEBAR_BUTTON_CORNER_RADIUS:Number = 3;
 		
 		public static const TIME_CONTROL_HEIGHT:Number = 25;
 		public static const TIME_CONTROL_BACKGROUND_COLOR:uint = 0xFFFFFF;
@@ -47,7 +49,6 @@ package sg.edu.smu.ksketch2
 		public static const ACTIVITY_OTHER_COLOR:uint = 0xFF8F8F;
 		public static const ACTIVITY_ALPHA:Number = 1.0;
 		
-		
 		//Canvas
 		public static const CANVAS_BACKGROUND_COLOR:uint = 0xA6A8AB;
 		public static const CANVAS_PAPER_COLOR:uint = 0xFFFFFF;
@@ -64,5 +65,14 @@ package sg.edu.smu.ksketch2
 		public static const FEEDBACK_FONT_SIZE:Number = 60;
 		public static const FEEDBACK_FADE_TIME:Number = 250;
 		public static const FEEDBACK_BACKGROUND_ALPHA:Number = 0;
+		
+		//Menu
+		public static const MENU_GAP:Number = 10;
+		public static const MENU_CORNER_RADIUS:Number = 5;
+		public static const MENU_BACKGROUND_COLOR:uint = 0xA6A8AB;
+		public static const MENU_PADDING:Number = 5;
+		public static const MENU_BUTTON_GAP:Number = 3;
+		public static const MENU_BUTTON_WIDTH:Number = 35;
+		public static const MENU_BUTTON_HEIGHT:Number = 35;
 	}
 }

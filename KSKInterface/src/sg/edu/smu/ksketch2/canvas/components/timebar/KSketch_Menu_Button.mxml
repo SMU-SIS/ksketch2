@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" width="{height}" height="100%" addedToStage="_initSkin()"
-		 skinClass="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_Timebar_Button_Skin">
+		 skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin">
 	<fx:Script>
 		<![CDATA[
+			import sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin;
 			import mx.events.StateChangeEvent;
 			
 			import spark.components.Image;
@@ -12,14 +13,14 @@
 			
 			private function _initSkin():void
 			{
-				var textureControl:Image = (skin as KSketch_Timebar_Button_Skin).texture;
+				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
 				skin.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, _onStateChange);
 				textureControl.source = KSketchAssets.texture_menu;	
 			}
 			
 			private function _onStateChange(event:StateChangeEvent):void
 			{
-				var textureControl:Image = (skin as KSketch_Timebar_Button_Skin).texture;
+				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
 				
 				if(event.newState == "up")
 					textureControl.source = KSketchAssets.texture_menu;

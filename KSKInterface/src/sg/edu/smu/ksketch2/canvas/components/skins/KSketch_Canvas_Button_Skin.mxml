@@ -50,23 +50,23 @@
 	
 	<s:filters>
 		<s:DropShadowFilter
-			alpha="{KSketchStyles.TIMEBAR_BUTTON_SHADOW_ALPHA}"
-			angle="{KSketchStyles.TIMEBAR_BUTTON_SHADOW_ANGLE}"
-			color="{KSketchStyles.TIMEBAR_BUTTON_SHADOW_COLOR}"
-			distance="{KSketchStyles.TIMEBAR_BUTTON_SHADOW_DISTANCE}"
-			strength="{KSketchStyles.TIMEBAR_BUTTON_SHADOW_STRENGTH}"
+			alpha="{KSketchStyles.CANVAS_BUTTON_SHADOW_ALPHA}"
+			angle="{KSketchStyles.CANVAS_BUTTON_SHADOW_ANGLE}"
+			color="{KSketchStyles.CANVAS_BUTTON_SHADOW_COLOR}"
+			distance="{KSketchStyles.CANVAS_BUTTON_SHADOW_DISTANCE}"
+			strength="{KSketchStyles.CANVAS_BUTTON_SHADOW_STRENGTH}"
 		/>
 	</s:filters>
 	
     <!-- layer 2: fill -->
     <!--- @private -->
     <s:Rect id="fill" left="1" right="1" top="1" bottom="1"
-			radiusX="{KSketchStyles.TIMEBAR_BUTTON_CORNER_RADIUS}"
-			radiusY="{KSketchStyles.TIMEBAR_BUTTON_CORNER_RADIUS}">
+			radiusX="{KSketchStyles.CANVAS_BUTTON_CORNER_RADIUS}"
+			radiusY="{KSketchStyles.CANVAS_BUTTON_CORNER_RADIUS}">
         <s:fill>
 			<s:SolidColor
-				color.up="{KSketchStyles.TIMEBAR_BUTTON_NORMAL}"
-				color.down="{KSketchStyles.TIMEBAR_BUTTON_ACTIVATED}"/>
+				color.up="{KSketchStyles.CANVAS_BUTTON_NORMAL}"
+				color.down="{KSketchStyles.CANVAS_BUTTON_ACTIVATED}"/>
         </s:fill>
     </s:Rect>
 

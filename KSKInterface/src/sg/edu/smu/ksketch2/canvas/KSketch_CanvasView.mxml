@@ -13,10 +13,11 @@
 		xmlns:view="sg.edu.smu.ksketch2.view.*"
 		xmlns:transformWidget="sg.edu.smu.ksketch2.controls.widgets.transformWidget.*"
 		xmlns:widgets="sg.edu.smu.ksketch2.controls.widgets.*"
+		creationPolicy="all"
 		destructionPolicy="never"
 		addedToStage="_initCanvas()"
 		add="_checkForImageData()"
-		viewActivate="_viewActivateHandler()"
+		viewActivate="_enterView_ProcessData()"
 		viewDeactivate="_viewDeactivateHandler()"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
 		xmlns:popup="sg.edu.smu.ksketch2.controls.components.popup.*"
@@ -32,9 +33,10 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KTouchFeedbackMessage;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
+			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.controls.components.transformWidget.KTouchWidgetBase;
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
 			import sg.edu.smu.ksketch2.controls.interactors.KCanvasInteractorManager;
@@ -48,33 +50,31 @@
 			[Bindable]
 			public static var isMobile:Boolean = true;
 			
-			private var _currentDocument:KSketchDocument;
 			private var _imageData:BitmapData;
+			private var _needToProcessData:Boolean;
+			private var _currentDocument:KSketchDocument;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KMobileInteractionControl;
 			
 			//Pop Ups
-			private var _feedbackPopUp:KTouchFeedbackMessage;
+			private var _feedbackPopUp:KSketch_Feedback_Message;
+			private var _menuPopUp:KSketch_PopUp_Menu;
 			
 			//These two are just here for the sake of being here/just in case/....
 			//Don't really need them declared
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
 			
-			//Starting up is done in the following stages
+			//Starting up is hopefully done in the following stages
+			//Should not depend on the events beingfired in the correct sequence all the time
 			//addedToStage: _initCanvas (if needed)
-			//add: _checkForImageData()
-			//viewActivated: _viewActivateHandler - loads data/ insert images
+			//add: _checkForImageData() //This can be done during addedToStage too
+			//viewActivated: _viewActivateHandler - loads data/ insert images 
+			//				A lot of times, this happens first, so we go back to addedToStage
 			
 			
 			//Starts up the canvas in the following order
-			//Determines platform
-			//Initialises KSketch
-			//Initialises interface
-			//Sets up pop ups
-			//Sets up user preferences
-			//Initialises interactors and control classes
 			private function _initCanvas():void
 			{	
 				//We shouldn't make a new ksketch if one already exists
@@ -92,11 +92,14 @@
 				//Actual setting up starts here
  				_KSketch = new KSketch2();
 				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
-
-				//Initiate pop ups
-				_feedbackPopUp = new KTouchFeedbackMessage();
-				_feedbackPopUp.init(this);
 				
+				//Initiate pop ups
+				_feedbackPopUp = new KSketch_Feedback_Message();
+				_feedbackPopUp.init(this);
+				_menuPopUp = new KSketch_PopUp_Menu();
+				_menuPopUp.init(canvas_component);
+				
+				//Initiate the controls
 				if(!isPlayer)
 				{
 					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
@@ -104,7 +107,7 @@
 				}
 				
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl, _interactionControl);
-				
+				timeControl.init(_KSketch, timeTickControl);
 
 				leftFrame.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
 				rightFrame.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
@@ -114,8 +117,7 @@
 				modelDisplay.init(_KSketch, true);
 				motionDisplay.init(_KSketch, _interactionControl);
 				
-				timeControl.init(_KSketch, timeTickControl);
-				
+				//This is the layer that blocks interaction whenever the app is playing
 				var playBounds:Rectangle = playButton.getBounds(this);
 				interceptor.graphics.beginFill(0x000000);
 				interceptor.graphics.drawRect(0,0, width, height);
@@ -123,6 +125,10 @@
 				interceptor.graphics.endFill();
 				playButton.init(timeControl, _interactionControl,interceptor, _KSketch);
 				_interactionControl.reset();
+				
+				//Fail safe measure
+				if(_needToProcessData)
+					_enterView_ProcessData();
 			}
 			
 			private function _checkForImageData():void
@@ -134,8 +140,18 @@
 			//The view activate handler should only be used solely for loading/generating ksketch objects
 			//Interface initiation should be done when the view has been added to stage
 			//This should be the last process of canvas start up.
-			private function _viewActivateHandler():void
-			{				
+			private function _enterView_ProcessData():void
+			{	
+				//Fail safe measure, we cannot depend on start up events firing properly
+				//Cancel activate handler if the events screwed up their order
+				if(!_KSketch)
+				{
+					_needToProcessData = true;
+					return;
+				}
+				else
+					_needToProcessData = false;
+				
 				if(_imageData)
 				{
 					//Add image here
@@ -254,6 +270,7 @@
 					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
 				<timebar:KSketch_Menu_Button
 					id="menuButton"
+					click="_menuPopUp.open(this)"
 					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
 			</s:Group>
 		</s:Group>

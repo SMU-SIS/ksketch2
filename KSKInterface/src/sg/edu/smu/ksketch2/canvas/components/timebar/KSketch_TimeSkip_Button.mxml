@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 skinClass="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_Timebar_Button_Skin"
+		 addedToStage="_initSkin()">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.StateChangeEvent;
+			
+			import spark.components.Image;
+			
+			import org.gestouch.events.GestureEvent;
+			import org.gestouch.gestures.TapGesture;
+			
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.canvas.KSketchAssets;
+			
+			public static const LEFT:int = -1;
+			public static const RIGHT:int = 1;
+
+			private var _KSketch:KSketch2;
+			private var _type:int;
+			private var _timeControl:KSketch_TimeControl;
+		
+			private var _tapGesture:TapGesture;
+
+			public function init(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, type:int):void
+			{
+				_KSketch = KSketchInstance;
+				_timeControl = timeControl;
+				_type = type;
+				
+				_tapGesture = new TapGesture(this);
+				_tapGesture.maxTapDuration = 200;
+				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
+			}
+			
+			/**
+			 * Tap handler to handle tapping to fast Forward or fast rewind to prev/next key frame
+			 */
+			private function _handleTap(event:org.gestouch.events.GestureEvent):void
+			{
+				if(!_timeControl.timings)
+					return;
+				
+				var i:int;
+				var length:int = _timeControl.timings.length;
+				
+				var timeList:Vector.<int> = new Vector.<int>();
+				
+				var log:XML = <op/>;
+				var date:Date = new Date();
+				
+				log.@category = "Timeline";
+				
+				for(i = 0; i<length; i++)
+				{
+					timeList.push(_timeControl.timings[i]);
+				}
+				
+				timeList.unshift(0);
+				timeList.push(_timeControl.maximum);
+				
+				var currentTime:Number = _KSketch.time;			
+				var currentIndex:int = 0;
+				
+				for(i = 0; i < timeList.length; i++)
+				{
+					currentIndex = i;
+					
+					if(currentTime <= timeList[i])
+						break;
+				}
+				
+				var toTime:Number = 0;
+				
+				if(_type == LEFT)
+				{
+					currentIndex -= 1;
+					
+					if(currentIndex < 0)
+						toTime = 0;
+					else
+						toTime = timeList[currentIndex];
+					
+					log.@type = "Prev Key";
+
+				}
+				else
+				{
+					if(currentIndex < timeList.length)
+					{
+						var checkTime:Number = timeList[currentIndex];
+						if(checkTime == _KSketch.time)
+						{
+							while(checkTime == _KSketch.time)
+							{
+								currentIndex += 1;
+								
+								if(currentIndex < timeList.length)
+									checkTime = timeList[currentIndex];
+								else
+									break;
+							}
+						}
+						
+						toTime = checkTime;
+					}
+					else
+						toTime = _KSketch.time;
+					
+					log.@type = "Next Key";
+				}
+				
+				_timeControl.time = toTime;
+
+				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+				_KSketch.log.appendChild(log);
+			}
+			
+			private function _initSkin():void
+			{
+				var textureControl:Image = (skin as KSketch_Timebar_Button_Skin).texture;
+				skin.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, _onStateChange);
+				
+				if(_type == LEFT)
+					textureControl.source = KSketchAssets.texture_back;
+				else
+					textureControl.source = KSketchAssets.texture_forward;	
+			}
+			
+			private function _onStateChange(event:StateChangeEvent):void
+			{
+				var textureControl:Image = (skin as KSketch_Timebar_Button_Skin).texture;
+				
+				if(_type == LEFT)
+				{
+					if(event.newState == "up")
+						textureControl.source = KSketchAssets.texture_back;
+					else
+						textureControl.source = KSketchAssets.texture_back_down;
+				}
+				else
+				{
+					if(event.newState == "up")
+						textureControl.source = KSketchAssets.texture_forward;	
+					else
+						textureControl.source = KSketchAssets.texture_forward_down;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+</s:Button>

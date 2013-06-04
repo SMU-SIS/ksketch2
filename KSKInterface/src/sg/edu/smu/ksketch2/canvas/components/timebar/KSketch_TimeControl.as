@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.controls.components.timeBar
+package sg.edu.smu.ksketch2.canvas.components.timebar
 {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -11,8 +11,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 	import sg.edu.smu.ksketch2.controls.components.ITimeControl;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
-
-	public class KTouchTimeControl extends TouchSliderTemplate implements ITimeControl
+	public class KSketch_TimeControl extends KSketch_TimeSlider implements ITimeControl
 	{
 		public static const PLAY_START:String = "Start Playing";
 		public static const PLAY_STOP:String = "Stop Playing";
@@ -29,8 +28,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 		public static const MAX_ALLOWED_TIME:int = 600000; //Max allowed time of 10 mins
 		
 		protected var _KSketch:KSketch2;
-		protected var _magnifier:KTouchTimeSliderMagnifier;
-		protected var _tickmarkControl:KTouchTickMarkControl;
+		protected var _tickmarkControl:KSketch_TickMark_Control;
 		
 		protected var _isPlaying:Boolean = false;
 		protected var _timer:Timer;
@@ -47,12 +45,12 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 		
 		private var _touchStage:Point = new Point(0,0);
 
-		public function KTouchTimeControl()
+		public function KSketch_TimeControl()
 		{
 			super();
 		}
 		
-		public function init(KSketchInstance:KSketch2, tickmarkControl:KTouchTickMarkControl):void
+		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control):void
 		{
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
@@ -61,40 +59,30 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			
 			addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 
-			_magnifier = new KTouchTimeSliderMagnifier();
-			_magnifier.init(contentGroup, this);
-			
 			timeDisplay.graphics.lineStyle(6,0xFF0000, 0.4);
+			
 			var anchor:Point = contentGroup.globalToLocal(localToGlobal(new Point(0,0)));
 			timeDisplay.graphics.moveTo(0,anchor.y);
 			timeDisplay.graphics.lineTo(0,anchor.y+height);
 			
-			maximum = KTouchTimeControl.DEFAULT_MAX_TIME;
+			maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			time = 0;
-			
-			_magnifier.open(contentGroup);
-			_magnifier.updatePosition();
-			_magnifier.closeMagnifier();
 		}
 		
 		public function reset():void
 		{
-			maximum = KTouchTimeControl.DEFAULT_MAX_TIME;
+			maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			time = 0;
 		}
 		
 		public function updatePosition():void
 		{
-			_magnifier.updatePosition();
+
 		}
 		
 		public function dispose():void
 		{
-			if(_magnifier)
-			{
-				_magnifier.visible = false;
-				_magnifier.close();
-			}
+
 		}
 		
 		/**
@@ -129,7 +117,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			_currentFrame = timeToFrame(value);
 			_KSketch.time = _currentFrame * KSketch2.ANIMATION_INTERVAL;
 			
-			if(KTouchTimeControl.DEFAULT_MAX_TIME < time)
+			if(KSketch_TimeControl.DEFAULT_MAX_TIME < time)
 			{
 				var modelMax:int = _KSketch.maxTime
 					
@@ -138,17 +126,14 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 				else
 					maximum = modelMax;
 			}
-			else if(time < KTouchTimeControl.DEFAULT_MAX_TIME && maximum != KTouchTimeControl.DEFAULT_MAX_TIME)
+			else if(time < KSketch_TimeControl.DEFAULT_MAX_TIME && maximum != KSketch_TimeControl.DEFAULT_MAX_TIME)
 			{
-				if(_KSketch.maxTime < KTouchTimeControl.DEFAULT_MAX_TIME)
-					maximum = KTouchTimeControl.DEFAULT_MAX_TIME;
+				if(_KSketch.maxTime < KSketch_TimeControl.DEFAULT_MAX_TIME)
+					maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			}
 			
 			var pct:Number = _currentFrame/(_maxFrame*1.0);
 			timeDisplay.x = pct*backgroundFill.width;
-			
-			_magnifier.x = timeToX(time);
-			_magnifier.showTime(time, _currentFrame);
 		}
 		
 		/**
@@ -164,6 +149,10 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			return _currentFrame;
 		}
 		
+		/**
+		 * On touch function. Time slider interactions begins here
+		 * Determines whether to use the tick mark control or to just itneract with the slider
+		 */
 		protected function _touchDown(event:MouseEvent):void
 		{
 			_touchStage.x = event.stageX;
@@ -172,24 +161,19 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			
 			var dx:Number = Math.abs(xPos - timeToX(time));
 			
-			if(!KSketch_CanvasView.isPlayer && dx > KTouchTickMarkControl.GRAB_THRESHOLD)
+			if(!KSketch_CanvasView.isPlayer && dx > KSketch_TickMark_Control.GRAB_THRESHOLD)
 				_tickmarkControl.grabTick(xPos);
 			
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
-				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
-				_magnifier.x = _tickmarkControl.grabbedTick.x;
-				_magnifier.showTime(toShowTime, timeToFrame(toShowTime));
-				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
+				
 			}
 			else
 			{
 				var timeX:Number = timeToX(time);
 				
-				if(Math.abs(xPos - timeX) >KTouchTickMarkControl.GRAB_THRESHOLD)
+				if(Math.abs(xPos - timeX) >KSketch_TickMark_Control.GRAB_THRESHOLD)
 					time = xToTime(xPos);
-				
-				_magnifier.magnify(timeToX(time));
 			}
 			
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
@@ -197,8 +181,12 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 		}
 		
+		/**
+		 * Update time control interaction
+		 */
 		protected function _touchMove(event:MouseEvent):void
 		{
+			//Only consider a move if a significant dx has been covered
 			if(Math.abs(event.stageX - _touchStage.x) < (pixelPerFrame*0.5))
 				return;
 			
@@ -206,28 +194,26 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			_touchStage.y = event.stageY;
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			
+			//Rout interaction into the tick mark control if there is a grabbed tick
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
 				_tickmarkControl.move_markers(xPos);
-				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
-				_magnifier.x = _tickmarkControl.grabbedTick.x;
-				_magnifier.showTime(toShowTime, timeToFrame(toShowTime));
-				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
 			}
 			else
 			{
-				time = xToTime(xPos);
-				_magnifier.magnify(timeToX(time));
+				time = xToTime(xPos); //Else just change the time
 			}
 		}
 		
+		/**
+		 * End of time control interaction
+		 */
 		protected function _touchEnd(event:MouseEvent):void
 		{
+			//Same, route the interaction to the tick mark control if there is a grabbed tick
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
 				_tickmarkControl.end_move_markers();
-				_magnifier.showTime(time, _currentFrame);
-				_magnifier.x = timeToX(time);
 			}
 			else
 			{
@@ -236,14 +222,9 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 				
 				log.@category = "Timeline";
 				log.@type = "Scroll";
-				log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 				_KSketch.log.appendChild(log);
 			}
-			
-			_magnifier.closeMagnifier();
-			
-			if(_tickmarkControl)
-				_tickmarkControl.grabbedTick = null;
 			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);
@@ -266,7 +247,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			_maxPlayTime = _KSketch.maxTime + PLAY_ALLOWANCE;
 			
 			_rewindToTime = time;
-			this.dispatchEvent(new Event(KTouchTimeControl.PLAY_START));
+			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_START));
 		}
 		
 		/**
@@ -292,7 +273,7 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			_timer.removeEventListener(TimerEvent.TIMER, playHandler);
 			_timer.stop();
 			_isPlaying = false;
-			this.dispatchEvent(new Event(KTouchTimeControl.PLAY_STOP));
+			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_STOP));
 		}
 				
 		/**
@@ -317,9 +298,6 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 		 */
 		private function recordHandler(event:TimerEvent):void 
 		{
-//			if((time + KSketch2.ANIMATION_INTERVAL) > maximum)
-//				maximum = maximum + KSketch2.ANIMATION_INTERVAL;
-			
 			time = time + KSketch2.ANIMATION_INTERVAL;
 		}
 		
@@ -348,6 +326,9 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			return timeToFrame(value)/(_maxFrame*1.0) * backgroundFill.width;
 		}
 		
+		/**
+		 * Converts x to time based on this time control
+		 */
 		public function xToTime(value:Number):int
 		{
 			var currentFrame:int = Math.floor(value/pixelPerFrame);
@@ -355,18 +336,23 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 			return currentFrame * KSketch2.ANIMATION_INTERVAL;
 		}
 		
+		/**
+		 * Num Pixels per frame
+		 */
 		public function get pixelPerFrame():Number
 		{
 			return backgroundFill.width/_maxFrame;
 		}
 		
+		/**
+		 * Returns the given time (milliseconds) as a SS:MM String
+		 */
 		public static function toTimeCode(milliseconds:Number):String
 		{
 			var seconds:int = Math.floor((milliseconds/1000));
 			var strSeconds:String = seconds.toString();
 			if(seconds < 10)
 				strSeconds = "0" + strSeconds;
-			
 			
 			var remainingMilliseconds:int = (milliseconds%1000)/10;
 			var strMilliseconds:String = remainingMilliseconds.toString();

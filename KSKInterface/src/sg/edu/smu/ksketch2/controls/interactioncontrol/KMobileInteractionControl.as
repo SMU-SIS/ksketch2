@@ -14,7 +14,7 @@ package sg.edu.smu.ksketch2.controls.interactioncontrol
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.components.timeBar.KTouchTimeControl;
+	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
@@ -31,13 +31,13 @@ package sg.edu.smu.ksketch2.controls.interactioncontrol
 		private var _KSketch:KSketch2;
 		private var _transitionMode:int;
 		private var _selection:KSelection;
-		private var _timeControl:KTouchTimeControl;
+		private var _timeControl:KSketch_TimeControl;
 		
 		private var _undoStack:Vector.<IModelOperation>;
 		private var _redoStack:Vector.<IModelOperation>;
 		private var _currentInteraction:KInteractionOperation;
 		
-		public function KMobileInteractionControl(KSketchInstance:KSketch2, timeControl:KTouchTimeControl)
+		public function KMobileInteractionControl(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl)
 		{
 			super(this);
 			_KSketch = KSketchInstance;
@@ -143,7 +143,7 @@ package sg.edu.smu.ksketch2.controls.interactioncontrol
 			
 			log.@category = "Undo";
 			log.@type = "Undo";
-			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 			_KSketch.log.appendChild(log);
 			
 			dispatchEvent(new Event(EVENT_UNDO_REDO));
@@ -166,7 +166,7 @@ package sg.edu.smu.ksketch2.controls.interactioncontrol
 			
 			log.@category = "Undo";
 			log.@type = "Redo";
-			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 			_KSketch.log.appendChild(log);
 			
 			dispatchEvent(new Event(EVENT_UNDO_REDO));

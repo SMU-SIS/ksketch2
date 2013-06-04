@@ -2,8 +2,11 @@
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="true" version="3">
   <includeClasses>
     <classEntry path="sg.edu.smu.ksketch2.imageEditing.KSketch_ImageEditingView"/>
-    <classEntry path="sg.edu.smu.ksketch2.controls.components.popup.KTouchOptionsMenu"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences"/>
+    <classEntry path="sg.edu.smu.ksketch2.KSketchStyles"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_Timebar_Button_Skin"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSlider"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.KSketchAssets"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

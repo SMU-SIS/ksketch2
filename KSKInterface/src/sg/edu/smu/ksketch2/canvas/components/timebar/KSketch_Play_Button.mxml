@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 skinClass="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_Timebar_Button_Skin"
+		 addedToStage="{buttonState = SHOW_PLAY}">
+	<fx:Script>
+		<![CDATA[
+			import spark.components.Image;
+			
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.canvas.KSketchAssets;
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.utils.KSelection;
+			
+			private var _KSketch:KSketch2;
+			private var _interceptor:DisplayObject;
+			private var _interactionControl:KMobileInteractionControl;
+			private var _timeControl:KSketch_TimeControl;
+			private var _buttonState:int;
+			private var _oldSelection:KSelection;
+			
+			private const SHOW_PLAY:int = 0;
+			private const SHOW_PAUSE:int = 1;
+			
+			
+			public function init(timeControl:KSketch_TimeControl, interactionControl:KMobileInteractionControl, interceptor:DisplayObject
+								, KSketchInstance:KSketch2):void
+			{
+				_KSketch = KSketchInstance;
+				_interactionControl = interactionControl;
+				_timeControl = timeControl;
+				_interceptor = interceptor;
+				
+				timeControl.addEventListener(KSketch_TimeControl.PLAY_START, _handlePlayPause);
+				timeControl.addEventListener(KSketch_TimeControl.PLAY_STOP, _handlePlayPause);
+			}
+			
+			public function playToggle():void
+			{
+				if(_buttonState == SHOW_PLAY)
+					_timeControl.play();
+				else
+					_timeControl.stop();
+			}
+			
+			private function _handlePlayPause(event:Event):void
+			{
+				if(event.type == KSketch_TimeControl.PLAY_START)
+				{
+					buttonState = SHOW_PAUSE;
+					_oldSelection =_interactionControl.selection;
+					_interactionControl.selection = null;
+					_interceptor.visible = true;
+					
+					var log:XML = <op/>;
+					var date:Date = new Date();
+					
+					log.@category = "Timeline";
+					log.@type = "Play";
+					log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+					_KSketch.log.appendChild(log);
+				}
+				else
+				{
+					buttonState = SHOW_PLAY;	// IF IT IS PAUSING,THEN SHOW PLAY!
+					_interactionControl.selection = _oldSelection;
+					_oldSelection = null;
+					_interceptor.visible = false;
+					
+					var log2:XML = <op/>;
+					var date2:Date = new Date();
+					
+					log2.@category = "Timeline";
+					log2.@type = "Pause";
+					log2.@elapsedTime = KSketch_TimeControl.toTimeCode(date2.time - _KSketch.logStartTime);
+					_KSketch.log.appendChild(log2);
+				}
+			}
+			
+			private function set buttonState(value:int):void
+			{
+				var textureControl:Image = (skin as KSketch_Timebar_Button_Skin).texture;
+
+				_buttonState = value;
+
+				if(_buttonState == SHOW_PLAY)
+					textureControl.source = KSketchAssets.texture_play;
+				else
+					textureControl.source = KSketchAssets.texture_pause;
+			}
+		]]>
+	</fx:Script>
+</s:Button>

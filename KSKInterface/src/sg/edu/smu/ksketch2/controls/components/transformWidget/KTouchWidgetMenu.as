@@ -20,7 +20,7 @@ package sg.edu.smu.ksketch2.controls.components.transformWidget
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
-	import sg.edu.smu.ksketch2.controls.components.timeBar.KTouchTimeControl;
+	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.widgetstates.KWidgetInteractorManager;
 	
@@ -119,13 +119,13 @@ package sg.edu.smu.ksketch2.controls.components.transformWidget
 			
 			if(KSketch2.studyMode == KSketch2.STUDY_P)
 			{
-				_insertKeyButton.label = "Break motion at "+ KTouchTimeControl.toTimeCode(_KSketch.time);
-				_clearMotionButton.label = "Delete motions after "+ KTouchTimeControl.toTimeCode(_KSketch.time)
+				_insertKeyButton.label = "Break motion at "+ KSketch_TimeControl.toTimeCode(_KSketch.time);
+				_clearMotionButton.label = "Delete motions after "+ KSketch_TimeControl.toTimeCode(_KSketch.time)
 			}
 			else
 			{
-				_insertKeyButton.label = "Insert key at "+ KTouchTimeControl.toTimeCode(_KSketch.time);
-				_clearMotionButton.label = "Clear keys after "+ KTouchTimeControl.toTimeCode(_KSketch.time);
+				_insertKeyButton.label = "Insert key at "+ KSketch_TimeControl.toTimeCode(_KSketch.time);
+				_clearMotionButton.label = "Clear keys after "+ KSketch_TimeControl.toTimeCode(_KSketch.time);
 			}
 			
 			_groupButton.label = "Group";
@@ -243,8 +243,8 @@ package sg.edu.smu.ksketch2.controls.components.transformWidget
 			
 			log.@category = "Context";
 			log.@type = "Insert Key";
-			log.@triggeredTime = KTouchTimeControl.toTimeCode(_KSketch.time);
-			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			log.@triggeredTime = KSketch_TimeControl.toTimeCode(_KSketch.time);
+			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 			_KSketch.log.appendChild(log);
 			
 			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
@@ -270,8 +270,8 @@ package sg.edu.smu.ksketch2.controls.components.transformWidget
 			
 			log.@category = "Context";
 			log.@type = "Clear Future Keys";
-			log.@triggeredTime = KTouchTimeControl.toTimeCode(_KSketch.time);
-			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			log.@triggeredTime = KSketch_TimeControl.toTimeCode(_KSketch.time);
+			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 			_KSketch.log.appendChild(log);
 			
 			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));

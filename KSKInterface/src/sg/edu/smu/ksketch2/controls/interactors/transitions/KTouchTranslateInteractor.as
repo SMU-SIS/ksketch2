@@ -7,7 +7,7 @@ package sg.edu.smu.ksketch2.controls.interactors.transitions
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.components.timeBar.KTouchTimeControl;
+	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
@@ -75,8 +75,8 @@ package sg.edu.smu.ksketch2.controls.interactors.transitions
 			else
 				log.@type = "Interpolate Translate";
 
-			log.@KSketchDuration = KTouchTimeControl.toTimeCode(_KSketch.time - _startTime);
-			log.@elapsedTime = KTouchTimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			log.@KSketchDuration = KSketch_TimeControl.toTimeCode(_KSketch.time - _startTime);
+			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 			_KSketch.log.appendChild(log);
 			
 			var i:int = 0;

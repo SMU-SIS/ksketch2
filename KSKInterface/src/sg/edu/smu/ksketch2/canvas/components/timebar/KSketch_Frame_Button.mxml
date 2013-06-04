@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 skinClass="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_Timebar_Button_Skin"
+		 addedToStage="_initSkin()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.StateChangeEvent;
+			
+			import spark.components.Image;
+			
+			import org.gestouch.events.GestureEvent;
+			import org.gestouch.gestures.TapGesture;
+			
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.canvas.KSketchAssets;
+			
+			public static const LEFT:int = -1;
+			public static const RIGHT:int = 1;
+
+			private var _KSketch:KSketch2;
+			private var _type:int;
+			private var _timeControl:KSketch_TimeControl;
+			private var _tapGesture:TapGesture;
+
+			public function init(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, type:int):void
+			{
+				_KSketch = KSketchInstance;
+				_timeControl = timeControl;
+				_type = type;
+				
+				_tapGesture = new TapGesture(this);
+				_tapGesture.maxTapDuration = 200;
+				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
+			}
+			
+			/**
+			 * Tap handler to handle tapping to advance/roll back to next/prev frame
+			 */
+			private function _handleTap(event:org.gestouch.events.GestureEvent):void
+			{
+				var log:XML = <op/>;
+				var date:Date = new Date();
+				
+				log.@category = "Timeline";
+				
+				if(_type == LEFT)
+				{
+					_timeControl.time -= KSketch2.ANIMATION_INTERVAL;
+					log.@type = "Prev Frame";
+				}
+				else
+				{
+					_timeControl.time += KSketch2.ANIMATION_INTERVAL;
+					log.@type = "Next Frame";
+				}
+				
+				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+				_KSketch.log.appendChild(log);
+			}
+			
+			private function _initSkin():void
+			{
+				var textureControl:Image = (skin as KSketch_Timebar_Button_Skin).texture;
+				skin.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, _onStateChange);
+				
+				if(_type == LEFT)
+					textureControl.source = KSketchAssets.texture_previous;
+				else
+					textureControl.source = KSketchAssets.texture_next;	
+			}
+			
+			private function _onStateChange(event:StateChangeEvent):void
+			{
+				var textureControl:Image = (skin as KSketch_Timebar_Button_Skin).texture;
+				
+				if(_type == LEFT)
+				{
+					if(event.newState == "up")
+						textureControl.source = KSketchAssets.texture_previous;
+					else
+						textureControl.source = KSketchAssets.texture_previous_down;
+				}
+				else
+				{
+					if(event.newState == "up")
+						textureControl.source = KSketchAssets.texture_next;	
+					else
+						textureControl.source = KSketchAssets.texture_next_down;
+				}
+			}
+		]]>
+	</fx:Script>
+</s:Button>

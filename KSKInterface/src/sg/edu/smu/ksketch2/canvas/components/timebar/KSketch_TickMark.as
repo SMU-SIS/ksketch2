@@ -1,8 +1,8 @@
-package sg.edu.smu.ksketch2.controls.components.timeBar
+package sg.edu.smu.ksketch2.canvas.components.timebar
 {
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 
-	public class KTouchTickMark
+	public class KSketch_TickMark
 	{
 		//Spatial variables used to compute this tick mark's position
 		public var x:Number;
@@ -17,10 +17,10 @@ package sg.edu.smu.ksketch2.controls.components.timeBar
 		public var associatedObjectID:int;
 
 		//Prev and next tick mark in the time line
-		public var prev:KTouchTickMark;
-		public var next:KTouchTickMark;
+		public var prev:KSketch_TickMark;
+		public var next:KSketch_TickMark;
 
-		public function KTouchTickMark()
+		public function KSketch_TickMark()
 		{
 			
 		}

@@ -23,7 +23,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
-	import sg.edu.smu.ksketch2.controls.components.popup.KTouchFeedbackMessage;
+	import sg.edu.smu.ksketch2.canvas.components.popup.KTouchFeedbackMessage;
 	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;

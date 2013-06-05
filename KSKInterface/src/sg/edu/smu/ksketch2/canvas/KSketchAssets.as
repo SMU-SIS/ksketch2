@@ -54,5 +54,77 @@ package sg.edu.smu.ksketch2.canvas
 		[Embed("assets/Button_Texture_Menu_Down.gif")] 
 		[Bindable] 
 		public static var texture_menu_down:Class;
+		
+		[Embed("assets/Button_Texture_BlackPen.gif")] 
+		[Bindable] 
+		public static var texture_blackPen:Class;
+		
+		[Embed("assets/Button_Texture_BlackPen_Down.gif")] 
+		[Bindable] 
+		public static var texture_blackPen_down:Class;
+		
+		[Embed("assets/Button_Texture_RedPen.gif")] 
+		[Bindable] 
+		public static var texture_redPen:Class;
+		
+		[Embed("assets/Button_Texture_RedPen_Down.gif")] 
+		[Bindable] 
+		public static var texture_redPen_down:Class;
+		
+		[Embed("assets/Button_Texture_BluePen.gif")] 
+		[Bindable] 
+		public static var texture_bluePen:Class;
+		
+		[Embed("assets/Button_Texture_BluePen_Down.gif")] 
+		[Bindable] 
+		public static var texture_bluePen_down:Class;
+		
+		[Embed("assets/Button_Texture_GreenPen.gif")] 
+		[Bindable] 
+		public static var texture_greenPen:Class;
+		
+		[Embed("assets/Button_Texture_GreenPen_Down.gif")] 
+		[Bindable] 
+		public static var texture_greenPen_down:Class;
+		
+		[Embed("assets/Button_Texture_YellowPen.gif")] 
+		[Bindable] 
+		public static var texture_yellowPen:Class;
+		
+		[Embed("assets/Button_Texture_YellowPen_Down.gif")] 
+		[Bindable] 
+		public static var texture_yellowPen_down:Class;
+		
+		[Embed("assets/Button_Texture_New_Doc.gif")] 
+		[Bindable] 
+		public static var texture_new:Class;
+		
+		[Embed("assets/Button_Texture_New_Doc.gif")] 
+		[Bindable] 
+		public static var texture_new_down:Class;
+		
+		[Embed("assets/Button_Texture_Eraser.gif")] 
+		[Bindable] 
+		public static var texture_eraser:Class;
+		
+		[Embed("assets/Button_Texture_Eraser.gif")] 
+		[Bindable] 
+		public static var texture_eraser_down:Class;
+		
+		[Embed("assets/Button_Texture_Options.gif")] 
+		[Bindable] 
+		public static var texture_options:Class;
+		
+		[Embed("assets/Button_Texture_Options.gif")] 
+		[Bindable] 
+		public static var texture_options_down:Class;
+		
+		[Embed("assets/Button_Texture_DocumentScreen.gif")] 
+		[Bindable] 
+		public static var texture_document:Class;
+		
+		[Embed("assets/Button_Texture_DocumentScreen.gif")] 
+		[Bindable] 
+		public static var texture_document_down:Class;
 	}
 }

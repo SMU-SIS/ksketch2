@@ -21,7 +21,7 @@
 		viewDeactivate="_viewDeactivateHandler()"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
 		xmlns:popup="sg.edu.smu.ksketch2.controls.components.popup.*"
-		xmlns:timeBar="sg.edu.smu.ksketch2.controls.components.timeBar.*" xmlns:transformWidget1="sg.edu.smu.ksketch2.controls.components.transformWidget.*"
+		xmlns:timeBar="sg.edu.smu.ksketch2.controls.components.timeBar.*" xmlns:transformWidget1="sg.edu.smu.ksketch2.controls.components.transformWidget.*" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
 		>
 	<fx:Script>
 		<![CDATA[
@@ -113,6 +113,7 @@
 				rightFrame.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
 				leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
 				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
+				menuButton.init(KSketchAssets.texture_menu, KSketchAssets.texture_menu_down);
 				
 				modelDisplay.init(_KSketch, true);
 				motionDisplay.init(_KSketch, _interactionControl);
@@ -251,24 +252,24 @@
 						paddingTop="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_VERTICAL}"
 						paddingBottom="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_VERTICAL}"/>
 				</s:layout>
-				<timebar:KSketch_Play_Button
+				<buttons:KSketch_Play_Button
 					   click="playButton.playToggle()"
 						id="playButton"
 						width="{KSketchStyles.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
 				<timebar:KSketch_TimeSkip_Button
 					id="leftTimeJumper"
 					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
-				<timebar:KSketch_Frame_Button
+				<buttons:KSketch_Frame_Button
 				 	id="leftFrame"
 					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
 				<timebar:KSketch_TimeControl id="timeControl"/>
-				<timebar:KSketch_Frame_Button
+				<buttons:KSketch_Frame_Button
 					id="rightFrame"
 					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
 				<timebar:KSketch_TimeSkip_Button
 					id="rightTimeJumper"
 					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
-				<timebar:KSketch_Menu_Button
+				<buttons:KSketch_Button
 					id="menuButton"
 					click="_menuPopUp.open(this)"
 					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>

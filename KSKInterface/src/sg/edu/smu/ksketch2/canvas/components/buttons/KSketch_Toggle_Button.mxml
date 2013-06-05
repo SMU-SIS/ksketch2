@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<buttons:KSketch_Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						xmlns:s="library://ns.adobe.com/flex/spark" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
+	<fx:Script>
+		<![CDATA[
+			import spark.components.Image;
+			
+			private var _selected:Boolean;
+			
+			override public function initSkin():void
+			{
+				if(!skin)
+					return;
+				
+				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
+				selected = false;
+			}
+			
+			public function set selected(value:Boolean):void
+			{
+				_selected = value;
+				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
+
+				if(_selected)
+					textureControl.source = _down;
+				else
+					textureControl.source = _up;
+			}
+		]]>
+	</fx:Script>
+</buttons:KSketch_Button>

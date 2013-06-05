@@ -11,13 +11,16 @@
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 						   xmlns:s="library://ns.adobe.com/flex/spark"
 						   backgroundAlpha="0"
-						   updateComplete="_updateMenuDisplay()">
+						   creationComplete="_initButtons()"
+						   updateComplete="_updateMenuDisplay()"
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.KSketchAssets;
 			
 			public static const EVENT_POSITION_CHANGED:String = "position changed";
 			public static const LEFT:int = 0;
@@ -29,12 +32,38 @@
 			private var _canvasOrigin:Point = new Point();
 			private var _position:int;
 			
+			private var _selectedButton:KSketch_Toggle_Button;
+			
 			public function init(referenceComponent:UIComponent):void
 			{
 				_referenceComponent = referenceComponent;
 				_canvasOrigin = referenceComponent.localToGlobal(_canvasOrigin);
 				_position = 1;
+				
 				addEventListener(EVENT_POSITION_CHANGED, _updateMenuDisplay);
+			}
+			
+			public function _initButtons():void
+			{
+				newButton.init(KSketchAssets.texture_new, KSketchAssets.texture_new_down);
+				newButton.initSkin();
+				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down);
+				optionButton.initSkin();
+				exitButton.init(KSketchAssets.texture_document, KSketchAssets.texture_document_down);
+				exitButton.initSkin();
+				
+				eraserToggle.init(KSketchAssets.texture_eraser, KSketchAssets.texture_eraser_down);
+				eraserToggle.initSkin();
+				blackToggle.init(KSketchAssets.texture_blackPen, KSketchAssets.texture_blackPen_down);
+				blackToggle.initSkin();
+				redToggle.init(KSketchAssets.texture_redPen, KSketchAssets.texture_redPen_down);
+				redToggle.initSkin();
+				blueToggle.init(KSketchAssets.texture_bluePen, KSketchAssets.texture_bluePen_down);
+				blueToggle.initSkin();
+				greenToggle.init(KSketchAssets.texture_greenPen, KSketchAssets.texture_greenPen_down);
+				greenToggle.initSkin();
+				
+				_setPen(blackToggle);
 			}
 			
 			public function set position(value:int):void
@@ -82,6 +111,17 @@
 				}
 			}
 			
+			private function _setPen(button:KSketch_Toggle_Button):void
+			{
+				if(button == _selectedButton)
+					return;
+				
+				if(_selectedButton)
+					_selectedButton.selected = false;
+				
+				button.selected = true;
+				_selectedButton = button;
+			}
 		]]>
 	</fx:Script>
 	
@@ -105,47 +145,50 @@
 						  paddingLeft="{KSketchStyles.MENU_PADDING}" paddingRight="{KSketchStyles.MENU_PADDING}"
 						  paddingBottom="{KSketchStyles.MENU_PADDING}" paddingTop="{KSketchStyles.MENU_PADDING}"/>
 		</s:layout>
-		<s:Button
+		<buttons:KSketch_Button
+			id="newButton"
 			click="{position = LEFT}"
-			skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin"
+			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+			
+			/>
+		<buttons:KSketch_Toggle_Button
+			click="{_setPen(eraserToggle)}"
+			id="eraserToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		<s:Button
-			click="{position = RIGHT}"
-			skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin"
+		<buttons:KSketch_Toggle_Button
+			click="{_setPen(blackToggle)}"
+			id="blackToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		<s:Button
-			click="{position = UP}"
-			skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin"
+		<buttons:KSketch_Toggle_Button
+			click="{_setPen(redToggle)}"
+			id="redToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		<s:Button
-			click="{position = DOWN}"
-			skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin"
+		<buttons:KSketch_Toggle_Button
+			click="{_setPen(blueToggle)}"
+			id="blueToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		<s:Button
-			skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin"
+		<buttons:KSketch_Toggle_Button
+			click="{_setPen(greenToggle)}"
+			id="greenToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		<s:Button
-			skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin"
+		<buttons:KSketch_Button
+			id="optionButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		<s:Button
-			skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
-		<s:Button
-			skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin"
+		<buttons:KSketch_Button
+			id="exitButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>

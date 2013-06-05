@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="{height}" height="100%" addedToStage="_initSkin()"
-		 skinClass="sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin">
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="{height}" height="100%" addedToStage="initSkin()"
+		 skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin">
 	<fx:Script>
 		<![CDATA[
-			import sg.edu.smu.ksketch2.canvas.components.skins.KSketch_Canvas_Button_Skin;
 			import mx.events.StateChangeEvent;
 			
 			import spark.components.Image;
 			
-			import sg.edu.smu.ksketch2.canvas.KSketchAssets;
+			protected var _up:Class;
+			protected var _down:Class;
 			
-			private function _initSkin():void
+			public function init(textureClassUp:Class, textureClassDown:Class):void
 			{
+				_up = textureClassUp;
+				_down = textureClassDown;
+			}
+			
+			public function initSkin():void
+			{
+				if(!skin)
+					return;
+
 				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
+				textureControl.source = _up;	
 				skin.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, _onStateChange);
-				textureControl.source = KSketchAssets.texture_menu;	
 			}
 			
 			private function _onStateChange(event:StateChangeEvent):void
@@ -23,9 +32,9 @@
 				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
 				
 				if(event.newState == "up")
-					textureControl.source = KSketchAssets.texture_menu;
+					textureControl.source = _up;
 				else
-					textureControl.source = KSketchAssets.texture_menu_down;
+					textureControl.source = _down;
 			}
 		]]>
 	</fx:Script>	

@@ -2,6 +2,11 @@ package sg.edu.smu.ksketch2.canvas
 {
 	public class KSketchAssets
 	{
+		public function KSketchAssets()
+		{
+			
+		}
+		
 		[Embed("assets/Button_Texture_Play.gif")] 
 		[Bindable] 
 		public static var texture_play:Class;

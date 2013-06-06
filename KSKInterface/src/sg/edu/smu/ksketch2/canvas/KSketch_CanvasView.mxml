@@ -34,6 +34,7 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
@@ -96,8 +97,10 @@
 				//Initiate pop ups
 				_feedbackPopUp = new KSketch_Feedback_Message();
 				_feedbackPopUp.init(this);
-				_menuPopUp = new KSketch_PopUp_Menu();
-				_menuPopUp.init(canvas_component);
+				
+				var optionsPopUp:KSketch_Options = new KSketch_Options();
+ 				_menuPopUp = new KSketch_PopUp_Menu();
+				_menuPopUp.init(canvas_component, this, optionsPopUp, _KSketch, _interactionControl);
 				
 				//Initiate the controls
 				if(!isPlayer)

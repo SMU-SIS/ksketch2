@@ -6,6 +6,11 @@ package sg.edu.smu.ksketch2
 		public static const APP_BACKGROUND_COLOR:uint = 0xD0D2D3;
 		public static const APP_FONT_FAMILY:String = "Arial, Helvetica";
 
+		public static const BLACK_PEN:uint = 0x000000;
+		public static const BLUE_PEN:uint = 0x0000FF;
+		public static const GREEN_PEN:uint = 0x00FF00;
+		public static const RED_PEN:uint = 0xFF0000;
+		
 		//Canvas
 		public static const CANVAS_BUTTON_NORMAL:uint = 0xC8CCCE;
 		public static const CANVAS_BUTTON_ACTIVATED:uint = 0xDD1F26;

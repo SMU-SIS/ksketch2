@@ -19,8 +19,13 @@
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 			
+			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.KSketchAssets;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.controls.interactors.KTouchDrawInteractor;
+			import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
 			
 			public static const EVENT_POSITION_CHANGED:String = "position changed";
 			public static const LEFT:int = 0;
@@ -28,17 +33,37 @@
 			public static const UP:int = 2;
 			public static const DOWN:int = 3;
 			
+			//Positioning variables
 			private var _referenceComponent:UIComponent;
 			private var _canvasOrigin:Point = new Point();
 			private var _position:int;
 			
+			//Current pen button that has been toggled
 			private var _selectedButton:KSketch_Toggle_Button;
 			
-			public function init(referenceComponent:UIComponent):void
+			private var _canvasView:KSketch_CanvasView;
+			private var _options:KSketch_Options;
+			
+			private var _KSketch:KSketch2;
+			private var _interactionControl:KMobileInteractionControl;
+			
+			/**
+			 * @referenceComponent: the component that this menu will refer to for positioning itself
+			 * @canvasView: the host view
+			 * @optionsPanel: an initialised KSketch_Options (this has to be done in the canvas first because of the timebar)
+			 * @ksketchInstance: The canvas's ksketch instance
+			 */
+			public function init(referenceComponent:UIComponent,
+								 canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options
+								,KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl):void
 			{
 				_referenceComponent = referenceComponent;
 				_canvasOrigin = referenceComponent.localToGlobal(_canvasOrigin);
 				_position = 1;
+				
+				_canvasView = canvasView;
+				_KSketch = KSketchInstance;
+				_options = optionsPanel;
 				
 				addEventListener(EVENT_POSITION_CHANGED, _updateMenuDisplay);
 			}
@@ -121,6 +146,37 @@
 				
 				button.selected = true;
 				_selectedButton = button;
+
+				switch(_selectedButton)
+				{
+					case eraserToggle:
+						KTouchDrawInteractor.eraser = true;
+						break;
+					case blackToggle:
+						KTouchDrawInteractor.eraser = false;
+						KDrawInteractor.penColor = KSketchStyles.BLACK_PEN;
+						break;
+					case blueToggle:
+						KTouchDrawInteractor.eraser = false;
+						KDrawInteractor.penColor = KSketchStyles.BLUE_PEN;
+						break;
+					case redToggle:
+						KTouchDrawInteractor.eraser = false;
+						KDrawInteractor.penColor = KSketchStyles.RED_PEN;
+						break;
+					case greenToggle:
+						KTouchDrawInteractor.eraser = false;
+						KDrawInteractor.penColor = KSketchStyles.GREEN_PEN;
+						break;
+				}
+			}
+			
+			/**
+			 * Clears the current document of every single content, without saving it.
+			 */
+			private function _clear():void
+			{
+				_interactionControl.reset();
 			}
 		]]>
 	</fx:Script>
@@ -146,8 +202,8 @@
 						  paddingBottom="{KSketchStyles.MENU_PADDING}" paddingTop="{KSketchStyles.MENU_PADDING}"/>
 		</s:layout>
 		<buttons:KSketch_Button
+			click="_clear()"
 			id="newButton"
-			click="{position = LEFT}"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			

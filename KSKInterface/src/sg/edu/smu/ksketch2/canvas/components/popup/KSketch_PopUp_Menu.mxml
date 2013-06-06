@@ -23,6 +23,7 @@
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.KSketchAssets;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
 			import sg.edu.smu.ksketch2.controls.interactors.KTouchDrawInteractor;
 			import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
@@ -176,7 +177,22 @@
 			 */
 			private function _clear():void
 			{
-				_interactionControl.reset();
+				//_interactionControl.reset();
+
+				_canvasView.mainCanvas.swapElements(_canvasView.timebar_group, _canvasView.canvas_component);
+				if(_canvasView.timeControl.position == KSketch_TimeControl.BAR_TOP)
+					_canvasView.timeControl.position = KSketch_TimeControl.BAR_BOTTOM;
+				else
+					_canvasView.timeControl.position = KSketch_TimeControl.BAR_TOP;
+			}
+			
+			
+			/**
+			 * Triggers exit
+			 */
+			private function _exit():void
+			{
+				_canvasView.exit();
 			}
 		]]>
 	</fx:Script>
@@ -244,6 +260,7 @@
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 		<buttons:KSketch_Button
+			click="_exit()"
 			id="exitButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"

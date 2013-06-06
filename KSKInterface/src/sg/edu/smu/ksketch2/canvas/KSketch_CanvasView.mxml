@@ -18,7 +18,6 @@
 		addedToStage="_initCanvas()"
 		add="_checkForImageData()"
 		viewActivate="_enterView_ProcessData()"
-		viewDeactivate="_viewDeactivateHandler()"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
 		xmlns:popup="sg.edu.smu.ksketch2.controls.components.popup.*"
 		xmlns:timeBar="sg.edu.smu.ksketch2.controls.components.timeBar.*" xmlns:transformWidget1="sg.edu.smu.ksketch2.controls.components.transformWidget.*" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
@@ -36,6 +35,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.controls.components.transformWidget.KTouchWidgetBase;
@@ -61,6 +61,8 @@
 			//Pop Ups
 			private var _feedbackPopUp:KSketch_Feedback_Message;
 			private var _menuPopUp:KSketch_PopUp_Menu;
+			private var _options:KSketch_Options;
+			private var _magnifier:KSketch_Timebar_Magnifier;
 			
 			//These two are just here for the sake of being here/just in case/....
 			//Don't really need them declared
@@ -98,9 +100,12 @@
 				_feedbackPopUp = new KSketch_Feedback_Message();
 				_feedbackPopUp.init(this);
 				
-				var optionsPopUp:KSketch_Options = new KSketch_Options();
+				_options = new KSketch_Options();
  				_menuPopUp = new KSketch_PopUp_Menu();
-				_menuPopUp.init(canvas_component, this, optionsPopUp, _KSketch, _interactionControl);
+				_menuPopUp.init(canvas_component, this, _options, _KSketch, _interactionControl);
+				_magnifier = new KSketch_Timebar_Magnifier();
+				_magnifier.init(canvas_component, timeControl);
+				_magnifier.open(this);
 				
 				//Initiate the controls
 				if(!isPlayer)
@@ -110,7 +115,7 @@
 				}
 				
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl, _interactionControl);
-				timeControl.init(_KSketch, timeTickControl);
+				timeControl.init(_KSketch, timeTickControl, _magnifier);
 
 				leftFrame.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
 				rightFrame.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
@@ -184,10 +189,12 @@
 				}
 			}
 			
-			
-			private function _viewDeactivateHandler():void
+			public function exit():void
 			{
-				timeControl.dispose();
+				_options.close();
+				_menuPopUp.close();
+				_feedbackPopUp.close();
+				_magnifier.close();
 			}
 			
 			override public function createReturnObject():Object

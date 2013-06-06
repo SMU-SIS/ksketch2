@@ -1,9 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" width="400" height="300">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-	
-	<s:Label text="Time:LALA"/>
+						   xmlns:s="library://ns.adobe.com/flex/spark">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			
+			import spark.components.Image;
+			
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+			
+			private const ORIGIN:Point = new Point();
+
+			private var _timeControlOrigin:Point;
+			private var _referenceComponent:UIComponent;
+			private var _timeControl:KSketch_TimeControl;
+			private var _magnifiedData:BitmapData;
+			private var _magnifiedImage:Image;
+
+			public function init(referenceComponent:UIComponent, timeControl:KSketch_TimeControl):void
+			{
+				_referenceComponent = referenceComponent;
+				_timeControl = timeControl;
+				_magnifiedImage = new Image();
+				_magnifiedData = new BitmapData(200, 200);
+				
+				timeControl.addEventListener(FlexEvent.UPDATE_COMPLETE, _updateYPosition);
+				addEventListener(FlexEvent.UPDATE_COMPLETE, _updateYPosition);
+			}
+			
+			private function _updateYPosition(event:Event):void
+			{
+				var topLimit:Number = _referenceComponent.localToGlobal(ORIGIN).y;
+				var bottomLimit:Number = topLimit+_referenceComponent.height;
+
+				_timeControlOrigin = _timeControl.localToGlobal(ORIGIN);
+				
+				if(_timeControl.position == KSketch_TimeControl.BAR_TOP)
+					y = topLimit + KSketchStyles.MENU_GAP;
+				else
+					y = bottomLimit - height - KSketchStyles.MENU_BUTTON_GAP
+			}
+			
+			public function showTime(toShowTime:String, frameNumber:int, xPos:Number):void
+			{
+				if(!_timeControlOrigin)
+					return;
+				
+				x = xPos + _timeControlOrigin.x;
+			}
+			
+			public function magnify(xPos:Number):void
+			{
+				if(!_magnifiedImage.parent)
+					magGroup.addElement(_magnifiedImage);
+					
+			}
+			
+			
+			public function removeMagnification():void
+			{
+				if(_magnifiedImage.parent)
+					magGroup.removeElement(_magnifiedImage);
+			}
+		]]>
+	</fx:Script>
+	<s:Group x="{-width*0.5}">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Group id="magGroup"/>
+		<s:Label text="Time:LALA"/>
+	</s:Group>
+
 </s:SkinnablePopUpContainer>

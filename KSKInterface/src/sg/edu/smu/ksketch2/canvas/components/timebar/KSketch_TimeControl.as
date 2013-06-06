@@ -8,6 +8,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 	import sg.edu.smu.ksketch2.controls.components.ITimeControl;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
@@ -17,6 +18,11 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public static const PLAY_STOP:String = "Stop Playing";
 		public static const RECORD_START:String = "Start Recording";
 		public static const RECORD_STOP:String = "Stop Recording";
+		public static const EVENT_POSITION_CHANGED:String = "position changed";
+
+		public static const BAR_TOP:int = 0;
+		public static const BAR_BOTTOM:int = 1;
+		
 		public static const DEFAULT_MAX_TIME:int = 5000;
 		public static const TIME_EXTENSION:int = 5000;
 		public static var recordingSpeed:Number = 1;
@@ -29,19 +35,18 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		protected var _KSketch:KSketch2;
 		protected var _tickmarkControl:KSketch_TickMark_Control;
+		protected var _magnifier:KSketch_Timebar_Magnifier;
 		
 		protected var _isPlaying:Boolean = false;
 		protected var _timer:Timer;
 		protected var _maxPlayTime:int;
 		protected var _rewindToTime:int;
+		private var _position:int;
 		
 		private var _maxFrame:int;
 		private var _currentFrame:int;
 		
 		public var timings:Vector.<int>;
-		
-		public static const BAR_TOP:int = 0;
-		public static const BAR_BOTTOM:int = 1;
 		
 		private var _touchStage:Point = new Point(0,0);
 
@@ -50,23 +55,26 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			super();
 		}
 		
-		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control):void
+		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control,
+							 magnifier:KSketch_Timebar_Magnifier):void
 		{
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
+			_magnifier = magnifier;
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 			
 			addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 
-			timeDisplay.graphics.lineStyle(6,0xFF0000, 0.4);
-			
 			var anchor:Point = contentGroup.globalToLocal(localToGlobal(new Point(0,0)));
 			timeDisplay.graphics.moveTo(0,anchor.y);
 			timeDisplay.graphics.lineTo(0,anchor.y+height);
 			
 			maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			time = 0;
+
+			_position = BAR_TOP;
+			dispatchEvent(new Event(EVENT_POSITION_CHANGED));
 		}
 		
 		public function reset():void
@@ -75,14 +83,17 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			time = 0;
 		}
 		
-		public function updatePosition():void
+		public function get position():int
 		{
-
+			return _position;
 		}
 		
-		public function dispose():void
+		public function set position(value:int):void
 		{
-
+			if(value == _position)
+				return;
+				
+			_position = value;	
 		}
 		
 		/**
@@ -134,6 +145,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			var pct:Number = _currentFrame/(_maxFrame*1.0);
 			timeDisplay.x = pct*backgroundFill.width;
+			
+			_magnifier.showTime(toTimeCode(time), _currentFrame, timeToX(time));
+
 		}
 		
 		/**
@@ -166,7 +180,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
-				
+				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
+				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(time));
+				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
 			}
 			else
 			{
@@ -198,10 +214,15 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
 				_tickmarkControl.move_markers(xPos);
+
+				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
+				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(time));
+				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
 			}
 			else
 			{
 				time = xToTime(xPos); //Else just change the time
+				_magnifier.magnify(timeToX(time));
 			}
 		}
 		
@@ -214,9 +235,10 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
 				_tickmarkControl.end_move_markers();
+				_magnifier.showTime(toTimeCode(time), timeToFrame(time),timeToX(time));
 			}
 			else
-			{
+			{	
 				var log:XML = <op/>;
 				var date:Date = new Date();
 				
@@ -225,6 +247,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 				_KSketch.log.appendChild(log);
 			}
+			
+			_magnifier.removeMagnification();
 			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);

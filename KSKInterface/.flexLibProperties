@@ -4,13 +4,11 @@
     <classEntry path="sg.edu.smu.ksketch2.imageEditing.KSketch_ImageEditingView"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences"/>
     <classEntry path="sg.edu.smu.ksketch2.KSketchStyles"/>
-    <classEntry path="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSlider"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.KSketchAssets"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier"/>
-    <classEntry path="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Toggle_Button"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -99,7 +99,7 @@ package sg.edu.smu.ksketch2.canvas
 		[Bindable] 
 		public static var texture_new:Class;
 		
-		[Embed("assets/Button_Texture_New_Doc.gif")] 
+		[Embed("assets/Button_Texture_New_Doc_Down.gif")] 
 		[Bindable] 
 		public static var texture_new_down:Class;
 		
@@ -107,7 +107,7 @@ package sg.edu.smu.ksketch2.canvas
 		[Bindable] 
 		public static var texture_eraser:Class;
 		
-		[Embed("assets/Button_Texture_Eraser.gif")] 
+		[Embed("assets/Button_Texture_Eraser_Down.gif")] 
 		[Bindable] 
 		public static var texture_eraser_down:Class;
 		
@@ -115,7 +115,7 @@ package sg.edu.smu.ksketch2.canvas
 		[Bindable] 
 		public static var texture_options:Class;
 		
-		[Embed("assets/Button_Texture_Options.gif")] 
+		[Embed("assets/Button_Texture_Options_Down.gif")] 
 		[Bindable] 
 		public static var texture_options_down:Class;
 		
@@ -123,7 +123,7 @@ package sg.edu.smu.ksketch2.canvas
 		[Bindable] 
 		public static var texture_document:Class;
 		
-		[Embed("assets/Button_Texture_DocumentScreen.gif")] 
+		[Embed("assets/Button_Texture_DocumentScreen_Down.gif")] 
 		[Bindable] 
 		public static var texture_document_down:Class;
 	}

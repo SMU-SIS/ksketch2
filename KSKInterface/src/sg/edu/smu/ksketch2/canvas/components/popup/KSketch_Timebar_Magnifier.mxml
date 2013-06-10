@@ -41,6 +41,10 @@
 					y = topLimit + KSketchStyles.MENU_GAP;
 				else
 					y = bottomLimit - height - KSketchStyles.MENU_BUTTON_GAP
+				
+				showTime(KSketch_TimeControl.toTimeCode(_timeControl.time),
+						_timeControl.timeToFrame(_timeControl.time),
+						_timeControl.timeToX(_timeControl.time));
 			}
 			
 			public function showTime(toShowTime:String, frameNumber:int, xPos:Number):void
@@ -49,6 +53,7 @@
 					return;
 				
 				x = xPos + _timeControlOrigin.x;
+				timeLabel.text = "Frame:"+frameNumber.toString()+" - "+toShowTime;
 			}
 			
 			public function magnify(xPos:Number):void
@@ -57,7 +62,6 @@
 					magGroup.addElement(_magnifiedImage);
 					
 			}
-			
 			
 			public function removeMagnification():void
 			{
@@ -71,7 +75,7 @@
 			<s:VerticalLayout/>
 		</s:layout>
 		<s:Group id="magGroup"/>
-		<s:Label text="Time:LALA"/>
+		<s:Label id="timeLabel" text="Time:LALA"/>
 	</s:Group>
 
 </s:SkinnablePopUpContainer>

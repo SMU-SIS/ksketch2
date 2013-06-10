@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark">
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
 	<fx:Script>
 		<![CDATA[
+			import mx.core.FlexGlobals;
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 			
+			import spark.components.Application;
 			import spark.components.Image;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			
 			private const ORIGIN:Point = new Point();
+			private const MAGNIFICATION_WIDTH:Number = 50;
 
 			private var _timeControlOrigin:Point;
 			private var _referenceComponent:UIComponent;
 			private var _timeControl:KSketch_TimeControl;
 			private var _magnifiedData:BitmapData;
 			private var _magnifiedImage:Image;
-
+			
+			private var _sourceRect:Rectangle;
+			
 			public function init(referenceComponent:UIComponent, timeControl:KSketch_TimeControl):void
 			{
 				_referenceComponent = referenceComponent;
 				_timeControl = timeControl;
 				_magnifiedImage = new Image();
-				_magnifiedData = new BitmapData(200, 200);
+				_magnifiedImage.scaleX = 2;
+				_magnifiedImage.scaleY = 2;
+
+				_sourceRect = new Rectangle();
 				
 				timeControl.addEventListener(FlexEvent.UPDATE_COMPLETE, _updateYPosition);
-				addEventListener(FlexEvent.UPDATE_COMPLETE, _updateYPosition);
 			}
 			
 			private function _updateYPosition(event:Event):void
@@ -36,15 +43,48 @@
 				var bottomLimit:Number = topLimit+_referenceComponent.height;
 
 				_timeControlOrigin = _timeControl.localToGlobal(ORIGIN);
-				
+
+				var labelBounds:Rectangle;
+				var appBounds:Rectangle;
+				var triangleHeight:Number = _timeControl.timeControlContents.getBounds(FlexGlobals.topLevelApplication as Application).y;
+				var triangularVertices:Vector.<Number> = new Vector.<Number>();
+
 				if(_timeControl.position == KSketch_TimeControl.BAR_TOP)
-					y = topLimit + KSketchStyles.MENU_GAP;
+				{
+					y = topLimit + KSketchStyles.MENU_GAP;					
+					appBounds = magContents.getBounds(FlexGlobals.topLevelApplication as Application);
+					triangularVertices.push(-triangleHeight*0.6);
+					triangularVertices.push(-appBounds.y);
+					triangularVertices.push(triangleHeight*0.6);
+					triangularVertices.push(-appBounds.y);
+					triangularVertices.push(0);
+					triangularVertices.push(-appBounds.y + triangleHeight);
+					
+					indicator.graphics.clear();
+					indicator.graphics.lineStyle(3,0x000000)
+					indicator.graphics.beginFill(0x000000);
+					indicator.graphics.drawTriangles(triangularVertices);
+					indicator.graphics.endFill();
+					
+					labelBounds = timeLabel.getBounds(this);
+					indicator.graphics.moveTo(0,-appBounds.y + 15);
+					indicator.graphics.lineTo(0, labelBounds.y);
+					
+				}
 				else
-					y = bottomLimit - height - KSketchStyles.MENU_BUTTON_GAP
+				{
+					y = bottomLimit - height - KSketchStyles.MENU_BUTTON_GAP;
+				}
 				
+				_sourceRect.width = MAGNIFICATION_WIDTH;
+				_sourceRect.height = _timeControl.contentGroup.height;
+				_sourceRect.y = 0;
+				_magnifiedData = new BitmapData(_sourceRect.width, _sourceRect.height);
+						
 				showTime(KSketch_TimeControl.toTimeCode(_timeControl.time),
 						_timeControl.timeToFrame(_timeControl.time),
 						_timeControl.timeToX(_timeControl.time));
+
 			}
 			
 			public function showTime(toShowTime:String, frameNumber:int, xPos:Number):void
@@ -53,29 +93,52 @@
 					return;
 				
 				x = xPos + _timeControlOrigin.x;
-				timeLabel.text = "Frame:"+frameNumber.toString()+" - "+toShowTime;
+				timeLabel.text = toShowTime;
+				frameLabel.text = "frame "+frameNumber.toString();
 			}
 			
 			public function magnify(xPos:Number):void
 			{
+				//Create the magnified area of interest
+				var bd : BitmapData = new BitmapData( _timeControl.width, _timeControl.height );
+				bd.draw(_timeControl.contentGroup);
+				
+				_sourceRect.x = xPos-(_sourceRect.width*0.5);
+				_magnifiedData = new BitmapData(_magnifiedData.width, _magnifiedData.height,false, 0x000000);
+				_magnifiedData.copyPixels(bd, _sourceRect, ORIGIN);
+
 				if(!_magnifiedImage.parent)
-					magGroup.addElement(_magnifiedImage);
-					
+					magContents.addElementAt(_magnifiedImage,0);	
+				
+				_magnifiedImage.source = _magnifiedData;
 			}
 			
 			public function removeMagnification():void
 			{
 				if(_magnifiedImage.parent)
-					magGroup.removeElement(_magnifiedImage);
+					magContents.removeElement(_magnifiedImage);
 			}
 		]]>
 	</fx:Script>
-	<s:Group x="{-width*0.5}">
-		<s:layout>
-			<s:VerticalLayout/>
-		</s:layout>
-		<s:Group id="magGroup"/>
-		<s:Label id="timeLabel" text="Time:LALA"/>
+	<s:Group x="{-magContents.width*0.5}" width="100%">
+		<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
+			<s:fill>
+				<s:SolidColor color="0x000000"/>
+			</s:fill>
+		</s:Rect>
+		<s:Group id="magContents">
+			<s:layout>
+				<s:VerticalLayout horizontalAlign="center" verticalAlign="bottom" paddingTop="5" paddingBottom="5" paddingLeft="5" paddingRight="5"/>
+			</s:layout>
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout/>
+				</s:layout>
+				<s:Label id="timeLabel" color="0xFFFFFF" fontSize="10"/>
+				<s:Group width="100%"/>
+				<s:Label id="frameLabel" color="0xFFFFFF" fontSize="10"/>
+			</s:Group>
+		</s:Group>
+		<s:Group id="indicator" x="{magContents.width*0.5}"/>
 	</s:Group>
-
 </s:SkinnablePopUpContainer>

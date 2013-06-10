@@ -15,9 +15,19 @@
 	<s:Group width="100%" height="{KSketchStyles.TIME_CONTROL_HEIGHT}" id="contentGroup" mouseChildren="false">
 		<s:Rect width="100%" height="100%" id="backgroundFill">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.TIME_CONTROL_BACKGROUND_COLOR}"/>
+				<s:SolidColor color="{KSketchStyles.TIMEBAR_BACKGROUND_COLOR}"/>
 			</s:fill>
 		</s:Rect>
+		<s:Group width="100%" height="100%">
+			<s:layout>
+				<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
+			</s:layout>
+			<s:Rect width="100%" height="85%">
+				<s:fill>
+					<s:SolidColor color="{KSketchStyles.TIME_CONTROL_BACKGROUND_COLOR}"/>
+				</s:fill>
+			</s:Rect>
+		</s:Group>
 		<s:Group width="100%" height="100%">
 			<s:layout>
 				<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
@@ -60,9 +70,9 @@
 		</s:Group>
 		<s:Group id="timeDisplay" cacheAsBitmap="true"/>
 	</s:Group>
-	<s:Group width="100%" id="timeLabel">
+	<s:Group width="100%" height="100%" id="timeLabel">
 		<s:layout>
-			<s:HorizontalLayout/>
+			<s:HorizontalLayout verticalAlign="bottom"/>
 		</s:layout>
 		<s:Label text="0"
 				 fontSize="{KSketchStyles.TIME_LABEL_FONT_SIZE}"

@@ -66,10 +66,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 
-			var anchor:Point = contentGroup.globalToLocal(localToGlobal(new Point(0,0)));
-			timeDisplay.graphics.moveTo(0,anchor.y);
-			timeDisplay.graphics.lineTo(0,anchor.y+height);
-			
 			maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			time = 0;
 
@@ -143,9 +139,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			}
 			
-			var pct:Number = _currentFrame/(_maxFrame*1.0);
-			timeDisplay.x = pct*backgroundFill.width;
-			
 			_magnifier.showTime(toTimeCode(time), _currentFrame, timeToX(time));
 
 		}
@@ -181,7 +174,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
 				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
-				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(time));
+				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(toShowTime));
 				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
 			}
 			else
@@ -190,6 +183,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				
 				if(Math.abs(xPos - timeX) >KSketch_TickMark_Control.GRAB_THRESHOLD)
 					time = xToTime(xPos);
+				
+				_magnifier.showTime(toTimeCode(time), timeToFrame(time),timeToX(time));
+				_magnifier.magnify(timeToX(time));
 			}
 			
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, _touchMove);

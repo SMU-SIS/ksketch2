@@ -24,7 +24,7 @@ package sg.edu.smu.ksketch2
 		//Timebar Stuffs
 		public static const TIMEBAR_LAYOUT_GAP:Number = 7;
 		public static const TIMEBAR_LAYOUT_PADDING_HORIZONTAL:Number = 5;
-		public static const TIMEBAR_LAYOUT_PADDING_VERTICAL:Number = 10;
+		public static const TIMEBAR_LAYOUT_PADDING_VERTICAL:Number = 5;
 		public static const TIMEBAR_BACKGROUND_COLOR:uint = 0xA6A8AB;
 		
 		public static const TIMEBAR_SHADOW_COLOR:uint = 0x000000;
@@ -38,7 +38,7 @@ package sg.edu.smu.ksketch2
 		public static const TIMEBAR_BUTTON_WIDTH:Number = 60;
 		public static const TIMEBAR_BUTTON_HEIGHT:Number = 60;
 		
-		public static const TIME_CONTROL_HEIGHT:Number = 25;
+		public static const TIME_CONTROL_HEIGHT:Number = 35;
 		public static const TIME_CONTROL_BACKGROUND_COLOR:uint = 0xFFFFFF;
 		public static const TIME_CONTROL_FILL_COLOR:uint = 0xDD1F26;
 		public static const TIME_INDICATOR_COLOR:uint = 0x000000;

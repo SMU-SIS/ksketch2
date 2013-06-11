@@ -8,7 +8,7 @@
 *http://mozilla.org/MPL/2.0/.
 ****************************************************/
 
-package sg.edu.smu.ksketch2.view
+package sg.edu.smu.ksketch2.canvas.components.view
 {
 	import flash.display.GraphicsPathCommand;
 	import flash.display.GraphicsPathWinding;

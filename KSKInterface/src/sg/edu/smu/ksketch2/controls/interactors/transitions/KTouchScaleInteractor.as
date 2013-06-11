@@ -6,7 +6,7 @@ package sg.edu.smu.ksketch2.controls.interactors.transitions
 	import org.gestouch.gestures.TransformGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
 	public class KTouchScaleInteractor extends KTouchTransitionInteractor

@@ -14,7 +14,7 @@ package sg.edu.smu.ksketch2.utils
 	import flash.utils.ByteArray;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.view.KModelDisplay;
+	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 
 	public class ExportUtil
 	{

@@ -14,7 +14,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.KSketchStyles;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;

@@ -8,7 +8,7 @@
  */
 package sg.edu.smu.ksketch2.utils
 {
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.ITimeControl;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.objects.KObject;

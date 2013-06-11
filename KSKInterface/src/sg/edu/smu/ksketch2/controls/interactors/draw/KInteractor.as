@@ -12,7 +12,7 @@ package sg.edu.smu.ksketch2.controls.interactors.draw
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	public class KInteractor extends EventDispatcher implements IInteractor

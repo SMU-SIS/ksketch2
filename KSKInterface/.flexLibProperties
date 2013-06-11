@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="true" version="3">
   <includeClasses>
-    <classEntry path="sg.edu.smu.ksketch2.imageEditing.KSketch_ImageEditingView"/>
+    <classEntry path="sg.edu.smu.ksketch2.KSketch_ImageEditingView"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences"/>
     <classEntry path="sg.edu.smu.ksketch2.KSketchStyles"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSlider"/>
-    <classEntry path="sg.edu.smu.ksketch2.canvas.KSketchAssets"/>
+    <classEntry path="sg.edu.smu.ksketch2.KSketchAssets"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier"/>

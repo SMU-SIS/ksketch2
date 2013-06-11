@@ -15,16 +15,16 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import flash.utils.Dictionary;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.KInteractor;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KSelection;
-	import sg.edu.smu.ksketch2.view.KModelDisplay;
-	import sg.edu.smu.ksketch2.view.objects.IObjectView;
-	import sg.edu.smu.ksketch2.view.objects.KImageView;
-	import sg.edu.smu.ksketch2.view.objects.KObjectView;
-	import sg.edu.smu.ksketch2.view.objects.KStrokeView;
+	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.KImageView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
 	
 	public class KTouchSelectInteractor extends KInteractor
 	{

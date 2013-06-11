@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.controls.ImageInput
+package sg.edu.smu.ksketch2.canvas.components.popup
 {
 	import spark.skins.spark.TitleWindowSkin;
 	

@@ -16,7 +16,7 @@ package sg.edu.smu.ksketch2.controls.interactors.draw
 	import spark.core.SpriteVisualElement;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.selectors.ISelectionArbiter;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.selectors.KPortion;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.selectors.KSimpleArbiter;
@@ -27,7 +27,7 @@ package sg.edu.smu.ksketch2.controls.interactors.draw
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	import sg.edu.smu.ksketch2.utils.KSelection;
-	import sg.edu.smu.ksketch2.view.KFilteredLoopView;
+	import sg.edu.smu.ksketch2.canvas.components.view.KFilteredLoopView;
 	
 	public class KLoopSelectInteractor extends KInteractor
 	{

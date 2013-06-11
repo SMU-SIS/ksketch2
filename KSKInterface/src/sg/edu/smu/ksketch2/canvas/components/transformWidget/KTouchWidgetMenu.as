@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.controls.components.transformWidget
+package sg.edu.smu.ksketch2.canvas.components.transformWidget
 {
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
@@ -21,7 +21,7 @@ package sg.edu.smu.ksketch2.controls.components.transformWidget
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.widgetstates.KWidgetInteractorManager;
 	
 	public class KTouchWidgetMenu extends SkinnablePopUpContainer

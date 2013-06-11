@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.view
+package sg.edu.smu.ksketch2.canvas.components.view
 {
 	import flash.display.BitmapData;
 	import flash.events.Event;
@@ -28,10 +28,10 @@ package sg.edu.smu.ksketch2.view
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.utils.ExportUtil;
-	import sg.edu.smu.ksketch2.view.objects.IObjectView;
-	import sg.edu.smu.ksketch2.view.objects.KGroupView;
-	import sg.edu.smu.ksketch2.view.objects.KImageView;
-	import sg.edu.smu.ksketch2.view.objects.KStrokeView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.KGroupView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.KImageView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
 	
 	/**
 	 * Exists to display the objects in the model

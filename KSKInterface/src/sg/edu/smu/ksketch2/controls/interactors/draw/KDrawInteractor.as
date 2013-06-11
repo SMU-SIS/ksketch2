@@ -11,12 +11,12 @@ package sg.edu.smu.ksketch2.controls.interactors.draw
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
-	import sg.edu.smu.ksketch2.view.objects.KStrokeView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
 	
 	import spark.core.SpriteVisualElement;
 

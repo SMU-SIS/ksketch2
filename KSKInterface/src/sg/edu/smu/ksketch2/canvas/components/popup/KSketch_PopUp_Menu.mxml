@@ -12,23 +12,23 @@
 						   xmlns:s="library://ns.adobe.com/flex/spark"
 						   backgroundAlpha="0"
 						   creationComplete="_initButtons()"
-						   updateComplete="_updateMenuDisplay()"
+						   updateComplete="updateMenuDisplay()"
 						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.KSketchAssets;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
-			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 			import sg.edu.smu.ksketch2.controls.interactors.KTouchDrawInteractor;
 			import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
 			
-			public static const EVENT_POSITION_CHANGED:String = "position changed";
+			public static const ORIGIN:Point = new Point();
 			public static const LEFT:int = 0;
 			public static const RIGHT:int = 1;
 			public static const UP:int = 2;
@@ -65,8 +65,6 @@
 				_canvasView = canvasView;
 				_KSketch = KSketchInstance;
 				_options = optionsPanel;
-				
-				addEventListener(EVENT_POSITION_CHANGED, _updateMenuDisplay);
 			}
 			
 			public function _initButtons():void
@@ -114,8 +112,11 @@
 				dispatchEvent(new FlexEvent(FlexEvent.UPDATE_COMPLETE));
 			}
 			
-			private function _updateMenuDisplay():void
+			public function updateMenuDisplay():void
 			{
+				if(_referenceComponent)
+					_canvasOrigin = _referenceComponent.localToGlobal(ORIGIN);
+					
 				switch(_position)
 				{ 
 					case UP:
@@ -177,13 +178,7 @@
 			 */
 			private function _clear():void
 			{
-				//_interactionControl.reset();
-
-				_canvasView.mainCanvas.swapElements(_canvasView.timebar_group, _canvasView.canvas_component);
-				if(_canvasView.timeControl.position == KSketch_TimeControl.BAR_TOP)
-					_canvasView.timeControl.position = KSketch_TimeControl.BAR_BOTTOM;
-				else
-					_canvasView.timeControl.position = KSketch_TimeControl.BAR_TOP;
+				_interactionControl.reset();
 			}
 			
 			
@@ -193,6 +188,15 @@
 			private function _exit():void
 			{
 				_canvasView.exit();
+			}
+			
+			/**
+			 * Opens the options dialog box
+			 */
+			private function _openOptions():void
+			{
+				_options.open(_canvasView,true);
+				PopUpManager.centerPopUp(_options);
 			}
 		]]>
 	</fx:Script>
@@ -255,6 +259,7 @@
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 		<buttons:KSketch_Button
+			click="_openOptions()"
 			id="optionButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"

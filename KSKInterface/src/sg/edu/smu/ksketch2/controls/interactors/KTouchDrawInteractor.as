@@ -5,11 +5,11 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import spark.core.SpriteVisualElement;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
-	import sg.edu.smu.ksketch2.view.KModelDisplay;
-	import sg.edu.smu.ksketch2.view.objects.IObjectView;
-	import sg.edu.smu.ksketch2.view.objects.KObjectView;
+	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;
 	
 	public class KTouchDrawInteractor extends KDrawInteractor
 	{

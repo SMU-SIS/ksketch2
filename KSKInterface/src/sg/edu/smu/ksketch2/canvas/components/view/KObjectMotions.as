@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.view
+package sg.edu.smu.ksketch2.canvas.components.view
 {
 	import flash.display.Shape;
 	import flash.display.Sprite;

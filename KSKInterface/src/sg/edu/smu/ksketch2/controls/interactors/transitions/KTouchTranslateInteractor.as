@@ -8,7 +8,7 @@ package sg.edu.smu.ksketch2.controls.interactors.transitions
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
 	public class KTouchTranslateInteractor extends KTouchTransitionInteractor

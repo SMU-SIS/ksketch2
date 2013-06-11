@@ -1,9 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark">
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			
 			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
+			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+			import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
+			
+			private var _canvasView:KSketch_CanvasView;
+			private var _menu:KSketch_PopUp_Menu;
+			
+			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu):void
+			{
+				_canvasView = canvasView;
+				_menu = menu;
+			}
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				super.open(owner, modal);
+				
+				switch(KSketch_CanvasView_Preferences.menuOpen)
+				{
+					case KSketch_CanvasView_Preferences.OPEN:
+						menuOpen.selected = true;
+						break;
+					default:
+						menuOpen.selected = false;
+				}
+				
+				switch(KSketch_CanvasView_Preferences.autoInsert)
+				{
+					case KSketch_CanvasView_Preferences.AUTO:
+						autoInsertKey.selected = true;
+						break;
+					default:
+						autoInsertKey.selected = false;
+				}
+			}
+			
+			public function applyPreferences():void
+			{
+				switch(KSketch_CanvasView_Preferences.timebarPosition)
+				{
+					case KSketch_CanvasView_Preferences.POS_BOTTOM:
+						_timebarBottom();
+						break;
+					default:
+						_timebarTop();
+				}
+				
+				switch(KSketch_CanvasView_Preferences.menuPosition)
+				{
+					case KSketch_CanvasView_Preferences.POS_LEFT:
+						_menuLeft();
+						break;
+					case KSketch_CanvasView_Preferences.POS_TOP:
+						_menuTop();
+					case KSketch_CanvasView_Preferences.POS_BOTTOM:
+						_menuBottom();
+					default:
+						_menuRight();
+				}
+				
+				switch(KSketch_CanvasView_Preferences.menuOpen)
+				{
+					case KSketch_CanvasView_Preferences.OPEN:
+						menuOpen.selected = true;
+						_menuOpen(true);
+						break;
+					default:
+						menuOpen.selected = false;
+						_menuOpen(false);
+				}
+				
+				switch(KSketch_CanvasView_Preferences.autoInsert)
+				{
+					case KSketch_CanvasView_Preferences.AUTO:
+						autoInsertKey.selected = true;
+						_autoInsertKey(true);
+						break;
+					default:
+						autoInsertKey.selected = false;
+						_autoInsertKey(false);
+				}
+			}
+			
+			private function _timebarTop():void
+			{
+				if(_canvasView.mainCanvas.getElementIndex(_canvasView.timebar_group) <= _canvasView.mainCanvas.getElementIndex(_canvasView.canvas_component))
+					return;
+
+				_canvasView.mainCanvas.swapElements(_canvasView.timebar_group, _canvasView.canvas_component);
+				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_TOP;
+				_canvasView.timeControl.position = KSketch_TimeControl.BAR_TOP;
+				_menu.dispatchEvent(new FlexEvent(FlexEvent.UPDATE_COMPLETE));
+			}
+			
+			private function _timebarBottom():void
+			{
+				if(_canvasView.mainCanvas.getElementIndex(_canvasView.timebar_group) >= _canvasView.mainCanvas.getElementIndex(_canvasView.canvas_component))
+					return;
+				
+				_canvasView.mainCanvas.swapElements(_canvasView.timebar_group, _canvasView.canvas_component);
+				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_BOTTOM;
+				_canvasView.timeControl.position = KSketch_TimeControl.BAR_BOTTOM;
+				_menu.dispatchEvent(new FlexEvent(FlexEvent.UPDATE_COMPLETE));
+			}
+			
+			private function _menuTop():void
+			{
+				_menu.position = KSketch_PopUp_Menu.UP;
+				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_TOP;
+			}
+			
+			private function _menuLeft():void
+			{
+				_menu.position = KSketch_PopUp_Menu.LEFT;
+				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_LEFT;
+			}
+			
+			private function _menuRight():void
+			{
+				_menu.position = KSketch_PopUp_Menu.RIGHT;
+				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_RIGHT;
+			}
+			
+			private function _menuBottom():void
+			{
+				_menu.position = KSketch_PopUp_Menu.DOWN;
+				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_BOTTOM;
+			}
+			
+			private function _menuOpen(value:Boolean):void
+			{
+				if(value)
+				{
+					_menu.open(_canvasView);
+					KSketch_CanvasView_Preferences.menuOpen = KSketch_CanvasView_Preferences.OPEN;
+				}
+				else
+					KSketch_CanvasView_Preferences.menuOpen = KSketch_CanvasView_Preferences.CLOSE;
+			}
+			
+			private function _autoInsertKey(value:Boolean):void
+			{
+				if(value)
+				{
+					KSingleReferenceFrameOperator.always_allow_interpolate = true;
+					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.AUTO;
+				}
+				else
+				{
+					KSingleReferenceFrameOperator.always_allow_interpolate = false;
+					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.NOT_AUTO;
+				}
+			}
 		]]>
 	</fx:Script>
 	<s:filters>
@@ -21,7 +177,54 @@
 	</s:Rect>
 	<s:Group>
 		<s:layout>
-			<s:VerticalLayout/>
+			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 		</s:layout>
+		<s:Label text="Options" fontSize="26"/>
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout paddingLeft="10"/>
+			</s:layout>
+			<s:Label text="Timebar position" fontSize="18"/>
+			<s:Group>
+				<s:layout>
+					<s:HorizontalLayout/>
+				</s:layout>
+				<s:Button label="Top" click="_timebarTop()" fontSize="14"/>
+				<s:Button label="Bottom" click="_timebarBottom()" fontSize="14"/>
+			</s:Group>
+		</s:Group>
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout paddingLeft="10"/>
+			</s:layout>
+			<s:Label text="Menu position" fontSize="18"/>
+			<s:Group>
+				<s:layout>
+					<s:HorizontalLayout/>
+				</s:layout>
+				<s:Button label="Top" click="_menuTop()" fontSize="14"/>
+				<s:Button label="Bottom" click="_menuBottom()" fontSize="14"/>
+				<s:Button label="Left" click="_menuLeft()" fontSize="14"/>
+				<s:Button label="Right" click="_menuRight()" fontSize="14"/>
+			</s:Group>
+		</s:Group>
+		<s:Group>
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="10" verticalAlign="middle"/>
+			</s:layout>
+			<s:CheckBox label="Menu Auto Open" id="menuOpen" click="_menuOpen(menuOpen.selected)" fontSize="14"/>
+		</s:Group>
+		<s:Group>
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="10" verticalAlign="middle"/>
+			</s:layout>
+			<s:CheckBox id="autoInsertKey" label="Auto Insert Key" click="_autoInsertKey(autoInsertKey.selected)" fontSize="14"/>
+		</s:Group>
+		<s:Group width="100%">
+			<s:layout>
+				<s:VerticalLayout paddingLeft="10" horizontalAlign="right"/>
+			</s:layout>
+			<s:Button label="Close" click="close()" fontSize="14"/>
+		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

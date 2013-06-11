@@ -3,8 +3,8 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 	import flash.display.DisplayObject;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.components.transformWidget.KTouchWidgetBase;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetBase;
+	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.transitions.KTouchRotateInteractor;
 	import sg.edu.smu.ksketch2.controls.interactors.transitions.KTouchScaleInteractor;
 	import sg.edu.smu.ksketch2.controls.interactors.transitions.KTouchTranslateInteractor;

@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.view
+package sg.edu.smu.ksketch2.canvas.components.view
 {
 	import flash.events.Event;
 	import flash.utils.Dictionary;
@@ -6,7 +6,7 @@ package sg.edu.smu.ksketch2.view
 	import spark.core.SpriteVisualElement;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;

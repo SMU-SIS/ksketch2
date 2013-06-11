@@ -7,7 +7,7 @@ package sg.edu.smu.ksketch2.controls.interactors.transitions
 	import org.gestouch.events.GestureEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	

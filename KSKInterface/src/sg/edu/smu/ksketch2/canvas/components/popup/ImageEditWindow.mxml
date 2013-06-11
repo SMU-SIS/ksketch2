@@ -6,7 +6,7 @@
 			   close="titleWin_closeHandler(event)"
 			   creationComplete="creationCompleteHandler()"
 			   resize="handleResize()"
-			   skinClass="sg.edu.smu.ksketch2.controls.ImageInput.HeaderlessSkin"
+			   skinClass="sg.edu.smu.ksketch2.canvas.components.popup.HeaderlessSkin"
 			   >
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -25,7 +25,7 @@
 			import org.osmf.net.StreamType;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.controls.interactioncontrol.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.ImageProcessing;
 			

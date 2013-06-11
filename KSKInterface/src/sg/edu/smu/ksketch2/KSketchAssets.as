@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.canvas
+package sg.edu.smu.ksketch2
 {
 	public class KSketchAssets
 	{

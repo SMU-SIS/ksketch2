@@ -18,7 +18,7 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.canvas.KSketch_Canvas;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
-			import sg.edu.smu.ksketch2.controls.components.ExportProgressBar;
+			import sg.edu.smu.ksketch2.canvas.components.popup.ExportProgressBar;
 			import sg.edu.smu.ksketch2.utils.ExportUtil;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			

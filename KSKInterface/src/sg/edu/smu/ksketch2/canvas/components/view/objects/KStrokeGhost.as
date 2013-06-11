@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.view.objects
+package sg.edu.smu.ksketch2.canvas.components.view.objects
 {
 	import flash.display.Sprite;
 	import flash.geom.Point;

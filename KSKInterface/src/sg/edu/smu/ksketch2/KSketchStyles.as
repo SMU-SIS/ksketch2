@@ -1,3 +1,11 @@
+/**
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ */
 package sg.edu.smu.ksketch2
 {
 	public class KSketchStyles
@@ -53,6 +61,17 @@ package sg.edu.smu.ksketch2
 		public static const ACTIVITY_COLOR:uint = 0xFF0000;
 		public static const ACTIVITY_OTHER_COLOR:uint = 0xFF8F8F;
 		public static const ACTIVITY_ALPHA:Number = 1.0;
+		
+		public static const MAGNIFIER_BACKGROUND_COLOR:Number = 0x000000;
+		public static const MAGNIFIER_IMAGE_UNSCALED_WIDTH:Number = 50;
+		public static const MAGNIFIER_SCALE:Number = 2;
+		public static const MAGNIFIER_PADDING:Number = 5;
+		public static const MAGNIFIER_FONT_SIZE:Number = 10;
+		public static const MAGNIFIER_FONT_COLOR:Number = 0xFFFFFF;
+
+		public static const MAGNIFIER_ARROW_PROPORTION:Number = 0.6;
+		public static const MAGNIFIER_INDICATOR_THICKNESS:Number = 3;
+		
 		
 		//Canvas
 		public static const CANVAS_BACKGROUND_COLOR:uint = 0xA6A8AB;

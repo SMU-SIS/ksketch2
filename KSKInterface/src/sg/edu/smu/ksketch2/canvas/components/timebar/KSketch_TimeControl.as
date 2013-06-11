@@ -1,3 +1,11 @@
+/**
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ */
 package sg.edu.smu.ksketch2.canvas.components.timebar
 {
 	import flash.events.Event;
@@ -9,7 +17,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
-	import sg.edu.smu.ksketch2.controls.components.ITimeControl;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
 	public class KSketch_TimeControl extends KSketch_TimeSlider implements ITimeControl
@@ -88,8 +95,23 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		{
 			if(value == _position)
 				return;
-				
+			
 			_position = value;	
+			
+			if(_position == BAR_TOP)
+			{
+				removeElement(timeBar_Spacing);
+				removeElement(timeLabels);
+				addElementAt(timeBar_Spacing,0);
+				addElementAt(timeLabels,2);
+			}
+			else
+			{
+				removeElement(timeBar_Spacing);
+				removeElement(timeLabels);
+				addElementAt(timeLabels,0);
+				addElementAt(timeBar_Spacing,2);
+			}
 		}
 		
 		/**

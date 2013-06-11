@@ -107,6 +107,9 @@
 				_magnifier.init(canvas_component, timeControl);
 				_magnifier.open(this);
 				
+				_menuPopUp.createDeferredContent();
+				_options.createDeferredContent();
+				
 				//Initiate the controls
 				if(!isPlayer)
 				{
@@ -134,6 +137,8 @@
 				interceptor.graphics.endFill();
 				playButton.init(timeControl, _interactionControl,interceptor, _KSketch);
 				_interactionControl.reset();
+				
+				_options.applyPreferences();
 				
 				//Fail safe measure
 				if(_needToProcessData)

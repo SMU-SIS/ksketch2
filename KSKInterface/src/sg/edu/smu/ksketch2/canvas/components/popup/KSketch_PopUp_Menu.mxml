@@ -93,7 +93,6 @@
 			public function set position(value:int):void
 			{
 				_position = value;
-				
 				switch(_position)
 				{
 					case UP:
@@ -116,7 +115,7 @@
 			{
 				if(_referenceComponent)
 					_canvasOrigin = _referenceComponent.localToGlobal(ORIGIN);
-					
+				
 				switch(_position)
 				{ 
 					case UP:

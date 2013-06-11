@@ -49,7 +49,6 @@ package sg.edu.smu.ksketch2.canvas
 		public static function get menuPosition():String
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
-			
 			if(prefs.data.menuPos)
 				return prefs.data.menuPos;
 			else

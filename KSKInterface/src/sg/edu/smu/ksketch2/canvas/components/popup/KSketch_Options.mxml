@@ -54,19 +54,6 @@
 						_timebarTop();
 				}
 				
-				switch(KSketch_CanvasView_Preferences.menuPosition)
-				{
-					case KSketch_CanvasView_Preferences.POS_LEFT:
-						_menuLeft();
-						break;
-					case KSketch_CanvasView_Preferences.POS_TOP:
-						_menuTop();
-					case KSketch_CanvasView_Preferences.POS_BOTTOM:
-						_menuBottom();
-					default:
-						_menuRight();
-				}
-				
 				switch(KSketch_CanvasView_Preferences.menuOpen)
 				{
 					case KSketch_CanvasView_Preferences.OPEN:
@@ -76,6 +63,21 @@
 					default:
 						menuOpen.selected = false;
 						_menuOpen(false);
+				}
+
+				switch(KSketch_CanvasView_Preferences.menuPosition)
+				{
+					case KSketch_CanvasView_Preferences.POS_LEFT:
+						_menuLeft();
+						break;
+					case KSketch_CanvasView_Preferences.POS_TOP:
+						_menuTop();
+						break;
+					case KSketch_CanvasView_Preferences.POS_BOTTOM:
+						_menuBottom();
+						break;
+					default:
+						_menuRight();
 				}
 				
 				switch(KSketch_CanvasView_Preferences.autoInsert)
@@ -115,25 +117,25 @@
 			private function _menuTop():void
 			{
 				_menu.position = KSketch_PopUp_Menu.UP;
-				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_TOP;
+				KSketch_CanvasView_Preferences.menuPosition = KSketch_CanvasView_Preferences.POS_TOP;
 			}
 			
 			private function _menuLeft():void
 			{
 				_menu.position = KSketch_PopUp_Menu.LEFT;
-				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_LEFT;
+				KSketch_CanvasView_Preferences.menuPosition = KSketch_CanvasView_Preferences.POS_LEFT;
 			}
 			
 			private function _menuRight():void
 			{
 				_menu.position = KSketch_PopUp_Menu.RIGHT;
-				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_RIGHT;
+				KSketch_CanvasView_Preferences.menuPosition = KSketch_CanvasView_Preferences.POS_RIGHT;
 			}
 			
 			private function _menuBottom():void
 			{
 				_menu.position = KSketch_PopUp_Menu.DOWN;
-				KSketch_CanvasView_Preferences.timebarPosition = KSketch_CanvasView_Preferences.POS_BOTTOM;
+				KSketch_CanvasView_Preferences.menuPosition = KSketch_CanvasView_Preferences.POS_BOTTOM;
 			}
 			
 			private function _menuOpen(value:Boolean):void

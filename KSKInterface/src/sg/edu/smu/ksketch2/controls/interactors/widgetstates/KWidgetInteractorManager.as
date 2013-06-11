@@ -173,7 +173,6 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			
 			_interactionControl.transitionMode = mode;
 			
-			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				if(!_enabled)
@@ -184,7 +183,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			}
 			else if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
 			{
-				if(KSketch2.studyMode == KSketch2.STUDY_K && KSketch2.studyMode == KSketch2.STUDY_PK)
+				if(_interactionControl.selection && !_isInteracting)
 					enabled = _interactionControl.selection.selectionTransformable(_KSketch.time);
 				_activeMode.demonstrationMode = false;
 			}

@@ -24,8 +24,8 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 		{
 			super(KSketchInstance, interactionControl, widgetBase);
 			
-			_translateInteractor = new KTouchTranslateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace);
-			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace);
+			_translateInteractor = new KTouchTranslateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace);
+			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace);
 			_scaleInteractor = new KTouchScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger, modelSpace);
 		}
 		
@@ -34,7 +34,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			demonstrationMode = false;
 			_translateInteractor.activate();
 			_rotateInteractor.activate();
-			//_scaleInteractor.activate();
+			_scaleInteractor.activate();
 			
 			super.activate();
 		}
@@ -43,7 +43,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 		{
 			_translateInteractor.deactivate();
 			_rotateInteractor.deactivate();
-			//_scaleInteractor.deactivate();
+			_scaleInteractor.deactivate();
 			
 			super.deactivate();
 		}
@@ -61,45 +61,19 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			_widget.reset();
 			if(!value)
 			{
-				//_widget.baseTrigger.graphics.beginFill(KTouchWidgetBase.COLOR1, KTouchWidgetBase.BLEND_ALPHA);
-				//_widget.baseTrigger.graphics.drawCircle(0,0,BASE_TRIGGER_RADIUS);
-				//_widget.baseTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
-				//_widget.baseTrigger.graphics.endFill();
-				
-				_widget.middleTrigger.graphics.beginFill(KTouchWidgetBase.COLOR2, KTouchWidgetBase.BLEND_ALPHA);
-				_widget.middleTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
-				_widget.middleTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
-				_widget.middleTrigger.graphics.endFill();
-				
-				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR3, KTouchWidgetBase.BLEND_ALPHA);
-				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
-				_widget.topTrigger.graphics.endFill();
-				
-				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR1, KTouchWidgetBase.BLEND_ALPHA);
-				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS*0.1);
-				_widget.topTrigger.graphics.endFill();
-				
+				_widget.strokeColor = 0x6E6F71;
+				_widget.centroid.graphics.lineStyle(2, 0x58595B);
+				_widget.centroid.graphics.beginFill(0x971C24);
+				_widget.centroid.graphics.drawCircle(0,0,10);
+				_widget.centroid.graphics.endFill();
 			}
 			else
 			{
-				//_widget.baseTrigger.graphics.beginFill(KTouchWidgetBase.COLOR4, KTouchWidgetBase.BLEND_ALPHA);
-				//_widget.baseTrigger.graphics.drawCircle(0,0,BASE_TRIGGER_RADIUS);
-				//_widget.baseTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
-				//_widget.baseTrigger.graphics.endFill();
-				
-				_widget.middleTrigger.graphics.beginFill(KTouchWidgetBase.COLOR4, KTouchWidgetBase.BLEND_ALPHA);
-				_widget.middleTrigger.graphics.drawCircle(0,0,MIDDLE_TRIGGER_RADIUS);
-				_widget.middleTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
-				_widget.middleTrigger.graphics.endFill();
-				
-				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR3, KTouchWidgetBase.BLEND_ALPHA);
-				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS);
-				_widget.topTrigger.graphics.endFill();
-				
-				_widget.topTrigger.graphics.beginFill(KTouchWidgetBase.COLOR1, KTouchWidgetBase.BLEND_ALPHA);
-				_widget.topTrigger.graphics.drawCircle(0,0,TOP_TRIGGER_RADIUS*0.1);
-				_widget.topTrigger.graphics.endFill();
-				
+				_widget.strokeColor = 0x971C24;
+				_widget.centroid.graphics.lineStyle(2, 0x58595B);
+				_widget.centroid.graphics.beginFill(0x971C24);
+				_widget.centroid.graphics.drawCircle(0,0,10);
+				_widget.centroid.graphics.endFill();
 			}
 		}
 	}

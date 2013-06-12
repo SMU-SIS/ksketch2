@@ -3,6 +3,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 	import flash.display.DisplayObject;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.KSketchStyles;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetBase;
 	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.controls.interactors.transitions.KTouchRotateInteractor;
@@ -11,10 +12,6 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 	
 	public class KBasicTransitionMode extends KTouchWidgetMode
 	{
-		public static const TOP_TRIGGER_RADIUS:Number = 80;
-		public static const MIDDLE_TRIGGER_RADIUS:Number = 120;
-		public static const BASE_TRIGGER_RADIUS:Number = 160;
-		
 		private var _translateInteractor:KTouchTranslateInteractor;
 		private var _rotateInteractor:KTouchRotateInteractor;
 		private var _scaleInteractor:KTouchScaleInteractor;
@@ -51,9 +48,9 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 		override public function set enabled(value:Boolean):void
 		{
 			if(value)
-				_widget.alpha = 1;
+				_widget.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
 			else
-				_widget.alpha = 0.2;
+				_widget.alpha = KSketchStyles.WIDGET_DISABLED_ALPHA;
 		}
 		
 		override public function set demonstrationMode(value:Boolean):void
@@ -61,18 +58,18 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			_widget.reset();
 			if(!value)
 			{
-				_widget.strokeColor = 0x6E6F71;
-				_widget.centroid.graphics.lineStyle(2, 0x58595B);
-				_widget.centroid.graphics.beginFill(0x971C24);
-				_widget.centroid.graphics.drawCircle(0,0,10);
+				_widget.strokeColor = KSketchStyles.WIDGET_INTERPOLATE_COLOR;
+				_widget.centroid.graphics.lineStyle(2, KSketchStyles.WIDGET_INTERPOLATE_COLOR);
+				_widget.centroid.graphics.beginFill(KSketchStyles.WIDGET_PERFORM_COLOR);
+				_widget.centroid.graphics.drawCircle(0,0,KSketchStyles.WIDGET_CENTROID_SIZE);
 				_widget.centroid.graphics.endFill();
 			}
 			else
 			{
-				_widget.strokeColor = 0x971C24;
-				_widget.centroid.graphics.lineStyle(2, 0x58595B);
-				_widget.centroid.graphics.beginFill(0x971C24);
-				_widget.centroid.graphics.drawCircle(0,0,10);
+				_widget.strokeColor = KSketchStyles.WIDGET_PERFORM_COLOR;
+				_widget.centroid.graphics.lineStyle(2, KSketchStyles.WIDGET_INTERPOLATE_COLOR);
+				_widget.centroid.graphics.beginFill(KSketchStyles.WIDGET_PERFORM_COLOR);
+				_widget.centroid.graphics.drawCircle(0,0,KSketchStyles.WIDGET_CENTROID_SIZE);
 				_widget.centroid.graphics.endFill();
 			}
 		}

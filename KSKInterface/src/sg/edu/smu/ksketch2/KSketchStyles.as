@@ -98,5 +98,12 @@ package sg.edu.smu.ksketch2
 		public static const MENU_BUTTON_GAP:Number = 3;
 		public static const MENU_BUTTON_WIDTH:Number = 35;
 		public static const MENU_BUTTON_HEIGHT:Number = 35;
+		
+		//Widget
+		public static const WIDGET_ENABLED_ALPHA:Number = 1;
+		public static const WIDGET_DISABLED_ALPHA:Number = 0.2;
+		public static const WIDGET_INTERPOLATE_COLOR:uint = 0x6E6F71;
+		public static const WIDGET_PERFORM_COLOR:uint = 0x971C24;
+		public static const WIDGET_CENTROID_SIZE:Number = 10;
 	}
 }

@@ -186,7 +186,10 @@
 			 */
 			private function _exit():void
 			{
-				_canvasView.exit();
+				var newImageWindow:KSketch_Desktop_ImageWindow = new KSketch_Desktop_ImageWindow();
+				newImageWindow.open(_canvasView, true);
+				PopUpManager.centerPopUp(newImageWindow);
+				//_canvasView.exit();
 			}
 			
 			/**

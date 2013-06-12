@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundColor="0xFFFFFF" backgroundAlpha="0.75"
+						   creationComplete="_onCreateHandler()" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			
+			import spark.components.Application;
+			
+			import sg.edu.smu.ksketch2.KSketchAssets;
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			
+			public static const IMAGE_EDIT_EXTERNALPADDING:Number = 15;
+			
+			private function _onCreateHandler():void
+			{
+				x = 0;
+				y = 0;
+				width = (FlexGlobals.topLevelApplication as Application).width;
+				height = (FlexGlobals.topLevelApplication as Application).height;	
+			}
+		]]>
+	</fx:Script>
+	<s:layout>
+		<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
+	</s:layout>
+	
+	<s:Group>
+		<s:filters>
+			<s:DropShadowFilter 
+				color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
+				alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
+				strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
+				blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+				blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+		</s:filters>
+		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+			<s:fill>
+				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+			</s:fill>
+		</s:Rect>
+		
+		<s:Group id="mainMenu">
+			<s:layout>
+				<s:VerticalLayout
+					verticalAlign="middle" horizontalAlign="left"
+					paddingLeft="{IMAGE_EDIT_EXTERNALPADDING}" paddingRight="{IMAGE_EDIT_EXTERNALPADDING}"
+					paddingTop="{IMAGE_EDIT_EXTERNALPADDING}" paddingBottom="{IMAGE_EDIT_EXTERNALPADDING}"/>
+			</s:layout>
+			<s:Label text="Import an image from:" fontFamily="{KSketchStyles.APP_FONT_FAMILY}" fontSize="12"/>
+			<s:Group>
+				<s:layout>
+					<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+				</s:layout>
+				<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"/>
+				<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"/>
+				<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"/>
+			</s:Group>
+		</s:Group>
+		
+		<!--<s:Group id="imageEditComponent">
+			<s:layout>
+				<s:HorizontalLayout horizontalAlign="center"/>
+			</s:layout>
+			<s:Group width="720" height="405">
+				<s:layout>
+					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"
+									  paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15"/>
+				</s:layout>
+				<s:Group width="100%" height="100%">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="0xFFFFFF"/>
+						</s:fill>
+					</s:Rect>
+				</s:Group>
+ 			</s:Group>
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"
+									  paddingRight="15" paddingTop="15" paddingBottom="15"/>
+				</s:layout>
+				<buttons:KSketch_Button
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+				<buttons:KSketch_Button
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+				<buttons:KSketch_Button
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+				<buttons:KSketch_Button
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+			</s:Group>
+		</s:Group>-->
+	</s:Group>	
+</s:SkinnablePopUpContainer>

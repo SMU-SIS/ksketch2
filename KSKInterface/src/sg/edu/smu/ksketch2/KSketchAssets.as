@@ -134,5 +134,17 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_Texture_DocumentScreen_Down.gif")] 
 		[Bindable] 
 		public static var texture_document_down:Class;
+		
+		[Embed("assets/ZZGlyph_Button_Texture_Camera.png")] 
+		[Bindable] 
+		public static var texture_camera:Class;
+		
+		[Embed("assets/ZZGlyph_Button_Texture_Photos.png")] 
+		[Bindable] 
+		public static var texture_photos:Class;
+		
+		[Embed("assets/ZZGlyph_Button_Texture_Trash.png")] 
+		[Bindable] 
+		public static var texture_trash:Class;
 	}
 }

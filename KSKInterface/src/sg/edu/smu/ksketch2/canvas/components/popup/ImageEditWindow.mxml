@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
-			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   windowMoving="titleWin_windowMovingHandler(event);"
-			   close="titleWin_closeHandler(event)"
-			   creationComplete="creationCompleteHandler()"
-			   resize="handleResize()"
-			   skinClass="sg.edu.smu.ksketch2.canvas.components.popup.HeaderlessSkin"
+<s:SkinnablePopUpContainer
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	creationComplete="creationCompleteHandler()"
+	resize="handleResize()"
 			   >
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
-			import mx.core.IFlexDisplayObject;
-			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			
 			import spark.components.VideoDisplay;
 			import spark.components.mediaClasses.DynamicStreamingVideoItem;
 			import spark.components.mediaClasses.DynamicStreamingVideoSource;
-			import spark.events.TitleWindowBoundsEvent;
 			
 			import org.osmf.net.StreamType;
 			
@@ -62,20 +57,6 @@
 			{
 				_KSketch = KSketchInstance;	
 				_interactionControl = interactionControl
-			}
-			
-			protected function titleWin_closeHandler(evt:CloseEvent):void
-			{
-				// Remove the pop up window.
-				PopUpManager.removePopUp(evt.currentTarget as IFlexDisplayObject);
-			}
-			
-			protected function titleWin_windowMovingHandler(evt:TitleWindowBoundsEvent):void
-			{
-				
-				// Before moving the TitleWindow container, check to see whether it should be draggable.
-				evt.stopImmediatePropagation();
-				evt.preventDefault();
 			}
 			
 			protected function handleResize():void
@@ -451,4 +432,4 @@
 			<s:Button label="Cancel" click="_exitLasso()"/>
 		</s:Group>	
 	</s:Group>
-</s:TitleWindow>
+</s:SkinnablePopUpContainer>

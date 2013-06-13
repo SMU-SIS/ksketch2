@@ -75,7 +75,6 @@
 			<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"
 							  paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"/>
 		</s:layout>		
-		<s:Image source="{KSketchAssets.texture_camera}" width="75%" height="75%"/>
 		<s:Label id="buttonLabel" text="Camera" fontFamily="{KSketchStyles.APP_FONT_FAMILY}" fontSize="12"/>
 	</s:Group>
 </s:SparkButtonSkin>

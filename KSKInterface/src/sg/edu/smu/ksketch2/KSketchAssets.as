@@ -15,136 +15,196 @@ package sg.edu.smu.ksketch2
 			
 		}
 		
-		[Embed("assets/Button_Texture_Play.gif")] 
+		[Embed("assets/Button_Texture_Play.png")] 
 		[Bindable] 
 		public static var texture_play:Class;
 		
-		[Embed("assets/Button_Texture_Pause.gif")] 
+		[Embed("assets/Button_Texture_Pause.png")] 
 		[Bindable] 
 		public static var texture_pause:Class;
 		
-		[Embed("assets/Button_Texture_Back.gif")] 
+		[Embed("assets/Button_Texture_Back.png")] 
 		[Bindable] 
 		public static var texture_back:Class;
 		
-		[Embed("assets/Button_Texture_Back_Down.gif")] 
+		[Embed("assets/Button_Texture_Back_Down.png")] 
 		[Bindable] 
 		public static var texture_back_down:Class;
 		
-		[Embed("assets/Button_Texture_Forward.gif")] 
+		[Embed("assets/Button_Texture_Forward.png")] 
 		[Bindable] 
 		public static var texture_forward:Class;
 		
-		[Embed("assets/Button_Texture_Forward_Down.gif")] 
+		[Embed("assets/Button_Texture_Forward_Down.png")] 
 		[Bindable] 
 		public static var texture_forward_down:Class;
 		
-		[Embed("assets/Button_Texture_Previous.gif")] 
+		[Embed("assets/Button_Texture_Previous.png")] 
 		[Bindable] 
 		public static var texture_previous:Class;
 		
-		[Embed("assets/Button_Texture_Previous_Down.gif")] 
+		[Embed("assets/Button_Texture_Previous_Down.png")] 
 		[Bindable] 
 		public static var texture_previous_down:Class;
 		
-		[Embed("assets/Button_Texture_Next.gif")] 
+		[Embed("assets/Button_Texture_Next.png")] 
 		[Bindable] 
 		public static var texture_next:Class;
 		
-		[Embed("assets/Button_Texture_Next_Down.gif")] 
+		[Embed("assets/Button_Texture_Next_Down.png")] 
 		[Bindable] 
 		public static var texture_next_down:Class;
 		
-		[Embed("assets/Button_Texture_Menu.gif")] 
+		[Embed("assets/Button_Texture_Menu.png")] 
 		[Bindable] 
 		public static var texture_menu:Class;
 		
-		[Embed("assets/Button_Texture_Menu_Down.gif")] 
+		[Embed("assets/Button_Texture_Menu_Down.png")] 
 		[Bindable] 
 		public static var texture_menu_down:Class;
 		
-		[Embed("assets/Button_Texture_BlackPen.gif")] 
+		[Embed("assets/Button_Texture_BlackPen.png")] 
 		[Bindable] 
 		public static var texture_blackPen:Class;
 		
-		[Embed("assets/Button_Texture_BlackPen_Down.gif")] 
+		[Embed("assets/Button_Texture_BlackPen_Down.png")] 
 		[Bindable] 
 		public static var texture_blackPen_down:Class;
 		
-		[Embed("assets/Button_Texture_RedPen.gif")] 
+		[Embed("assets/Button_Texture_RedPen.png")] 
 		[Bindable] 
 		public static var texture_redPen:Class;
 		
-		[Embed("assets/Button_Texture_RedPen_Down.gif")] 
+		[Embed("assets/Button_Texture_RedPen_Down.png")] 
 		[Bindable] 
 		public static var texture_redPen_down:Class;
 		
-		[Embed("assets/Button_Texture_BluePen.gif")] 
+		[Embed("assets/Button_Texture_BluePen.png")] 
 		[Bindable] 
 		public static var texture_bluePen:Class;
 		
-		[Embed("assets/Button_Texture_BluePen_Down.gif")] 
+		[Embed("assets/Button_Texture_BluePen_Down.png")] 
 		[Bindable] 
 		public static var texture_bluePen_down:Class;
 		
-		[Embed("assets/Button_Texture_GreenPen.gif")] 
+		[Embed("assets/Button_Texture_GreenPen.png")] 
 		[Bindable] 
 		public static var texture_greenPen:Class;
 		
-		[Embed("assets/Button_Texture_GreenPen_Down.gif")] 
+		[Embed("assets/Button_Texture_GreenPen_Down.png")] 
 		[Bindable] 
 		public static var texture_greenPen_down:Class;
 		
-		[Embed("assets/Button_Texture_YellowPen.gif")] 
-		[Bindable] 
-		public static var texture_yellowPen:Class;
-		
-		[Embed("assets/Button_Texture_YellowPen_Down.gif")] 
-		[Bindable] 
-		public static var texture_yellowPen_down:Class;
-		
-		[Embed("assets/Button_Texture_New_Doc.gif")] 
+		[Embed("assets/Button_Texture_New_Doc.png")] 
 		[Bindable] 
 		public static var texture_new:Class;
 		
-		[Embed("assets/Button_Texture_New_Doc_Down.gif")] 
+		[Embed("assets/Button_Texture_New_Doc_Down.png")] 
 		[Bindable] 
 		public static var texture_new_down:Class;
 		
-		[Embed("assets/Button_Texture_Eraser.gif")] 
+		[Embed("assets/Button_Texture_Eraser.png")] 
 		[Bindable] 
 		public static var texture_eraser:Class;
 		
-		[Embed("assets/Button_Texture_Eraser_Down.gif")] 
+		[Embed("assets/Button_Texture_Eraser_Down.png")] 
 		[Bindable] 
 		public static var texture_eraser_down:Class;
 		
-		[Embed("assets/Button_Texture_Options.gif")] 
+		[Embed("assets/Button_Texture_Options.png")] 
 		[Bindable] 
 		public static var texture_options:Class;
 		
-		[Embed("assets/Button_Texture_Options_Down.gif")] 
+		[Embed("assets/Button_Texture_Options_Down.png")] 
 		[Bindable] 
 		public static var texture_options_down:Class;
 		
-		[Embed("assets/Button_Texture_DocumentScreen.gif")] 
+		[Embed("assets/Button_Texture_DocumentScreen.png")] 
 		[Bindable] 
 		public static var texture_document:Class;
 		
-		[Embed("assets/Button_Texture_DocumentScreen_Down.gif")] 
+		[Embed("assets/Button_Texture_DocumentScreen_Down.png")] 
 		[Bindable] 
 		public static var texture_document_down:Class;
 		
-		[Embed("assets/ZZGlyph_Button_Texture_Camera.png")] 
+		[Embed("assets/Button_Texture_Camera.png")] 
 		[Bindable] 
 		public static var texture_camera:Class;
 		
-		[Embed("assets/ZZGlyph_Button_Texture_Photos.png")] 
+		[Embed("assets/Button_Texture_Camera_Down.png")] 
 		[Bindable] 
-		public static var texture_photos:Class;
+		public static var texture_camera_down:Class;
 		
-		[Embed("assets/ZZGlyph_Button_Texture_Trash.png")] 
+		[Embed("assets/Button_Texture_Trash.png")] 
 		[Bindable] 
 		public static var texture_trash:Class;
+		
+		[Embed("assets/Button_Texture_Trash_Down.png")] 
+		[Bindable] 
+		public static var texture_trash_down:Class;
+		
+		[Embed("assets/Button_Texture_Insert.png")] 
+		[Bindable] 
+		public static var texture_insert:Class;
+		
+		[Embed("assets/Button_Texture_Insert.png")] 
+		[Bindable] 
+		public static var texture_insert_down:Class;
+		
+		[Embed("assets/Button_Texture_Remove.png")] 
+		[Bindable] 
+		public static var texture_remove:Class;
+		
+		[Embed("assets/Button_Texture_Remove_Down.png")] 
+		[Bindable] 
+		public static var texture_remove_down:Class;
+		
+		[Embed("assets/Button_Texture_Clear.png")] 
+		[Bindable] 
+		public static var texture_clear:Class;
+		
+		[Embed("assets/Button_Texture_Clear_Down.png")] 
+		[Bindable] 
+		public static var texture_clear_down:Class;
+		
+		[Embed("assets/Button_Texture_OK.png")] 
+		[Bindable] 
+		public static var texture_ok:Class;
+		
+		[Embed("assets/Button_Texture_OK_Down.png")] 
+		[Bindable]
+		public static var texture_ok_down:Class;
+		
+		[Embed("assets/Button_Texture_PrevScreen.png")] 
+		[Bindable] 
+		public static var texture_prevScreen:Class;
+		
+		[Embed("assets/Button_Texture_PrevScreen_Down.png")] 
+		[Bindable] 
+		public static var texture_prevScreen_down:Class;
+		
+		[Embed("assets/Button_Texture_Photos.png")] 
+		[Bindable] 
+		public static var texture_photo:Class;
+		
+		[Embed("assets/Button_Texture_Photos_Down.png")] 
+		[Bindable] 
+		public static var texture_photo_down:Class;
+		
+		[Embed("assets/Button_Texture_Crop.png")] 
+		[Bindable] 
+		public static var texture_crop:Class;
+		
+		[Embed("assets/Button_Texture_Crop_Down.png")] 
+		[Bindable] 
+		public static var texture_crop_down:Class;
+		
+		[Embed("assets/Button_Texture_Extend.png")] 
+		[Bindable] 
+		public static var texture_extend:Class;
+		
+		[Embed("assets/Button_Texture_Extend_Down.png")] 
+		[Bindable] 
+		public static var texture_extend_down:Class;
 	}
 }

@@ -200,6 +200,21 @@
 				_options.open(_canvasView,true);
 				PopUpManager.centerPopUp(_options);
 			}
+			
+			/**
+			 * Import image
+			 */
+			private function _importImage():void				
+			{
+				if(KSketch_CanvasView.isMobile)
+				{
+					
+				}
+				else
+				{
+					
+				}
+			}
 		]]>
 	</fx:Script>
 	
@@ -263,6 +278,12 @@
 		<buttons:KSketch_Button
 			click="_openOptions()"
 			id="optionButton"
+			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+			/>
+		<buttons:KSketch_Button
+			click="_importImage()"
+			id="imageButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>

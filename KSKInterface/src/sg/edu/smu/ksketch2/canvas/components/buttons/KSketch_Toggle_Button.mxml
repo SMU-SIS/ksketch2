@@ -5,6 +5,8 @@
 		<![CDATA[
 			import spark.components.Image;
 			
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			
 			private var _selected:Boolean;
 			
 			override public function initSkin():void
@@ -22,9 +24,15 @@
 				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
 
 				if(_selected)
+				{
 					textureControl.source = _down;
+					(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchStyles.CANVAS_BUTTON_ACTIVATED;
+				}
 				else
+				{
 					textureControl.source = _up;
+					(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchStyles.CANVAS_BUTTON_NORMAL;
+				}
 			}
 		]]>
 	</fx:Script>

@@ -58,13 +58,12 @@
 		/>
 	</s:filters>
 	
-    <!-- layer 2: fill -->
     <!--- @private -->
-    <s:Rect id="fill" left="1" right="1" top="1" bottom="1"
+    <s:Rect left="1" right="1" top="1" bottom="1"
 			radiusX="{KSketchStyles.CANVAS_BUTTON_CORNER_RADIUS}"
 			radiusY="{KSketchStyles.CANVAS_BUTTON_CORNER_RADIUS}">
         <s:fill>
-			<s:SolidColor
+			<s:SolidColor id="backgroundFill"
 				color.up="{KSketchStyles.CANVAS_BUTTON_NORMAL}"
 				color.down="{KSketchStyles.CANVAS_BUTTON_ACTIVATED}"/>
         </s:fill>
@@ -78,18 +77,10 @@
         </s:stroke>
     </s:Rect>
     
-    <!-- layer 8: text -->
-    <!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay  -->
-    <s:Label id="labelDisplay"
-             textAlign="center"
-             maxDisplayedLines="1"
-             horizontalCenter="0" verticalCenter="1" verticalAlign="middle"
-             left="10" right="10" top="2" bottom="2">
-    </s:Label>
 	<s:Group width="100%" height="100%">
 		<s:layout>
 			<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:Image id="texture" width="100%" height="100%" smooth="true" smoothingQuality="high"/>
+		<s:Image id="texture" width="60%" height="60%" smooth="true" smoothingQuality="high"/>
 	</s:Group>
 </s:SparkButtonSkin>

@@ -22,14 +22,14 @@
 				if(!skin)
 					return;
 
-				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
+				var textureControl:Image = (skin as Object).texture;
 				textureControl.source = _up;	
 				skin.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, _onStateChange);
 			}
 			
 			private function _onStateChange(event:StateChangeEvent):void
 			{
-				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
+				var textureControl:Image = (skin as Object).texture;
 				
 				if(event.newState == "up")
 					textureControl.source = _up;

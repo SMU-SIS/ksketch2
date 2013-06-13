@@ -175,6 +175,14 @@ package sg.edu.smu.ksketch2
 		[Bindable]
 		public static var texture_ok_down:Class;
 		
+		[Embed("assets/Button_Texture_Cancel.png")] 
+		[Bindable] 
+		public static var texture_cancel:Class;
+		
+		[Embed("assets/Button_Texture_Cancel_Down.png")] 
+		[Bindable]
+		public static var texture_cancel_down:Class;
+		
 		[Embed("assets/Button_Texture_PrevScreen.png")] 
 		[Bindable] 
 		public static var texture_prevScreen:Class;

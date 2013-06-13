@@ -44,11 +44,16 @@
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			
+			public static const PLUG_IN:String = "PlugIn";
+			
 			[Bindable]
 			public static var isPlayer:Boolean = false;
 			
 			[Bindable]
 			public static var isMobile:Boolean = true;
+			
+			[Bindable]
+			public static var isWeb:Boolean = true;
 			
 			private var _imageData:BitmapData;
 			private var _needToProcessData:Boolean;
@@ -90,6 +95,8 @@
 					isMobile = true;
 				else
 					isMobile = false;
+				
+				isWeb = (Capabilities.playerType == PLUG_IN);
 				
 				//Actual setting up starts here
  				_KSketch = new KSketch2();

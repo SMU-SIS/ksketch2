@@ -9,7 +9,7 @@
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier"/>
-    <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Desktop_ImageWindow"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_ImageImport_Control"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"/>
   </includeClasses>
   <includeResources/>

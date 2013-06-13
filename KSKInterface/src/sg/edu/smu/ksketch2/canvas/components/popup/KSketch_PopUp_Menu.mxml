@@ -73,6 +73,8 @@
 				newButton.initSkin();
 				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down);
 				optionButton.initSkin();
+				imageButton.init(KSketchAssets.texture_photo, KSketchAssets.texture_photo_down);
+				imageButton.initSkin();
 				exitButton.init(KSketchAssets.texture_document, KSketchAssets.texture_document_down);
 				exitButton.initSkin();
 				
@@ -186,10 +188,7 @@
 			 */
 			private function _exit():void
 			{
-				var newImageWindow:KSketch_Desktop_ImageWindow = new KSketch_Desktop_ImageWindow();
-				newImageWindow.open(_canvasView, true);
-				PopUpManager.centerPopUp(newImageWindow);
-				//_canvasView.exit();
+				_canvasView.exit();
 			}
 			
 			/**
@@ -212,7 +211,10 @@
 				}
 				else
 				{
-					
+					var newImageWindow:KSketch_ImageImport_Control = new KSketch_ImageImport_Control();
+					newImageWindow.createDeferredContent();
+					newImageWindow.open(_canvasView, true);
+					PopUpManager.centerPopUp(newImageWindow);
 				}
 			}
 		]]>
@@ -288,6 +290,8 @@
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 		<buttons:KSketch_Button
+			visible="{!KSketch_CanvasView.isWeb}"
+			includeInLayout="{!KSketch_CanvasView.isWeb}"
 			click="_exit()"
 			id="exitButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"

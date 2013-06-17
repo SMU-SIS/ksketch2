@@ -46,7 +46,7 @@ package sg.edu.smu.ksketch2
 		public static const TIMEBAR_BUTTON_WIDTH:Number = 60;
 		public static const TIMEBAR_BUTTON_HEIGHT:Number = 60;
 		
-		public static const TIME_CONTROL_HEIGHT:Number = 35;
+		public static const TIME_CONTROL_HEIGHT:Number = 25;
 		public static const TIME_CONTROL_BACKGROUND_COLOR:uint = 0xFFFFFF;
 		public static const TIME_CONTROL_FILL_COLOR:uint = 0xDD1F26;
 		public static const TIME_INDICATOR_COLOR:uint = 0x000000;

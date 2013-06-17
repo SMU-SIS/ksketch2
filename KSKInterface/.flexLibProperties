@@ -11,6 +11,8 @@
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_ImageImport_Control"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeLabels"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_OnOff_Toggle"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

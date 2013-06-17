@@ -112,7 +112,6 @@
 				_menuPopUp.init(canvas_component, this, _options, _KSketch, _interactionControl);
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
-				_magnifier.open(this);
 				
 				_menuPopUp.createDeferredContent();
 				_options.createDeferredContent();
@@ -146,7 +145,8 @@
 				_interactionControl.reset();
 				
 				_options.applyPreferences();
-				
+				_magnifier.open(this);
+
 				//Fail safe measure
 				if(_needToProcessData)
 					_enterView_ProcessData();

@@ -14,6 +14,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import flash.geom.Point;
 	import flash.utils.Timer;
 	
+	import mx.events.FlexEvent;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
@@ -65,13 +67,14 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control,
 							 magnifier:KSketch_Timebar_Magnifier):void
 		{
+			trace("Initiating time control");
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
 			_magnifier = magnifier;
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
-			
-			addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+
+			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 
 			maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			time = 0;
@@ -212,7 +215,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.addEventListener(MouseEvent.MOUSE_UP, _touchEnd);
-			removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+			contentGroup.removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 		}
 		
 		/**
@@ -270,7 +273,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);
-			addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 		}
 		
 		/**

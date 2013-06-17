@@ -5,7 +5,6 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
-			import mx.managers.PopUpManager;
 			
 			import spark.components.Application;
 			import spark.components.mediaClasses.DynamicStreamingVideoItem;
@@ -16,6 +15,7 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketch_ImageEditingView;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin;
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
@@ -45,17 +45,20 @@
 			private var fullBitmapData:BitmapData;
 			private var preProcessed:BitmapData;
 			private var drawMat:Matrix;
+			private var dataSource:IDataInput;
 			
 			private var _fileRef:FileReference;
 			private var _correction:Point
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KMobileInteractionControl;
+			private var _canvasView:KSketch_CanvasView;
 			
-			public function init(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, canvas:KSketch_CanvasView):void
 			{
 				_KSketch = KSketchInstance;	
-				_interactionControl = interactionControl
+				_interactionControl = interactionControl;
+				_canvasView = canvas;
 			}
 			
 			private function _onCreateHandler():void
@@ -79,14 +82,14 @@
 				cancelButton.initSkin();
 				(cancelButton.skin as KSketch_Dialog_Button_Skin).buttonLabel.text = "Cancel";
 				
-				removeElement(videoDisplayGroup);
-				removeElement(imageDisplayGroup);
+				imageEditMain.removeElement(videoDisplayGroup);
+				imageEditMain.removeElement(imageDisplayGroup);
 			}
 			
 			/**
 			 * Switch to camera input mode
 			 */
-			protected function startCamera():void
+			protected function startDesktopCamera():void
 			{
 				var camera:Camera = Camera.getCamera();
 				if(camera)
@@ -115,26 +118,26 @@
 					videoDisplay.source = videoSource;
 					videoDisplay.videoObject.attachCamera(camera);
 					imageSelectionOption.visible = false;
-					addElement(videoDisplayGroup);
+					imageEditMain.addElement(videoDisplayGroup);
 				}	
 			}
 			
-			protected function chooseImage():void
+			protected function chooseDesktopImage():void
 			{
 				_fileRef = new FileReference();
 				_fileRef.browse([IMAGE_FILE_FILTER]);
-				_fileRef.addEventListener(Event.SELECT, selectPicture);						
+				_fileRef.addEventListener(Event.SELECT, selectDesktopPicture);						
 			}	
 			
-			protected function selectPicture(event:Event):void
+			protected function selectDesktopPicture(event:Event):void
 			{
 				_fileRef.load();
-				_fileRef.addEventListener(Event.COMPLETE, loadSelection, false, 0, true);
+				_fileRef.addEventListener(Event.COMPLETE, loadDesktopSelection, false, 0, true);
 			}
 			
-			protected function loadSelection(event:Event):void
+			protected function loadDesktopSelection(event:Event):void
 			{
-				_fileRef.removeEventListener(Event.COMPLETE, loadSelection);
+				_fileRef.removeEventListener(Event.COMPLETE, loadDesktopSelection);
 				var loader:Loader = new Loader();
 				loader.loadBytes(_fileRef.data);
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, generateBitmap);
@@ -165,7 +168,7 @@
 			{
 				imageDisplay.source = data;
 				imageSelectionOption.visible = false;
-				addElement(imageDisplayGroup);
+				imageEditMain.addElement(imageDisplayGroup);
 			}
 			
 			protected function takePicture():void
@@ -173,19 +176,19 @@
 				var snapShot:BitmapData = new BitmapData(videoDisplay.width, videoDisplay.height);
 				snapShot.draw(videoDisplay, videoDisplay.transform.matrix);
 				videoDisplay.videoObject.attachCamera(null);
-				removeElement(videoDisplayGroup);
+				imageEditMain.removeElement(videoDisplayGroup);
 				setBitmapData(snapShot);
 			}
 			
 			protected function cancelCamera():void
 			{
-				removeElement(videoDisplayGroup);
+				imageEditMain.removeElement(videoDisplayGroup);
 				imageSelectionOption.visible = true;
 			}
 			
 			protected function cancelImage():void
 			{
-				removeElement(imageDisplayGroup);
+				imageEditMain.removeElement(imageDisplayGroup);
 				imageSelectionOption.visible = true;
 			}
 			
@@ -392,9 +395,81 @@
 				return point;
 			}
 			
+			private function _enterCameraMode():void
+			{
+				if(KSketch_CanvasView.isMobile)
+					_activateMobileCameraView();
+				else
+					startDesktopCamera();
+			}
+			
+			private function _enterImageMode():void
+			{
+				if(KSketch_CanvasView.isMobile)
+					_activateMobileGalleryView();
+				else
+					chooseDesktopImage();
+			}
+			
+			
 			public function closeImageInsertion():void
 			{
-				PopUpManager.removePopUp(this);
+				close();
+			}
+			
+			
+			private function _activateMobileCameraView():void
+			{
+				if(CameraUI.isSupported)
+				{
+					var camera:CameraUI = new CameraUI();
+					camera.addEventListener(Event.COMPLETE, _imageConfirmed);
+					camera.launch(MediaType.IMAGE);
+					close();
+				}
+			}
+			
+			private function _activateMobileGalleryView():void
+			{
+				if(CameraRoll.supportsBrowseForImage)
+				{
+					var gallery:CameraRoll = new CameraRoll();
+					gallery.addEventListener(Event.SELECT, _imageConfirmed);
+					gallery.browseForImage();
+					close();
+				}
+			}
+			
+			//Air mobiel osnly media functions
+			private function _imageConfirmed(event:Event):void
+			{
+				if(Capabilities.playerType != "PlugIn")
+				{
+					var imagePromise:MediaPromise = (event as MediaEvent).data;
+					dataSource = imagePromise.open();
+					
+					if( imagePromise.isAsync )
+					{
+						var eventSource:IEventDispatcher = dataSource as IEventDispatcher;            
+						eventSource.addEventListener( Event.COMPLETE, _onMediaLoaded );         
+					}
+					else
+					{
+						_readMediaData()	
+					}
+				}
+			}
+			
+			private function _onMediaLoaded(event:Event):void
+			{
+				_readMediaData();
+			}
+			
+			private function _readMediaData():void
+			{
+				var imageBytes:ByteArray = new ByteArray();
+				dataSource.readBytes( imageBytes );
+				_canvasView.navigator.pushView(KSketch_ImageEditingView, imageBytes);
 			}
 		]]>
 	</fx:Script>
@@ -402,7 +477,7 @@
 		<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
 	</s:layout>
 	
-	<s:Group>
+	<s:Group id="imageEditMain">
 		<s:filters>
 			<s:DropShadowFilter 
 				color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
@@ -433,15 +508,18 @@
 				<buttons:KSketch_Button
 					id="activateCameraButton"
 					skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"
-					width="100" height="100"/>
+					width="100" height="100"
+					click="{_enterCameraMode()}"/>
 				<buttons:KSketch_Button
 					id="activateGalleryButton"
 					skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"
-					width="100" height="100"/>
+					width="100" height="100"
+					click="{_enterImageMode()}"/>
 				<buttons:KSketch_Button
 					id="cancelButton"
 					skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"
-					width="100" height="100"/>
+					width="100" height="100"
+					click="{closeImageInsertion()}"/>
 			</s:Group>
 		</s:Group>
 		<s:Group id="videoDisplayGroup">

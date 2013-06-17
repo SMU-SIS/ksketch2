@@ -39,6 +39,8 @@
 			private var _canvasOrigin:Point = new Point();
 			private var _position:int;
 			
+			private var dataSource:IDataInput;
+			
 			//Current pen button that has been toggled
 			private var _selectedButton:KSketch_Toggle_Button;
 			
@@ -205,17 +207,11 @@
 			 */
 			private function _importImage():void				
 			{
-				if(KSketch_CanvasView.isMobile)
-				{
-					
-				}
-				else
-				{
-					var newImageWindow:KSketch_ImageImport_Control = new KSketch_ImageImport_Control();
-					newImageWindow.createDeferredContent();
-					newImageWindow.open(_canvasView, true);
-					PopUpManager.centerPopUp(newImageWindow);
-				}
+				var newImageWindow:KSketch_ImageImport_Control = new KSketch_ImageImport_Control();
+				newImageWindow.init(_KSketch, _interactionControl, _canvasView);
+				newImageWindow.createDeferredContent();
+				newImageWindow.open(_canvasView, true);
+				PopUpManager.centerPopUp(newImageWindow);
 			}
 		]]>
 	</fx:Script>

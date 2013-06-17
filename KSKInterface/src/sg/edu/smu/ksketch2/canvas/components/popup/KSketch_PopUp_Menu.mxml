@@ -66,6 +66,7 @@
 				
 				_canvasView = canvasView;
 				_KSketch = KSketchInstance;
+				_interactionControl = interactionControl;
 				_options = optionsPanel;
 			}
 			

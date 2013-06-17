@@ -14,8 +14,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import flash.geom.Point;
 	import flash.utils.Timer;
 	
-	import mx.events.FlexEvent;
-	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
@@ -67,15 +65,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control,
 							 magnifier:KSketch_Timebar_Magnifier):void
 		{
-			trace("Initiating time control");
+
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
 			_magnifier = magnifier;
+			timeLabels.init(this);
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 
 			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
-
+			
 			maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			time = 0;
 

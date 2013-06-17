@@ -70,5 +70,5 @@
 		</s:Group>
 		<s:Group id="timeDisplay" cacheAsBitmap="true"/>
 	</s:Group>
-	<timebar:KSketch_TimeLabels id="timeLabels"/>
+	<timebar:KSketch_TimeLabelBar id="timeLabels" width="100%"/>
 </s:Group>

@@ -50,13 +50,11 @@
 				
 				//This listener will help the magnifier auto manage its own vertical position
 				timeControl.addEventListener(FlexEvent.UPDATE_COMPLETE, _updateYPosition);
-				trace("Magnifier initialised");
 			}
 			
 			//Sets the Y position according to the timebar's canvas placement
 			private function _updateYPosition(event:Event):void
 			{
-				trace("Updating Y Position for magnifier");
 				//Find the top and bottom vertical limit for placing this pop up
 				//Limits are in Stage Y coordinate system.
 				var topLimit:Number = _referenceComponent.localToGlobal(ORIGIN).y;

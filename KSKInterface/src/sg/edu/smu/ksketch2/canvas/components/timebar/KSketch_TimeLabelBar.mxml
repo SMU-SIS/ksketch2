@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="100%" height="100%" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+		 >
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
+			
+			private var _timeControl:KSketch_TimeControl;
+			private var _labelPool:Vector.<KSketch_TimeLabel>;
+			
+			private static const MAX_DIVISIONS:int = 20;
+			
+			public function init(timeControl:KSketch_TimeControl):void
+			{
+				_timeControl = timeControl;
+				timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _updateLabels);
+				
+				_labelPool = new Vector.<KSketch_TimeLabel>();
+				
+				for(var i:int = 0; i<MAX_DIVISIONS; i++)
+				{
+					_labelPool.push(new KSketch_TimeLabel());
+				}
+			}
+			
+			private function _toggleLabelVisibility():void
+			{
+				labels.visible = onButton.on;
+			}
+			
+			private function _updateLabels(event:Event):void
+			{
+				var maxTime:Number = _timeControl.maximum/1000;
+				var timePerDivision:Number = 1;
+				var power:Number = 0;
+				var numDivisionsRequired:int = Math.ceil(maxTime/timePerDivision);
+				
+				while(numDivisionsRequired > MAX_DIVISIONS)
+				{
+					power += 1;
+					timePerDivision = power * 5;
+					numDivisionsRequired = Math.ceil(maxTime/timePerDivision);
+				}
+
+				if(numDivisionsRequired == labels.numElements)
+					return;
+				
+				labels.removeAllElements();
+				
+				var last:Number = numDivisionsRequired - 1;
+				
+				for(var i:int = 0; i < numDivisionsRequired; i++)
+				{
+					var myLabel:KSketch_TimeLabel = _labelPool[i];
+					myLabel.timeLabelText.text = ((i+1)*timePerDivision).toString();
+					labels.addElement(myLabel);
+					
+					if(i == last)
+						myLabel.visible = false;
+					else
+						myLabel.visible = true;
+				}
+			}
+		]]>
+	</fx:Script>
+	<s:Group width="100%" height="100%" id="timeLabels">
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle"/>
+		</s:layout>
+		<buttons:KSketch_OnOff_Toggle id="onButton" click="_toggleLabelVisibility()"/>
+		<s:Group id="labels" width="100%" height="100%">
+			<s:layout>
+				<s:HorizontalLayout verticalAlign="middle"/>
+			</s:layout>
+		</s:Group>
+	</s:Group>
+</s:Group>

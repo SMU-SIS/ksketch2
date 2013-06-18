@@ -2,18 +2,44 @@
 <s:SkinnablePopUpContainer
 			xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		   xmlns:s="library://ns.adobe.com/flex/spark" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
-		   creationComplete="_init()"
 		   backgroundAlpha="0"
 		   >
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexMouseEvent;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;			
-						
-			private function _init():void
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;			
+			
+			public function init():void
+			{
+				
+			}
+			
+			public function set position(value:int):void
+			{
+				if(value == KSketch_TimeControl.BAR_TOP)
+				{
+					arrowHead.visible = true;
+					arrowHeadBottom.visible = false;
+				}
+				else
+				{
+					arrowHead.visible = false;
+					arrowHeadBottom.visible = true;
+				}
+			}
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				super.open(owner, modal);
+				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);					
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
 			{
 				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);
+				super.close(commit, data);
 			}
 			
 			private function _handleMouseDownOutside(event:FlexMouseEvent):void
@@ -22,7 +48,7 @@
 			}
 		]]>
 	</fx:Script>
-	<s:Group width="100%" height="100%">
+	<s:Group width="100%" height="100%" id="actualContentContainer">
 		<s:Group id="arrowHead">
 			<s:Graphic>
 				<s:Path data="M 0 0 L 20 20 L -20 20 z">
@@ -61,6 +87,15 @@
 					</s:Group>
 				</s:Group>
 			</s:Group>
+		</s:Group>
+		<s:Group id="arrowHeadBottom" y="{arrowHead.height+calloutContents.height}">
+			<s:Graphic>
+				<s:Path data="M 0 20 L 20 0 L -20 0 z">
+					<s:fill>
+						<s:SolidColor color="0x000000"/>
+					</s:fill>
+				</s:Path>
+			</s:Graphic>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

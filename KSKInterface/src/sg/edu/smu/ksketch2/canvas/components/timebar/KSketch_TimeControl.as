@@ -14,6 +14,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import flash.geom.Point;
 	import flash.utils.Timer;
 	
+	import mx.events.FlexEvent;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
@@ -114,6 +116,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				addElementAt(timeLabels,0);
 				addElementAt(timeBar_Spacing,2);
 			}
+			
+			_magnifier.dispatchEvent(new FlexEvent(FlexEvent.UPDATE_COMPLETE));
 		}
 		
 		/**

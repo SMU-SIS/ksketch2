@@ -76,6 +76,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 
 			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+			_magnifier.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 			
 			maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			time = 0;
@@ -219,6 +220,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.addEventListener(MouseEvent.MOUSE_UP, _touchEnd);
 			contentGroup.removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+			_magnifier.removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 		}
 		
 		/**
@@ -277,6 +279,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);
 			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+			_magnifier.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 		}
 		
 		/**

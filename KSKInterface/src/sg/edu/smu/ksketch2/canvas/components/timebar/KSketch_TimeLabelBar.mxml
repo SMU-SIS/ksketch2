@@ -8,6 +8,8 @@
 			
 			private var _timeControl:KSketch_TimeControl;
 			private var _labelPool:Vector.<KSketch_TimeLabel>;
+			private var _lastPartition:Group;
+
 			
 			private static const MAX_DIVISIONS:int = 20;
 			
@@ -16,6 +18,7 @@
 				_timeControl = timeControl;
 				timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _updateLabels);
 				
+				_lastPartition = new Group();
 				_labelPool = new Vector.<KSketch_TimeLabel>();
 				
 				for(var i:int = 0; i<MAX_DIVISIONS; i++)
@@ -52,26 +55,32 @@
 				
 				for(var i:int = 0; i < numDivisionsRequired; i++)
 				{
-					var myLabel:KSketch_TimeLabel = _labelPool[i];
-					myLabel.timeLabelText.text = ((i+1)*timePerDivision).toString();
-					labels.addElement(myLabel);
-					
-					if(i == last)
-						myLabel.visible = false;
+					if(i != last)
+					{
+						var myLabel:KSketch_TimeLabel = _labelPool[i];
+						myLabel.timeLabelText.text = ((i+1)*timePerDivision).toString()+"s";
+						labels.addElement(myLabel);
+					}
 					else
-						myLabel.visible = true;
+					{
+						labels.addElement(_lastPartition);
+						_lastPartition.width = _timeControl.timeToX(_timeControl.maximum) - _timeControl.timeToX(i*timePerDivision*1000);
+					}
+
 				}
 			}
 		]]>
 	</fx:Script>
 	<s:Group width="100%" height="100%" id="timeLabels">
-		<s:layout>
-			<s:HorizontalLayout verticalAlign="middle"/>
-		</s:layout>
-		<buttons:KSketch_OnOff_Toggle id="onButton" click="_toggleLabelVisibility()"/>
+		<s:Group height="100%">
+			<s:layout>
+				<s:VerticalLayout verticalAlign="middle"/>
+			</s:layout>
+			<buttons:KSketch_OnOff_Toggle id="onButton" click="_toggleLabelVisibility()"/>
+		</s:Group>
 		<s:Group id="labels" width="100%" height="100%">
 			<s:layout>
-				<s:HorizontalLayout verticalAlign="middle"/>
+				<s:HorizontalLayout verticalAlign="middle" gap="0"/>
 			</s:layout>
 		</s:Group>
 	</s:Group>

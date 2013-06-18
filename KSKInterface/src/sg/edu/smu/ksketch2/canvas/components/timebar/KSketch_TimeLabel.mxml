@@ -8,9 +8,9 @@
 	</fx:Script>
 	<s:Group width="100%">
 		<s:layout>
-			<s:HorizontalLayout gap="0"/>
+			<s:HorizontalLayout gap="0" horizontalAlign="right"/>
 		</s:layout>
 		<s:Rect width="100%"/>
-		<s:Label id="timeLabelText" text="label" textAlign="center" fontFamily="{KSketchStyles.APP_FONT_FAMILY}" fontSize="9"/>
+		<s:Label id="timeLabelText" text="label" textAlign="right" fontFamily="{KSketchStyles.APP_FONT_FAMILY}" fontSize="9"/>
 	</s:Group>
 </s:Group>

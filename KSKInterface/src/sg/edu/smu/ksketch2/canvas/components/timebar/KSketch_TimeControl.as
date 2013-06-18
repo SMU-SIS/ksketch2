@@ -14,10 +14,14 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import flash.geom.Point;
 	import flash.utils.Timer;
 	
+	import mx.core.FlexGlobals;
 	import mx.events.FlexEvent;
+	
+	import spark.components.Application;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_ContextMenu;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
@@ -45,6 +49,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		protected var _KSketch:KSketch2;
 		protected var _tickmarkControl:KSketch_TickMark_Control;
 		protected var _magnifier:KSketch_Timebar_Magnifier;
+		protected var _keyMenu:KSketch_Timebar_ContextMenu;
+		protected var _interactionTimer:Timer;
+		protected var _longTouch:Boolean = false;
 		
 		protected var _isPlaying:Boolean = false;
 		protected var _timer:Timer;
@@ -58,22 +65,25 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public var timings:Vector.<int>;
 		
 		private var _touchStage:Point = new Point(0,0);
-
+		private var _keyMenuY:Number;
+		
 		public function KSketch_TimeControl()
 		{
 			super();
 		}
 		
 		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control,
-							 magnifier:KSketch_Timebar_Magnifier):void
+							 magnifier:KSketch_Timebar_Magnifier, keyMenu:KSketch_Timebar_ContextMenu):void
 		{
 
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
 			_magnifier = magnifier;
+			_keyMenu = keyMenu;
 			timeLabels.init(this);
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
+			_interactionTimer = new Timer(500);
 
 			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 			_magnifier.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
@@ -96,12 +106,17 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			return _position;
 		}
 		
+		/**
+		 * Sets the position of the time bar
+		 * Either KSketch_TimeControl.BAR_TOP for top
+		 * KSketch_TimeControl.BAR_BOTTOM for bottom
+		 */
 		public function set position(value:int):void
 		{
 			if(value == _position)
 				return;
 			
-			_position = value;	
+			_position = value;
 			
 			if(_position == BAR_TOP)
 			{
@@ -221,6 +236,10 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			stage.addEventListener(MouseEvent.MOUSE_UP, _touchEnd);
 			contentGroup.removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 			_magnifier.removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+			
+			_longTouch = false;
+			_interactionTimer.addEventListener(TimerEvent.TIMER, _triggerLongTouch);
+			_interactionTimer.start();
 		}
 		
 		/**
@@ -276,10 +295,34 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			_magnifier.removeMagnification();
 			
+			if(_longTouch)
+			{
+				_keyMenu.open(contentGroup,true);
+				_keyMenu.x = _magnifier.x;
+
+				if(this.position == BAR_TOP)
+				{
+					_keyMenu.y = contentGroup.localToGlobal(new Point).y + contentGroup.y + 3;
+				}
+				else
+				{
+					_keyMenu.y = contentGroup.localToGlobal(new Point).y - _keyMenu.height - 3;
+				}
+			}
+			
+			_interactionTimer.stop();
+			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);
 			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 			_magnifier.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+		}
+		
+		private function _triggerLongTouch(event:TimerEvent):void
+		{
+			_longTouch = true;
+			_interactionTimer.removeEventListener(TimerEvent.TIMER, _triggerLongTouch);
+			_interactionTimer.stop();
 		}
 		
 		/**

@@ -34,6 +34,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_ContextMenu;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
@@ -67,6 +68,7 @@
 			private var _menuPopUp:KSketch_PopUp_Menu;
 			private var _options:KSketch_Options;
 			private var _magnifier:KSketch_Timebar_Magnifier;
+			private var _keyMenu:KSketch_Timebar_ContextMenu;
 			
 			//These two are just here for the sake of being here/just in case/....
 			//Don't really need them declared
@@ -108,6 +110,7 @@
 				
 				_options = new KSketch_Options();
  				_menuPopUp = new KSketch_PopUp_Menu();
+				_keyMenu = new KSketch_Timebar_ContextMenu();
 				_options.init(this, _menuPopUp);
 				_menuPopUp.init(canvas_component, this, _options, _KSketch, _interactionControl);
 				_magnifier = new KSketch_Timebar_Magnifier();
@@ -115,7 +118,8 @@
 				
 				_menuPopUp.createDeferredContent();
 				_options.createDeferredContent();
-				
+				_keyMenu.createDeferredContent();
+
 				//Initiate the controls
 				if(!isPlayer)
 				{
@@ -123,8 +127,8 @@
 					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, _feedbackPopUp);
 				}
 				
-				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl, _interactionControl);
-				timeControl.init(_KSketch, timeTickControl, _magnifier);
+				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl,_interactionControl);
+				timeControl.init(_KSketch, timeTickControl, _magnifier, _keyMenu);
 
 				leftFrame.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
 				rightFrame.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
@@ -146,7 +150,7 @@
 				
 				_options.applyPreferences();
 				_magnifier.open(this);
-
+				
 				//Fail safe measure
 				if(_needToProcessData)
 					_enterView_ProcessData();

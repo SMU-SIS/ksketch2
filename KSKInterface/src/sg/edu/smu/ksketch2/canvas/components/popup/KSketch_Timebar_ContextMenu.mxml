@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer
+			xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+		   creationComplete="_init()"
+		   backgroundAlpha="0"
+		   >
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexMouseEvent;
+			
+			import sg.edu.smu.ksketch2.KSketchStyles;			
+						
+			private function _init():void
+			{
+				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);
+			}
+			
+			private function _handleMouseDownOutside(event:FlexMouseEvent):void
+			{
+				close();
+			}
+		]]>
+	</fx:Script>
+	<s:Group width="100%" height="100%">
+		<s:Group id="arrowHead">
+			<s:Graphic>
+				<s:Path data="M 0 0 L 20 20 L -20 20 z">
+					<s:fill>
+						<s:SolidColor color="0x000000"/>
+					</s:fill>
+				</s:Path>
+			</s:Graphic>
+		</s:Group>
+		<s:Group id="calloutContents" x="{-calloutContents.width/2}" y="{arrowHead.height}">
+			<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
+				<s:fill>
+					<s:SolidColor color="0x000000"/>
+				</s:fill>
+			</s:Rect>
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout paddingLeft="7.5" paddingRight="7.5" paddingTop="7.5" paddingBottom="7.5"/>
+				</s:layout>
+				<s:Group>
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="{KSketchStyles.APP_BACKGROUND_COLOR}"/>
+						</s:fill>
+					</s:Rect>
+					<s:Group>
+						<s:layout>
+							<s:HorizontalLayout gap="2" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+						</s:layout>
+						<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
+												width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
+						<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
+												width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
+						<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
+												width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
+					</s:Group>
+				</s:Group>
+			</s:Group>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

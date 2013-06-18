@@ -8,11 +8,9 @@
  */
 package sg.edu.smu.ksketch2.canvas.controls
 {
-	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
 	
-	import sg.edu.smu.ksketch2.model.data_structures.IModelObjectList;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;

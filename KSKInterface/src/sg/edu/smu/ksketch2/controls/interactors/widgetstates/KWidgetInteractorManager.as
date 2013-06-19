@@ -3,8 +3,10 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.ui.Keyboard;
+	import flash.utils.Timer;
 	
 	import mx.core.FlexGlobals;
 	
@@ -34,6 +36,8 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 		private var _enabled:Boolean;
 		private var _isInteracting:Boolean;
 		private var _keyDown:Boolean;
+		private var _longPressTimer:Timer;
+		private var _isLongPress:Boolean = false;
 		
 		private var _activeMode:ITouchWidgetMode;
 		public var defaultMode:ITouchWidgetMode;
@@ -57,15 +61,9 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			//freeTransformMode = new KFreeTransformMode(_KSketch, _interactionControl, _widget, modelSpace);
 			activeMode = defaultMode;
 			
+			_longPressTimer = new Timer(500);
 			_modeGesture = new TapGesture(_widget);
-			_modeGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
-			
-			_activateMenuGesture = new TapGesture(_widget);
-			_activateMenuGesture.numTapsRequired = 2;
-			_activateMenuGesture.maxTapDelay = 150;
-			_activateMenuGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleOpenMenu);
-			
-			_modeGesture.requireGestureToFail(_activateMenuGesture);
+			_modeGesture.addEventListener(GestureEvent.GESTURE_POSSIBLE, _handleTapStart);
 			
 			interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, updateWidget);
 			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_BEGIN, updateWidget);
@@ -113,17 +111,51 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			}
 		}
 		
-		private function _handleModeSwitch(event:Event):void
+		private function _handleTapStart(event:Event):void
 		{
-			if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
-				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
-			else
-				transitionMode = KSketch2.TRANSITION_INTERPOLATED;
+			_isLongPress = false;
+			_longPressTimer.start();
+			_longPressTimer.addEventListener(TimerEvent.TIMER, _activatedLongPress);
+
+			_modeGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
+			_modeGesture.addEventListener(GestureEvent.GESTURE_FAILED, _handleTapFail);
 		}
 		
-		private function _handleOpenMenu(event:GestureEvent):void
+		private function _activatedLongPress(event:TimerEvent):void
 		{
-			var point:Point = _widget.parent.localToGlobal(new Point(_widget.x, _widget.y));
+			_isLongPress = true;
+			_longPressTimer.stop();
+			_longPressTimer.removeEventListener(TimerEvent.TIMER, _activatedLongPress);
+		}
+		
+		private function _handleTapFail(event:Event):void
+		{
+			_modeGesture.removeEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
+			_modeGesture.removeEventListener(GestureEvent.GESTURE_FAILED, _handleTapFail);
+			_modeGesture.addEventListener(GestureEvent.GESTURE_POSSIBLE, _handleTapStart);
+		}
+		
+		private function _handleModeSwitch(event:Event):void
+		{
+			if(_isLongPress)
+			{
+				_handleOpenMenu();
+			}
+			else
+			{
+				if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
+					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
+				else
+					transitionMode = KSketch2.TRANSITION_INTERPOLATED;
+			}
+			
+			_modeGesture.removeEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
+			_modeGesture.removeEventListener(GestureEvent.GESTURE_FAILED, _handleTapFail);
+			_modeGesture.addEventListener(GestureEvent.GESTURE_POSSIBLE, _handleTapStart);
+		}
+		
+		private function _handleOpenMenu():void
+		{
 			if(_widget.visible)
 				_contextMenu.open(_widget, true);
 		}

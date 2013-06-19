@@ -59,7 +59,6 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			if(!value)
 			{
 				_widget.strokeColor = KSketchStyles.WIDGET_INTERPOLATE_COLOR;
-				_widget.centroid.graphics.lineStyle(2, KSketchStyles.WIDGET_INTERPOLATE_COLOR);
 				_widget.centroid.graphics.beginFill(KSketchStyles.WIDGET_PERFORM_COLOR);
 				_widget.centroid.graphics.drawCircle(0,0,KSketchStyles.WIDGET_CENTROID_SIZE);
 				_widget.centroid.graphics.endFill();
@@ -67,7 +66,6 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			else
 			{
 				_widget.strokeColor = KSketchStyles.WIDGET_PERFORM_COLOR;
-				_widget.centroid.graphics.lineStyle(2, KSketchStyles.WIDGET_INTERPOLATE_COLOR);
 				_widget.centroid.graphics.beginFill(KSketchStyles.WIDGET_PERFORM_COLOR);
 				_widget.centroid.graphics.drawCircle(0,0,KSketchStyles.WIDGET_CENTROID_SIZE);
 				_widget.centroid.graphics.endFill();

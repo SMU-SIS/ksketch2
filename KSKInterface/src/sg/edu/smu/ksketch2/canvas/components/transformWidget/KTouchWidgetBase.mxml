@@ -25,11 +25,8 @@
 			<s:Path winding="nonZero" data="M87.319-56.954
 					c0.069-0.069,18.315-18.173,18.315-18.173l9.649,9.787l4.025-53.302l-53.163,4.027l10.062,10.062c0,0-14.939,14.902-17.855,17.817
 					C71.592-77.417,79.03-69.173,87.319-56.954z">
-				<s:stroke>
-					<s:SolidColorStroke weight="5" caps="none" joints="miter" miterLimit="10" color="{strokeColor}"/>
-				</s:stroke>
 				<s:fill>
-					<s:SolidColor alpha="0" color="0xffffff"/>
+					<s:SolidColor color="{strokeColor}" alpha="0.4"/>
 				</s:fill>
 			</s:Path>
 		</s:Graphic>
@@ -38,11 +35,8 @@
 			<s:Path winding="nonZero" data="M58.274,86.744
 					c0.069,0.07,17.616,17.689,17.616,17.689l-9.786,9.648l53.301,4.025l-4.026-53.162l-10.062,10.062
 					c0,0-15.068-14.859-17.983-17.773C80.682,67.002,72.691,76.514,58.274,86.744z">
-				<s:stroke>
-					<s:SolidColorStroke weight="5" caps="none" joints="miter" miterLimit="10" color="{strokeColor}"/>
-				</s:stroke>
 				<s:fill>
-					<s:SolidColor alpha="0" color="0xffffff"/>
+					<s:SolidColor color="{strokeColor}" alpha="0.4"/>
 				</s:fill>
 			</s:Path>
 		</s:Graphic>
@@ -51,11 +45,8 @@
 			<s:Path winding="nonZero" data="M-87.84-58.724
 					c-0.07-0.07-17.891-17.751-17.891-17.751l-9.648,9.787l-4.025-53.302l53.162,4.025l-10.063,10.063
 					c0,0,15.151,15.086,18.065,18.001C-72.049-78.626-79.717-70.228-87.84-58.724z">
-				<s:stroke>
-					<s:SolidColorStroke weight="5" caps="none" joints="miter" miterLimit="10" color="{strokeColor}"/>
-				</s:stroke>
 				<s:fill>
-					<s:SolidColor alpha="0" color="0xffffff"/>
+					<s:SolidColor  color="{strokeColor}" alpha="0.4"/>
 				</s:fill>
 			</s:Path>
 		</s:Graphic>
@@ -64,11 +55,8 @@
 			<s:Path winding="nonZero" data="M-57.689,88.227
 					c-0.069,0.068-17.988,18.09-17.988,18.09l9.787,9.648l-53.3,4.025l4.024-53.162l10.063,10.062c0,0,14.729-14.674,17.644-17.588
 					C-79.598,70.086-71.646,79.25-57.689,88.227z">
-				<s:stroke>
-					<s:SolidColorStroke weight="5" caps="none" joints="miter" miterLimit="10" color="{strokeColor}"/>
-				</s:stroke>
 				<s:fill>
-					<s:SolidColor alpha="0" color="0xffffff"/>
+					<s:SolidColor color="{strokeColor}" alpha="0.4"/>
 				</s:fill>
 			</s:Path>
 		</s:Graphic>
@@ -87,11 +75,8 @@
 			<s:Path x="-92.5415" y="-87.1927" winding="nonZero" data="M130.6 168.127C178.938 147.481 196.153 91.9671 178.053 52.6062 157.184 7.2371 105.571 -11.3684 62.1509 7.02225 33.5981 19.1004 18.5898 43.5808 13.2002 62.7264 7.99414 60.7058 0 58.0223 0 58.0223L17.3872 104.481 59.895 80.5496C59.895 80.5496 49.1919
 					75.8592 44.9341 74.2361 52.041 55.49 64.377 46.1961 76.3911 41.0076 108.239 27.2137 133.848 44.0476 143.75 67.3992 155.5 94.9788 148.481 122.629 117.042 136.028 91.4399 146.963 58.0962 135.766 47.9932 108.018 39.5068 111.492 23.6279 118.401 14.9028
 					122.153 31.7559 161.608 87.0298 186.739 130.6 168.127Z">
-				<s:stroke>
-					<s:SolidColorStroke weight="5" caps="none" joints="miter" miterLimit="10" color="{strokeColor}"/>
-				</s:stroke>
 				<s:fill>
-					<s:SolidColor alpha="0" color="0xffffff"/>
+					<s:SolidColor color="{strokeColor}" alpha="0.4"/>
 				</s:fill>
 			</s:Path>
 		</s:Graphic>

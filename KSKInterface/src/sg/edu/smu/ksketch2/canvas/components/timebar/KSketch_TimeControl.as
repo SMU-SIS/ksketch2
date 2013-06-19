@@ -62,7 +62,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public var timings:Vector.<int>;
 		
 		private var _touchStage:Point = new Point(0,0);
-		private var _keyMenuY:Number;
+		private var _substantialMovement:Boolean = false;
 		
 		public function KSketch_TimeControl()
 		{
@@ -205,6 +205,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		{
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
+			_substantialMovement = false;
+			
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			
 			var dx:Number = Math.abs(xPos - timeToX(time));
@@ -250,6 +252,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
+			_substantialMovement = true;
+
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			
 			//Rout interaction into the tick mark control if there is a grabbed tick
@@ -292,7 +296,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			_magnifier.removeMagnification();
 			
-			if(_longTouch)
+			if(_longTouch && !_substantialMovement)
 			{
 				_keyMenu.open(contentGroup,true);
 				_keyMenu.x = _magnifier.x;

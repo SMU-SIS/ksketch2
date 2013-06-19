@@ -125,7 +125,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 		{
 			var point:Point = _widget.parent.localToGlobal(new Point(_widget.x, _widget.y));
 			if(_widget.visible)
-				_contextMenu.open(_widget);
+				_contextMenu.open(_widget, true);
 		}
 		
 		public function updateWidget(event:Event):void

@@ -3,6 +3,8 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexMouseEvent;
+			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin;
 			
@@ -11,6 +13,14 @@
 				super.open(owner, modal);
 				x = owner.x;
 				y = owner.y;
+
+				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _closeContextMenu);
+			}
+			
+			private function _closeContextMenu(event:FlexMouseEvent):void
+			{
+				close();
+				removeEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _closeContextMenu);
 			}
 		]]>
 	</fx:Script>

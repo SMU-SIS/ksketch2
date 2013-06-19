@@ -39,11 +39,11 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_forward_down:Class;
 		
-		[Embed("assets/Button_Texture_Previous.png")] 
+		[Embed("assets/Button_Texture_Prev.png")] 
 		[Bindable] 
 		public static var texture_previous:Class;
 		
-		[Embed("assets/Button_Texture_Previous_Down.png")] 
+		[Embed("assets/Button_Texture_Prev_Down.png")] 
 		[Bindable] 
 		public static var texture_previous_down:Class;
 		
@@ -214,5 +214,21 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_Texture_Extend_Down.png")] 
 		[Bindable] 
 		public static var texture_extend_down:Class;
+		
+		[Embed("assets/Button_Texture_Group.png")] 
+		[Bindable] 
+		public static var texture_group:Class;
+		
+		[Embed("assets/Button_Texture_Group_Down.png")] 
+		[Bindable] 
+		public static var texture_group_down:Class;
+		
+		[Embed("assets/Button_Texture_Ungroup.png")] 
+		[Bindable] 
+		public static var texture_ungroup:Class;
+		
+		[Embed("assets/Button_Texture_Ungroup_Down.png")] 
+		[Bindable] 
+		public static var texture_ungroup_down:Class;
 	}
 }

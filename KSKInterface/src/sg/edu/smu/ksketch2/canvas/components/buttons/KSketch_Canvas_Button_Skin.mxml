@@ -81,6 +81,6 @@
 		<s:layout>
 			<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:Image id="texture" width="60%" height="60%" smooth="true" smoothingQuality="high"/>
+		<s:Image id="texture" width="70%" height="70%" smooth="true" smoothingQuality="high"/>
 	</s:Group>
 </s:SparkButtonSkin>

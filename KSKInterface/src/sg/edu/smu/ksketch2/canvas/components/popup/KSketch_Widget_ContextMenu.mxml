@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
+		 xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0"
+		 xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+		 creationComplete="_initButtons()">
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexMouseEvent;
 			
+			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin;
+			
+			public function _initButtons():void
+			{
+				groupButton.init(KSketchAssets.texture_group, KSketchAssets.texture_group_down);
+				groupButton.initSkin();
+				
+				ungroupButton.init(KSketchAssets.texture_ungroup , KSketchAssets.texture_ungroup_down);
+				ungroupButton.initSkin();
+			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
@@ -45,10 +57,31 @@
 					<s:layout>
 						<s:HorizontalLayout gap="2" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 					</s:layout>
-					<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
-											width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
-					<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
-											width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
+					<buttons:KSketch_Button
+						id="groupButton"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
+					<buttons:KSketch_Button
+						id="ungroupButton"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
+					<buttons:KSketch_Button
+						id="copyButton"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
+					<buttons:KSketch_Button
+						id="pasteButton"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
+					<buttons:KSketch_Button
+						id="cutButton"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
 				</s:Group>
 			</s:Group>
 		</s:Group>

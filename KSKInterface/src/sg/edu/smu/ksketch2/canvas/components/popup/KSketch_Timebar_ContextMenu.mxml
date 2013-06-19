@@ -3,17 +3,26 @@
 			xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		   xmlns:s="library://ns.adobe.com/flex/spark" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
 		   backgroundAlpha="0"
+		   creationComplete="_initButtons()"
 		   >
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexMouseEvent;
 			
+			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;			
 			
-			public function init():void
+			public function _initButtons():void
 			{
+				insertButton.init(KSketchAssets.texture_insert, KSketchAssets.texture_insert_down);
+				insertButton.initSkin();
 				
+				removeButton.init(KSketchAssets.texture_remove , KSketchAssets.texture_remove_down);
+				removeButton.initSkin();
+				
+				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down);
+				clearButton.initSkin();
 			}
 			
 			public function set position(value:int):void
@@ -78,12 +87,21 @@
 						<s:layout>
 							<s:HorizontalLayout gap="2" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 						</s:layout>
-						<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
-												width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
-						<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
-												width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
-						<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
-												width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
+						<buttons:KSketch_Button
+							id="insertButton"
+							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							/>
+						<buttons:KSketch_Button
+							id="removeButton"
+							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							/>
+						<buttons:KSketch_Button
+							id="clearButton"
+							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							/>
 					</s:Group>
 				</s:Group>
 			</s:Group>

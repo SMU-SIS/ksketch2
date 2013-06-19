@@ -13,8 +13,8 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Widget_ContextMenu;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetBase;
-	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetMenu;
 	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
@@ -26,7 +26,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 		protected var _widget:KTouchWidgetBase;
 		protected var _modelSpace:DisplayObject;
 		protected var _widgetSpace:DisplayObject;
-		protected var _contextMenu:KTouchWidgetMenu;
+		protected var _contextMenu:KSketch_Widget_ContextMenu;
 	
 		private var _modeGesture:TapGesture;
 		private var _activateMenuGesture:TapGesture;
@@ -50,7 +50,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			_widget = widgetBase;
 			_modelSpace = modelSpace;
 			_widgetSpace = _widget.parent;
-			_contextMenu = new KTouchWidgetMenu(KSketchInstance, interactionControl, widgetBase, this);
+			_contextMenu = new KSketch_Widget_ContextMenu();
 			
 			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace);
 			//steeringMode = new KSteeringMode(_KSketch, _interactionControl, _widget);
@@ -125,7 +125,7 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 		{
 			var point:Point = _widget.parent.localToGlobal(new Point(_widget.x, _widget.y));
 			if(_widget.visible)
-				_contextMenu.showMenu(_widget, false, point.x, point.y);
+				_contextMenu.open(_widget);
 		}
 		
 		public function updateWidget(event:Event):void

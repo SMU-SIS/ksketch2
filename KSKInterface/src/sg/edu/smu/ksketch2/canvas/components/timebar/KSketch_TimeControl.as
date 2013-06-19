@@ -14,10 +14,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import flash.geom.Point;
 	import flash.utils.Timer;
 	
-	import mx.core.FlexGlobals;
 	import mx.events.FlexEvent;
-	
-	import spark.components.Application;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;

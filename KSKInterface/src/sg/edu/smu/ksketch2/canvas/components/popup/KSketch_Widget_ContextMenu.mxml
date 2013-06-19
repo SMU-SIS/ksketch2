@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin;
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				super.open(owner, modal);
+				x = owner.x;
+				y = owner.y;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Group id="calloutContents">
+		<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
+			<s:fill>
+				<s:SolidColor color="0x000000"/>
+			</s:fill>
+		</s:Rect>
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout paddingLeft="7.5" paddingRight="7.5" paddingTop="7.5" paddingBottom="7.5"/>
+			</s:layout>
+			<s:Group>
+				<s:Rect width="100%" height="100%">
+					<s:fill>
+						<s:SolidColor color="{KSketchStyles.APP_BACKGROUND_COLOR}"/>
+					</s:fill>
+				</s:Rect>
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout gap="2" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+					</s:layout>
+					<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
+											width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
+					<buttons:KSketch_Button skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
+											width="{KSketchStyles.MENU_BUTTON_WIDTH}" height="{KSketchStyles.MENU_BUTTON_HEIGHT}"/>
+				</s:Group>
+			</s:Group>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

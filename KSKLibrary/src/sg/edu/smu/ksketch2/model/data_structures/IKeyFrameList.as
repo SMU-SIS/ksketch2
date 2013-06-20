@@ -42,6 +42,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 */
 		function insertKey(key:IKeyFrame):void;
 		
+		/**
+		 * Removes the given key frame from the key list. Hooks the next key to prev key and vice versa
+		 */
+		function removeKeyFrame(key:IKeyFrame):void
+		
 		function serialize():XML;
 	}
 }

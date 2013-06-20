@@ -224,6 +224,21 @@ package sg.edu.smu.ksketch2.model.data_structures
 				trace("There are no keys in this list");
 		}
 		
+		public function removeKeyFrame(key:IKeyFrame):void
+		{
+			if(key == _head)
+				throw new Error("You cannot remove the head of a key list");
+			
+			var prevKey:IKeyFrame = key.previous;
+			var nextKey:IKeyFrame = key.next;
+			
+			if(prevKey)
+				(prevKey as KKeyFrame).next = nextKey;
+			
+			if(nextKey)
+				(nextKey as KKeyFrame).previous = prevKey;
+		}
+		
 		/**
 		 * Splits given key at time and returns the front portion
 		 * Throws an error if given key does not exist in this list

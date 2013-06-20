@@ -32,6 +32,7 @@ package sg.edu.smu.ksketch2.operators
 		function endTransition(time:int, op:KCompositeOperation):void;
 		
 		function insertBlankKeyFrame(time:int, op:KCompositeOperation):void;
+		function removeKeyFrame(time:int, op:KCompositeOperation):void;
 		function clearAllMotionsAfterTime(time:int, op:KCompositeOperation):void;
 		
 		/**

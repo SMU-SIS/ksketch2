@@ -1,7 +1,11 @@
 package sg.edu.smu.ksketch2.utils
 {
+	import flash.geom.Point;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
+	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 
 	public class KPathProcessing
@@ -63,6 +67,65 @@ package sg.edu.smu.ksketch2.utils
 					}
 				}
 			}
+		}
+		
+		public static function joinPaths(pathBefore:KPath, pathAfter:KPath, frontKeyDuration:int, backKeyDuration:int):KPath
+		{
+			var joinedPath:KPath = new KPath();
+			
+			var i:int;
+			var length:int = pathBefore.length; 		
+			var length2:int = pathAfter.length;
+			
+			if(length == 0 && length2 == 0)
+			{
+				joinedPath.points.push(new KTimedPoint(0,0,0));
+				joinedPath.points.push(new KTimedPoint(0,0,frontKeyDuration+backKeyDuration));				
+			}
+			else
+			{
+				var currentPoint:KTimedPoint;
+				var accumulatedPoint:KTimedPoint;
+				
+				
+				
+				if(length > 0)
+				{
+					for(i = 0; i<length; i++)
+					{
+						currentPoint = pathBefore.points[i].clone();
+						joinedPath.points.push(currentPoint);
+					}
+				}
+				else
+				{
+					joinedPath.points.push(new KTimedPoint(0,0,0));
+					joinedPath.points.push(new KTimedPoint(0,0,frontKeyDuration));
+				}
+				
+				accumulatedPoint = joinedPath.points[joinedPath.length-1];
+				
+				
+				if(length2 > 0)
+				{
+					for(i = 0; i<length2; i++)
+					{
+						currentPoint = pathAfter.points[i].clone();
+						currentPoint.x = currentPoint.x + accumulatedPoint.x;
+						currentPoint.y = currentPoint.y + accumulatedPoint.y;
+						currentPoint.time = currentPoint.time + accumulatedPoint.time;
+						joinedPath.points.push(currentPoint);
+					}
+				}
+				else
+				{
+					joinedPath.push(accumulatedPoint.x, accumulatedPoint.y, accumulatedPoint.time + backKeyDuration);
+				}
+			}
+			
+			
+
+			return joinedPath;
 		}
 		
 		/**

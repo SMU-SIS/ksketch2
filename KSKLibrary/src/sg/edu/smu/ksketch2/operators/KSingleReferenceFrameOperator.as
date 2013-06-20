@@ -340,9 +340,21 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function canRemoveKey(time:int):Boolean
 		{
-			var hasKeyAtTime:Boolean = (_refFrame.getKeyAtTime(time) as KSpatialKeyFrame != null);
+			var key:IKeyFrame = _refFrame.getKeyAtTime(time);
+			var canRemove:Boolean = false;
 			
-			return hasKeyAtTime;
+			if(key)
+			{
+				canRemove = true;
+				
+				if(!key.next)
+					canRemove = false;
+				
+				if(key == _refFrame.head)
+					canRemove = false;
+			}
+			
+			return canRemove;
 		}
 		
 		/**
@@ -720,6 +732,45 @@ package sg.edu.smu.ksketch2.operators
 				if(op)
 					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));		
 			}
+			_dirty = true;
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
+		}
+		
+		/**
+		 * Removes the key. Transition happening at the time will become non-keyed
+		 * Keeps the object's transform consistent (as compared to before removal)
+		 * before and after the given time. 
+		 */
+		public function removeKeyFrame(time:int, op:KCompositeOperation):void
+		{
+			var key:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
+			
+			//This method should not even be called if the conditions are not correct
+			//if there's a key after time, we need to split it
+			if(key)
+			{
+				var nextKey:KSpatialKeyFrame = key.next as KSpatialKeyFrame;
+				
+				var oldPath:KPath = nextKey.translatePath.clone();
+				nextKey.translatePath = KPathProcessing.joinPaths(key.translatePath, nextKey.translatePath,key.duration, nextKey.duration);
+				op.addOperation(new KReplacePathOperation(nextKey, nextKey.translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
+				oldPath = nextKey.rotatePath.clone();
+				nextKey.rotatePath = KPathProcessing.joinPaths(key.rotatePath, nextKey.rotatePath,key.duration, nextKey.duration);
+				op.addOperation(new KReplacePathOperation(nextKey, nextKey.rotatePath, oldPath, KSketch2.TRANSFORM_ROTATION));
+				
+				oldPath = nextKey.scalePath.clone();
+				nextKey.scalePath = KPathProcessing.joinPaths(key.scalePath, nextKey.scalePath,key.duration, nextKey.duration);
+				op.addOperation(new KReplacePathOperation(nextKey, nextKey.scalePath, oldPath, KSketch2.TRANSFORM_SCALE));
+				
+				var removeKeyOp:KRemoveKeyOperation = new KRemoveKeyOperation(key.previous, key.next, key);
+				_refFrame.removeKeyFrame(key);
+				op.addOperation(removeKeyOp);
+			}
+			else
+			{
+				throw new Error("There is no key at time! Cannot remove key");
+			}
+			
 			_dirty = true;
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 		}

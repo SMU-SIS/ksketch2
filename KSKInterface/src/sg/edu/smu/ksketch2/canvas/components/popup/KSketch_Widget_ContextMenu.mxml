@@ -7,11 +7,25 @@
 		<![CDATA[
 			import mx.events.FlexMouseEvent;
 			
+			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin;
+			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+			import sg.edu.smu.ksketch2.model.objects.KGroup;
+			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+			import sg.edu.smu.ksketch2.utils.KSelection;
 			
-			public function _initButtons():void
+			private var _KSketch:KSketch2;
+			private var _interactionControl:KMobileInteractionControl;
+			
+			public function init(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl):void
+			{
+				_KSketch = KSketchInstance;
+				_interactionControl = interactionControl;
+			}
+			
+			private function _initButtons():void
 			{
 				groupButton.init(KSketchAssets.texture_group, KSketchAssets.texture_group_down);
 				groupButton.initSkin();
@@ -25,7 +39,9 @@
 				super.open(owner, modal);
 				x = owner.x;
 				y = owner.y;
-
+				
+				_updateGroup();
+				_updateUngroup();
 				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _closeContextMenu);
 			}
 			
@@ -33,6 +49,49 @@
 			{
 				close();
 				removeEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _closeContextMenu);
+			}
+			
+			private function _updateGroup():void
+			{
+				if(_interactionControl.selection.objects.length() > 1)
+					groupButton.enabled = true;
+				else
+					groupButton.enabled = false;
+			}
+			
+			private function _group(event:MouseEvent = null):void
+			{
+				_interactionControl.begin_interaction_operation();
+				var op:KCompositeOperation = new KCompositeOperation();
+				var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(_interactionControl.selection.objects, _KSketch.time, false, op);	
+				_interactionControl.selection = new KSelection(newObjectList);
+				_interactionControl.end_interaction_operation(op, _interactionControl.selection);
+				close();
+			}
+			
+			private function _updateUngroup():void
+			{
+				ungroupButton.enabled = false;
+				
+				if(_interactionControl.selection.objects.length() > 0)
+				{
+					var objects:KModelObjectList = _interactionControl.selection.objects;
+					
+					for(var i:int = 0; i<objects.length(); i++)
+					{
+						if(objects.getObjectAt(i).parent != _KSketch.root || objects.getObjectAt(i) is KGroup)
+							ungroupButton.enabled = true;
+					}
+				}
+			}
+			private function _ungroup(event:MouseEvent = null):void
+			{
+				_interactionControl.begin_interaction_operation();
+				var op:KCompositeOperation = new KCompositeOperation();
+				var newObjectList:KModelObjectList = _KSketch.hierarchy_Ungroup(_interactionControl.selection.objects, _KSketch.time, op);	
+				_interactionControl.selection = new KSelection(newObjectList);
+				_interactionControl.end_interaction_operation(op, _interactionControl.selection);
+				close();
 			}
 		]]>
 	</fx:Script>
@@ -59,15 +118,17 @@
 					</s:layout>
 					<buttons:KSketch_Button
 						id="groupButton"
+						click="_group(event)"
 						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 						/>
 					<buttons:KSketch_Button
 						id="ungroupButton"
+						click="_ungroup(event)"
 						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 						/>
-					<buttons:KSketch_Button
+<!--					<buttons:KSketch_Button
 						id="copyButton"
 						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
@@ -81,7 +142,7 @@
 						id="cutButton"
 						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-						/>
+						/>-->
 				</s:Group>
 			</s:Group>
 		</s:Group>

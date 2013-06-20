@@ -54,7 +54,10 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 			_widget = widgetBase;
 			_modelSpace = modelSpace;
 			_widgetSpace = _widget.parent;
+			
 			_contextMenu = new KSketch_Widget_ContextMenu();
+			_contextMenu.init(_KSketch, _interactionControl);
+			
 			
 			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace);
 			//steeringMode = new KSteeringMode(_KSketch, _interactionControl, _widget);

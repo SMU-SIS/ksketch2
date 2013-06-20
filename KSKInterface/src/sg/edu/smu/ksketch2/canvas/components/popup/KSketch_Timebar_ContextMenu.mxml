@@ -9,11 +9,93 @@
 		<![CDATA[
 			import mx.events.FlexMouseEvent;
 			
+			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;			
+			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;			
 			
-			public function _initButtons():void
+			private var _KSketch:KSketch2;
+			private var _interactionControl:KMobileInteractionControl;
+			
+			public function init(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl):void
+			{
+				_KSketch = KSketchInstance;
+				_interactionControl = interactionControl;
+				
+				
+			}
+			
+			private function _updateInsertKey():void
+			{
+				if(!_interactionControl.selection)
+				{	
+					insertButton.enabled = false;
+					return;
+				}
+				
+				if(_interactionControl.selection.objects.length() != 1)
+				{
+					insertButton.enabled = false;
+					return;
+				}
+				
+				if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canInsertKey(_KSketch.time))
+				{
+					insertButton.enabled = true;
+					return;
+				}
+				
+				insertButton.enabled = false;
+			}
+			
+			private function _updateRemoveKey():void
+			{
+				if(!_interactionControl.selection)
+				{	
+					removeButton.enabled = false;
+					return;
+				}
+				
+				if(_interactionControl.selection.objects.length() != 1)
+				{
+					removeButton.enabled = false;
+					return;
+				}
+				
+				if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canRemoveKey(_KSketch.time))
+				{
+					removeButton.enabled = true;
+					return;
+				}
+				
+				removeButton.enabled = false;
+			}
+			
+			private function _updateClearKeys():void
+			{
+				if(!_interactionControl.selection)
+				{	
+					clearButton.enabled = false;
+					return;
+				}
+				
+				if(_interactionControl.selection.objects.length() != 1)
+				{
+					clearButton.enabled = false;
+					return;
+				}
+				
+				if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canClearKeys(_KSketch.time))
+				{
+					clearButton.enabled = true;
+					return;
+				}
+				
+				clearButton.enabled = false;
+			}
+			
+			private function _initButtons():void
 			{
 				insertButton.init(KSketchAssets.texture_insert, KSketchAssets.texture_insert_down);
 				insertButton.initSkin();
@@ -42,6 +124,11 @@
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
 				super.open(owner, modal);
+				
+				_updateInsertKey();
+				_updateRemoveKey();
+				_updateClearKeys();
+				
 				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);					
 			}
 			

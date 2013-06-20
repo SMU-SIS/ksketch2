@@ -24,6 +24,8 @@ package sg.edu.smu.ksketch2.operators
 		function get transitionType():int;
 		function canInterpolate(time:int):Boolean;
 		function canInsertKey(time:int):Boolean;
+		function canRemoveKey(time:int):Boolean;
+		function canClearKeys(time:int):Boolean;
 		
 		function beginTransition(time:int, transitionType:int, op:KCompositeOperation):void;
 		function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void;

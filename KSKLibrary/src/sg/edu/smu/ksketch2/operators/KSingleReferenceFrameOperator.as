@@ -335,6 +335,27 @@ package sg.edu.smu.ksketch2.operators
 		}
 		
 		/**
+		 * Returns a boolean denoting whether it is possible to remove a key
+		 * from this operator's key list
+		 */
+		public function canRemoveKey(time:int):Boolean
+		{
+			var hasKeyAtTime:Boolean = (_refFrame.getKeyAtTime(time) as KSpatialKeyFrame != null);
+			
+			return hasKeyAtTime;
+		}
+		
+		/**
+		 * Returns a boolean denoting whether it is possible to remove keys after given time
+		 */
+		public function canClearKeys(time:int):Boolean
+		{
+			var hasKeyAfterTime:Boolean = (_refFrame.getKeyAftertime(time) as KSpatialKeyFrame != null);
+			
+			return hasKeyAfterTime;
+		}
+		
+		/**
 		 * Preps the object for transition
 		 * Checks for errors and inconsistencies and complains if the object is not in a magical state
 		 * --- THe previous operation did not clean up the object

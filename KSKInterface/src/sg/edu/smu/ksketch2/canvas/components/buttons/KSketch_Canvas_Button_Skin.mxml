@@ -23,8 +23,7 @@
 <s:SparkButtonSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
              xmlns:s="library://ns.adobe.com/flex/spark" 
              xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
-             minWidth="21" minHeight="21" 
-             alpha.disabled="0.5" xmlns:ksketch2="sg.edu.smu.ksketch2.*">
+             minWidth="21" minHeight="21" xmlns:ksketch2="sg.edu.smu.ksketch2.*">
      
     <fx:Metadata>
         <![CDATA[ 
@@ -51,6 +50,7 @@
 	<s:filters>
 		<s:DropShadowFilter
 			alpha="{KSketchStyles.CANVAS_BUTTON_SHADOW_ALPHA}"
+			alpha.disabled="0"
 			angle="{KSketchStyles.CANVAS_BUTTON_SHADOW_ANGLE}"
 			color="{KSketchStyles.CANVAS_BUTTON_SHADOW_COLOR}"
 			distance="{KSketchStyles.CANVAS_BUTTON_SHADOW_DISTANCE}"
@@ -65,7 +65,9 @@
         <s:fill>
 			<s:SolidColor id="backgroundFill"
 				color.up="{KSketchStyles.CANVAS_BUTTON_NORMAL}"
-				color.down="{KSketchStyles.CANVAS_BUTTON_ACTIVATED}"/>
+				color.over="{KSketchStyles.CANVAS_BUTTON_ACTIVATED}"
+				color.down="{KSketchStyles.CANVAS_BUTTON_ACTIVATED}"
+				color.disabled="{KSketchStyles.CANVAS_BUTTON_NORMAL}"/>
         </s:fill>
     </s:Rect>
 
@@ -77,7 +79,7 @@
         </s:stroke>
     </s:Rect>
     
-	<s:Group width="100%" height="100%">
+	<s:Group width="100%" height="100%" alpha.disabled="0.25">
 		<s:layout>
 			<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>

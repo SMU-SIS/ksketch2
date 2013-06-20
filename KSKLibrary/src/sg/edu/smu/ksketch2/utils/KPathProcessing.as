@@ -87,8 +87,6 @@ package sg.edu.smu.ksketch2.utils
 				var currentPoint:KTimedPoint;
 				var accumulatedPoint:KTimedPoint;
 				
-				
-				
 				if(length > 0)
 				{
 					for(i = 0; i<length; i++)

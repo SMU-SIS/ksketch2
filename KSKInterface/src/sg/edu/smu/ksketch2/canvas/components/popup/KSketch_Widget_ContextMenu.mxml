@@ -5,6 +5,7 @@
 		 creationComplete="_initButtons()">
 	<fx:Script>
 		<![CDATA[
+			import mx.core.FlexGlobals;
 			import mx.events.FlexMouseEvent;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
@@ -18,6 +19,9 @@
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KMobileInteractionControl;
+			
+			[Bindable]
+			private var xPosFactor:Number = 2;
 			
 			public function init(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl):void
 			{
@@ -37,8 +41,40 @@
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
 				super.open(owner, modal);
-				x = owner.x;
-				y = owner.y;
+				
+				//STEP 1: COMPUTE PLACING BOUNDS FIRST
+				var canvasBounds:Rectangle = owner.parent.getBounds(FlexGlobals.topLevelApplication as DisplayObject);
+				var widgetPosition:Point = owner.localToGlobal(new Point());
+				var xPos:Number = widgetPosition.x;
+				var xVariant:Number;
+				//Do the left test
+				if(xPos < (canvasBounds.width/4))
+				{
+					xVariant = xPos - width;
+					if(xVariant < 0)
+						xPos = (width/2) + 50;
+				}
+				else if(xPos > (canvasBounds.width*0.75))//do the right test
+				{
+					//USE THE APPLICATION WIDTH. THE PARENT CONTAINER WILL EXPAND ITSELF IF THE WIDGET IS NEAR THE EDGES
+					//AND THEN THE TESTING WILL FAIL BECAUSE THE BOUNDARY KEEPS INCREASING ITS SIZE
+					xVariant = xPos + (FlexGlobals.topLevelApplication as DisplayObject).width;
+
+					if(xVariant > (FlexGlobals.topLevelApplication as DisplayObject).width)
+						xPos = (FlexGlobals.topLevelApplication as DisplayObject).width - (width/2) - 50;
+				}
+
+				x = xPos;
+					
+				var topLimit:Number = canvasBounds.y;
+				var bottomLimit:Number = canvasBounds.y + canvasBounds.height - height;
+				var heightVariant:Number = height + 25
+				var yPos:Number =  owner.y - heightVariant;
+				
+				if(yPos < topLimit)
+					yPos = owner.y + height + heightVariant;
+				
+				y = yPos;
 				
 				_updateGroup();
 				_updateUngroup();
@@ -96,7 +132,7 @@
 		]]>
 	</fx:Script>
 	
-	<s:Group id="calloutContents">
+	<s:Group id="calloutContents" x="{-calloutContents.width/2}">
 		<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
 			<s:fill>
 				<s:SolidColor color="0x000000"/>

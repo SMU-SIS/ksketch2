@@ -16,6 +16,7 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
+	import sg.edu.smu.ksketch2.operators.operations.KParentChangeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KVisibilityChangedOperation;
 
 	public class KVisibilityControl implements IVisibilityControl
@@ -64,8 +65,16 @@ package sg.edu.smu.ksketch2.operators
 		{
 			//Look for the relevant key at given time first
 			var key:IVisibilityKey = _visibilityKeys.getActiveKey(time);
+			
 			if(key)
-			{
+			{				
+				if(time  == _object.transformInterface.firstKeyTime)
+				{
+					op.addOperation(new KParentChangeOperation(_object, null, _object.parent));
+					_object.parent = null;
+					return;
+				}
+				
 				if(key.visible == visible)
 					return;
 				

@@ -417,6 +417,12 @@
 				close();
 			}
 			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				super.close(commit,data);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
+			}
+			
 			
 			private function _activateMobileCameraView():void
 			{

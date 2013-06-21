@@ -230,5 +230,13 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_Texture_Ungroup_Down.png")] 
 		[Bindable] 
 		public static var texture_ungroup_down:Class;
+		
+		[Embed("assets/Button_Texture_Images.png")] 
+		[Bindable] 
+		public static var texture_images:Class;
+		
+		[Embed("assets/Button_Texture_Images_Down.png")] 
+		[Bindable] 
+		public static var texture_images_down:Class;
 	}
 }

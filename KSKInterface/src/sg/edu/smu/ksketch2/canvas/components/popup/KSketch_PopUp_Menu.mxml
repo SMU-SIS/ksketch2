@@ -76,7 +76,7 @@
 				newButton.initSkin();
 				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down);
 				optionButton.initSkin();
-				imageButton.init(KSketchAssets.texture_photo, KSketchAssets.texture_photo_down);
+				imageButton.init(KSketchAssets.texture_images, KSketchAssets.texture_images_down);
 				imageButton.initSkin();
 				exitButton.init(KSketchAssets.texture_document, KSketchAssets.texture_document_down);
 				exitButton.initSkin();

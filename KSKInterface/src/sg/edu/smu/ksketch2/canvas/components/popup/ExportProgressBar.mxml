@@ -6,7 +6,10 @@
 						   >
 	<fx:Script>
 		<![CDATA[
+			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
+			
+			import spark.components.Application;
 			
 			import leelib.util.flvEncoder.ByteArrayFlvEncoder;
 			
@@ -92,6 +95,12 @@
 			{
 				close();
 				return;
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				super.close(commit,data);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
 			}
 		]]>
 	</fx:Script>

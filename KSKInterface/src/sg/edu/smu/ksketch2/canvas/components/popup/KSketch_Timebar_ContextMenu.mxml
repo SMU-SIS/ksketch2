@@ -7,7 +7,10 @@
 		   >
 	<fx:Script>
 		<![CDATA[
+			import mx.core.FlexGlobals;
 			import mx.events.FlexMouseEvent;
+			
+			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
@@ -133,7 +136,8 @@
 			
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
-				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);
+				removeEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
 				super.close(commit, data);
 			}
 			

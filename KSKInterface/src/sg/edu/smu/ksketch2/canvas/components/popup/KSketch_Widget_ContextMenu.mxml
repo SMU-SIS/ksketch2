@@ -8,6 +8,8 @@
 			import mx.core.FlexGlobals;
 			import mx.events.FlexMouseEvent;
 			
+			import spark.components.Application;
+			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
@@ -85,6 +87,7 @@
 			{
 				close();
 				removeEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _closeContextMenu);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
 			}
 			
 			private function _updateGroup():void

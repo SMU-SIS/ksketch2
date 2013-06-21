@@ -3,7 +3,10 @@
 						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
 	<fx:Script>
 		<![CDATA[
+			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
+			
+			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
@@ -161,6 +164,12 @@
 					KSingleReferenceFrameOperator.always_allow_interpolate = false;
 					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.NOT_AUTO;
 				}
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				super.close(commit, data);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
 			}
 		]]>
 	</fx:Script>

@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.controls.interactors
+package sg.edu.smu.ksketch2.canvas.controls.interactors
 {
 	import com.coreyoneil.collision.CollisionList;
 	
@@ -16,7 +16,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactors.draw.KInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KSelection;

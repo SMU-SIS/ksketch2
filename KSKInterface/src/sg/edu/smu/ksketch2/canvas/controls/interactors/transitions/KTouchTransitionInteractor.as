@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.controls.interactors.transitions
+package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;

@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.controls.interactors.widgetstates
+package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 {
 	public interface ITouchWidgetMode
 	{

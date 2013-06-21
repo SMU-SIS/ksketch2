@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.controls.interactors
+package sg.edu.smu.ksketch2.canvas.controls.interactors
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -25,9 +25,9 @@ package sg.edu.smu.ksketch2.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactors.draw.IInteractor;
-	import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
-	import sg.edu.smu.ksketch2.controls.interactors.draw.KLoopSelectInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KLoopSelectInteractor;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	
 	public class KCanvasInteractorManager extends EventDispatcher

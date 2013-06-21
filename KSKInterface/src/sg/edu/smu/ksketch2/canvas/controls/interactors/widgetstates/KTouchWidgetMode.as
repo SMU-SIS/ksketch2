@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.controls.interactors.widgetstates
+package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 {
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetBase;

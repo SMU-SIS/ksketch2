@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.controls.interactors.widgetstates
+package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 {
 	import flash.display.DisplayObject;
 	
@@ -6,9 +6,9 @@ package sg.edu.smu.ksketch2.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.KSketchStyles;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetBase;
 	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactors.transitions.KTouchRotateInteractor;
-	import sg.edu.smu.ksketch2.controls.interactors.transitions.KTouchScaleInteractor;
-	import sg.edu.smu.ksketch2.controls.interactors.transitions.KTouchTranslateInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTouchRotateInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTouchScaleInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTouchTranslateInteractor;
 	
 	public class KBasicTransitionMode extends KTouchWidgetMode
 	{

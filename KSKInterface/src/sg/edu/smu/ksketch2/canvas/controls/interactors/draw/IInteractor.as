@@ -6,7 +6,7 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.controls.interactors.draw
+package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 {
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;

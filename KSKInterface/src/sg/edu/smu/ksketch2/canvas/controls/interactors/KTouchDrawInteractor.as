@@ -1,4 +1,4 @@
-package sg.edu.smu.ksketch2.controls.interactors
+package sg.edu.smu.ksketch2.canvas.controls.interactors
 {
 	import flash.geom.Point;
 	
@@ -6,7 +6,7 @@ package sg.edu.smu.ksketch2.controls.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
-	import sg.edu.smu.ksketch2.controls.interactors.draw.KDrawInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;

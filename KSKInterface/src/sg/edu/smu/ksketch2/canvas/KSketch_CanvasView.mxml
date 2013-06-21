@@ -40,8 +40,8 @@
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetBase;
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
-			import sg.edu.smu.ksketch2.controls.interactors.KCanvasInteractorManager;
-			import sg.edu.smu.ksketch2.controls.interactors.widgetstates.KWidgetInteractorManager;
+			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
+			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			
@@ -298,7 +298,7 @@
 					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
 				<buttons:KSketch_Button
 					id="menuButton"
-					click="_menuPopUp.open(this)"
+					click="{_menuPopUp.isOpen?_menuPopUp.close():_menuPopUp.open(this)}"
 					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
 			</s:Group>
 		</s:Group>

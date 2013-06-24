@@ -303,16 +303,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				_keyMenu.position = position;
 
 				if(this.position == BAR_TOP)
-				{
 					_keyMenu.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y + 3;
-				}
 				else
-				{
 					_keyMenu.y = contentGroup.localToGlobal(new Point()).y
-									- _keyMenu.arrowHead.height
-									- _keyMenu.arrowHeadBottom.height
-									- _keyMenu.calloutContents.height;
-				}
 			}
 			
 			_interactionTimer.stop();

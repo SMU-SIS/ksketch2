@@ -147,7 +147,7 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_insert:Class;
 		
-		[Embed("assets/Button_Texture_Insert.png")] 
+		[Embed("assets/Button_Texture_Insert_Down.png")] 
 		[Bindable] 
 		public static var texture_insert_down:Class;
 		

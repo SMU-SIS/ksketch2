@@ -31,6 +31,9 @@
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
 			
+			[Bindable]
+			private var _onTop:Boolean = true;
+			
 			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl):void
 			{
 				_KSketch = KSketchInstance;
@@ -124,11 +127,13 @@
 				{
 					arrowHead.visible = true;
 					arrowHeadBottom.visible = false;
+					_onTop = true;
 				}
 				else
 				{
 					arrowHead.visible = false;
 					arrowHeadBottom.visible = true;
+					_onTop = false;
 				}
 			}
 			
@@ -224,7 +229,7 @@
 			}
 		]]>
 	</fx:Script>
-	<s:Group width="100%" height="100%" id="actualContentContainer">
+	<s:Group width="100%" height="100%" id="actualContentContainer" y="{_onTop?0: -arrowHead.height - arrowHeadBottom.height - calloutContents.height}">
 		<s:Group id="arrowHead">
 			<s:Graphic>
 				<s:Path data="M 0 0 L 20 20 L -20 20 z">

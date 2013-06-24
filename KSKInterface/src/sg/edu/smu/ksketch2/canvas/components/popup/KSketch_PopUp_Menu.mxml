@@ -144,9 +144,6 @@
 			
 			private function _setPen(button:KSketch_Toggle_Button):void
 			{
-				if(button == _selectedButton)
-					return;
-				
 				if(_selectedButton)
 					_selectedButton.selected = false;
 				

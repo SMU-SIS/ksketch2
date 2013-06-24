@@ -1,3 +1,11 @@
+/**
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ */
 package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 {
 	import flash.display.DisplayObject;
@@ -8,11 +16,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
-	public class KTouchRotateInteractor extends KTouchTransitionInteractor
+	public class KRotateInteractor extends KTransitionInteractor
 	{
 		public static const PIx2:Number = 6.283185307;
 		private var _rotateGesture:PanGesture;
@@ -22,7 +30,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		private var _previousPoint:Point;
 		private var _startPoint:Point;
 		
-		public function KTouchRotateInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+		public function KRotateInteractor(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 											   inputComponent:DisplayObject, modelSpace:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl, modelSpace);

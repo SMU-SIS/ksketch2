@@ -1,3 +1,11 @@
+/**
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ */
 package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 {
 	import flash.display.DisplayObject;
@@ -16,16 +24,16 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Widget_ContextMenu;
-	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetBase;
-	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
 	public class KWidgetInteractorManager
 	{		
 		protected var _KSketch:KSketch2;
-		protected var _interactionControl:KMobileInteractionControl;
-		protected var _widget:KTouchWidgetBase;
+		protected var _interactionControl:KInteractionControl;
+		protected var _widget:KSketch_Widget_Component;
 		protected var _modelSpace:DisplayObject;
 		protected var _widgetSpace:DisplayObject;
 		protected var _contextMenu:KSketch_Widget_ContextMenu;
@@ -39,14 +47,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		private var _longPressTimer:Timer;
 		private var _isLongPress:Boolean = false;
 		
-		private var _activeMode:ITouchWidgetMode;
-		public var defaultMode:ITouchWidgetMode;
-		public var steeringMode:ITouchWidgetMode;
-		public var freeTransformMode:ITouchWidgetMode;	
+		private var _activeMode:IWidgetMode;
+		public var defaultMode:IWidgetMode;
+		public var steeringMode:IWidgetMode;
+		public var freeTransformMode:IWidgetMode;	
 		
 		public function KWidgetInteractorManager(KSketchInstance:KSketch2,
-												 interactionControl:KMobileInteractionControl, 
-												 widgetBase:KTouchWidgetBase, modelSpace:DisplayObject)
+												 interactionControl:KInteractionControl, 
+												 widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject)
 		{
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
@@ -69,9 +77,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_modeGesture.addEventListener(GestureEvent.GESTURE_POSSIBLE, _handleTapStart);
 			
 			interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, updateWidget);
-			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_BEGIN, updateWidget);
-			interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, updateWidget);
-			interactionControl.addEventListener(KMobileInteractionControl.EVENT_UNDO_REDO, updateWidget);
+			interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_BEGIN, updateWidget);
+			interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_END, updateWidget);
+			interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, updateWidget);
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, updateWidget);
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, updateWidget);
 			
@@ -79,7 +87,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_DOWN, _keyTrigger);
 		}
 		
-		public function set activeMode(mode:ITouchWidgetMode):void
+		public function set activeMode(mode:IWidgetMode):void
 		{
 			if(_activeMode == mode)
 				return;
@@ -165,10 +173,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		
 		public function updateWidget(event:Event):void
 		{
-			if(event.type == KMobileInteractionControl.EVENT_INTERACTION_BEGIN)
+			if(event.type == KInteractionControl.EVENT_INTERACTION_BEGIN)
 				_isInteracting = true;
 			
-			if(event.type == KMobileInteractionControl.EVENT_INTERACTION_END)
+			if(event.type == KInteractionControl.EVENT_INTERACTION_END)
 			{
 				_isInteracting = false;
 				transitionMode = KSketch2.TRANSITION_INTERPOLATED;

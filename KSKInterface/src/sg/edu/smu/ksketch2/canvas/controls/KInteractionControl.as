@@ -21,7 +21,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 
-	public class KMobileInteractionControl extends EventDispatcher implements IInteractionControl
+	public class KInteractionControl extends EventDispatcher implements IInteractionControl
 	{
 		public static const EVENT_INTERACTION_BEGIN:String = "Interaction Begin";
 		public static const EVENT_INTERACTION_END:String = "Interaction End";
@@ -37,7 +37,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _redoStack:Vector.<IModelOperation>;
 		private var _currentInteraction:KInteractionOperation;
 		
-		public function KMobileInteractionControl(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl)
+		public function KInteractionControl(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl)
 		{
 			super(this);
 			_KSketch = KSketchInstance;

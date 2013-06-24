@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0"
 		 xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
@@ -13,19 +22,19 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KSelection;
 			
 			private var _KSketch:KSketch2;
-			private var _interactionControl:KMobileInteractionControl;
+			private var _interactionControl:KInteractionControl;
 			
 			[Bindable]
 			private var xPosFactor:Number = 2;
 			
-			public function init(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;

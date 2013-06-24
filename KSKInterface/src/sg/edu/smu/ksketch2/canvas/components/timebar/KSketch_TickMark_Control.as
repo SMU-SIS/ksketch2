@@ -14,7 +14,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.KSketchStyles;
-	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
@@ -37,7 +37,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		private var _KSketch:KSketch2;
 		private var _timeControl:KSketch_TimeControl;
-		private var _interactionControl:KMobileInteractionControl;
+		private var _interactionControl:KInteractionControl;
 		
 		private var _ticks:Vector.<KSketch_TickMark>;
 		private var _before:Vector.<KSketch_TickMark>;
@@ -53,16 +53,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 * A helper class containing the codes for generating and moving tick marks
 		 * Should Probably read the comments within the codes
 		 */
-		public function KSketch_TickMark_Control(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, interactionControl:KMobileInteractionControl)
+		public function KSketch_TickMark_Control(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, interactionControl:KInteractionControl)
 		{
 			_KSketch = KSketchInstance;
 			_timeControl = timeControl;
 			_interactionControl = interactionControl;
 			
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _updateTicks);
-			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_UNDO_REDO, _updateTicks);
+			_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, _updateTicks);
 			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _updateTicks);
-			_interactionControl.addEventListener(KMobileInteractionControl.EVENT_INTERACTION_END, _updateTicks);
+			_interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_END, _updateTicks);
 			_timeControl.addEventListener(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED, _recalibrateTicksAgainstMaxTime);
 		}
 		

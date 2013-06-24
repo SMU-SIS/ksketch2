@@ -26,7 +26,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
 	
-	public class KTouchSelectInteractor extends KInteractor
+	public class KMultiTouchSelectInteractor extends KInteractor
 	{
 		public static const DETECTION_RADIUS:Number = 30; //detection radius 30px
 		private var _selectionArea:Sprite;
@@ -37,7 +37,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * The old select interactor works thru the model.
 		 * Will have to bring this into the model soon instead of letting it run on view components
 		 */
-		public function KTouchSelectInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl,
+		public function KMultiTouchSelectInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl,
 											   modelDisplay:KModelDisplay)
 		{
 			super(KSketchInstance, interactionControl);

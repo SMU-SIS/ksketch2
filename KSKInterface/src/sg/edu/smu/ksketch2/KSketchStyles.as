@@ -68,10 +68,15 @@ package sg.edu.smu.ksketch2
 		public static const MAGNIFIER_PADDING:Number = 5;
 		public static const MAGNIFIER_FONT_SIZE:Number = 10;
 		public static const MAGNIFIER_FONT_COLOR:Number = 0xFFFFFF;
-
+		
 		public static const MAGNIFIER_ARROW_PROPORTION:Number = 0.6;
 		public static const MAGNIFIER_INDICATOR_THICKNESS:Number = 3;
 		
+		public static const TOGGLEBUTTON_ON_COLOR:uint = 0xFFFFFF;
+		public static const TOGGLEBUTTON_OFF_COLOR:uint = 0x000000;
+		public static const TOGGLEBUTTON_PADDING:Number = 2;
+		public static const TOGGLEBUTTON_FONT_SIZE:Number = 9;
+		public static const TOGGLEBUTTON_CORNERS:Number = 2;
 		
 		//Canvas
 		public static const CANVAS_BACKGROUND_COLOR:uint = 0xA6A8AB;

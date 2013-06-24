@@ -1,3 +1,11 @@
+/**
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ */
 package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 {
 	import flash.display.DisplayObject;
@@ -7,15 +15,15 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import org.gestouch.events.GestureEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
-	public class KTouchTransitionInteractor
+	public class KTransitionInteractor
 	{
 		protected var _activated:Boolean = false;
 		protected var _KSketch:KSketch2;
-		protected var _interactionControl:KMobileInteractionControl;
+		protected var _interactionControl:KInteractionControl;
 		protected var _modelSpace:DisplayObject;
 		
 		protected var _startTime:int;
@@ -30,7 +38,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		 * @param InteractionControl IInteractionControl interface that this interactor gets its working selection and undo/redo stacks from.
 		 * @param inputComponent Target component that is will activate the transition gesture inputs.
 		 */
-		public function KTouchTransitionInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+		public function KTransitionInteractor(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 													modelSpace:DisplayObject)
 		{
 			_KSketch = KSketchInstance;
@@ -78,7 +86,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			_transitionObjects = _newSelection.objects;
 			
 			_interactionControl.begin_interaction_operation();
-			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_BEGIN));
+			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_BEGIN));
 			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 				_interactionControl.beginRecording();
@@ -90,7 +98,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			//Handle interaction operation wrap up here in this class
 			_interactionControl.end_interaction_operation();
-			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_END));
+			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_END));
 
 		}
 		

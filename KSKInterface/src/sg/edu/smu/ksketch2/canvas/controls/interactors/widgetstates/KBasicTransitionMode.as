@@ -1,29 +1,37 @@
+/**
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ */
 package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 {
 	import flash.display.DisplayObject;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.KSketchStyles;
-	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetBase;
-	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
-	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTouchRotateInteractor;
-	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTouchScaleInteractor;
-	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTouchTranslateInteractor;
+	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KRotateInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KScaleInteractor;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTranslateInteractor;
 	
-	public class KBasicTransitionMode extends KTouchWidgetMode
+	public class KBasicTransitionMode extends KWidgetMode
 	{
-		private var _translateInteractor:KTouchTranslateInteractor;
-		private var _rotateInteractor:KTouchRotateInteractor;
-		private var _scaleInteractor:KTouchScaleInteractor;
+		private var _translateInteractor:KTranslateInteractor;
+		private var _rotateInteractor:KRotateInteractor;
+		private var _scaleInteractor:KScaleInteractor;
 		
-		public function KBasicTransitionMode(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, widgetBase:KTouchWidgetBase
+		public function KBasicTransitionMode(KSketchInstance:KSketch2, interactionControl:KInteractionControl, widgetBase:KSketch_Widget_Component
 											,modelSpace:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl, widgetBase);
 			
-			_translateInteractor = new KTouchTranslateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace);
-			_rotateInteractor = new KTouchRotateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace);
-			_scaleInteractor = new KTouchScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger, modelSpace);
+			_translateInteractor = new KTranslateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace);
+			_rotateInteractor = new KRotateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace);
+			_scaleInteractor = new KScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger, modelSpace);
 		}
 		
 		override public function activate():void

@@ -1,3 +1,11 @@
+/**
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ */
 package sg.edu.smu.ksketch2.canvas.controls.interactors
 {
 	import flash.geom.Point;
@@ -11,11 +19,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;
 	
-	public class KTouchDrawInteractor extends KDrawInteractor
+	public class KMultiTouchDrawInteractor extends KDrawInteractor
 	{
 		public static var eraser:Boolean = false;
 		
-		public function KTouchDrawInteractor(KSketchInstance:KSketch2, interactorDisplay:SpriteVisualElement, interactionControl:IInteractionControl)
+		public function KMultiTouchDrawInteractor(KSketchInstance:KSketch2, interactorDisplay:SpriteVisualElement, interactionControl:IInteractionControl)
 		{
 			super(KSketchInstance, interactorDisplay, interactionControl);
 		}

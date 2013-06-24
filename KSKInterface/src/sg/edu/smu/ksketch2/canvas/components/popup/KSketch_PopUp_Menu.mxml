@@ -24,8 +24,8 @@
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
-			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
-			import sg.edu.smu.ksketch2.canvas.controls.interactors.KTouchDrawInteractor;
+			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+			import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 			
 			public static const ORIGIN:Point = new Point();
@@ -48,7 +48,7 @@
 			private var _options:KSketch_Options;
 			
 			private var _KSketch:KSketch2;
-			private var _interactionControl:KMobileInteractionControl;
+			private var _interactionControl:KInteractionControl;
 			
 			/**
 			 * @referenceComponent: the component that this menu will refer to for positioning itself
@@ -58,7 +58,7 @@
 			 */
 			public function init(referenceComponent:UIComponent,
 								 canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options
-								,KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl):void
+								,KSketchInstance:KSketch2, interactionControl:KInteractionControl):void
 			{
 				_referenceComponent = referenceComponent;
 				_canvasOrigin = referenceComponent.localToGlobal(_canvasOrigin);
@@ -156,22 +156,22 @@
 				switch(_selectedButton)
 				{
 					case eraserToggle:
-						KTouchDrawInteractor.eraser = true;
+						KMultiTouchDrawInteractor.eraser = true;
 						break;
 					case blackToggle:
-						KTouchDrawInteractor.eraser = false;
+						KMultiTouchDrawInteractor.eraser = false;
 						KDrawInteractor.penColor = KSketchStyles.BLACK_PEN;
 						break;
 					case blueToggle:
-						KTouchDrawInteractor.eraser = false;
+						KMultiTouchDrawInteractor.eraser = false;
 						KDrawInteractor.penColor = KSketchStyles.BLUE_PEN;
 						break;
 					case redToggle:
-						KTouchDrawInteractor.eraser = false;
+						KMultiTouchDrawInteractor.eraser = false;
 						KDrawInteractor.penColor = KSketchStyles.RED_PEN;
 						break;
 					case greenToggle:
-						KTouchDrawInteractor.eraser = false;
+						KMultiTouchDrawInteractor.eraser = false;
 						KDrawInteractor.penColor = KSketchStyles.GREEN_PEN;
 						break;
 				}

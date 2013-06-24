@@ -6,19 +6,14 @@
  * not distributed with this file, You can obtain one at
  * http://mozilla.org/MPL/2.0/.
  */
-package sg.edu.smu.ksketch2.utils
+package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 {
-	import flash.events.Event;
-	
-	public class KProgressEvent extends Event
+	public interface IWidgetMode
 	{
-		public var progress:Number;
-		
-		public function KProgressEvent(type:String, progress:Number)
-		{
-			super(type);
-			
-			this.progress = progress;
-		}
+		function init():void;
+		function activate():void;
+		function deactivate():void;
+		function set demonstrationMode(demo:Boolean):void
+		function set enabled(enable:Boolean):void;
 	}
 }

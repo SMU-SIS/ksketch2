@@ -1,3 +1,11 @@
+/**
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ */
 package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 {
 	import flash.display.DisplayObject;
@@ -7,10 +15,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
-	public class KTouchScaleInteractor extends KTouchTransitionInteractor
+	public class KScaleInteractor extends KTransitionInteractor
 	{
 		private var _scaleGesture:PanGesture;
 		private var _previousPoint:Point;
@@ -18,7 +26,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		private var _startScaleDistance:Number;
 		private var _scale:Number;
 		
-		public function KTouchScaleInteractor(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+		public function KScaleInteractor(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 											  inputComponent:DisplayObject, modelSpace:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl, modelSpace);

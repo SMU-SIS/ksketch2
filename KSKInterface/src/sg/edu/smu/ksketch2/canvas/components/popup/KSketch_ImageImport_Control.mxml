@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundColor="0xFFFFFF" backgroundAlpha="0.75"
 						   creationComplete="_onCreateHandler()" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
@@ -18,15 +27,20 @@
 			import sg.edu.smu.ksketch2.KSketch_ImageEditingView;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin;
-			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.ImageProcessing;
 			
+			//Style values
 			public static const IMAGE_EDIT_EXTERNALPADDING:Number = 15;
+			public static const IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS:Number = 100;
+			
+			//Lasso values
 			private static const DIRECTION_STRENGTH:Number = 20;
 			private static const WHITE:uint = 0xFFFFFF;
 			private static const SEARCH_RADIUS:int = 18;
 			
+			//File values
 			public static const IMAGE_FILE_FILTER:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png");
 			public static const IMAGE_MAX_WIDTH:Number = 480;
 			public static const CAMERA_FPS:int = 16;
@@ -51,10 +65,10 @@
 			private var _correction:Point
 			
 			private var _KSketch:KSketch2;
-			private var _interactionControl:KMobileInteractionControl;
+			private var _interactionControl:KInteractionControl;
 			private var _canvasView:KSketch_CanvasView;
 			
-			public function init(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl, canvas:KSketch_CanvasView):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, canvas:KSketch_CanvasView):void
 			{
 				_KSketch = KSketchInstance;	
 				_interactionControl = interactionControl;
@@ -487,10 +501,10 @@
 		<s:filters>
 			<s:DropShadowFilter 
 				color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-				alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
+				alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA}"
 				strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-				blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-				blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+				blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE}"
+				blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE}"/>
 		</s:filters>
 		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
 			<s:fill>
@@ -514,17 +528,17 @@
 				<buttons:KSketch_Button
 					id="activateCameraButton"
 					skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"
-					width="100" height="100"
+					width="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}" height="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}"
 					click="{_enterCameraMode()}"/>
 				<buttons:KSketch_Button
 					id="activateGalleryButton"
 					skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"
-					width="100" height="100"
+					width="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}" height="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}"
 					click="{_enterImageMode()}"/>
 				<buttons:KSketch_Button
 					id="cancelButton"
 					skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"
-					width="100" height="100"
+					width="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}" height="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}"
 					click="{closeImageInsertion()}"/>
 			</s:Group>
 		</s:Group>

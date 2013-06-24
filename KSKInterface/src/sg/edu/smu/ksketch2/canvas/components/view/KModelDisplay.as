@@ -16,8 +16,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 	
 	import spark.core.SpriteVisualElement;
 	
-	import org.osmf.events.TimeEvent;
-	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KGroupEvent;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
@@ -27,7 +25,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 	import sg.edu.smu.ksketch2.model.objects.KImage;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
-	import sg.edu.smu.ksketch2.utils.ExportUtil;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KGroupView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KImageView;

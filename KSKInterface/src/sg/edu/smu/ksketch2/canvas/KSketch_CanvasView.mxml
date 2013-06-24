@@ -38,8 +38,8 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
-			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KTouchWidgetBase;
-			import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
+			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
@@ -61,7 +61,7 @@
 			private var _currentDocument:KSketchDocument;
 			
 			private var _KSketch:KSketch2;
-			private var _interactionControl:KMobileInteractionControl;
+			private var _interactionControl:KInteractionControl;
 			
 			//Pop Ups
 			private var _feedbackPopUp:KSketch_Feedback_Message;
@@ -102,7 +102,7 @@
 				
 				//Actual setting up starts here
  				_KSketch = new KSketch2();
-				_interactionControl = new KMobileInteractionControl(_KSketch, timeControl);
+				_interactionControl = new KInteractionControl(_KSketch, timeControl);
 				
 				//Initiate pop ups
 				_feedbackPopUp = new KSketch_Feedback_Message();
@@ -344,7 +344,7 @@
 						</s:fill>
 					</s:Rect>
 				</s:Group>
-				<transformWidget2:KTouchWidgetBase id="widget" visible="false"/>
+				<transformWidget2:KSketch_Widget_Component id="widget" visible="false"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

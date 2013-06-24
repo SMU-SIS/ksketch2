@@ -24,7 +24,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
-	import sg.edu.smu.ksketch2.canvas.controls.KMobileInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KLoopSelectInteractor;
@@ -36,7 +36,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private const _RIGHT:int = 1;
 		
 		private var _KSketch:KSketch2;
-		private var _interactionControl:KMobileInteractionControl;
+		private var _interactionControl:KInteractionControl;
 		private var _inputComponent:UIComponent;
 		private var _modelDisplay:KModelDisplay;
 		private var _feedbackMessage:KSketch_Feedback_Message;
@@ -45,9 +45,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _doubleTap:TapGesture;
 		private var _drawGesture:PanGesture;
 		
-		private var _drawInteractor:KTouchDrawInteractor;
+		private var _drawInteractor:KMultiTouchDrawInteractor;
 		private var _loopSelectInteractor:KLoopSelectInteractor;
-		private var _tapSelectInteractor:KTouchSelectInteractor;
+		private var _tapSelectInteractor:KMultiTouchSelectInteractor;
 		
 		private var _activeInteractor:IInteractor;
 		private var _startPoint:Point;
@@ -62,7 +62,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * @param modelDisplay: ModelDisplay linked to given KSketchInstance
 		 * 
 		 */
-		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KMobileInteractionControl,
+		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 											   inputComponent:UIComponent, modelDisplay:KModelDisplay, feedbackMessage:KSketch_Feedback_Message)
 		{
 			super(this);
@@ -78,8 +78,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			 * Reusing Draw and loop select interactors so implementation will feel a bit weird
 			 * These interactors are sharing gesture inputs
 			 */
-			_drawInteractor = new KTouchDrawInteractor(_KSketch, _modelDisplay, _interactionControl);
-			_tapSelectInteractor = new KTouchSelectInteractor(_KSketch, _interactionControl, _modelDisplay);
+			_drawInteractor = new KMultiTouchDrawInteractor(_KSketch, _modelDisplay, _interactionControl);
+			_tapSelectInteractor = new KMultiTouchSelectInteractor(_KSketch, _interactionControl, _modelDisplay);
 			_loopSelectInteractor = new KLoopSelectInteractor(_KSketch, _modelDisplay, _interactionControl);
 			
 			KDrawInteractor.penColor = 0x000000;
@@ -193,7 +193,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 
 			_drawGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updateDraw);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_ENDED, _endDraw);
-			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_BEGIN));
+			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_BEGIN));
 		}
 		
 		/**
@@ -221,7 +221,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_activeInteractor.interaction_End();
 			_drawGesture.removeAllEventListeners();
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
-			_interactionControl.dispatchEvent(new Event(KMobileInteractionControl.EVENT_INTERACTION_END));
+			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_END));
 		}	
 	}
 }

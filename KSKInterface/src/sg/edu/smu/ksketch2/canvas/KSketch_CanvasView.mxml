@@ -137,7 +137,7 @@
 				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
 				menuButton.init(KSketchAssets.texture_menu, KSketchAssets.texture_menu_down);
 				
-				modelDisplay.init(_KSketch, true);
+				modelDisplay.init(_KSketch, _interactionControl);
 				motionDisplay.init(_KSketch, _interactionControl);
 				
 				//This is the layer that blocks interaction whenever the app is playing

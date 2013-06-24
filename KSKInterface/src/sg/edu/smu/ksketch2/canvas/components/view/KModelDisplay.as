@@ -17,25 +17,31 @@ package sg.edu.smu.ksketch2.canvas.components.view
 	import spark.core.SpriteVisualElement;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.events.KGroupEvent;
-	import sg.edu.smu.ksketch2.events.KObjectEvent;
-	import sg.edu.smu.ksketch2.events.KSketchEvent;
-	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
-	import sg.edu.smu.ksketch2.model.objects.KGroup;
-	import sg.edu.smu.ksketch2.model.objects.KImage;
-	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KGroupView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KImageView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+	import sg.edu.smu.ksketch2.events.KGroupEvent;
+	import sg.edu.smu.ksketch2.events.KObjectEvent;
+	import sg.edu.smu.ksketch2.events.KSketchEvent;
+	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
+	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
+	import sg.edu.smu.ksketch2.model.objects.KImage;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	
 	/**
 	 * Exists to display the objects in the model
 	 */
 	public class KModelDisplay extends SpriteVisualElement
 	{
+		public static const BOUNDS_THICKNESS:Number = 7;
+		public static const DOT_LENGTH:Number = 28;
+		
 		protected var _KSketch:KSketch2;
+		protected var _interactionControl:KInteractionControl;
 		protected var _viewsTable:Dictionary;
 		
 		/**
@@ -46,16 +52,28 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			super();
 		}
 		
-		public function init(kSketchInstance:KSketch2, showPath:Boolean):void
+		public function init(kSketchInstance:KSketch2, interactionControl:KInteractionControl):void
 		{
 			_KSketch = kSketchInstance;
+			
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _handler_UpdateAllViews);
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _handler_UpdateAllViews);
 			_KSketch.addEventListener(KSketchEvent.EVENT_KSKETCH_INIT, reset);
+			
+			_interactionControl = interactionControl;
+			_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, _handler_UpdateAllViews);
+			_interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_BEGIN, _clearBoundingBoxes);
+			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _handler_UpdateAllViews);
+			
 			reset();
 			
 			scaleX = scaleX;
 			scaleY = scaleY;
+		}
+		
+		private function _clearBoundingBoxes(event:Event):void
+		{
+			graphics.clear();
 		}
 		
 		override public function set scaleX(value:Number):void
@@ -153,7 +171,36 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		{
 			for(var view:Object in _viewsTable)
 				_viewsTable[view].updateView(_KSketch.time);
+			
+			var currentSelection:KModelObjectList = _interactionControl.selection?_interactionControl.selection.objects:new KModelObjectList();
+			
+			var i:int;	
+			var length:int = currentSelection.length();
+			var currentObject:KObject;
+			
+			var groupView:KGroupView;
+			var groupBounds:Rectangle;
+			
+			graphics.clear();
+			graphics.lineStyle(BOUNDS_THICKNESS, 0x000000, 0.3);
+			
+			for(i = 0; i < length; i++)
+			{
+				currentObject = currentSelection.getObjectAt(i);
+				
+				if(currentObject is KGroup)
+				{
+					groupView = _viewsTable[currentObject] as KGroupView;
+					groupBounds = groupView.getBounds(this);
+					_dottedLine(groupBounds.left, groupBounds.top, groupBounds.left, groupBounds.bottom);
+					_dottedLine(groupBounds.left, groupBounds.bottom, groupBounds.right, groupBounds.bottom);
+					_dottedLine(groupBounds.right, groupBounds.bottom, groupBounds.right, groupBounds.top);
+					_dottedLine(groupBounds.right, groupBounds.top, groupBounds.left, groupBounds.top);
+				}
+			}
 		}
+		
+		
 		
 		protected function _handler_UpdateObjectView(event:KObjectEvent):void
 		{
@@ -197,6 +244,49 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			bitmapData.draw(this, matrix);				
 			_KSketch.time = savedTime;
 			return bitmapData;
+		}
+		
+		/**
+		 * Draws a dotted line from the left to right, top to bottom (flash coordinate space!) direction
+		 */
+		private function _dottedLine(fromX:Number, fromY:Number, toX:Number, toY:Number):void
+		{
+			//Figure out where to start and end
+			var startX:Number = Math.min(fromX, toX);
+			var startY:Number = Math.min(fromY, toY);
+			var endX:Number = Math.max(fromX, toX);
+			var endY:Number = Math.max(fromY, toY);
+			
+			var draw:Boolean = false;
+			var currentX:Number = startX;
+			var currentY:Number = startY;
+			
+			//Loop and draw the dotted line!
+			while(currentX < endX || currentY < endY)
+			{
+				if(draw)
+					graphics.lineTo(currentX, currentY);
+				else
+					graphics.moveTo(currentX, currentY);
+				
+				if(currentX < endX)
+				{
+					currentX += DOT_LENGTH;
+					
+					if(endX < currentX)
+						currentX = endX;
+				}
+				
+				if(currentY < endY)
+				{
+					currentY += DOT_LENGTH;
+					
+					if(endY < currentY)
+						currentY = endY;
+				}
+				
+				draw = !draw;
+			}
 		}
 	}
 }

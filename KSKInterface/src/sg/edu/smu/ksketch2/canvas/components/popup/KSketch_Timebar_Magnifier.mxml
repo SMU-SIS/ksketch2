@@ -192,6 +192,9 @@
 			}
 		]]>
 	</fx:Script>
+	<!--
+		-magContents.width*0.5 causes the objects to be centered at 0
+	-->
 	<s:Group x="{-magContents.width*0.5}" width="100%">
 		<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
 			<s:fill>

@@ -145,14 +145,17 @@
 	</fx:Script>
 	
 	<s:Group id="calloutContents" x="{-calloutContents.width/2}">
-		<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.CONTEXTMENU_CORNERS}" radiusY="{KSketchStyles.CONTEXTMENU_CORNERS}">
 			<s:fill>
-				<s:SolidColor color="0x000000"/>
+				<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout paddingLeft="7.5" paddingRight="7.5" paddingTop="7.5" paddingBottom="7.5"/>
+				<s:VerticalLayout paddingLeft="{KSketchStyles.CONTEXTMENU_PADDING}"
+								  paddingRight="{KSketchStyles.CONTEXTMENU_PADDING}"
+								  paddingTop="{KSketchStyles.CONTEXTMENU_PADDING}"
+								  paddingBottom="{KSketchStyles.CONTEXTMENU_PADDING}"/>
 			</s:layout>
 			<s:Group>
 				<s:Rect width="100%" height="100%">
@@ -162,7 +165,11 @@
 				</s:Rect>
 				<s:Group>
 					<s:layout>
-						<s:HorizontalLayout gap="2" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+						<s:HorizontalLayout gap="2"
+											paddingLeft="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
+											paddingRight="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
+											paddingTop="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
+											paddingBottom="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"/>
 					</s:layout>
 					<buttons:KSketch_Button
 						id="groupButton"

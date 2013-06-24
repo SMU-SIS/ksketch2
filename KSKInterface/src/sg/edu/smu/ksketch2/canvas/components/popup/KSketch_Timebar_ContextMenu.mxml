@@ -229,30 +229,40 @@
 			<s:Graphic>
 				<s:Path data="M 0 0 L 20 20 L -20 20 z">
 					<s:fill>
-						<s:SolidColor color="0x000000"/>
+						<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
 					</s:fill>
 				</s:Path>
 			</s:Graphic>
 		</s:Group>
 		<s:Group id="calloutContents" x="{-calloutContents.width/2}" y="{arrowHead.height}">
-			<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
+			<s:Rect width="100%" height="100%"
+					radiusX="{KSketchStyles.CONTEXTMENU_CORNERS}"
+					radiusY="{KSketchStyles.CONTEXTMENU_CORNERS}">
 				<s:fill>
-					<s:SolidColor color="0x000000"/>
+					<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
 				</s:fill>
 			</s:Rect>
 			<s:Group>
 				<s:layout>
-					<s:VerticalLayout paddingLeft="7.5" paddingRight="7.5" paddingTop="7.5" paddingBottom="7.5"/>
+					<s:VerticalLayout
+						paddingLeft="{KSketchStyles.CONTEXTMENU_PADDING}"
+						paddingRight="{KSketchStyles.CONTEXTMENU_PADDING}"
+						paddingTop="{KSketchStyles.CONTEXTMENU_PADDING}"
+						paddingBottom="{KSketchStyles.CONTEXTMENU_PADDING}"/>
 				</s:layout>
 				<s:Group>
 					<s:Rect width="100%" height="100%">
 						<s:fill>
-							<s:SolidColor color="{KSketchStyles.APP_BACKGROUND_COLOR}"/>
+							<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
 						</s:fill>
 					</s:Rect>
 					<s:Group>
 						<s:layout>
-							<s:HorizontalLayout gap="2" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+							<s:HorizontalLayout gap="2"
+												paddingLeft="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
+												paddingRight="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
+												paddingTop="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
+												paddingBottom="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"/>
 						</s:layout>
 						<buttons:KSketch_Button
 							id="insertButton"
@@ -280,7 +290,7 @@
 			<s:Graphic>
 				<s:Path data="M 0 20 L 20 0 L -20 0 z">
 					<s:fill>
-						<s:SolidColor color="0x000000"/>
+						<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
 					</s:fill>
 				</s:Path>
 			</s:Graphic>

@@ -53,6 +53,7 @@ package sg.edu.smu.ksketch2
 		
 		public static const TIME_LABEL_FONT_SIZE:Number = 10;
 		public static const TIME_LABEL_FONT_COLOR:Number = 0x404041;
+		public static const TIME_PARTITION_FONT_SIZE:Number = 9;
 		
 		public static const TIME_TICK_COLOR:uint = 0x58595B;
 		public static const TIME_TICK_THICKNESS:Number = 4;
@@ -78,6 +79,12 @@ package sg.edu.smu.ksketch2
 		public static const TOGGLEBUTTON_FONT_SIZE:Number = 9;
 		public static const TOGGLEBUTTON_CORNERS:Number = 2;
 		
+		//Context menu
+		public static const CONTEXTMENU_PADDING:Number = 7.5;
+		public static const CONTEXTMENU_BUTTON_PADDING:Number = 5;
+		public static const CONTEXTMENU_CORNERS:Number = 5;
+		public static const CONTEXTMENU_BACKGROUND_COLOR:uint = 0x000000;
+		
 		//Canvas
 		public static const CANVAS_BACKGROUND_COLOR:uint = 0xA6A8AB;
 		public static const CANVAS_PAPER_COLOR:uint = 0xFFFFFF;
@@ -89,6 +96,10 @@ package sg.edu.smu.ksketch2
 		public static const CANVAS_SHADOW_Y_DISTANCE:Number = 12;
 		public static const CANVAS_SHADOW_ANGLE:Number = 45;
 		public static const CANVAS_SHADOW_STRENGTH:Number = 2;
+		
+		//Dialog button skins
+		public static const DIALOGBUTTON_PADDING:Number = 10;
+		public static const DIALOGBUTTON_FONT_SIZE:Number = 12;
 		
 		//Feedback Message
 		public static const FEEDBACK_FONT_SIZE:Number = 60;

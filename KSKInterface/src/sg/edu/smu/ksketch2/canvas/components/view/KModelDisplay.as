@@ -200,8 +200,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			}
 		}
 		
-		
-		
 		protected function _handler_UpdateObjectView(event:KObjectEvent):void
 		{
 			var view:IObjectView = _viewsTable[event.object];
@@ -268,13 +266,21 @@ package sg.edu.smu.ksketch2.canvas.components.view
 					graphics.lineTo(currentX, currentY);
 				else
 					graphics.moveTo(currentX, currentY);
+				draw = !draw;
 				
 				if(currentX < endX)
 				{
 					currentX += DOT_LENGTH;
 					
 					if(endX < currentX)
+					{
 						currentX = endX;
+						if(draw)
+							graphics.lineTo(currentX, currentY);
+						else
+							graphics.moveTo(currentX, currentY);
+						draw = !draw;
+					}
 				}
 				
 				if(currentY < endY)
@@ -282,10 +288,15 @@ package sg.edu.smu.ksketch2.canvas.components.view
 					currentY += DOT_LENGTH;
 					
 					if(endY < currentY)
+					{
 						currentY = endY;
+						if(draw)
+							graphics.lineTo(currentX, currentY);
+						else
+							graphics.moveTo(currentX, currentY);
+						draw = !draw;
+					}
 				}
-				
-				draw = !draw;
 			}
 		}
 	}

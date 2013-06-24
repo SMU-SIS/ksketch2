@@ -95,6 +95,11 @@
 			private function _closeContextMenu(event:FlexMouseEvent):void
 			{
 				close();
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				super.close(commit, data);
 				removeEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _closeContextMenu);
 				(FlexGlobals.topLevelApplication as Application).setFocus();
 			}

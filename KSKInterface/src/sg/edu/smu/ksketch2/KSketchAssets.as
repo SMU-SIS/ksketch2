@@ -231,11 +231,11 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_ungroup_down:Class;
 		
-		[Embed("assets/Button_Texture_Images.png")] 
+		[Embed("assets/Button_Texture_Image.png")] 
 		[Bindable] 
 		public static var texture_images:Class;
 		
-		[Embed("assets/Button_Texture_Images_Down.png")] 
+		[Embed("assets/Button_Texture_Image_Down.png")] 
 		[Bindable] 
 		public static var texture_images_down:Class;
 	}

@@ -141,12 +141,7 @@
 				motionDisplay.init(_KSketch, _interactionControl);
 				
 				//This is the layer that blocks interaction whenever the app is playing
-				var playBounds:Rectangle = playButton.getBounds(this);
-				interceptor.graphics.beginFill(0x000000);
-				interceptor.graphics.drawRect(0,0, width, height);
-				interceptor.graphics.drawRect(playBounds.x, playBounds.y, playBounds.width, playBounds.height);
-				interceptor.graphics.endFill();
-				playButton.init(timeControl, _interactionControl,interceptor, _KSketch);
+				playButton.init(timeControl, _interactionControl,interceptor, _KSketch, _menuPopUp);
 				_interactionControl.reset();
 				
 				_options.applyPreferences();
@@ -354,5 +349,5 @@
 		</s:Group>
 	</s:Group>
 	
-	<s:Group width="100%" height="100%" visible="false" id="interceptor" alpha="0"/>
+	<s:Group width="100%" height="100%" id="interceptor" alpha="0"/>
 </s:View>

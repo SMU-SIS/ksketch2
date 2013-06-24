@@ -5,7 +5,12 @@
 		 addedToStage="{buttonState = SHOW_PLAY}">
 	<fx:Script>
 		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			
+			import spark.components.Application;
 			import spark.components.Image;
+			import spark.components.SkinnablePopUpContainer;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
@@ -15,23 +20,26 @@
 			import sg.edu.smu.ksketch2.utils.KSelection;
 			
 			private var _KSketch:KSketch2;
-			private var _interceptor:DisplayObject;
+			private var _interceptor:UIComponent;
 			private var _interactionControl:KMobileInteractionControl;
 			private var _timeControl:KSketch_TimeControl;
 			private var _buttonState:int;
 			private var _oldSelection:KSelection;
+			private var _menu:SkinnablePopUpContainer;
+			private var _wasMenuOpen:Boolean = false;
 			
 			private const SHOW_PLAY:int = 0;
 			private const SHOW_PAUSE:int = 1;
 			
 			
-			public function init(timeControl:KSketch_TimeControl, interactionControl:KMobileInteractionControl, interceptor:DisplayObject
-								, KSketchInstance:KSketch2):void
+			public function init(timeControl:KSketch_TimeControl, interactionControl:KMobileInteractionControl, interceptor:UIComponent
+								, KSketchInstance:KSketch2, menu:SkinnablePopUpContainer):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
 				_interceptor = interceptor;
+				_menu = menu;
 				
 				timeControl.addEventListener(KSketch_TimeControl.PLAY_START, _handlePlayPause);
 				timeControl.addEventListener(KSketch_TimeControl.PLAY_STOP, _handlePlayPause);
@@ -39,6 +47,7 @@
 			
 			public function playToggle():void
 			{
+
 				if(_buttonState == SHOW_PLAY)
 					_timeControl.play();
 				else
@@ -47,12 +56,29 @@
 			
 			private function _handlePlayPause(event:Event):void
 			{
+				var app:Application = FlexGlobals.topLevelApplication as Application;
+				_interceptor.graphics.clear();
+				
 				if(event.type == KSketch_TimeControl.PLAY_START)
 				{
 					buttonState = SHOW_PAUSE;
 					_oldSelection =_interactionControl.selection;
 					_interactionControl.selection = null;
 					_interceptor.visible = true;
+					
+					var playBounds:Rectangle = getBounds(app);
+					_interceptor.graphics.beginFill(0x000000);
+					_interceptor.graphics.drawRect(0,0, app.width, app.height);
+					_interceptor.graphics.drawRect(playBounds.x, playBounds.y, playBounds.width, playBounds.height);
+					_interceptor.graphics.endFill();
+					
+					if(_menu.isOpen)
+					{
+						_menu.close();
+						_wasMenuOpen = true;
+					}
+					else
+						_wasMenuOpen = false;
 					
 					var log:XML = <op/>;
 					var date:Date = new Date();
@@ -68,6 +94,9 @@
 					_interactionControl.selection = _oldSelection;
 					_oldSelection = null;
 					_interceptor.visible = false;
+					
+					if(_wasMenuOpen)
+						_menu.open(app);
 					
 					var log2:XML = <op/>;
 					var date2:Date = new Date();

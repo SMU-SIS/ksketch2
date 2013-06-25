@@ -93,7 +93,7 @@ package sg.edu.smu.ksketch2.utils
 			{
 				currentObject = _visibleSelection.getObjectAt(i);
 				matrix = currentObject.fullPathMatrix(time);
-				objectCentroid = matrix.transformPoint(currentObject.centroid);
+				objectCentroid = matrix.transformPoint(currentObject.center);
 				
 				centroid.x += objectCentroid.x;
 				centroid.y += objectCentroid.y;

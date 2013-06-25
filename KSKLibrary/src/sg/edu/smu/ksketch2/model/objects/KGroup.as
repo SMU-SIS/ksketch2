@@ -161,7 +161,7 @@ package sg.edu.smu.ksketch2.model.objects
 			
 			for(var i:int = 0; i<length; i++)
 			{
-				point = _children.getObjectAt(i).centroid;
+				point = _children.getObjectAt(i).center;
 				point = _children.getObjectAt(i).fullPathMatrix(_creationTime).transformPoint(point);
 				
 				if(point.x < minX)
@@ -183,7 +183,7 @@ package sg.edu.smu.ksketch2.model.objects
 			_center.y = (minY+maxY)/2;
 		}
 		
-		override public function get centroid():Point
+		override public function get center():Point
 		{			
 			if(!_center)
 				updateCenter();

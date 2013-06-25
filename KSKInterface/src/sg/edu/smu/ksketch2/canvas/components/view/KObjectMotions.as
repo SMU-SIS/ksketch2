@@ -154,7 +154,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			if(activeKey != _prevActiveKey)
 				_determineAndGeneratePaths(activeKey);
 			
-			var position:Point = _object.fullPathMatrix(time).transformPoint(_object.centroid);
+			var position:Point = _object.fullPathMatrix(time).transformPoint(_object.center);
 			_rotationMotionPath.x = position.x;
 			_rotationMotionPath.y = position.y;
 		}
@@ -183,7 +183,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			var matrix:Matrix;
 			var currentTime:int = key.startTime;
 			var currentKeyElapsedTime:int = 0;
-			var centroid:Point = _object.centroid;
+			var centroid:Point = _object.center;
 			var position:Point;
 			
 			var proportion:int;

@@ -23,6 +23,7 @@
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
@@ -34,7 +35,8 @@
 			[Bindable]
 			private var xPosFactor:Number = 2;
 			
-			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
+								 widgetManager:KWidgetInteractorManager):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
@@ -47,6 +49,9 @@
 				
 				ungroupButton.init(KSketchAssets.texture_ungroup , KSketchAssets.texture_ungroup_down);
 				ungroupButton.initSkin();
+				
+				moveCenterButton.init(KSketchAssets.texture_center , KSketchAssets.texture_center_down);
+				moveCenterButton.initSkin();
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
@@ -137,6 +142,7 @@
 					}
 				}
 			}
+			
 			private function _ungroup(event:MouseEvent = null):void
 			{
 				_interactionControl.begin_interaction_operation();
@@ -145,6 +151,19 @@
 				_interactionControl.selection = new KSelection(newObjectList);
 				_interactionControl.end_interaction_operation(op, _interactionControl.selection);
 				close();
+			}
+			
+			private function _updateMoveCenter():void
+			{
+				if(_interactionControl.selection.objects.length() != 1)
+					moveCenterButton.enabled = false;
+				else
+					moveCenterButton.enabled = true;
+			}
+			
+			private function _moveCenter(event:MouseEvent = null):void
+			{
+//				_widget.
 			}
 		]]>
 	</fx:Script>
@@ -185,6 +204,11 @@
 					<buttons:KSketch_Button
 						id="ungroupButton"
 						click="_ungroup(event)"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
+					<buttons:KSketch_Button
+						id="moveCenterButton"
 						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 						/>

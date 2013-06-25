@@ -238,5 +238,13 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_Texture_Image_Down.png")] 
 		[Bindable] 
 		public static var texture_images_down:Class;
+		
+		[Embed("assets/Button_Texture_Center.png")] 
+		[Bindable] 
+		public static var texture_center:Class;
+		
+		[Embed("assets/Button_Texture_Center_Down.png")] 
+		[Bindable] 
+		public static var texture_center_down:Class;
 	}
 }

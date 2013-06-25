@@ -134,7 +134,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		
 		protected function _transformBegin(event:KObjectEvent):void
 		{
-			_originalPosition = _object.transformInterface.matrix(event.time).transformPoint(_object.centroid);			
+			_originalPosition = _object.transformInterface.matrix(event.time).transformPoint(_object.center);			
 			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _updateGhost);
 			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);
 		}
@@ -159,7 +159,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 					}
 					
 					currentMatrix = _object.transformInterface.matrix(event.time);
-					var currentPosition:Point = currentMatrix.transformPoint(_object.centroid);
+					var currentPosition:Point = currentMatrix.transformPoint(_object.center);
 					var positionDifferences:Point = currentPosition.subtract(_originalPosition);
 					
 					if(positionDifferences.x > 1 || positionDifferences.y > 1)

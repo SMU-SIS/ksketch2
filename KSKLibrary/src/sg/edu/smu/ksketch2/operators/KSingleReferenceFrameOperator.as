@@ -196,10 +196,10 @@ package sg.edu.smu.ksketch2.operators
 			}
 			
 			var result:Matrix = new Matrix();
-			result.translate(-_object.centroid.x,-_object.centroid.y);
+			result.translate(-_object.center.x,-_object.center.y);
 			result.rotate(theta);
 			result.scale(sigma, sigma);
-			result.translate(_object.centroid.x, _object.centroid.y);
+			result.translate(_object.center.x, _object.center.y);
 			result.translate(x, y);
 			
 			_cachedMatrix = result.clone();
@@ -292,10 +292,10 @@ package sg.edu.smu.ksketch2.operators
 			}
 
 			var result:Matrix = new Matrix();
-			result.translate(-_object.centroid.x,-_object.centroid.y);
+			result.translate(-_object.center.x,-_object.center.y);
 			result.rotate(theta+_cachedTheta);
 			result.scale(sigma+_cachedScale, sigma+_cachedScale);
-			result.translate(_object.centroid.x, _object.centroid.y);
+			result.translate(_object.center.x, _object.center.y);
 			result.translate(x+_cachedX, y+_cachedY);
 			return result;	
 		}
@@ -727,7 +727,7 @@ package sg.edu.smu.ksketch2.operators
 			else
 			{
 				//Else we will need to insert a key at time
-				key = new KSpatialKeyFrame(time, _object.centroid);
+				key = new KSpatialKeyFrame(time, _object.center);
 				_refFrame.insertKey(key);
 				if(op)
 					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));		
@@ -853,7 +853,7 @@ package sg.edu.smu.ksketch2.operators
 					else
 					{
 						//Else we just insert a new one at time
-						toModifyKey = new KSpatialKeyFrame(currentKey.time, _object.centroid);
+						toModifyKey = new KSpatialKeyFrame(currentKey.time, _object.center);
 						op.addOperation(new KInsertKeyOperation(_refFrame.getKeyAtBeforeTime(currentKey.time), null, toModifyKey));
 						_refFrame.insertKey(toModifyKey);
 					}
@@ -889,8 +889,8 @@ package sg.edu.smu.ksketch2.operators
 			var newPosition:Point;
 			var difference:Point;
 			
-			var centroid:Point = _object.centroid;
-			var centroidDiff:Point = sourceObject.centroid.subtract(_object.centroid);
+			var centroid:Point = _object.center;
+			var centroidDiff:Point = sourceObject.center.subtract(_object.center);
 			var alteredPath:KPath;
 			var centroidPath:KPath;
 			
@@ -900,7 +900,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(!toModifyKey)
 				{
-					toModifyKey = new KSpatialKeyFrame(currentKey.time, _object.centroid);
+					toModifyKey = new KSpatialKeyFrame(currentKey.time, _object.center);
 					op.addOperation(new KInsertKeyOperation(_refFrame.getKeyAtBeforeTime(currentKey.time), null, toModifyKey));
 					_refFrame.insertKey(toModifyKey);
 				}
@@ -961,8 +961,8 @@ package sg.edu.smu.ksketch2.operators
 			if(sourcePath.length == 0)
 				return;
 			
-			var sourceHeader:KSpatialKeyFrame = new KSpatialKeyFrame(startTime, _object.centroid);
-			var sourceKey:KSpatialKeyFrame = new KSpatialKeyFrame(endTime, _object.centroid);
+			var sourceHeader:KSpatialKeyFrame = new KSpatialKeyFrame(startTime, _object.center);
+			var sourceKey:KSpatialKeyFrame = new KSpatialKeyFrame(endTime, _object.center);
 			sourceHeader.next = sourceKey;
 			sourceKey.previous = sourceHeader;
 			
@@ -1050,7 +1050,7 @@ package sg.edu.smu.ksketch2.operators
 				else
 				{
 					//Else we will need to insert a key at time
-					key = new KSpatialKeyFrame(time, _object.centroid);
+					key = new KSpatialKeyFrame(time, _object.center);
 					_refFrame.insertKey(key);
 					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));
 				}

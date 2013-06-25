@@ -44,7 +44,7 @@ package sg.edu.smu.ksketch2.model.objects
 		/**
 		 * Centroid for this KImage. As of now, it is center of the image
 		 */
-		override public function get centroid():Point
+		override public function get center():Point
 		{
 			return _center.clone();
 		}

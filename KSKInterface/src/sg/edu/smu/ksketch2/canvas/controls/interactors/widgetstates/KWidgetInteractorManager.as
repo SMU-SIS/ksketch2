@@ -64,7 +64,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_widgetSpace = _widget.parent;
 			
 			_contextMenu = new KSketch_Widget_ContextMenu();
-			_contextMenu.init(_KSketch, _interactionControl);
+			_contextMenu.init(_KSketch, _interactionControl, this);
 			
 			
 			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace);

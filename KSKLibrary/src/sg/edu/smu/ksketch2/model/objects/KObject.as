@@ -162,7 +162,7 @@ package sg.edu.smu.ksketch2.model.objects
 		 * This centroid its not its current centroid, it is its centroid at its created time
 		 * May need to multiply the returned centroid with matrices if you need a relevant one.
 		 */
-		public function get centroid():Point
+		public function get center():Point
 		{
 			if (getQualifiedClassName(this) == "sg.edu.smu.ksketch2.model.objects::KObject")
 				throw new new Error("You don't ask a KObject for its centroid. Ask a KStroke or Group instead");
@@ -173,6 +173,11 @@ package sg.edu.smu.ksketch2.model.objects
 		public function debug(debugSpacing:String = ""):void
 		{
 			trace(debugSpacing,this, id);
+		}
+		
+		public function set center(point:Point):void
+		{
+			_center = point.clone();
 		}
 		
 		public function serialize():XML

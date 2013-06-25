@@ -97,7 +97,7 @@ package sg.edu.smu.ksketch2.model.objects
 		/**
 		 * Returns the geometric center for this KStroke
 		 */
-		override public function get centroid():Point
+		override public function get center():Point
 		{
 			if(!_center)
 				computeCenter();

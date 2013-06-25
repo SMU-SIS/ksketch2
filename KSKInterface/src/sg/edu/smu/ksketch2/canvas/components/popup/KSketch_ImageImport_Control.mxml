@@ -220,16 +220,16 @@
 				
 				imageDisplay.addEventListener(MouseEvent.MOUSE_DOWN, _startLasso);
 				
-				var rect:Rectangle = imageDisplay.getRect(this);
-				imgLeft = rect.left - imageDisplay.x;
-				imgRight = rect.right - imageDisplay.x;
+				var rect:Rectangle = imageDisplay.getRect(imageEditMain);
+				imgLeft = rect.left;
+				imgRight = rect.right;
 				imgTop = rect.top;
 				imgBottom = rect.bottom;
 				
 				//Do pre processing of the image here
 				fullBitmapData = new BitmapData(rect.width, rect.height);
-				fullBitmapData.draw(imageDisplay);				
-				preProcessed = ImageProcessing.sobelOperation(fullBitmapData);			
+				fullBitmapData.draw(imageDisplay);
+				preProcessed = ImageProcessing.sobelOperation(fullBitmapData);
 			}
 			
 			private function _startLasso(event:MouseEvent):void
@@ -269,12 +269,11 @@
 				{
 					//Magnetic lasso can be turned off here
 					imgPoint = _magneticLasso(imgPoint);
-					
+
 					if(cropPoints.length == 0)
 						pointCommand.push(GraphicsPathCommand.MOVE_TO);
 					else
 						pointCommand.push(GraphicsPathCommand.LINE_TO);
-					
 					cropPoints.push(imgPoint.x);
 					cropPoints.push(imgPoint.y);
 				}
@@ -573,7 +572,7 @@
 					<s:Button label="Cancel" click="cancelImage()"/>
 				</s:Group>
 			</s:Group>
-			<s:Group id="cropMenu" width="100%" visible="false">
+			<s:Group id="cropMenu" width="100%" visible="false" includeInLayout="false">
 				<s:layout>
 					<s:HorizontalLayout horizontalAlign="center"/>
 				</s:layout>

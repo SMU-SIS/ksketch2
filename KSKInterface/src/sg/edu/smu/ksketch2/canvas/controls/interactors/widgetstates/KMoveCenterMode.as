@@ -16,7 +16,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 										,modelSpace:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl, widget);
-			_centerInteractor = new KMoveCenterInteractor(KSketchInstance, interactionControl, widget.centroid, modelSpace);
+			_centerInteractor = new KMoveCenterInteractor(KSketchInstance, interactionControl, widget, modelSpace);
 		}
 		
 		override public function activate():void

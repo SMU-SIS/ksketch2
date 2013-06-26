@@ -26,6 +26,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Widget_ContextMenu;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.KMoveCenterInteractor;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
@@ -77,11 +78,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_longPressTimer = new Timer(500);
 			_modeGesture = new TapGesture(_widget);
 			_modeGesture.addEventListener(GestureEvent.GESTURE_POSSIBLE, _handleTapStart);
-			
+
 			interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, updateWidget);
 			interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_BEGIN, updateWidget);
 			interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_END, updateWidget);
 			interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, updateWidget);
+			interactionControl.addEventListener(KMoveCenterInteractor.CENTER_CHANGE_ENDED, _handleCenterChange);
 			_KSketch.addEventListener(KSketchEvent.EVENT_MODEL_UPDATED, updateWidget);
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, updateWidget);
 			
@@ -95,14 +97,15 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				return;
 			
 			if(_activeMode)
-			{
 				_activeMode.deactivate();
-				if(_activeMode == centerMode)
-					mode = defaultMode;
-			}
 			
 			_activeMode = mode;
 			_activeMode.activate();
+		}
+		
+		private function _handleCenterChange(event:Event):void
+		{
+			activeMode = defaultMode;
 		}
 		
 		private function _keyTrigger(event:KeyboardEvent):void

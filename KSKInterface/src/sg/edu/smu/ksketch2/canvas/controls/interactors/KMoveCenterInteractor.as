@@ -1,6 +1,7 @@
 package sg.edu.smu.ksketch2.canvas.controls.interactors
 {
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	import flash.geom.Point;
 	
 	import org.gestouch.events.GestureEvent;
@@ -15,6 +16,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	
 	public class KMoveCenterInteractor extends KInteractor
 	{
+		public static const CENTER_CHANGE_ENDED:String = "Center Change Ended";
+		
 		private var _panGesture:PanGesture;
 		
 		private var _modelSpace:DisplayObject;
@@ -85,6 +88,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			log.@type = "Move Center";
 			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
 			_KSketch.log.appendChild(log);
+			
+			_interactionControl.dispatchEvent(new Event(CENTER_CHANGE_ENDED));
 			
 			reset();
 		}

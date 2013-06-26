@@ -50,6 +50,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		private var _activeMode:IWidgetMode;
 		public var defaultMode:IWidgetMode;
 		public var steeringMode:IWidgetMode;
+		public var centerMode:IWidgetMode;
 		public var freeTransformMode:IWidgetMode;	
 		
 		public function KWidgetInteractorManager(KSketchInstance:KSketch2,
@@ -68,6 +69,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			
 			
 			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace);
+			centerMode = new KMoveCenterMode(_KSketch, _interactionControl, _widget, modelSpace);
 			//steeringMode = new KSteeringMode(_KSketch, _interactionControl, _widget);
 			//freeTransformMode = new KFreeTransformMode(_KSketch, _interactionControl, _widget, modelSpace);
 			activeMode = defaultMode;
@@ -93,7 +95,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				return;
 			
 			if(_activeMode)
+			{
 				_activeMode.deactivate();
+				if(_activeMode == centerMode)
+					mode = defaultMode;
+			}
 			
 			_activeMode = mode;
 			_activeMode.activate();
@@ -186,6 +192,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				!_interactionControl.selection.isVisible(_KSketch.time))
 			{
 				_widget.visible = false;
+				activeMode = defaultMode;
 				_contextMenu.close();
 				return;
 			}

@@ -30,6 +30,7 @@
 			import sg.edu.smu.ksketch2.utils.KSelection;
 			
 			private var _KSketch:KSketch2;
+			private var _widgetManager:KWidgetInteractorManager;
 			private var _interactionControl:KInteractionControl;
 			
 			[Bindable]
@@ -40,6 +41,7 @@
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
+				_widgetManager = widgetManager;
 			}
 			
 			private function _initButtons():void
@@ -163,7 +165,8 @@
 			
 			private function _moveCenter(event:MouseEvent = null):void
 			{
-//				_widget.
+				_widgetManager.activeMode = _widgetManager.centerMode;
+				close();
 			}
 		]]>
 	</fx:Script>
@@ -209,6 +212,7 @@
 						/>
 					<buttons:KSketch_Button
 						id="moveCenterButton"
+						click="_moveCenter(event)"
 						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 						/>

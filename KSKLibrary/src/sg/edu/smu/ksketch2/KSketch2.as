@@ -245,6 +245,12 @@ package sg.edu.smu.ksketch2
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 		}
 		
+		public function moveCenter(object:KObject, dx:Number, dy:Number):void
+		{
+			object.transformInterface.moveCenter(dx, dy, time);
+			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
+		}
+		
 		/**
 		 * Function to change key time
 		 * It's really just here for the sake of logging things

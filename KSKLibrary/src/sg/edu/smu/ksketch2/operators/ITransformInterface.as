@@ -31,6 +31,7 @@ package sg.edu.smu.ksketch2.operators
 		function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void;
 		function endTransition(time:int, op:KCompositeOperation):void;
 		
+		function moveCenter(dx:Number, dy:Number, time:int):void
 		function insertBlankKeyFrame(time:int, op:KCompositeOperation):void;
 		function removeKeyFrame(time:int, op:KCompositeOperation):void;
 		function clearAllMotionsAfterTime(time:int, op:KCompositeOperation):void;

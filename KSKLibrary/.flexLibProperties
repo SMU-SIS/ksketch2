@@ -3,6 +3,7 @@
   <includeClasses>
     <classEntry path="sg.edu.smu.ksketch2.utils.KPathProcessing"/>
     <classEntry path="sg.edu.smu.ksketch2.utils.ImageProcessing"/>
+    <classEntry path="sg.edu.smu.ksketch2.operators.operations.KChangeCenterOperation"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

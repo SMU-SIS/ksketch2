@@ -300,6 +300,14 @@ package sg.edu.smu.ksketch2.operators
 			return result;	
 		}
 		
+		public function moveCenter(dx:Number, dy:Number, time:int):void
+		{
+			_object.center = _object.center.add(new Point(dx, dy));
+			_dirty = true;
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
+		}
+		
 		/**
 		 * Identifies if the object has active transforms at given time
 		 * Returns true if there is a transform

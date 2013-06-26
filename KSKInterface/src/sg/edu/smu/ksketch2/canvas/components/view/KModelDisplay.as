@@ -43,6 +43,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		protected var _KSketch:KSketch2;
 		protected var _interactionControl:KInteractionControl;
 		protected var _viewsTable:Dictionary;
+		private var _isInteracting:Boolean = false;
 		
 		/**
 		 * KModel Display is in charge of displaying things from the scene graph
@@ -62,8 +63,9 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			
 			_interactionControl = interactionControl;
 			_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, _handler_UpdateAllViews);
-			_interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_BEGIN, _clearBoundingBoxes);
 			_interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _handler_UpdateAllViews);
+			_interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_BEGIN, _startInteraction);
+			_interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_END , _endInteraction);
 			
 			reset();
 			
@@ -71,9 +73,16 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			scaleY = scaleY;
 		}
 		
-		private function _clearBoundingBoxes(event:Event):void
+		private function _startInteraction(event:Event):void
 		{
 			graphics.clear();
+			_isInteracting = true;
+		}
+		
+		private function _endInteraction(event:Event):void
+		{
+			_isInteracting = false;
+			_drawBounds();
 		}
 		
 		override public function set scaleX(value:Number):void
@@ -122,7 +131,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			
 			if(object is KGroup)
 			{
-				view = new KGroupView(object);
+				view = new KGroupView(object, this);
 				//Need to listen to children changes so as to handle their addition/removal on the view side
 				object.addEventListener(KGroupEvent.OBJECT_ADDED, _handler_ObjectParented);
 				object.addEventListener(KGroupEvent.OBJECT_REMOVED, _handler_ObjectDiscarded);
@@ -171,33 +180,8 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		{
 			for(var view:Object in _viewsTable)
 				_viewsTable[view].updateView(_KSketch.time);
-			
-			var currentSelection:KModelObjectList = _interactionControl.selection?_interactionControl.selection.objects:new KModelObjectList();
-			
-			var i:int;	
-			var length:int = currentSelection.length();
-			var currentObject:KObject;
-			
-			var groupView:KGroupView;
-			var groupBounds:Rectangle;
-			
-			graphics.clear();
-			graphics.lineStyle(BOUNDS_THICKNESS, 0x000000, 0.3);
-			
-			for(i = 0; i < length; i++)
-			{
-				currentObject = currentSelection.getObjectAt(i);
 				
-				if(currentObject is KGroup)
-				{
-					groupView = _viewsTable[currentObject] as KGroupView;
-					groupBounds = groupView.getBounds(this);
-					_dottedLine(groupBounds.left, groupBounds.top, groupBounds.left, groupBounds.bottom);
-					_dottedLine(groupBounds.left, groupBounds.bottom, groupBounds.right, groupBounds.bottom);
-					_dottedLine(groupBounds.right, groupBounds.bottom, groupBounds.right, groupBounds.top);
-					_dottedLine(groupBounds.right, groupBounds.top, groupBounds.left, groupBounds.top);
-				}
-			}
+			_drawBounds();
 		}
 		
 		protected function _handler_UpdateObjectView(event:KObjectEvent):void
@@ -242,6 +226,40 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			bitmapData.draw(this, matrix);				
 			_KSketch.time = savedTime;
 			return bitmapData;
+		}
+		
+		private function _drawBounds():void
+		{			
+			graphics.clear();
+			
+			if(_isInteracting)
+				return;
+
+			var currentSelection:KModelObjectList = _interactionControl.selection?_interactionControl.selection.objects:new KModelObjectList();
+			
+			var i:int;	
+			var length:int = currentSelection.length();
+			var currentObject:KObject;
+			
+			var groupView:KGroupView;
+			var groupBounds:Rectangle;
+			
+			graphics.lineStyle(BOUNDS_THICKNESS, 0x000000, 0.3);
+			
+			for(i = 0; i < length; i++)
+			{
+				currentObject = currentSelection.getObjectAt(i);
+				
+				if(currentObject is KGroup)
+				{
+					groupView = _viewsTable[currentObject] as KGroupView;
+					groupBounds = groupView.getBounds(this);
+					_dottedLine(groupBounds.left, groupBounds.top, groupBounds.left, groupBounds.bottom);
+					_dottedLine(groupBounds.left, groupBounds.bottom, groupBounds.right, groupBounds.bottom);
+					_dottedLine(groupBounds.right, groupBounds.bottom, groupBounds.right, groupBounds.top);
+					_dottedLine(groupBounds.right, groupBounds.top, groupBounds.left, groupBounds.top);
+				}
+			}
 		}
 		
 		/**

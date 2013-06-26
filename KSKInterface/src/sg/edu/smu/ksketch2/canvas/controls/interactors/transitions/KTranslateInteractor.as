@@ -9,6 +9,7 @@
 package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 {
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	import flash.geom.Point;
 	
 	import org.gestouch.events.GestureEvent;
@@ -17,9 +18,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
-	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.operators.operations.KParentChangeOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	public class KTranslateInteractor extends KTransitionInteractor
@@ -76,6 +75,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			for(i; i < length; i++)
 				_KSketch.beginTransform(_transitionObjects.getObjectAt(i),_interactionControl.transitionMode, _interactionControl.currentInteraction);
 			
+			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_BEGIN));
 			_translateGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Translate);
 			_translateGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			
 		}

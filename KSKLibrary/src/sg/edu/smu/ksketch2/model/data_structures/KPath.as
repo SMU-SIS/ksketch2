@@ -323,19 +323,36 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 */
 		public function mergePath(sourcePath:KPath):void
 		{
-			if(length == 0)
-				points = sourcePath.points;
-			return;
-			
-			var offSetTime:int = points[0].time;
-			var duration:int = pathDuration - offSetTime;
+			var i:int;
 			var currentPoint:KTimedPoint;	
-			var proportion:Number;
-			for(var i:int = 0; i<length; i++)
+			var pathLength:int = length;
+
+			if(pathLength == 0)
 			{
-				currentPoint = points[i];
-				proportion = (currentPoint.time - offSetTime)/duration;
-				currentPoint.add(sourcePath.find_Point(proportion));
+				var sourceLength:int = sourcePath.points.length;
+				for(i = 0; i<sourceLength; i++)
+					points.push(sourcePath.points[i].clone());
+			}
+			else if(pathDuration==0)
+			{
+				for(i = 0; i<pathLength; i++)
+				{
+					currentPoint = points[i];
+					proportion = i/pathLength;
+					currentPoint.add(sourcePath.find_Point(proportion));
+				}
+			}
+			else
+			{
+				var offSetTime:int = points[0].time;
+				var duration:int = pathDuration - offSetTime;
+				var proportion:Number;
+				for(i = 0; i<pathLength; i++)
+				{
+					currentPoint = points[i];
+					proportion = (currentPoint.time - offSetTime)/duration;
+					currentPoint.add(sourcePath.find_Point(proportion));
+				}
 			}
 		}
 		

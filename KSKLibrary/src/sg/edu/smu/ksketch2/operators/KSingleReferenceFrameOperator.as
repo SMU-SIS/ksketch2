@@ -830,6 +830,10 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function mergeTransform(sourceObject:KObject, stopMergeTime:int, op:KCompositeOperation):void
 		{
+			//This function is really very very very very long.
+			//It only really became this long because of optimisations, trying to cut loops here and there
+			//Now, it is barely good enough to run on ipads, maybe the next better programmer can do better :S
+			
 			var sourceInterface:KSingleReferenceFrameOperator = sourceObject.transformInterface.clone() as KSingleReferenceFrameOperator;
 			var oldInterface:KSingleReferenceFrameOperator = this.clone() as KSingleReferenceFrameOperator;
 			var toMergeRefFrame:KReferenceFrame = new KReferenceFrame();
@@ -924,23 +928,33 @@ package sg.edu.smu.ksketch2.operators
 				oldPath = toModifyKey.translatePath.clone();
 
 				keyStartTime = toModifyKey.startTime;
-				currentTime = toModifyKey.startTime+ KSketch2.ANIMATION_INTERVAL;
-				
+				currentTime = toModifyKey.startTime;
 				alteredPath = new KPath();
 				alteredPath.push(0,0,0);
-				while(currentTime <= toModifyKey.time)
+				
+				if(currentKey.duration == 0)
 				{
 					oldPosition = oldInterface.matrix(currentTime).transformPoint(centroid);
 					oldPosition = sourceInterface.matrix(currentTime).transformPoint(oldPosition);
 					newPosition = matrix(currentTime).transformPoint(centroid);
 					difference = oldPosition.subtract(newPosition);
 					alteredPath.push(difference.x, difference.y, currentTime-keyStartTime);
-					
-					currentTime += KSketch2.ANIMATION_INTERVAL;
 				}
-
-				toModifyKey.translatePath.mergePath(alteredPath);
+				else
+				{
+					while(currentTime <= toModifyKey.time)
+					{
+						oldPosition = oldInterface.matrix(currentTime).transformPoint(centroid);
+						oldPosition = sourceInterface.matrix(currentTime).transformPoint(oldPosition);
+						newPosition = matrix(currentTime).transformPoint(centroid);
+						difference = oldPosition.subtract(newPosition);
+						alteredPath.push(difference.x, difference.y, currentTime-keyStartTime);
+						currentTime += KSketch2.ANIMATION_INTERVAL;
+					}
+				}
 				
+				toModifyKey.translatePath.mergePath(alteredPath);
+								
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
 				
 				if(currentKey.time == stopMergeTime)
@@ -955,6 +969,7 @@ package sg.edu.smu.ksketch2.operators
 				}
 			}
 			
+			dirty = true;//This guy is important if it isn't dirtied, the view wont update.
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, stopMergeTime));
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, stopMergeTime));
 		}

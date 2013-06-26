@@ -17,7 +17,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.operators.operations.KParentChangeOperation;
+	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	public class KTranslateInteractor extends KTransitionInteractor
 	{
@@ -58,6 +61,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		override protected function _interaction_begin(event:GestureEvent):void
 		{
 			super._interaction_begin(event);
+			
+			var rawSelection:KSelection = _interactionControl.selection;
+			
+			if(rawSelection && rawSelection.objects.length() == 1)
+				_KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, false, _interactionControl.currentInteraction);
 			
 			_startPoint = _translateGesture.location;
 			

@@ -99,7 +99,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			_interactionControl.begin_interaction_operation();
 			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_BEGIN));
-
+			_interactionControl.currentInteraction.addOperation(op);
+			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 				_interactionControl.beginRecording();
 		}

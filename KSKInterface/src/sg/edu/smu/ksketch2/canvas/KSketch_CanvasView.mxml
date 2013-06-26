@@ -209,7 +209,11 @@
 			
 			public function exit():void
 			{
-
+				trace("ModelDisplay Debug");
+				modelDisplay.debug();
+				
+				trace("Model Debug");
+				_KSketch.root.debug();
 			}
 			
 			public function viewDeactivated():void

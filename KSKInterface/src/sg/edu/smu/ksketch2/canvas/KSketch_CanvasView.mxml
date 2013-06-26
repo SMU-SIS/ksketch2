@@ -89,7 +89,9 @@
 			{	
 				//We shouldn't make a new ksketch if one already exists
 				if(_KSketch)
+				{
 					return;
+				}
 
 				//Determine platform type, mobile / not mobile
 				//If os is a mac or windows, it is desktop.
@@ -185,6 +187,9 @@
 					}
 					
 					_imageData = null;
+					
+					_options.applyPreferences();
+					_magnifier.open(this);
 				}
 				else
 				{

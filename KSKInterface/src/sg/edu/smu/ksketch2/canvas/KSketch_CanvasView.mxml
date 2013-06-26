@@ -17,6 +17,7 @@
 		addedToStage="_initCanvas()"
 		add="_checkForImageData()"
 		viewActivate="_enterView_ProcessData()"
+		viewDeactivate="viewDeactivated()"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" xmlns:transformWidget2="sg.edu.smu.ksketch2.canvas.components.transformWidget.*"
 		>
@@ -202,6 +203,11 @@
 			}
 			
 			public function exit():void
+			{
+
+			}
+			
+			public function viewDeactivated():void
 			{
 				_options.close();
 				_menuPopUp.close();

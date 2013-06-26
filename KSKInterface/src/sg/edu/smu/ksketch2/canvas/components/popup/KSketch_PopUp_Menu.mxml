@@ -286,6 +286,7 @@
 		<buttons:KSketch_Button
 			visible="{!KSketch_CanvasView.isWeb}"
 			includeInLayout="{!KSketch_CanvasView.isWeb}"
+			enabled="false"
 			click="_exit()"
 			id="exitButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"

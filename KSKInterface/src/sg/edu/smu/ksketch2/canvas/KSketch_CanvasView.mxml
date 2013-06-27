@@ -187,9 +187,6 @@
 					}
 					
 					_imageData = null;
-					
-					_options.applyPreferences();
-					_magnifier.open(this);
 				}
 				else
 				{
@@ -205,6 +202,9 @@
 					_KSketch.time = 0;
 					_KSketch.beginSession();
 				}
+				
+				_options.applyPreferences();
+				_magnifier.open(this);
 			}
 			
 			public function exit():void

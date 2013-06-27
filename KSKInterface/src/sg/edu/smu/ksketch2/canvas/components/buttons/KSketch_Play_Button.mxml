@@ -127,8 +127,9 @@
 					textureControl.source = KSketchAssets.texture_play;
 				else
 					textureControl.source = KSketchAssets.texture_pause;
-
-				(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchStyles.CANVAS_BUTTON_ACTIVATED;
+				
+				
+				(skin as KSketch_Canvas_Button_Skin).upColor = KSketchStyles.CANVAS_BUTTON_ACTIVATED;
 			}
 		]]>
 	</fx:Script>

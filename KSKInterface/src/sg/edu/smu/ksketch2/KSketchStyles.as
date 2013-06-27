@@ -70,7 +70,7 @@ package sg.edu.smu.ksketch2
 		public static const MAGNIFIER_FONT_SIZE:Number = 10;
 		public static const MAGNIFIER_FONT_COLOR:Number = 0xFFFFFF;
 		
-		public static const MAGNIFIER_ARROW_PROPORTION:Number = 0.6;
+		public static const MAGNIFIER_ARROW_PROPORTION:Number = 0.4;
 		public static const MAGNIFIER_INDICATOR_THICKNESS:Number = 3;
 		
 		public static const TOGGLEBUTTON_ON_COLOR:uint = 0xFFFFFF;

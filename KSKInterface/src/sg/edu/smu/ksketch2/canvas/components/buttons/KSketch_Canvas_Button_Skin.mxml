@@ -44,6 +44,9 @@
 	<fx:Script>
 		<![CDATA[
 			import sg.edu.smu.ksketch2.KSketchStyles;
+			
+			[Bindable]
+			public var upColor:uint = KSketchStyles.CANVAS_BUTTON_NORMAL;
 		]]>
 	</fx:Script>
     
@@ -72,7 +75,7 @@
 			radiusY="{KSketchStyles.CANVAS_BUTTON_CORNER_RADIUS}">
         <s:fill>
 			<s:SolidColor id="backgroundFill"
-				color.up="{KSketchStyles.CANVAS_BUTTON_NORMAL}"
+				color.up="{upColor}"
 				color.over="{KSketchStyles.CANVAS_BUTTON_ACTIVATED}"
 				color.down="{KSketchStyles.CANVAS_BUTTON_ACTIVATED}"
 				color.disabled="{KSketchStyles.CANVAS_BUTTON_NORMAL}"/>

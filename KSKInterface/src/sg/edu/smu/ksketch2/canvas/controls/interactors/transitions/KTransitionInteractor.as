@@ -85,6 +85,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			//Handle general interaction implicit grouping here in this class
 			var rawSelection:KSelection = _interactionControl.selection;
 			var op:KCompositeOperation = new KCompositeOperation();
+			_interactionControl.begin_interaction_operation();
 			var savedTransitionMode:int = _interactionControl.transitionMode;
 
 			if(rawSelection.objects.length() > 1 )
@@ -92,14 +93,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 				var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, false, op);
 				_interactionControl.selection = new KSelection(newObjectList);
 				_interactionControl.transitionMode = savedTransitionMode;
+				_interactionControl.currentInteraction.addOperation(op);
 			}
 			
 			_newSelection = _interactionControl.selection; // For the time being. We have to put it thru a grouping algo to get the correct one
 			_transitionObjects = _newSelection.objects;
 			
-			_interactionControl.begin_interaction_operation();
 			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_BEGIN));
-			_interactionControl.currentInteraction.addOperation(op);
 			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 				_interactionControl.beginRecording();

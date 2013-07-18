@@ -10,13 +10,15 @@ package sg.edu.smu.ksketch2.model.data_structures
 {
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
+	/**
+	 * The KModelObjectList class serves as the concrete class for a model object
+	 */
 	public class KModelObjectList implements IModelObjectList
 	{
-		private var _objectList:Vector.<KObject>;
+		private var _objectList:Vector.<KObject>;		// the model object list
 		
 		/**
-		 * Data structure with functions to manipulate a sorted list of objects
-		 * objects are sorted according to their ids
+		 * The default constructor for initializing the model object list.
 		 */
 		public function KModelObjectList()
 		{
@@ -24,8 +26,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Adds the given object to the sorted list. Its position in the list will
-		 * be determined by its id.
+		 * Adds a KObject to the model object list. Its position in the list will
+		 * be determined by its ID.
+		 * 
+		 * @param object The target KObject.
+		 * @param index The index in the model object list.
 		 */
 		public function add(object:KObject, index:int = -1):void
 		{
@@ -41,7 +46,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Removes the given object from this KModelObjectList
+		 * Removes a KObject from the model object list.
+		 * 
+		 * @param object The target KObject.
 		 */
 		public function remove(object:KObject):void
 		{
@@ -53,7 +60,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Number of objects in this KModelObjectList
+		 * Gets the length of the model object list.
+		 * 
+		 * @return The length of the model object list.
 		 */
 		public function length():int
 		{
@@ -61,41 +70,75 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Checks if this KModelObjectList contains the given object
+		 * Checks whether the model object list contains the target KObject.
+		 * 
+		 * @param object The target KObject.
+		 * @return Whether the model object list contains the target KObject.
 		 */
 		public function contains(obj:KObject):Boolean
 		{
 			return _objectList.indexOf(obj) > -1;
 		}
 		
-		
+		/**
+		 * Gets the KObject at the target index.
+		 * 
+		 * @param index The target index.
+		 * @return The KObject from the target index in the model object list.
+		 */
 		public function getObjectAt(index:int):KObject
 		{
 			return _objectList[index];
 		}
 		
+		/**
+		 * Gets the list of IDs for each KObject in the model object list.
+		 * 
+		 * @return The list of IDs for each KObject in the model object list.
+		 */
 		public function toIDs():Vector.<int>
 		{
+			// initialize the list of IDs
 			var ints:Vector.<int> = new Vector.<int>();
+			
+			// iterate through each KObject in the model object list
 			for(var i:int = 0; i < _objectList.length; i++)
 			{
+				// add the KObject's ID to the list
 				ints.push(_objectList[i].id);
 			}
+			
+			// get the list of each KObject's IDs
 			return ints;
 		}
 		
+		/**
+		 * Gets the string representation of the model object list.
+		 * 
+		 * @return The string representation of the model object list.
+		 */
 		public function toString():String
 		{
+			// initialize the string
 			var str:String = "";
+			
+			// iterate through each object in the model object list
 			for(var i:int = 0; i < _objectList.length; i++)
+			{
+				// append the KObject's ID
 				str += _objectList[i].id.toString() +" ";
+			}
+			
+			// get the string representation
 			return str;
 		}
 		
 		/**
-		 * Given another IModelObjectList, intersect removes all objects
-		 * that is not present in the other IModelObjectList from this list/
-		 * This function modifies this KModelObjectList.
+		 * Intersects the model object list with the other model object list by removing all objects
+		 * in the model object list not present in the other model object list, given another model
+		 * object list. This function modifies the model object list.
+		 * 
+		 * @param toIntersect The other model object list.
 		 */
 		public function intersect(toIntersect:IModelObjectList):void
 		{
@@ -112,22 +155,26 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Method for comparing whether both model object lists have identical composition
-		 * Take not that only the objects directly recorded in the lists will be cmopared.
-		 * We will be assuming that any composite objects will have the identical composition when
-		 * using this method.
+		 * Compares whether both model object lists have identical composition. Assume that
+		 * any composite objects will have the identical composition when using this method.
+		 * 
+		 * @param comparedTo The other model object list.
+		 * @return Whether both model object lists have idential composition.
 		 */
 		public function isDifferent(comparedTo:IModelObjectList):Boolean
 		{
+			// case: the other model object list doesn't exist
 			if(!comparedTo)
 				return true;
 			
+			// case: the two model object lists have different lengths
 			if(comparedTo.length() != length())
 				return true;
 			
 			var i:int;
 			var currentObject:KObject;
 			
+			// do one-to-one comparisons between both model object lists
 			for(i = 0; i < _objectList.length; i++)
 			{
 				currentObject = _objectList[i];
@@ -139,18 +186,32 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return false;
 		}
 		
+		/**
+		 * Gets the KObject from its ID.
+		 * 
+		 * @param id The KObject's ID.
+		 * @return The ID's corresponding KObject.
+		 */
 		public function getObjectByID(id:int):KObject
 		{
-			
+			// iterate through the model object list
 			for(var i:int = 0; i<_objectList.length; i++)
 			{
+				// case: IDs match
 				if(_objectList[i].id == id)
 					return _objectList[i];
 			}
+			
+			// handle case when no KObject in the model object list has this ID
 			throw new Error("Object "+id.toString()+" does not exist in this list!");
 			return null;
 		}
 		
+		/**
+		 * Gets a clone of the model object list.
+		 * 
+		 * @return A clone of the model object list.
+		 */
 		public function clone():KModelObjectList
 		{
 			var newList:KModelObjectList = new KModelObjectList();

@@ -10,8 +10,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 {
 	import flash.geom.Matrix;
 
+	/**
+	 * The IReferenceFrame interface serves as the interface class for a reference
+	 * frame in K-Sketch. A reference frame is a key frame list for transformation key frames.
+	 */
 	public interface IReferenceFrame extends IKeyFrameList
 	{
+		/**
+		 * Gets the concatenated matrix for the reference frame from time 0 to the given time.
+		 * 
+		 * @param time The target time.
+		 * @return The concatenated matrix for the reference frame from time 0 to the given time.
+		 */
 		function matrix(time:int):Matrix;
 	}
 }

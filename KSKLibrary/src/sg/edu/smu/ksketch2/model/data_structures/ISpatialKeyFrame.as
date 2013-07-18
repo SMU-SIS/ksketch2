@@ -11,25 +11,38 @@ package sg.edu.smu.ksketch2.model.data_structures
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
+	/**
+	 * The ISpatialKeyFrame interface serves as the interface class that defines the core
+	 * implementations of spatial key frames in K-Sketch. Spatial key frames contain
+	 * spatial data such as its paths and transformation center.
+	 */
 	public interface ISpatialKeyFrame extends IKeyFrame
 	{
 		/**
-		 * Dirtys this key and all future keys, forcing recomputation of its matrix when it is required
+		 * Dirties the key and all future keys, forcing recomputation of its matrix when it is required.
 		 */
 		function dirtyKey():void;
 		
 		/**
-		 * Returns a clone of this key's transformation center
+		 * Gets a clone of the key's transformation center.
+		 * 
+		 * @return A clone of the key's transformation center.
 		 */
 		function get center():Point;
 		
 		/**
-		 * Returns this Spatial Key's matrix, concatenated with matrices of previous keys at time
+		 * Gets the spatial key's matrix, concatenated with matrices of previous keys at the given time.
+		 * 
+		 * @param time The target time.
+		 * @return The spatial key's full matrix.
 		 */
 		function fullMatrix(time:int):Matrix;
 		
 		/**
-		 * Returns this spatial key's own matrix at time 
+		 * Gets the spatial key's own matrix up to the given time.
+		 * 
+		 * @param time The target time.
+		 * @return The spatial key's partial matrix.
 		 */
 		function partialMatrix(time:int):Matrix;
 	}

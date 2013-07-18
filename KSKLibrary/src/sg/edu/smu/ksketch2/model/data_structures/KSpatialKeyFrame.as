@@ -16,63 +16,101 @@ package sg.edu.smu.ksketch2.model.data_structures
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation;
 	
+	/**
+	 * The KSpatialKeyFrame class serves as the concrete class that defines the core
+	 * implementations of spatial key frames in K-Sketch. Spatial key frames contain
+	 * spatial data such as its paths and transformation center.
+	 */
 	public class KSpatialKeyFrame extends KKeyFrame implements ISpatialKeyFrame
 	{
-		private var _isDirty:Boolean;
-		private var _center:Point;
-		private var _actualCenter:Point;
+		// settings variables
+		private var _isDirty:Boolean;			// the dirty status
+		private var _center:Point;				// the transformation center
+		private var _actualCenter:Point;		// the actual transformation center
+		
+		// path variables
 		public var translatePath:KPath;
 		public var rotatePath:KPath;
 		public var scalePath:KPath;
 		
-		//Paths used during transition
-		//If they aren't cleared after transitions, an error will be thrown
+		// paths used during transition
+		// if they aren't cleared after transitions, an error will be thrown
 		public var tempX:Number;
 		public var tempY:Number;
 		public var tempTheta:Number;
 		public var tempSigma:Number;
 		
+		/**
+		 * The main constructor for the KSpatialKeyFrame.
+		 * 
+		 * @param newTime The spatial key frame's time.
+		 * @param center The spatial key frame's center position.
+		 */
 		public function KSpatialKeyFrame(newTime:int, center:Point)
 		{
+			// set the spatial key frame's time
 			super(newTime);
 			
+			// initialize the main variables
 			_isDirty = true;
 			_center = center.clone();
 			translatePath = new KPath();
 			rotatePath = new KPath();
 			scalePath = new KPath();
 			
+			// initialize the temporary variables
 			tempX = 0;
 			tempY = 0;
 			tempTheta = 0;
 			tempSigma = 0;
 		}
 		
+		/**
+		 * Dirties the key and all future keys, forcing recomputation of its matrix when it is required.
+		 */
 		public function dirtyKey():void
 		{
 			_isDirty = true;
 			(next as KSpatialKeyFrame).dirtyKey();
 		}
 		
+		/**
+		 * Gets a clone of the key's transformation center.
+		 * 
+		 * @return A clone of the key's transformation center.
+		 */
 		public function get center():Point
 		{
 			return _center.clone();
 		}
 		
 		/**
-		 * Returns the concatenated matrix from all previous and this key frame up till getTime
+		 * Gets the spatial key's matrix, concatenated with matrices of previous keys at the given time.
+		 * 
+		 * @param time The target time.
+		 * @return The spatial key's full matrix.
 		 */
 		public function fullMatrix(getTime:int):Matrix
 		{
+			// get the matrix pair
 			var pre:Array = getMatrixPair(getTime);
+			
+			// get the result matrix
 			var result:Matrix = pre[1];
+			
+			// get the concatenated matrix
 			result.concat(pre[0] as Matrix);
+			
+			// return the full matrix
 			return result;
 		}
 		
 		/**
-		 * Temporary function with a stupid name to get a pair of matrices
-		 * [translation matrix, RS matrix] from the previous key frames
+		 * A temporary function with a stupid name for getting a pair of matrices
+		 * [translation matrix, RS matrix] from the previous key frames.
+		 * 
+		 * @param getTime The target time.
+		 * @return A pair of matrices from the previous key frames.
 		 */
 		public function getMatrixPair(getTime:int):Array
 		{
@@ -104,9 +142,12 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 *Returns this key frame's transformation matrix up to getTime
-		 * Contains duplicate code path from getPartial matrix, JT should really go and 
-		 * clean this up if it works
+		 * Gets the spatial key's matrix, concatenated with matrices of previous keys at the given time.
+		 * Note: Contains duplicate code path from getPartial matrix, JT should really go and 
+		 * clean this up if it works.
+		 * 
+		 * @param time The target time.
+		 * @return The spatial key's full matrix.
 		 */
 		public function partialMatrix(getTime:int):Matrix
 		{
@@ -114,7 +155,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 
 			var transforms:Array = _findTransforms(getTime);
 			
-			//create the matrix for this key frame
+			// create the matrix for this key frame
 			var matrix:Matrix = new Matrix();
 			matrix.translate(-_center.x, -_center.y);
 			matrix.rotate(transforms[0]);
@@ -124,6 +165,12 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return matrix;
 		}
 		
+		/**
+		 * Find the transforms.
+		 * 
+		 * @param getTime The target time.
+		 * @return The found transforms.
+		 */
 		private function _findTransforms(getTime:int):Array
 		{
 			if(getTime < startTime)
@@ -137,28 +184,26 @@ package sg.edu.smu.ksketch2.model.data_structures
 			var dx:Number = 0;
 			var dy:Number = 0;
 			
-			//Duration 0 happens on two cases
-			//1. Key is really of 0 duration
-			//2. There is no previous key, which means it can only be the head key
+			// duration 0 happens on two cases
+			// 1. key is really of 0 duration
+			// 2. there is no previous key, which means it can only be the head key
 			var proportion:Number;
 			if(keyDuration == 0)
 				proportion = 1;
 			else
 				proportion = Number((getTime-startTime)/keyDuration);
 			
-			//Return the full path transform
+			// return the full path transform
 			theta = tempTheta;
 			point = rotatePath.find_Point(proportion);
 			if(point)
 				theta += point.x;
-
 			
 			sigma = 1+tempSigma;
 			point = scalePath.find_Point(proportion);
 			if(point)
 				sigma += point.x;
 
-			
 			dx = tempX;
 			dy = tempY;
 			point = translatePath.find_Point(proportion);
@@ -173,8 +218,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * If this keyframe has a transition, it will return true, else false.
-		 * transition is determined by having changes in its transformation over time.
+		 * Checks if the key frame has a transition and returns true if so, else false.
+		 * A transition is determined by having changes in its transformation over time.
+		 * 
+		 * @return If the key frame has a transition.
 		 */
 		override public function hasActivityAtTime():Boolean
 		{
@@ -182,7 +229,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Returns a clone of this KSpatialKeyframe.
+		 * Gets a clone of the key frame.
+		 * 
+		 * @return A clone of the key frame.
 		 */
 		override public function clone():IKeyFrame
 		{
@@ -195,14 +244,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Splits this key into two portions
+		 * Splits the key frame into two parts -- a front key frame and a back key frame -- and returns the front key frame.
+		 * 
+		 * @param time The time of the split key frame.
+		 * @param op The associated composite operation.
+		 * @return The front key.
 		 */
 		override public function splitKey(atTime:int, op:KCompositeOperation):IKeyFrame
 		{
-			//Handle the pre split operation first
-			//We are basically "removing" this key and adding 2 more keys, so a total of 3 key operations
+			// handle the pre-split operation first
+			// we are basically "removing" this key and adding 2 more keys, so a total of 3 key operations
 			
-			//Find the proportion
+			// find the proportion
 			var proportion:Number = findProportion(Number(atTime));
 			var frontKey:KSpatialKeyFrame = new KSpatialKeyFrame(atTime, center);
 			var oldPath:KPath;
@@ -227,13 +280,20 @@ package sg.edu.smu.ksketch2.model.data_structures
 			frontKey.next = this;
 			previous = frontKey;
 			
-			//Now we have 2 more keys
-			//Deal with teh 2 "inserted keys"
+			// now we have 2 more keys
+			// deal with teh 2 "inserted keys"
 			op.addOperation(new KInsertKeyOperation(frontKey.previous, this, frontKey));
 			
 			return frontKey;
 		}
 		
+		/**
+		 * Checks for the spatial key frame's usefulness by whether the
+		 * spatial key frame or its next one had any activity, and returns
+		 * true if so, else false.
+		 * 
+		 * @return If the spatial key frame or its next one had any activity.
+		 */
 		override public function isUseful():Boolean
 		{
 			var hasTranslation:Boolean = true;
@@ -243,6 +303,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return (time != 0) && (hasActivityAtTime()||((next != null)&&next.hasActivityAtTime()));
 		}
 		
+		/**
+		 * Serializes the key frame to an XML object.
+		 * 
+		 * @return The serialized XML object of the key frame.
+		 */
 		override public function serialize():XML
 		{
 			var keyXML:XML = <spatialkey time="0" center=""/>;
@@ -264,6 +329,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return keyXML;
 		}
 		
+		/**
+		 * Deserializes the XML object to a key frame.
+		 * 
+		 * @param xml The target XML object.
+		 */
 		override public function deserialize(xml:XML):void
 		{
 			var centroidPosition:Array = ((xml.@center).toString()).split(",");

@@ -10,12 +10,16 @@ package sg.edu.smu.ksketch2.model.data_structures
 {
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 
+	/**
+	 * The KKeyFrameList class serves as the abstract class for a key frame list in K-Sketch.
+	 * The core implementation of the list is a linked list data structure of key frames.
+	 */
 	public class KKeyFrameList implements IKeyFrameList
 	{
-		protected var _head:KKeyFrame;
+		protected var _head:KKeyFrame;		// head key frame of the list
 		
 		/**
-		 * KKeyFrameList is an abstract class defining the core implementations of a linked list of key frames
+		 * The default constructor of the key frame list.
 		 */
 		public function KKeyFrameList()
 		{
@@ -23,7 +27,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Returns the first key of the key frame list
+		 * Gets the first key frame in the key frame list.
+		 * 
+		 * @return The first key frame in the key frame list.
 		 */
 		public function get head():IKeyFrame
 		{
@@ -31,8 +37,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Returns the last key of the key frame list
-		 * Returns null if there are no keys in this list
+		 * Gets the last key frame in the key frame list for a non-empty list;
+		 * else null otherwese.
+		 * 
+		 * @return The last key frame in the key frame list.
 		 */
 		public function get lastKey():IKeyFrame
 		{
@@ -50,8 +58,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Returns the key at the given time
-		 * If a key does not exist at time, returns null
+		 * Gets the key frame at the given target time for a non-empty list; else null otherwise.
+		 * 
+		 * @param time The target time.
+		 * @return The key frame at the given target time.
 		 */
 		public function getKeyAtTime(time:int):IKeyFrame
 		{
@@ -69,8 +79,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Returns the last key frame that is at or before the given time
-		 * returns null if a key does not exist at or before time
+		 * Gets the last key frame that is at or before the given time,
+		 * else null if a key frame does not exist at or before time.
+		 * 
+		 * @param time The target time.
+		 * @return The last key frame that is at or before the given time, else null.
 		 */
 		public function getKeyAtBeforeTime(time:int):IKeyFrame
 		{
@@ -91,8 +104,13 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Returns the first key that is after the given time
-		 * Returns null if a key does not exist after time.
+		 * Gets the first key frame that is after the given time if it exists,
+		 * else null if a key frame does not exist after the given target time.
+		 * [Note: Should refactor this method name to match capitalization of
+		 * beforeKeyatBeforeTime(...) method].
+		 * 
+		 * @param time The target time.
+		 * @return The first key frame after the given target time, else null.
 		 */
 		public function getKeyAftertime(time:int):IKeyFrame
 		{
@@ -114,8 +132,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Inserts key at its time into this key frame list
-		 * Note: key's previous linkages will be removed.
+		 * Inserts the given key into its correct position in the key frame list.
+		 * The key's previous linkages will be removed as a result.
+		 * 
+		 * @param key The target key frame.
 		 */
 		public function insertKey(key:IKeyFrame):void
 		{
@@ -149,9 +169,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 				_head = key as KKeyFrame;				
 		}
 		
-		/**Attaches this key to the end of the key list
-		 * If key.time < last key.time
-		 * This function will complain
+		/**
+		 * Appends the key frame to the end of the key frame list. An error will be thrown
+		 * if the given key frame's time occurs before the existing last key's time.
+		 * 
+		 * @param key The key frame to append.
 		 */
 		public function appendKey(key:IKeyFrame):void
 		{
@@ -171,8 +193,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * removes all keys after and including key
-		 * returns the removed keys intact as a linked list
+		 * Removes all keys after and including the given key frame, then returns
+		 * all the removed key frames intact as a linked list.
+		 * 
+		 * @param key The target key frame.
 		 */
 		public function removeKeyFrom(key:IKeyFrame):IKeyFrame
 		{
@@ -196,6 +220,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return key;
 		}
 		
+		/**
+		 * Serializes the key frame list to an XML object.
+		 * 
+		 * @return The serialized XML object of the key frame list.
+		 */
 		public function serialize():XML
 		{
 			var keyListXML:XML = <keylist type="default"></keylist>;
@@ -203,11 +232,20 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return keyListXML;
 		}
 		
+		/**
+		 * Gets a clone of the key frame list.
+		 * 
+		 * @return A clone of the key frame list.
+		 */
 		public function clone():KKeyFrameList
 		{
 			return null;
 		}
 		
+		/**
+		 * Debugs the key frame list object by outputting a string representation
+		 * of the key frame list.
+		 */
 		public function debug():void
 		{
 			var debugString:String = "";
@@ -224,6 +262,12 @@ package sg.edu.smu.ksketch2.model.data_structures
 				trace("There are no keys in this list");
 		}
 		
+		/**
+		 * Removes the given key frame from the key frame list. Links the
+		 * next key frame to the prevous key frame, and vice versa.
+		 * 
+		 * @param key The target key to remove.
+		 */
 		public function removeKeyFrame(key:IKeyFrame):void
 		{
 			if(key == _head)
@@ -240,8 +284,12 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Splits given key at time and returns the front portion
-		 * Throws an error if given key does not exist in this list
+		 * Splits the given key frame at the time, and returns the front portion.
+		 * Throws an error if the given key frame does not exist in the list.
+		 * 
+		 * @param key The target key frame.
+		 * @param time The target time.
+		 * @param op The corresponding composite operation.
 		 */
 		public function split(key:IKeyFrame, time:int, op:KCompositeOperation):IKeyFrame
 		{

@@ -8,41 +8,61 @@
  */
 package sg.edu.smu.ksketch2.model.data_structures
 {
+	/**
+	 * The KTimedPoint class serves as the concrete class that defines the core
+	 * implementations of timed points in K-Sketch. Timed points consist of points
+	 * containing the x-position, y-position, and time.
+	 */
 	public class KTimedPoint
 	{
-		public var x:Number;
-		public var y:Number;
-		public var time:int;
+		public var x:Number;	// x-position
+		public var y:Number;	// y-position
+		public var time:int;	// time
 		
+		/**
+		 * The main constructor of the KTimedPoint object. The constructor
+		 * sets the spatial and temporal information of the timed point.
+		 * 
+		 * @param x The x-position.
+		 * @param y The y-position.
+		 * @param time The time.
+		 */
 		public function KTimedPoint(x:Number=0, y:Number=0, time:int = 0)
 		{
-			this.x = x;
-			this.y = y;
-			this.time = time;
+			this.x = x;			// set the x-position
+			this.y = y;			// set the y-position
+			this.time = time;	// set the time
 		}
 		
 		/**
-		 * Adds the x and y values from anther_Point into KTimedPoint object
+		 * Adds the x- and y-values from anther timed point into the timed point.
+		 * 
+		 * @param another_Point The other timed point to add from.
 		 */
 		public function add(another_Point:KTimedPoint):void
 		{
-			x += another_Point.x;
-			y += another_Point.y;
+			x += another_Point.x;	// add the x-positions from both timed points
+			y += another_Point.y;	// add the y-positions from both timed points
 		}
 		
 		/**
-		 * Subtracts the x and y values of anther_Point from KTimedPoint object
+		 * Subtracts the x- and y-values from another timed point into the timed point.
+		 * 
+		 * @param another_Point The other timed point to subtract from.
 		 */
 		public function subtract(another_Point:KTimedPoint):void
 		{
-			x -= another_Point.x;
-			y -= another_Point.y;
+			x -= another_Point.x;	// subtract the x-positions from both timed points
+			y -= another_Point.y;	// subtract the y-positions from both timed points
 		}
 		
 		/**
-		 * Compares this point to another_Point. 
-		 * If all values of this point is equal to those of another_point, returns true
-		 * else false
+		 * Checks whether the timed point is equivalent to the other timed point.
+		 * If all spatial and temporal information of the timed point is equivalent
+		 * to the other given timed point, returns true.  Else, return false.
+		 * 
+		 * @param another_Point The other timed point.
+		 * @return Whether the timed point is equivalent to the other timed point.
 		 */
 		public function isEqualsTo(another_Point:KTimedPoint):Boolean
 		{
@@ -53,24 +73,31 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Returns a clone of this KTimedPoint object
+		 * Gets a clone of the timed point.
+		 * 
+		 * @return A clone of the timed point.
 		 */
 		public function clone():KTimedPoint
 		{
 			return new KTimedPoint(x,y,time);
 		}
 		
+		/**
+		 * Serializes the timed point to an XML object.
+		 * 
+		 * @return The serialized XML object of the timed point.
+		 */
 		public function serialize():String
 		{
 			return x.toString()+","+y.toString()+","+time.toString();
 		}
 		
+		/**
+		 * Prints the spatial and temporal information of the timed point to the console.
+		 */
 		public function print():void
 		{
 			trace("(",x,",",y,",",time,")");
 		}
-		
-		
-		
 	}
 }

@@ -10,39 +10,76 @@ package sg.edu.smu.ksketch2.operators.operations
 {
 	import sg.edu.smu.ksketch2.model.data_structures.IVisibilityKey;
 
+	/**
+	 * The KVisibilityChangedOperation class serves as the concrete class for
+	 * handling visibility changed operations in K-Sketch.
+	 */
 	public class KVisibilityChangedOperation implements IModelOperation
 	{
-		private var _key:IVisibilityKey;
-		private var _oldVisibility:Boolean;
-		private var _newVisibility:Boolean
+		private var _key:IVisibilityKey;		// the current key frame
+		private var _oldVisibility:Boolean;		// the key frame's older visibility
+		private var _newVisibility:Boolean		// the key frame's newer visibility
 		
+		/**
+		 * The main constructor for the KVisibilityChangedOperation class.
+		 * 
+		 * @param key The current key frame.
+		 * @param oldVisibility The key frame's older visibility.
+		 * @param newVisibility The key frame's newer visibility.
+		 */
 		public function KVisibilityChangedOperation(key:IVisibilityKey, oldVisibility:Boolean, newVisibility:Boolean)
 		{
-			_key = key;
-			_oldVisibility = oldVisibility;
-			_newVisibility = newVisibility;
+			_key = key;							// set the current key frame
+			_oldVisibility = oldVisibility;		// set the key frame's older visibility
+			_newVisibility = newVisibility;		// set the key frame's newer visibility
 		}
 		
+		/**
+		 * Gets the error message for the visibility changed operation.
+		 * 
+		 * @return The error message for the visibility changed operation.
+		 */
 		public function get errorMessage():String
 		{
 			return "KVisibilityChangedOperation does not have enough information to perform its duties";
 		}
 		
+		/**
+		 * Checks whether the visibility changed operation is valid. If not, it
+		 * should fail on construction and not be added to the operation stack.
+		 * 
+		 * @return Whether the visibility changed operation is valid.
+		 */
 		public function isValid():Boolean
 		{
+			// check if the key frame is non-null
 			return _key != null;
 		}
 		
+		/**
+		 * Undoes the visibility changed operation by reverting the state of the
+		 * operation to immediately before the operation was performed.
+		 */
 		public function undo():void
 		{
+			// set the keyframe's visibility to the older visibility
 			_key.visible = _oldVisibility;
 		}
 		
+		/**
+		 * Redoes the visibility changed operation by reverting the state of the
+		 * operation to immediately after the operation was performed.
+		 */
 		public function redo():void
 		{
+			// set the key frame's visibility to the newer visibility
 			_key.visible = _newVisibility;
 		}
 		
+		/**
+		 * Debugs the visibility changed operation by showing what is inside the
+		 * operation.
+		 */
 		public function debug():void
 		{
 			

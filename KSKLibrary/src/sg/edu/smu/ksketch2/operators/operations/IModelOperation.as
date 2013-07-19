@@ -8,30 +8,42 @@
  */
 package sg.edu.smu.ksketch2.operators.operations
 {
+	/**
+	 * The IModelOperation class serves as the interface class for a model
+	 * operation in K-Sketch.
+	 */
 	public interface IModelOperation
 	{
 		/**
-		 * error message for this operation
+		 * Gets the error message for the model operation.
+		 * 
+		 * @return The error message for the model operation.
 		 */
 		function get errorMessage():String;
 		
 		/**
-		 * If the operation is not valid, it should fail on construction and should not be added to an operation stack
+		 * Checks whether the operation is valid. If not, it should fail on
+		 * construction and not be added to the operation stack.
+		 * 
+		 * @return Whether the operation is valid.
 		 */
 		function isValid():Boolean;
 
 		/**
-		 * Revert the state of the model to before this operation was performed
+		 * Undoes the model operation by reverting the state of the model to
+		 * immediately before the model operation was performed.
 		 */
 		function undo():void;
 		
 		/**
-		 * Revert the state of the model to immediately after this operation was performed
+		 * Redoes the model operation by reverting the state of the model to
+		 * immediately after the operation was performed.
 		 */
 		function redo():void;
 		
 		/**
-		 * Shows Whats inside this operation
+		 * Debugs the model operation by showing what is inside the model
+		 * operation.
 		 */
 		function debug():void;
 	}

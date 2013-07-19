@@ -12,47 +12,82 @@ package sg.edu.smu.ksketch2.operators.operations
 	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 
+	/**
+	 * The KEditKeyTimeOperation class serves as the concrete class for
+	 * handling edit key time operations in K-Sketch. Specifically, the
+	 * operations for changing a key's time (i.e., when moving markers).
+	 */
 	public class KEditKeyTimeOperation implements IModelOperation
 	{
-		private var _object:KObject;
-		private var _key:KKeyFrame;
-		private var _newTime:int;
-		private var _oldTime:int;
+		private var _object:KObject;	// the current object
+		private var _key:KKeyFrame;		// the current key frame
+		private var _newTime:int;		// the current newer time
+		private var _oldTime:int;		// the current older time
 		
 		/**
-		 * Operation for changing a key's time (ie. when moving markers)
+		 * The main constructor for the KEditKeyTimeOperation class.
+		 * 
+		 * @param object The target current object.
+		 * @param key The target current key frame.
+		 * @param newTime The target newer time.
+		 * @param oldTime The target older time.
 		 */
 		public function KEditKeyTimeOperation(object:KObject, key:IKeyFrame, newTime:int, oldTime:int)
 		{
-			_object = object;
-			_key = key as KKeyFrame;
-			_newTime = newTime;
-			_oldTime = oldTime;
+			_object = object;			// set the current object
+			_key = key as KKeyFrame;	// set the current key frame
+			_newTime = newTime;			// set the newer time
+			_oldTime = oldTime;			// set the older time
 			
+			// case: the edit key time operation is invalid
+			// throw an error
 			if(!isValid())
 				throw new Error(errorMessage)
 		}
 		
+		/**
+		 * Gets the error message for the edit key time operation.
+		 * 
+		 * @return The error message for the edit key time operation.
+		 */
 		public function get errorMessage():String
 		{
 			return "KEditKeyTimeOperation does not have enough variables to perform undo/redo";
 		}
 		
+		/**
+		 * Checks whether the edit key time operation is valid. If not, it
+		 * should fail on construction and not be added to the operation stack.
+		 * 
+		 * @return Whether the edit key time operation is valid. 
+		 */
 		public function isValid():Boolean
 		{
 			return (_object != null)&&(_key != null) && !isNaN(_newTime) && !isNaN(_oldTime);
 		}
 		
+		/**
+		 * Undoes the edit key time operation by reverting the state of the
+		 * operation to immediately before the operation was performed.
+		 */
 		public function undo():void
 		{
 			_key.time = _oldTime;
 		}
 		
+		/**
+		 * Redoes the edit key time operation by reverting the state of the
+		 * operation to immediately after the operation was performed.
+		 */
 		public function redo():void
 		{
 			_key.time = _newTime;
 		}
 		
+		/**
+		 * Debugs the edit key time operation by showing what is inside the
+		 * operation.
+		 */
 		public function debug():void
 		{
 			trace(this);

@@ -13,6 +13,10 @@ package sg.edu.smu.ksketch2.events
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
+	/**
+	 * The KGroupEvent class serves as the concrete class for denoting
+	 * events to a KGroup in K-Sketch.
+	 */
 	public class KGroupEvent extends Event
 	{
 		public static const OBJECT_REMOVED:String = "Object Removed";
@@ -22,7 +26,11 @@ package sg.edu.smu.ksketch2.events
 		private var _child:KObject;
 		
 		/**
-		 * Class Denoting Events related to a KGroup
+		 * The main constructor for the KGroupEvent class.
+		 * 
+		 * @param type The event type.
+		 * @param targetGroup The target group.
+		 * @param targetObject The target object.
 		 */
 		public function KGroupEvent(type:String, targetGroup:KGroup, targetObject:KObject)
 		{
@@ -31,11 +39,21 @@ package sg.edu.smu.ksketch2.events
 			_child = targetObject;
 		}
 		
+		/**
+		 * Gets the group of objects.
+		 * 
+		 * @return The group of objects.
+		 */
 		public function get group():KGroup
 		{
 			return _group;
 		}
 		
+		/**
+		 * Gets the child object.
+		 * 
+		 * @return The child object.
+		 */
 		public function get child():KObject
 		{
 			return _child;

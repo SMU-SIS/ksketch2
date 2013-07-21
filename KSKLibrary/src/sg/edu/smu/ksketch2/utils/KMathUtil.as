@@ -12,9 +12,9 @@ package sg.edu.smu.ksketch2.utils
 	import flash.geom.Point;
 	
 	/**
-	 * The MathTools class contains methods that support basic geometry operations.
+	 * The KMathUtil class contains methods that support basic geometry operations.
 	 * All the methods of the this class are static and must be called using the 
-	 * syntax MathTools.method(parameter) 	 .
+	 * syntax KMathUtil.method(parameter).
 	 */	
 	public class KMathUtil
 	{
@@ -24,26 +24,35 @@ package sg.edu.smu.ksketch2.utils
 		public static const EPSILON:Number = 1.0e-6;
 		
 		/**
-		 * Compute the distance between 2 points.
-		 * @param p1 The 1st point.
-		 * @param p2 The 2nd point.
-		 * @return Distance between 2 points.
+		 * Computes the distance between two points.
+		 * 
+		 * @param p1 The first point.
+		 * @param p2 The second point.
+		 * @return The distance between the two points.
 		 */		
 		public static function distanceOf(p1:Point, p2:Point):Number
 		{
 			return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y));
 		}
 		
+		/**
+		 * Computes the magnitude of the point.
+		 * 
+		 * @param x The x-position.
+		 * @param y The y-position.
+		 * @return The magnitude of the point.
+		 */
 		public static function magnitude(x:Number, y:Number):Number
 		{
 			return Math.sqrt((x*x)+(y*y));
 		}
 		
 		/**
-		 * Compute the angle (in radians) from one vector to another.
-		 * @param startVector The 1st vector.
-		 * @param endVector The 2nd vector.
-		 * @return Angle in radius from startVector to endVector.
+		 * Computes the angle (in radians) from one vector to another.
+		 * 
+		 * @param startVector The first vector.
+		 * @param endVector The second vector.
+		 * @return The angle in radius from the start vector to the end vector.
 		 */		
 		public static function angleOf(startVector:Point, endVector:Point):Number
 		{
@@ -68,10 +77,11 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Compute the ratio of the magnitute of one vector compare to another.
+		 * Computes the ratio of the magnitute of one vector compare to another.
 		 * Division by zero error will be thrown if the startVector is zero.
-		 * @param startVector The 1st vector.
-		 * @param endVector The 2nd vector.
+		 * 
+		 * @param startVector The first vector.
+		 * @param endVector The second vector.
 		 * @return Ratio of |endVector|/|startVector|.
 		 */		
 		public static function scaleOf(startVector:Point, endVector:Point):Number
@@ -82,9 +92,10 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Get translational vector of the matrix.
-		 * @param m A matrix. The translation vector will be extracted from this matrix.
-		 * @return Translational vector in the form of (tx,ty).
+		 * Gets the translational vector of the matrix.
+		 * 
+		 * @param m The target matrix; the translation vector will be extracted from this matrix.
+		 * @return The translational vector in the form of (tx,ty).
 		 */
 		public static function getOffset(m:Matrix):Point
 		{
@@ -92,9 +103,10 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Get scale value of the matrix in the range [0,1].
-		 * @param m a matrix. The scale will be extracted from this matrix.
-		 * @return scale value in the range [0,1].
+		 * Gets the scale value of the matrix in the range [0,1].
+		 * 
+		 * @param m The target matrix; The scale will be extracted from this matrix.
+		 * @return The scale value in the range [0,1].
 		 */		
 		public static function getScale(m:Matrix):Number
 		{
@@ -102,9 +114,10 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Get rotational value of the matrix in degree, the value will be in [0, 360).
-		 * @param m A matrix. The angle will be extracted from this matrix.
-		 * @return Rotational value in degree.
+		 * Gets the rotational value of the matrix in degrees; the value will be in [0, 360).
+		 * 
+		 * @param m The target matrix; the angle will be extracted from this matrix.
+		 * @return The rotational value in degrees.
 		 */		
 		public static function getRotation(m:Matrix):Number
 		{
@@ -136,10 +149,11 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Compute the area of a polygon represented by coordinates of points
-		 * using the formula 0.5*abs(x1*y2-y1*x2+x2*y3-y2*x3+...+xn*y1-yn*x1)
-		 * @param polygon The coordinates of the vertices of the polygon
-		 * @return Area of the polygon
+		 * Computes the area of a polygon represented by coordinates of points
+		 * using the formula 0.5*abs(x1*y2-y1*x2+x2*y3-y2*x3+...+xn*y1-yn*x1).
+		 * 
+		 * @param polygon The coordinates of the vertices of the target polygon.
+		 * @return The area of the target polygon.
 		 */		
 		public static function area(polygon:Vector.<Point>):Number
 		{
@@ -159,9 +173,10 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Compute the perimeter of a polygon represented by coordinates of points
-		 * @param polygon The coordinates of the vertices of the polygon
-		 * @return Perimeter of the polygon
+		 * Computes the perimeter of a polygon represented by the coordinates of points.
+		 * 
+		 * @param polygon The coordinates of the vertices of the target polygon.
+		 * @return The perimeter of the target polygon.
 		 */		
 		public static function perimeter(polygon:Vector.<Point>):Number
 		{
@@ -174,12 +189,13 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Determine if 2 line segments are crossed
-		 * @param seg1p1 Start coordinate of the 1st line segment
-		 * @param seg1p2 End coordinate of the 1st line segment
-		 * @param seg2p1 Start coordinate of the 2nd line segment
-		 * @param seg2p2 End coordinate of the 2nd line segment
-		 * @return Boolean value indicating if the line segments are crossed
+		 * Determines if two line segments are crossed.
+		 * 
+		 * @param seg1p1 The start coordinate of the 1st line segment.
+		 * @param seg1p2 The end coordinate of the 1st line segment.
+		 * @param seg2p1 The start coordinate of the 2nd line segment.
+		 * @param seg2p2 The end coordinate of the 2nd line segment.
+		 * @return The boolean value indicating if the line segments are crossed.
 		 */		
 		public static function lineSegmentCross(seg1p1:Point, seg1p2:Point, 
 												seg2p1:Point, seg2p2:Point):Boolean
@@ -214,13 +230,14 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Compute the coordinate of the intersection of 2 line segments
-		 * Exception will be thrown if the lines are parallel
-		 * @param p1 Start coordinate of the 1st line segment
-		 * @param p2 End coordinate of the 1st line segment
-		 * @param q1 Start coordinate of the 2nd line segment
-		 * @param q2 End coordinate of the 2nd line segment
-		 * @return coordinate of the interesction of the 2 line segments
+		 * Computes the coordinate of the intersection of two line segments.
+		 * An exception will be thrown if the lines are parallel.
+		 * 
+		 * @param p1 The start coordinate of the 1st line segment.
+		 * @param p2 The end coordinate of the 1st line segment.
+		 * @param q1 The start coordinate of the 2nd line segment.
+		 * @param q2 The end coordinate of the 2nd line segment.
+		 * @return The ccoordinate of the interesction of the two line segments.
 		 */		
 		public static function segmentIntersection(p1:Point, p2:Point, q1:Point, q2:Point):Point
 		{
@@ -243,11 +260,12 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Determine if a Point falls on a line segment
-		 * @param point Coordinate of the Point
-		 * @param segStart Start coordinate of the line segment
-		 * @param segEnd End coordinate of the line segment
-		 * @return Boolean value indicating if the point falls on the line segment
+		 * Determines if a point falls on a line segment.
+		 * 
+		 * @param point The coordinate of the point.
+		 * @param segStart The start coordinate of the line segment.
+		 * @param segEnd The end coordinate of the line segment.
+		 * @return The boolean value indicating if the point falls on the line segment.
 		 */		
 		public static function hasIntersection(point:Point, segStart:Point, segEnd:Point):Boolean
 		{
@@ -258,12 +276,13 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Determine if 2 points falls on the same side of a line
-		 * @param p1 coordinate of 1st point
-		 * @param p2 coordinate of 2nd point
-		 * @param v direction vector of the line
+		 * Determines if two points falls on the same side of a line.
+		 * 
+		 * @param p1 The coordinate of the first point.
+		 * @param p2 The coordinate of the second point.
+		 * @param v The direction vector of the line.
 		 * @return 1 if both points falls on the same side of the line, 
-		 * -1 if they falls on opposite side, 0 otherwise 
+		 * -1 if they falls on opposite side, 0 otherwise.
 		 */		
 		public static function segcross(p1:Point, p2:Point, v:Point):int
 		{
@@ -289,7 +308,11 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Returns the proportion of the entire duration with respect to the given time.
+		 * Converts Cartesian coordinates into polar coordinates.
+		 * 
+		 * @point The target point.
+		 * @point The target center.
+		 * @return The converted polar coordinations.
 		 */
 		public static function cartesianToPolar(point:Point, center:Point = null):Point
 		{

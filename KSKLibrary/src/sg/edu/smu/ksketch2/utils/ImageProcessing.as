@@ -10,15 +10,25 @@ package sg.edu.smu.ksketch2.utils
 {
 	import flash.display.BitmapData;
 
+	/**
+	 * The ImageProcessing class serves as the concrete class for image
+	 * processing in K-Sketch.
+	 */
 	public class ImageProcessing
 	{
-		//Edge generator
+		/**
+		 * Generate the edges of the target image.
+		 * 
+		 * @param targetBMD The target image.
+		 * @return The generated edge of the target image.
+		 */
 		public static function sobelOperation(targetBMD:BitmapData):BitmapData
 		{
 			var edgeData:BitmapData = new BitmapData(targetBMD.width, targetBMD.height);
 			var targetWidth:Number = targetBMD.width-1;
 			var targetHeight:Number = targetBMD.height-1;
-			//Loop through original data and calculate edges
+			
+			// loop through original data and calculate edges
 			for(var w:int = 1; w<targetWidth; w++)
 			{
 				for(var h:int = 1; h<targetHeight; h++)
@@ -34,7 +44,7 @@ package sg.edu.smu.ksketch2.utils
 					var pixelValue135:uint = getGray(targetBMD.getPixel(w+1, h+1));
 					var pixelValue225:uint = getGray(targetBMD.getPixel(w-1, h+1));
 					
-					// Applying the following convolution mask matrix to the pixel
+					// applying the following convolution mask matrix to the pixel
 					//    GX        GY  
 					// -1, 0, 1   1, 2, 1
 					// -2, 0, 2   0, 0, 0
@@ -45,21 +55,21 @@ package sg.edu.smu.ksketch2.utils
 					
 					var gray:uint = Math.abs(gx) + Math.abs(gy);
 					
-					// Decrease the grays a little or else its all black and white.
-					// You can play with this value to get harder or softer edges.
+					// decrease the grays a little or else its all black and white
+					// you can play with this value to get harder or softer edges
 					gray *= .5;
 					
-					// Check to see if values aren't our of bounds
+					// check to see if values aren't out of bounds
 					if(gray > 255)
 						gray = 255;
 					
 					if(gray < 0)
 						gray = 0;
 					
-					// Build New Pixel
+					// build the new pixel value
 					var newPixelValue:uint = (gray << 16) + (gray << 8) + (gray);
 					
-					// Copy New Pixel Into Edge Data Bitmap
+					// copy the new pixel into the edge data bitmap
 					edgeData.setPixel(w,h,Math.round(Math.round(newPixelValue/0xAAAAAA)*0xFFFFFF));	
 				}	
 			}
@@ -67,6 +77,12 @@ package sg.edu.smu.ksketch2.utils
 			return edgeData;
 		}
 		
+		/**
+		 * Gets the gray pixel value of the given input color.
+		 * 
+		 * @param pixelValue The pixel value of the target input color.
+		 * @return The gray pixel value of the target input color.
+		 */
 		private static function getGray(pixelValue:uint):uint
 		{
 			var red:uint = (pixelValue >> 16 & 0xFF) * 0.30;

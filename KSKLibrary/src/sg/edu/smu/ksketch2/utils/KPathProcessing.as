@@ -12,10 +12,20 @@ package sg.edu.smu.ksketch2.utils
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 
+	/**
+	 * The KPathProcessingclass serves as the concrete class for path
+	 * processing in K-Sketch.
+	 */
 	public class KPathProcessing
 	{
 		/**
-		 * Adds dx and dy to the portion of path starting from startProportion to endProportion
+		 * Adds dx and dy to the portion of path starting from the start proportion to the end proportion.
+		 * 
+		 * @param The target path.
+		 * @param The start proportion.
+		 * @param The end proportion.
+		 * @param dx The change in the x-position.
+		 * @param dy The change in the y-position.
 		 */
 		public static function interpolateSpan(path:KPath,
 											   startProportion:Number, endProportion:Number,
@@ -30,8 +40,8 @@ package sg.edu.smu.ksketch2.utils
 			var currentProportion:Number = 0;;
 			var currentPoint:KTimedPoint;
 			
-			//If the duration of this path is 0
-			//offset the whole thing with dx and dy
+			// if the duration of this path is 0
+			// offset the whole thing with dx and dy
 			if(duration == 0)
 			{
 				index = 0;
@@ -73,6 +83,15 @@ package sg.edu.smu.ksketch2.utils
 			}
 		}
 		
+		/**
+		 * Joints two different paths.
+		 * 
+		 * @param pathBefore The previous path.
+		 * @param pathAfter The subsequent path.
+		 * @param frontKeyDuration The time duration of the front key frame.
+		 * @param backKeyDuration The time duration of the back key frame.
+		 * @return The joined path.
+		 */
 		public static function joinPaths(pathBefore:KPath, pathAfter:KPath, frontKeyDuration:int, backKeyDuration:int):KPath
 		{
 			var joinedPath:KPath = new KPath();
@@ -131,11 +150,12 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Makes sure that a path has at least one point in every frame
-		 * in the time span that it is active in, and that it begins and ends
-		 * at frames.
+		 * Normalizes the path density by making sure that a path has at
+		 * least one point in every frame in the time span that it is
+		 * active in, and that it begins and ends
+		 * at frames. If a path is empty. It will not be filled
 		 * 
-		 * If a path is empty. It will not be filled
+		 * @param path The target path.
 		 */
 		public static function normalisePathDensity(path:KPath):void
 		{
@@ -144,10 +164,12 @@ package sg.edu.smu.ksketch2.utils
 			
 			var duration:int = path.pathDuration;
 			
-			if(duration == 0)//nothing to be done here // maybe make sure that there are at least 2 points at 0
+			// nothing to be done here
+			// maybe make sure that there are at least 2 points at 0
+			if(duration == 0)
 				return;
 			
-			//Round the duration to the nearest frame
+			// round the duration to the nearest frame
 			var remainingDuration:int = duration%KSketch2.ANIMATION_INTERVAL;
 			var toAdd:int = Math.round(remainingDuration/KSketch2.ANIMATION_INTERVAL)*KSketch2.ANIMATION_INTERVAL;
 			duration = duration - remainingDuration + toAdd;
@@ -166,12 +188,16 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Makes a path linear vs time
+		 * Makes a path linear versus the time.
+		 * 
+		 * @param The target path.
 		 */
 		public static function discardPathTimings(path:KPath):void
 		{
+			// case: no path
+			// return nothing since nothing to discard
 			if(path.length == 0)
-				return; //return, nothing to discard
+				return; 
 			
 			var currentTime:int = 0;
 			var currentProportion:Number = 0;
@@ -192,7 +218,9 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Replace straight line between points with Catmull Rom Spline
+		 * Replaces straight line between points with the Catmull Rom Spline.
+		 * 
+		 * @param path The target path.
 		 */
 		public static function CatmullRomSpline(path:KPath):void
 		{
@@ -270,13 +298,25 @@ package sg.edu.smu.ksketch2.utils
 			path.points = newPoints;
 		}
 		
+		
+		/**
+		 * Calculates the distance between the two timed points.
+		 * 
+		 * @param p1 The first timed point.
+		 * @param p2 The second timed point.
+		 * @return The distance between the two timed points.
+		 */
 		public static function distance(p1:KTimedPoint, p2:KTimedPoint):Number
 		{
 			return Math.sqrt(((p1.x-p2.x)*(p1.x-p2.x))+((p1.y-p2.y)*(p1.y-p2.y)));
 		}
 		
 		/**
-		 * Used to calculate tangent of control points in Catmull Rom Spline
+		 * Used to calculate tangent of the control points in the Catmull Rom Spline.
+		 * 
+		 * @param prevPt The previous timed point.
+		 * @param nxtPt The next timed point.
+		 * @return The calculated tangent of the control points in the Catmull Rom Spline.
 		 */
 		public static function PointTangent(prevPt:KTimedPoint, nxtPt:KTimedPoint):KTimedPoint
 		{

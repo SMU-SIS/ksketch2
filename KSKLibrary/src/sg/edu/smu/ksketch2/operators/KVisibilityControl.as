@@ -19,53 +19,58 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.operators.operations.KParentChangeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KVisibilityChangedOperation;
 
+	/**
+	 * The KVisibilityControl class serves as the concrete class for visibility
+	 * control in K-Sketch. Specifically, the transform operator for visibility
+	 * key frames.
+	 */
 	public class KVisibilityControl implements IVisibilityControl
 	{
+		// static constants
 		public static const VISIBLE_ALPHA:Number = 1;
 		public static const GHOST_ALPHA:Number = 0.2;
 		public static const INVISIBLE_ALPHA:Number = 0;
 		
-		private var _object:KObject;
-		private var _visibilityKeys:KVisibilityKeyList;
+		// class variables
+		private var _object:KObject;						// the object
+		private var _visibilityKeys:KVisibilityKeyList;		// the visibility key frame list
 		
 		/**
-		 * Operator for visibility keys
-		 * Don't really need this but I think we should have something here.
-		 * We can deal with visibility interpolation in this class instead of changing the data object
-		 * for visibility keys.
+		 * The main constructor for the KVisibilityControl class.
+		 * 
+		 * @param object The target object.
 		 */
 		public function KVisibilityControl(object:KObject)
 		{
+			// set the object
 			_object = object;
+			
+			// initialize the set of visibility key frames
 			_visibilityKeys = new KVisibilityKeyList();
 //			setVisibility(false, 0, null);
 		}
 		
 		public function get earliestVisibleTime():int
 		{
+			// set the current key frame as the head of the visibility key frame list
 			var currentKey:IKeyFrame = _visibilityKeys.head;
 			
+			// iterate through each non-completely visible key frame
 			while(!(currentKey as IVisibilityKey).visible)
 			{
 				currentKey = currentKey.next;
 			}
 			
+			// return the time of the first completely visible key frame
 			return currentKey.time;
 		}
 		
-		public function get visibilityKeyHeader():IKeyFrame
-		{
-			return _visibilityKeys.head;
-		}
-		
-		/**
-		 * Sets the visibility at time
-		 */
 		public function setVisibility(visible:Boolean, time:int, op:KCompositeOperation):void
 		{
-			//Look for the relevant key at given time first
+			// look for the relevant key frame at the given time first
 			var key:IVisibilityKey = _visibilityKeys.getActiveKey(time);
 			
+			// case: the key frame exists
 			if(key)
 			{				
 				if(time  == _object.transformInterface.firstKeyTime)
@@ -101,29 +106,6 @@ package sg.edu.smu.ksketch2.operators
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
 		}
 		
-		/**
-		 * Should be able to switch this function around to give
-		 * interpolated visibility values
-		 */
-		public function alpha(time:int):Number
-		{
-			var key:IVisibilityKey = _visibilityKeys.getActiveKey(time);
-			if(key)
-			{
-				if(key.visible)
-					return VISIBLE_ALPHA;
-				else
-				{
-					if(key.time ==time)
-						return GHOST_ALPHA;
-					else
-						return INVISIBLE_ALPHA;
-				}
-			}
-			else
-				return INVISIBLE_ALPHA;
-		}
-		
 		public function serializeVisibility():XML
 		{
 			var visibilityXML:XML = <Activity/>;
@@ -148,6 +130,52 @@ package sg.edu.smu.ksketch2.operators
 			}
 		}
 		
+		public function alpha(time:int):Number
+		{
+			// get the activity visibility key frame at the given time
+			var key:IVisibilityKey = _visibilityKeys.getActiveKey(time);
+			
+			// case: the key frame exists
+			if(key)
+			{
+				// case: the key frame has a visibile state
+				// return a visible alpha value
+				if(key.visible)
+					return VISIBLE_ALPHA;
+				else
+				{
+					// case: the key frame's time matches the given time
+					// return a ghost visible alpha value
+					if(key.time == time)
+						return GHOST_ALPHA;
+					
+					// case: the key frame lacks both a visibile state and matching time
+					// return an invisible alpha value
+					else
+						return INVISIBLE_ALPHA;
+				}
+			}
+			// the visibility key doesn't exist
+			// return an invisible alpha value
+			else
+				return INVISIBLE_ALPHA;
+		}
+		
+		/**
+		 * Gets the visibility key frame at the head of the visibility key frame list.
+		 * 
+		 * @return The visibility key frame at the head of the visibility key frame list.
+		 */
+		public function get visibilityKeyHeader():IKeyFrame
+		{
+			return _visibilityKeys.head;
+		}
+		
+		/**
+		 * Gets a clone of the visibility control.
+		 * 
+		 * @return A clone of the visibility control.
+		 */
 		public function clone():IVisibilityControl
 		{
 			var newVisibilityControl:KVisibilityControl = new KVisibilityControl(_object);

@@ -27,110 +27,238 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.utils.KPathProcessing;
 	
 	//Yay monster class! Good luck reading this
+	
+	/**
+	 * The KChangeCenterOperation class serves as the concrete class for
+	 * handling change center operations in K-Sketch. Specifically, the
+	 * class serves as the transform interface for dealing with the
+	 * single reference frame model.
+	 */
 	public class KSingleReferenceFrameOperator implements ITransformInterface
 	{
-		public static const TRANSLATE_THRESHOLD:Number = 3;
-		public static const ROTATE_THRESHOLD:Number = 0.3;
-		public static const SCALE_THRESHOLD:Number = 0.1;
-		public static const EPSILON:Number = 0.05;
-		public static var always_allow_interpolate:Boolean = false;
+		// ##########
+		// # Fields #
+		// ##########
 		
-		protected var _object:KObject;
-		protected var _refFrame:KReferenceFrame;
-		protected var _dirty:Boolean = true;
-		protected var _lastQueryTime:int;
-		protected var _cachedMatrix:Matrix = new Matrix();
+		// static variables
+		public static const TRANSLATE_THRESHOLD:Number = 3;				// translation threshold
+		public static const ROTATE_THRESHOLD:Number = 0.3;				// rotation threshold
+		public static const SCALE_THRESHOLD:Number = 0.1;				// scaling threshold
+		public static const EPSILON:Number = 0.05;						// epsilon threshold
+		public static var always_allow_interpolate:Boolean = false;		// always interpolate state flag
 		
-		protected var _interpolationKey:KSpatialKeyFrame;
-		protected var _TStoredPath:KPath;
-		protected var _RStoredPath:KPath;
-		protected var _SStoredPath:KPath;
+		// miscellaneous state variables
+		protected var _object:KObject;									// active object
+		protected var _refFrame:KReferenceFrame;						// active reference frame
+		protected var _dirty:Boolean = true;							// dirty state flag
+		protected var _lastQueryTime:int;								// previous query time 
+		protected var _cachedMatrix:Matrix = new Matrix();				// cached matrix 
 		
-		protected var _nextInterpolationKey:KSpatialKeyFrame;
-		protected var _TStoredPath2:KPath;
-		protected var _RStoredPath2:KPath;
-		protected var _SStoredPath2:KPath;
+		// current transformation storage variables
+		protected var _interpolationKey:KSpatialKeyFrame;				// current interpolation spatial key frame
+		protected var _TStoredPath:KPath;								// stored transformation path
+		protected var _RStoredPath:KPath;								// stored rotation path
+		protected var _SStoredPath:KPath;								// stored scaling path
 		
-		protected var _startTime:int;
-		protected var _startMatrix:Matrix;
-		protected var _inTransit:Boolean
-		protected var _transitionType:int;
+		// subsequent transformation storage variables
+		protected var _nextInterpolationKey:KSpatialKeyFrame;			// next interpolation spatial key frame
+		protected var _TStoredPath2:KPath;								// other stored transformation path
+		protected var _RStoredPath2:KPath;								// other stored rotation path
+		protected var _SStoredPath2:KPath;								// other stored scaling path
 		
-		protected var _transitionX:Number;
-		protected var _transitionY:Number;
-		protected var _transitionTheta:Number;
-		protected var _transitionSigma:Number;
+		// transition time variables
+		protected var _startTime:int;									// starting time
+		protected var _startMatrix:Matrix;								// starting matrix
+		protected var _inTransit:Boolean								// in-transition state flag
+		protected var _transitionType:int;								// transition state type
 		
-		protected var _magX:Number;
-		protected var _magY:Number;
-		protected var _magTheta:Number;
-		protected var _magSigma:Number;
+		// transition space variables
+		protected var _transitionX:Number;								// transition's x-value
+		protected var _transitionY:Number;								// transition's y-value
+		protected var _transitionTheta:Number;							// transition's theta value
+		protected var _transitionSigma:Number;							// transition's sigma value
+		
+		// magnitude variables
+		protected var _magX:Number;										// magnitude's x-value
+		protected var _magY:Number;										// magnitude's y-value
+		protected var _magTheta:Number;									// magnitude's rotational (theta) value
+		protected var _magSigma:Number;									// magnitude's scaling (sigma) value
 
-		protected var _cachedX:Number;
-		protected var _cachedY:Number;
-		protected var _cachedTheta:Number;
-		protected var _cachedScale:Number;
+		// cache variables
+		protected var _cachedX:Number;									// cached x-vaue
+		protected var _cachedY:Number;									// cached y-value
+		protected var _cachedTheta:Number;								// cached rotational (theta) value
+		protected var _cachedScale:Number;								// cached scaling value [note: why is it not called _cachedSigma?]
 		
-		public var hasTranslate:Boolean;
-		public var hasRotate:Boolean;
-		public var hasScale:Boolean;
+		// transformation state flag variables
+		public var hasTranslate:Boolean;								// transition state flag
+		public var hasRotate:Boolean;									// rotation state flag
+		public var hasScale:Boolean;									// scaling state flag
+		
+		
+		
+		// ###############
+		// # Constructor #
+		// ###############
 		
 		/**
-		 * KSingleReferenceFrame is the transform interface dealing with the single reference frame model
+		 * The main constructor for the KSingleReferenceFrameOperator class.
+		 * 
+		 * @param object The target object.
 		 */
 		public function KSingleReferenceFrameOperator(object:KObject)
 		{
+			// case: the given object is null
+			// throw an error
 			if(!object)
 				throw new Error("Transform interface says: Dude, no object given!");
-			_refFrame = new KReferenceFrame();
-			_object = object;
-			_inTransit = false;
 			
-			_lastQueryTime = 0;
-			_transitionX = 0;
-			_transitionY = 0;
-			_transitionTheta = 0;
-			_transitionSigma = 0;
+			// initialize the objects
+			_refFrame = new KReferenceFrame();		// initialize the active reference frame
+			_object = object;						// initialize the active object
+			_inTransit = false;						// initialize the in-transition flag
+			
+			// set the initial transition information
+			_lastQueryTime = 0;						// set the initial previous query time
+			_transitionX = 0;						// set the initial transition x-position
+			_transitionY = 0;						// set the initial transition y-position
+			_transitionTheta = 0;					// set the initial transition's theta
+			_transitionSigma = 0;					// set the initial transition's theta
 
 		}
 		
+		
+		
+		// ##########################
+		// # Accessors and Mutators #
+		// ##########################
+		
 		public function set dirty(value:Boolean):void
 		{
+			// set the dirty state flag to the given value
 			_dirty = value;
 		}
 		
-		public function get transitionType():int
+		public function matrix(time:int):Matrix
 		{
-			return _transitionType;
+			// case: the reference frame is in transition
+			if(_inTransit)
+			{
+				// case: the reference frame is being demonstrated
+				// return the transition matrix
+				if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
+					return _transitionMatrix(time);
+			}
+			
+			// case: the reference frame is clean and the given time matches the last queried time
+			// return the cached matrix
+			// sending the cached matrix is done to improve the interface's performance
+			if(!_dirty && _lastQueryTime == time)
+				return _cachedMatrix.clone();
+			
+			// the reference frame is neither in transition nor cached,
+			// so calculate an extremely hardcoded matrix
+			// iterate through the key frame list and add up the rotation, scale, dx, and dy values,
+			// then pump these values into the matrix afterwards
+			var currentKey:KSpatialKeyFrame = _refFrame.head as KSpatialKeyFrame;
+			
+			// case: the reference frame is null
+			// return a new matrix
+			if(!currentKey)
+				return new Matrix();
+			
+			// set the initial key frame path values
+			var x:Number = 0;
+			var y:Number = 0;
+			var theta:Number = 0;
+			var sigma:Number = 1;
+			var point:KTimedPoint;
+			
+			// iterate through each key frame
+			while(currentKey)
+			{
+				// case: the current key frame's is before the queried time
+				if(currentKey.startTime <= time)
+				{
+					// calculate the proportional value
+					var proportionKeyFrame:Number = currentKey.findProportion(time);
+					
+					// locate the point in the current key frame's translated path at the proportional value
+					point = currentKey.translatePath.find_Point(proportionKeyFrame);
+					
+					// case: the located point is not null
+					// extract the located point's x- and y-positions
+					if(point)
+					{
+						x += point.x;
+						y += point.y;
+					}
+					
+					// locate the point in the current key frame's rotated path at the proportional value
+					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
+					
+					// case: the located point is not null
+					// increment the rotational value
+					if(point)
+						theta += point.x;
+					
+					// locate the point in the current key frame's scaled path at the proportional value
+					point = currentKey.scalePath.find_Point(proportionKeyFrame);
+					
+					// case: the located point is not null
+					// increment the scaling value
+					if(point)
+						sigma += point.x;
+				}
+				
+				// set the current key frame as the next key frame
+				currentKey = currentKey.next as KSpatialKeyFrame;
+			}
+			
+			// create the resultant matrix from the extracted valued
+			var result:Matrix = new Matrix();
+			result.translate(-_object.center.x,-_object.center.y);
+			result.rotate(theta);
+			result.scale(sigma, sigma);
+			result.translate(_object.center.x, _object.center.y);
+			result.translate(x, y);
+			
+			// set the cached matrix's states
+			_cachedMatrix = result.clone();
+			_lastQueryTime = time;
+			_dirty = false;
+			
+			// return the resultant matrix
+			return result;
 		}
 		
-		/**
-		 * Returns the time value of the first key in the reference frame this transform operator handles
-		 */
 		public function get firstKeyTime():int
 		{
+			// case: the reference frame's head (i.e., first key frame) is non-null
+			// return the first key frame's time
 			if(_refFrame.head)
 				return _refFrame.head.time;
+			// case: the reference frame's head is null
+			// throw an error
 			else
 				throw new Error("Reference frame for "+_object.id.toString()+" doesn't have a key!");
 		}
 		
-		/**
-		 * Returns the time value of the last key in the reference frame this transform operator handles
-		 */
 		public function get lastKeyTime():int
 		{
+			// initialize the key frame as the reference frame's last key frame
 			var key:IKeyFrame = _refFrame.lastKey;
 			
+			// case: the last key frame is non-null
+			// return the last key frame's time
 			if(key)
 				return _refFrame.lastKey.time;
+			// case: the reference frame's tail is null
+			// throw an error
 			else
 				throw new Error("Reference frame for "+_object.id.toString()+" doesn't have a key!");
 		}
 		
-		/**
-		 * Returns the key in effect at given time
-		 */
 		public function getActiveKey(time:int):IKeyFrame
 		{
 			var activeKey:IKeyFrame = _refFrame.getKeyAtTime(time);
@@ -141,72 +269,9 @@ package sg.edu.smu.ksketch2.operators
 			return activeKey;
 		}
 		
-	
-		/**
-		 * Returns the transform matrix of the reference frame that this interface provides access to
-		 */
-		public function matrix(time:int):Matrix
+		public function get transitionType():int
 		{
-			if(_inTransit)
-			{
-				if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-					return _transitionMatrix(time);
-			}
-			
-
-			if(!_dirty && _lastQueryTime == time)
-				return _cachedMatrix.clone();
-			
-			//Extremely hardcoded matrix
-			//Iterate through the key list and add up the rotation, scale, dx dy values
-			//Pump these values into the matrix after wards
-			var currentKey:KSpatialKeyFrame = _refFrame.head as KSpatialKeyFrame;
-			
-			if(!currentKey)
-				return new Matrix();
-			
-			var x:Number = 0;
-			var y:Number = 0;
-			var theta:Number = 0;
-			var sigma:Number = 1;
-			var point:KTimedPoint;
-			
-			while(currentKey)
-			{
-				if(currentKey.startTime <= time)
-				{
-					var proportionKeyFrame:Number = currentKey.findProportion(time);
-					point = currentKey.translatePath.find_Point(proportionKeyFrame);
-					if(point)
-					{
-						x += point.x;
-						y += point.y;
-					}
-					
-					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
-					if(point)
-						theta += point.x;
-					
-					point = currentKey.scalePath.find_Point(proportionKeyFrame);
-					if(point)
-						sigma += point.x;
-				}
-				
-				currentKey = currentKey.next as KSpatialKeyFrame;
-			}
-			
-			var result:Matrix = new Matrix();
-			result.translate(-_object.center.x,-_object.center.y);
-			result.rotate(theta);
-			result.scale(sigma, sigma);
-			result.translate(_object.center.x, _object.center.y);
-			result.translate(x, y);
-			
-			_cachedMatrix = result.clone();
-			_lastQueryTime = time;
-			_dirty = false;
-			
-			return result;
+			return _transitionType;
 		}
 		
 		/**
@@ -249,7 +314,7 @@ package sg.edu.smu.ksketch2.operators
 							_cachedX += point.x;
 							_cachedY += point.y;
 						}
-
+						
 						hasTranslate = true;
 					}
 				}
@@ -266,7 +331,7 @@ package sg.edu.smu.ksketch2.operators
 					{
 						if(point)
 							_cachedTheta += point.x;
-
+						
 						hasRotate = true;
 					}
 				}
@@ -290,7 +355,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
-
+			
 			var result:Matrix = new Matrix();
 			result.translate(-_object.center.x,-_object.center.y);
 			result.rotate(theta+_cachedTheta);
@@ -300,91 +365,103 @@ package sg.edu.smu.ksketch2.operators
 			return result;	
 		}
 		
-		public function moveCenter(dx:Number, dy:Number, time:int):void
-		{
-			_object.center = _object.center.add(new Point(dx, dy));
-			_dirty = true;
-			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
-			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
-		}
 		
-		/**
-		 * Identifies if the object has active transforms at given time
-		 * Returns true if there is a transform
-		 */
+
+		
+		
+		// ##############
+		// # Permitters #
+		// ##############
+
 		public function canInterpolate(time:int):Boolean
 		{
+			// case: always allow interpolation flag is enabled
+			// return true
 			if(always_allow_interpolate)
 				return true;
 			
+			// get the first active key frame after the time before the given time
 			var activeKey:ISpatialKeyFrame;
-			
 			activeKey = _refFrame.getKeyAftertime(time-1) as ISpatialKeyFrame;
+			
+			// case: the active key frame exists
 			if(activeKey)
 			{
+				// case: the active key frame's time matches the key frame after the time before the given time
 				if(activeKey.time == time)
 					return true;
 				
+				// otherwese, return whether the active key frame has activity at that time
 				return activeKey.hasActivityAtTime();
 			}
 			
+			// return false when all other possible true cases have failed
 			return false;
 		}
 		
-		/**
-		 * Returns a boolean denoting whether it is possible to insert a key
-		 * into this operator's key list
-		 */
 		public function canInsertKey(time:int):Boolean
 		{
+			// get the key frame at the given time and check if the extacted key frame exists
 			var hasKeyAtTime:Boolean = (_refFrame.getKeyAtTime(time) as KSpatialKeyFrame != null);
 			
+			// return whether the extracted key frame exists
 			return !hasKeyAtTime;
 		}
 		
-		/**
-		 * Returns a boolean denoting whether it is possible to remove a key
-		 * from this operator's key list
-		 */
 		public function canRemoveKey(time:int):Boolean
 		{
+			// get the key frame at the given time
 			var key:IKeyFrame = _refFrame.getKeyAtTime(time);
+			
+			// initially set the remove key frame check as false
 			var canRemove:Boolean = false;
 			
+			// case: the key frame at the given time exists
 			if(key)
 			{
 				canRemove = true;
 				
+				// case: the key frame either has no next key frame or is the head key frame
+				// set the remove key frame check as false false
 				if(!key.next)
 					canRemove = false;
-				
 				if(key == _refFrame.head)
 					canRemove = false;
 			}
 			
+			// return the remove key frame check
 			return canRemove;
 		}
 		
-		/**
-		 * Returns a boolean denoting whether it is possible to remove keys after given time
-		 */
 		public function canClearKeys(time:int):Boolean
 		{
+			// get the key frame after the given time
 			var hasKeyAfterTime:Boolean = (_refFrame.getKeyAftertime(time) as KSpatialKeyFrame != null);
 			
+			// return whether the key frame after the given time exists
 			return hasKeyAfterTime;
 		}
 		
+		
+		
+		// ###############
+		// # Transitions #
+		// ###############
+		
 		/**
-		 * Preps the object for transition
-		 * Checks for errors and inconsistencies and complains if the object is not in a magical state
-		 * --- THe previous operation did not clean up the object
+		 * Preps the object for transition by checking for errors and
+		 * inconsistencies, and complains if the object is not in the magical
+		 * state. Note: the previous operation did not clean up the object.
+		 * 
+		 * @param time The target time.
+		 * @param transitionType The transition type.
+		 * @param The corresponding composite operation.
 		 */
 		public function beginTransition(time:int, transitionType:int, op:KCompositeOperation):void
 		{
 			_transitionType = transitionType;
 			_startTime = time;
-
+			
 			//Initiate transition values and variables first
 			_transitionX = 0;
 			_transitionY = 0;
@@ -433,7 +510,7 @@ package sg.edu.smu.ksketch2.operators
 					_cachedX += point.x;
 					_cachedY += point.y;
 				}
-
+				
 				point = currentKey.rotatePath.find_Point(1);
 				if(point)
 					_cachedTheta += point.x;
@@ -452,11 +529,16 @@ package sg.edu.smu.ksketch2.operators
 			
 			_dirty = true;
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _object, time));
-
 		}
 		
 		/**
-		 * Updates the object during transition
+		 * Updates the object during the transition.
+		 * 
+		 * @param time The target time.
+		 * @param dx The target x-position.
+		 * @param dy The target y-position.
+		 * @param dTheta The target rotation value.
+		 * @param dScale The target scaling value.
 		 */
 		public function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
 		{
@@ -512,19 +594,25 @@ package sg.edu.smu.ksketch2.operators
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
 		}
 		
+		/**
+		 * Finalizes the object's transition.
+		 * 
+		 * @param time The target time.
+		 * @param op The corresponding composite operation.
+		 */
 		public function endTransition(time:int, op:KCompositeOperation):void
 		{
 			_dirty = true;
 			_endTransition_process_ModeDI(time, op);
 			_inTransit = false;
 			_dirty = true;
-
-			//Dispatch a transform finalised event
-			//Application level components can listen to this event to do updates
+			
+			// dispatch a transform finalised event
+			// application level components can listen to this event to do updates
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, time));
 		}
-
+		
 		private function _beginTransition_process_interpolation(time:int, op:KCompositeOperation):void
 		{
 			if(_transitionType == KSketch2.TRANSITION_INTERPOLATED)
@@ -557,7 +645,7 @@ package sg.edu.smu.ksketch2.operators
 				_SStoredPath = _interpolationKey.scalePath.clone();
 			}
 		}
-		
+
 		private function _endTransition_process_interpolation(time:int, op:KCompositeOperation):void
 		{
 			if(_transitionType == KSketch2.TRANSITION_INTERPOLATED)
@@ -590,7 +678,7 @@ package sg.edu.smu.ksketch2.operators
 			else
 				_endTransition_process_interpolation(time, op);
 		}
-		
+
 		private function _demonstrate(time:int, op:KCompositeOperation):void
 		{
 			//Process the paths here first
@@ -608,7 +696,7 @@ package sg.edu.smu.ksketch2.operators
 				KPathProcessing.discardPathTimings(_RStoredPath);
 				KPathProcessing.discardPathTimings(_SStoredPath);
 			}
-
+			
 			//Path validity will be tested in _normaliseForOverwriting
 			//If path is valid, the object's future for that transform type will be discarded
 			_normaliseForOverwriting(_startTime, op);
@@ -626,29 +714,12 @@ package sg.edu.smu.ksketch2.operators
 			_clearEmptyKeys(op);
 		}
 		
-		public function lastKeyWithTransform(targetKey:KSpatialKeyFrame):KSpatialKeyFrame
-		{
-			var targetPath:KPath;
-			
-			//Loop through everything before time to find the correct key with a transform
-			while(targetKey)
-			{				
-				if(targetKey.hasActivityAtTime())
-					return targetKey;
-				
-				targetKey = targetKey.previous as KSpatialKeyFrame;
-			}
-			
-			//Return the reference frame's header if there's nothing.
-			return _refFrame.head as KSpatialKeyFrame;
-		}
-		
 		/**
 		 * Adds a dx, dy interpolation to targetKey
 		 * target key should be a key at or before time;
 		 */
 		private function _interpolate(dx:Number, dy:Number, targetKey:KSpatialKeyFrame, 
-										 transformType:int, time:int):void
+									  transformType:int, time:int):void
 		{
 			if(!targetKey)
 				throw new Error("No Key to interpolate!");
@@ -721,40 +792,234 @@ package sg.edu.smu.ksketch2.operators
 		}
 		
 		/**
-		 * Inserts a key ONLY WHEN THERE IS A KEY after time and that key HAS TRANSITIONS in it!
+		 * Make source path the transition path of type for this operator's key list.
+		 * Will split the source path to fit the time range
+		 * Replaces all current paths of given type
 		 */
+		protected function _replacePathOverTime(sourcePath:KPath, startTime:int, endTime:int, transformType:int, op:KCompositeOperation):void
+		{
+			if(sourcePath.length == 0)
+				return;
+			
+			var sourceHeader:KSpatialKeyFrame = new KSpatialKeyFrame(startTime, _object.center);
+			var sourceKey:KSpatialKeyFrame = new KSpatialKeyFrame(endTime, _object.center);
+			sourceHeader.next = sourceKey;
+			sourceKey.previous = sourceHeader;
+			
+			switch(transformType)
+			{
+				case KSketch2.TRANSFORM_TRANSLATION:
+					sourceKey.translatePath = sourcePath;
+					break;
+				case KSketch2.TRANSFORM_ROTATION:
+					sourceKey.rotatePath = sourcePath;
+					break;
+				case KSketch2.TRANSFORM_SCALE:
+					sourceKey.scalePath = sourcePath;
+					break;
+				default:
+					throw new Error("Wrong transform type given!");
+			}
+			
+			var toMergeKey:KSpatialKeyFrame;
+			var currentKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(startTime) as KSpatialKeyFrame;
+			var targetPath:KPath;
+			var oldPath:KPath;
+			
+			while(currentKey && sourceKey != toMergeKey)
+			{
+				if(sourceKey.time < currentKey.time)
+					currentKey = _refFrame.split(currentKey,sourceKey.time, op) as KSpatialKeyFrame;
+				
+				if(currentKey.time <= sourceKey.time)
+				{
+					if(currentKey.time < sourceKey.time)
+						toMergeKey = sourceKey.splitKey(currentKey.time, new KCompositeOperation()) as KSpatialKeyFrame;
+					else
+						toMergeKey = sourceKey;
+					
+					switch(transformType)
+					{
+						case KSketch2.TRANSFORM_TRANSLATION:
+							targetPath = toMergeKey.translatePath;
+							oldPath = currentKey.translatePath;
+							currentKey.translatePath = targetPath;
+							break;
+						case KSketch2.TRANSFORM_ROTATION:
+							targetPath = toMergeKey.rotatePath;
+							oldPath = currentKey.rotatePath;
+							currentKey.rotatePath = targetPath;
+							break;
+						case KSketch2.TRANSFORM_SCALE:
+							targetPath = toMergeKey.scalePath;
+							oldPath = currentKey.scalePath;
+							currentKey.scalePath = targetPath;
+							break;
+						default:
+							throw new Error("Wrong transform type given!");
+					}
+					op.addOperation(new KReplacePathOperation(currentKey, targetPath, oldPath, transformType));
+				}
+				
+				currentKey = currentKey.next as KSpatialKeyFrame;
+			}
+			
+			if(sourceKey != toMergeKey)
+			{
+				_refFrame.insertKey(sourceKey);
+				op.addOperation(new KInsertKeyOperation(sourceKey.previous, sourceKey.next, sourceKey));
+			}
+		}
+
+		/**
+		 * Makes sure the object/model is in a magical state in order for transition
+		 * paths to be added to the model
+		 */
+		protected function _normaliseForOverwriting(time:int, op:KCompositeOperation):void
+		{
+			var key:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
+			//If there's a key there. Perfect! No need to do anything right now
+			//Else we need a key here some how
+			if(!key)
+			{
+				key = _refFrame.getKeyAftertime(time) as KSpatialKeyFrame;
+				
+				//if there's a key after time, we need to split it
+				if(key)
+					key = _refFrame.split(key,time, op) as KSpatialKeyFrame;
+				else
+				{
+					//Else we will need to insert a key at time
+					key = new KSpatialKeyFrame(time, _object.center);
+					_refFrame.insertKey(key);
+					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));
+				}
+			}
+			
+			if(!key)
+				throw new Error("Normaliser's magic is failing! Check if your object is available for demonstration!");
+			
+			//FUTURE OVERWRITING IS DONE HERE
+			//IF YOU WANT TO CHANGE IMPLEMENTATION FOR FUTURE, DO IT HERE
+			var currentKey:KSpatialKeyFrame = key;
+			var oldPath:KPath;
+			var newPath:KPath;
+			
+			var validTranslate:Boolean = (TRANSLATE_THRESHOLD < _magX) || (TRANSLATE_THRESHOLD < _magY);
+			var validRotate:Boolean = ROTATE_THRESHOLD < _magTheta;
+			var validScale:Boolean = SCALE_THRESHOLD < _magSigma;
+			
+			while(currentKey.next)
+			{
+				currentKey = currentKey.next as KSpatialKeyFrame;
+				
+				if(validTranslate)	
+				{
+					oldPath = currentKey.translatePath;
+					currentKey.translatePath = new KPath();
+					newPath = currentKey.translatePath;
+					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
+				}
+				
+				if(validRotate)
+				{
+					oldPath = currentKey.rotatePath;
+					currentKey.rotatePath = new KPath();
+					newPath = currentKey.rotatePath;
+					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_ROTATION));
+				}
+				
+				if(validScale)
+				{
+					oldPath = currentKey.scalePath;
+					currentKey.scalePath = new KPath();
+					newPath = currentKey.scalePath;
+					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_SCALE));
+				}
+			}
+		}
+
+		//Cleans up the model after a transition.
+		//Splits key frames up if a key frame has a path that does not fill its time span fully.
+		//Removes empty key frames
+		protected function _clearEmptyKeys(op:KCompositeOperation):void
+		{
+			var currentKey:KSpatialKeyFrame = _refFrame.lastKey as KSpatialKeyFrame;
+			
+			while(currentKey)
+			{
+				if(!currentKey.isUseful() && (currentKey != _refFrame.head))
+				{
+					var removeKeyOp:KRemoveKeyOperation = new KRemoveKeyOperation(currentKey.previous, currentKey.next, currentKey);
+					var nextCurrentKey:KSpatialKeyFrame = currentKey.previous as KSpatialKeyFrame;
+					_refFrame.removeKeyFrom(currentKey);
+					currentKey = nextCurrentKey;
+					op.addOperation(removeKeyOp);
+				}
+				else
+					currentKey = currentKey.previous as KSpatialKeyFrame;
+			}
+		}
+		
+		
+		
+		// ############
+		// # Modifers #
+		// ############
+		
+		public function moveCenter(dx:Number, dy:Number, time:int):void
+		{
+			// set the new center of the object
+			_object.center = _object.center.add(new Point(dx, dy));
+			
+			// enable the object's dirty state flag due to the object's changed center
+			_dirty = true;
+			
+			// change the object's transform operation
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
+			
+			// update the object's transform operation
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
+		}
+		
 		public function insertBlankKeyFrame(time:int, op:KCompositeOperation):void
 		{
 			var key:KSpatialKeyFrame = _refFrame.getKeyAftertime(time) as KSpatialKeyFrame;
 			
-			//if there's a key after time, we need to split it
+			// case: there exists a key frame after the given time
+			// need to split the key frame
 			if(key)
 			{
 				key = _refFrame.split(key,time, op) as KSpatialKeyFrame;
 			}
+			// case: there doesn't exist a key frame after the given time
 			else
 			{
-				//Else we will need to insert a key at time
+				// need to insert a key frame at the given time
 				key = new KSpatialKeyFrame(time, _object.center);
 				_refFrame.insertKey(key);
+				
+				// case: the corresponding composite operation exists
+				// update the composite operation
 				if(op)
 					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));		
 			}
+			
+			// enable the dirty state flag due to the object's blank key frame insertion
 			_dirty = true;
+			
+			// end the object's transform operation
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 		}
 		
-		/**
-		 * Removes the key. Transition happening at the time will become non-keyed
-		 * Keeps the object's transform consistent (as compared to before removal)
-		 * before and after the given time. 
-		 */
 		public function removeKeyFrame(time:int, op:KCompositeOperation):void
 		{
+			// get the key frame after the given time
 			var key:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
 			
-			//This method should not even be called if the conditions are not correct
-			//if there's a key after time, we need to split it
+			// case: there exists a key frame after the given time
+			// split the key frame
+			// note: this method should never be called if the conditions are not correct
 			if(key)
 			{
 				var nextKey:KSpatialKeyFrame = key.next as KSpatialKeyFrame;
@@ -774,31 +1039,38 @@ package sg.edu.smu.ksketch2.operators
 				_refFrame.removeKeyFrame(key);
 				op.addOperation(removeKeyOp);
 			}
+			// case: there doesn't exist a key frame after the given time
+			// throw an error
 			else
 			{
 				throw new Error("There is no key at time! Cannot remove key");
 			}
 			
+			// enable the dirty state flag due to the object's blank key frame insertion
 			_dirty = true;
+			
+			// end the object's transform operation
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 		}
 		
-		/**
-		 * Removes all motions after time.
-		 * If there is no active key at time, motions wont be cleared (no keys after that point in time)
-		 * If there is an active key at time, a key frame will be inserted at time (if there is not key frame)
-		 */
 		public function clearAllMotionsAfterTime(time:int, op:KCompositeOperation):void
 		{
+			// case: there exists an active key frame at the given time
 			if(getActiveKey(time))
 			{
+				// case: can insert a key frame at the given time
+				// inserts a blank key frame at the given time
 				if(canInsertKey(time))
 					insertBlankKeyFrame(time, op);
 				
+				// set the current key frame as the last key frame in the reference frame
 				var currentKey:KSpatialKeyFrame = _refFrame.lastKey as KSpatialKeyFrame;
 				
+				// iterate backwards through the reference frame while the current key frame exists
 				while(currentKey)
 				{
+					// case: the given time is before the curret key frame's time and the current key frame is not the head key frame
+					// remove the current key frame
 					if(time < currentKey.time && (currentKey != _refFrame.head))
 					{
 						var removeKeyOp:KRemoveKeyOperation = new KRemoveKeyOperation(currentKey.previous, currentKey.next, currentKey);
@@ -810,10 +1082,20 @@ package sg.edu.smu.ksketch2.operators
 					else
 						currentKey = currentKey.previous as KSpatialKeyFrame;
 				}
+				
+				// enable the dirty state flag due to the object's blank key frame insertion
 				_dirty = true;
+				
+				// end the object's transform operation
 				_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 			}
 		}
+		
+		
+		
+		// #################
+		// # Miscellaneous #
+		// #################
 		
 		/**
 		 * Return a list of headers for key frame linked lists
@@ -920,13 +1202,13 @@ package sg.edu.smu.ksketch2.operators
 				oldPath = toModifyKey.rotatePath.clone();
 				toModifyKey.rotatePath.mergePath(currentKey.rotatePath);
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.rotatePath, oldPath, KSketch2.TRANSFORM_ROTATION));
-
+				
 				oldPath = toModifyKey.scalePath.clone();
 				toModifyKey.scalePath.mergePath(currentKey.scalePath);
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.scalePath, oldPath, KSketch2.TRANSFORM_SCALE));
-
+				
 				oldPath = toModifyKey.translatePath.clone();
-
+				
 				keyStartTime = toModifyKey.startTime;
 				currentTime = toModifyKey.startTime;
 				alteredPath = new KPath();
@@ -954,7 +1236,7 @@ package sg.edu.smu.ksketch2.operators
 				}
 				
 				toModifyKey.translatePath.mergePath(alteredPath);
-								
+				
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
 				
 				if(currentKey.time == stopMergeTime)
@@ -974,174 +1256,14 @@ package sg.edu.smu.ksketch2.operators
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, stopMergeTime));
 		}
 		
-		/**
-		 * Make source path the transition path of type for this operator's key list.
-		 * Will split the source path to fit the time range
-		 * Replaces all current paths of given type
-		 */
-		protected function _replacePathOverTime(sourcePath:KPath, startTime:int, endTime:int, transformType:int, op:KCompositeOperation):void
+		public function clone():ITransformInterface
 		{
-			if(sourcePath.length == 0)
-				return;
+			var newTransformInterface:KSingleReferenceFrameOperator = new KSingleReferenceFrameOperator(_object);
+			var clonedKeys:KReferenceFrame = _refFrame.clone() as KReferenceFrame;
 			
-			var sourceHeader:KSpatialKeyFrame = new KSpatialKeyFrame(startTime, _object.center);
-			var sourceKey:KSpatialKeyFrame = new KSpatialKeyFrame(endTime, _object.center);
-			sourceHeader.next = sourceKey;
-			sourceKey.previous = sourceHeader;
+			newTransformInterface._refFrame = clonedKeys;
 			
-			switch(transformType)
-			{
-				case KSketch2.TRANSFORM_TRANSLATION:
-					sourceKey.translatePath = sourcePath;
-					break;
-				case KSketch2.TRANSFORM_ROTATION:
-					sourceKey.rotatePath = sourcePath;
-					break;
-				case KSketch2.TRANSFORM_SCALE:
-					sourceKey.scalePath = sourcePath;
-					break;
-				default:
-					throw new Error("Wrong transform type given!");
-			}
-			
-			var toMergeKey:KSpatialKeyFrame;
-			var currentKey:KSpatialKeyFrame = _refFrame.getKeyAftertime(startTime) as KSpatialKeyFrame;
-			var targetPath:KPath;
-			var oldPath:KPath;
-			
-			while(currentKey && sourceKey != toMergeKey)
-			{
-				if(sourceKey.time < currentKey.time)
-					currentKey = _refFrame.split(currentKey,sourceKey.time, op) as KSpatialKeyFrame;
-				
-				if(currentKey.time <= sourceKey.time)
-				{
-					if(currentKey.time < sourceKey.time)
-						toMergeKey = sourceKey.splitKey(currentKey.time, new KCompositeOperation()) as KSpatialKeyFrame;
-					else
-						toMergeKey = sourceKey;
-					
-					switch(transformType)
-					{
-						case KSketch2.TRANSFORM_TRANSLATION:
-							targetPath = toMergeKey.translatePath;
-							oldPath = currentKey.translatePath;
-							currentKey.translatePath = targetPath;
-							break;
-						case KSketch2.TRANSFORM_ROTATION:
-							targetPath = toMergeKey.rotatePath;
-							oldPath = currentKey.rotatePath;
-							currentKey.rotatePath = targetPath;
-							break;
-						case KSketch2.TRANSFORM_SCALE:
-							targetPath = toMergeKey.scalePath;
-							oldPath = currentKey.scalePath;
-							currentKey.scalePath = targetPath;
-							break;
-						default:
-							throw new Error("Wrong transform type given!");
-					}
-					op.addOperation(new KReplacePathOperation(currentKey, targetPath, oldPath, transformType));
-				}
-				
-				currentKey = currentKey.next as KSpatialKeyFrame;
-			}
-			
-			if(sourceKey != toMergeKey)
-			{
-				_refFrame.insertKey(sourceKey);
-				op.addOperation(new KInsertKeyOperation(sourceKey.previous, sourceKey.next, sourceKey));
-			}
-		}
-		
-		/**
-		 * Makes sure the object/model is in a magical state in order for transition
-		 * paths to be added to the model
-		 */
-		protected function _normaliseForOverwriting(time:int, op:KCompositeOperation):void
-		{
-			var key:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
-			//If there's a key there. Perfect! No need to do anything right now
-			//Else we need a key here some how
-			if(!key)
-			{
-				key = _refFrame.getKeyAftertime(time) as KSpatialKeyFrame;
-				
-				//if there's a key after time, we need to split it
-				if(key)
-					key = _refFrame.split(key,time, op) as KSpatialKeyFrame;
-				else
-				{
-					//Else we will need to insert a key at time
-					key = new KSpatialKeyFrame(time, _object.center);
-					_refFrame.insertKey(key);
-					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));
-				}
-			}
-
-			if(!key)
-				throw new Error("Normaliser's magic is failing! Check if your object is available for demonstration!");
-			
-			//FUTURE OVERWRITING IS DONE HERE
-			//IF YOU WANT TO CHANGE IMPLEMENTATION FOR FUTURE, DO IT HERE
-			var currentKey:KSpatialKeyFrame = key;
-			var oldPath:KPath;
-			var newPath:KPath;
-			
-			var validTranslate:Boolean = (TRANSLATE_THRESHOLD < _magX) || (TRANSLATE_THRESHOLD < _magY);
-			var validRotate:Boolean = ROTATE_THRESHOLD < _magTheta;
-			var validScale:Boolean = SCALE_THRESHOLD < _magSigma;
-			
-			while(currentKey.next)
-			{
-				currentKey = currentKey.next as KSpatialKeyFrame;
-				
-				if(validTranslate)	
-				{
-					oldPath = currentKey.translatePath;
-					currentKey.translatePath = new KPath();
-					newPath = currentKey.translatePath;
-					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
-				}
-				
-				if(validRotate)
-				{
-					oldPath = currentKey.rotatePath;
-					currentKey.rotatePath = new KPath();
-					newPath = currentKey.rotatePath;
-					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_ROTATION));
-				}
-				
-				if(validScale)
-				{
-					oldPath = currentKey.scalePath;
-					currentKey.scalePath = new KPath();
-					newPath = currentKey.scalePath;
-					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_SCALE));
-				}
-			}
-		}
-		
-		//Cleans up the model after a transition.
-		//Splits key frames up if a key frame has a path that does not fill its time span fully.
-		//Removes empty key frames
-		protected function _clearEmptyKeys(op:KCompositeOperation):void
-		{
-			var currentKey:KSpatialKeyFrame = _refFrame.lastKey as KSpatialKeyFrame;
-
-			while(currentKey)
-			{
-				if(!currentKey.isUseful() && (currentKey != _refFrame.head))
-				{
-					var removeKeyOp:KRemoveKeyOperation = new KRemoveKeyOperation(currentKey.previous, currentKey.next, currentKey);
-					var nextCurrentKey:KSpatialKeyFrame = currentKey.previous as KSpatialKeyFrame;
-					_refFrame.removeKeyFrom(currentKey);
-					currentKey = nextCurrentKey;
-					op.addOperation(removeKeyOp);
-				}
-				else
-					currentKey = currentKey.previous as KSpatialKeyFrame;
-			}
+			return newTransformInterface;
 		}
 		
 		public function serializeTransform():XML
@@ -1172,14 +1294,21 @@ package sg.edu.smu.ksketch2.operators
 			}
 		}
 		
-		public function clone():ITransformInterface
+		public function lastKeyWithTransform(targetKey:KSpatialKeyFrame):KSpatialKeyFrame
 		{
-			var newTransformInterface:KSingleReferenceFrameOperator = new KSingleReferenceFrameOperator(_object);
-			var clonedKeys:KReferenceFrame = _refFrame.clone() as KReferenceFrame;
+			var targetPath:KPath;
 			
-			newTransformInterface._refFrame = clonedKeys;
+			//Loop through everything before time to find the correct key with a transform
+			while(targetKey)
+			{				
+				if(targetKey.hasActivityAtTime())
+					return targetKey;
+				
+				targetKey = targetKey.previous as KSpatialKeyFrame;
+			}
 			
-			return newTransformInterface;
+			//Return the reference frame's header if there's nothing.
+			return _refFrame.head as KSpatialKeyFrame;
 		}
 		
 		public function debug():void

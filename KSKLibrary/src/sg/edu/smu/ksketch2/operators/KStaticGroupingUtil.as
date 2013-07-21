@@ -16,10 +16,17 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 
+	/**
+	 * The KStaticGroupingUtil class serves as the concrete class for
+	 * utilizing static grouping in K-Sketch.
+	 */
 	public class KStaticGroupingUtil extends KGroupingUtil
 	{
-		public static var STATIC_GROUP_TIME:int = 0;
+		public static var STATIC_GROUP_TIME:int = 0;	// static variable for handling static group time
 		
+		/**
+		 * The main constructor of the KStaticGroupingUtil class.
+		 */
 		public function KStaticGroupingUtil()
 		{
 			super();
@@ -48,11 +55,16 @@ package sg.edu.smu.ksketch2.operators
 		}
 		
 		/**
-		 * Ungroups the given list of objects
-		 * This method is hardcore.
-		 * Given a list of objects
-		 * Puts all strokes in the set of objects (even the children/grandchildren/great grand children/the whole family) into the root!
-		 * Returns a list of all ungrouped objects
+		 * Ungroups the given list of objects. This method is hardcorded.
+		 * Given a list of objects Puts all strokes in the set of objects
+		 * (even the children/grandchildren/great grand children/the whole
+		 * family) into the root! Returns a list of all ungrouped objects.
+		 * 
+		 * @param toUngroupList The list of objects to ungroup.
+		 * @param ungroupTime The target time of the list of objects to ungroup.
+		 * @param scene The corresponding target scene graph.
+		 * @param op The corresponding composite operation.
+		 * @return The ungrouped list of objects.
 		 */
 		override public function ungroup(toUngroupList:KModelObjectList, ungroupTime:int, scene:KSceneGraph,
 										 op:KCompositeOperation):KModelObjectList
@@ -125,7 +137,7 @@ package sg.edu.smu.ksketch2.operators
 		
 		override public function removeSingletonGroups(currentGroup:KGroup, model:KSceneGraph, op:KCompositeOperation):void
 		{
-			//Recursively traverse all the way down to the groups at the bottom first
+			// recursively traverse all the way down to the groups at the bottom first
 			var children:KModelObjectList = currentGroup.children;
 			var currentObject:KObject;
 			var i:int;
@@ -149,25 +161,28 @@ package sg.edu.smu.ksketch2.operators
 				}
 			}
 			
-			//Root, dont do anything
+			// case: is a Root
+			// don't do anything
 			if(currentGroup == model.root)
 				return;
 			
 			var numChildren:int = currentGroup.children.length();
 
-			//Not singleton group, dont do anything
+			// case: not a singleton group
+			// don't do anything
 			if(numChildren > 1)
 				return;
 			
-			//Singleton group, 1 child, merge motion into child
+			// singleton group, 1 child
+			// merge motion into child
 			if(numChildren == 1)
 			{	
 				var child:KObject = currentGroup.children.getObjectAt(0);
-				//Merge motion into child
+				// merge motion into child
 				_static_CollapseHierarchy(currentGroup.children, currentGroup.parent, currentGroup.transformInterface.lastKeyTime, model, op);
 			}
 			
-			//Remove the current group from the model
+			// remove the current group from the model
 			var oldParent:KGroup = currentGroup.parent;
 			if(oldParent)
 				op.addOperation(addObjectToParent(currentGroup, null));

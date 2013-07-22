@@ -18,26 +18,36 @@ package sg.edu.smu.ksketch2.model.data_structures
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 
+	/**
+	 * The KSceneGraph class serves as the concrete class that defines the core
+	 * implementations of scene graphs in K-Sketch. Specifically, the class
+	 * manages all objects that live in the model by providing functions that
+	 * identifies or clones those objects.
+	 */
 	public class KSceneGraph
 	{
-		private var _highestID:int;
-		
-		private var _root:KGroup;
-		
+		private var _highestID:int;		// the ID of the scene graph's highest object
+		private var _root:KGroup;		// the scene graph's root node
 		
 		/**
-		 * The KSceneGraphClass manages all KObjects that lives in the model.
-		 * Provides functions that identifies or clones KObjects.
+		 * The main constructor of the KSceneGraph class.
 		 */
 		public function KSceneGraph()
 		{
+			// initialize the scene graph's root node
 			_root = new KGroup(_highestID);
+			
+			// set the scene graph's root node to visible at the initial time 0
 			_root.visibilityControl.setVisibility(true, 0, null);
+			
+			// initialize the ID of the scene graph's highest object to 1
 			_highestID = 1;
 		}
 		
 		/**
-		 * Returns the root node of the scene graph
+		 * Gets the scene graph's root node.
+		 * 
+		 * @return The scene graph's root node.
 		 */
 		public function get root():KGroup
 		{
@@ -45,7 +55,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Maximum time that this scenegraph will reach
+		 * Get the maximum time that the scene graph will reach. This value is
+		 * obtained from the maximum value of all the children's maximum times.
+		 * 
+		 * @return The maximum time that the scene graph will reach.
 		 */
 		public function get maxTime():int
 		{
@@ -73,7 +86,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Returns the ID of the highest object in the scene graph
+		 * Gets the ID of the highest object in the scene graph.
+		 * 
+		 * @return The ID of the highest object in the scene graph.
 		 */
 		public function get nextHighestID():int
 		{
@@ -81,7 +96,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Adds the object to the root of the scene graph
+		 * Registers an object to the scene graph by adding the object
+		 * to the root of the scene graph.
+		 * 
+		 * @param newObject The target object.
+		 * @param op The corresponding composite operation.
 		 */
 		public function registerObject(newObject:KObject, op:KCompositeOperation = null):void
 		{
@@ -93,6 +112,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 				op.addOperation(addOp);
 		}
 		
+		/**
+		 * Serializes the scene graph to an XML object.
+		 * 
+		 * @return The serialized XML object of the scene graph.
+		 */
 		public function serialize():XML
 		{
 			var sceneXML:XML = <scene/>;
@@ -104,6 +128,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return sceneXML;
 		}
 		
+		/**
+		 * Deserializes the XML object to a scene graph.
+		 * 
+		 * @param xml The target XML object.
+		 */
 		public function deserialize(xml:XML):void
 		{
 			var serializedObjects:XMLList = xml.children();
@@ -155,6 +184,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 			}
 		}
 		
+		/**
+		 * Debugs the scene graph object by outputting a string
+		 * representation of the scene graph's root node.
+		 */
 		public function debug():void
 		{
 			_root.debug();

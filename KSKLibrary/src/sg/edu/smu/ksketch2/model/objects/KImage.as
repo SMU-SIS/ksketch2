@@ -18,39 +18,56 @@ package sg.edu.smu.ksketch2.model.objects
 	
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 
+	/**
+	 * The KImage class serves as the concrete class for representing
+	 * image objects in the model in K-Sketch.
+	 */
 	public class KImage extends KObject
 	{
-		protected var _points:Vector.<Point>;
+		protected var _points:Vector.<Point>;	// the image's list of points
 		
-		private var _imgData:BitmapData;
-		public var x:Number;
-		public var y:Number;
+		private var _imgData:BitmapData;	// the image data
+		public var x:Number;				// the image's x-position
+		public var y:Number;				// the image's y-position
 		
 		/**
-		 * KObject implementation for images
+		 * The main constructor for the KImage class.
+		 * 
+		 * @param id The target ID.
+		 * @param newImgData The target image data.
+		 * @param imgX The target x-position.
+		 * @param imgY The target y-position.
 		 */		
 		public function KImage(id:int, newImgData:BitmapData, imgX:Number, imgY:Number)
 		{
+			// set the image's ID
 			super(id);
+			
+			// set the image's spatial coordinates
 			x = imgX;
 			y = imgY;
+			
+			// set the image's data
 			_imgData = newImgData;
+			
+			// calculate and add the image's geometric center
 			this._center = new Point(x+_imgData.width/2, y+_imgData.height/2);
 			_points = new Vector.<Point>;
 			_points.push(this._center.clone());
+			
+			// initialize the image's transform
 			transformInterface = new KSingleReferenceFrameOperator(this);
 		}
 		
-		/**
-		 * Centroid for this KImage. As of now, it is center of the image
-		 */
 		override public function get center():Point
 		{
 			return _center.clone();
 		}
 		
 		/**
-		 * Returns BitmapData of this KImage
+		 * Gets the image's data.
+		 * 
+		 * @return The image's data.
 		 */
 		public function get imgData():BitmapData
 		{
@@ -58,7 +75,9 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Returns the some points that are within this KImage
+		 * Gets the image's list of points.
+		 * 
+		 * @return The image's list of points.
 		 */
 		public function get points():Vector.<Point>
 		{
@@ -66,7 +85,9 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Serializes th eKImage and encodes it in base 64
+		 * Serializes the image to an XML object in base 64.
+		 * 
+		 * @return The serialized XML object of the image.
 		 */
 		override public function serialize():XML
 		{
@@ -87,6 +108,12 @@ package sg.edu.smu.ksketch2.model.objects
 			return objectXML;
 		}
 		
+		/**
+		 * Deserializes the XML object to an image.
+		 * 
+		 * @param The target XML object.
+		 * @return The deserialized image.
+		 */
 		public static function imageFromXML(xml:XML):KImage
 		{
 			var imageSerial:String = xml.imageData.@data;

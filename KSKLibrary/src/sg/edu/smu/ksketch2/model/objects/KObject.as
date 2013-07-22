@@ -20,18 +20,26 @@ package sg.edu.smu.ksketch2.model.objects
 	import sg.edu.smu.ksketch2.operators.KVisibilityControl;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
+	/**
+	 * The KObject class serves as the abstract class for representing
+	 * screen objects in the model in K-Sketch.
+	 */
 	public class KObject extends EventDispatcher
 	{
-		public var transformInterface:ITransformInterface;
-		public var visibilityControl:IVisibilityControl;
-		private var _id:int;
-		private var _parent:KGroup;
-		protected var _selected:Boolean;
-		protected var _center:Point;
-		protected var _creationTime:int;
+		public var transformInterface:ITransformInterface;	// the object's transform
+		public var visibilityControl:IVisibilityControl;	// the object's visibility
+		
+		private var _id:int;								// the object's ID
+		private var _parent:KGroup;							// the object's parent
+		
+		protected var _selected:Boolean;					// the object's selection state flag
+		protected var _center:Point;						// the object's centroid
+		protected var _creationTime:int;					// the object's creation time
 		
 		/**
-		 * KObject is teh abstract class representing the screen objects in the model.
+		 * The main constructor of the KObject class.
+		 * 
+		 * @param id The object's ID.
 		 */
 		public function KObject(id:int)
 		{
@@ -44,21 +52,32 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Initialises this object's visibility and transform. Object fails if it is not initialised
+		 * Initializes the object's visibility and transform. The
+		 * object fails if it is not initialized.
+		 * 
+		 * @param time The target creation time.
+		 * @param op The corresponding composite operation.
 		 */
 		public function init(time:int, op:KCompositeOperation):void
 		{
+			// set the object's creation time
 			_creationTime = time;
+			
+			// handle cases for different derived classes
 			if(this is KGroup)
 				visibilityControl.setVisibility(true, 0, op);
 			else
 				visibilityControl.setVisibility(true, time, op);
+			
+			// insert a blank key at the given time in the transform
 			transformInterface.insertBlankKeyFrame(time, op);
 		}
 
 		
 		/**
-		 * A number that identifies this KObject
+		 * Gets the object's ID.
+		 * 
+		 * @return The object's ID.
 		 */
 		public function get id():int
 		{
@@ -66,8 +85,9 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Boolean denoting whether this object is selected
-		 * Setting this value causes the object to dispatch a selection state changed event
+		 * Gets the object's selection state.
+		 * 
+		 * @return The object's selection state.
 		 */
 		public function get selected():Boolean
 		{
@@ -75,17 +95,22 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Boolean denoting whether this object is selected
-		 * Setting this value causes the object to dispatch a selection state changed event
+		 * Sets the object's selection state. Setting this value causes the
+		 * object to dispatch a selection state changed event.
+		 * 
+		 * @param value The object's selection state.
 		 */
 		public function set selected(value:Boolean):void
 		{
 			_selected = value;
+			
 			dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_SELECTION_CHANGED,this, 0));
 		}
 		
 		/**
-		 * Returns the current parent of this KObject
+		 * Gets the object's current parent.
+		 * 
+		 * @return The object's current parent.
 		 */
 		public function get parent():KGroup
 		{
@@ -93,8 +118,10 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Setting the parent for this KObject removes it from its previous parent
-		 * and adds it to the new parent
+		 * Sets the object's current parent by first removing its previous
+		 * parent and then adding its new parent.
+		 * 
+		 * @param newParent The object's new parent.
 		 */
 		public function set parent(newParent:KGroup):void
 		{
@@ -111,44 +138,71 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Returns a list of this object's ancestors, with the most immediate parents occupying index 0....
-		 * i.e. The root will always be at the end of the list if it is present.
+		 * Gets the object's hierarchy by retrieving the list of the
+		 * object's ancestors, with the most immediate parents occupying
+		 * index 0. That is, the root will always be at the end of the list,
+		 * if it is present.
+		 * 
+		 * @param hierarchyList The object's previous hierarchy.
+		 * @return The object's current hierarchy.
 		 */
 		public function getHierarchy(hierarchyList:KModelObjectList = null):KModelObjectList
 		{
+			// case: there is no hierarchy list
 			if(!hierarchyList)
 				hierarchyList = new KModelObjectList();
 			
+			// case: the object's parent exists
 			if(_parent)
 			{ 
+				// add the object's parent
 				hierarchyList.add(_parent);
+				
+				// recurse through the object's parent
 				_parent.getHierarchy(hierarchyList);
 			}
+			
+			// return the object's updated hierarchy
 			return hierarchyList;
 		}
 		
+		/**
+		 * Get the object's maximum time by retrieving the time of the last
+		 * key frame in the object's transform.
+		 * 
+		 * @return The object's maximum time.
+		 */
 		public function get maxTime():int
 		{
 			return transformInterface.lastKeyTime;
 		}
 		
 		/**
-		 * Returns the matrix of this object denoting its transformation on the screen.
-		 * This matrix is its own matrix concatenated with its parents', grandparents' great granparents', great greate grandparents...
+		 * Gets the object's fulll matrix that denotes its transformation on the screen. This matrix is its own matrix that concatenates its
+		 * ancesortors (i.e, parents', grandparents', ...).
+		 * 
+		 * @param time The target time.
+		 * @return The object's full matrix.
 		 */
 		public function fullPathMatrix(time:int):Matrix
 		{
-
+			// get the transform's matrix at the given time
 			var matrix:Matrix = transformInterface.matrix(time);
 			
+			// case: the object's parent exists
+			// concatenate the parent's full matrix to this matrix
 			if(_parent)
 				matrix.concat(parent.fullPathMatrix(time));
 			
+			// return the full matrix
 			return matrix;
 		}
 		
 		/**
-		 * Returns this KObject's own matrix
+		 * Returns the object's transform matrix.
+		 * 
+		 * @param int The target time.
+		 * @return The object's transform matrix.
 		 */
 		public function transformMatrix(time:int):Matrix
 		{
@@ -156,11 +210,13 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * The default centroid of this object in the model
-		 * not modified by any matrices
-		 * We use the centroid as a measurement of an object's position
-		 * This centroid its not its current centroid, it is its centroid at its created time
-		 * May need to multiply the returned centroid with matrices if you need a relevant one.
+		 * The default centroid of this object in the model not modified by any
+		 * matrices. We use the centroid as a measurement of the object's position.
+		 * This centroid is not its current centroid, but the centroid at its created
+		 * time. May need to multiply the returned centroid with matrices if you need
+		 * a relevant one.
+		 * 
+		 * @return The object's centroid at creation time.
 		 */
 		public function get center():Point
 		{
@@ -170,16 +226,31 @@ package sg.edu.smu.ksketch2.model.objects
 			return null;
 		}
 		
+		/**
+		 * Debugs the object by outputting debugging console messages.
+		 * 
+		 * @param debugSpacing The target spacing in the debugging messages.
+		 */
 		public function debug(debugSpacing:String = ""):void
 		{
 			trace(debugSpacing,this, id);
 		}
 		
+		/**
+		 * Sets the object's centroid.
+		 * 
+		 * @param point The object's centroid.
+		 */
 		public function set center(point:Point):void
 		{
 			_center = point.clone();
 		}
 		
+		/**
+		 * Serializes the object to an XML object.
+		 * 
+		 * @return The serialized XML object of the object.
+		 */
 		public function serialize():XML
 		{
 			var objectXML:XML = <KObject id="" type="" centroid=""/>;
@@ -197,6 +268,11 @@ package sg.edu.smu.ksketch2.model.objects
 			return objectXML;
 		}
 		
+		/**
+		 * Deserializes the XML object to an object.
+		 * 
+		 * @param The target XML object.
+		 */
 		public function deserialize(xml:XML):void
 		{
 			if(xml.@centroid)
@@ -210,10 +286,14 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Clone this object and let it have the given id
-		 * Cloned objects can have identical motions as the original
-		 * Visibility attributes are not cloned and the cloned objects will appear 
-		 * at any given time. Remember to give it a visibility key if not it will not appear
+		 * Clones the object with the given ID. Cloned objects can have
+		 * identical motions to the original objects. Visibility attributes
+		 * are not cloned and the cloned objects will appear at any given
+		 * time. Remember to give cloned objects a visibility key. If not,
+		 * it will not appear.
+		 * 
+		 * @param id The cloned object's ID.
+		 * @param withMotions The cloned object's motion state flag.
 		 */
 		public function clone(id:int, withMotions:Boolean = false):KObject
 		{

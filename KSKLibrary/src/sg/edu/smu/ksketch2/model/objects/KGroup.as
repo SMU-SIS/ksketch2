@@ -15,10 +15,19 @@ package sg.edu.smu.ksketch2.model.objects
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 
+	/**
+	 * The KGroup class serves as the concrete class for representing
+	 * group objects in the model in K-Sketch.
+	 */
 	public class KGroup extends KObject implements IModelObjectList
 	{
-		private var _children:KModelObjectList;
+		private var _children:KModelObjectList;		// the group's list of children
 		
+		/**
+		 * The main constructor of the KGroup class.
+		 * 
+		 * @param id The group's ID.
+		 */
 		public function KGroup(id:int)
 		{
 			super(id);
@@ -28,8 +37,10 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Returns the KModelObjectList containing this KGroup's Children
+		 * Gets the list of objects containing the group's children.
 		 * Warning: Modifying this list modifies the children themselves!
+		 * 
+		 * @return The list of objects containing the group's children.
 		 */
 		public function get children():KModelObjectList
 		{
@@ -64,8 +75,13 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Adds all of the group's non-KGroup children (all the way down to the leaves) into the given vector allChildren
-		 * the result is not sorted
+		 * Gets all the non-group objects by adding all of the group's
+		 * non-group children (i.e., all the way down to the leaves) and
+		 * putting them into the given parameter vector allChildren
+		 * Note: The result is not sorted.
+		 * 
+		 * @param allChildren The target input list for holding all the non-group objects.
+		 * @return An unsorted output list holding all the non-group objects.
 		 */
 		public function getAllNonGroupObjects(allChildren:KModelObjectList = null):KModelObjectList
 		{
@@ -88,7 +104,10 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Returns a list of all of this object's children
+		 * Gets a list of all the children in the group.
+		 * 
+		 * @param allChildren The previous list of all the children in the group.
+		 * @return The current list of all the children in the group.
 		 */
 		public function getAllChildren(allChildren:KModelObjectList = null):KModelObjectList
 		{
@@ -120,7 +139,10 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Checks if this IModelObjectList contains the given object
+		 * Checks whether the group contains the given object.
+		 * 
+		 * @param obj The target object.
+		 * @return Whether the group contains the given object.
 		 */
 		public function contains(obj:KObject):Boolean
 		{
@@ -148,6 +170,9 @@ package sg.edu.smu.ksketch2.model.objects
 			return _children.toIDs();
 		}
 		
+		/**
+		 * Updates the group's geometric center.
+		 */
 		public function updateCenter():void
 		{
 			var minX:Number = Number.MAX_VALUE;
@@ -183,6 +208,11 @@ package sg.edu.smu.ksketch2.model.objects
 			_center.y = (minY+maxY)/2;
 		}
 		
+		/**
+		 * Gets the group's geometric center.
+		 * 
+		 * @return The group's geometric center.
+		 */
 		override public function get center():Point
 		{			
 			if(!_center)
@@ -217,6 +247,12 @@ package sg.edu.smu.ksketch2.model.objects
 			return objectXML;
 		}
 		
+		/**
+		 * Deserializes the XML object to a group.
+		 * 
+		 * @param The target XML object.
+		 * @return The deserialized group.
+		 */
 		public static function groupFromXML(xml:XML):KGroup
 		{
 			return new KGroup(xml.@id);	

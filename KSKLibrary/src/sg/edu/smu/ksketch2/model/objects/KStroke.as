@@ -9,20 +9,31 @@
 package sg.edu.smu.ksketch2.model.objects
 {
 	import flash.geom.Point;
-	
 	import mx.utils.StringUtil;
-	
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 
+	/**
+	 * The KStroke class serves as the concrete class for representing
+	 * stroke objects in the model in K-Sketch.
+	 */
 	public class KStroke extends KObject
 	{
-		protected var _color:uint;
-		protected var _thickness:Number;
-		protected var _points:Vector.<Point>;
+		protected var _color:uint;				// the stroke's color
+		protected var _thickness:Number;		// the stroke's thickness
+		protected var _points:Vector.<Point>;	// the stroke's list of points
 		
+		/**
+		 * The main constructor for the KStroke class.
+		 * 
+		 * @param id The stroke's ID.
+		 * @param points The stroke's list of points.
+		 * @param newColor The stroke's color.
+		 * @param newThickness The stroke's thickness.
+		 */
 		public function KStroke(id:int, points:Vector.<Point>, newColor:uint, newThickness:Number)
 		{
 			super(id);
+			
 			_points = points;
 			_color = newColor;
 			_thickness = newThickness;
@@ -31,7 +42,9 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Color for this object
+		 * Gets the stroke's color.
+		 * 
+		 * @return The stroke's color.
 		 */
 		public function get color():uint
 		{
@@ -39,7 +52,9 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * This stroke's thickness
+		 * Gets the stroke's thickness.
+		 * 
+		 * @return The stroke's thickness.
 		 */
 		public function get thickness():Number
 		{
@@ -47,7 +62,9 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Returns the set of points that makes up this KStroke
+		 * Gets the stroke's set of points.
+		 * 
+		 * @return The stroke's set of points.
 		 */
 		public function get points():Vector.<Point>
 		{
@@ -55,7 +72,7 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Computes the geometric center for this object
+		 * Computes the geometric center for this object.
 		 */
 		public function computeCenter():void
 		{
@@ -95,13 +112,18 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		/**
-		 * Returns the geometric center for this KStroke
+		 * Gets the stroke's geometric center.
+		 * 
+		 * @return The stroke's geometric center.
 		 */
 		override public function get center():Point
 		{
+			// case: the stroke's geometric center doesn't exist
+			// compute the center
 			if(!_center)
 				computeCenter();
 			
+			// return the computed geometric center
 			return _center;
 		}
 		

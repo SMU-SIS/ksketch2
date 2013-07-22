@@ -11,7 +11,8 @@ package sg.edu.smu.ksketch2.model.data_structures
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
 	/**
-	 * The KModelObjectList class serves as the concrete class for a model object
+	 * The KModelObjectList class serves as the concrete class for a list of
+	 * model objects.
 	 */
 	public class KModelObjectList implements IModelObjectList
 	{

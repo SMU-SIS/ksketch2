@@ -13,8 +13,21 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw.selectors
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 
+	/**
+	 * The ISelectionArbiter class serves as the interface class for
+	 * selection arbitration in K-Sketch.
+	 */
 	public interface ISelectionArbiter
 	{
+		/**
+		 * Gets the best guess of the list of model objects in the selection
+		 * set.
+		 * 
+		 * @param rawData The target raw data.
+		 * @param time The target time.
+		 * @param searchRoot The root node of the group.
+		 * @return The best guess of the list of model objects in the selection set.
+		 */
 		function bestGuess(rawData:Dictionary, time:Number, searchRoot:KGroup):KModelObjectList;
 	}
 }

@@ -38,17 +38,17 @@ package sg.edu.smu.ksketch2
 		// ##########
 		
 		/**
-		 * Study mode K.
+		 * Study mode K(ey-frames).
 		 */
 		public static const STUDY_K:int = 0;
 		
 		/**
-		 * Study mode P.
+		 * Study mode P(erformance).
 		 */
 		public static const STUDY_P:int = 1;
 		
 		/**
-		 * Study mode PK.
+		 * Study mode P(erformance and)K(ey-frames).
 		 */
 		public static const STUDY_PK:int = 2;
 		

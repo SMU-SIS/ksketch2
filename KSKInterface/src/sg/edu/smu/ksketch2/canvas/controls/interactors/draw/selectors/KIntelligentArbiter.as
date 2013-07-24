@@ -15,18 +15,25 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw.selectors
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
-		
+	
+	/**
+	 * The KIntelligentArbiter class serves as the concrete class for
+	 * intelligent selection arbitration in K-Sketch.
+	 */
 	public class KIntelligentArbiter extends KSimpleArbiter
 	{
-		private var _leafPortion:Dictionary;
+		private var _leafPortion:Dictionary;					// the leaf portion
 		
-		private var _groupPortion:Dictionary;
-		private var _rawSelection:KModelObjectList;
-		private var _s:Vector.<KGroup>;
+		private var _groupPortion:Dictionary;					// the group portion
+		private var _rawSelection:KModelObjectList;				// the raw selection
+		private var _s:Vector.<KGroup>;							// the selection list
 		
-		private var _candidates:Vector.<KModelObjectList>;
-		private var _index:int;
+		private var _candidates:Vector.<KModelObjectList>;		// the list of candidates
+		private var _index:int;									// the list index
 		
+		/**
+		 * The main constructor of the KIntelligentArbiter class.
+		 */
 		public function KIntelligentArbiter()
 		{
 
@@ -43,25 +50,54 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw.selectors
 			return _candidates[_index];
 		}
 		
+		/**
+		 * Gets the next list of candidates in the cycle.
+		 * 
+		 * @param rawData The target raw data.
+		 * @param time The target time.
+		 * @param searchRoot The target search root node.
+		 * @return The next list of candidates in the cycle.
+		 */
 		public function cycleNext(rawData:Dictionary, time:Number, searchRoot:KGroup):KModelObjectList
 		{
+			// case: there is no leaf portion
+			// prepare a leaf portion
 			if(_leafPortion == null)
 				prepareOn(rawData, time, searchRoot);
+			
+			// case: the raw selection list is empty
+			// return a null list
 			if(_rawSelection.length() == 0)
 				return null;
+			
 			// skip if same as _g or _rawSelection
 			_index ++;
 			_index %= _candidates.length;
 			
+			// return the next list of candidates
 			return _candidates[_index];
 		}
 		
+		/**
+		 * Gets the previous list of candidates in the cycle.
+		 * 
+		 * @param rawData The target raw data.
+		 * @param time The target time.
+		 * @param searchRoot The target search root node.
+		 * @return The previous list of candidates in the cycle.
+		 */
 		public function cyclePrevious(rawData:Dictionary, time:Number, searchRoot:KGroup):KModelObjectList
 		{
+			// case: there is no leaf portion
+			// prepare a leaf portion
 			if(_leafPortion == null)
 				prepareOn(rawData, time,searchRoot);
+			
+			// case: the raw selection list is empty
+			// return a null list
 			if(_rawSelection.length() == 0)
 				return null;
+			
 			// skip if same as _g or _rawSelection
 			_index --;
 			if(_index < 0)
@@ -70,6 +106,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw.selectors
 			return _candidates[_index];
 		}
 		
+		/**
+		 * Clears the settings of the intelligent arbiter.
+		 */
 		public function clear():void
 		{
 			_rawSelection = null;

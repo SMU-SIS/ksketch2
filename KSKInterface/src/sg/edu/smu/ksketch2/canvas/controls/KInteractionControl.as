@@ -20,37 +20,55 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
-
+	/**
+	 * The KInteractionControl class serves as the concrete class for
+	 * interaction control in K-Sketch.
+	 */
 	public class KInteractionControl extends EventDispatcher implements IInteractionControl
 	{
+		/**
+		 * The interaction begins status.
+		 */
 		public static const EVENT_INTERACTION_BEGIN:String = "Interaction Begin";
+		
+		/**
+		 * The interaction ends status.
+		 */
 		public static const EVENT_INTERACTION_END:String = "Interaction End";
+		
+		/**
+		 * The undo/redo status.
+		 */
 		public static const EVENT_UNDO_REDO:String = "Undo Redo";
+		
+		/**
+		 * The transition mode changed status.
+		 */
 		public static const EVENT_TRANSITION_MODE_CHANGED:String = "Transition Mode Changed";
 		
-		private var _KSketch:KSketch2;
-		private var _transitionMode:int;
-		private var _selection:KSelection;
-		private var _timeControl:KSketch_TimeControl;
+		private var _KSketch:KSketch2;								// the current ksketch object
+		private var _transitionMode:int;							// the current transition mode
+		private var _selection:KSelection;							// the current selection
+		private var _timeControl:KSketch_TimeControl;				// the current time control
 		
-		private var _undoStack:Vector.<IModelOperation>;
-		private var _redoStack:Vector.<IModelOperation>;
-		private var _currentInteraction:KInteractionOperation;
+		private var _undoStack:Vector.<IModelOperation>;			// the undo stack
+		private var _redoStack:Vector.<IModelOperation>;			// the redo stack
+		private var _currentInteraction:KInteractionOperation;		// the current interaction
 		
+		/**
+		 * The main constructor for the KInteractionControl class. Sets
+		 * the ksketch instance and time control.
+		 * 
+		 * @param KSketchInstance The ksketch object.
+		 * @param timeControl The time control.
+		 */
 		public function KInteractionControl(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl)
 		{
 			super(this);
 			_KSketch = KSketchInstance;
 			_timeControl = timeControl;
 		}
-		
-		/**
-		 * Resets application state variables
-		 *  - Resets undo/redo stacks
-		 *  - Resets selection
-		 *  - Resets interaction state
-		 *  - Resets time Control
-		 */
+
 		public function reset():void
 		{
 			_undoStack = new Vector.<IModelOperation>();
@@ -95,8 +113,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var i:int;
 			var length:int;
 			
-			//Will trigger the selection/deselection
-			//Will cause the objects to trigger their selection events
+			// will trigger the selection/deselection
+			// will cause the objects to trigger their selection events
 			if(oldSelection)
 				oldSelection.triggerDeselected();
 			
@@ -112,7 +130,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 		}
 		
 		/**
-		 * For touch versions, call after every selection interaction
+		 * Adds to the undo stack. For touch versions, it calls after
+		 * every selection interaction.
+		 * 
+		 * @param operation The target model operation.
 		 */
 		public function addToUndoStack(operation:IModelOperation):void
 		{
@@ -184,7 +205,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function triggerInterfaceUpdate():void
 		{
-			//Wait and see if we need to do anything ehre
+			// wait and see if we need to do anything ehre
 		}
 		
 		public function get currentInteraction():KInteractionOperation
@@ -192,11 +213,17 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return _currentInteraction;
 		}
 		
+		/**
+		 * Starts recording the interaction control.
+		 */
 		public function beginRecording():void
 		{
 			_timeControl.startRecording();
 		}
 		
+		/**
+		 * Stops recording the interaction control.
+		 */
 		public function stopRecording():void
 		{
 			_timeControl.stopRecording();
@@ -211,6 +238,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_currentInteraction.oldSelection = selection;
 		}
 		
+		/**
+		 * Cancels the interaction operation.
+		 */
 		public function cancel_interaction_operation():void
 		{
 			_currentInteraction = null;
@@ -240,21 +270,27 @@ package sg.edu.smu.ksketch2.canvas.controls
 		}		
 		
 		/**
-		 * Not required for touch
+		 * Not required for touch.
 		 */
 		public function beginCanvasInput(point:Point, isManipulation:Boolean, manipulationType:String):void
 		{
-			//Disabled for touch
+			// disabled for touch
 		}
 		
+		/**
+		 * Not required for touch.
+		 */
 		public function updateCanvasInput(point:Point):void
 		{
-			//Disabled for touch
+			// disabled for touch
 		}
 		
+		/**
+		 * Not required for touch.
+		 */
 		public function completeCanvasInput():void
 		{
-			//Disabled for touch
+			// disabled for touch
 		}
 		
 		public function enterDrawingMode(drawModeType:String):void
@@ -267,7 +303,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			
 		}
-		
 
 		public function determineMode():void
 		{

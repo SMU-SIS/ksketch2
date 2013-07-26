@@ -14,24 +14,42 @@ package sg.edu.smu.ksketch2.utils
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
+	/**
+	 * The KInteractionOperation class serves as the concrete class for handling
+	 * interaction operations in K-Sketch.
+	 */
 	public class KInteractionOperation extends KCompositeOperation
 	{
-		private var _interactionControl:IInteractionControl;
-		private var _timeControl:ITimeControl;
+		private var _interactionControl:IInteractionControl;	// the interaction control
+		private var _timeControl:ITimeControl;					// the time control
 		
-		public var startTime:int;
-		public var endTime:int;
+		public var startTime:int;								// the start time
+		public var endTime:int;									// the end time
 		
-		public var newSelection:KSelection;
-		public var oldSelection:KSelection;
+		public var newSelection:KSelection;						// the new selection
+		public var oldSelection:KSelection;						// the old selection
 		
+		/**
+		 * The main constructor for the KInteractionOperation class.
+		 * 
+		 * @param interactionControl The target interaction control.
+		 * @param timeControl The target time control.
+		 */
 		public function KInteractionOperation(interactionControl:IInteractionControl, timeControl:ITimeControl)
 		{
+			// initialize the interaction operation
 			super();
+			
+			// set the interaction and time control
 			_interactionControl = interactionControl;
 			_timeControl = timeControl;
 		}
 		
+		/**
+		 * Undoes the interaction operation by reverting the state of the
+		 * interaction operation to immediately before the interaction
+		 * operation was performed.
+		 */
 		override public function undo():void
 		{
 			super.undo();
@@ -54,6 +72,11 @@ package sg.edu.smu.ksketch2.utils
 			}
 		}
 		
+		/**
+		 * Redoes the interaction operation by reverting the state of the
+		 * interaction operation to immediately after the interaction
+		 * operation was performed.
+		 */
 		override public function redo():void
 		{
 			super.redo();
@@ -75,15 +98,34 @@ package sg.edu.smu.ksketch2.utils
 			}
 		}
 		
+		/**
+		 * Checks whether the interaction operation is valid. If not, it should
+		 * fail on construction and not be added to the interaction operation
+		 * stack. Validity for interaction operations involves valid start
+		 * and end times.
+		 * 
+		 * @return Whether the interaction operation is valid.
+		 */
 		override public function isValid():Boolean
 		{
+			// checks whether start and end times are valid
 			return (!isNaN(startTime) && !isNaN(endTime));
 		}
 		
+		/**
+		 * Gets the error message for the interaction operation.
+		 * 
+		 * @return The error message for the interaction operation.
+		 */
 		override public function get errorMessage():String
 		{
+			// case: the error is not related to validity
+			// throw the corresponding non-validity error message
 			if(isValid())
 				return super.errorMessage;
+			
+			// case: the error is related to validity
+			// throw validity-related error
 			else
 				return "The start and end time for this interaction operation has not been specified";
 		}

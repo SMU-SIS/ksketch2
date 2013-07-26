@@ -26,49 +26,44 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		protected var _interactionStartTime:int;
 		protected var _interactionEndTime:int;
 		
+		/**
+		 * The main constructor of the KInteractor class.
+		 * 
+		 * @param KSketchIntance The ksketch object.
+		 * @param interactionControl The interaction control.
+		 */
 		public function KInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl)
 		{
+			// sets the interactor
 			super(this);
+			
+			// sets the ksketch object
 			_KSketch = KSketchInstance;
+			
+			// sets the interaction control
 			_interactionControl = interactionControl;
 		}
 		
-		/**
-		 * Prepares this interactor for use
-		 * So it has its magical values and will tend to fail less often
-		 */
 		public function activate():void
 		{
 			
 		}
 		
-		/**
-		 * Sets the values of this interactor to their default magical values
-		 */
 		public function reset():void
 		{
 			
 		}
 		
-		/**
-		 * Start of interaction
-		 */
 		public function interaction_Begin(point:Point):void
 		{
 
 		}
 		
-		/**
-		 * Updating interaction
-		 */
 		public function interaction_Update(point:Point):void
 		{
 			
 		}
 		
-		/**
-		 * End interaction
-		 */
 		public function interaction_End():void
 		{
 			

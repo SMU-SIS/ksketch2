@@ -74,18 +74,19 @@ package sg.edu.smu.ksketch2.operators.operations
 		
 		/**
 		 * Undoes the composite operation by reverting the state of the
-		 * composite operation to immediately before the composite operation was performed.
+		 * composite operation to immediately before the composite
+		 * operation was performed.
 		 */
 		public function undo():void
 		{
-			// iterate throu
 			for(var i:int = operationStack.length-1; -1 < i; i--)
 				operationStack[i].undo();
 		}
 		
 		/**
 		 * Redoes the composite operation by reverting the state of the
-		 * composite operation to immediately after the composite operation was performed.
+		 * composite operation to immediately after the composite
+		 * operation was performed.
 		 */
 		public function redo():void
 		{

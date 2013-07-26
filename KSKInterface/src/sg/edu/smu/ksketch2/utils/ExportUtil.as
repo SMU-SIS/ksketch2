@@ -16,19 +16,38 @@ package sg.edu.smu.ksketch2.utils
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 
+	/**
+	 * The ExportUtil class serves as the concrete class for video
+	 * exporting in K-Sketch. Specifically, it uses the given model and
+	 * its related display to generate a set of images to be used in video
+	 * exporting.
+	 */
 	public class ExportUtil
 	{
+		/**
+		 * The exported content.
+		 */
 		public static var exportedContent:ByteArray;
 
+		/**
+		 * The width for 480p display.
+		 */
 		public static const WIDTH_480P:Number = 854;
+		
+		/**
+		 * The height for 480p display.
+		 */
 		public static const HEIGHT_480P:Number = 480;
 		
 		/**
-		 *	Uses the given model and its related display to generate a set of images to be used in video exporting 
+		 * Converts the scene graph to FLV bytes.
+		 * 
+		 * @param display The target model display.
+		 * @param ksketch The target ksketch object.
 		 */
 		public static function convertSceneToFLVBytes(display:KModelDisplay, ksketch:KSketch2):Vector.<BitmapData>
 		{
-			//Size of the area to be captured to be determined here
+			// determine the size of the area to be captured
 			var captureArea:Rectangle = new Rectangle(0,0,WIDTH_480P,HEIGHT_480P);
 			var drawnFrames:Vector.<BitmapData> = new Vector.<BitmapData>();
 			
@@ -36,13 +55,13 @@ package sg.edu.smu.ksketch2.utils
 			var endTime:int = ksketch.maxTime;
 			var currentFrame:BitmapData;
 			
-			//Generate the matrix to scale
+			// generate the matrix to scale
 			var toScaleX:Number = KSketch2.CANONICAL_WIDTH/captureArea.width;
 			var toScaleY:Number = KSketch2.CANONICAL_HEIGHT/captureArea.height;
 			var matrix:Matrix = new Matrix();
 			matrix.scale(1/toScaleX, 1/toScaleY);
 			
-			//Draw the frames for at every frame boundary
+			// draw the frames for at every frame boundary
 			while(currentTime <= endTime)
 			{
 				ksketch.time = currentTime;

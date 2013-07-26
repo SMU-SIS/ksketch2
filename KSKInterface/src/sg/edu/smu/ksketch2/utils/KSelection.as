@@ -14,21 +14,33 @@ package sg.edu.smu.ksketch2.utils
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 
+	/**
+	 * The KSelection class serves as the concrete class for handling
+	 * selection in K-Sketch.
+	 */
 	public class KSelection
 	{
-		private var _visibleSelection:KModelObjectList;
-		private var _completeSelection:KModelObjectList;
+		private var _visibleSelection:KModelObjectList;		// the visible selection
+		private var _completeSelection:KModelObjectList;	// the complete selection
 		
+		/**
+		 * The main constructor for the KSelection class.
+		 * 
+		 * @param selectedObjects The selected list of model objects.
+		 */
 		public function KSelection(selectedObjects:KModelObjectList)
 		{
-			_visibleSelection = selectedObjects;
-			_completeSelection = selectedObjects.clone();
+			_visibleSelection = selectedObjects;			// set the visible selection of model objects
+			_completeSelection = selectedObjects.clone();	// set the complete selection of model objects
 		}
 		
 		/**
-		 * Returns the current set of visible objects at their highest order of composition
-		 * Groups that are partially visible will still be counted as fully visible (their children objects should not be in the selection)
+		 * Gets the current set of visible objects at their highest order
+		 * of composition. Groups that are partially visible will still be
+		 * counted as fully visible, but then their their children objects
+		 * should not be in the selection.
 		 * 
+		 * @return The current set of visible objects at their highest order of composition.
 		 */
 		public function get objects():KModelObjectList
 		{
@@ -36,7 +48,9 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Returns the entire set of objects
+		 * Gets the complete selection of model objects.
+		 * 
+		 * @param The complete selection of model objects.
 		 */
 		public function get completeSelection():KModelObjectList
 		{
@@ -44,8 +58,8 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Sets the selection boolean of all objects in this selection
-		 * to be true. The objects themselves will dispatch a selection changed event
+		 * Enables the selection boolean of all objects in the selection.
+		 * The objects themselves will dispatch a selection changed event.
 		 */
 		public function triggerSelected():void
 		{
@@ -59,8 +73,8 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Sets the selection boolean of all objects in this selection
-		 * to be false. The objects themselves will dispatch a selection changed event
+		 * Disables the selection boolean of all objects in the selection.
+		 * The objects themselves will dispatch a selection changed event.
 		 */
 		public function triggerDeselected():void
 		{
@@ -72,7 +86,10 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Returns the centroid for this selection at time
+		 * Gets the centroid for the selection at the given time.
+		 * 
+		 * @param time The target time.
+		 * @return The centroid for the selection at the given time.
 		 */
 		public function centerAt(time:int):Point
 		{
@@ -105,14 +122,25 @@ package sg.edu.smu.ksketch2.utils
 			return centroid;
 		}
 		
+		/**
+		 * Checks whether the selection is visible at the given time.
+		 * 
+		 * @param time The target time.
+		 * @return Whether the selection is visible at the given time.
+		 */
 		public function isVisible(time:int):Boolean
 		{
 			return _visibleSelection.length() > 0;
 		}
 		
+		/**
+		 * Updates the selection composition.
+		 * 
+		 * @param time The target time.
+		 */
 		public function updateSelectionComposition(time:int):void
 		{
-			var i:int =0 ;
+			var i:int = 0;
 			var length:int = _completeSelection.length();
 			var currentObject:KObject;
 			var visibleList:KModelObjectList = new KModelObjectList;
@@ -129,7 +157,11 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Determines whether the selection has an active transform time
+		 * Checks whether the selection has an active selection
+		 * transform time.
+		 * 
+		 * @param time The target time.
+		 * @return Whether the selection has an active selection transform time.
 		 */
 		public function selectionTransformable(time:int):Boolean
 		{
@@ -139,6 +171,12 @@ package sg.edu.smu.ksketch2.utils
 				return false;
 		}
 		
+		/**
+		 * Checks whether the selection is different from another selection.
+		 * 
+		 * @param anotherSelection The other selection.
+		 * @return Whether the two selections are different from each other.
+		 */
 		public function isDifferentFrom(anotherSelection:KSelection):Boolean
 		{
 			if(!anotherSelection)
@@ -147,6 +185,9 @@ package sg.edu.smu.ksketch2.utils
 			return completeSelection.isDifferent(anotherSelection.completeSelection);
 		}
 		
+		/**
+		 * Outpus a debugging message to the console.
+		 */
 		public function debug():void
 		{
 			trace("visible selection:", objects);

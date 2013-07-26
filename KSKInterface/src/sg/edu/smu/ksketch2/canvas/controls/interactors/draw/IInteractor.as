@@ -11,31 +11,46 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
 	
+	/**
+	 * The IInteractor class serves as the interface class for interactors
+	 * in K-Sketch.
+	 */
 	public interface IInteractor extends IEventDispatcher
 	{
 		/**
-		 * Sets up an IInteraction implementation before interaction begin
+		 * Activates the interactor by setting up the implementation
+		 * before the interaction begins. Specifically, it prepares
+		 * the interactor's values that will tend to fail less often.
 		 */
 		function activate():void;
 		
 		/**
-		 * Cleans up any mess created by the previous interaction. Returns the IInteractor implementation
-		 * to its default state
+		 * Resets the interactor by cleaning up any mess created by the
+		 * previous interaction and then returning the interactor to its
+		 * default state.
 		 */
 		function reset():void;
 		
 		/**
-		 * Generic interaction begin function for an IInteraction implementation
+		 * Begins the interaction. Specifically, serves as a generic
+		 * interaction begins method.
+		 * 
+		 * @param point The target point.
 		 */
 		function interaction_Begin(point:Point):void;
 		
 		/**
-		 * Generic interaction update function for an IInteraction implementation
+		 * Updates the interaction. Specifically, serves as a generic
+		 * interaction update method that sets the interactor's values
+		 * to their default values.
+		 * 
+		 * @param point The target point.
 		 */
 		function interaction_Update(point:Point):void;
 		
 		/**
-		 * Generic interaction end function for an IInteraction implementation
+		 * Ends the interaction. Specifically, serves as a generic
+		 * interation end method.
 		 */
 		function interaction_End():void;
 	}

@@ -20,6 +20,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 	
 	import spark.core.SpriteVisualElement;
 
+	/**
+	 * The KInteractor class serves as the pseudo-abstract class for
+	 * interactors in K-Sketch.
+	 */
 	public class KDrawInteractor extends KInteractor
 	{
 		public static var penColor:uint = 0X000000;
@@ -28,6 +32,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		private var _points:Vector.<Point>;
 		protected var _interactorDisplay:SpriteVisualElement;
 		
+		/**
+		 * 
+		 */
 		public function KDrawInteractor(KSKetchInstance:KSketch2, interactorDisplay:SpriteVisualElement, interactionControl:IInteractionControl)
 		{
 			_interactorDisplay = interactorDisplay;

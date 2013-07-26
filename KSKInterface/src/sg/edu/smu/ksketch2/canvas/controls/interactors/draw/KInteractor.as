@@ -15,16 +15,20 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
+	/**
+	 * The KInteractor class serves as the pseudo-abstract class for
+	 * interactors in K-Sketch.
+	 */
 	public class KInteractor extends EventDispatcher implements IInteractor
 	{
-		protected var _KSketch:KSketch2;
-		protected var _interactionControl:IInteractionControl;
+		protected var _KSketch:KSketch2;							// the ksketch instance
+		protected var _interactionControl:IInteractionControl;		// the interaction control
 
-		//Variables for operations
-		protected var _oldSelection:KSelection;
-		protected var _newSelection:KSelection;
-		protected var _interactionStartTime:int;
-		protected var _interactionEndTime:int;
+		// variables for operations
+		protected var _oldSelection:KSelection;						// the old selection
+		protected var _newSelection:KSelection;						// the new selection
+		protected var _interactionStartTime:int;					// the interaction start time
+		protected var _interactionEndTime:int;						// the interaction end time
 		
 		/**
 		 * The main constructor of the KInteractor class.
@@ -37,7 +41,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 			// sets the interactor
 			super(this);
 			
-			// sets the ksketch object
+			// sets the ksketch instance
 			_KSketch = KSketchInstance;
 			
 			// sets the interaction control

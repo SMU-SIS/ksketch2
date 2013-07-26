@@ -29,34 +29,51 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.canvas.components.view.KFilteredLoopView;
 	
+	/**
+	 * The KLoopSelectInteractor class serves as the concrete class for
+	 * loop select interactors in K-Sketch.
+	 */
 	public class KLoopSelectInteractor extends KInteractor
 	{
+		/**
+		 * The gesture display.
+		 */
 		public var gestureDisplay:SpriteVisualElement;
 		
+		/**
+		 * The intel model status.
+		 */
 		public static const MODE:String = "INTEL";
 		
-		private static const RADIUS:Number = 2;
-		private static const COLOR:uint = 0xf38400;
-		
-		private static const THRESHOLD_DISTANCE:int = 5;
-		
-		private var _loopStart:Point;
-		private var _secondToLast:Point;
-		private var _loopEnd:Point;
-		
-		private var _lastChecked:int;
-		private var _all:ByteArray;
-		private var _last:ByteArray;
-		
-		private var _root:KGroup;
-		private var _portions:Dictionary;
-		private var _arbiter:ISelectionArbiter;
-		
-		private var _loopView:KFilteredLoopView;
-		private var _gestureComponent:SpriteVisualElement
+		private static const RADIUS:Number = 2;					// the loop selection radius
+		private static const COLOR:uint = 0xf38400;				// the loop selection color
 		
 		/**
-		 * SelectInteractor 
+		 * The loop selection threshold distance.
+		 */
+		private static const THRESHOLD_DISTANCE:int = 5;
+		
+		private var _loopStart:Point;							// the loop selection start point
+		private var _secondToLast:Point;						// the loop selection second-to-last point
+		private var _loopEnd:Point;								// the loop selection end point
+		
+		private var _lastChecked:int;
+		private var _all:ByteArray;								
+		private var _last:ByteArray;
+		
+		private var _root:KGroup;								// the grouped objects' root node
+		private var _portions:Dictionary;						// the objects' portions
+		private var _arbiter:ISelectionArbiter;					// the selection arbiter
+		
+		private var _loopView:KFilteredLoopView;				// the loop view
+		private var _gestureComponent:SpriteVisualElement		// the gesture component
+		
+		/**
+		 * The main constructor of the KLoopSelectInteractor class.
+		 * 
+		 * @param KSketch2 The ksketch instance.
+		 * @param gestureComponent The gesture component.
+		 * @param interactionControl The interaction control. 
 		 */
 		public function KLoopSelectInteractor(KSketchInstance:KSketch2, gestureComponent:SpriteVisualElement, interactionControl:IInteractionControl)
 		{
@@ -66,9 +83,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 			reset();
 		}
 		
-		/**
-		 * Cleans up the interactor
-		 */
 		override public function reset():void
 		{
 			_lastChecked = -1;
@@ -85,7 +99,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 			_root = _KSketch.root;
 			_gestureComponent.addChild(_loopView);
 			_loopView.add(point);
-			
 			
 			_portions = new Dictionary();
 			
@@ -104,13 +117,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 			_secondToLast = _loopEnd;
 			_loopEnd = point;
 			
-			//Updates the loop view only. No selection here
+			// updates the loop view only, no selection here
 			_loopView.add(point);
 			
 			checkAllObjects();
 			
-			//Selection happens here
-			//A new set of selection is gather on every update.
+			// selection happens here
+			// a new set of selection is gather on every update
 			var selectedObjects:KModelObjectList = (_arbiter as KSimpleArbiter).bestGuess(_portions, _KSketch.time, _root);
 			_interactionControl.selection = new KSelection(selectedObjects);
 		}
@@ -121,6 +134,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 			_gestureComponent.removeChild(_loopView);
 		}
 		
+		/**
+		 * Resets the loop selection's settings for the start and end of
+		 * the interaction.
+		 */
 		private function _reset():void
 		{
 			_loopEnd = null;
@@ -136,8 +153,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		}
 		
 		/**
-		 * Checks all the objects in the model and
-		 * Computes their selection threshold
+		 * Checks all the objects in the model and computes their
+		 * selection threshold.
 		 */
 		private function checkAllObjects():void
 		{
@@ -162,7 +179,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		}
 		
 		/**
-		 * Does a hittest on the target object and see how much of it is intersected with the selection loop
+		 * Does a hit test on the given object and sees how much of the
+		 * given object is intersected with the selection loop.
+		 * 
+		 * @param target The target object.
+		 * @kskTime The ksketch instance's time.
 		 */
 		private function hitTest(target:KObject, kskTime:Number):uint
 		{
@@ -175,7 +196,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		}
 		
 		/**
-		 * Performs intersection test for the object
+		 * Performs an intersection test for the given object.
+		 * 
+		 * @param points The list of points.
+		 * @param transform The transform matrix.
+		 * @param startPoint The start point.
+		 * @param oldEnd The old endpoint.
+		 * @param newEnd The new endpoint.
+		 * @return The inside count of the intersection.
 		 */
 		private function updateByteArray(points:Vector.<Point>, transform:Matrix, startPoint:Point, oldEnd:Point, newEnd:Point):uint
 		{
@@ -220,27 +248,51 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		}
 		
 		/**
-		 * Returns TOTAL NUMBER OF POINTS being tested for selection intersection
+		 * Gets the total number of points being tested for selection
+		 * intersection.
+		 * 
+		 * @param object The target object.
+		 * @return The total number of points being tested for selection intersection.
 		 */
 		protected function testPointsCount(object:KObject):uint
 		{
+			// case: the object is a stroke
+			// return the stroke's number of points
 			if(object is KStroke)
 				return (object as KStroke).points.length;
+			
+			// case: the object is an image
+			// return the image's number of points
 			else if(object is KImage)
 				return (object as KImage).points.length;
+			
+			// case: the object is something else
+			// return an error
 			else
 				throw new Error("not supported kobject: "+object);
 		}
 		
 		/**
-		 * Returns the SET OF POINTS that are used for selection intersection
+		 * Gets the set of points that are used for selection
+		 * intersection.
+		 * 
+		 * @param object The target object.
+		 * @return The set of points that are used for selection intersection.
 		 */
 		protected function scaledBoundingBox(object:KObject):Vector.<Point>
 		{
+			// case: the object is a stroke
+			// return the stroke's set of points
 			if(object is KStroke)
 				return (object as KStroke).points;
+			
+			// case: the object is an image
+			// return the image's set of points
 			else if(object is KImage)
 				return (object as KImage).points;
+			
+			// case: the object is something else
+			// return an error
 			else
 				throw new Error("not supported kobject: "+object);
 		}

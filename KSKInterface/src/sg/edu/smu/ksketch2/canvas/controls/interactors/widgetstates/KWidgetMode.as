@@ -12,23 +12,34 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	
+	/**
+	 * The KWidgetMode class serves as the concrete class for widget mode
+	 * in K-Sketch.
+	 */
 	public class KWidgetMode implements IWidgetMode
 	{
-		protected var _KSketch:KSketch2;
-		protected var _demoMode:Boolean;
-		protected var _enabled:Boolean;
-		protected var _activated:Boolean;
-		protected var _interactionControl:KInteractionControl;
-		protected var _widget:KSketch_Widget_Component;
+		protected var _KSketch:KSketch2;							// the ksketch instance
+		protected var _demoMode:Boolean;							// the demo mode boolean flag
+		protected var _enabled:Boolean;								// the enabled state boolean flag
+		protected var _activated:Boolean;							// the activated state boolean flag
+		protected var _interactionControl:KInteractionControl;		// the interaction control
+		protected var _widget:KSketch_Widget_Component;				// the widget instance
 		
-		public function KWidgetMode(KSketchInstance:KSketch2,
-										 interactionControl:KInteractionControl, 
-										 widgetBase:KSketch_Widget_Component)
+		/**
+		 * The main constructor of the KWidgetMode class.
+		 * 
+		 * @param KSketchInstance The ksketch instance.
+		 * @param interactionControl The interaction control.
+		 * @param widgetBase The widget base component.
+		 */
+		public function KWidgetMode(KSketchInstance:KSketch2, interactionControl:KInteractionControl,  widgetBase:KSketch_Widget_Component)
 		{
+			// initialize the settings
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
 			_widget = widgetBase;
 			
+			// disable the boolean flags
 			_demoMode = false;
 			_enabled = false;
 			_activated = false;

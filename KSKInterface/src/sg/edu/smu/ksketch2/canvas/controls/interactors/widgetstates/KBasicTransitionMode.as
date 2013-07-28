@@ -18,14 +18,25 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KScaleInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTranslateInteractor;
 	
+	/**
+	 * The KBasicTransitionMode class serves as the concrete class for
+	 * basic transition mode in K-Sketch.
+	 */
 	public class KBasicTransitionMode extends KWidgetMode
 	{
-		private var _translateInteractor:KTranslateInteractor;
-		private var _rotateInteractor:KRotateInteractor;
-		private var _scaleInteractor:KScaleInteractor;
+		private var _translateInteractor:KTranslateInteractor;		// the translate interactor
+		private var _rotateInteractor:KRotateInteractor;			// the rotate interactor
+		private var _scaleInteractor:KScaleInteractor;				// the scale interactor
 		
-		public function KBasicTransitionMode(KSketchInstance:KSketch2, interactionControl:KInteractionControl, widgetBase:KSketch_Widget_Component
-											,modelSpace:DisplayObject)
+		/**
+		 * The main constructor for the KBasicTransitionMode class.
+		 * 
+		 * @param KSketchInstance The ksketch instance.
+		 * @param interactionControl The interaction control.
+		 * @param widgetBase The sketch widget base component.
+		 * @param modelSpace The model space.
+		 */
+		public function KBasicTransitionMode(KSketchInstance:KSketch2, interactionControl:KInteractionControl, widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject)
 		{
 			super(KSketchInstance, interactionControl, widgetBase);
 			

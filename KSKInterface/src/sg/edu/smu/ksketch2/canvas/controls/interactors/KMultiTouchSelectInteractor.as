@@ -26,6 +26,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
 	
+	/**
+	 * The KMultiTouchSelectInteractor class serves as the concrete class
+	 * for handling multi-touch select interactions in K-Sketch.
+	 * Specifically, touch selection interaction is done through the view,
+	 * where the old select interactor works through the model. It will
+	 * need to bring this into the model soon isntead of letting it run on
+	 * view components.
+	 */
 	public class KMultiTouchSelectInteractor extends KInteractor
 	{
 		public static const DETECTION_RADIUS:Number = 30; //detection radius 30px
@@ -33,12 +41,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _modelDisplay:KModelDisplay;
 		
 		/**
-		 * Touch Select Interactor for selection done through the view.
-		 * The old select interactor works thru the model.
-		 * Will have to bring this into the model soon instead of letting it run on view components
+		 * The main constructor of the KMultiTouchSelectInteractor class.
+		 * 
+		 * @param KSketchInstance The target ksketch instance.
+		 * @param interactorDisplay The target interactor display.
+		 * @param interactionControl The target interaction control.
 		 */
-		public function KMultiTouchSelectInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl,
-											   modelDisplay:KModelDisplay)
+		public function KMultiTouchSelectInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl, modelDisplay:KModelDisplay)
 		{
 			super(KSketchInstance, interactionControl);
 			_modelDisplay = modelDisplay;
@@ -47,6 +56,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			//_selectionArea.alpha = 0;
 		}
 		
+		/**
+		 * Handles the tap input of the touch select interaction.
+		 * 
+		 * @param location The target point location of the tap.
+		 */
 		public function tap(location:Point):void
 		{
 			_selectionArea.graphics.clear();
@@ -60,9 +74,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		}
 		
 		/**
-		 * Collision Detection code vs view
-		 * Must change it to collision detection vs model data to maintain consistency
-		 * View CD can't handle >20 objects :(
+		 * Detects object collision. Must change it to detect collision
+		 * versus model data to maintain consistency. View collision
+		 * detection cannot handle more than twenty objects.
 		 */
 		public function detectObjects():void
 		{
@@ -102,10 +116,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		}
 		
 		/**
-		 * Processes the result of collision detection
-		 * Determines which object/group should be selected based on the given object view
-		 * We should make different functions to select bigger groups based on given object view
-		 * and use them here.
+		 * Selects objects based on the given object view by processing
+		 * the result of the collision detection. Should make different
+		 * functions to select larger groups based on the given object
+		 * view and use them here.
+		 * 
+		 * @param objectView The object view.
 		 */
 		public function select(objectView:KObjectView):void
 		{
@@ -113,11 +129,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			if(objectView)
 			{
-				//Deal with which object to select here
-				//The parent group or the object itself or blah blah blah blah
+				// handles which object to select here
+				// the parent group or the object itself or other types
 				
-				//After we are done with processing the selection, dump the results into the
-				//List below and make a new selection
+				// after we are done with processing the selection, dump the results into the
+				// list below and make a new selection
 				var selectedObjectList:KModelObjectList = new KModelObjectList();
 				var object:KObject = objectView.object;
 				if(object.parent != _KSketch.root)

@@ -19,20 +19,29 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;
 	
+	/**
+	 * The KMultiTouchDrawInteractor serves as the multi-touch version
+	 * of the KDrawInteractor in K-Sketch.
+	 */
 	public class KMultiTouchDrawInteractor extends KDrawInteractor
 	{
+		/**
+		 * The eraser state boolean flag.
+		 */
 		public static var eraser:Boolean = false;
 		
+		/**
+		 * The main constructor of the KMultiTouchDrawInteractor class.
+		 * 
+		 * @param KSketchInstance The target ksketch instance.
+		 * @param interactorDisplay The target interactor display.
+		 * @param interactionControl The target interaction control.
+		 */
 		public function KMultiTouchDrawInteractor(KSketchInstance:KSketch2, interactorDisplay:SpriteVisualElement, interactionControl:IInteractionControl)
 		{
 			super(KSketchInstance, interactorDisplay, interactionControl);
 		}
 		
-		/**
-		 * DrawInteractor.interaction_Begin creates a temporary view to display the
-		 * new stroke that is being drawn. This temporaray view has no properties and
-		 * is seriously just there for cosmetic purposes
-		 */
 		override public function interaction_Begin(point:Point):void
 		{
 			_interactionControl.begin_interaction_operation();
@@ -44,11 +53,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 		}
 		
-		/**
-		 * Updates the temporary view with the new mouse move point.
-		 * Adds to the collection of points that will be used to create the
-		 * Stroke Object in the model
-		 */
 		override public function interaction_Update(point:Point):void
 		{
 			if(!eraser)

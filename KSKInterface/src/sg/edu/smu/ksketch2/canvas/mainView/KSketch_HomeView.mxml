@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:mx="library://ns.adobe.com/flex/mx" 
+		actionBarVisible="false" 
+		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
+		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
+		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
+		initialize="init()"
+		addedToStage="addedToStageHandler(event)"
+		viewActivate="init()"
+		destructionPolicy="never"
+		>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:HTTPService id="GetUserSketch"               
+					   resultFormat="text" 
+					   result="ParseJSONObject(event)" 
+					   showBusyCursor="false">                        
+		</s:HTTPService>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
+			import com.adobe.serialization.json.JSON;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectProxy;
+			
+			import air.net.URLMonitor;
+			
+			import sg.edu.smu.ksketch2.KSketchAssets;
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchWebLinks;
+			import sg.edu.smu.ksketch2.KSketch_User;
+			import sg.edu.smu.ksketch2.KSketch_UserSketches;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SyncOptions;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer;
+			import sg.edu.smu.ksketch2.canvas.controls.KOrientationControl;
+			import sg.edu.smu.ksketch2.utils.KSketchDocument;
+			
+			[Bindable]
+			private var dataProxy:ObjectProxy;
+			
+			[Bindable] 
+			public static var arrDG:ArrayCollection;	//to display user's list of sketches on the DataGrid
+			
+			private var arrSketchDocument:ArrayCollection = new ArrayCollection();
+			private var array:Array = [];
+			
+			private var monitor:URLMonitor;
+			private var userData:Object = new Object();
+			private var userSketch:KSketch_UserSketches;
+			private var _orientationControl:KOrientationControl;
+			private var _syncOptions:KSketch_SyncOptions;
+			
+			//variables for list of sketches
+			private var _lastClickEvent:int = 0;
+			private var selectedSketchName:String;
+			private var selectedSketchId:String;
+			private var selectedSketchVersion:String;
+			
+			public static var _isXML:Boolean;
+			public static var _isUsingCache:Boolean;
+			private var _isCanvas:Boolean;
+			private var _isConnected:Boolean;
+			private var _isCached:Boolean;
+			private var _isLoggedIn:Boolean;
+			
+			public static var mySO:SharedObject;
+			public static var _cachedUser:String;
+			public static var _cachedUserSketch:String;
+			public static var _cachedSketchDocs:String;
+			public static var _dup_cachedUser:String;
+			public static var _dup_cachedUserSketch:String;
+			public static var _dup_cachedSketchDocs:String;
+			
+			private var cacheTimer:Timer;
+			private var refreshViewTimer:Timer;
+			private var progressTimer:Timer;
+			
+			private function addedToStageHandler(event:Event):void
+			{
+				_orientationControl = new KOrientationControl(stage);
+				_orientationControl.init(event);
+				
+				//check for network connection
+				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				monitor.addEventListener(StatusEvent.STATUS, isConnected);
+				monitor.start();
+				
+				//add timer to constantly cache data every X time
+				cacheTimer = new Timer (60000, 1);
+				cacheTimer.start();
+				cacheTimer.addEventListener(TimerEvent.TIMER_COMPLETE, updateCache);
+			}
+			
+			private function init():void
+			{	
+				_syncOptions = new KSketch_SyncOptions();
+				_syncOptions.createDeferredContent();
+				
+				//set KSketch Logo
+				logoHolder.init(KSketchAssets.texture_logo, KSketchAssets.texture_logo);
+				
+				//check if user is logged in
+				_isLoggedIn = KSketch_LoginView._isLoggedIn;
+			}
+			
+			private function prepareView():void
+			{
+				mySO = SharedObject.getLocal("mydata");
+				if (mySO.data) {
+					if(mySO.data.user)
+					{
+						_cachedUser = mySO.data.user;	
+						_dup_cachedUser = _cachedUser;
+					}
+					
+					if(mySO.data.userSketch)
+					{
+						_cachedUserSketch = mySO.data.userSketch;
+						_dup_cachedUserSketch = _cachedUserSketch;
+					}
+					
+					if(mySO.data.sketchDocs)
+					{
+						_cachedSketchDocs = mySO.data.sketchDocs;
+						_dup_cachedSketchDocs = _cachedSketchDocs;
+					}
+				}
+				
+				if(data)
+				{
+					//cast data from previous view to ObjectProxy. This is to avoid getting IEventDispatcher error
+					dataProxy = new ObjectProxy(data);
+					
+					if(dataProxy.kUser)
+						userData.kUser = dataProxy.kUser;
+					
+					if(_isLoggedIn)
+						loginButton.label = "Logout, "+ userData.kUser.u_realname;
+					else
+						loginButton.label = "Login";
+				}
+				else
+				{
+					var obj:Object = new Object();
+					obj.status = "failed";
+					obj.u_login = "n.a";
+					var kUser:KSketch_User = new KSketch_User(obj);
+					userData.kUser = kUser;
+					trace("created user object: " + kUser.u_realname + " " + kUser.id);
+					loginButton.label = "Login";
+				}
+				
+				userData.homeView = this;
+				userData.kSketchDocument = null;
+				_dup_cachedUser = com.adobe.serialization.json.JSON.encode(userData.kUser);
+				
+				if(_isConnected)
+				{
+					if(_isLoggedIn)
+					{
+						if(KSketch_SaveOptions.isSaved)
+						{
+							refreshViewTimer = new Timer (5000, 1);
+							refreshViewTimer.start();
+							refreshViewTimer.addEventListener(TimerEvent.TIMER_COMPLETE, refreshViewFromWeb);
+						}
+						else
+							retrieveDataFromWeb();
+					}
+					else
+						retrieveDataFromCache();
+				}
+				else
+					retrieveDataFromCache();
+			}
+			
+			private function isConnected(event:StatusEvent):void
+			{
+				if(monitor.available)
+					_isConnected = true;
+				else
+					_isConnected = false;
+				
+				monitor.stop();
+				monitor.removeEventListener(StatusEvent.STATUS, isConnected);
+				
+				prepareView();
+			}
+			
+			private function retrieveDataFromCache():void
+			{
+				_isUsingCache = true;
+				
+				var rawData:String;
+				
+				if(_dup_cachedUserSketch && (_cachedUser == _dup_cachedUser))
+				{
+					
+					if(_dup_cachedUserSketch.indexOf("%") >= 0)
+					{
+						var sketchArr:Array = _dup_cachedUserSketch.split("%");
+						var arrEntities:Array;
+						if(sketchArr)
+						{
+							arrEntities = new Array(sketchArr.length);
+							for(var i:int=0; i<sketchArr.length; i++)
+							{
+								var objSketch:Object = com.adobe.serialization.json.JSON.decode(sketchArr[i], true);
+								arrEntities[i] = objSketch;
+							}
+							
+							rawData = com.adobe.serialization.json.JSON.encode(arrEntities);
+						}
+					}
+					else
+						rawData = _dup_cachedUserSketch;
+					
+					var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
+					retrieveData(obj, _dup_cachedUserSketch);
+					
+					progressTimer.stop();
+					progressTimer.removeEventListener(TimerEvent.TIMER, timer_tickHandler);
+					progressBar.visible = false;
+				}
+				else
+					startNewSketch();
+					
+			}
+			
+			private function refreshViewFromWeb(event:TimerEvent):void
+			{
+				refreshViewTimer.removeEventListener(TimerEvent.TIMER, refreshViewFromWeb);
+				refreshViewTimer.stop();
+				
+				retrieveDataFromWeb();
+			}
+			
+			public function retrieveDataFromWeb():void
+			{
+				arrDG.removeAll();
+				
+				_isUsingCache = false;
+				_isXML = false;	//set boolean to false because first JSON retrieval is list of sketches, not XML of sketch
+				
+				//if previous user has sketches and is Anonymous, display the sketches as well
+				//var prevUserObj:Object = com.adobe.serialization.json.JSON.decode(_cachedUser,true);
+				if(_cachedUser)
+				{
+					var previousCachedUser:KSketch_User = new KSketch_User(com.adobe.serialization.json.JSON.decode(_cachedUser,true));
+					if(_cachedUserSketch && previousCachedUser.u_realname == "Anonymous")
+					{
+						KSketch_SyncOptions._currentUser = userData.kUser;
+						KSketch_SyncOptions._cachedUserSketch = _cachedUserSketch;
+						KSketch_SyncOptions._cachedSketchDocs = _cachedSketchDocs;
+						
+						_syncOptions.open(this,true);
+						PopUpManager.centerPopUp(_syncOptions);
+					}
+				}
+				
+				//get json object of user's list of sketches from the URL and according to his real name
+				GetUserSketch.url = KSketchWebLinks.jsonurlSketch + userData.kUser.id;
+				GetUserSketch.send();
+				startProgressBar();
+			}
+			
+			private function ParseJSONObject(event:ResultEvent):void
+			{
+				var rawData:String = String(event.result);
+				var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
+				retrieveData(obj,rawData);
+				
+				progressTimer.stop();
+				progressTimer.removeEventListener(TimerEvent.TIMER, timer_tickHandler);
+				progressBar.visible = false;
+			}
+			
+			private function retrieveData(obj:Object, rawData:String):void
+			{
+				startProgressBar();
+				
+				if(obj != null)
+				{
+					if(!_isXML)	//if object contains list of sketches
+					{
+						//Check the 'entities' property of the object to know if user has any existing sketches
+						var arrEntities:Array = [];
+						arrEntities = (obj.entities as Array);
+						
+						//cache comes in two format. Entities follow web formatter while cached to disk needs to split string
+						if(!arrEntities)
+						{
+							arrEntities = [];
+							for(var prep:String in obj)
+							{
+								if(prep == "id" || prep == "modified" || prep == "created")
+								{
+									arrEntities.push(obj);
+									break;
+								}
+								else
+									arrEntities.push(obj[prep]);
+							}
+						}
+						
+						if(arrEntities.length != 0)
+						{
+							//Create a UserSketch instance by sending only the 'entities' of the JSON object and user's ID
+							userSketch = new KSketch_UserSketches(arrEntities, userData.kUser.id);
+							
+							//Set DataGrid array to user sketches collection
+							if(!arrDG)
+								arrDG = userSketch.getUserSketchArray(); 
+							else
+								arrDG.addAll(userSketch.getUserSketchArray());
+							
+							_dup_cachedUserSketch = rawData;
+							
+							listSketches_unavailable.visible = false;
+						}
+						else
+							startNewSketch();
+					}
+					else //if object contains XML of a particular sketch
+					{
+						_isXML = false;
+						
+						//create XML and date object from JSON to create a KSketchDocument object
+						var xml:XML = new XML(obj.data.fileData);
+						var date:Date = new Date(obj.modified);
+						var docObj:KSketchDocument = new KSketchDocument(obj.data.fileName, xml, obj.id, date, obj.data.originalName, obj.data.originalVersion, obj.data.changeDescription);
+						
+						if(_dup_cachedSketchDocs)
+							_dup_cachedSketchDocs += "%" + rawData;
+						else
+							_dup_cachedSketchDocs = rawData;
+						
+						userData.kSketchDocument = docObj;
+						
+						navigateToScreen("CANVAS");
+					}
+				}
+			}
+			
+			private function startNewSketch():void
+			{
+				listSketches_unavailable.visible = true;
+				_cachedUserSketch = null;
+				_dup_cachedUserSketch = null;
+				_cachedSketchDocs = null;
+				_dup_cachedSketchDocs = null;
+			}
+			
+			private function updateCache(event:TimerEvent):void
+			{
+				cacheTimer.removeEventListener(TimerEvent.TIMER, updateCache);
+				cacheTimer.stop();
+				
+				writeDataToCache();
+				
+				cacheTimer = new Timer(60000, 1);
+				cacheTimer.start();
+				cacheTimer.addEventListener(TimerEvent.TIMER_COMPLETE, updateCache);
+			}
+			
+			public static function writeDataToCache():void
+			{
+				mySO.clear();
+				
+				_cachedUser = _dup_cachedUser;
+				mySO.data.user = _cachedUser;
+				_dup_cachedUser = null;
+				
+				if(_dup_cachedUser)
+				{
+					_cachedUser = _dup_cachedUser;
+					mySO.data.user = _cachedUser;
+					_dup_cachedUser = null;
+				}
+				
+				if(_dup_cachedUserSketch)
+				{
+					_cachedUserSketch = _dup_cachedUserSketch;
+					mySO.data.userSketch = _cachedUserSketch;
+					_dup_cachedUserSketch = null;
+				}
+				
+				if(_dup_cachedSketchDocs)
+				{
+					_cachedSketchDocs = _dup_cachedSketchDocs;
+					mySO.data.sketchDocs = _cachedSketchDocs;
+					_dup_cachedSketchDocs = null;
+				}
+				
+				mySO.flush();
+				
+				mySO = SharedObject.getLocal("mydata");
+				if (mySO.data) {
+					if(mySO.data.user)
+					{
+						_cachedUser = mySO.data.user;	
+						_dup_cachedUser = _cachedUser;
+					}
+					
+					if(mySO.data.userSketch)
+					{
+						_cachedUserSketch = mySO.data.userSketch;
+						_dup_cachedUserSketch = _cachedUserSketch;
+					}
+					
+					if(mySO.data.sketchDocs)
+					{
+						_cachedSketchDocs = mySO.data.sketchDocs;
+						_dup_cachedSketchDocs = _cachedSketchDocs;
+					}
+				}
+			}
+			
+			private function datagridSelectItem():void
+			{
+				selectedSketchName = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchName;
+				selectedSketchId = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchId;
+				selectedSketchVersion = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedVersion;
+				
+				_isXML = true; //set boolean to true because this JSON retrieval will be XML of sketch
+				_isCanvas = true;
+				
+				if(_isUsingCache)
+				{
+					if(selectedSketchName && selectedSketchVersion)
+					{
+						if(_dup_cachedSketchDocs)
+						{
+							var isSketch:Boolean = false;
+							var sketchDocumentListArr:Array = _dup_cachedSketchDocs.split("%");
+							
+							for(var i:int=0; i<sketchDocumentListArr.length; i++)
+							{
+								var sketchObj:Object = com.adobe.serialization.json.JSON.decode(sketchDocumentListArr[i], true);
+								
+								//get sketchID and versionNo.
+								var tempSketchName:String = sketchObj.data.fileName;
+								var tempSketchId:String = sketchObj.data.sketchId;
+								var tempSketchVer:String = sketchObj.data.version;
+								
+								if (tempSketchVer == selectedSketchVersion && tempSketchName == selectedSketchName)
+								{
+									tempSketchName = "";
+									tempSketchId = "";
+									tempSketchVer = "";
+									_isXML = true;
+									
+									var rawData:String = sketchDocumentListArr[i];
+									var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
+									retrieveData(obj, rawData);
+									
+									isSketch = true;
+									break;
+								}
+							}
+							
+							if(!isSketch)
+								trace("display alert box that data has not been downloaded yet and needs internet connection to load the data");
+						}
+						else
+							trace("display alert box that data has not been downloaded yet and needs internet connection to load the data");
+					}
+				}
+				else 
+				{
+					if(selectedSketchId && selectedSketchVersion)
+					{
+						//get json object of sketch from the URL and according to sketchid and version number
+						GetUserSketch.url = KSketchWebLinks.jsonurlSketchXML + "/" + selectedSketchId + "/" + selectedSketchVersion;
+						GetUserSketch.send();
+						startProgressBar();
+					}
+				}
+				
+				selectedSketchName = null;
+				selectedSketchId = null;
+				selectedSketchVersion = null;
+				KSketch_HomeView_IconItemRenderer.selectedSketchName = null;
+				KSketch_HomeView_IconItemRenderer.selectedSketchId = null;
+				KSketch_HomeView_IconItemRenderer.selectedVersion = null;
+			}
+			
+			private function navigateToScreen(screenName:String):void
+			{
+				if(_dup_cachedUser || _dup_cachedUserSketch || _dup_cachedSketchDocs)
+				{
+					if(cacheTimer.hasEventListener(TimerEvent.TIMER_COMPLETE))
+					{
+						cacheTimer.removeEventListener(TimerEvent.TIMER, updateCache);
+						cacheTimer.stop();
+					}
+					
+					writeDataToCache();
+				}	
+				
+				arrDG = new ArrayCollection();
+				if(screenName.indexOf("CANVAS") == -1) //if screen name is Login
+				{
+					KSketch_LoginView.userData = new Object();
+					KSketch_LoginView._isLoggedIn = false;
+					navigator.pushView(KSketch_LoginView);
+				}	
+				else //if screen name is Canvas
+					navigator.pushView(KSketch_CanvasView, userData);
+			}
+		
+			protected function startProgressBar():void
+			{
+				progressBar.visible = true;
+				
+				progressTimer = new Timer(1);
+				progressTimer.addEventListener(TimerEvent.TIMER, timer_tickHandler);
+				progressTimer.start();
+			}
+			
+			protected function timer_tickHandler(event:TimerEvent):void
+			{
+				progressBar.value += .008;
+				
+				if (progressBar.value >= 1)
+					progressBar.value = 0;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Group width="100%" height="100%">
+		<!-- defines the page to arrange 'group' elements from left to right -->
+		<s:layout> <s:HorizontalLayout gap="2"/> </s:layout>
+		
+		<!-- First half of the page -->
+		<s:Group width="33%" height="100%">
+			<!-- sets the background to grey -->
+			<s:Rect width="100%" height="100%">
+				<s:fill> <s:SolidColor color="0xE7E7E7"/> </s:fill>
+			</s:Rect>
+			
+			<s:Group width="100%" height="100%">
+				<!-- defines the page to arrange 'group' elements from top to bottom -->
+				<s:layout> <s:VerticalLayout paddingLeft="15" paddingRight="15" paddingTop="15"/> </s:layout>
+				
+				<!-- Alignment for logo button -->
+				<s:Group width="100%" height="40%">
+					<s:layout> <s:HorizontalLayout paddingLeft="48" paddingTop="10"/> </s:layout>
+					<buttons:KSketch_Button id="logoHolder"
+											width="{KSketchStyles.LOGO_BUTTON_WIDTH}" 
+											height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"/>
+				</s:Group>
+				
+				<s:Group width="100%">
+					<s:layout> <s:VerticalLayout paddingBottom="10"/> </s:layout>
+					<s:Button width="100%" label="Create a Sketch" click="navigateToScreen('CANVAS')"/>
+				</s:Group>
+				
+				<s:Group width="100%">
+					<s:layout> <s:VerticalLayout paddingBottom="10"/> </s:layout>
+					<s:Button id="loginButton" width="100%" click="navigateToScreen('LOGIN')"/>
+				</s:Group>
+				
+				<!-- end alignment for buttons -->
+			</s:Group>
+		</s:Group>
+		<!-- end of first half -->
+		
+		<!-- Second half of the page -->
+		<s:Group width="67%" height="100%">
+			
+			<!-- Background for previewer -->
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xE7E7E7"/>
+				</s:fill>
+			</s:Rect>
+			
+			<!--Previewer portion-->
+			<s:Group width="100%" height="100%">
+				<s:Rect top="15" left="15" right="15" bottom="15">
+					<s:fill>
+						<s:SolidColor color="0xFFFFFF"/>
+					</s:fill>
+					<s:filters>
+						<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
+					</s:filters>
+				</s:Rect>
+				
+				<s:Group top="15" left="15" right="15" bottom="15">
+					<s:List id="listSketches" contentBackgroundAlpha="0" width="100%" height="100%"
+					 	itemRenderer="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"
+						dataProvider="{arrDG}" change="datagridSelectItem()"
+					 	>
+					</s:List>
+					<s:Label id="listSketches_unavailable" text="Start a new sketch now!" visible="false"/>
+					
+					<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
+											horizontalCenter="0" verticalCenter="0" visible="false"/>
+				</s:Group>
+				
+			</s:Group> 
+			<!-- end of previewer portion-->
+		</s:Group>	
+		<!-- end of second half -->
+	</s:Group>
+</s:View>

@@ -15,23 +15,23 @@ package sg.edu.smu.ksketch2.utils
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 
 	/**
-	 * The KSelection class serves as the concrete class for handling
-	 * selection in K-Sketch.
-	 */
+ 	 * The KSelection class serves as the concrete class for handling
+ 	 * selection in K-Sketch.
+ 	 */
 	public class KSelection
 	{
-		private var _visibleSelection:KModelObjectList;		// the visible selection
-		private var _completeSelection:KModelObjectList;	// the complete selection
+		private var _visibleSelection:KModelObjectList; // the visible selection
+		private var _completeSelection:KModelObjectList; // the complete selection
 		
 		/**
-		 * The main constructor for the KSelection class.
-		 * 
-		 * @param selectedObjects The selected list of model objects.
-		 */
+ 		 * The main constructor for the KSelection class.
+ 		 * 
+ 		 * @param selectedObjects The selected list of model objects.
+ 		 */
 		public function KSelection(selectedObjects:KModelObjectList)
 		{
-			_visibleSelection = selectedObjects;			// set the visible selection of model objects
-			_completeSelection = selectedObjects.clone();	// set the complete selection of model objects
+			_visibleSelection = selectedObjects; // set the visible selection of model objects
+			_completeSelection = selectedObjects.clone(); // set the complete selection of model objects
 		}
 		
 		/**
@@ -49,8 +49,8 @@ package sg.edu.smu.ksketch2.utils
 		
 		/**
 		 * Gets the complete selection of model objects.
-		 * 
-		 * @param The complete selection of model objects.
+		 * 	
+		 *  @param The complete selection of model objects.
 		 */
 		public function get completeSelection():KModelObjectList
 		{
@@ -91,7 +91,7 @@ package sg.edu.smu.ksketch2.utils
 		 * @param time The target time.
 		 * @return The centroid for the selection at the given time.
 		 */
-		public function centerAt(time:int):Point
+		public function centerAt(time:Number):Point
 		{
 			if(!_visibleSelection)
 				return null;
@@ -123,24 +123,24 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Checks whether the selection is visible at the given time.
-		 * 
-		 * @param time The target time.
-		 * @return Whether the selection is visible at the given time.
-		 */
-		public function isVisible(time:int):Boolean
+ 		 * Checks whether the selection is visible at the given time.
+ 		 * 
+ 		 * @param time The target time.
+ 		 * @return Whether the selection is visible at the given time.
+ 		 */
+		public function isVisible(time:Number):Boolean
 		{
 			return _visibleSelection.length() > 0;
 		}
 		
 		/**
-		 * Updates the selection composition.
-		 * 
-		 * @param time The target time.
-		 */
-		public function updateSelectionComposition(time:int):void
+ 		 * Updates the selection composition.
+ 		 * 
+ 		 * @param time The target time.
+ 		 */
+		public function updateSelectionComposition(time:Number):void
 		{
-			var i:int = 0;
+			var i:int =0 ;
 			var length:int = _completeSelection.length();
 			var currentObject:KObject;
 			var visibleList:KModelObjectList = new KModelObjectList;
@@ -157,13 +157,13 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Checks whether the selection has an active selection
-		 * transform time.
-		 * 
-		 * @param time The target time.
-		 * @return Whether the selection has an active selection transform time.
+ 		 * Checks whether the selection has an active selection
+ 		 * transform time.
+ 		 * 
+ 		 * @param time The target time.
+ 		 * @return Whether the selection has an active selection transform time.
 		 */
-		public function selectionTransformable(time:int):Boolean
+		public function selectionTransformable(time:Number):Boolean
 		{
 			if(objects.length() == 1)
 				return _visibleSelection.getObjectAt(0).transformInterface.canInterpolate(time);
@@ -172,11 +172,11 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Checks whether the selection is different from another selection.
-		 * 
-		 * @param anotherSelection The other selection.
-		 * @return Whether the two selections are different from each other.
-		 */
+ 		 * Checks whether the selection is different from another selection.
+ 		 * 
+ 		 * @param anotherSelection The other selection.
+ 		 * @return Whether the two selections are different from each other.
+ 		 */
 		public function isDifferentFrom(anotherSelection:KSelection):Boolean
 		{
 			if(!anotherSelection)
@@ -186,8 +186,8 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Outpus a debugging message to the console.
-		 */
+ 		 * Outpus a debugging message to the console.
+ 		 */
 		public function debug():void
 		{
 			trace("visible selection:", objects);

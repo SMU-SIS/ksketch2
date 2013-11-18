@@ -22,7 +22,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;

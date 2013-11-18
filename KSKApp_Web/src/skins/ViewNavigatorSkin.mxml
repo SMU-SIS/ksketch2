@@ -46,6 +46,7 @@
                 
                 super.updateDisplayList(unscaledWidth, unscaledHeight);
             }
+			
         ]]>        
     </fx:Script>
     

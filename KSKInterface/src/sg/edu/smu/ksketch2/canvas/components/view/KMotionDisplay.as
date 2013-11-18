@@ -14,7 +14,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 	import spark.core.SpriteVisualElement;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
@@ -25,7 +25,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		private const DEFAULT_MOTION_DISPLAY_LIMIT:int = 10;
 		
 		private var _KSketch:KSketch2;
-		private var _interactionControl:IInteractionControl;
+		private var _interactionControl:KInteractionControl;
 		
 		private var _objectsWithPath:KModelObjectList;
 		private var _visibleMotionDisplays:Dictionary;
@@ -45,7 +45,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			mouseEnabled = false;
 		}
 		
-		public function init(KSketchInstance:KSketch2, interactionControl:IInteractionControl):void
+		public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl):void
 		{
 			_KSketch = KSketchInstance;	
 			_interactionControl = interactionControl;
@@ -62,7 +62,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		 */
 		public function registerObject(object:KObject):void	
 		{
-			var newObjectMotion:KObjectMotions = new KObjectMotions();
+			var newObjectMotion:KObjectMotions = new KObjectMotions(_interactionControl);
 			newObjectMotion.object = object;
 			addChild(newObjectMotion);
 			_motionDisplays[object] = newObjectMotion;

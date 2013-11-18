@@ -10,10 +10,12 @@ package sg.edu.smu.ksketch2.canvas.components.view
 {
 	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -28,7 +30,8 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		private var _motionPath:Shape;
 		private var _rotationMotionPath:Shape;
 		private var _prevActiveKey:KSpatialKeyFrame;
-
+		
+		protected var _interactionControl:KInteractionControl;
 		
 		/**
 		 *	Display class for motion paths and static ghosts.
@@ -36,7 +39,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		 * 	Static ghosts show the objects' position, orientation and size
 		 *	at the end of the active key frame.
 		 */
-		public function KObjectMotions()
+		public function KObjectMotions(interactionControl:KInteractionControl)
 		{
 			//So in essence, the object's motions are represented by a ghost and a motion path
 			//The motion path will show the user how the object gets to the ghost
@@ -44,11 +47,16 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			
 			super();
 			
+			_interactionControl = interactionControl;
+			//_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, clearTemp);
+			
 			_motionPath = new Shape();
 			addChild(_motionPath);
 			
 			_rotationMotionPath = new Shape();
 			addChild(_rotationMotionPath);
+			
+			
 		}
 		
 		public function set object(newObject:KObject):void
@@ -116,9 +124,11 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			if(_motionPath.visible && _rotationMotionPath.visible)
 			{
 				var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(event.time) as KSpatialKeyFrame;			
+				var firstKeyTime:Number = _object.transformInterface.firstKeyTime;
+				var lastKeyTime:Number = _object.transformInterface.lastKeyTime;
 				
 				if(activeKey)
-					_determineAndGeneratePaths(activeKey);				
+					_determineAndGeneratePaths(activeKey,firstKeyTime,lastKeyTime);				
 			}
 		}
 		
@@ -137,13 +147,15 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		/**
 		 * Generate a motion path at time
 		 */
-		private function _updateMotionPath(time:int):void
+		private function _updateMotionPath(time:Number):void
 		{
 			if(!(_rotationMotionPath.visible && _motionPath.visible))
 				return;
 			
 			var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(time) as KSpatialKeyFrame;			
-		
+			var firstKeyTime:Number = _object.transformInterface.firstKeyTime;
+			var lastKeyTime:Number = _object.transformInterface.lastKeyTime;
+			
 			if(!activeKey)
 			{
 				_prevActiveKey = null;
@@ -152,26 +164,28 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			}
 			
 			if(activeKey != _prevActiveKey)
-				_determineAndGeneratePaths(activeKey);
+				_determineAndGeneratePaths(activeKey, firstKeyTime, lastKeyTime);
 			
 			var position:Point = _object.fullPathMatrix(time).transformPoint(_object.center);
 			_rotationMotionPath.x = position.x;
 			_rotationMotionPath.y = position.y;
 		}
 		
-		private function _determineAndGeneratePaths(activeKey:KSpatialKeyFrame):void
+		private function _determineAndGeneratePaths(activeKey:KSpatialKeyFrame, firstKeyTime:Number, lastKeyTime:Number):void
 		{
 			_prevActiveKey = activeKey;
 			var path:Vector.<Point>;
 			
 			_motionPath.graphics.clear();
-			_generateMotionPath(activeKey);
+			_generateMotionPath(activeKey,firstKeyTime,lastKeyTime);
 			
+			/*this is the original implementation
 			if(activeKey.next)
 				_generateMotionPath(activeKey.next as KSpatialKeyFrame);
+			*/
 		}
 		
-		private function _generateMotionPath(key:KSpatialKeyFrame):void
+		private function _generateMotionPath(key:KSpatialKeyFrame, firstKeyTime:Number, lastKeyTime:Number):void
 		{			
 			if(!key)
 				throw new Error("Unable to generate a motion path if there is no active key");
@@ -181,8 +195,8 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			var scalePath:Vector.<Number> = new Vector.<Number>();
 			
 			var matrix:Matrix;
-			var currentTime:int = key.startTime;
-			var currentKeyElapsedTime:int = 0;
+			var currentTime:Number = key.startTime;
+			var currentKeyElapsedTime:Number = 0;
 			var centroid:Point = _object.center;
 			var position:Point;
 			
@@ -193,9 +207,9 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			
 			//Just iterate and generate all the values for each frame
 			//This iteration generates an object's position and transform values
-			while(currentTime <= key.time)
+			while(firstKeyTime <= lastKeyTime)
 			{
-				matrix = _object.fullPathMatrix(currentTime);
+				matrix = _object.fullPathMatrix(firstKeyTime);
 				position = matrix.transformPoint(centroid);
 				translatePath.push(position);
 
@@ -204,7 +218,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				rotatePath.push(transformer.rotation);
 				scalePath.push(transformer.scaleX);
 					
-				currentTime += KSketch2.ANIMATION_INTERVAL;
+				firstKeyTime += KSketch2.ANIMATION_INTERVAL;
 			}
 			
 			_drawTranslatePath(translatePath);
@@ -219,7 +233,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			if(1 < path.length)
 			{
 				var currentPoint:Point = path[0];
-				_motionPath.graphics.lineStyle(2, 0x2E9AFE);
+				_motionPath.graphics.lineStyle(2, 0x2E9AFE); //this is the color for motion
 				_motionPath.graphics.moveTo(currentPoint.x, currentPoint.y);
 				
 				var i:int = 1;
@@ -252,6 +266,15 @@ package sg.edu.smu.ksketch2.canvas.components.view
 					_rotationMotionPath.graphics.lineTo(currentPoint.x, currentPoint.y);
 				}
 			}	
+		}
+		
+		private function clearTemp(event:Event):void
+		{
+			if(_motionPath)
+				_motionPath.graphics.clear();
+			
+			if(_rotationMotionPath)
+				_rotationMotionPath.graphics.clear();
 		}
 	}
 }

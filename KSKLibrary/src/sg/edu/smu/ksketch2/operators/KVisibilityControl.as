@@ -31,6 +31,12 @@ package sg.edu.smu.ksketch2.operators
 		public static const GHOST_ALPHA:Number = 0.2;
 		public static const INVISIBLE_ALPHA:Number = 0;
 		
+		public static const STUDYMODE_K:int = 0;						// Version K value
+		public static const STUDYMODE_P:int = 1;						// Version P value
+		public static const STUDYMODE_KP:int = 2;						// Version KP value
+		public static const STUDYMODE_KP2:int = 3;							// Version KP2 value
+		public static var studyMode:int = STUDYMODE_KP2;
+		
 		// class variables
 		private var _object:KObject;						// the object
 		private var _visibilityKeys:KVisibilityKeyList;		// the visibility key frame list
@@ -47,10 +53,11 @@ package sg.edu.smu.ksketch2.operators
 			
 			// initialize the set of visibility key frames
 			_visibilityKeys = new KVisibilityKeyList();
-//			setVisibility(false, 0, null);
+			//setVisibility(false, 0, null);
+			
 		}
 		
-		public function get earliestVisibleTime():int
+		public function get earliestVisibleTime():Number
 		{
 			// set the current key frame as the head of the visibility key frame list
 			var currentKey:IKeyFrame = _visibilityKeys.head;
@@ -65,7 +72,7 @@ package sg.edu.smu.ksketch2.operators
 			return currentKey.time;
 		}
 		
-		public function setVisibility(visible:Boolean, time:int, op:KCompositeOperation):void
+		public function setVisibility(visible:Boolean, time:Number, op:KCompositeOperation):void
 		{
 			// look for the relevant key frame at the given time first
 			var key:IVisibilityKey = _visibilityKeys.getActiveKey(time);
@@ -93,7 +100,13 @@ package sg.edu.smu.ksketch2.operators
 				}
 			}
 			
-			key = new KVisibilityKey(time);
+			var passthrough:Boolean;
+			if(studyMode == STUDYMODE_K || studyMode == STUDYMODE_KP)
+				passthrough = false;
+			else
+				passthrough = true;
+			
+			key = new KVisibilityKey(time,passthrough);
 			_visibilityKeys.insertKey(key);
 			if(op)
 				op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));
@@ -120,7 +133,14 @@ package sg.edu.smu.ksketch2.operators
 			var keyXML:XMLList = xml.keylist.visibilitykey
 			for(var i:int = 0; i<keyXML.length(); i++)
 			{
-				var newVisibilityKey:KVisibilityKey = new KVisibilityKey(int(keyXML[i].@time));
+				//Passthrough edit
+				var passthrough:Boolean;
+				if(studyMode == STUDYMODE_K || studyMode == STUDYMODE_KP)
+					passthrough = false;
+				else
+					passthrough = true;
+				
+				var newVisibilityKey:KVisibilityKey = new KVisibilityKey(int(keyXML[i].@time),passthrough);
 				
 				if(keyXML[i].@visibility == "true")
 					newVisibilityKey.visible = true;
@@ -130,7 +150,7 @@ package sg.edu.smu.ksketch2.operators
 			}
 		}
 		
-		public function alpha(time:int):Number
+		public function alpha(time:Number):Number
 		{
 			// get the activity visibility key frame at the given time
 			var key:IVisibilityKey = _visibilityKeys.getActiveKey(time);

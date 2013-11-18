@@ -32,7 +32,7 @@ package sg.edu.smu.ksketch2.operators
 			super();
 		}
 		
-		override public function group(objects:KModelObjectList, commonParent:KGroup, groupTime:int, scene:KSceneGraph, op:KCompositeOperation):KObject
+		override public function group(objects:KModelObjectList, commonParent:KGroup, groupTime:Number, scene:KSceneGraph, op:KCompositeOperation):KObject
 		{
 			if(objects.length() == 0)
 				throw new Error("KGroupUtil.groupStatic: No objects in the objectlist given. Wth dood");
@@ -66,7 +66,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param op The corresponding composite operation.
 		 * @return The ungrouped list of objects.
 		 */
-		override public function ungroup(toUngroupList:KModelObjectList, ungroupTime:int, scene:KSceneGraph,
+		override public function ungroup(toUngroupList:KModelObjectList, ungroupTime:Number, scene:KSceneGraph,
 										 op:KCompositeOperation):KModelObjectList
 		{
 			var result:KModelObjectList = new KModelObjectList();
@@ -106,7 +106,7 @@ package sg.edu.smu.ksketch2.operators
 		 * Merges the objects' hierarchies's transforms into the objects themselves
 		 * empowering the objects with their ancestors' powers
 		 */
-		private function _static_CollapseHierarchy(objects:KModelObjectList, stopParent:KGroup, stopCollapseTime:int,
+		private function _static_CollapseHierarchy(objects:KModelObjectList, stopParent:KGroup, stopCollapseTime:Number,
 												   scene:KSceneGraph, op:KCompositeOperation):void
 		{
 			//Assume that the object list given consists of the highest order
@@ -124,7 +124,7 @@ package sg.edu.smu.ksketch2.operators
 			}
 		}
 		
-		private function _topDownCollapse(object:KObject, stopParent:KGroup, stopCollapseTime:int,
+		private function _topDownCollapse(object:KObject, stopParent:KGroup, stopCollapseTime:Number,
 										  scene:KSceneGraph, op:KCompositeOperation):void
 		{
 			if(object.parent != stopParent && object.parent != scene.root)

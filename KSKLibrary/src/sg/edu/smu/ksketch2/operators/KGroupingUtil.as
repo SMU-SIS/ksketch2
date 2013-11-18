@@ -63,7 +63,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param op The corresponding composite operation.
 		 * @return The grouped list of objects.
 		 */
-		public function group(objects:KModelObjectList, commonParent:KGroup, groupTime:int, scene:KSceneGraph, op:KCompositeOperation):KObject
+		public function group(objects:KModelObjectList, commonParent:KGroup, groupTime:Number, scene:KSceneGraph, op:KCompositeOperation):KObject
 		{
 			return _groupObjects(objects, commonParent, groupTime, scene, op);
 		}
@@ -81,7 +81,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param op The corresponding composite operation.
 		 * @return The ungrouped list of objects.
 		 */
-		public function ungroup(toUngroupList:KModelObjectList, ungroupTime:int, scene:KSceneGraph, op:KCompositeOperation):KModelObjectList
+		public function ungroup(toUngroupList:KModelObjectList, ungroupTime:Number, scene:KSceneGraph, op:KCompositeOperation):KModelObjectList
 		{
 			return _ungroupObjects(toUngroupList, ungroupTime, scene, op)
 		}
@@ -136,7 +136,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param op The corresponding composite operation.
 		 * @return The grouped list of objects.
 		 */
-		protected function _groupObjects(objects:KModelObjectList, commonParent:KGroup, groupTime:int, scene:KSceneGraph, op:KCompositeOperation):KGroup
+		protected function _groupObjects(objects:KModelObjectList, commonParent:KGroup, groupTime:Number, scene:KSceneGraph, op:KCompositeOperation):KGroup
 		{	
 			// case: there is at most one oject in the group
 			// throw an error
@@ -167,7 +167,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param op The corresponding composite operation.
 		 * @return The ungrouped list of objects.
 		 */
-		protected function _ungroupObjects(toUngroupList:KModelObjectList, ungroupTime:int, scene:KSceneGraph,
+		protected function _ungroupObjects(toUngroupList:KModelObjectList, ungroupTime:Number, scene:KSceneGraph,
 										   op:KCompositeOperation):KModelObjectList
 		{
 			// adds the objects in the given list to the new parent 

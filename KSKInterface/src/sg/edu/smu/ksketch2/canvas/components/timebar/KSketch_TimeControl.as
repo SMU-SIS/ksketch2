@@ -17,9 +17,10 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import mx.events.FlexEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_ContextMenu;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
 	public class KSketch_TimeControl extends KSketch_TimeSlider implements ITimeControl
@@ -30,39 +31,49 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public static const RECORD_STOP:String = "Stop Recording";
 		public static const EVENT_POSITION_CHANGED:String = "position changed";
 
+		public static const SNAP_DOWN:int = 20;
+		public static const SNAP_MOVE:int = 20;
+		
 		public static const BAR_TOP:int = 0;
 		public static const BAR_BOTTOM:int = 1;
 		
-		public static const DEFAULT_MAX_TIME:int = 5000;
-		public static const TIME_EXTENSION:int = 5000;
+		public static const DEFAULT_MAX_TIME:Number = 5000;
+		public static const TIME_EXTENSION:Number = 5000;
 		public static var recordingSpeed:Number = 1;
 		
 		public var recordingSpeed:Number = 1;
 		private var _editMarkers:Boolean;
 		
 		public static const PLAY_ALLOWANCE:int = 2000;
-		public static const MAX_ALLOWED_TIME:int = 600000; //Max allowed time of 10 mins
+		public static const MAX_ALLOWED_TIME:Number = 600000; //Max allowed time of 10 mins
 		
 		protected var _KSketch:KSketch2;
 		protected var _tickmarkControl:KSketch_TickMark_Control;
+		protected var _transitionHelper:KWidgetInteractorManager;
 		protected var _magnifier:KSketch_Timebar_Magnifier;
 		protected var _keyMenu:KSketch_Timebar_ContextMenu;
-		protected var _interactionTimer:Timer;
-		protected var _longTouch:Boolean = false;
 		
-		protected var _isPlaying:Boolean = false;
+		public static var _isPlaying:Boolean = false;
 		protected var _timer:Timer;
-		protected var _maxPlayTime:int;
-		protected var _rewindToTime:int;
+		protected var _maxPlayTime:Number;
+		protected var _rewindToTime:Number;
 		private var _position:int;
 		
 		private var _maxFrame:int;
 		private var _currentFrame:int;
 		
-		public var timings:Vector.<int>;
+		public var timings:Vector.<Number>;
 		
 		private var _touchStage:Point = new Point(0,0);
 		private var _substantialMovement:Boolean = false;
+		
+		private var grabbedTickTimer:Timer;
+		private var nearTick: Number;
+		private var _longTouch:Boolean = false;
+		private var isNearTick: Boolean = false;
+		private var moveTick:Boolean = false;
+		
+		private var showMagnifier:Boolean = false;
 		
 		public function KSketch_TimeControl()
 		{
@@ -70,18 +81,19 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		}
 		
 		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control,
+							 transitionHelper:KWidgetInteractorManager,
 							 magnifier:KSketch_Timebar_Magnifier, keyMenu:KSketch_Timebar_ContextMenu):void
 		{
 
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
+			_transitionHelper = transitionHelper;
 			_magnifier = magnifier;
 			_keyMenu = keyMenu;
 			timeLabels.init(this);
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
-			_interactionTimer = new Timer(500);
-
+			
 			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 			_magnifier.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 			
@@ -117,17 +129,13 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			if(_position == BAR_TOP)
 			{
-				removeElement(timeBar_Spacing);
 				removeElement(timeLabels);
-				addElementAt(timeBar_Spacing,0);
-				addElementAt(timeLabels,2);
+				addElementAt(timeLabels,1);
 			}
 			else
 			{
-				removeElement(timeBar_Spacing);
 				removeElement(timeLabels);
-				addElementAt(timeLabels,0);
-				addElementAt(timeBar_Spacing,2);
+				addElementAt(timeLabels,1);
 			}
 			
 			_magnifier.dispatchEvent(new FlexEvent(FlexEvent.UPDATE_COMPLETE));
@@ -136,7 +144,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		/**
 		 * Maximum time value for this application in milliseconds
 		 */
-		public function set maximum(value:int):void
+		public function set maximum(value:Number):void
 		{
 			_maxFrame = value/KSketch2.ANIMATION_INTERVAL;
 			dispatchEvent(new Event(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED));
@@ -145,7 +153,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		/**
 		 * Maximum time value for this application in milliseconds
 		 */
-		public function get maximum():int
+		public function get maximum():Number
 		{
 			return _maxFrame * KSketch2.ANIMATION_INTERVAL;
 		}
@@ -153,7 +161,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		/**
 		 * Current time value for this application in milliseconds
 		 */
-		public function set time(value:int):void
+		public function set time(value:Number):void
 		{
 			if(value < 0)
 				value = 0;
@@ -161,7 +169,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				value = MAX_ALLOWED_TIME;
 			if(maximum < value)
 				maximum = value;
-			
+
 			_currentFrame = timeToFrame(value);
 			_KSketch.time = _currentFrame * KSketch2.ANIMATION_INTERVAL;
 			
@@ -181,13 +189,12 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			}
 			
 			_magnifier.showTime(toTimeCode(time), _currentFrame, timeToX(time));
-
 		}
 		
 		/**
 		 * Current time value for this application in milliseconds
 		 */
-		public function get time():int
+		public function get time():Number
 		{
 			return _KSketch.time
 		}
@@ -201,44 +208,52 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 * On touch function. Time slider interactions begins here
 		 * Determines whether to use the tick mark control or to just itneract with the slider
 		 */
-		protected function _touchDown(event:MouseEvent):void
-		{
+		public function _touchDown(event:MouseEvent):void
+		{	
+			//upon touchdown, start grabbedTickTimer to time how long the touchdown is
+			//if timer completes (means longPress), grab the tick at that particular time
+			grabbedTickTimer = new Timer(800,1);
+			grabbedTickTimer.start();
+			grabbedTickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _triggerLongTouch);
+			
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
 			_substantialMovement = false;
 			
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
-			
 			var dx:Number = Math.abs(xPos - timeToX(time));
 			
-			if(!KSketch_CanvasView.isPlayer && dx > KSketch_TickMark_Control.GRAB_THRESHOLD)
-				_tickmarkControl.grabTick(xPos);
-			
-			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
+			//check if position x is a tick
+			var xPosIsTick:Boolean = false;
+			if(_tickmarkControl._ticks)
 			{
-				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
-				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(toShowTime));
-				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
+				var i:int;
+				for( i=0; i<_tickmarkControl._ticks.length; i++)
+				{
+					var tempTick:Number = _tickmarkControl._ticks[i].x;
+					if(Math.round(xPos) >= (Math.round(tempTick) - SNAP_DOWN) && Math.round(xPos) <= (Math.round(tempTick) + SNAP_DOWN))
+					{
+						xPosIsTick = true;
+						nearTick = tempTick;
+						break;
+					}
+				}
+			}
+			
+			//check if slider is on top if xPosIsTick is true
+			if(xPosIsTick)
+			{
+				_tickmarkControl.grabTick(nearTick);
+				_autoSnap(nearTick);
+				nearTick = 0;
 			}
 			else
-			{
-				var timeX:Number = timeToX(time);
-				
-				if(Math.abs(xPos - timeX) >KSketch_TickMark_Control.GRAB_THRESHOLD)
-					time = xToTime(xPos);
-				
-				_magnifier.showTime(toTimeCode(time), timeToFrame(time),timeToX(time));
-				_magnifier.magnify(timeToX(time));
-			}
+				_autoSnap(xPos);
 			
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
-			stage.addEventListener(MouseEvent.MOUSE_UP, _touchEnd);
 			contentGroup.removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 			_magnifier.removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
-			
-			_longTouch = false;
-			_interactionTimer.addEventListener(TimerEvent.TIMER, _triggerLongTouch);
-			_interactionTimer.start();
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
+			stage.addEventListener(MouseEvent.MOUSE_UP, _touchEnd);
 		}
 		
 		/**
@@ -246,6 +261,14 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		protected function _touchMove(event:MouseEvent):void
 		{
+			//remove grabbed tick timer if it hasn't completed countdown when user enters move
+			if(grabbedTickTimer.currentCount == 0)
+			{
+				_longTouch = false;
+				grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _triggerLongTouch);
+				grabbedTickTimer.stop();
+			}
+			
 			//Only consider a move if a significant dx has been covered
 			if(Math.abs(event.stageX - _touchStage.x) < (pixelPerFrame*0.5))
 				return;
@@ -256,20 +279,38 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			
+			if(_tickmarkControl._ticks)
+			{
+				for(var i:int=0; i<_tickmarkControl._ticks.length; i++)
+				{
+					nearTick = _tickmarkControl._ticks[i].x;
+					if(Math.floor(xPos) >= (Math.round(nearTick) - SNAP_MOVE) && Math.floor(xPos) <= (Math.round(nearTick) + SNAP_MOVE))
+					{
+						isNearTick = true;
+						break;
+					}
+					else
+						isNearTick = false;
+				}
+			}
+			
 			//Rout interaction into the tick mark control if there is a grabbed tick
-			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
+			if(!KSketch_CanvasView.isPlayer && (_tickmarkControl.grabbedTick && _longTouch))
 			{
 				_tickmarkControl.move_markers(xPos);
-
-				var toShowTime:int = xToTime(_tickmarkControl.grabbedTick.x);
-				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(time));
-				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
+				_magnifier.magnify(timeToX(xToTime(xPos)));
+				_autoSnap(xPos);
+				
+				moveTick = true;
+			}
+			else if(isNearTick)
+			{
+				_autoSnap(nearTick);
+				isNearTick = false;
+				nearTick = 0;
 			}
 			else
-			{
-				time = xToTime(xPos); //Else just change the time
-				_magnifier.magnify(timeToX(time));
-			}
+				_autoSnap(xPos);
 		}
 		
 		/**
@@ -277,26 +318,22 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		protected function _touchEnd(event:MouseEvent):void
 		{
+			//remove grabbedTick timer if it hasn't complete countdown when user ends touch
+			if(grabbedTickTimer.currentCount == 0)
+			{
+				grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _triggerLongTouch);
+				grabbedTickTimer.stop();
+			}
+			
 			//Same, route the interaction to the tick mark control if there is a grabbed tick
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
 				_tickmarkControl.end_move_markers();
 				_magnifier.showTime(toTimeCode(time), timeToFrame(time),timeToX(time));
-			}
-			else
-			{	
-				var log:XML = <op/>;
-				var date:Date = new Date();
-				
-				log.@category = "Timeline";
-				log.@type = "Scroll";
-				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-				_KSketch.log.appendChild(log);
+				_autoSnap(timeToX(time));
 			}
 			
-			_magnifier.removeMagnification();
-			
-			if(_longTouch && !_substantialMovement)
+			if(_longTouch && !moveTick)
 			{
 				_keyMenu.open(contentGroup,true);
 				_keyMenu.x = _magnifier.x;
@@ -308,7 +345,11 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					_keyMenu.y = contentGroup.localToGlobal(new Point()).y
 			}
 			
-			_interactionTimer.stop();
+			//reset boolean properties
+			_magnifier.removeMagnification();
+			_longTouch = false;
+			moveTick = false;
+			isNearTick = false;
 			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);
@@ -319,8 +360,37 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		private function _triggerLongTouch(event:TimerEvent):void
 		{
 			_longTouch = true;
-			_interactionTimer.removeEventListener(TimerEvent.TIMER, _triggerLongTouch);
-			_interactionTimer.stop();
+			
+			_showMagnifier(event);
+			grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _triggerLongTouch);
+			grabbedTickTimer.stop();
+		}
+		
+		public function _showMagnifier(event:TimerEvent):void
+		{
+			
+			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
+			{
+				var toShowTime:Number = xToTime(_tickmarkControl.grabbedTick.x);
+				
+				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(toShowTime));
+				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
+			}
+			else
+			{
+				var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
+				var timeX:Number = timeToX(time);
+				if(Math.abs(xPos - timeX) >KSketch_TickMark_Control.GRAB_THRESHOLD)
+					time = xToTime(xPos);
+			}
+		}
+		
+		public function _autoSnap(xPos:Number):void
+		{
+			time = xToTime(xPos); //Else just change the time
+			
+			if(showMagnifier)
+				_magnifier.magnify(timeToX(time));
 		}
 		
 		/**
@@ -340,6 +410,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			_rewindToTime = time;
 			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_START));
+			
+			_KSketch.removeEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateWidget);
+			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateMovingWidget);
 		}
 		
 		/**
@@ -366,6 +439,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_timer.stop();
 			_isPlaying = false;
 			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_STOP));
+			_KSketch.removeEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateMovingWidget);
+			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateWidget);
 		}
 				
 		/**
@@ -390,7 +465,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		private function recordHandler(event:TimerEvent):void 
 		{
-			time = time + KSketch2.ANIMATION_INTERVAL;
+			if(!_isPlaying)
+				time = time + KSketch2.ANIMATION_INTERVAL;
 		}
 		
 		/**
@@ -400,20 +476,21 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		{
 			_timer.removeEventListener(TimerEvent.TIMER, recordHandler);
 			_timer.stop();
+			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_STOP));
 		}
 		
 		/**
 		 * Converts a time value to frame value
 		 */
-		public function timeToFrame(value:int):int
+		public function timeToFrame(value:Number):int
 		{
-			return int(Math.floor(value/KSketch2.ANIMATION_INTERVAL));
+			return value/KSketch2.ANIMATION_INTERVAL; //int(Math.floor(value/KSketch2.ANIMATION_INTERVAL));
 		}
 		
 		/**
 		 * Converts a time value to a x position;
 		 */
-		public function timeToX(value:int):Number
+		public function timeToX(value:Number):Number
 		{
 			return timeToFrame(value)/(_maxFrame*1.0) * backgroundFill.width;
 		}
@@ -421,10 +498,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		/**
 		 * Converts x to time based on this time control
 		 */
-		public function xToTime(value:Number):int
+		public function xToTime(value:Number):Number
 		{
-			var currentFrame:int = Math.floor(value/pixelPerFrame);
-			
+			var currentFrame:int = Math.round(value/pixelPerFrame);
 			return currentFrame * KSketch2.ANIMATION_INTERVAL;
 		}
 		

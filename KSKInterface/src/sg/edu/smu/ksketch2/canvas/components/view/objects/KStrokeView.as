@@ -47,7 +47,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			cacheAsBitmap = true;
 		}
 		
-		override public function eraseIfHit(xPoint:Number, yPoint:Number, time:int, op:KCompositeOperation):void
+		override public function eraseIfHit(xPoint:Number, yPoint:Number, time:Number, op:KCompositeOperation):void
 		{
 			if(hitTestPoint(xPoint, yPoint, true))
 				_object.visibilityControl.setVisibility(false, time, op);

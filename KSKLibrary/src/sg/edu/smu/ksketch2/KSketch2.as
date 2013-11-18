@@ -37,22 +37,12 @@ package sg.edu.smu.ksketch2
 		// # Fields #
 		// ##########
 		
-		/**
-		 * Study mode K(ey-frames).
-		 */
-		public static const STUDY_K:int = 0;
+		public static const STUDYMODE_K:int = 0;									// Version K value
+		public static const STUDYMODE_P:int = 1;									// Version P value
+		public static const STUDYMODE_KP:int = 2;									// Version KP value
+		public static const STUDYMODE_KP2:int = 3;										// Version KP2 value
 		
-		/**
-		 * Study mode P(erformance).
-		 */
-		public static const STUDY_P:int = 1;
-		
-		/**
-		 * Study mode P(erformance and)K(ey-frames).
-		 */
-		public static const STUDY_PK:int = 2;
-		
-		public static var studyMode:int = STUDY_PK;									// the study mode value
+		public static var studyMode:int = STUDYMODE_KP2;							// the study mode value
 		public static var discardTransitionTimings:Boolean = false;					// the discard transition timings state flag
 		public static var addInterpolationKeys:Boolean = false;						// the add interpolation keys state flag
 		public static var returnTranslationInterpolationToZero:Boolean = true;		// the return translation interpolation to zero state flag
@@ -100,16 +90,14 @@ package sg.edu.smu.ksketch2
 		/**
 		 * The animation interval.
 		 */
-		public static var ANIMATION_INTERVAL:Number = 40;
+		public static var ANIMATION_INTERVAL:Number = 62.5;//40;
 		
 		private var _groupingUtil:KGroupingUtil;			// the grouping utility
 		private var _sceneGraph:KSceneGraph;				// the scene graph
-		private var _time:int;								// the time
+		private var _time:Number;								// the time
 		
 		public var log:XML;									// the log
 		public var logStartTime:Number;						// the log's start time
-		
-		
 		
 		// ###############
 		// # Constructor #
@@ -177,26 +165,31 @@ package sg.edu.smu.ksketch2
 		public function beginSession():void
 		{
 			// log the session start
-			log = <session/>;
+			log = <KSketch/>;
 			
 			// log the time and date
 			var date:Date = new Date();
 			logStartTime = date.time;
 			log.@date = date.toString();
 			
+			
 			// log the study mode
 			switch(studyMode)
 			{	
-				case STUDY_K:
+				case STUDYMODE_K:
 					log.@mode = "K"
 					break;
-				case STUDY_P:
+				case STUDYMODE_P:
 					log.@mode = "P"
 					break;
-				case STUDY_PK:
-					log.@mode = "PK"
+				case STUDYMODE_KP:
+					log.@mode = "KP"
+					break;
+				case STUDYMODE_KP2:
+					log.@mode = "KP2"
 					break;
 			}
+			
 		}
 		
 		/**
@@ -249,7 +242,7 @@ package sg.edu.smu.ksketch2
 		 * 
 		 * @return The ksketch's current time.
 		 */
-		public function get time():int
+		public function get time():Number
 		{
 			return _time;
 		}
@@ -259,7 +252,7 @@ package sg.edu.smu.ksketch2
 		 * 
 		 * @param value The current time.
 		 */
-		public function set time(value:int):void
+		public function set time(value:Number):void
 		{
 			// initialize the time changed event
 			var timeChangedEvent:KTimeChangedEvent = new KTimeChangedEvent(KTimeChangedEvent.EVENT_TIME_CHANGED, _time, value);
@@ -298,7 +291,7 @@ package sg.edu.smu.ksketch2
 		 * @param op The corresponding composite operation.
 		 * @return The resultant stroke.
 		 */
-		public function object_Add_Stroke(points:Vector.<Point>, time:int, color:uint, thickness:Number, op:KCompositeOperation):KStroke
+		public function object_Add_Stroke(points:Vector.<Point>, time:Number, color:uint, thickness:Number, op:KCompositeOperation):KStroke
 		{
 			var newStroke:KStroke = new KStroke(_sceneGraph.nextHighestID, points, color, thickness);
 			_sceneGraph.registerObject(newStroke, op);
@@ -316,7 +309,7 @@ package sg.edu.smu.ksketch2
 		 * @param op The corresponding composite operation.
 		 * @return The resultant image.
 		 */
-		public function object_Add_Image(imgData:BitmapData, time:int, op:KCompositeOperation):KImage
+		public function object_Add_Image(imgData:BitmapData, time:Number, op:KCompositeOperation):KImage
 		{
 			var centerX:Number = (KSketch2.CANONICAL_WIDTH * scaleX)/2;
 			var centerY:Number = (KSketch2.CANONICAL_HEIGHT * scaleY)/2;
@@ -399,7 +392,7 @@ package sg.edu.smu.ksketch2
 		 * @param op The corresponding composite operation.
 		 * @return The list of ungrouped objects.
 		 */
-		public function hierarchy_Ungroup(toUngroupList:KModelObjectList, ungroupTime:int, op:KCompositeOperation):KModelObjectList
+		public function hierarchy_Ungroup(toUngroupList:KModelObjectList, ungroupTime:Number, op:KCompositeOperation):KModelObjectList
 		{
 			// get the list of ungrouped objects
 			var result:KModelObjectList = _groupingUtil.ungroup(toUngroupList, ungroupTime, _sceneGraph, op);
@@ -482,7 +475,7 @@ package sg.edu.smu.ksketch2
 		 * @param newTime The new time.
 		 * @param op The corresponding composite operation.
 		 */
-		public function editKeyTime(object:KObject, key:IKeyFrame, newTime:int, op:KCompositeOperation):void
+		public function editKeyTime(object:KObject, key:IKeyFrame, newTime:Number, op:KCompositeOperation):void
 		{ 
 			// case: the key frame's time differs from the new time
 			// change the key frame's time

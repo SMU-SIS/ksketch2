@@ -11,7 +11,7 @@
 <s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
-		 addedToStage="{buttonState = SHOW_PLAY}">
+		 initialize="{buttonState = SHOW_PLAY}">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
@@ -41,13 +41,12 @@
 			private const SHOW_PAUSE:int = 1;
 			
 			
-			public function init(timeControl:KSketch_TimeControl, interactionControl:KInteractionControl, interceptor:UIComponent
-								, KSketchInstance:KSketch2, menu:SkinnablePopUpContainer):void
+			public function init(timeControl:KSketch_TimeControl, interactionControl:KInteractionControl,
+								KSketchInstance:KSketch2, menu:SkinnablePopUpContainer):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
-				_interceptor = interceptor;
 				_menu = menu;
 				
 				timeControl.addEventListener(KSketch_TimeControl.PLAY_START, _handlePlayPause);
@@ -66,20 +65,13 @@
 			private function _handlePlayPause(event:Event):void
 			{
 				var app:Application = FlexGlobals.topLevelApplication as Application;
-				_interceptor.graphics.clear();
+				//_interceptor.graphics.clear();
 				
 				if(event.type == KSketch_TimeControl.PLAY_START)
 				{
 					buttonState = SHOW_PAUSE;
 					_oldSelection =_interactionControl.selection;
-					_interactionControl.selection = null;
-					_interceptor.visible = true;
-					
-					var playBounds:Rectangle = getBounds(app);
-					_interceptor.graphics.beginFill(0x000000);
-					_interceptor.graphics.drawRect(0,0, app.width, app.height);
-					_interceptor.graphics.drawRect(playBounds.x, playBounds.y, playBounds.width, playBounds.height);
-					_interceptor.graphics.endFill();
+					_interactionControl.selection = null; 
 					
 					if(_menu.isOpen)
 					{
@@ -87,33 +79,14 @@
 						_wasMenuOpen = true;
 					}
 					else
-						_wasMenuOpen = false;
-					
-					var log:XML = <op/>;
-					var date:Date = new Date();
-					
-					log.@category = "Timeline";
-					log.@type = "Play";
-					log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-					_KSketch.log.appendChild(log);
+						_wasMenuOpen = false;		
 				}
 				else
 				{
 					buttonState = SHOW_PLAY;	// IF IT IS PAUSING,THEN SHOW PLAY!
-					_interactionControl.selection = _oldSelection;
-					_oldSelection = null;
-					_interceptor.visible = false;
 					
 					if(_wasMenuOpen)
 						_menu.open(app);
-					
-					var log2:XML = <op/>;
-					var date2:Date = new Date();
-					
-					log2.@category = "Timeline";
-					log2.@type = "Pause";
-					log2.@elapsedTime = KSketch_TimeControl.toTimeCode(date2.time - _KSketch.logStartTime);
-					_KSketch.log.appendChild(log2);
 				}
 			}
 			
@@ -128,9 +101,9 @@
 				else
 					textureControl.source = KSketchAssets.texture_pause;
 				
-				
 				(skin as KSketch_Canvas_Button_Skin).upColor = KSketchStyles.CANVAS_BUTTON_ACTIVATED;
 			}
 		]]>
 	</fx:Script>
 </s:Button>
+

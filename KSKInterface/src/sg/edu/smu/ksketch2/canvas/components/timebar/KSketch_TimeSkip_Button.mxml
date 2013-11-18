@@ -11,7 +11,7 @@
 <s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin"
-		 addedToStage="_initSkin()">
+		 initialize="_initSkin()">
 	<fx:Script>
 		<![CDATA[
 			import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Canvas_Button_Skin;
@@ -56,7 +56,7 @@
 				var i:int;
 				var length:int = _timeControl.timings.length;
 				
-				var timeList:Vector.<int> = new Vector.<int>();
+				var timeList:Vector.<Number> = new Vector.<Number>();
 				
 				var log:XML = <op/>;
 				var date:Date = new Date();
@@ -66,6 +66,7 @@
 				for(i = 0; i<length; i++)
 				{
 					timeList.push(_timeControl.timings[i]);
+					trace("Timing: " + _timeControl.timings[i]);
 				}
 				
 				timeList.unshift(0);

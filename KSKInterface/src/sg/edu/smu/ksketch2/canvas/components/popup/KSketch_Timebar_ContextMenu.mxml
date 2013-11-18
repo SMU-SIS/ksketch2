@@ -9,11 +9,11 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer
-			xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		   xmlns:s="library://ns.adobe.com/flex/spark" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
-		   backgroundAlpha="0"
-		   creationComplete="_initButtons()"
-		   >
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+	backgroundAlpha="0"
+	initialize="_initButtons()"
+	>
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
@@ -25,65 +25,75 @@
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
-			import sg.edu.smu.ksketch2.events.KSketchEvent;			
+			import sg.edu.smu.ksketch2.events.KSketchEvent;
+			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+			import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
+			import sg.edu.smu.ksketch2.utils.KSelection;	
+			
+			public static const STUDYMODE_K:int = 0;						// Version K value
+			public static const STUDYMODE_P:int = 1;						// Version P value
+			public static const STUDYMODE_KP:int = 2;						// Version KP value
+			public static const STUDYMODE_KP2:int = 3;						// Version KP2 value
+			public static var studyMode: int = STUDYMODE_KP2;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
+			private var _timeControl:KSketch_TimeControl;
+			
+			
 			
 			[Bindable]
 			private var _onTop:Boolean = true;
 			
-			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, timeControl:KSketch_TimeControl):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
+				_timeControl = timeControl;
 			}
 			
 			private function _updateInsertKey():void
 			{
-				if(!_interactionControl.selection)
-				{	
-					insertButton.enabled = false;
-					return;
-				}
-				
-				if(_interactionControl.selection.objects.length() != 1)
-				{
-					insertButton.enabled = false;
-					return;
-				}
-				
-				if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canInsertKey(_KSketch.time))
-				{
-					insertButton.enabled = true;
-					return;
-				}
-				
 				insertButton.enabled = false;
+				
+				//if an object is selected
+				if(_interactionControl.selection)
+				{
+					//check if object can insert a key at that time
+					//if yes, then make sure it is not in P mode
+					if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canInsertKeyFrame(_KSketch.time))
+					{
+						//only enable button if the study mode is K,KP or KP2
+						if(studyMode != STUDYMODE_P)
+							insertButton.enabled = true;
+					}
+					
+				}
+				//if no object is selected
+				else
+				{
+					//check if there are any objects on the canvas
+					//do not enable the button if there are no objects found
+					if(_KSketch.root.children.length() != 0)
+					{	
+						//only enable button if the study mode is K, KP or KP2
+						if(studyMode != STUDYMODE_P)
+							insertButton.enabled = true;
+					}
+				}
 			}
 			
 			private function _updateRemoveKey():void
 			{
-				if(!_interactionControl.selection)
-				{	
-					removeButton.enabled = false;
-					return;
-				}
-				
-				if(_interactionControl.selection.objects.length() != 1)
-				{
-					removeButton.enabled = false;
-					return;
-				}
-				
-				if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canRemoveKey(_KSketch.time))
-				{
-					removeButton.enabled = true;
-					return;
-				}
-				
 				removeButton.enabled = false;
+				
+				if(_interactionControl.selection)
+				{
+					if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canRemoveKey(_KSketch.time))
+						removeButton.enabled = true;
+				}
 			}
 			
 			private function _updateClearKeys():void
@@ -119,20 +129,23 @@
 				
 				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down);
 				clearButton.initSkin();
+				
+				leftFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.LEFT);
+				rightFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.RIGHT);
 			}
 			
 			public function set position(value:int):void
 			{
 				if(value == KSketch_TimeControl.BAR_TOP)
 				{
-					arrowHead.visible = true;
+					arrowHead.visible = false;
 					arrowHeadBottom.visible = false;
 					_onTop = true;
 				}
 				else
 				{
 					arrowHead.visible = false;
-					arrowHeadBottom.visible = true;
+					arrowHeadBottom.visible = false;
 					_onTop = false;
 				}
 			}
@@ -163,20 +176,54 @@
 			private function _insertKey(event:MouseEvent = null):void
 			{
 				_interactionControl.begin_interaction_operation();
-				_interactionControl.selection.objects.getObjectAt(0).transformInterface.insertBlankKeyFrame(_KSketch.time, _interactionControl.currentInteraction);
+				
+				var activeKey:KSpatialKeyFrame;
+				
+				//if an object is selected
+				if(_interactionControl.selection)
+				{
+					//check if the object has an existing key
+					activeKey = _interactionControl.selection.objects.getObjectAt(0).transformInterface.getActiveKey(_KSketch.time) as KSpatialKeyFrame;
+					
+					if(studyMode == STUDYMODE_KP2)
+					{
+						if(activeKey != null && activeKey.time == _KSketch.time) //the key is a controlpoint, so change the passthrough property to be a keyframe
+							_interactionControl.selection.objects.getObjectAt(0).transformInterface.changeToKeyFrame(_KSketch.time, _interactionControl.currentInteraction);
+						
+						else //there is no active key, so insert blank keyframe at that time for the object
+							_interactionControl.selection.objects.getObjectAt(0).transformInterface.insertBlankKeyFrame(_KSketch.time, _interactionControl.currentInteraction, true);
+					}
+					else
+						_interactionControl.selection.objects.getObjectAt(0).transformInterface.insertBlankKeyFrame(_KSketch.time, _interactionControl.currentInteraction, true);	
+				}
+				//else if no object is selected, grab all the objects on canvas
+				else
+				{
+					var objectList:KModelObjectList = _KSketch.root.children;
+					for(var i:int=0; i<objectList.length(); i++)
+					{
+						var selectedList:KModelObjectList = new KModelObjectList();
+						selectedList.add(objectList.getObjectAt(i));
+						_interactionControl.selection = new KSelection(selectedList);
+						activeKey = _interactionControl.selection.objects.getObjectAt(0).transformInterface.getActiveKey(_KSketch.time) as KSpatialKeyFrame;
+						
+						if(studyMode == STUDYMODE_KP2)
+						{
+							if(activeKey != null && activeKey.time == _KSketch.time) //the key is a controlpoint, so change the passthrough property to be a keyframe
+								_interactionControl.selection.objects.getObjectAt(0).transformInterface.changeToKeyFrame(_KSketch.time,_interactionControl.currentInteraction);
+							
+							else //there is no active key, so insert blank keyframe at that time for the object
+								_interactionControl.selection.objects.getObjectAt(0).transformInterface.insertBlankKeyFrame(_KSketch.time, _interactionControl.currentInteraction, true);
+						}
+						else
+							_interactionControl.selection.objects.getObjectAt(0).transformInterface.insertBlankKeyFrame(_KSketch.time, _interactionControl.currentInteraction, true);
+						
+						_interactionControl.selection = null;
+					}
+				}
+				
 				_interactionControl.end_interaction_operation(null,_interactionControl.selection);
-				
-				var log:XML = <op/>;
-				var date:Date = new Date();
-				
-				log.@category = "Context";
-				log.@type = "Insert Key";
-				log.@triggeredTime = KSketch_TimeControl.toTimeCode(_KSketch.time);
-				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-				_KSketch.log.appendChild(log);
-				
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
-				
 				_updateInsertKey();
 				close();
 			}
@@ -184,18 +231,8 @@
 			private function _removeKey(event:MouseEvent = null):void
 			{
 				_interactionControl.begin_interaction_operation();
-				_interactionControl.selection.objects.getObjectAt(0).transformInterface.removeKeyFrame(_KSketch.time,
-																						_interactionControl.currentInteraction);
+				_interactionControl.selection.objects.getObjectAt(0).transformInterface.removeKeyFrame(_KSketch.time, _interactionControl.currentInteraction);
 				_interactionControl.end_interaction_operation(null,_interactionControl.selection);
-				
-				var log:XML = <op/>;
-				var date:Date = new Date();
-				
-				log.@category = "Context";
-				log.@type = "Insert Key";
-				log.@triggeredTime = KSketch_TimeControl.toTimeCode(_KSketch.time);
-				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-				_KSketch.log.appendChild(log);
 				
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 				
@@ -214,15 +251,6 @@
 				_interactionControl.begin_interaction_operation();
 				_interactionControl.selection.objects.getObjectAt(0).transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
 				_interactionControl.end_interaction_operation(null, _interactionControl.selection);
-				
-				var log:XML = <op/>;
-				var date:Date = new Date();
-				
-				log.@category = "Context";
-				log.@type = "Clear Future Keys";
-				log.@triggeredTime = KSketch_TimeControl.toTimeCode(_KSketch.time);
-				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-				_KSketch.log.appendChild(log);
 				
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 				close();
@@ -269,6 +297,11 @@
 												paddingTop="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
 												paddingBottom="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"/>
 						</s:layout>
+						<buttons:KSketch_Frame_Button
+							id="leftFrame"
+							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							/>
 						<buttons:KSketch_Button
 							id="insertButton"
 							click="_insertKey(event)"
@@ -284,6 +317,11 @@
 						<buttons:KSketch_Button
 							id="clearButton"
 							click="_clearKeys(event)"
+							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							/>
+						<buttons:KSketch_Frame_Button
+							id="rightFrame"
 							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 							/>

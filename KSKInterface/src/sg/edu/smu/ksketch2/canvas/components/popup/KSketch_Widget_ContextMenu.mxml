@@ -11,7 +11,9 @@
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0"
 		 xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
-		 creationComplete="_initButtons()">
+		 initialize="_initButtons()"
+		 >
+	<!--initialize="_initButtons()" add this in to the top to ENABLE WIDGET-->
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;

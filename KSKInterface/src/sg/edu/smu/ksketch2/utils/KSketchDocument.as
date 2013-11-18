@@ -9,54 +9,57 @@
 package sg.edu.smu.ksketch2.utils
 {
 	/**
-	 * The KSketchDocument class serves as the concrete class for handling
-	 * sketch documents in K-Sketch.
-	 */
+ 	 * The KSketchDocument class serves as the concrete class for handling
+ 	 * sketch documents in K-Sketch.
+ 	 */
 	[Bindable]
 	public class KSketchDocument
 	{
-		/**
-		 * The sketch document's XML object.
-		 */
 		public var xml:XML;
-		
-		/**
-		 * The sketch document's name.
-		 */
 		public var name:String;
-		
-		/**
-		 * The sketch document's ID.
-		 */
 		public var id:String;
-		
-		/**
-		 * The sketch document's last edited time.
-		 */
-		public var lastEdited:Number
-		
-		/**
-		 * The sketch document's description.
-		 */
+		public var lastEdited:Date
 		public var description:String
+		public var originalName:String
+		public var originalVersion:int;
+		public var originalSketch:int;
+		public var version:String;
 		
 		/**
-		 * The main constructor of the KSketchDocument class. Sets the
-		 * sketch document's various information.
-		 * 
-		 * @param name The target name.
-		 * @param xml The target XML object.
-		 * @param id The target ID.
-		 * @param date The target date.
-		 * @param description The target description.
-		 */
-		public function KSketchDocument(name:String, xml:XML, id:String,  date:Number = 0, description:String = "")
+ 		 * The main constructor of the KSketchDocument class. Sets the
+ 		 * sketch document's various information.
+ 		 * 
+ 		 * @param name The target name.
+ 		 * @param xml The target XML object.
+ 		 * @param id The target ID.
+ 		 * @param date The target date.
+ 		 * @param description The target description.
+ 		 */
+		public function KSketchDocument(name:String, xml:XML, id:String,  date:Date, originalName:String, originalVersion:int, description:String = "")
 		{
-			this.xml = xml;
-			this.name = name;
-			this.id = id;
-			this.lastEdited = date;
-			this.description = description;
-		}		
+			this.xml = xml;						//The model itself, the <scene> tag
+			this.name = name;					//The title of the document, user defined
+			this.id = id;						//The server generated UID for this KSketch document instance
+			this.lastEdited = date;				//The last time this document is changed/saved
+			this.description = description;		//A short description of this document, user defined
+			
+			if(originalName || originalName != "")
+				this.originalName = originalName;	
+			else
+				this.originalName = name;
+			
+			if(originalVersion || originalVersion > 0)
+			{
+				this.originalVersion = originalVersion;
+				this.version = "" + originalVersion + 1;
+				this.originalSketch = originalVersion + 1; 
+			}
+			else
+			{
+				this.originalVersion = -1;
+				this.version = "";
+				this.originalSketch = -1;
+			}
+		}
 	}
 }

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:HTTPService id="httpService"
+					   useProxy="false"  
+					   method="POST"
+					   resultFormat="text" 
+					   >
+		</s:HTTPService>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			
+			import mx.formatters.DateFormatter;
+			
+			import air.net.URLMonitor;
+			
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchWebLinks;
+			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
+			
+			public static var isSaved:Boolean = false;
+			public static var returnToHome:Boolean = false;
+			
+			private var _homeView:KSketch_HomeView;
+			private var _canvasView:KSketch_CanvasView;
+			private var _menu:KSketch_PopUp_Menu;
+			private var _options:KSketch_Options;
+			private var monitor:URLMonitor;
+			private var _isConnected:Boolean;
+			
+			protected var userData:Object = new Object();
+			protected var url:String = "http://ksketchweb.appspot.com/post/sketchxml";
+			
+			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, options:KSketch_Options):void
+			{
+				_canvasView = canvasView;
+				_menu = menu;
+				_options = options;
+				
+				//check for network connection
+				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				monitor.addEventListener(StatusEvent.STATUS, isConnected);
+				monitor.start();
+			}
+			
+			private function isConnected(event:StatusEvent):void
+			{
+				if(monitor.available)
+					_isConnected = true;
+				else
+					_isConnected = false;
+				
+				monitor.stop();
+				monitor.removeEventListener(StatusEvent.STATUS, isConnected);
+			}
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				super.open(owner, modal);
+				userData = _canvasView.saveSketch();
+				
+				var length:int = 1;
+				if(KSketch_HomeView._dup_cachedSketchDocs)
+				{
+					var userSketchArr:Array = KSketch_HomeView._dup_cachedSketchDocs.split("%");
+					length = userSketchArr.length + 1;
+				}
+				sketchName.text = "My Sketch " + length;
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				//super.close(commit,data);
+				//(FlexGlobals.topLevelApplication as Application).setFocus();
+				
+				if(!returnToHome)
+				{
+					trace("close new canvas");
+					super.close(commit,data);
+					_canvasView._interactionControl.reset();
+				}
+				else
+				{
+					trace("close back to home");
+					super.close(commit,data);
+					_menu._exit();
+				}
+					
+					
+			}
+			
+			private function save():void
+			{
+				var objUserSketch:Object = new Object();
+				var objSketchDoc:Object = new Object();
+				
+				//if connected to network and has logged in, then save to web. Else save to cache
+				if(_isConnected && KSketch_LoginView._isLoggedIn)
+				{
+					objSketchDoc["fileData"] = com.adobe.serialization.json.JSON.encode(prepareSketchDoc());
+					httpService.url = url;
+					httpService.send(objSketchDoc);
+				}
+				else
+				{
+					trace("in process of saving sketch..."); 
+					objUserSketch.entities = prepareUserSketch();
+					
+					if(KSketch_HomeView._dup_cachedUserSketch)
+						KSketch_HomeView._dup_cachedUserSketch += "%" + com.adobe.serialization.json.JSON.encode(objUserSketch.entities);
+					else
+						KSketch_HomeView._dup_cachedUserSketch = com.adobe.serialization.json.JSON.encode(objUserSketch.entities);
+					
+					objSketchDoc.data = prepareSketchDoc();
+					
+					if(KSketch_HomeView._dup_cachedSketchDocs)
+						KSketch_HomeView._dup_cachedSketchDocs += "%" + com.adobe.serialization.json.JSON.encode(objSketchDoc);
+					else
+						KSketch_HomeView._dup_cachedSketchDocs = com.adobe.serialization.json.JSON.encode(objSketchDoc);
+					
+					KSketch_HomeView.writeDataToCache();
+				}
+				
+				isSaved = true;
+				
+				close();	
+			}
+			
+			private function prepareUserSketch():Object
+			{
+				var data:Object = new Object();
+				data.data = new Object();
+				data.id = "";
+				
+				var currentDateTime:Date = new Date();
+				var formatter:DateFormatter = new DateFormatter();
+				formatter.formatString = "MMM";
+				var currentMonth:String = new String(formatter.format(currentDateTime));
+				var dateString:String = currentDateTime.getDate().toString() + " " + currentMonth + " " + currentDateTime.getFullYear().toString();
+				var timeString:String = currentDateTime.getHours().toString() + ":" + currentDateTime.getMinutes().toString() + ":" + currentDateTime.getSeconds().toString();
+				
+				data.modified = dateString + " " + timeString;
+				data.created = dateString + " " + timeString;
+				
+				data.data.comment = 0;
+				data.data.thumbnailData = userData.thumbnailData;
+				data.data.sketchId = "";
+				data.data.originalVersion = userData.kSketchDocument.originalVersion;
+				data.data.p_edit = true;
+				data.data.changeDescription = "";
+				data.data.fileName = sketchName.text;
+				data.data.like = 0;
+				
+				if(userData.kSketchDocument.originalName == "")
+					data.data.originalName = sketchName.text;
+				else
+					data.data.originalName = userData.kSketchDocument.originalName;
+				
+				data.data.appver = 1.0;
+				data.data.version = 1;
+				data.data.p_view = true;
+				data.data.owner = userData.kUser.u_realname; 
+				data.data.originalSketch =  userData.kSketchDocument.originalSketch;
+				data.data.p_comment = true;
+				data.data.owner_id = userData.kUser.id;
+				trace("save owner id: " + data.owner_id);
+				return data;
+			}
+			
+			//these are the things that you need to pass to Python Backend to add in a new sketch
+			protected function prepareSketchDoc():Object
+			{
+				var data:Object = new Object();
+				//data.group = [];
+				data.group_permissions = [];
+				data.thumbnailData = userData.thumbnailData;
+				data.sketchId = ""; 
+				data.p_edit = true;
+				data.changeDescription = "";
+				data.fileName = sketchName.text;
+				
+				data.originalVersion = userData.kSketchDocument.originalVersion;
+				data.originalSketch = userData.kSketchDocument.originalSketch;
+				
+				if(userData.kSketchDocument.originalName == "")
+					data.originalName = sketchName.text;
+				else
+					data.originalName = userData.kSketchDocument.originalName;
+				
+				data.appver = 1.0;
+				data.version = userData.kSketchDocument.version;
+				data.p_view = 1;
+				data.fileData = userData.kSketchDocument.xml.toXMLString();
+				data.p_comment = true;
+				data.owner = userData.kUser.u_realname;
+				data.owner_id = userData.kUser.id;
+				trace("save owner id: " + data.owner_id);
+				return data;
+				
+			}
+		]]>
+	</fx:Script>
+	<s:filters>
+		<s:DropShadowFilter 
+			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
+			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
+			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
+			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+	</s:filters>
+	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+		<s:fill>
+			<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+		</s:fill>
+	</s:Rect>
+	<s:Group>
+		<s:layout>
+			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+		</s:layout>
+		<s:Label text="Save My Sketch" fontSize="26"/>
+		
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout paddingLeft="10"/>
+			</s:layout>
+			<s:Label text="Sketch Name" fontSize="18"/>
+			<s:TextArea id="sketchName"/>
+		</s:Group>
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+			</s:layout>
+			<s:Button label="Save" click="save()" fontSize="14"/>
+			<s:Button label="Discard" click="close()" fontSize="14"/>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

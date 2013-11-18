@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					currentState="normal"
+					>
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="myState"/>
+		<s:State name="selected"/>
+	</s:states>
+	
+	<s:HGroup id="bc" horizontalAlign="center" height="120" verticalAlign="middle" paddingLeft="15" paddingRight="15">
+		<s:Image id="imgData"/>
+		
+		<s:VGroup>
+			<s:Label id="sketchName"/>
+			<s:Label id="sketchDate"/>
+		</s:VGroup>
+	</s:HGroup>
+	<s:Graphic width="100%" id="border"/>
+	<s:Group visible="false">
+		<s:Label id="sketchId"/>
+		<s:Label id="sketchVersion"/>
+	</s:Group>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.utils.Base64Decoder;
+			
+			private var _myIcon:Bitmap;
+			
+			public static var selectedSketchName:String;
+			public static var selectedSketchId:String;
+			public static var selectedVersion:String;
+			
+			protected function state1_enterStateHandler(event:FlexEvent):void
+			{
+				bc.setStyle("backgroundColor",0xff0018);
+			}
+			
+			override public function set data(value:Object):void
+			{
+				if(value.image)
+				{
+					super.data = value
+					
+					//set name and date properties
+					sketchName.text = value.name;
+					sketchName.setStyle("fontSize",20);
+					sketchDate.text = value.date;
+					sketchId.text = value.sketchId;
+					sketchVersion.text = value.version;
+					
+					//drawing border for each row
+					border.graphics.lineStyle(2, 0x990000, .75);
+					border.graphics.beginFill(0x00FF00);
+					border.graphics.moveTo(0, 0);
+					border.graphics.lineTo(1000, 0);
+					
+					//decode for Image
+					var decoder:Base64Decoder = new Base64Decoder();
+					decoder.decode(value.image);
+					var bytes:ByteArray = decoder.toByteArray();
+					
+					var loader:Loader = new Loader();
+					loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
+					loader.loadBytes(bytes);
+				}
+			}
+			
+			private function onComplete(event:Event):void
+			{
+				_myIcon = new Bitmap();
+				_myIcon.bitmapData = Bitmap(LoaderInfo(event.target).content).bitmapData;
+				imgData.source = _myIcon;
+			}
+			
+			override public function set selected(value:Boolean):void
+			{
+				if (value == selected)
+					return;
+				
+				super.selected = value;
+				
+				if (selected)
+				{
+					selectedSketchName = sketchName.text;
+					selectedSketchId = sketchId.text; 
+					selectedVersion = sketchVersion.text; 
+				}
+			}
+		]]>
+	</fx:Script>
+	
+</s:ItemRenderer>

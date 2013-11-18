@@ -246,5 +246,9 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_Texture_Center_Down.png")] 
 		[Bindable] 
 		public static var texture_center_down:Class;
+		
+		[Embed("assets/Logo_KSketch.png")] 
+		[Bindable] 
+		public static var texture_logo:Class;
 	}
 }

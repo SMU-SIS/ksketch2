@@ -19,11 +19,11 @@ package sg.edu.smu.ksketch2.canvas
 		/**
 		 * Shared object ID status.
 		 */
-		public static const SHARED_OBJECT_ID:String = "KSketch_Pref";
+		public static const SHARED_OBJECT_ID:String = "KSketch_Pref"; 
 		
 		/**
-		 * Left position status.
-		 */
+ 		 * Left position status.
+ 		 */
 		public static const POS_LEFT:String = "LEFT";
 		
 		/**
@@ -62,10 +62,10 @@ package sg.edu.smu.ksketch2.canvas
 		public static const NOT_AUTO:String = "NOT AUTO";
 		
 		/**
-		 * Gets the shared object.
-		 * 
-		 * @return The shared object.
-		 */
+ 		 * Gets the shared object.
+ 		 * 
+ 		 * @return The shared object.
+ 		 */
 		public static function getSharedObject():SharedObject
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
@@ -73,10 +73,10 @@ package sg.edu.smu.ksketch2.canvas
 		}
 		
 		/**
-		 * Gets the time bar position.
-		 * 
-		 * @return The time bar position
-		 */
+ 		 * Gets the time bar position.
+ 		 * 
+ 		 * @return The time bar position
+ 		 */
 		public static function get timebarPosition():String
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
@@ -88,7 +88,7 @@ package sg.edu.smu.ksketch2.canvas
 		}
 		
 		/**
-		 * Sets the time bar position.
+ 		 * Sets the time bar position.
 		 * 
 		 * @param value The target time bar position.
 		 */
@@ -102,7 +102,7 @@ package sg.edu.smu.ksketch2.canvas
 		/**
 		 * Gets the menu position.
 		 * 
-		 * @return The menu position.
+		 * @return The  menu position.
 		 */
 		public static function get menuPosition():String
 		{
@@ -110,7 +110,7 @@ package sg.edu.smu.ksketch2.canvas
 			if(prefs.data.menuPos)
 				return prefs.data.menuPos;
 			else
-				return POS_RIGHT;
+				return POS_TOP;
 		}
 		
 		/**
@@ -126,10 +126,10 @@ package sg.edu.smu.ksketch2.canvas
 		}
 		
 		/**
-		 * Gets the menu open value.
-		 * 
-		 * @return The menu open value.
-		 */
+ 		 * Gets the menu open value.
+ 		 * 
+ 		 * @return The  menu open value.
+ 		 */
 		public static function get menuOpen():String
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
@@ -140,10 +140,10 @@ package sg.edu.smu.ksketch2.canvas
 		}
 		
 		/**
-		 * Sets the menu open value.
-		 * 
-		 * @param value The target menu open value.
-		 */
+ 		 * Sets the menu open value.
+ 		 * 
+ 		 * @param value The target menu open value.
+ 		 */
 		public static function set menuOpen(value:String):void
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
@@ -152,10 +152,10 @@ package sg.edu.smu.ksketch2.canvas
 		}
 		
 		/**
-		 * Gets the auto insert value.
-		 * 
-		 * @return The auto insert value.
-		 */
+ 		 * Gets the auto insert value.
+ 		 * 
+ 		 * @return The auto insert value.
+ 		 */
 		public static function get autoInsert():String
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
@@ -166,10 +166,10 @@ package sg.edu.smu.ksketch2.canvas
 		}
 		
 		/**
-		 * Sets the auto insert value.
-		 * 
-		 * @param value The target auto insert value.
-		 */
+  		 * Sets the auto insert value.
+ 		 * 
+ 		 * @param value The target auto insert value.
+ 		 */
 		public static function set autoInsert(value:String):void
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);

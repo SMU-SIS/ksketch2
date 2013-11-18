@@ -18,18 +18,23 @@
 			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+			import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 			import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
+			public var studyMode:int;
 			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu):void
 			{
 				_canvasView = canvasView;
 				_menu = menu;
+				
+				//set the studyMode to default
+				studyMode = KSingleReferenceFrameOperator.studyMode;
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
@@ -39,10 +44,10 @@
 				switch(KSketch_CanvasView_Preferences.menuOpen)
 				{
 					case KSketch_CanvasView_Preferences.OPEN:
-						menuOpen.selected = true;
+						menuOpen.selected = false;
 						break;
 					default:
-						menuOpen.selected = false;
+						menuOpen.selected = true;
 				}
 				
 				switch(KSketch_CanvasView_Preferences.autoInsert)
@@ -59,22 +64,22 @@
 			{
 				switch(KSketch_CanvasView_Preferences.timebarPosition)
 				{
-					case KSketch_CanvasView_Preferences.POS_BOTTOM:
-						_timebarBottom();
+					case KSketch_CanvasView_Preferences.POS_TOP:
+						_timebarTop();
 						break;
 					default:
-						_timebarTop();
+						_timebarBottom();
 				}
 				
 				switch(KSketch_CanvasView_Preferences.menuOpen)
 				{
 					case KSketch_CanvasView_Preferences.OPEN:
-						menuOpen.selected = true;
-						_menuOpen(true);
-						break;
-					default:
 						menuOpen.selected = false;
 						_menuOpen(false);
+						break;
+					default:
+						menuOpen.selected = true;
+						_menuOpen(true);
 				}
 
 				switch(KSketch_CanvasView_Preferences.menuPosition)
@@ -82,14 +87,15 @@
 					case KSketch_CanvasView_Preferences.POS_LEFT:
 						_menuLeft();
 						break;
-					case KSketch_CanvasView_Preferences.POS_TOP:
-						_menuTop();
+					case KSketch_CanvasView_Preferences.POS_RIGHT:
+						_menuRight();
 						break;
 					case KSketch_CanvasView_Preferences.POS_BOTTOM:
 						_menuBottom();
 						break;
+					case KSketch_CanvasView_Preferences.POS_TOP:
 					default:
-						_menuRight();
+						_menuTop();
 				}
 				
 				switch(KSketch_CanvasView_Preferences.autoInsert)
@@ -175,6 +181,14 @@
 				}
 			}
 			
+			private function _setStudy(value:int):void
+			{
+				KSingleReferenceFrameOperator.studyMode = value;
+				KSketch_Timebar_ContextMenu.studyMode = value;
+				KKeyFrame.studyMode = value;
+				studyMode = value;
+			}
+			
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
 				super.close(commit, data);
@@ -226,6 +240,21 @@
 				<s:Button label="Bottom" click="_menuBottom()" fontSize="14"/>
 				<s:Button label="Left" click="_menuLeft()" fontSize="14"/>
 				<s:Button label="Right" click="_menuRight()" fontSize="14"/>
+			</s:Group>
+		</s:Group>
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout paddingLeft="10"/>
+			</s:layout>
+			<s:Label text="Study Mode" fontSize="18"/>
+			<s:Group>
+				<s:layout>
+					<s:HorizontalLayout/>
+				</s:layout>
+				<s:RadioButton label="K" click="_setStudy(0)" fontSize="14"/>
+				<s:RadioButton label="P" click="_setStudy(1)" fontSize="14"/>
+				<s:RadioButton label="KP" click="_setStudy(2)" fontSize="14"/>
+				<s:RadioButton label="KP2" click="_setStudy(3)" fontSize="14"/>
 			</s:Group>
 		</s:Group>
 		<s:Group>

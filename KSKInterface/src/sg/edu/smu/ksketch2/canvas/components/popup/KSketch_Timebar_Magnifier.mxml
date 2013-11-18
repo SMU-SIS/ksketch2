@@ -23,7 +23,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			
 			private const ORIGIN:Point = new Point();
-
+			
 			private var _timeControlOrigin:Point;
 			private var _referenceComponent:UIComponent;
 			private var _timeControl:KSketch_TimeControl;
@@ -45,7 +45,7 @@
 				_magnifiedImage = new Image();
 				_magnifiedImage.scaleX = KSketchStyles.MAGNIFIER_SCALE;
 				_magnifiedImage.scaleY = KSketchStyles.MAGNIFIER_SCALE;
-
+				
 				_sourceRect = new Rectangle();
 				
 				//This listener will help the magnifier auto manage its own vertical position
@@ -63,85 +63,66 @@
 				//Limits are in Stage Y coordinate system.
 				var topLimit:Number = _referenceComponent.localToGlobal(ORIGIN).y;
 				var bottomLimit:Number = topLimit+_referenceComponent.height;
-
+				
 				//Find the top left hand corner of the time control component
 				_timeControlOrigin = _timeControl.localToGlobal(ORIGIN);
-
-				var appBounds:Rectangle;
-				var triangleHeight:Number;
-				var triangularVertices:Vector.<Number> = new Vector.<Number>();
 				
+				var appBounds:Rectangle;
 				if(_timeControl.position == KSketch_TimeControl.BAR_TOP)
 				{
 					//Place this popup at top, below the time bar
 					y = topLimit + KSketchStyles.MENU_GAP;	
 					
-					//Compute the arrow values and draw the time indicators
 					appBounds = magContents.getBounds(FlexGlobals.topLevelApplication as Application);
-					triangleHeight = _timeControl.timeControlContents.getBounds(FlexGlobals.topLevelApplication as Application).y;
-					triangularVertices.push(-triangleHeight*KSketchStyles.MAGNIFIER_ARROW_PROPORTION);
-					triangularVertices.push(-appBounds.y);
-					triangularVertices.push(triangleHeight*KSketchStyles.MAGNIFIER_ARROW_PROPORTION);
-					triangularVertices.push(-appBounds.y);
-					triangularVertices.push(0);
-					triangularVertices.push(-appBounds.y + triangleHeight);
 					
 					indicator.graphics.clear();
-					indicator.graphics.lineStyle(3,KSketchStyles.MAGNIFIER_BACKGROUND_COLOR)
-					indicator.graphics.beginFill(KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
-					indicator.graphics.drawTriangles(triangularVertices);
-					indicator.graphics.endFill();
+					indicatorTouch.graphics.clear();
+					indicator.graphics.lineStyle(KSketchStyles.MAGNIFIER_INDICATOR_THICKNESS,KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
+					indicatorTouch.graphics.beginFill(KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
+					indicatorTouch.graphics.drawCircle(0, -25, 14);
+					indicatorTouch.graphics.endFill();
+					indicatorTouch.graphics.beginFill(0xffffff);
+					indicatorTouch.graphics.drawCircle(0, -25, 11);
+					indicatorTouch.graphics.endFill();
 					
 					var labelBounds:Rectangle = timeLabel.getBounds(this);
 					
-					indicator.graphics.moveTo(0,-appBounds.y + KSketchStyles.MAGNIFIER_PADDING*3);
+					indicator.graphics.moveTo(0,-appBounds.y);
 					indicator.graphics.lineTo(0, labelBounds.y);
 					
 				}
 				else
 				{
-					//Pplace this popup above the timebar at the bottom of the canvas
+					//Place this popup above the timebar at the bottom of the canvas
 					y = bottomLimit - height - KSketchStyles.MENU_BUTTON_GAP;
 					
 					//Compute and draw the indicator
 					var maxY:Number = (FlexGlobals.topLevelApplication as Application).height - y;
 					appBounds = _timeControl.timeControlContents.getBounds(FlexGlobals.topLevelApplication as Application);
-					triangleHeight = (FlexGlobals.topLevelApplication as Application).height - 
-									appBounds.bottom - _timeControl.timeControlLayout.gap;
-
-					triangularVertices.push(-triangleHeight*KSketchStyles.MAGNIFIER_ARROW_PROPORTION);
-					triangularVertices.push(maxY);
-					triangularVertices.push(triangleHeight*KSketchStyles.MAGNIFIER_ARROW_PROPORTION);
-					triangularVertices.push(maxY);
-					triangularVertices.push(0);
-					triangularVertices.push(maxY - triangleHeight);
-					indicator.graphics.clear();
-					indicator.graphics.lineStyle(KSketchStyles.MAGNIFIER_INDICATOR_THICKNESS ,KSketchStyles.MAGNIFIER_BACKGROUND_COLOR)
-					indicator.graphics.beginFill(KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
-					indicator.graphics.drawTriangles(triangularVertices);
-					indicator.graphics.endFill();
 					
-					if(_magnifiedImage && _magnifiedImage.parent)
-					{
-						indicator.graphics.moveTo(0, KSketchStyles.MAGNIFIER_PADDING);
-						indicator.graphics.lineTo(0, KSketchStyles.MAGNIFIER_PADDING
-													+ (_magnifiedImage.height*_magnifiedImage.scaleY));
-					}
+					indicator.graphics.clear();
+					indicatorTouch.graphics.clear();
+					indicator.graphics.lineStyle(KSketchStyles.MAGNIFIER_INDICATOR_THICKNESS,KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
+					indicatorTouch.graphics.beginFill(KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
+					indicatorTouch.graphics.drawCircle(0, maxY-23, 18);
+					indicatorTouch.graphics.endFill();
+					indicatorTouch.graphics.beginFill(0xffffff);
+					indicatorTouch.graphics.drawCircle(0, maxY-23, 14);
+					indicatorTouch.graphics.endFill();
 					
 					indicator.graphics.moveTo(0, height);
 					indicator.graphics.lineTo(0, maxY);
 				}
 				
 				_sourceRect.width = KSketchStyles.MAGNIFIER_IMAGE_UNSCALED_WIDTH;
-				_sourceRect.height = _timeControl.contentGroup.height;
+				_sourceRect.height = _timeControl.contentGroup.height/2.5;
 				_sourceRect.y = 0;
 				_magnifiedData = new BitmapData(_sourceRect.width, _sourceRect.height);
 				
 				//Refresh the time and make sure the xPosition is correct in the case of resizes
 				showTime(KSketch_TimeControl.toTimeCode(_timeControl.time),
-						_timeControl.timeToFrame(_timeControl.time),
-						_timeControl.timeToX(_timeControl.time));
-
+					_timeControl.timeToFrame(_timeControl.time),
+					_timeControl.timeToX(_timeControl.time));
 			}
 			
 			/**
@@ -161,16 +142,26 @@
 			 * Magnifies the area around given xPos
 			 */
 			public function magnify(xPos:Number):void
-			{
-				//Source image of the entire time line
-				var bd : BitmapData = new BitmapData( _timeControl.width, _timeControl.height );
+			{	
+				//create a label for current time in magnifying glass
+				var bitmapdata:BitmapData = new BitmapData(KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_THICKNESS, _timeControl.height);
+				var currentTimeLabel:Label = new Label();
+				bitmapdata.draw(currentTimeLabel);
+				bitmapdata.colorTransform(bitmapdata.rect, new ColorTransform(1,0,0,0,0,0,0,0));
+				
+				var bd:BitmapData = new BitmapData(_timeControl.width, _timeControl.height);
 				bd.draw(_timeControl.contentGroup);
 				
 				//Copy out the pixels from the source
 				_sourceRect.x = xPos-(_sourceRect.width*0.5);
-				_magnifiedData = new BitmapData(_magnifiedData.width, _magnifiedData.height,false, KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
+				_magnifiedData = new BitmapData(_magnifiedData.width, _magnifiedData.height ,true, KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
 				_magnifiedData.copyPixels(bd, _sourceRect, ORIGIN);
-
+				_magnifiedData.merge(bitmapdata, bd.rect, new Point(KSketchStyles.MAGNIFIER_IMAGE_UNSCALED_WIDTH/2,0),
+					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
+					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
+					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
+					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER);
+				
 				//Display the source
 				if(!_magnifiedImage.parent)
 					magContents.addElementAt(_magnifiedImage,0);	
@@ -193,7 +184,7 @@
 		]]>
 	</fx:Script>
 	<!--
-		-magContents.width*0.5 causes the objects to be centered at 0
+	-magContents.width*0.5 causes the objects to be centered at 0
 	-->
 	<s:Group x="{-magContents.width*0.5}" width="100%">
 		<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
@@ -201,21 +192,26 @@
 				<s:SolidColor color="{KSketchStyles.MAGNIFIER_BACKGROUND_COLOR}"/>
 			</s:fill>
 		</s:Rect>
-		<s:Group id="magContents">
-			<s:layout>
-				<s:VerticalLayout horizontalAlign="center" verticalAlign="bottom"
-								  paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
-								  paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
-			</s:layout>
-			<s:Group width="100%">
+		<s:Group>
+			<s:Graphic/>
+			<s:Group id="magContents">
 				<s:layout>
-					<s:HorizontalLayout/>
+					<s:VerticalLayout horizontalAlign="center" verticalAlign="bottom"
+									  paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
+									  paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
 				</s:layout>
-				<s:Label id="timeLabel" color="{KSketchStyles.MAGNIFIER_FONT_COLOR}" fontSize="{KSketchStyles.MAGNIFIER_FONT_SIZE}"/>
-				<s:Group width="100%"/>
-				<s:Label id="frameLabel" color="{KSketchStyles.MAGNIFIER_FONT_COLOR}" fontSize="{KSketchStyles.MAGNIFIER_FONT_SIZE}"/>
+				<s:Group width="100%">
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+					<s:Label id="timeLabel" color="{KSketchStyles.MAGNIFIER_FONT_COLOR}" fontSize="{KSketchStyles.MAGNIFIER_FONT_SIZE}"/>
+					<s:Group width="100%"/>
+					<s:Label id="frameLabel" color="{KSketchStyles.MAGNIFIER_FONT_COLOR}" fontSize="{KSketchStyles.MAGNIFIER_FONT_SIZE}"/>
+				</s:Group>
 			</s:Group>
 		</s:Group>
-		<s:Group id="indicator" x="{magContents.width*0.5}"/>
+		<s:Group id="indicator" x="{magContents.width*0.5}">
+			<s:Graphic id="indicatorTouch" />
+		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

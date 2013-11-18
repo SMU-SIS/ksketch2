@@ -27,7 +27,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		private var _isDirty:Boolean;			// the dirty status
 		private var _center:Point;				// the transformation center
 		private var _actualCenter:Point;		// the actual transformation center
-		
+
 		// path variables
 		public var translatePath:KPath;
 		public var rotatePath:KPath;
@@ -39,14 +39,14 @@ package sg.edu.smu.ksketch2.model.data_structures
 		public var tempY:Number;
 		public var tempTheta:Number;
 		public var tempSigma:Number;
-		
+
 		/**
 		 * The main constructor for the KSpatialKeyFrame.
 		 * 
 		 * @param newTime The spatial key frame's time.
 		 * @param center The spatial key frame's center position.
 		 */
-		public function KSpatialKeyFrame(newTime:int, center:Point)
+		public function KSpatialKeyFrame(newTime:Number, center:Point)
 		{
 			// set the spatial key frame's time
 			super(newTime);
@@ -54,6 +54,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 			// initialize the main variables
 			_isDirty = true;
 			_center = center.clone();
+			
 			translatePath = new KPath();
 			rotatePath = new KPath();
 			scalePath = new KPath();
@@ -84,13 +85,14 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return _center.clone();
 		}
 		
+		
 		/**
 		 * Gets the spatial key's matrix, concatenated with matrices of previous keys at the given time.
 		 * 
 		 * @param time The target time.
 		 * @return The spatial key's full matrix.
 		 */
-		public function fullMatrix(getTime:int):Matrix
+		public function fullMatrix(getTime:Number):Matrix
 		{
 			// get the matrix pair
 			var pre:Array = getMatrixPair(getTime);
@@ -149,7 +151,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The spatial key's full matrix.
 		 */
-		public function partialMatrix(getTime:int):Matrix
+		public function partialMatrix(getTime:Number):Matrix
 		{
 			getMatrixPair(startTime);
 
@@ -171,7 +173,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param getTime The target time.
 		 * @return The found transforms.
 		 */
-		private function _findTransforms(getTime:int):Array
+		private function _findTransforms(getTime:Number):Array
 		{
 			if(getTime < startTime)
 				return [0,1,0,0];
@@ -250,8 +252,8 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param op The associated composite operation.
 		 * @return The front key.
 		 */
-		override public function splitKey(atTime:int, op:KCompositeOperation):IKeyFrame
-		{
+		override public function splitKey(atTime:Number, op:KCompositeOperation):IKeyFrame
+		{	
 			// handle the pre-split operation first
 			// we are basically "removing" this key and adding 2 more keys, so a total of 3 key operations
 			
@@ -310,9 +312,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 */
 		override public function serialize():XML
 		{
-			var keyXML:XML = <spatialkey time="0" center=""/>;
+			var keyXML:XML = <spatialkey time="0" center="" passthrough=""/>;
 			keyXML.@time = _time.toString();
 			keyXML.@center = _center.x.toString()+","+_center.y.toString();
+			keyXML.@passthrough = _passthrough.toString(); //Passthrough edit
 			
 			var pathXML:XML = translatePath.serialize();
 			pathXML.@type = "translate";
@@ -338,6 +341,16 @@ package sg.edu.smu.ksketch2.model.data_structures
 		{
 			var centroidPosition:Array = ((xml.@center).toString()).split(",");
 			_center = new Point(centroidPosition[0], centroidPosition[1]);
+			
+			
+			//Passthrough edit
+			var passthroughValue:String = (xml.@passthrough.toString());
+			if(passthroughValue == null)
+				_passthrough = false;
+			else if (passthroughValue.indexOf("true") >= 0)
+				_passthrough = true;
+			else
+				_passthrough = false;
 			
 			var pathXML:XMLList = xml.path;
 			var currentPathXML:XML;

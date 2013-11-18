@@ -19,6 +19,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 	public class KPath
 	{
 		public var points:Vector.<KTimedPoint>;		// the set of points in the key frame path
+		public var pointProperty:Object;
 		
 		/**
 		 * The default constructor for the KPath object. The constructor initializes
@@ -121,7 +122,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param y The point's y-position.
 		 * @param time The point's time.
 		 */
-		public function push(x:Number=0,y:Number=0,time:int=0):void
+		public function push(x:Number,y:Number,time:Number):void
 		{
 			points.push(new KTimedPoint(x,y,time));
 		}
@@ -193,8 +194,15 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 */
 		public function find_Point_By_Magnitude(proportion:Number):KTimedPoint
 		{
+			/*
+			This method is not being used. Wah liao so confusing!!!
+			*/
+			
 			if(points.length < 2)
+			{
 				return new KTimedPoint(0,0,0);
+			}
+				
 			
 			var i:int;														// the loop variable
 			var length:int = points.length;									// the number of points in the key frames path
@@ -483,8 +491,8 @@ package sg.edu.smu.ksketch2.model.data_structures
 			}
 			else
 			{
-				var offSetTime:int = points[0].time;
-				var duration:int = pathDuration - offSetTime;
+				var offSetTime:Number = points[0].time;
+				var duration:Number = pathDuration - offSetTime;
 				var proportion:Number;
 				for(i = 0; i<pathLength; i++)
 				{

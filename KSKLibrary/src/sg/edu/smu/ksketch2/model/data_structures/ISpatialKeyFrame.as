@@ -36,7 +36,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The spatial key's full matrix.
 		 */
-		function fullMatrix(time:int):Matrix;
+		function fullMatrix(time:Number):Matrix;
 		
 		/**
 		 * Gets the spatial key's own matrix up to the given time.
@@ -44,6 +44,6 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The spatial key's partial matrix.
 		 */
-		function partialMatrix(time:int):Matrix;
+		function partialMatrix(time:Number):Matrix;
 	}
 }

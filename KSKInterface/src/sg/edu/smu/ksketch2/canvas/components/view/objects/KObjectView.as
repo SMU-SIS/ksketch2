@@ -54,7 +54,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			return this;
 		}
 		
-		public function eraseIfHit(xPoint:Number, yPoint:Number, time:int, op:KCompositeOperation):void
+		public function eraseIfHit(xPoint:Number, yPoint:Number, time:Number, op:KCompositeOperation):void
 		{
 			
 		}
@@ -93,7 +93,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		 * Updates the transform for this KObject
 		 * You can update anything related to time here
 		 */
-		public function updateView(time:int):void
+		public function updateView(time:Number):void
 		{
 			alpha = _object.visibilityControl.alpha(time);
 			if(alpha <= 0)

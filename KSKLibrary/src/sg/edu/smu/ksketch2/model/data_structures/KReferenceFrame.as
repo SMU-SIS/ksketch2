@@ -31,7 +31,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The concatenated matrix for the reference frame from time 0 to the given time.
 		 */
-		public function matrix(time:int):Matrix
+		public function matrix(time:Number):Matrix
 		{
 			var activeKey:KSpatialKeyFrame = getKeyAftertime(time) as KSpatialKeyFrame;
 			

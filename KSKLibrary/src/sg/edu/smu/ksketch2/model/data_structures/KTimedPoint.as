@@ -15,9 +15,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 	 */
 	public class KTimedPoint
 	{
-		public var x:Number;	// x-position
-		public var y:Number;	// y-position
-		public var time:int;	// time
+		public var x:Number;				// x-position
+		public var y:Number;				// y-position
+		public var time:Number;				// time
 		
 		/**
 		 * The main constructor of the KTimedPoint object. The constructor
@@ -27,11 +27,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param y The y-position.
 		 * @param time The time.
 		 */
-		public function KTimedPoint(x:Number=0, y:Number=0, time:int = 0)
+		public function KTimedPoint(x:Number, y:Number, time:Number)
 		{
-			this.x = x;			// set the x-position
-			this.y = y;			// set the y-position
-			this.time = time;	// set the time
+			this.x = x;						// set the x-position
+			this.y = y;						// set the y-position
+			this.time = time;				// set the time
 		}
 		
 		/**

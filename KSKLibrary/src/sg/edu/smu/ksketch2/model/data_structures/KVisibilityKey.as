@@ -21,7 +21,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @param newTime The key frame's new time.
 		 */
-		public function KVisibilityKey(newTime:int)
+		public function KVisibilityKey(newTime:int,pass:Boolean)
 		{
 			// set the visibility key frame's time
 			super(newTime);

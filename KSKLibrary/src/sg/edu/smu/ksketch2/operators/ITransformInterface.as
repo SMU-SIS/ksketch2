@@ -41,7 +41,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The queried time.
 		 * @return The transform matrix of the reference frame.
 		 */
-		function matrix(time:int):Matrix;
+		function matrix(time:Number):Matrix;
 		
 		/**
 		 * Gets the time value of the first key frame in the reference frame
@@ -50,7 +50,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @return The time value of the first key frame in the reference frame
 		 * that the transform operator handles.
 		 */
-		function get firstKeyTime():int;
+		function get firstKeyTime():Number;
 		
 		/**
 		 * Gets the time value of the last key frame in the reference frame
@@ -59,7 +59,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @return The time value of the first key frame in the reference frame
 		 * that the transform operator handles.
 		 */
-		function get lastKeyTime():int;
+		function get lastKeyTime():Number;
 		
 		/**
 		 * Gets the active key frame in effect at the given time.
@@ -67,7 +67,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param The target time.
 		 * @return The active key frame at the given time.
 		 */
-		function getActiveKey(time:int):IKeyFrame;
+		function getActiveKey(time:Number):IKeyFrame;
 		
 		/**
 		 * Gets the type of the transition operator.
@@ -90,7 +90,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @return Whether there is an active transform operations at the given
 		 * time.
 		 */
-		function canInterpolate(time:int):Boolean;
+		function canInterpolate(time:Number):Boolean;
 		
 		/**
 		 * Checks whether it is possible to insert a key frame into the 
@@ -101,7 +101,9 @@ package sg.edu.smu.ksketch2.operators
 		 * @return Whether it is possible to insert a key frame into
 		 * the transform operator's key frame list.
 		 */
-		function canInsertKey(time:int):Boolean;
+		function canInsertKey(time:Number):Boolean;
+		
+		function canInsertKeyFrame(time:Number):Boolean;
 		
 		/**
 		 * Checks whether it is possible to remove a key frame from the 
@@ -113,7 +115,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @return Whether it is possible to remove a key frame from
 		 * the transform operator's key frame list.
 		 */
-		function canRemoveKey(time:int):Boolean;
+		function canRemoveKey(time:Number):Boolean;
 		
 		/**
 		 * Checks whether it is possible to clear key frames from the 
@@ -124,7 +126,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @return Whether it is possible to clear key frames from the 
 		 * transform operator's key frame list.
 		 */
-		function canClearKeys(time:int):Boolean;
+		function canClearKeys(time:Number):Boolean;
 		
 		
 		
@@ -141,7 +143,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param transitionType The transition type.
 		 * @param The corresponding composite operation.
 		 */
-		function beginTransition(time:int, transitionType:int, op:KCompositeOperation):void;
+		function beginTransition(time:Number, transitionType:int, op:KCompositeOperation):void;
 		
 		/**
 		 * Updates the object during the transition.
@@ -152,7 +154,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param dTheta The target rotation value.
 		 * @param dScale The target scaling value.
 		 */
-		function updateTransition(time:int, dx:Number, dy:Number, dTheta:Number, dScale:Number):void;
+		function updateTransition(time:Number, dx:Number, dy:Number, dTheta:Number, dScale:Number):void;
 		
 		/**
 		 * Finalizes the object's transition.
@@ -160,7 +162,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 * @param op The corresponding composite operation.
 		 */
-		function endTransition(time:int, op:KCompositeOperation):void;
+		function endTransition(time:Number, op:KCompositeOperation):void;
 		
 		
 		
@@ -175,7 +177,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param dy The target y-position.
 		 * @param time The target time.
 		 */
-		function moveCenter(dx:Number, dy:Number, time:int):void;
+		function moveCenter(dx:Number, dy:Number, time:Number):void;
 		
 		/**
 		 * Inserts a blank key frame into the key frame list under the following
@@ -185,7 +187,16 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 * @param op The corresponding target composite operation.
 		 */
-		function insertBlankKeyFrame(time:int, op:KCompositeOperation):void;
+		function insertBlankKeyFrame(time:Number, op:KCompositeOperation, keyframe:Boolean):void;
+		
+		
+		/**
+		 * Modifies an existing key frame's passthrough value
+		 * 
+		 * @param time The target time.
+		 * @param op The corresponding target composite operation.
+		 */
+		function changeToKeyFrame(time:Number, op:KCompositeOperation):void;
 		
 		/**
 		 * Removes the key frame from the key frame list. Any transitions
@@ -196,7 +207,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 * @param op The corresponding composite operation.
 		 */
-		function removeKeyFrame(time:int, op:KCompositeOperation):void;
+		function removeKeyFrame(time:Number, op:KCompositeOperation):void;
 		
 		/**
 		 * Clears all the motions after the given time. If there is no active
@@ -207,7 +218,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 * @param op The corresponding composite operation.
 		 */
-		function clearAllMotionsAfterTime(time:int, op:KCompositeOperation):void;
+		function clearAllMotionsAfterTime(time:Number, op:KCompositeOperation):void;
 		
 		
 		
@@ -232,7 +243,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param stopMergeTime The time to stop the merge.
 		 * @param op The corresponding composite operation.
 		 */
-		function mergeTransform(sourceObject:KObject, stopMergeTime:int, op:KCompositeOperation):void;
+		function mergeTransform(sourceObject:KObject, stopMergeTime:Number, op:KCompositeOperation):void;
 		
 		/**
 		 * Gets a copy of the transform operator.

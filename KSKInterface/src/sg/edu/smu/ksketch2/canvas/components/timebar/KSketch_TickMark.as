@@ -17,7 +17,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public var originalPosition:Number;
 		
 		//Time value FOR THIS TICK ONLY. Changing this time does not change the key frame's time directly
-		public var time:int;
+		public var time:Number;
 
 		//Variables to reference model's objects
 		public var key:IKeyFrame;

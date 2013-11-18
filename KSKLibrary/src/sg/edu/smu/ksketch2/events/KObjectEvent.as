@@ -56,7 +56,7 @@ package sg.edu.smu.ksketch2.events
 		
 		private var _targetObject:KObject;		// the target object
 		private var _parent:KGroup;				// the object's parent
-		private var _time:int;					// the object's time
+		private var _time:Number;					// the object's time
 		
 		/**
 		 * The main constructor for the KObjectEvent class.
@@ -65,7 +65,7 @@ package sg.edu.smu.ksketch2.events
 		 * @param targetObject The target object.
 		 * @param eventTime The event's time.
 		 */
-		public function KObjectEvent(type:String, targetObject:KObject, eventTime:int)
+		public function KObjectEvent(type:String, targetObject:KObject, eventTime:Number)
 		{
 			super(type);
 			_targetObject = targetObject;
@@ -99,7 +99,7 @@ package sg.edu.smu.ksketch2.events
 		 * 
 		 * @return The object's time.
 		 */
-		public function get time():int
+		public function get time():Number
 		{
 			return _time;
 		}

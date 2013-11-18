@@ -29,6 +29,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 */
 		function set ownerID(value:int):void;
 		
+		//Passthrough edit
+		function get passthrough():Boolean;
+		
+		function set passthrough(value:Boolean):void;
+		
 		/**
 		 * Gets the previous key frame.
 		 * 
@@ -48,7 +53,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @return The key frame's current time.
 		 */
-		function get time():int;
+		function get time():Number;
 		
 		/**
 		 * Gets whether the key frame is active at this given time.
@@ -72,7 +77,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param op The composite operation.
 		 * @return The front key.
 		 */
-		function splitKey(time:int, op:KCompositeOperation):IKeyFrame;
+		function splitKey(time:Number, op:KCompositeOperation):IKeyFrame;
 		
 		/**
 		 * Checks the usefulness of the key frame.

@@ -47,12 +47,12 @@ package sg.edu.smu.ksketch2.model.objects
 			return _children;
 		}
 		
-		override public function get maxTime():int
+		override public function get maxTime():Number
 		{
 			if(!transformInterface)
 				return 0;
 			
-			var thisMax:int = transformInterface.lastKeyTime;
+			var thisMax:Number = transformInterface.lastKeyTime;
 			var thisLength:int = length();
 			var i:int = 0;
 			var currentChild:KObject;

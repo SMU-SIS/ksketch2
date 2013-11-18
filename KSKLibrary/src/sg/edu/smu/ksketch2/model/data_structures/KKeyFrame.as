@@ -23,17 +23,29 @@ package sg.edu.smu.ksketch2.model.data_structures
 		protected var _owner:int;				// the owner ID of the key frame
 		protected var _previous:KKeyFrame;		// the previous key frame
 		protected var _next:KKeyFrame;			// the next key frame
-		protected var _time:int;				// the key frame's time
-		
+		protected var _time:Number;				// the key frame's time
+		protected var _passthrough:Boolean; 	// Passthrough edit
+
+		public static const STUDYMODE_K:int = 0;						// Version K value
+		public static const STUDYMODE_P:int = 1;						// Version P value
+		public static const STUDYMODE_KP:int = 2;						// Version KP value
+		public static const STUDYMODE_KP2:int = 3;							// Version KP2 value
+		public static var studyMode: int = STUDYMODE_KP2;
 		/**
 		 * The main constructor for the KKeyFrame object. Do not instantiate this
 		 * class by itself.
 		 * 
 		 * @param newTime The key frame's new time.
 		 */
-		public function KKeyFrame(newTime:int)
+		public function KKeyFrame(newTime:Number)
 		{
 			time = newTime;
+			
+			//Passthrough edit;
+			if(studyMode == STUDYMODE_K || studyMode == STUDYMODE_KP)
+				passthrough = false;
+			else
+				passthrough = true;
 		}
 		
 		/**
@@ -45,7 +57,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		{
 			return _owner;
 		}
-
+		
 		/**
 		 * Sets the key frame's owner ID.
 		 * 
@@ -56,6 +68,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 			_owner = value;
 		}
 
+		//Passthrough edit
+		public function get passthrough():Boolean
+		{
+			return _passthrough;
+		}
+		
+		//Passthrough edit
+		public function set passthrough(value:Boolean):void
+		{
+			_passthrough = value;
+		}
+		
 		/**
 		 * Gets the previous key frame in the linked list.
 		 * 
@@ -77,11 +101,16 @@ package sg.edu.smu.ksketch2.model.data_structures
 			{
 				if( _time <= key.time)
 				{
-					trace("Given key.time:",key.time, "this key's time:", _time);
-					throw new Error("KKeyFrame set previous: the previous key should have a time value that is smaller than this key");
+					trace("Trying to overwrite existing control point with a key frame");
+					
+					if((key as KKeyFrame).passthrough)
+					{
+						(key as KKeyFrame).passthrough = false;
+						return;
+					}
 				}
+					//throw new Error("KKeyFrame set previous: the previous key should have a time value that is smaller than this key");
 			}
-			
 			_previous = key as KKeyFrame
 		}
 		
@@ -107,7 +136,13 @@ package sg.edu.smu.ksketch2.model.data_structures
 				if(key.time <= _time)
 				{
 					trace("Given key.time:",key.time, "this key's time:", _time);
-					throw new Error("KKeyFrame set next: the next key should have a time value that is greater than this key");
+					
+					if(key.time == _time)
+					{
+						(key as KKeyFrame).passthrough = false;
+					}
+					else
+						throw new Error("KKeyFrame set next: the next key should have a time value that is greater than this key");
 				}
 			}
 			
@@ -120,7 +155,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @return The key frame's current time.
 		 */
-		public function get time():int
+		public function get time():Number
 		{
 			return _time;
 		}
@@ -131,7 +166,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @param newTime The key frame's current time.
 		 */
-		public function set time(newTime:int):void
+		public function set time(newTime:Number):void
 		{
 			// do a logic check with previous key frame's time
 			if(previous)
@@ -162,7 +197,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param newTime The new target time.
 		 * @param op The associated composite operation.
 		 */
-		public function retime(newTime:int, op:KCompositeOperation):void
+		public function retime(newTime:Number, op:KCompositeOperation):void
 		{
 			// case: a previous key frame exists
 			if(_previous)
@@ -193,13 +228,14 @@ package sg.edu.smu.ksketch2.model.data_structures
 						_previous = null;
 						_next = null;
 					}
-					
+					/*
 					// case: there is activity at the time of this key frame
 					else
 					{
 						throw new Error("Erroneous retiming of key frame. The widget allowed the key's host marker to stack when this key has activities");
 				
 					}
+					*/
 				}
 			}
 			
@@ -237,7 +273,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param op The associated composite operation.
 		 * @return The front key.
 		 */
-		public function splitKey(time:int, op:KCompositeOperation):IKeyFrame
+		public function splitKey(time:Number, op:KCompositeOperation):IKeyFrame
 		{
 			return null;
 		}
@@ -247,7 +283,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @return startTime The key frame's start time.
 		 */
-		public function get startTime():int
+		public function get startTime():Number
 		{
 			// case: the key frame has a previous key frame
 			if(previous)

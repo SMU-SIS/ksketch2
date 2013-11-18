@@ -63,7 +63,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The key frame at the given target time.
 		 */
-		public function getKeyAtTime(time:int):IKeyFrame
+		public function getKeyAtTime(time:Number):IKeyFrame
 		{
 			var currentKey:KKeyFrame = _head;
 			
@@ -85,7 +85,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The last key frame that is at or before the given time, else null.
 		 */
-		public function getKeyAtBeforeTime(time:int):IKeyFrame
+		public function getKeyAtBeforeTime(time:Number):IKeyFrame
 		{
 			var resultKey:IKeyFrame;
 			var currentKey:KKeyFrame = _head;
@@ -112,7 +112,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The first key frame after the given target time, else null.
 		 */
-		public function getKeyAftertime(time:int):IKeyFrame
+		public function getKeyAftertime(time:Number):IKeyFrame
 		{
 			var resultKey:IKeyFrame;
 			var currentKey:KKeyFrame = _head;
@@ -147,7 +147,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 			{
 				if(before.time == key.time)
 					throw new Error("KKeyFrameList.insertKey: KeyFrameLists cannot have 2 keys that are at the same time!");
-	
+				
 				before.next = key;
 				(key as KKeyFrame).previous = before;
 			}	
@@ -291,7 +291,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @param op The corresponding composite operation.
 		 */
-		public function split(key:IKeyFrame, time:int, op:KCompositeOperation):IKeyFrame
+		public function split(key:IKeyFrame, time:Number, op:KCompositeOperation):IKeyFrame
 		{
 			var frontKey:IKeyFrame = key.splitKey(time, op);
 			

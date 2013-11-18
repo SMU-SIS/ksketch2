@@ -60,7 +60,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @return The maximum time that the scene graph will reach.
 		 */
-		public function get maxTime():int
+		public function get maxTime():Number
 		{
 			var children:KModelObjectList = _root.children;
 			var thisMax:int = 0;

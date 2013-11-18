@@ -34,7 +34,7 @@ package sg.edu.smu.ksketch2.model.objects
 		
 		protected var _selected:Boolean;					// the object's selection state flag
 		protected var _center:Point;						// the object's centroid
-		protected var _creationTime:int;					// the object's creation time
+		protected var _creationTime:Number;					// the object's creation time
 		
 		/**
 		 * The main constructor of the KObject class.
@@ -58,7 +58,7 @@ package sg.edu.smu.ksketch2.model.objects
 		 * @param time The target creation time.
 		 * @param op The corresponding composite operation.
 		 */
-		public function init(time:int, op:KCompositeOperation):void
+		public function init(time:Number, op:KCompositeOperation):void
 		{
 			// set the object's creation time
 			_creationTime = time;
@@ -70,7 +70,7 @@ package sg.edu.smu.ksketch2.model.objects
 				visibilityControl.setVisibility(true, time, op);
 			
 			// insert a blank key at the given time in the transform
-			transformInterface.insertBlankKeyFrame(time, op);
+			transformInterface.insertBlankKeyFrame(time, op, false);
 		}
 
 		
@@ -172,7 +172,7 @@ package sg.edu.smu.ksketch2.model.objects
 		 * 
 		 * @return The object's maximum time.
 		 */
-		public function get maxTime():int
+		public function get maxTime():Number
 		{
 			return transformInterface.lastKeyTime;
 		}
@@ -184,7 +184,7 @@ package sg.edu.smu.ksketch2.model.objects
 		 * @param time The target time.
 		 * @return The object's full matrix.
 		 */
-		public function fullPathMatrix(time:int):Matrix
+		public function fullPathMatrix(time:Number):Matrix
 		{
 			// get the transform's matrix at the given time
 			var matrix:Matrix = transformInterface.matrix(time);
@@ -204,7 +204,7 @@ package sg.edu.smu.ksketch2.model.objects
 		 * @param int The target time.
 		 * @return The object's transform matrix.
 		 */
-		public function transformMatrix(time:int):Matrix
+		public function transformMatrix(time:Number):Matrix
 		{
 			return transformInterface.matrix(time);
 		}

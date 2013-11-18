@@ -21,8 +21,8 @@ package sg.edu.smu.ksketch2.operators.operations
 	{
 		private var _object:KObject;	// the current object
 		private var _key:KKeyFrame;		// the current key frame
-		private var _newTime:int;		// the current newer time
-		private var _oldTime:int;		// the current older time
+		private var _newTime:Number;		// the current newer time
+		private var _oldTime:Number;		// the current older time
 		
 		/**
 		 * The main constructor for the KEditKeyTimeOperation class.
@@ -32,7 +32,7 @@ package sg.edu.smu.ksketch2.operators.operations
 		 * @param newTime The target newer time.
 		 * @param oldTime The target older time.
 		 */
-		public function KEditKeyTimeOperation(object:KObject, key:IKeyFrame, newTime:int, oldTime:int)
+		public function KEditKeyTimeOperation(object:KObject, key:IKeyFrame, newTime:Number, oldTime:Number)
 		{
 			_object = object;			// set the current object
 			_key = key as KKeyFrame;	// set the current key frame

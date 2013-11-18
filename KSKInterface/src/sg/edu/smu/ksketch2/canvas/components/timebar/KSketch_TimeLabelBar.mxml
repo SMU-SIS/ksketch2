@@ -18,7 +18,7 @@
 			private var _timeControl:KSketch_TimeControl;
 			private var _labelPool:Vector.<KSketch_TimeLabel>;
 			private var _lastPartition:Group;
-
+			
 			
 			private static const MAX_DIVISIONS:int = 20;
 			
@@ -44,7 +44,7 @@
 			private function _updateLabels(event:Event):void
 			{
 				var maxTime:Number = _timeControl.maximum/1000;
-				var timePerDivision:Number = 1;
+				var timePerDivision:Number = 0.9;
 				var power:Number = 0;
 				var numDivisionsRequired:int = Math.ceil(maxTime/timePerDivision);
 				
@@ -52,9 +52,9 @@
 				{
 					power += 1;
 					timePerDivision = power * 5;
-					numDivisionsRequired = Math.ceil(maxTime/timePerDivision);
+					numDivisionsRequired = maxTime/timePerDivision;//Math.ceil(maxTime/timePerDivision);
 				}
-
+				
 				if(numDivisionsRequired == labels.numElements)
 					return;
 				
@@ -67,7 +67,7 @@
 					if(i != last)
 					{
 						var myLabel:KSketch_TimeLabel = _labelPool[i];
-						myLabel.timeLabelText.text = ((i+1)*timePerDivision).toString()+"s";
+						myLabel.timeLabelText.text = (Math.round((i+1)*timePerDivision)).toString()+"s";
 						labels.addElement(myLabel);
 					}
 					else
@@ -75,7 +75,6 @@
 						labels.addElement(_lastPartition);
 						_lastPartition.width = _timeControl.timeToX(_timeControl.maximum) - _timeControl.timeToX(i*timePerDivision*1000);
 					}
-
 				}
 			}
 		]]>

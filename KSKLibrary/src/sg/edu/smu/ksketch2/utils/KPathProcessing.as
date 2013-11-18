@@ -175,7 +175,7 @@ package sg.edu.smu.ksketch2.utils
 			duration = duration - remainingDuration + toAdd;
 			
 			var refinedPoints:Vector.<KTimedPoint> = new Vector.<KTimedPoint>();
-			var currentTime:int = 0;
+			var currentTime:Number = 0;
 			var currentPoint:KTimedPoint;
 			
 			for(currentTime; currentTime <= duration; currentTime += KSketch2.ANIMATION_INTERVAL)
@@ -199,7 +199,7 @@ package sg.edu.smu.ksketch2.utils
 			if(path.length == 0)
 				return; 
 			
-			var currentTime:int = 0;
+			var currentTime:Number = 0;
 			var currentProportion:Number = 0;
 			var currentPoint:KTimedPoint;
 			var pathDuration:int = path.pathDuration;
@@ -224,6 +224,11 @@ package sg.edu.smu.ksketch2.utils
 		 */
 		public static function CatmullRomSpline(path:KPath):void
 		{
+			/*
+			Passthrough edit - This method is not being used. Not sure what passthrough value should be
+			Doesn't matter anyway!!! Line 293, 298
+			*/
+			
 			var points:Vector.<KTimedPoint> = path.points;
 			
 			//Check there is at least 4 control points
@@ -281,13 +286,13 @@ package sg.edu.smu.ksketch2.utils
 					
 					var xCoord:Number = h00 * p0.x + h10 * m0.x + h01 * p1.x + h11 * m1.x;
 					var yCoord:Number = h00 * p0.y + h10 * m0.y + h01 * p1.y + h11 * m1.y;
-					
-					newPoints.push(new KTimedPoint(xCoord, yCoord));
+
+					newPoints.push(new KTimedPoint(xCoord, yCoord, 0));
 				}		
 			}
 			
 			//Add last control point to Catmull Rom Spline
-			newPoints.push(new KTimedPoint(points[pCtr].x, points[pCtr].y));
+			newPoints.push(new KTimedPoint(points[pCtr].x, points[pCtr].y, 0));
 			var myPoint:KTimedPoint;
 			for(var a:int = 0; a < newPoints.length; a++)
 			{
@@ -297,7 +302,6 @@ package sg.edu.smu.ksketch2.utils
 			
 			path.points = newPoints;
 		}
-		
 		
 		/**
 		 * Calculates the distance between the two timed points.
@@ -318,9 +322,13 @@ package sg.edu.smu.ksketch2.utils
 		 * @param nxtPt The next timed point.
 		 * @return The calculated tangent of the control points in the Catmull Rom Spline.
 		 */
+		
 		public static function PointTangent(prevPt:KTimedPoint, nxtPt:KTimedPoint):KTimedPoint
 		{
-			return new KTimedPoint((prevPt.x - nxtPt.x)/2, (prevPt.y - nxtPt.y)/2);
+			/*
+			This method is not being used. Wah liao so confusing!!!
+			*/
+			return new KTimedPoint((prevPt.x - nxtPt.x)/2, (prevPt.y - nxtPt.y)/2, 0);
 		}
 	}
 }

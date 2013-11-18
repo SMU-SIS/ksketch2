@@ -18,7 +18,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		 * Update view uses the given time to generate updated values from
 		 * the model object. Uses these updated values to update this view object
 		 */
-		function updateView(time:int):void;
+		function updateView(time:Number):void;
 			
 		/**
 		 * Update parent switches the parent of this view object in the flash display list

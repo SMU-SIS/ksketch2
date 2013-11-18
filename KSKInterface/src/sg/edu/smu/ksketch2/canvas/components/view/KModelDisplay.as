@@ -208,7 +208,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		/**
 		 * Returns a thumbnail sized image (160x90) of the display at time
 		 */
-		public function getThumbnail(time:int):BitmapData
+		public function getThumbnail(time:Number):BitmapData
 		{
 			//Size of the area to be captured to be determined here
 			var captureArea:Rectangle = new Rectangle(0,0,160,90);
@@ -219,7 +219,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			var matrix:Matrix = new Matrix();
 			matrix.scale(1/toScaleX, 1/toScaleY);
 			
-			var savedTime:int = _KSketch.time;
+			var savedTime:Number = _KSketch.time;
 			
 			_KSketch.time = time;
 			var bitmapData:BitmapData = new BitmapData(captureArea.width, captureArea.height, false, 0xFFFFFF);	

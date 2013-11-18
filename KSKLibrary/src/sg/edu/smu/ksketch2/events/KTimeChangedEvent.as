@@ -27,8 +27,8 @@ package sg.edu.smu.ksketch2.events
 		 */
 		public static const EVENT_MAX_TIME_CHANGED:String = "Max time changed"
 			
-		private var _from:int;	// the starting time
-		private var _to:int;	// the ending time
+		private var _from:Number;	// the starting time
+		private var _to:Number;	// the ending time
 		
 		/**
 		 * The main constructor of the KTimeChangedEvent class.
@@ -37,7 +37,7 @@ package sg.edu.smu.ksketch2.events
 		 * @param fromTime The starting time.
 		 * @param toTime The ending time.
 		 */
-		public function KTimeChangedEvent(type:String, fromTime:int, toTime:int)
+		public function KTimeChangedEvent(type:String, fromTime:Number, toTime:Number)
 		{
 			super(type, bubbles, cancelable);
 			
@@ -50,7 +50,7 @@ package sg.edu.smu.ksketch2.events
 		 * 
 		 * @return The starting time.
 		 */
-		public function get from():int
+		public function get from():Number
 		{
 			return _from;
 		}
@@ -60,7 +60,7 @@ package sg.edu.smu.ksketch2.events
 		 * 
 		 * @return The ending time.
 		 */
-		public function get to():int
+		public function get to():Number
 		{
 			return _to;
 		}

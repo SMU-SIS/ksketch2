@@ -31,7 +31,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The visibility key frame at the given time.
 		 */
-		public function visible(time:int):Boolean
+		public function visible(time:Number):Boolean
 		{
 			var key:IVisibilityKey = getActiveKey(time);
 			
@@ -47,7 +47,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The visibility key frame at the given time.
 		 */
-		public function getActiveKey(time:int):IVisibilityKey
+		public function getActiveKey(time:Number):IVisibilityKey
 		{
 			return getKeyAtBeforeTime(time) as IVisibilityKey;
 		}

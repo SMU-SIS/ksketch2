@@ -25,7 +25,7 @@ package sg.edu.smu.ksketch2.operators
 		 * 
 		 * @return The earliest visible time.
 		 */
-		function get earliestVisibleTime():int;
+		function get earliestVisibleTime():Number;
 		
 		/**
 		 * Sets the visibility at the given time.
@@ -34,7 +34,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 * @param op The corresponding composite operation.
 		 */
-		function setVisibility(visible:Boolean, time:int, op:KCompositeOperation):void;
+		function setVisibility(visible:Boolean, time:Number, op:KCompositeOperation):void;
 		
 		/**
 		 * Gets the head key frame of the visibility key frame list.
@@ -67,6 +67,6 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 * @return The corresponding alpha value for the visibility key.
 		 */
-		function alpha(time:int):Number;
+		function alpha(time:Number):Number;
 	}
 }

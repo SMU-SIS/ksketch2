@@ -33,7 +33,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The key frame at the given target time.
 		 */
-		function getKeyAtTime(time:int):IKeyFrame;
+		function getKeyAtTime(time:Number):IKeyFrame;
 		
 		/**
 		 * Gets the last key frame that is at or before the given time,
@@ -42,7 +42,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The last key frame that is at or before the given time, else null.
 		 */
-		function getKeyAtBeforeTime(time:int):IKeyFrame;
+		function getKeyAtBeforeTime(time:Number):IKeyFrame;
 		
 		/**
 		 * Gets the first key frame that is after the given time if it exists,
@@ -53,7 +53,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param time The target time.
 		 * @return The first key frame after the given target time, else null.
 		 */
-		function getKeyAftertime(time:int):IKeyFrame;
+		function getKeyAftertime(time:Number):IKeyFrame;
 		
 		/**
 		 * Inserts the given key into its correct position in the key frame list.

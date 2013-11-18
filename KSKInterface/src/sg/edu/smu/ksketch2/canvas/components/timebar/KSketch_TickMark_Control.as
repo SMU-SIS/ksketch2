@@ -20,9 +20,10 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.SortingFunctions;
-
+	
 	/**
 	 * Tick mark control generates tick marks and handles interactions with the tick marks
 	 * It is more like an extension to the time control class.
@@ -33,16 +34,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	 */	
 	public class KSketch_TickMark_Control
 	{	
-		public static const GRAB_THRESHOLD:Number = 24;
+		public static const GRAB_THRESHOLD:Number = 10;
 		
 		private var _KSketch:KSketch2;
 		private var _timeControl:KSketch_TimeControl;
 		private var _interactionControl:KInteractionControl;
 		
-		private var _ticks:Vector.<KSketch_TickMark>;
+		public var _ticks:Vector.<KSketch_TickMark>;
 		private var _before:Vector.<KSketch_TickMark>;
 		private var _after:Vector.<KSketch_TickMark>;
-
+		
 		private var _grabbedTick:KSketch_TickMark;
 		
 		private var _startX:Number;
@@ -87,7 +88,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		private function _updateTicks(event:Event = null):void
 		{
 			var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
-			_timeControl.timings = new Vector.<int>();
+			_timeControl.timings = new Vector.<Number>();
 			_ticks = new Vector.<KSketch_TickMark>();
 			
 			//Gather the keys from objects and generate chains of markers from the keys
@@ -97,7 +98,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			var currentObject:KObject;
 			var transformKeyHeaders:Vector.<IKeyFrame>;
-
+			
 			for(i = 0; i<length; i++)
 			{
 				currentObject = allObjects.getObjectAt(i);
@@ -106,14 +107,14 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				//Generate markers for each set of transform keys
 				for(j = 0; j < transformKeyHeaders.length; j++)
 					_generateTicks(transformKeyHeaders[j], currentObject.id, currentObject.selected);
-					
+				
 				//Generate markers for visibility key
 				_generateTicks(currentObject.visibilityControl.visibilityKeyHeader, currentObject.id, currentObject.selected);
 			}
 			
 			_ticks.sort(SortingFunctions._compare_x_property);
 			_drawTicks();
-
+			
 			//Set timings for time control's jumping function
 			_timeControl.timings.sort(SortingFunctions._sortInt);			
 		}
@@ -152,7 +153,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				currentKey = currentKey.next;
 			}
 		}
-			
+		
 		//Recompute the xPositions of all available time ticks against the time control's maximum time
 		//Only updates the available time ticks' position
 		//Does not create new time ticks.
@@ -161,17 +162,17 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(!_ticks || _ticks.length == 0)
 				return;
 			
-				var i:int = 0;
-				var length:int = _ticks.length;
-				var currentTick:KSketch_TickMark;
-
-				for(i; i<length; i++)
-				{
-					currentTick = _ticks[i];
-					currentTick.x = _timeControl.timeToX(currentTick.time);
-				}
-				
-				_drawTicks();
+			var i:int = 0;
+			var length:int = _ticks.length;
+			var currentTick:KSketch_TickMark;
+			
+			for(i; i<length; i++)
+			{
+				currentTick = _ticks[i];
+				currentTick.x = _timeControl.timeToX(currentTick.time);
+			}
+			
+			_drawTicks();
 		}
 		
 		/**
@@ -205,18 +206,14 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//Rigth now it is drawing if and only if there is only 1 object selected
 			if(_interactionControl.selection && _interactionControl.selection.objects.length() == 1)
 			{
-				_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS,
-																		KSketchStyles.TIME_TICK_COLOR);
-
-				_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS,
-																			KSketchStyles.ACTIVITY_OTHER_COLOR);
+				_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS, KSketchStyles.ACTIVITY_OTHER_COLOR);
 				
 				drawTarget = _timeControl.activityDisplay;
 				
 				for(i = 0; i<_ticks.length; i++)
 				{
 					currentMarker = _ticks[i];
-						
+					
 					if(!currentMarker.selected)
 						continue;
 					
@@ -227,6 +224,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 						
 						if(currentX < 0)
 							continue;
+						
+						var firstFrame:KSpatialKeyFrame =  _interactionControl.selection.objects.getObjectAt(0).transformInterface.getActiveKey(currentMarker.key.time) as KSpatialKeyFrame;	
+						
+						if(firstFrame)
+						{
+							if(firstFrame.passthrough)
+									_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_A, KSketchStyles.TIME_TICK_CONTROLPOINT);
+							else
+								_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_B, KSketchStyles.TIME_TICK_KEYFRAME);
+						}
 						
 						if(drawTarget.x <= currentX)
 						{
@@ -241,7 +248,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 									if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
 									{
 										drawTarget.graphics.beginFill(KSketchStyles.ACTIVITY_COLOR);
-										
 										drawTarget.graphics.drawRect(currentMarker.prev.x, 0, currentMarker.x - currentMarker.prev.x, drawTarget.height);	
 										drawTarget.graphics.endFill();	
 									}
@@ -253,8 +259,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			}
 			else
 			{
-				_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS,
-																			KSketchStyles.TIME_TICK_COLOR);
+				_timeControl.unselectedTickMarkDisplay.alpha = KSketchStyles.TIME_TICK_SELECTED_ALPHA;
+				_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_A, KSketchStyles.ACTIVITY_OTHER_COLOR);
 			}
 			
 			//Draw unselected markers
@@ -263,7 +269,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			for(i = 0; i<_ticks.length; i++)
 			{
 				currentMarker = _ticks[i];
-
+				
 				if(!currentMarker.selected)
 				{
 					currentX = currentMarker.x;
@@ -273,8 +279,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					
 					if(drawTarget.x <= currentX)
 					{
-						drawTarget.graphics.moveTo( currentX, 0);
-						drawTarget.graphics.lineTo( currentX, drawTarget.height);
+						drawTarget.graphics.moveTo(currentX, 0);
+						drawTarget.graphics.lineTo(currentX, drawTarget.height);
 					}
 				}
 			}
@@ -308,7 +314,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				if(_interactionControl.selection)
 					if(!currentTick.selected)
 						continue;
-
+				
 				dx = Math.abs(currentTick.x - _startX);
 				
 				if(dx > GRAB_THRESHOLD)
@@ -330,7 +336,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//Ticks exactly on the spot are classified as before
 			_before = new Vector.<KSketch_TickMark>();
 			_after = new Vector.<KSketch_TickMark>();
-
+			
 			for(i = 0; i < length; i++)
 			{
 				currentTick = _ticks[i];
@@ -390,16 +396,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				for(i = 0; i < length; i++)
 				{
 					tick = _before[i];	
-					
 					tickChangeX = Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
-
+						//Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
+					
 					if(tickChangeX < 0)
 						tick.moveToX(tick.originalPosition + tickChangeX, _pixelPerFrame);
 					else
-						tick.x = tick.originalPosition;
+						tick.x = tick.originalPosition;		
 				}
 			}
-
+			
 			//Moving towards the right pushes future keys
 			if(changeX >= 0)
 			{
@@ -409,19 +415,21 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				{
 					tick = _after[i];	
 					
-					tickChangeX = Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
+					tickChangeX = ((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
+						//Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
 					
 					if(tickChangeX > 0)
 						tick.moveSelfAndNext(tick.originalPosition + tickChangeX, _pixelPerFrame);
 					else
 						tick.moveSelfAndNext(tick.originalPosition, _pixelPerFrame);
+						
 				}
 			}
 			
 			//Update marker positions
 			length = _ticks.length
 			var currentTick:KSketch_TickMark;
-			var maxTime:int = 0;
+			var maxTime:Number = 0;
 			for(i = 0; i < length; i++)
 			{
 				currentTick = _ticks[i];
@@ -431,11 +439,11 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					currentTick.time = KSketch_TimeControl.MAX_ALLOWED_TIME;
 					currentTick.x = _timeControl.timeToX(currentTick.time);
 				}
-
+				
 				if(maxTime < currentTick.time)
 					maxTime = currentTick.time;
 			}
-
+			
 			//Redraw markers
 			_drawTicks();
 			_changeX = changeX;
@@ -455,7 +463,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			var length:int = _ticks.length;
 			var currentTick:KSketch_TickMark;
 			var allObjects:KModelObjectList = _KSketch.root.getAllChildren();
-			var maxTime:int = 0;
+			var maxTime:Number = 0;
 			for(i = 0; i < _ticks.length; i++)
 			{
 				currentTick = _ticks[i];
@@ -463,8 +471,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					maxTime = currentTick.time;
 				
 				_KSketch.editKeyTime(allObjects.getObjectByID(currentTick.associatedObjectID),
-																currentTick.key, currentTick.time,
-																_interactionControl.currentInteraction);
+					currentTick.key, currentTick.time,
+					_interactionControl.currentInteraction);
 			}
 			
 			//Update the time control's maximum time if needed
@@ -480,16 +488,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
 				
 				_interactionControl.end_interaction_operation();
-				
-				var log:XML = <op/>;
-				var date:Date = new Date();
-				
-				log.@category = "Tickmark";
-				log.@type = "Move Tickmark";
-				log.@moveFrom = KSketch_TimeControl.toTimeCode(_timeControl.xToTime(_startX));
-				log.@moveTo = KSketch_TimeControl.toTimeCode(_timeControl.xToTime(_startX+_changeX));
-				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-				_KSketch.log.appendChild(log);
 			}
 			else
 				_interactionControl.cancel_interaction_operation();

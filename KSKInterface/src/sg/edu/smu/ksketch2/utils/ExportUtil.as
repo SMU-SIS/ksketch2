@@ -17,51 +17,51 @@ package sg.edu.smu.ksketch2.utils
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 
 	/**
-	 * The ExportUtil class serves as the concrete class for video
-	 * exporting in K-Sketch. Specifically, it uses the given model and
-	 * its related display to generate a set of images to be used in video
-	 * exporting.
-	 */
+ 	 * The ExportUtil class serves as the concrete class for video
+ 	 * exporting in K-Sketch. Specifically, it uses the given model and
+ 	 * its related display to generate a set of images to be used in video
+ 	 * exporting.
+ 	 */
 	public class ExportUtil
 	{
 		/**
-		 * The exported content.
-		 */
+ 		 * The exported content.
+ 		 */
 		public static var exportedContent:ByteArray;
 
 		/**
-		 * The width for 480p display.
-		 */
+ 		 * The width for 480p display.
+ 		 */
 		public static const WIDTH_480P:Number = 854;
 		
 		/**
-		 * The height for 480p display.
-		 */
+ 		 * The height for 480p display.
+ 		 */
 		public static const HEIGHT_480P:Number = 480;
 		
 		/**
-		 * Converts the scene graph to FLV bytes.
-		 * 
-		 * @param display The target model display.
-		 * @param ksketch The target ksketch object.
+ 		 * Converts the scene graph to FLV bytes.
+ 		 * 
+ 		 * @param display The target model display.
+ 		 * @param ksketch The target ksketch object.
 		 */
 		public static function convertSceneToFLVBytes(display:KModelDisplay, ksketch:KSketch2):Vector.<BitmapData>
 		{
-			// determine the size of the area to be captured
+			//Size of the area to be captured to be determined here
 			var captureArea:Rectangle = new Rectangle(0,0,WIDTH_480P,HEIGHT_480P);
 			var drawnFrames:Vector.<BitmapData> = new Vector.<BitmapData>();
 			
-			var currentTime:int = 0;
-			var endTime:int = ksketch.maxTime;
+			var currentTime:Number = 0;
+			var endTime:Number = ksketch.maxTime;
 			var currentFrame:BitmapData;
 			
-			// generate the matrix to scale
+			//Generate the matrix to scale
 			var toScaleX:Number = KSketch2.CANONICAL_WIDTH/captureArea.width;
 			var toScaleY:Number = KSketch2.CANONICAL_HEIGHT/captureArea.height;
 			var matrix:Matrix = new Matrix();
 			matrix.scale(1/toScaleX, 1/toScaleY);
 			
-			// draw the frames for at every frame boundary
+			//Draw the frames for at every frame boundary
 			while(currentTime <= endTime)
 			{
 				ksketch.time = currentTime;

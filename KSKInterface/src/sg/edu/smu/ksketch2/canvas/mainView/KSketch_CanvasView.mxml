@@ -87,12 +87,15 @@
 			//add: _checkForImageData() //This can be done during addedToStage too
 			//viewActivated: _viewActivateHandler - loads data/ insert images 
 			//				A lot of times, this happens first, so we go back to addedToStage
-			
 			protected function addedToStageHandler(event:Event):void 
 			{
 				if(isMobile)
 				{
-					_orientationControl = new KOrientationControl(stage);
+					if(userData.orientationControl)
+						_orientationControl = userData.orientationControl;
+					else
+						_orientationControl = new KOrientationControl(stage);
+					
 					_orientationControl.init(event);
 				}
 			} 
@@ -119,9 +122,7 @@
 				
 				//We shouldn't make a new ksketch if one already exists
 				if(_KSketch)
-				{
 					return;
-				}
 				
 				//Determine platform type, mobile / not mobile
 				//If os is a mac or windows, it is desktop.
@@ -206,7 +207,6 @@
 				//Fail safe measure
 				if(_needToProcessData)
 					_enterView_ProcessData();
-				
 			}
 			
 			private function _checkForImageData():void

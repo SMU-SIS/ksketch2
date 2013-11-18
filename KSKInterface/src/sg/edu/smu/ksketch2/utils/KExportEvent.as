@@ -12,27 +12,27 @@ package sg.edu.smu.ksketch2.utils
 	import flash.events.Event;
 	
 	/**
-	 * The KExportEvent class serves as the concrete class for handling
-	 * export events in K-Sketch.
-	 */
+ 	 * The KExportEvent class serves as the concrete class for handling
+ 	 * export events in K-Sketch.
+ 	 */
 	public class KExportEvent extends Event
 	{
 		/**
-		 * The export event status.
-		 */
+ 		 * The export event status.
+ 		 */
 		public static const EVENT_EXPORT:String = "export save";
 		
 		/**
-		 * The export data.
-		 */
+ 		 * The export data.
+ 		 */
 		public var data:Vector.<BitmapData>;
 		
 		/**
-		 * The main constructor for the KExportEvent class.
-		 * 
-		 * @param type The event type.
-		 * @param exportData The export data.
-		 */
+ 		 * The main constructor for the KExportEvent class.
+ 		 * 
+ 		 * @param type The event type.
+ 		 * @param exportData The export data.
+ 		 */
 		public function KExportEvent(type:String, exportData:Vector.<BitmapData>)
 		{
 			super(type);

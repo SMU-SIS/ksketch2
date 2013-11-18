@@ -94,7 +94,7 @@
 				var isRedirectedToLogin:Boolean = currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0;
 				var isRedirectedToSkip:Boolean = currentURL.indexOf(KSketchWebLinks.redirecturl_skip) >= 0;
 				
-				
+				trace("trace url: " + currentURL);
 				if(isRedirectedToLogin || isRedirectedToSkip)
 				{
 					if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0)
@@ -155,7 +155,7 @@
 			public function ParseJSONObject(event:ResultEvent):void
 			{
 				var rawData:String = String(event.result);
-				
+				trace("user data form login: " + rawData);
 				var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 				
 				//check if user data does not exist

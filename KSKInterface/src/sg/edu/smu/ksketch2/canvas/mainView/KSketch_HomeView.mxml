@@ -96,6 +96,8 @@
 			{
 				_orientationControl = new KOrientationControl(stage);
 				_orientationControl.init(event);
+				userData.orientationControl = _orientationControl;
+					
 				
 				//check for network connection
 				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
@@ -460,7 +462,7 @@
 								var tempSketchId:String = sketchObj.data.sketchId;
 								var tempSketchVer:String = sketchObj.data.version;
 								
-								if (tempSketchVer == selectedSketchVersion && tempSketchName == selectedSketchName)
+								if (tempSketchName == selectedSketchName)
 								{
 									tempSketchName = "";
 									tempSketchId = "";

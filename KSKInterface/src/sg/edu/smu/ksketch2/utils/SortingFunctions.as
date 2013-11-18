@@ -32,11 +32,11 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Compares the times for both key frames.
-		 * 
-		 * @param key1 The target first key.
-		 * @param key2 The target second key.
-		 * @return The comparison.
+ 		 * Compares the times for both key frames.
+ 		 * 
+ 		 * @param key1 The target first key.
+ 		 * @param key2 The target second key.
+ 		 * @return The comparison.
 		 */
 		public static function _compareKeyTimes(key1:IKeyFrame, key2:IKeyFrame):Number
 		{
@@ -47,12 +47,12 @@ package sg.edu.smu.ksketch2.utils
 		}
 		
 		/**
-		 * Compares the values for both integers.
-		 * 
-		 * @param int1 The target first integer value.
-		 * @param int2 The target second integer value.
-		 * @param The comparison.
-		 */
+ 		 * Compares the values for both integers.
+ 		 * 
+ 		 * @param int1 The target first integer value.
+ 		 * @param int2 The target second integer value.
+ 		 * @param The comparison.
+ 		 */
 		public static function _sortInt(int1:int, int2:int):int
 		{
 			if(int1 <= int2)

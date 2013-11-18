@@ -11,5 +11,6 @@
 <s:ViewNavigatorApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 							xmlns:s="library://ns.adobe.com/flex/spark"
 							xmlns:canvas="sg.edu.smu.ksketch2.canvas.*"
-							firstView="sg.edu.smu.ksketch2.canvas.KSketch_CanvasView">
+							firstView="sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView">
+	
 </s:ViewNavigatorApplication>

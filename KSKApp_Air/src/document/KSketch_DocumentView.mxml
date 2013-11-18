@@ -16,7 +16,6 @@
 			import document.scrollerColumn.KDocumentSelectedEvent;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.canvas.KSketch_Canvas;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.components.popup.ExportProgressBar;
 			import sg.edu.smu.ksketch2.utils.ExportUtil;
@@ -157,7 +156,7 @@
 			private function _openDocument(doc:KSketchDocument):void
 			{
 				if(doc)
-					navigator.pushView(KSketch_Canvas, doc);
+					navigator.pushView(KSketch_CanvasView, doc);
 			}
 			
 			private function _deleteDocument(doc:KSketchDocument):void

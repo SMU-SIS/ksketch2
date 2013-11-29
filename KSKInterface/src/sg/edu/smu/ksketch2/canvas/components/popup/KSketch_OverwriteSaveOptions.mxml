@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:HTTPService id="httpService"
+					   useProxy="false"  
+					   method="POST"
+					   resultFormat="text" 
+					   >
+		</s:HTTPService>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import air.net.URLMonitor;
+			
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchWebLinks;
+			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
+			
+			public static var isSaved:Boolean = false;
+			
+			private var _canvasView:KSketch_CanvasView;
+			private var _menu:KSketch_PopUp_Menu;
+			private var _saveOptions:KSketch_SaveOptions;
+			private var _cancel:Boolean = false;
+			
+			private var monitor:URLMonitor;
+			private var _isConnected:Boolean;
+			
+			private var _result:Object;
+			private var _userData:Object;
+			
+			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, saveOptions:KSketch_SaveOptions):void
+			{
+				_canvasView = canvasView;
+				_menu = menu;
+				_saveOptions = saveOptions;
+				
+				//check for network connection
+				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				monitor.addEventListener(StatusEvent.STATUS, isConnected);
+				monitor.start();
+			}
+			
+			private function isConnected(event:StatusEvent):void
+			{
+				if(monitor.available)
+					_isConnected = true;
+				else
+					_isConnected = false;
+				
+				monitor.stop();
+				monitor.removeEventListener(StatusEvent.STATUS, isConnected);
+			}
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				//get the user data fropm save options
+				_userData = _saveOptions.userData;
+				
+				super.open(owner, modal);
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				super.close(commit,data);
+				
+				if(!_cancel)
+				{
+					if(!KSketch_SaveOptions.returnToHome)
+						_canvasView._interactionControl.reset();
+					else
+						_menu._exit();
+				}
+			}
+			
+			private function cancel():void
+			{
+				_cancel = true;
+				close();
+				_cancel = false;
+			}
+			
+			private function save():void
+			{
+				_saveOptions.save();
+				isSaved = true;
+				close();
+			}
+			
+			private function resultHandler(event:ResultEvent):void
+			{
+				var resultRaw:Object = event.result;
+				var result:Object = com.adobe.serialization.json.JSON.decode(resultRaw.toString());
+				if (result.status == "success")
+				{
+					isSaved = true;
+					close();
+				}
+			}
+			
+			private function faultHandler(event:FaultEvent):void
+			{
+				trace("Fault: " + event.toString());
+			}
+		]]>
+	</fx:Script>
+	<s:filters>
+		<s:DropShadowFilter 
+			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
+			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
+			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
+			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+	</s:filters>
+	<s:Group id="overwriteSketch" visible="true">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+			<s:fill>
+				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+			</s:fill>
+		</s:Rect>
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+			</s:layout>
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout paddingLeft="10"/>
+				</s:layout>
+				<s:Label text="You are trying to save an older version of this sketch." fontSize="18"/>
+			</s:Group>
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+				</s:layout>
+				<s:Button label="Save Anyway" click="save()" fontSize="14"/>
+				<s:Button label="Cancel" click="cancel()" fontSize="14"/>
+			</s:Group>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

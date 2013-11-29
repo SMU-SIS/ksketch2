@@ -23,10 +23,10 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
+			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
 			
 			public static const ORIGIN:Point = new Point();
 			public static const LEFT:int = 0;
@@ -81,7 +81,6 @@
 				imageButton.init(KSketchAssets.texture_images, KSketchAssets.texture_images_down);
 				imageButton.initSkin();
 				
-				//*disable exit and save button
 				if(_saveOptions)
 				{
 					newButton.visible = true;
@@ -221,6 +220,7 @@
 			{
 				close();
 				_canvasView.exit();
+				KSketch_CanvasView.isNewSketch = false;
 			}
 			
 			/**

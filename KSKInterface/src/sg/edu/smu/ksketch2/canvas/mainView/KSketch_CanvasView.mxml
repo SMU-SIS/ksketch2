@@ -15,7 +15,6 @@
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:transformWidget2="sg.edu.smu.ksketch2.canvas.components.transformWidget.*"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
-		addedToStage="addedToStageHandler(event)"
 		initialize="_initCanvas()"
 		add="_checkForImageData()"
 		creationPolicy="all"
@@ -35,6 +34,7 @@
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_OverwriteSaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_ContextMenu;
@@ -43,7 +43,6 @@
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
-			import sg.edu.smu.ksketch2.canvas.controls.KOrientationControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
@@ -60,6 +59,8 @@
 			[Bindable]
 			public static var isWeb:Boolean = true;
 			
+			public static var isNewSketch:Boolean = false;
+			
 			private var userData:Object = new Object();
 			private var _imageData:BitmapData;
 			private var _needToProcessData:Boolean;
@@ -67,13 +68,13 @@
 			
 			private var _KSketch:KSketch2;
 			public var _interactionControl:KInteractionControl;
-			private var _orientationControl:KOrientationControl;
 			
 			//Pop Ups
 			private var _feedbackPopUp:KSketch_Feedback_Message;
 			private var _menuPopUp:KSketch_PopUp_Menu;
 			private var _options:KSketch_Options;
 			private var _saveOptions:KSketch_SaveOptions;
+			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
 			private var _magnifier:KSketch_Timebar_Magnifier;
 			private var _keyMenu:KSketch_Timebar_ContextMenu;
 			private var _transitionHelper:KWidgetInteractorManager;
@@ -87,18 +88,6 @@
 			//add: _checkForImageData() //This can be done during addedToStage too
 			//viewActivated: _viewActivateHandler - loads data/ insert images 
 			//				A lot of times, this happens first, so we go back to addedToStage
-			protected function addedToStageHandler(event:Event):void 
-			{
-				if(isMobile)
-				{
-					if(userData.orientationControl)
-						_orientationControl = userData.orientationControl;
-					else
-						_orientationControl = new KOrientationControl(stage);
-					
-					_orientationControl.init(event);
-				}
-			} 
 			
 			private function _saveHandler(event:KIOEvent):void
 			{
@@ -160,6 +149,7 @@
 				_options = new KSketch_Options();
 				_keyMenu = new KSketch_Timebar_ContextMenu();
 				_saveOptions = new KSketch_SaveOptions();
+				_overwriteSaveOptions = new KSketch_OverwriteSaveOptions();
 				_menuPopUp = new KSketch_PopUp_Menu();
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
@@ -167,7 +157,8 @@
 				
 				if(!isWeb)
 				{
-					_saveOptions.init(this, _menuPopUp, _options);
+					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions);
+					_overwriteSaveOptions.init(this, _menuPopUp, _saveOptions);
 					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl);
 					_saveOptions.createDeferredContent();
 				}
@@ -348,7 +339,7 @@
 				
 				if(_currentDocument == null)
 				{
-					_currentDocument = new KSketchDocument("",saveXML,"",new Date(),"", 0,"");
+					_currentDocument = new KSketchDocument("",saveXML,"",new Date(),"", 0,-1,"");
 				}
 				else
 				{

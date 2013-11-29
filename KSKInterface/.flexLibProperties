@@ -19,7 +19,6 @@
     <classEntry path="sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KMoveCenterMode"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.controls.interactors.KMoveCenterInteractor"/>
     <classEntry path="sg.edu.smu.ksketch2.KSketchWebLinks"/>
-    <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KOrientationControl"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"/>
   </includeClasses>
   <includeResources/>

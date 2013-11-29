@@ -8,6 +8,10 @@
  */
 package sg.edu.smu.ksketch2.utils
 {
+	import mx.collections.ArrayCollection;
+	import mx.collections.Sort;
+	import mx.collections.SortField;
+	
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 
 	/**
@@ -59,6 +63,21 @@ package sg.edu.smu.ksketch2.utils
 				return -1;
 			else
 				return 1;				
+		}
+		
+		public static function sortArray(arr:ArrayCollection, category:String):ArrayCollection
+		{
+			var dataSortField:SortField = new SortField();
+			dataSortField.name = category;
+			dataSortField.numeric = true;
+			
+			var numericDataSort:Sort = new Sort();
+			numericDataSort.fields = [dataSortField];
+			
+			arr.sort = numericDataSort;
+			arr.refresh();
+			
+			return arr;
 		}
 		
 	}

@@ -30,12 +30,12 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
-			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import com.adobe.serialization.json.JSON;
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.utils.ObjectProxy;
 			
@@ -46,10 +46,11 @@
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.KSketch_User;
 			import sg.edu.smu.ksketch2.KSketch_UserSketches;
+			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_OfflineOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SyncOptions;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer;
-			import sg.edu.smu.ksketch2.canvas.controls.KOrientationControl;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			
 			[Bindable]
@@ -58,29 +59,7 @@
 			[Bindable] 
 			public static var arrDG:ArrayCollection;	//to display user's list of sketches on the DataGrid
 			
-			private var arrSketchDocument:ArrayCollection = new ArrayCollection();
-			private var array:Array = [];
-			
-			private var monitor:URLMonitor;
-			private var userData:Object = new Object();
-			private var userSketch:KSketch_UserSketches;
-			private var _orientationControl:KOrientationControl;
-			private var _syncOptions:KSketch_SyncOptions;
-			
-			//variables for list of sketches
-			private var _lastClickEvent:int = 0;
-			private var selectedSketchName:String;
-			private var selectedSketchId:String;
-			private var selectedSketchVersion:String;
-			
-			public static var _isXML:Boolean;
-			public static var _isUsingCache:Boolean;
-			private var _isCanvas:Boolean;
-			private var _isConnected:Boolean;
-			private var _isCached:Boolean;
-			private var _isLoggedIn:Boolean;
-			
-			public static var mySO:SharedObject;
+			public static var _mySO:SharedObject;
 			public static var _cachedUser:String;
 			public static var _cachedUserSketch:String;
 			public static var _cachedSketchDocs:String;
@@ -88,32 +67,84 @@
 			public static var _dup_cachedUserSketch:String;
 			public static var _dup_cachedSketchDocs:String;
 			
+			public static var autoSaveCounter:int = 0;
+			
+			private var monitor:URLMonitor;
+			private var userData:Object = new Object();
+			private var _syncOptions:KSketch_SyncOptions;
+			private var _offlineOptions:KSketch_OfflineOptions;
+			
+			private var _lastClickEvent:int = 0;
+			private var _isCanvas:Boolean;
+			private var _isCached:Boolean;
+			private var _isXML:Boolean;
+			private var _successfulRetrievalFromWeb:Boolean;
+			
+			public var _isLoggedIn:Boolean;
+			public var _isConnected:Boolean;
+			public var _isUsingCache:Boolean;
+			
 			private var cacheTimer:Timer;
 			private var refreshViewTimer:Timer;
 			private var progressTimer:Timer;
+			private var dataFromWebTimer:Timer = new Timer(10000,1);
 			
 			private function addedToStageHandler(event:Event):void
 			{
-				_orientationControl = new KOrientationControl(stage);
-				_orientationControl.init(event);
-				userData.orientationControl = _orientationControl;
-					
+				trace("stage orientation: " + stage.deviceOrientation);
+				if(stage.deviceOrientation != "unknown")
+				{
+					trace("set to landscape");
+					stage.setAspectRatio("landscape");
+					stage.autoOrients = true;
+					stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChangedHandler);
+				}
 				
 				//check for network connection
 				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
 				monitor.addEventListener(StatusEvent.STATUS, isConnected);
 				monitor.start();
 				
-				//add timer to constantly cache data every X time
+				/*add timer to constantly cache data every X time
 				cacheTimer = new Timer (60000, 1);
 				cacheTimer.start();
-				cacheTimer.addEventListener(TimerEvent.TIMER_COMPLETE, updateCache);
+				cacheTimer.addEventListener(TimerEvent.TIMER_COMPLETE, updateCache);*/
+			}
+			
+			private function isConnected(event:StatusEvent):void
+			{
+				if(monitor.available)
+					_isConnected = true;
+				else
+					_isConnected = false;
+				
+				monitor.stop();
+				monitor.removeEventListener(StatusEvent.STATUS, isConnected);
+				
+				prepareView();
+			}
+			
+			private function orientationChangedHandler(event:StageOrientationEvent):void {
+				event.stopImmediatePropagation();
+				if(event.afterOrientation == StageOrientation.ROTATED_RIGHT || event.afterOrientation == StageOrientation.ROTATED_LEFT)
+					trace("Inside orientationChanging()");
+			}
+			
+			public function refreshHomeView():void
+			{
+				//check for network connection
+				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				monitor.addEventListener(StatusEvent.STATUS, isConnected);
+				monitor.start();
 			}
 			
 			private function init():void
 			{	
 				_syncOptions = new KSketch_SyncOptions();
 				_syncOptions.createDeferredContent();
+				
+				_offlineOptions = new KSketch_OfflineOptions;
+				_offlineOptions.createDeferredContent();
 				
 				//set KSketch Logo
 				logoHolder.init(KSketchAssets.texture_logo, KSketchAssets.texture_logo);
@@ -124,29 +155,50 @@
 			
 			private function prepareView():void
 			{
-				mySO = SharedObject.getLocal("mydata");
-				if (mySO.data) {
-					if(mySO.data.user)
+				_mySO = SharedObject.getLocal("mydata");
+				if (_mySO.data) {
+					if(_mySO.data.user)
 					{
-						_cachedUser = mySO.data.user;	
+						_cachedUser = _mySO.data.user;	
 						_dup_cachedUser = _cachedUser;
 					}
 					
-					if(mySO.data.userSketch)
+					if(_mySO.data.userSketch)
 					{
-						_cachedUserSketch = mySO.data.userSketch;
+						_cachedUserSketch = _mySO.data.userSketch;
 						_dup_cachedUserSketch = _cachedUserSketch;
 					}
 					
-					if(mySO.data.sketchDocs)
+					if(_mySO.data.sketchDocs)
 					{
-						_cachedSketchDocs = mySO.data.sketchDocs;
+						_cachedSketchDocs = _mySO.data.sketchDocs;
 						_dup_cachedSketchDocs = _cachedSketchDocs;
 					}
 				}
 				
-				if(data)
+				if(!data || data == "Skip Login" || data == "Lost Connection" || data == "Janrain Failed")
 				{
+					if(data)
+					{
+						var errorMessage:String = String(data);
+						
+						if(errorMessage == "Lost Connection")
+							listSketches_unavailable.text = "Failed to login. You are not connected to the Internet.";
+						else if(errorMessage == "Janrain Failed")
+							listSketches_unavailable.text = "Our login provider is not accessible at the moment. Please try again later.";
+					}
+					
+					var obj:Object = new Object();
+					obj.status = "failed";
+					obj.u_login = "n.a";
+					var kUser:KSketch_User = new KSketch_User(obj);
+					userData.kUser = kUser;
+					
+					loginButton.label = "Login";
+				}
+				else
+				{
+					
 					//cast data from previous view to ObjectProxy. This is to avoid getting IEventDispatcher error
 					dataProxy = new ObjectProxy(data);
 					
@@ -158,20 +210,19 @@
 					else
 						loginButton.label = "Login";
 				}
-				else
-				{
-					var obj:Object = new Object();
-					obj.status = "failed";
-					obj.u_login = "n.a";
-					var kUser:KSketch_User = new KSketch_User(obj);
-					userData.kUser = kUser;
-					trace("created user object: " + kUser.u_realname + " " + kUser.id);
-					loginButton.label = "Login";
-				}
 				
 				userData.homeView = this;
 				userData.kSketchDocument = null;
 				_dup_cachedUser = com.adobe.serialization.json.JSON.encode(userData.kUser);
+				
+				updateDataList();
+			}
+			
+			public function updateDataList():void
+			{
+				trace("Updating data list");
+				if(arrDG)
+					arrDG.removeAll();
 				
 				if(_isConnected)
 				{
@@ -193,57 +244,41 @@
 					retrieveDataFromCache();
 			}
 			
-			private function isConnected(event:StatusEvent):void
-			{
-				if(monitor.available)
-					_isConnected = true;
-				else
-					_isConnected = false;
-				
-				monitor.stop();
-				monitor.removeEventListener(StatusEvent.STATUS, isConnected);
-				
-				prepareView();
-			}
-			
 			private function retrieveDataFromCache():void
 			{
-				_isUsingCache = true;
-				
-				var rawData:String;
-				
-				if(_dup_cachedUserSketch && (_cachedUser == _dup_cachedUser))
+				//If there is a timer for web retrieval, remove it
+				if(dataFromWebTimer.hasEventListener(TimerEvent.TIMER_COMPLETE))
 				{
+					dataFromWebTimer.stop();
+					dataFromWebTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, timer_timeoutWebData);
 					
-					if(_dup_cachedUserSketch.indexOf("%") >= 0)
-					{
-						var sketchArr:Array = _dup_cachedUserSketch.split("%");
-						var arrEntities:Array;
-						if(sketchArr)
-						{
-							arrEntities = new Array(sketchArr.length);
-							for(var i:int=0; i<sketchArr.length; i++)
-							{
-								var objSketch:Object = com.adobe.serialization.json.JSON.decode(sketchArr[i], true);
-								arrEntities[i] = objSketch;
-							}
-							
-							rawData = com.adobe.serialization.json.JSON.encode(arrEntities);
-						}
-					}
-					else
-						rawData = _dup_cachedUserSketch;
-					
-					var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
-					retrieveData(obj, _dup_cachedUserSketch);
-					
-					progressTimer.stop();
-					progressTimer.removeEventListener(TimerEvent.TIMER, timer_tickHandler);
-					progressBar.visible = false;
+					dataFromWebTimer = new Timer(1,1)
+					dataFromWebTimer.addEventListener(TimerEvent.TIMER_COMPLETE, timer_timeoutWebData);
+					dataFromWebTimer.start();
 				}
 				else
-					startNewSketch();
+				{
+				
+					_isUsingCache = true;
 					
+					var rawData:String;
+					
+					if(_dup_cachedUserSketch && (_cachedUser == _dup_cachedUser))
+					{
+						
+						rawData = _dup_cachedUserSketch;
+						
+						var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
+						trace("Retrieve from cache raw data: " + rawData);
+						retrieveData(obj, _dup_cachedUserSketch);
+						
+						progressTimer.stop();
+						progressTimer.removeEventListener(TimerEvent.TIMER, timer_tickHandler);
+						progressBar.visible = false;
+					}
+					else
+						resetListOfSketches();
+				}
 			}
 			
 			private function refreshViewFromWeb(event:TimerEvent):void
@@ -256,31 +291,27 @@
 			
 			public function retrieveDataFromWeb():void
 			{
+				trace("retrieving from web");
+				
 				arrDG.removeAll();
 				
 				_isUsingCache = false;
 				_isXML = false;	//set boolean to false because first JSON retrieval is list of sketches, not XML of sketch
 				
-				//if previous user has sketches and is Anonymous, display the sketches as well
-				//var prevUserObj:Object = com.adobe.serialization.json.JSON.decode(_cachedUser,true);
-				if(_cachedUser)
-				{
-					var previousCachedUser:KSketch_User = new KSketch_User(com.adobe.serialization.json.JSON.decode(_cachedUser,true));
-					if(_cachedUserSketch && previousCachedUser.u_realname == "Anonymous")
-					{
-						KSketch_SyncOptions._currentUser = userData.kUser;
-						KSketch_SyncOptions._cachedUserSketch = _cachedUserSketch;
-						KSketch_SyncOptions._cachedSketchDocs = _cachedSketchDocs;
-						
-						_syncOptions.open(this,true);
-						PopUpManager.centerPopUp(_syncOptions);
-					}
-				}
+				//reset variable for successful retrieval from web to false
+				_successfulRetrievalFromWeb = false;
 				
 				//get json object of user's list of sketches from the URL and according to his real name
 				GetUserSketch.url = KSketchWebLinks.jsonurlSketch + userData.kUser.id;
 				GetUserSketch.send();
+				GetUserSketch.addEventListener(FaultEvent.FAULT, faultHandler);
+				
 				startProgressBar();
+				
+				//start timeout timer for web retrieval
+				dataFromWebTimer = new Timer(60000,1);
+				dataFromWebTimer.start();
+				dataFromWebTimer.addEventListener(TimerEvent.TIMER_COMPLETE, timer_timeoutWebData);
 			}
 			
 			private function ParseJSONObject(event:ResultEvent):void
@@ -289,9 +320,57 @@
 				var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 				retrieveData(obj,rawData);
 				
+				trace("successfully retrieved data from the web");
+				
+				_successfulRetrievalFromWeb = true;
+				
+				//make sure offline option box is closed if it was open because of disconnectivity at any point
+				if(_offlineOptions.isOpen)
+				{
+					_offlineOptions.close();
+					PopUpManager.removePopUp(_offlineOptions);
+				}
+				
+				//stop progress bar
 				progressTimer.stop();
 				progressTimer.removeEventListener(TimerEvent.TIMER, timer_tickHandler);
 				progressBar.visible = false;
+				
+				//stop timeout for web retrieval
+				dataFromWebTimer.stop();
+				dataFromWebTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, timer_timeoutWebData);
+			}
+			
+			private function sketchSync():void
+			{
+				trace("inside sketch sync: " + _cachedUserSketch);
+				if(_cachedUser)
+				{
+					var previousCachedUser:KSketch_User = new KSketch_User(com.adobe.serialization.json.JSON.decode(_cachedUser,true));
+					var currentCachedUser:KSketch_User = new KSketch_User(com.adobe.serialization.json.JSON.decode(_dup_cachedUser,true));
+					if(_cachedUserSketch && (previousCachedUser.u_realname == "Anonymous" || previousCachedUser.u_realname == currentCachedUser.u_realname))
+					{
+						
+						var newSketchObj:Object = com.adobe.serialization.json.JSON.decode(_dup_cachedUserSketch);
+						var oldSketchObj:Object = com.adobe.serialization.json.JSON.decode(_cachedUserSketch);	
+						
+						trace("hello:" + _dup_cachedUserSketch + "..." + _cachedUserSketch);
+						if(newSketchObj.entities.length != oldSketchObj.entities.length)
+						{
+							trace("bye");
+							KSketch_SyncOptions._currentUser = userData.kUser;
+							KSketch_SyncOptions._cachedUserSketch = _cachedUserSketch;
+							KSketch_SyncOptions._cachedSketchDocs = _cachedSketchDocs;
+							KSketch_SyncOptions._dup_cachedUserSketch = _dup_cachedUserSketch;
+							KSketch_SyncOptions._dup_cachedSketchDocs = _dup_cachedSketchDocs;
+							
+							_syncOptions.open(this,true);
+							PopUpManager.centerPopUp(_syncOptions);	
+						}
+					}
+				}
+				
+				writeDataToCache();
 			}
 			
 			private function retrieveData(obj:Object, rawData:String):void
@@ -306,48 +385,38 @@
 						var arrEntities:Array = [];
 						arrEntities = (obj.entities as Array);
 						
-						//cache comes in two format. Entities follow web formatter while cached to disk needs to split string
-						if(!arrEntities)
-						{
-							arrEntities = [];
-							for(var prep:String in obj)
-							{
-								if(prep == "id" || prep == "modified" || prep == "created")
-								{
-									arrEntities.push(obj);
-									break;
-								}
-								else
-									arrEntities.push(obj[prep]);
-							}
-						}
-						
 						if(arrEntities.length != 0)
 						{
 							//Create a UserSketch instance by sending only the 'entities' of the JSON object and user's ID
-							userSketch = new KSketch_UserSketches(arrEntities, userData.kUser.id);
+							var userSketch:KSketch_UserSketches = new KSketch_UserSketches(arrEntities, userData.kUser.id);
+							
+							initializeAutoSaveSketchName(userSketch);
 							
 							//Set DataGrid array to user sketches collection
+							var sortBy:String = "sketchId";
 							if(!arrDG)
-								arrDG = userSketch.getUserSketchArray(); 
+								arrDG = userSketch.getUserSketchArray(sortBy); 
 							else
-								arrDG.addAll(userSketch.getUserSketchArray());
+								arrDG.addAll(userSketch.getUserSketchArray(sortBy));
 							
 							_dup_cachedUserSketch = rawData;
 							
 							listSketches_unavailable.visible = false;
+							
+							sketchSync();
 						}
 						else
-							startNewSketch();
+							startNewSketch();		
 					}
 					else //if object contains XML of a particular sketch
 					{
 						_isXML = false;
+						trace("rawdata from retrieve data: " + rawData);
 						
 						//create XML and date object from JSON to create a KSketchDocument object
 						var xml:XML = new XML(obj.data.fileData);
 						var date:Date = new Date(obj.modified);
-						var docObj:KSketchDocument = new KSketchDocument(obj.data.fileName, xml, obj.id, date, obj.data.originalName, obj.data.originalVersion, obj.data.changeDescription);
+						var docObj:KSketchDocument = new KSketchDocument(obj.data.fileName, xml, obj.id, date, obj.data.originalName, obj.data.originalVersion, obj.data.sketchId, obj.data.changeDescription);
 						
 						if(_dup_cachedSketchDocs)
 							_dup_cachedSketchDocs += "%" + rawData;
@@ -361,7 +430,60 @@
 				}
 			}
 			
+			private function initializeAutoSaveSketchName(arrUserSketch:KSketch_UserSketches):void
+			{
+				var sortBy:String = "fileName";
+				var arrTemp:ArrayCollection = arrUserSketch.getUserSketchArray(sortBy); 
+				
+				for(var i:int = 0; i<arrTemp.length; i++)
+				{
+					if(arrTemp.getItemAt(i).name.indexOf("My Sketch") >= 0)
+					{
+						var tempFilename:String = arrTemp.getItemAt(i).name;
+						var trimFilename:String = tempFilename.replace("My Sketch", ""); 
+						var isANumber:Boolean = !isNaN(Number(trimFilename));
+						
+						if(isANumber)
+						{
+							var tempNo:int = int(trimFilename);
+							if(tempNo > autoSaveCounter)
+								autoSaveCounter = tempNo;	
+						}
+					}
+				}
+			}
+			
 			private function startNewSketch():void
+			{
+				if(_isConnected && _isLoggedIn)
+				{
+					//if previous user has sketches and is Anonymous, display the sketches as well
+					//var prevUserObj:Object = com.adobe.serialization.json.JSON.decode(_cachedUser,true);
+					if(_cachedUser)
+					{
+						var previousCachedUser:KSketch_User = new KSketch_User(com.adobe.serialization.json.JSON.decode(_cachedUser,true));
+						if(_cachedUserSketch && previousCachedUser.u_realname == "Anonymous")
+						{
+							KSketch_SyncOptions._currentUser = userData.kUser;
+							KSketch_SyncOptions._cachedUserSketch = _cachedUserSketch;
+							KSketch_SyncOptions._cachedSketchDocs = _cachedSketchDocs;
+							KSketch_SyncOptions._dup_cachedUserSketch = _dup_cachedUserSketch;
+							KSketch_SyncOptions._dup_cachedSketchDocs = _dup_cachedSketchDocs;
+							
+							_syncOptions.open(this,true);
+							PopUpManager.centerPopUp(_syncOptions);
+						}
+						else
+							resetListOfSketches();
+					}
+				}
+				else
+					resetListOfSketches();
+				
+				writeDataToCache();
+			}
+			
+			private function resetListOfSketches():void
 			{
 				listSketches_unavailable.visible = true;
 				_cachedUserSketch = null;
@@ -370,83 +492,77 @@
 				_dup_cachedSketchDocs = null;
 			}
 			
-			private function updateCache(event:TimerEvent):void
-			{
-				cacheTimer.removeEventListener(TimerEvent.TIMER, updateCache);
-				cacheTimer.stop();
-				
-				writeDataToCache();
-				
-				cacheTimer = new Timer(60000, 1);
-				cacheTimer.start();
-				cacheTimer.addEventListener(TimerEvent.TIMER_COMPLETE, updateCache);
-			}
-			
 			public static function writeDataToCache():void
 			{
-				mySO.clear();
+				_mySO.clear();
 				
 				_cachedUser = _dup_cachedUser;
-				mySO.data.user = _cachedUser;
+				_mySO.data.user = _cachedUser;
 				_dup_cachedUser = null;
 				
 				if(_dup_cachedUser)
 				{
 					_cachedUser = _dup_cachedUser;
-					mySO.data.user = _cachedUser;
+					_mySO.data.user = _cachedUser;
 					_dup_cachedUser = null;
 				}
 				
 				if(_dup_cachedUserSketch)
 				{
 					_cachedUserSketch = _dup_cachedUserSketch;
-					mySO.data.userSketch = _cachedUserSketch;
+					_mySO.data.userSketch = _cachedUserSketch;
 					_dup_cachedUserSketch = null;
 				}
 				
 				if(_dup_cachedSketchDocs)
 				{
 					_cachedSketchDocs = _dup_cachedSketchDocs;
-					mySO.data.sketchDocs = _cachedSketchDocs;
+					_mySO.data.sketchDocs = _cachedSketchDocs;
 					_dup_cachedSketchDocs = null;
 				}
 				
-				mySO.flush();
+				_mySO.flush();
 				
-				mySO = SharedObject.getLocal("mydata");
-				if (mySO.data) {
-					if(mySO.data.user)
+				_mySO = SharedObject.getLocal("mydata");
+				if (_mySO.data) {
+					if(_mySO.data.user)
 					{
-						_cachedUser = mySO.data.user;	
+						_cachedUser = _mySO.data.user;	
 						_dup_cachedUser = _cachedUser;
 					}
 					
-					if(mySO.data.userSketch)
+					if(_mySO.data.userSketch)
 					{
-						_cachedUserSketch = mySO.data.userSketch;
+						_cachedUserSketch = _mySO.data.userSketch;
 						_dup_cachedUserSketch = _cachedUserSketch;
 					}
 					
-					if(mySO.data.sketchDocs)
+					if(_mySO.data.sketchDocs)
 					{
-						_cachedSketchDocs = mySO.data.sketchDocs;
+						_cachedSketchDocs = _mySO.data.sketchDocs;
 						_dup_cachedSketchDocs = _cachedSketchDocs;
 					}
 				}
+				
+				trace("INITIALIZING CACHED DATA ----");
+				trace("User: " + _cachedUser);
+				trace("Sket: " + _cachedUserSketch);
+				trace("Docs: " + _cachedSketchDocs);
+				
 			}
 			
 			private function datagridSelectItem():void
 			{
-				selectedSketchName = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchName;
-				selectedSketchId = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchId;
-				selectedSketchVersion = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedVersion;
+				var selectedSketchName:String = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchName;
+				var selectedSketchId:String = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchId;
+				var selectedSketchVersion:String = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedVersion;
 				
 				_isXML = true; //set boolean to true because this JSON retrieval will be XML of sketch
 				_isCanvas = true;
 				
 				if(_isUsingCache)
 				{
-					if(selectedSketchName && selectedSketchVersion)
+					if(selectedSketchName)
 					{
 						if(_dup_cachedSketchDocs)
 						{
@@ -508,11 +624,11 @@
 			{
 				if(_dup_cachedUser || _dup_cachedUserSketch || _dup_cachedSketchDocs)
 				{
-					if(cacheTimer.hasEventListener(TimerEvent.TIMER_COMPLETE))
+					/*if(cacheTimer.hasEventListener(TimerEvent.TIMER_COMPLETE))
 					{
 						cacheTimer.removeEventListener(TimerEvent.TIMER, updateCache);
 						cacheTimer.stop();
-					}
+					}*/
 					
 					writeDataToCache();
 				}	
@@ -527,8 +643,14 @@
 				else //if screen name is Canvas
 					navigator.pushView(KSketch_CanvasView, userData);
 			}
+			
+			private function createSketch():void
+			{
+				KSketch_CanvasView.isNewSketch = true;
+				navigateToScreen('CANVAS');
+			}
 		
-			protected function startProgressBar():void
+			private function startProgressBar():void
 			{
 				progressBar.visible = true;
 				
@@ -537,12 +659,42 @@
 				progressTimer.start();
 			}
 			
-			protected function timer_tickHandler(event:TimerEvent):void
+			private function timer_tickHandler(event:TimerEvent):void
 			{
 				progressBar.value += .008;
 				
 				if (progressBar.value >= 1)
 					progressBar.value = 0;
+			}
+		
+			private function timer_timeoutWebData(event:TimerEvent):void
+			{
+				trace("inside timer_timeoutWebData: " + event.type);
+				
+				if(!_successfulRetrievalFromWeb)
+				{
+					//Open offline option pop-up
+					_offlineOptions.open(this,true);
+					PopUpManager.centerPopUp(_offlineOptions);
+				}
+				
+				//if progress bar is showing
+				if(progressBar.visible)
+				{
+					//stop progress bar
+					progressTimer.stop();
+					progressTimer.removeEventListener(TimerEvent.TIMER, timer_tickHandler);
+					progressBar.visible = false;
+				}
+				
+				dataFromWebTimer.stop();
+				dataFromWebTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, timer_timeoutWebData);
+			}
+			
+			private function faultHandler(event:FaultEvent):void
+			{
+				_isConnected = false;
+				updateDataList();
 			}
 		]]>
 	</fx:Script>
@@ -567,12 +719,13 @@
 					<s:layout> <s:HorizontalLayout paddingLeft="48" paddingTop="10"/> </s:layout>
 					<buttons:KSketch_Button id="logoHolder"
 											width="{KSketchStyles.LOGO_BUTTON_WIDTH}" 
-											height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"/>
+											height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"
+											 click="refreshHomeView()"/>
 				</s:Group>
 				
 				<s:Group width="100%">
 					<s:layout> <s:VerticalLayout paddingBottom="10"/> </s:layout>
-					<s:Button width="100%" label="Create a Sketch" click="navigateToScreen('CANVAS')"/>
+					<s:Button width="100%" label="Create a Sketch" click="createSketch()"/>
 				</s:Group>
 				
 				<s:Group width="100%">

@@ -17,12 +17,13 @@
 	<fx:Script>
         
 		<![CDATA[
-			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
 			import com.adobe.serialization.json.JSON;
 			
 			import flash.events.StatusEvent;
+			import flash.media.StageWebView;
 			import flash.net.URLRequest;
 			
+			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
 			import air.net.URLMonitor;
@@ -30,7 +31,7 @@
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.KSketch_User;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar;
-			import sg.edu.smu.ksketch2.canvas.controls.KOrientationControl;
+			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
 			
 			private var progressTimer:Timer;
 			private var _stage:Stage;
@@ -40,18 +41,15 @@
 			
 			public static var userData:Object = new Object();
 			private var webView:StageWebView = new StageWebView();
-			private var _orientationControl:KOrientationControl;
 			
 			public static var _isLoggedIn:Boolean = false;
 			
 			private function addedToStageHandler(event:Event):void
 			{
-				_orientationControl = new KOrientationControl(stage);
-				_orientationControl.init(event);
-				
+				data = null;
 				webView.stage = stage;
-				_stageWidth = _orientationControl.stageWidth;
-				_stageHeight = _orientationControl.stageHeight;
+				_stageWidth = stage.stageWidth;
+				_stageHeight = stage.stageHeight;
 				
 				//check for network connection
 				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
@@ -71,23 +69,39 @@
 					
 					webView.loadURL(KSketchWebLinks.url);
 					webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGE, locationChangedHandler);
-					webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGING, locationChangingHandler);
+					webView.addEventListener(ErrorEvent.ERROR, errorEventHandler);
+					//webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGING, locationChangingHandler);
 				}
 				else
 				{
-					skipConnection();
+					skipConnection("Lost Connection");
 				}
 				
 				monitor.stop();
 				monitor.removeEventListener(StatusEvent.STATUS, prepareView);
 			}
 			
-			private function skipConnection():void
+			private function skipConnection(errorHandled:String):void
 			{	
-				navigator.pushView(KSketch_HomeView);
+				if(GetUser.hasEventListener(FaultEvent.FAULT))
+					GetUser.removeEventListener(FaultEvent.FAULT, faultHandler);
+					
+				if(webView)
+				{
+					//remove error event listeners
+					if(webView.hasEventListener(ErrorEvent.ERROR))
+						webView.removeEventListener(ErrorEvent.ERROR, errorEventHandler);
+					
+					webView.stop();
+					webView.viewPort = null;
+					webView.dispose();
+					webView = null;
+				}
+				
+				navigator.pushView(KSketch_HomeView, errorHandled);
 			}
 			
-			//FOR Android
+			/*FOR Android
 			private function locationChangingHandler(event:LocationChangeEvent):void
 			{
 				var currentURL:String = event.location.toString();
@@ -111,18 +125,13 @@
 					}
 					else if(currentURL.indexOf(KSketchWebLinks.redirecturl_skip) >= 0)
 					{
-						webView.stop();
-						webView.viewPort = null;
-						webView.dispose();
-						webView = null;
-						
 						skipConnection();
 					}
 				}
 				//else //this is to prevent navigation to other external links in the stage web view
 				//	webView.loadURL(KSketchWebLinks.url);
 				
-			}
+			}*/
 			
 			//FOR IOS
 			private function locationChangedHandler(event:LocationChangeEvent):void
@@ -139,23 +148,18 @@
 					//get json url
 					GetUser.url = KSketchWebLinks.jsonurlUser;
 					GetUser.send();
+					GetUser.addEventListener(FaultEvent.FAULT, faultHandler);
 					startProgressBar();
 				}
 				else if(currentURL.indexOf(KSketchWebLinks.redirecturl_skip) >= 0)
 				{
-					webView.stop();
-					webView.viewPort = null;
-					webView.dispose();
-					webView = null;
-					
-					skipConnection();
+					skipConnection("Skip Login");
 				}
 			}
 			
 			public function ParseJSONObject(event:ResultEvent):void
 			{
 				var rawData:String = String(event.result);
-				trace("user data form login: " + rawData);
 				var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 				
 				//check if user data does not exist
@@ -191,6 +195,16 @@
 				
 				if (progressBar.value >= 1)
 					progressBar.value = 0;
+			}
+			
+			private function faultHandler(event:FaultEvent):void
+			{
+				skipConnection("Janrain Failed");
+			}
+			
+			private function errorEventHandler(event:ErrorEvent):void
+			{
+				skipConnection("Lost Connection");
 			}
 			
 		]]>

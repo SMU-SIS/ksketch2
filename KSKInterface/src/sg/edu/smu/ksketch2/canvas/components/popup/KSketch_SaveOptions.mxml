@@ -24,34 +24,38 @@
 		<![CDATA[
 			import com.adobe.serialization.json.JSON;
 			
-			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
 			
 			import air.net.URLMonitor;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
+			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
-			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
+			import sg.edu.smu.ksketch2.utils.KWebData;
 			
 			public static var isSaved:Boolean = false;
 			public static var returnToHome:Boolean = false;
+			public static var overwriteSave:Boolean = false;
 			
-			private var _homeView:KSketch_HomeView;
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
-			private var _options:KSketch_Options;
+			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
 			private var monitor:URLMonitor;
 			private var _isConnected:Boolean;
+			private var discard:Boolean = false;
 			
-			protected var userData:Object = new Object();
-			protected var url:String = "http://ksketchweb.appspot.com/post/sketchxml";
+			public var result:Object;
+			public var userData:Object = new Object();
 			
-			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, options:KSketch_Options):void
+			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, overwriteSave:KSketch_OverwriteSaveOptions):void
 			{
 				_canvasView = canvasView;
 				_menu = menu;
-				_options = options;
+				_overwriteSaveOptions = overwriteSave;
 				
 				//check for network connection
 				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
@@ -72,40 +76,51 @@
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
-				super.open(owner, modal);
+				
 				userData = _canvasView.saveSketch();
 				
-				var length:int = 1;
-				if(KSketch_HomeView._dup_cachedSketchDocs)
+				//if this is an attempt to save a new sketch, 
+				//then show the textarea to enter sketch name
+				if(KSketch_CanvasView.isNewSketch)
 				{
-					var userSketchArr:Array = KSketch_HomeView._dup_cachedSketchDocs.split("%");
-					length = userSketchArr.length + 1;
+					var saveCounter:int = KSketch_HomeView.autoSaveCounter;
+					sketchName.text = "My Sketch " + (saveCounter + 1);
 				}
-				sketchName.text = "My Sketch " + length;
+				else
+				{
+					sketchName.text = userData.kSketchDocument.originalName;
+					saveAsWarning.visible = true;
+				}
+				
+				super.open(owner, modal);
+			}
+			
+			private function cancel():void
+			{
+				discard = true;
+				close();
 			}
 			
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
-				//super.close(commit,data);
-				//(FlexGlobals.topLevelApplication as Application).setFocus();
+				super.close(commit,data);
 				
-				if(!returnToHome)
+				if(!overwriteSave || discard)
 				{
-					trace("close new canvas");
-					super.close(commit,data);
-					_canvasView._interactionControl.reset();
+					if(!returnToHome)
+						_canvasView._interactionControl.reset();
+					else
+						_menu._exit();
 				}
 				else
 				{
-					trace("close back to home");
-					super.close(commit,data);
-					_menu._exit();
+					overwriteSave = false;
+					_overwriteSaveOptions.open(_canvasView,true);
+					PopUpManager.centerPopUp(_overwriteSaveOptions);
 				}
-					
-					
 			}
 			
-			private function save():void
+			public function save():void
 			{
 				var objUserSketch:Object = new Object();
 				var objSketchDoc:Object = new Object();
@@ -113,21 +128,59 @@
 				//if connected to network and has logged in, then save to web. Else save to cache
 				if(_isConnected && KSketch_LoginView._isLoggedIn)
 				{
-					objSketchDoc["fileData"] = com.adobe.serialization.json.JSON.encode(prepareSketchDoc());
-					httpService.url = url;
+					objSketchDoc["fileData"] = com.adobe.serialization.json.JSON.encode(KWebData.prepareSketchDoc_Save(userData, sketchName.text));
+					httpService.url = KSketchWebLinks.jsonurlPostXML;
 					httpService.send(objSketchDoc);
+					httpService.addEventListener(ResultEvent.RESULT, resultHandler);
+					httpService.addEventListener(FaultEvent.FAULT, faultHandler);
 				}
 				else
 				{
-					trace("in process of saving sketch..."); 
-					objUserSketch.entities = prepareUserSketch();
+					/*
+					format: {"count": x, "entities":[array], "en_type": "Sketch", "method": "get_entities_by_criteria_new"} 
+					in array of entities will only be ONE object with one or many data objects
+					{"data": {object}, "id": x, "modified": "", "created": ""}
+					*/
 					
+					var newObj:Object = new Object();
+					var tempData:Object = new Object();
 					if(KSketch_HomeView._dup_cachedUserSketch)
-						KSketch_HomeView._dup_cachedUserSketch += "%" + com.adobe.serialization.json.JSON.encode(objUserSketch.entities);
+					{
+						var tempObj:Object = com.adobe.serialization.json.JSON.decode(KSketch_HomeView._dup_cachedUserSketch);
+						
+						newObj.count = tempObj.count;
+						newObj.en_type = tempObj.en_type;
+						newObj.method = tempObj.method;
+						
+						newObj.entities = new Array(tempObj.entities.length + 1);
+						
+						for(var i:int = 0; i<newObj.entities.length; i++)
+						{
+							tempData = new Object();
+							if(i < newObj.entities.length-1)
+								tempData.data = tempObj.entities[i].data;
+								
+							else
+								tempData.data = KWebData.prepareUserSketch(userData, sketchName.text);
+								
+							newObj.entities[i] = tempData;
+						}	
+					}
 					else
-						KSketch_HomeView._dup_cachedUserSketch = com.adobe.serialization.json.JSON.encode(objUserSketch.entities);
+					{	
+						newObj.count = 0;
+						newObj.en_type = "Sketch";
+						newObj.method = "cached";
+						
+						newObj.entities = new Array(1);
+						
+						tempData.data = KWebData.prepareUserSketch(userData, sketchName.text);
+						newObj.entities[0] = tempData;
+					}
 					
-					objSketchDoc.data = prepareSketchDoc();
+					KSketch_HomeView._dup_cachedUserSketch = com.adobe.serialization.json.JSON.encode(newObj);
+					
+					objSketchDoc.data = KWebData.prepareSketchDoc_Save(userData, sketchName.text);
 					
 					if(KSketch_HomeView._dup_cachedSketchDocs)
 						KSketch_HomeView._dup_cachedSketchDocs += "%" + com.adobe.serialization.json.JSON.encode(objSketchDoc);
@@ -135,84 +188,33 @@
 						KSketch_HomeView._dup_cachedSketchDocs = com.adobe.serialization.json.JSON.encode(objSketchDoc);
 					
 					KSketch_HomeView.writeDataToCache();
+					
+					isSaved = true;
+					
+					close();	
 				}
-				
-				isSaved = true;
-				
-				close();	
 			}
 			
-			private function prepareUserSketch():Object
+			private function resultHandler(event:ResultEvent):void
 			{
-				var data:Object = new Object();
-				data.data = new Object();
-				data.id = "";
+				var resultRaw:Object = event.result;
+				result = com.adobe.serialization.json.JSON.decode(resultRaw.toString());
 				
-				var currentDateTime:Date = new Date();
-				var formatter:DateFormatter = new DateFormatter();
-				formatter.formatString = "MMM";
-				var currentMonth:String = new String(formatter.format(currentDateTime));
-				var dateString:String = currentDateTime.getDate().toString() + " " + currentMonth + " " + currentDateTime.getFullYear().toString();
-				var timeString:String = currentDateTime.getHours().toString() + ":" + currentDateTime.getMinutes().toString() + ":" + currentDateTime.getSeconds().toString();
-				
-				data.modified = dateString + " " + timeString;
-				data.created = dateString + " " + timeString;
-				
-				data.data.comment = 0;
-				data.data.thumbnailData = userData.thumbnailData;
-				data.data.sketchId = "";
-				data.data.originalVersion = userData.kSketchDocument.originalVersion;
-				data.data.p_edit = true;
-				data.data.changeDescription = "";
-				data.data.fileName = sketchName.text;
-				data.data.like = 0;
-				
-				if(userData.kSketchDocument.originalName == "")
-					data.data.originalName = sketchName.text;
-				else
-					data.data.originalName = userData.kSketchDocument.originalName;
-				
-				data.data.appver = 1.0;
-				data.data.version = 1;
-				data.data.p_view = true;
-				data.data.owner = userData.kUser.u_realname; 
-				data.data.originalSketch =  userData.kSketchDocument.originalSketch;
-				data.data.p_comment = true;
-				data.data.owner_id = userData.kUser.id;
-				trace("save owner id: " + data.owner_id);
-				return data;
+				if (result.status == "success")
+				{
+					isSaved = true;
+					close();	
+				}
+				else if (result.status == "errorDiscrepancy")
+				{
+					overwriteSave = true;
+					close();
+				}
 			}
 			
-			//these are the things that you need to pass to Python Backend to add in a new sketch
-			protected function prepareSketchDoc():Object
+			private function faultHandler(event:FaultEvent):void
 			{
-				var data:Object = new Object();
-				//data.group = [];
-				data.group_permissions = [];
-				data.thumbnailData = userData.thumbnailData;
-				data.sketchId = ""; 
-				data.p_edit = true;
-				data.changeDescription = "";
-				data.fileName = sketchName.text;
-				
-				data.originalVersion = userData.kSketchDocument.originalVersion;
-				data.originalSketch = userData.kSketchDocument.originalSketch;
-				
-				if(userData.kSketchDocument.originalName == "")
-					data.originalName = sketchName.text;
-				else
-					data.originalName = userData.kSketchDocument.originalName;
-				
-				data.appver = 1.0;
-				data.version = userData.kSketchDocument.version;
-				data.p_view = 1;
-				data.fileData = userData.kSketchDocument.xml.toXMLString();
-				data.p_comment = true;
-				data.owner = userData.kUser.u_realname;
-				data.owner_id = userData.kUser.id;
-				trace("save owner id: " + data.owner_id);
-				return data;
-				
+				trace("Fault: " + event.toString());
 			}
 		]]>
 	</fx:Script>
@@ -224,30 +226,55 @@
 			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
 			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
 	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
-		<s:fill>
-			<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
-		</s:fill>
-	</s:Rect>
-	<s:Group>
-		<s:layout>
-			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
-		</s:layout>
-		<s:Label text="Save My Sketch" fontSize="26"/>
-		
+	<s:Group id="saveNewSketch" visible="true">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+			<s:fill>
+				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+			</s:fill>
+		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout paddingLeft="10"/>
+				<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 			</s:layout>
-			<s:Label text="Sketch Name" fontSize="18"/>
-			<s:TextArea id="sketchName"/>
+			<s:Label text="Save this sketch?" fontSize="26"/>
+			
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout paddingLeft="10"/>
+				</s:layout>
+				<s:Label text="Sketch Name" fontSize="18"/>
+				<s:TextArea id="sketchName"/>
+				<s:Label id="saveAsWarning" text="A different filename will save this sketch as a new copy" fontSize="10" visible="false"/>
+			</s:Group>
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+				</s:layout>
+				<s:Button label="Save" click="save()" fontSize="14"/>
+				<s:Button label="Discard" click="close()" fontSize="14"/>
+			</s:Group>
 		</s:Group>
-		<s:Group width="100%">
+	</s:Group>
+	
+	<s:Group id="saveExistingSketch" visible="false">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+			<s:fill>
+				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+			</s:fill>
+		</s:Rect>
+		<s:Group>
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+				<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 			</s:layout>
-			<s:Button label="Save" click="save()" fontSize="14"/>
-			<s:Button label="Discard" click="close()" fontSize="14"/>
+			<s:Label text="Save this sketch?" fontSize="26"/>
+			
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+				</s:layout>
+				<s:Button label="Save" click="save()" fontSize="14"/>
+				<s:Button label="Discard" click="cancel()" fontSize="14"/>
+			</s:Group>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

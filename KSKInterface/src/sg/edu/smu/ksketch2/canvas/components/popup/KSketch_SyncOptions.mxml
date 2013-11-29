@@ -25,19 +25,22 @@
 		<![CDATA[
 			import com.adobe.serialization.json.JSON;
 			
+			import mx.collections.ArrayCollection;
 			import mx.core.FlexGlobals;
+			import mx.rpc.Fault;
 			import mx.rpc.events.FaultEvent;
-			import mx.rpc.events.ResultEvent;
 			
 			import spark.components.Application;
 			
 			import air.net.URLMonitor;
 			
-			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.KSketch_User;
 			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
+			import sg.edu.smu.ksketch2.utils.KWebData;
+			import sg.edu.smu.ksketch2.utils.SortingFunctions;
 			
 			private var _homeView:KSketch_HomeView;
 			private var _menu:KSketch_PopUp_Menu;
@@ -45,6 +48,7 @@
 			private var monitor:URLMonitor;
 			private var _isConnected:Boolean;
 			private var refreshTimer:Timer;
+			private var newSketchList:ArrayCollection = new ArrayCollection();
 			
 			protected var userData:Object = new Object();
 			protected var webView:StageWebView = new StageWebView();
@@ -52,6 +56,8 @@
 			public static var _currentUser:KSketch_User;
 			public static var _cachedUserSketch:String;
 			public static var _cachedSketchDocs:String
+			public static var _dup_cachedUserSketch:String;
+			public static var _dup_cachedSketchDocs:String;
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
@@ -61,9 +67,19 @@
 			
 			public function init():void
 			{
+				//check against recently retrieved sketch list data from the web if there are any new sketches 
+				//check for differences if there are are existing sketches retrieved from the web
+				var newSketchObj:Object = com.adobe.serialization.json.JSON.decode(_dup_cachedUserSketch);
+				var oldSketchObj:Object = com.adobe.serialization.json.JSON.decode(_cachedUserSketch);	
+				
+				var noOfSketches:Number = oldSketchObj.entities.length - newSketchObj.entities.length;
+				trace(noOfSketches + " , old: " + oldSketchObj.entities.length + " , new: " + newSketchObj.entities.length);
+				if(noOfSketches < 0)
+					noOfSketches = Math.abs(noOfSketches);
+				
 				var sketchNo:String;
-				if(_cachedUserSketch.indexOf("%") >= 0)
-					sketchNo = "are " + (_cachedUserSketch.split("%").length) + " sketches";
+				if(noOfSketches > 1)
+					sketchNo = "are " + noOfSketches + " sketches";
 				else
 					sketchNo = "is 1 sketch";
 				
@@ -81,41 +97,49 @@
 			{
 				userData= com.adobe.serialization.json.JSON.decode(KSketch_HomeView._dup_cachedUser,true);
 				
-				var arrSketch:Array;
 				var arrSketchDocs: Array;
 				
-				if(_cachedUserSketch.indexOf("%") >= 0) //if there are more than 1 sketch
-				{
-					arrSketch = _cachedUserSketch.split("%");
+				//if there are more than 1 sketch documents
+				if(_cachedSketchDocs.indexOf("%") >= 0) 
 					arrSketchDocs = _cachedSketchDocs.split("%");
-				}
 				else
 				{
-					arrSketch = new Array(1);
 					arrSketchDocs = new Array(1);
-					
-					arrSketch[0] = _cachedUserSketch;
 					arrSketchDocs[0] = _cachedSketchDocs;
 				}
 				
-				for(var i:int=0; i<arrSketch.length; i++)
+				//only select sketch documents that match sketches in new sketch list
+				var tempSketchDocList:ArrayCollection = new ArrayCollection();
+				for(var x:int=0; x<arrSketchDocs.length; x++)
 				{
-					var sketch:Object = com.adobe.serialization.json.JSON.decode(arrSketch[i], true);
-					var sketchDoc:Object = com.adobe.serialization.json.JSON.decode(arrSketchDocs[i],true);
+					var temp:Object = com.adobe.serialization.json.JSON.decode(arrSketchDocs[x],true);
+					if(temp.data.sketchId == "")
+						tempSketchDocList.addItem(arrSketchDocs[x]);
+				}
+				
+				//sort sketch and sketch documents according to time created
+				newSketchList = SortingFunctions.sortArray(newSketchList, "created");
+				tempSketchDocList = SortingFunctions.sortArray(tempSketchDocList, "created");
+				
+				for(var i:int=0; i<newSketchList.length; i++)
+				{
+					var sketch:Object = newSketchList.getItemAt(i);
+					var sketchDoc:Object = com.adobe.serialization.json.JSON.decode(String(tempSketchDocList.getItemAt(i)),true);
 					
 					//create XML and date object from JSON to create a KSketchDocument object
 					var xml:XML = new XML(sketchDoc.data.fileData);
 					var date:Date = new Date(sketchDoc.modified);
-					var docObj:KSketchDocument = new KSketchDocument(sketchDoc.data.fileName, xml, sketchDoc.id, date, sketchDoc.data.originalName, sketchDoc.data.originalVersion, sketchDoc.data.changeDescription);
+					var docObj:KSketchDocument = new KSketchDocument(sketchDoc.data.fileName, xml, sketchDoc.id, date, sketchDoc.data.originalName, sketchDoc.data.originalVersion, sketchDoc.data.sketchId, sketchDoc.data.changeDescription);
 					
 					//get thumbnaildata, filename
 					var thumbnailData:String = sketch.data.thumbnailData;
 					var fileName:String = sketchDoc.data.fileName;
 					
 					var objSketchDoc:Object = new Object();
-					objSketchDoc["fileData"] = com.adobe.serialization.json.JSON.encode(prepareSketchDoc(docObj, thumbnailData, fileName));
+					objSketchDoc["fileData"] = com.adobe.serialization.json.JSON.encode(KWebData.prepareSketchDoc_Sync(_currentUser, docObj, thumbnailData, fileName));
 					httpService.url = KSketchWebLinks.jsonurlPostXML;
 					httpService.send(objSketchDoc);
+					httpService.addEventListener(FaultEvent.FAULT, faultHandler);
 				}
 				
 				_cachedUserSketch = null;
@@ -124,7 +148,7 @@
 				KSketch_HomeView._cachedUserSketch = null;
 				KSketch_HomeView._cachedUser = null;
 				
-				refreshTimer = new Timer(2000,1);
+				refreshTimer = new Timer(5000,1);
 				refreshTimer.addEventListener(TimerEvent.TIMER_COMPLETE, refreshDataFromWeb);
 				refreshTimer.start();
 			}
@@ -134,36 +158,16 @@
 				refreshTimer.stop();
 				refreshTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, refreshDataFromWeb);
 				
-				_homeView.retrieveDataFromWeb();
+				_homeView.updateDataList();
 				
 				close();
 			}
 			
-			//these are the things that you need to pass to Python Backend to add in a new sketch
-			protected function prepareSketchDoc(docObj:KSketchDocument, thumbnailData:String, fileName:String):Object
+			private function faultHandler(event:FaultEvent):void
 			{
-				var data:Object = new Object();
-				data.group_permissions = [];
-				data.thumbnailData = thumbnailData;
-				data.sketchId = ""; 
-				data.p_edit = true;
-				data.changeDescription = "";
-				data.fileName = fileName;
-				
-				data.originalVersion = docObj.originalVersion;
-				data.originalSketch = docObj.originalSketch;
-				data.originalName = fileName;
-				
-				data.appver = 1.0;
-				data.version = docObj.version;
-				data.p_view = 1;
-				data.fileData = docObj.xml.toXMLString();
-				data.p_comment = true;
-				data.owner = _currentUser.u_realname;
-				data.owner_id = _currentUser.id;
-				trace("sync owner id: " + data.owner_id);
-				return data;
+				trace(event.toString());
 			}
+			
 		]]>
 	</fx:Script>
 	<s:filters>

@@ -24,6 +24,7 @@ package sg.edu.smu.ksketch2.utils
 		public var originalVersion:int;
 		public var originalSketch:int;
 		public var version:String;
+		public var sketchId:int;
 		
 		/**
  		 * The main constructor of the KSketchDocument class. Sets the
@@ -35,7 +36,7 @@ package sg.edu.smu.ksketch2.utils
  		 * @param date The target date.
  		 * @param description The target description.
  		 */
-		public function KSketchDocument(name:String, xml:XML, id:String,  date:Date, originalName:String, originalVersion:int, description:String = "")
+		public function KSketchDocument(name:String, xml:XML, id:String,  date:Date, originalName:String, originalVersion:int, sketchId:int, description:String = "")
 		{
 			this.xml = xml;						//The model itself, the <scene> tag
 			this.name = name;					//The title of the document, user defined
@@ -43,6 +44,11 @@ package sg.edu.smu.ksketch2.utils
 			this.lastEdited = date;				//The last time this document is changed/saved
 			this.description = description;		//A short description of this document, user defined
 			
+			if(sketchId || sketchId > 0)
+				this.sketchId = sketchId;
+			else
+				this.sketchId = -1;
+				
 			if(originalName || originalName != "")
 				this.originalName = originalName;	
 			else
@@ -51,8 +57,8 @@ package sg.edu.smu.ksketch2.utils
 			if(originalVersion || originalVersion > 0)
 			{
 				this.originalVersion = originalVersion;
-				this.version = "" + originalVersion + 1;
-				this.originalSketch = originalVersion + 1; 
+				this.version = "" + (originalVersion + 1);
+				this.originalSketch = sketchId; 
 			}
 			else
 			{

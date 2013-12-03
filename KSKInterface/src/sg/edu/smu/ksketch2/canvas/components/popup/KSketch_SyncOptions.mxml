@@ -27,8 +27,8 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.FlexGlobals;
-			import mx.rpc.Fault;
 			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
 			
 			import spark.components.Application;
 			
@@ -36,95 +36,50 @@
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
-			import sg.edu.smu.ksketch2.KSketch_User;
+			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.utils.KCache;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			import sg.edu.smu.ksketch2.utils.KWebData;
-			import sg.edu.smu.ksketch2.utils.SortingFunctions;
 			
 			private var _homeView:KSketch_HomeView;
-			private var _menu:KSketch_PopUp_Menu;
-			private var _options:KSketch_Options;
 			private var monitor:URLMonitor;
-			private var _isConnected:Boolean;
-			private var refreshTimer:Timer;
-			private var newSketchList:ArrayCollection = new ArrayCollection();
+			private var discardTimer:Timer;
 			
-			protected var userData:Object = new Object();
-			protected var webView:StageWebView = new StageWebView();
-			
-			public static var _currentUser:KSketch_User;
-			public static var _cachedUserSketch:String;
-			public static var _cachedSketchDocs:String
-			public static var _dup_cachedUserSketch:String;
-			public static var _dup_cachedSketchDocs:String;
+			public var syncSketchArr:ArrayCollection;
+			public var syncSketchDocsArr:ArrayCollection;
+			public var currentUser:Object;
+			public var _isConnected:Boolean;
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
 				_homeView = owner as KSketch_HomeView;
 				super.open(owner, modal);
+				
+				checkConnection();
 			}
 			
 			public function init():void
 			{
-				//check against recently retrieved sketch list data from the web if there are any new sketches 
 				//check for differences if there are are existing sketches retrieved from the web
-				var newSketchObj:Object = com.adobe.serialization.json.JSON.decode(_dup_cachedUserSketch);
-				var oldSketchObj:Object = com.adobe.serialization.json.JSON.decode(_cachedUserSketch);	
-				
-				var noOfSketches:Number = oldSketchObj.entities.length - newSketchObj.entities.length;
-				trace(noOfSketches + " , old: " + oldSketchObj.entities.length + " , new: " + newSketchObj.entities.length);
-				if(noOfSketches < 0)
-					noOfSketches = Math.abs(noOfSketches);
-				
 				var sketchNo:String;
-				if(noOfSketches > 1)
-					sketchNo = "are " + noOfSketches + " sketches";
+				if(syncSketchArr.length > 1)
+					sketchNo = "are " + syncSketchArr.length + " sketches";
 				else
 					sketchNo = "is 1 sketch";
 				
-				var accName:String = _currentUser.u_realname;
+				var accName:String = currentUser.u_realname;
 				syncLabel.text = "There " + sketchNo + " on this device. Add to '" + accName + "' account? " ;
 			}
 			
-			override public function close(commit:Boolean=false, data:*=null):void
+			public function save():void
 			{
-				super.close(commit, data);
-				(FlexGlobals.topLevelApplication as Application).setFocus();
-			}
-			
-			private function save():void
-			{
-				userData= com.adobe.serialization.json.JSON.decode(KSketch_HomeView._dup_cachedUser,true);
-				
-				var arrSketchDocs: Array;
-				
-				//if there are more than 1 sketch documents
-				if(_cachedSketchDocs.indexOf("%") >= 0) 
-					arrSketchDocs = _cachedSketchDocs.split("%");
-				else
+				trace("saving synced sketches: " + syncSketchArr);
+				for(var i:int=0; i<syncSketchArr.length; i++)
 				{
-					arrSketchDocs = new Array(1);
-					arrSketchDocs[0] = _cachedSketchDocs;
-				}
-				
-				//only select sketch documents that match sketches in new sketch list
-				var tempSketchDocList:ArrayCollection = new ArrayCollection();
-				for(var x:int=0; x<arrSketchDocs.length; x++)
-				{
-					var temp:Object = com.adobe.serialization.json.JSON.decode(arrSketchDocs[x],true);
-					if(temp.data.sketchId == "")
-						tempSketchDocList.addItem(arrSketchDocs[x]);
-				}
-				
-				//sort sketch and sketch documents according to time created
-				newSketchList = SortingFunctions.sortArray(newSketchList, "created");
-				tempSketchDocList = SortingFunctions.sortArray(tempSketchDocList, "created");
-				
-				for(var i:int=0; i<newSketchList.length; i++)
-				{
-					var sketch:Object = newSketchList.getItemAt(i);
-					var sketchDoc:Object = com.adobe.serialization.json.JSON.decode(String(tempSketchDocList.getItemAt(i)),true);
+					trace("inside loop" + syncSketchArr.length);
+					var sketch:Object = syncSketchArr.getItemAt(i);
+					var sketchDoc:Object = com.adobe.serialization.json.JSON.decode(String(syncSketchDocsArr.getItemAt(i)),true);
 					
 					//create XML and date object from JSON to create a KSketchDocument object
 					var xml:XML = new XML(sketchDoc.data.fileData);
@@ -134,38 +89,121 @@
 					//get thumbnaildata, filename
 					var thumbnailData:String = sketch.data.thumbnailData;
 					var fileName:String = sketchDoc.data.fileName;
-					
 					var objSketchDoc:Object = new Object();
-					objSketchDoc["fileData"] = com.adobe.serialization.json.JSON.encode(KWebData.prepareSketchDoc_Sync(_currentUser, docObj, thumbnailData, fileName));
-					httpService.url = KSketchWebLinks.jsonurlPostXML;
-					httpService.send(objSketchDoc);
-					httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+					
+					objSketchDoc["fileData"] = com.adobe.serialization.json.JSON.encode(KWebData.prepareSketchDoc_Sync(currentUser, docObj, thumbnailData, fileName));
+				
+					if(_isConnected && KSketch_LoginView._isLoggedIn)
+					{
+						trace("there is internet conn ======== saved to web");
+						httpService.url = KSketchWebLinks.jsonurlPostXML;
+						httpService.send(objSketchDoc);
+						httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+						httpService.addEventListener(ResultEvent.RESULT, resultHandler);
+					}
+					else
+					{
+						trace("there is no conn ======== saved to cache");
+						KSketch_HomeView._viewArr[1] = KCache.appendCacheSketch(KSketch_HomeView._viewArr[1],sketch);
+						KSketch_HomeView._viewArr[2] = KCache.appendCacheSketchDocuments(KSketch_HomeView._viewArr[2],sketchDoc);
+						
+						trace("NOTICE THIS: " + KSketch_HomeView._viewArr[1]);
+						
+						prepareForDiscard();
+					}
 				}
-				
-				_cachedUserSketch = null;
-				_cachedSketchDocs = null;
-				KSketch_HomeView._cachedSketchDocs = null;
-				KSketch_HomeView._cachedUserSketch = null;
-				KSketch_HomeView._cachedUser = null;
-				
-				refreshTimer = new Timer(5000,1);
-				refreshTimer.addEventListener(TimerEvent.TIMER_COMPLETE, refreshDataFromWeb);
-				refreshTimer.start();
 			}
 			
-			private function refreshDataFromWeb(event:TimerEvent):void
+			public function checkConnection():void
 			{
-				refreshTimer.stop();
-				refreshTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, refreshDataFromWeb);
+				//check for network connection
+				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				monitor.addEventListener(StatusEvent.STATUS, connectionHandler);
+				monitor.start();
+			}
+			
+			private function connectionHandler(event:StatusEvent):void
+			{
+				if(monitor.available)
+					_isConnected = true;
+				else
+					_isConnected = false;
 				
-				_homeView.updateDataList();
-				
-				close();
+				monitor.stop();
+				monitor.removeEventListener(StatusEvent.STATUS, connectionHandler);
+			}
+			
+			private function resultHandler(event:ResultEvent):void
+			{
+				prepareForDiscard();
 			}
 			
 			private function faultHandler(event:FaultEvent):void
 			{
-				trace(event.toString());
+				_isConnected = false;
+				save();
+			}
+			
+			private function prepareForDiscard():void
+			{
+				discardTimer = new Timer(10000,1);
+				discardTimer.addEventListener(TimerEvent.TIMER_COMPLETE, discardHandler);
+				discardTimer.start();
+			}
+			
+			private function discardHandler(event:TimerEvent):void
+			{
+				discardTimer.stop();
+				discardTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, discardHandler);
+				
+				discard();
+			}
+			
+			private function discard():void
+			{
+				if(_isConnected && KSketch_LoginView._isLoggedIn)
+				{
+					KSketch_HomeView._viewArr[1] = null;
+					KSketch_HomeView._viewArr[2] = null;
+					//KSketch_HomeView._viewArr[3] = "WEB";
+				}
+				else
+				{
+					if(_homeView)
+					{
+						_homeView._isUsingCache = true;
+						_homeView._isConnected = false;
+					}
+					KSketch_HomeView._viewArr[3] = "CACHE";
+				}
+				
+				KCache.writeDataToCache(KSketch_HomeView._viewArr);
+				
+				if(_homeView)
+					_homeView.addedToStageHandler();
+					
+				close();
+			}
+			
+			public function resetSyncArrays():void
+			{
+				if(syncSketchArr)
+					syncSketchArr.removeAll();
+				
+				if(syncSketchDocsArr)
+					syncSketchDocsArr.removeAll();
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				syncSketchArr.removeAll();
+				syncSketchDocsArr.removeAll();
+				
+				super.close(commit, data);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
+				
+				if(_homeView)
+					_homeView.prepareDataList();
 			}
 			
 		]]>
@@ -187,14 +225,14 @@
 		<s:layout>
 			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 		</s:layout>
-		<s:Label id="syncLabel" fontSize="26"/>
+		<s:Label id="syncLabel" fontSize="15"/>
 		
 		<s:Group width="100%">
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
 			</s:layout>
 			<s:Button label="Sync to Web" click="save()" fontSize="14"/>
-			<s:Button label="Discard all" click="close()" fontSize="14"/>
+			<s:Button label="Discard all" click="discard()" fontSize="14"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

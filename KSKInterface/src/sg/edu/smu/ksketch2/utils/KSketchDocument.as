@@ -8,6 +8,10 @@
  */
 package sg.edu.smu.ksketch2.utils
 {
+	import mx.collections.ArrayCollection;
+	
+	import sg.edu.smu.ksketch2.KSketch_UserSketches;
+
 	/**
  	 * The KSketchDocument class serves as the concrete class for handling
  	 * sketch documents in K-Sketch.

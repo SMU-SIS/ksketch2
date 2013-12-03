@@ -35,6 +35,7 @@
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.utils.KCache;
 			import sg.edu.smu.ksketch2.utils.KWebData;
 			
 			public static var isSaved:Boolean = false;
@@ -47,6 +48,7 @@
 			private var monitor:URLMonitor;
 			private var _isConnected:Boolean;
 			private var discard:Boolean = false;
+			private var objSketchDoc:Object = new Object();
 			
 			public var result:Object;
 			public var userData:Object = new Object();
@@ -88,7 +90,14 @@
 				}
 				else
 				{
-					sketchName.text = userData.kSketchDocument.originalName;
+					if(userData.kSketchDocument.originalName == "N/A")
+					{
+						sketchName.text = userData.kSketchDocument.name;
+						userData.kSketchDocument.originalName = userData.kSketchDocument.name;
+					}
+					else
+						sketchName.text = userData.kSketchDocument.originalName;
+					
 					saveAsWarning.visible = true;
 				}
 				
@@ -114,85 +123,60 @@
 				}
 				else
 				{
-					overwriteSave = false;
+					overwriteSave = true;
 					_overwriteSaveOptions.open(_canvasView,true);
 					PopUpManager.centerPopUp(_overwriteSaveOptions);
 				}
+				
+				overwriteSave = false;
 			}
 			
 			public function save():void
 			{
-				var objUserSketch:Object = new Object();
-				var objSketchDoc:Object = new Object();
-				
 				//if connected to network and has logged in, then save to web. Else save to cache
 				if(_isConnected && KSketch_LoginView._isLoggedIn)
 				{
 					objSketchDoc["fileData"] = com.adobe.serialization.json.JSON.encode(KWebData.prepareSketchDoc_Save(userData, sketchName.text));
-					httpService.url = KSketchWebLinks.jsonurlPostXML;
+					if(!overwriteSave)
+						httpService.url = KSketchWebLinks.jsonurlPostXML;
+					else
+						httpService.url = KSketchWebLinks.jsonurlOverwritePostXML;
+					
 					httpService.send(objSketchDoc);
 					httpService.addEventListener(ResultEvent.RESULT, resultHandler);
 					httpService.addEventListener(FaultEvent.FAULT, faultHandler);
 				}
 				else
+					saveToCache();
+			}
+			
+			private function saveToCache():void
+			{
+				/*
+				format: {"count": x, "entities":[array], "en_type": "Sketch", "method": "get_entities_by_criteria_new"} 
+				in array of entities will only be ONE object with one or many data objects
+				{"data": {object}, "id": x, "modified": "", "created": ""}
+				*/
+				
+				var finalFileName:String =  sketchName.text;
+				if(!KSketch_CanvasView.isNewSketch)
 				{
-					/*
-					format: {"count": x, "entities":[array], "en_type": "Sketch", "method": "get_entities_by_criteria_new"} 
-					in array of entities will only be ONE object with one or many data objects
-					{"data": {object}, "id": x, "modified": "", "created": ""}
-					*/
-					
-					var newObj:Object = new Object();
-					var tempData:Object = new Object();
-					if(KSketch_HomeView._dup_cachedUserSketch)
-					{
-						var tempObj:Object = com.adobe.serialization.json.JSON.decode(KSketch_HomeView._dup_cachedUserSketch);
-						
-						newObj.count = tempObj.count;
-						newObj.en_type = tempObj.en_type;
-						newObj.method = tempObj.method;
-						
-						newObj.entities = new Array(tempObj.entities.length + 1);
-						
-						for(var i:int = 0; i<newObj.entities.length; i++)
-						{
-							tempData = new Object();
-							if(i < newObj.entities.length-1)
-								tempData.data = tempObj.entities[i].data;
-								
-							else
-								tempData.data = KWebData.prepareUserSketch(userData, sketchName.text);
-								
-							newObj.entities[i] = tempData;
-						}	
-					}
-					else
-					{	
-						newObj.count = 0;
-						newObj.en_type = "Sketch";
-						newObj.method = "cached";
-						
-						newObj.entities = new Array(1);
-						
-						tempData.data = KWebData.prepareUserSketch(userData, sketchName.text);
-						newObj.entities[0] = tempData;
-					}
-					
-					KSketch_HomeView._dup_cachedUserSketch = com.adobe.serialization.json.JSON.encode(newObj);
-					
-					objSketchDoc.data = KWebData.prepareSketchDoc_Save(userData, sketchName.text);
-					
-					if(KSketch_HomeView._dup_cachedSketchDocs)
-						KSketch_HomeView._dup_cachedSketchDocs += "%" + com.adobe.serialization.json.JSON.encode(objSketchDoc);
-					else
-						KSketch_HomeView._dup_cachedSketchDocs = com.adobe.serialization.json.JSON.encode(objSketchDoc);
-					
-					KSketch_HomeView.writeDataToCache();
-					
-					isSaved = true;
-					
-					close();	
+					var currentDate:String = KWebData.generateTimestamp(null);
+					finalFileName += "_" + currentDate;
 				}
+				
+				var objSketch:Object = new Object();
+				objSketch.data = KWebData.prepareUserSketch(userData, finalFileName, KSketch_CanvasView.isNewSketch);
+				KSketch_HomeView._viewArr[1] = KCache.appendCacheSketch(KSketch_HomeView._viewArr[1], objSketch);
+				
+				objSketchDoc.data = KWebData.prepareSketchDoc_Save(userData, finalFileName);
+				KSketch_HomeView._viewArr[2] = KCache.appendCacheSketchDocuments(KSketch_HomeView._viewArr[2], objSketchDoc);
+				KSketch_HomeView._viewArr[3] = "CACHE";
+				KCache.writeDataToCache(KSketch_HomeView._viewArr);
+				
+				isSaved = true;
+				
+				close();
 			}
 			
 			private function resultHandler(event:ResultEvent):void
@@ -202,6 +186,7 @@
 				
 				if (result.status == "success")
 				{
+					overwriteSave = false;
 					isSaved = true;
 					close();	
 				}
@@ -215,6 +200,7 @@
 			private function faultHandler(event:FaultEvent):void
 			{
 				trace("Fault: " + event.toString());
+				saveToCache();
 			}
 		]]>
 	</fx:Script>

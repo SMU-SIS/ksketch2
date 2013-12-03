@@ -22,15 +22,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import com.adobe.serialization.json.JSON;
-			
-			import mx.rpc.events.FaultEvent;
-			import mx.rpc.events.ResultEvent;
-			
-			import air.net.URLMonitor;
-			
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
 			
 			public static var isSaved:Boolean = false;
@@ -40,40 +32,15 @@
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _cancel:Boolean = false;
 			
-			private var monitor:URLMonitor;
-			private var _isConnected:Boolean;
-			
-			private var _result:Object;
-			private var _userData:Object;
-			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, saveOptions:KSketch_SaveOptions):void
 			{
 				_canvasView = canvasView;
 				_menu = menu;
 				_saveOptions = saveOptions;
-				
-				//check for network connection
-				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
-				monitor.addEventListener(StatusEvent.STATUS, isConnected);
-				monitor.start();
-			}
-			
-			private function isConnected(event:StatusEvent):void
-			{
-				if(monitor.available)
-					_isConnected = true;
-				else
-					_isConnected = false;
-				
-				monitor.stop();
-				monitor.removeEventListener(StatusEvent.STATUS, isConnected);
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
-				//get the user data fropm save options
-				_userData = _saveOptions.userData;
-				
 				super.open(owner, modal);
 			}
 			
@@ -90,7 +57,7 @@
 				}
 			}
 			
-			private function cancel():void
+			public function cancel():void
 			{
 				_cancel = true;
 				close();
@@ -99,26 +66,12 @@
 			
 			private function save():void
 			{
+				close();
 				_saveOptions.save();
 				isSaved = true;
-				close();
+				
 			}
 			
-			private function resultHandler(event:ResultEvent):void
-			{
-				var resultRaw:Object = event.result;
-				var result:Object = com.adobe.serialization.json.JSON.decode(resultRaw.toString());
-				if (result.status == "success")
-				{
-					isSaved = true;
-					close();
-				}
-			}
-			
-			private function faultHandler(event:FaultEvent):void
-			{
-				trace("Fault: " + event.toString());
-			}
 		]]>
 	</fx:Script>
 	<s:filters>
@@ -143,7 +96,7 @@
 				<s:layout>
 					<s:VerticalLayout paddingLeft="10"/>
 				</s:layout>
-				<s:Label text="You are trying to save an older version of this sketch." fontSize="18"/>
+				<s:Label text="You are trying to save an older version of this sketch." fontSize="15"/>
 			</s:Group>
 			<s:Group width="100%">
 				<s:layout>

@@ -8,6 +8,8 @@
  */
 package sg.edu.smu.ksketch2.utils
 {
+	import mx.formatters.DateFormatter;
+	
 	/**
  	 * The KSketchDocument class serves as the concrete class for handling
  	 * sketch documents in K-Sketch.
@@ -76,12 +78,17 @@ package sg.edu.smu.ksketch2.utils
 			return data;
 		}
 		
-		public static function prepareUserSketch(userData:Object, sketchName:String):Object
+		public static function prepareUserSketch(userData:Object, sketchName:String, isNewSketch:Boolean):Object
 		{
 			var data:Object = new Object();
 			data.comment = 0;
 			data.thumbnailData = userData.thumbnailData;
-			data.sketchId = userData.kSketchDocument.sketchId;
+			
+			if(!isNewSketch)
+				data.sketchId = -1;
+			else
+				data.sketchId = userData.kSketchDocument.sketchId;
+			
 			data.originalVersion = userData.kSketchDocument.originalVersion;
 			data.p_edit = true;
 			data.changeDescription = "";
@@ -102,6 +109,17 @@ package sg.edu.smu.ksketch2.utils
 			data.owner_id = userData.kUser.id;
 			
 			return data;
+		}
+		
+		public static function generateTimestamp(timestamp:Date):String
+		{
+			if (timestamp == null)
+			{
+				timestamp = new Date();
+			}
+			var dateFormatter:DateFormatter = new DateFormatter();
+			dateFormatter.formatString = "YYYY-MM-DDTJJ:NN:SS"
+			return dateFormatter.format(timestamp);
 		}
 	}
 }

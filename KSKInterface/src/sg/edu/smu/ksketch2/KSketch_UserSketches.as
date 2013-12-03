@@ -1,5 +1,7 @@
 package sg.edu.smu.ksketch2
 {
+	import com.adobe.serialization.json.JSON;
+	
 	import mx.collections.ArrayCollection;
 	import mx.collections.Sort;
 	import mx.collections.SortField;
@@ -56,7 +58,7 @@ package sg.edu.smu.ksketch2
 				//check if the owner id is the same as logged-in id
 				var tempId:String = arrEntities[i].data.owner_id;
 				
-				if(tempId == id)
+				if(tempId == id || tempId == "n.a")
 				{
 					var tempItem:DataItem = new DataItem();
 					tempItem.name = arrEntities[i].data.fileName;
@@ -82,10 +84,119 @@ package sg.edu.smu.ksketch2
 			if(arrDG)
 			{
 				arrDG = SortingFunctions.sortArray(arrDG, sortBy);
-				//arrDG.filterFunction = removedDuplicates;
 				arrDG.refresh();
 			}
 			return arrDG;
+		}
+		
+		public static function getSketchArrayToSync(arr:Array):ArrayCollection
+		{
+			var syncArr:ArrayCollection = new ArrayCollection();
+			
+			for(var i:int=0; i<arr.length; i++)
+			{
+				if(arr[i].data.sketchId == "-1")
+				{
+					if(!syncArr.contains(arr[i]))
+						syncArr.addItem(arr[i]);		
+				}
+			}
+			
+			return syncArr;
+		}
+		
+		public static function getSketchDocumentArrayToSync(arr:Array, arrColl:ArrayCollection):ArrayCollection
+		{
+			var syncArr:ArrayCollection = new ArrayCollection();
+			
+			//only get documents that belong to sketches in arrColl
+			for(var i:int=0; i<arr.length; i++)
+			{
+				var sketchDocObj:Object = com.adobe.serialization.json.JSON.decode(arr[i], true);
+				for(var j:int=0; j<arrColl.length; j++)
+				{
+					if(!sketchDocObj.data.sketchId && (sketchDocObj.data.originalName == arrColl.getItemAt(j).data.fileName))
+					{
+						if(!syncArr.contains(arr[i]))
+							syncArr.addItem(arr[i]);	
+					}
+				}
+			}
+			
+			return syncArr;
+		}
+		
+		public static function getSketchDocumentObjectByName(arr:Array, name:String):String
+		{
+			var rawData:String;
+			for(var i:int=0; i<arr.length; i++)
+			{
+				var sketchObj:Object = com.adobe.serialization.json.JSON.decode(arr[i], true);
+				
+				//get sketchID and versionNo.
+				var tempSketchName:String = sketchObj.data.fileName;
+				var tempSketchId:String = sketchObj.data.sketchId;
+				var tempSketchVer:String = sketchObj.data.version;
+				
+				if (tempSketchName == name)
+				{
+					tempSketchName = "";
+					tempSketchId = "";
+					tempSketchVer = "";
+					rawData = arr[i];
+				}
+			}
+			
+			return rawData;
+		}
+		
+		public static function hasToSyncSketches(arrStr:String):Boolean
+		{
+			var hasToSync:Boolean = false;
+			
+			if(arrStr)
+			{
+				var obj:Object = com.adobe.serialization.json.JSON.decode(arrStr, true);
+				var arr:Array = [];
+				arr = (obj.entities as Array);
+				
+				for(var i:int=0; i<arr.length; i++)
+				{
+					if(arr[i].data.sketchId == "-1")
+					{
+						hasToSync = true;
+						break;
+					}
+				}
+			}
+			
+			return hasToSync;
+		}
+		
+		public static function initializeAutoSaveSketchName(arrUserSketch:KSketch_UserSketches):int
+		{
+			var autoSaveCounter:int = 0;
+			var sortBy:String = "fileName";
+			var arrTemp:ArrayCollection = arrUserSketch.getUserSketchArray(sortBy); 
+			
+			for(var i:int = 0; i<arrTemp.length; i++)
+			{
+				if(arrTemp.getItemAt(i).name.indexOf("My Sketch") >= 0)
+				{
+					var tempFilename:String = arrTemp.getItemAt(i).name;
+					var trimFilename:String = tempFilename.replace("My Sketch", ""); 
+					var isANumber:Boolean = !isNaN(Number(trimFilename));
+					
+					if(isANumber)
+					{
+						var tempNo:int = int(trimFilename);
+						if(tempNo > autoSaveCounter)
+							autoSaveCounter = tempNo;	
+					}
+				}
+			}
+			
+			return autoSaveCounter;
 		}
 		
 		/*

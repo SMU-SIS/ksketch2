@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			
+			import spark.components.Application;
+			
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
+			
+			private var _homeView:KSketch_HomeView;
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				_homeView = owner as KSketch_HomeView;
+				super.open(owner, modal);
+			}
+			
+			private function forceLogout():void
+			{
+				_homeView.endLogout(true);
+				close();
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				super.close(commit, data);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
+				
+				_homeView._isLoggingOut = false;
+				_homeView.prepareDataList();
+			}
+		]]>
+	</fx:Script>
+	<s:filters>
+		<s:DropShadowFilter 
+			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
+			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
+			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
+			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+	</s:filters>
+	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+		<s:fill>
+			<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+		</s:fill>
+	</s:Rect>
+	<s:Group width="50%">
+		<s:layout>
+			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalAlign="middle" horizontalAlign="center"/>
+		</s:layout>
+		<s:Label fontSize="15" text="You have unsaved sketches in your account."/>
+		<s:Label fontSize="15" text="To save, please enable internet connection before logging off."/>
+		<s:Label fontSize="15" text="Otherwise, these sketches will be deleted."/>
+		
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+			</s:layout>
+			<s:Button label="Cancel" click="close()" fontSize="14"/>
+			<s:Button label="Logout" click="forceLogout()" fontSize="14"/>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

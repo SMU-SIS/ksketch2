@@ -43,6 +43,7 @@
 			private var webView:StageWebView = new StageWebView();
 			
 			public static var _isLoggedIn:Boolean = false;
+			public static var _isLoggedOut:Boolean = false;
 			
 			private function addedToStageHandler(event:Event):void
 			{
@@ -74,7 +75,10 @@
 				}
 				else
 				{
-					skipConnection("Lost Connection");
+					if(_isLoggedOut)
+						skipConnection("Skip Login");
+					else
+						skipConnection("Lost Connection");
 				}
 				
 				monitor.stop();
@@ -98,6 +102,7 @@
 					webView = null;
 				}
 				
+				_isLoggedOut = false;
 				navigator.pushView(KSketch_HomeView, errorHandled);
 			}
 			
@@ -137,7 +142,7 @@
 			private function locationChangedHandler(event:LocationChangeEvent):void
 			{
 				var currentURL:String = event.location.toString();
-				trace("current url: " + currentURL);
+				
 				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0)
 				{
 					webView.stop();

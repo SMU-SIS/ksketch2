@@ -74,10 +74,8 @@
 			
 			public function save():void
 			{
-				trace("saving synced sketches: " + syncSketchArr);
 				for(var i:int=0; i<syncSketchArr.length; i++)
 				{
-					trace("inside loop" + syncSketchArr.length);
 					var sketch:Object = syncSketchArr.getItemAt(i);
 					var sketchDoc:Object = com.adobe.serialization.json.JSON.decode(String(syncSketchDocsArr.getItemAt(i)),true);
 					
@@ -95,7 +93,6 @@
 				
 					if(_isConnected && KSketch_LoginView._isLoggedIn)
 					{
-						trace("there is internet conn ======== saved to web");
 						httpService.url = KSketchWebLinks.jsonurlPostXML;
 						httpService.send(objSketchDoc);
 						httpService.addEventListener(FaultEvent.FAULT, faultHandler);
@@ -103,11 +100,8 @@
 					}
 					else
 					{
-						trace("there is no conn ======== saved to cache");
 						KSketch_HomeView._viewArr[1] = KCache.appendCacheSketch(KSketch_HomeView._viewArr[1],sketch);
 						KSketch_HomeView._viewArr[2] = KCache.appendCacheSketchDocuments(KSketch_HomeView._viewArr[2],sketchDoc);
-						
-						trace("NOTICE THIS: " + KSketch_HomeView._viewArr[1]);
 						
 						prepareForDiscard();
 					}
@@ -146,7 +140,7 @@
 			
 			private function prepareForDiscard():void
 			{
-				discardTimer = new Timer(10000,1);
+				discardTimer = new Timer(1000,1);
 				discardTimer.addEventListener(TimerEvent.TIMER_COMPLETE, discardHandler);
 				discardTimer.start();
 			}
@@ -180,13 +174,20 @@
 				KCache.writeDataToCache(KSketch_HomeView._viewArr);
 				
 				if(_homeView)
-					_homeView.addedToStageHandler();
+					_homeView.startMonitorConnection();
 					
 				close();
 			}
 			
 			public function resetSyncArrays():void
 			{
+				trace("reset sync arr: " );
+				if(syncSketchArr)
+					trace("syncSketchArr: " + syncSketchArr + " , " + syncSketchArr.length);
+				
+				if(syncSketchDocsArr)
+					trace("syncSketchDocsArr: " + syncSketchDocsArr + " , " + syncSketchDocsArr.length);
+				
 				if(syncSketchArr)
 					syncSketchArr.removeAll();
 				
@@ -196,9 +197,6 @@
 			
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
-				syncSketchArr.removeAll();
-				syncSketchDocsArr.removeAll();
-				
 				super.close(commit, data);
 				(FlexGlobals.topLevelApplication as Application).setFocus();
 				

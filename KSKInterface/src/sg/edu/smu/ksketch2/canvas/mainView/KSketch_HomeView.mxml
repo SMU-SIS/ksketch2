@@ -91,18 +91,15 @@
 			
 			public function addedToStageHandler():void
 			{
-				if(stage.deviceOrientation != "unknown")
-				{
-					stage.setAspectRatio("landscape");
-					stage.autoOrients = true;
-					stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChangedHandler);
-				}
+				trace("in addedTOStageHandler: " + stage.deviceOrientation );
+				stage.setAspectRatio("landscape");
+				stage.autoOrients = true;
+				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChangedHandler);
 				
 				startMonitorConnection();
 			}
 			
-			private function orientationChangedHandler(event:StageOrientationEvent):void 
-			{
+			private function orientationChangedHandler(event:StageOrientationEvent):void {
 				event.stopImmediatePropagation();
 				if(event.afterOrientation == StageOrientation.ROTATED_RIGHT || event.afterOrientation == StageOrientation.ROTATED_LEFT)
 					trace("Inside orientationChanging()");
@@ -536,7 +533,7 @@
 				navigator.pushView(KSketch_LoginView);
 			}
 			
-			private function startMonitorConnection():void
+			public function startMonitorConnection():void
 			{
 				//check for network connection
 				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
@@ -641,7 +638,7 @@
 					<buttons:KSketch_Button id="logoHolder"
 											width="{KSketchStyles.LOGO_BUTTON_WIDTH}" 
 											height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"
-											click="addedToStageHandler()"/>
+											click="startMonitorConnection()"/>
 				</s:Group>
 				
 				<s:Group width="100%">

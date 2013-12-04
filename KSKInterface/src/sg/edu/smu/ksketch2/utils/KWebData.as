@@ -38,8 +38,8 @@ package sg.edu.smu.ksketch2.utils
 			{
 				data.fileName = sketchName;
 				data.sketchId = "";
-				data.originalVersion = -1;
-				data.originalSketch = -1;
+				data.originalVersion = 1;
+				data.originalSketch = 1;
 				
 				data.originalName = sketchName;
 			}

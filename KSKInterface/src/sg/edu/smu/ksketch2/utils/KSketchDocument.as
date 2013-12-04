@@ -66,9 +66,9 @@ package sg.edu.smu.ksketch2.utils
 			}
 			else
 			{
-				this.originalVersion = -1;
+				this.originalVersion = 1;
 				this.version = "";
-				this.originalSketch = -1;
+				this.originalSketch = 1;
 			}
 		}
 	}

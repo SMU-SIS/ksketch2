@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:mx="library://ns.adobe.com/flex/mx" 
+		actionBarVisible="false" 
+		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
+		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
+		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
+		initialize="init()"
+		addedToStage="addedToStageHandler()"
+		viewActivate="init()"
+		destructionPolicy="never"
+		>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:HTTPService id="GetUserSketch"               
+					   resultFormat="text" 
+					   showBusyCursor="false">                        
+		</s:HTTPService>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectProxy;
+			
+			import air.net.URLMonitor;
+			
+			import sg.edu.smu.ksketch2.KSketchAssets;
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchWebLinks;
+			import sg.edu.smu.ksketch2.KSketch_User;
+			import sg.edu.smu.ksketch2.KSketch_UserSketches;
+			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_CanvasNotice;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_LogoutNotice;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SyncOptions;
+			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KWebControl;
+			import sg.edu.smu.ksketch2.utils.KSketchDocument;
+			import sg.edu.smu.ksketch2.utils.KWebData;
+			
+			[Bindable]
+			private var arrDG:ArrayCollection = new ArrayCollection();
+			
+			public static var autoSaveCounter:int = 0;
+			
+			//class variables
+			//public static var _viewArr:Array = new Array(4);
+			private var userData:Object = new Object();
+			private var _mySO:SharedObject;
+			private var _resultSketch:String;
+			
+			//variables for other components
+			public var _webControl:KWebControl;
+			public var _mobileControl:KMobileControl;
+			private var _fileControl:KFileControl;
+			private var _syncOptions:KSketch_SyncOptions;
+			private var _logoffNotice:KSketch_LogoutNotice;
+			private var _canvasNotice:KSketch_CanvasNotice;
+			
+			//variables for connection
+			public var _isConnected:Boolean;
+			private var monitor:URLMonitor;
+			
+			//variables for web or cache retrieval
+			private var _isXML:Boolean;
+			
+			//timer variables
+			private var progressTimer:Timer;	//for progressBar
+			
+			//sketch selection variables
+			private var selectedSketchName:String;
+			private var selectedSketchId:String;
+			private var selectedSketchVersion:String;
+			
+			public function addedToStageHandler():void
+			{
+				if(stage.deviceOrientation == "unknown") //if(stage.deviceOrientation != "unknown") //
+				{
+					stage.setAspectRatio("landscape");
+					stage.autoOrients = true;
+					stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChangedHandler);
+				}
+				startMonitorConnection();
+			}
+			
+			private function orientationChangedHandler(event:StageOrientationEvent):void {
+				event.stopImmediatePropagation();
+				if(event.afterOrientation == StageOrientation.ROTATED_RIGHT || event.afterOrientation == StageOrientation.ROTATED_LEFT)
+					trace("Inside orientationChanging()");
+			}
+			
+			private function init():void
+			{	
+				_fileControl = new KFileControl();
+				
+				_syncOptions = new KSketch_SyncOptions();
+				_syncOptions.createDeferredContent();
+				
+				_logoffNotice = new KSketch_LogoutNotice();
+				_logoffNotice.createDeferredContent();
+				
+				_canvasNotice = new KSketch_CanvasNotice();
+				_canvasNotice.createDeferredContent();
+				
+				//set KSketch Logo
+				logoHolder.init(KSketchAssets.texture_logo, KSketchAssets.texture_logo);
+				
+				GetUserSketch.addEventListener(FaultEvent.FAULT, retrieveFaultHandler);
+				GetUserSketch.addEventListener(ResultEvent.RESULT, retrieveResultHandler);
+			}
+			
+			private function prepareHomeView():void
+			{
+				//initialize login button and KUser object
+				if(!data || data == "Skip Login" || data == "Lost Connection" || data == "Janrain Failed")
+				{
+					if(data)
+					{
+						var errorMessage:String = String(data);
+						
+						if(errorMessage == "Lost Connection")
+							listSketches_unavailable.text = "Failed to login. You are not connected to the Internet.";
+						else if(errorMessage == "Janrain Failed")
+							listSketches_unavailable.text = "Our login provider is not accessible at the moment. Please try again later.";
+					}
+					
+					var obj:Object = new Object();
+					obj.status = "failed";
+					obj.u_login = "n.a";
+					var kUser:KSketch_User = new KSketch_User(obj);
+					userData.kUser = kUser;
+					
+					loginButton.label = "Login";
+				}
+				else
+				{
+					//cast data from previous view to ObjectProxy. This is to avoid getting IEventDispatcher error
+					var dataProxy:ObjectProxy = new ObjectProxy(data);
+					
+					if(dataProxy.kUser)
+						userData.kUser = dataProxy.kUser;
+					
+					if(KSketch_LoginView._isLoggedIn)
+						loginButton.label = "Logout, "+ userData.kUser.u_realname;
+					else
+						loginButton.label = "Login";
+				}
+				
+				prepareDataList();
+			}
+			
+			public function prepareDataList():void
+			{
+				startProgressBar();
+				
+				_mobileControl = new KMobileControl();
+				
+				userData.homeView = this;
+				userData.mobileControl = _mobileControl;
+				userData.kSketchDocument = null;
+				
+				if(KSketch_LoginView._isLoggedIn && _isConnected)
+				{
+					_webControl = new KWebControl(userData.kUser, _mobileControl);
+					updateFromWeb();
+				}
+				else
+					displaySketchData();
+			}
+			
+			public function updateFromWeb():void
+			{
+				_isXML = false;						//JSON retrieval is list of sketches, not XML of sketch
+				
+				//get json object of user's list of sketches from the URL
+				//returned result will be a stringified JSON object
+				GetUserSketch.url = KSketchWebLinks.jsonurlSketch + userData.kUser.id;
+				GetUserSketch.send();
+			}
+			
+			private function retrieveResultHandler(event:ResultEvent):void
+			{
+				var rawData:String = String(event.result);
+				var resultObj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
+				
+				if(!_isXML)
+				{
+					var syncSketchArr:ArrayCollection;
+					if(resultObj)
+					{
+						var newArr:ArrayCollection = new ArrayCollection();
+						var tempArr:Array = (resultObj.entities as Array);
+						if(tempArr.length > 0)
+						{
+							var newTempArr:ArrayCollection = KFileControl.convertArrayToArrayCollection(tempArr);
+							for each(var tempObj:Object in newTempArr)
+							{
+								tempObj = KWebData.convertWebObjForMobile(tempObj);
+								newArr.addItem(tempObj);
+							}
+							
+							for each(var obj:Object in newArr)
+								_webControl.addSketchToList(obj);
+								
+						}
+					}
+					if(_isConnected)
+						resolveConflict();		
+				}
+				
+				if(_isXML)
+				{
+					resultObj = KWebData.convertWebObjForMobile(resultObj);
+					_webControl.addSketchToList(resultObj);
+					displaySketchDocument(resultObj);
+				}
+					
+			}
+			
+			private function retrieveFaultHandler(event:FaultEvent):void
+			{
+				if(!_isXML)
+					displaySketchData();
+				else
+					displaySketchDocument(null);
+			}
+			
+			private function resolveConflict():void
+			{
+				var syncSketchArr:ArrayCollection = new ArrayCollection();	//array for list of sketches to sync
+				
+				if(_mobileControl.informationArr[1])
+					syncSketchArr = KFileControl.getSyncSketchObjects(_mobileControl.informationArr[1]);//, _webControl.informationArr[1]);
+
+				//if there are sketches to sync, then prompt dialog
+				//else just display data
+				if(syncSketchArr.length > 0)
+				{
+					_syncOptions.resetSyncArrays();
+					
+					_syncOptions.currentUser = userData.kUser;
+					_syncOptions.syncSketchArr = syncSketchArr;
+					_syncOptions.open(this,true);
+					PopUpManager.centerPopUp(_syncOptions);	
+				}
+				else
+					displaySketchData();
+			}
+			
+			public function displaySketchData():void
+			{
+				arrDG.removeAll();							//reset arrDG
+				var sketchArr:ArrayCollection;				//array for list of sketches from web or mobile
+				
+				if(_mobileControl)
+					trace("From HOME: " + _mobileControl.informationArr[1]);
+				
+				if(_mobileControl && _webControl)
+				{
+					sketchArr = KFileControl.getSyncSketchList(_mobileControl.informationArr[1], _webControl.informationArr[1]);
+					
+					_mobileControl.reset();
+				}
+				
+				if(!sketchArr)
+					sketchArr = new ArrayCollection();
+				
+				if(_webControl && _webControl.sketchList)
+					sketchArr.addAll(_webControl.sketchList);		//display everything from web control
+				
+				if (_mobileControl && _mobileControl.sketchList)
+					sketchArr.addAll(_mobileControl.sketchList);	//display everything from mobile control
+				
+				if(sketchArr.length > 0)
+				{
+					var userSketch:KSketch_UserSketches = new KSketch_UserSketches();
+					userSketch.createArray(sketchArr, userData.kUser.id);
+					
+					autoSaveCounter = KSketch_UserSketches.initializeAutoSaveSketchName(userSketch);
+					
+					//Set DataGrid array to user sketches collection
+					var sortBy:String = "sketchId";
+					if(!arrDG)
+						arrDG = userSketch.getUserSketchArray(sortBy); 
+					else
+						arrDG.addAll(userSketch.getUserSketchArray(sortBy));
+					
+					listSketches_unavailable.visible = false;
+				}
+				else
+					startNewSketch();
+				
+				stopProgressBar();
+			}
+			
+			private function displaySketchDocument(obj:Object):void
+			{
+				//if no obj is passed in as argument, search through the cached data
+				if(!obj)
+				{
+					var sketchDocArr:ArrayCollection;
+					
+					if(_webControl)
+						sketchDocArr = _webControl.sketchList;
+					else if(_mobileControl)
+						sketchDocArr = _mobileControl.sketchList;
+					
+					//overwrite existing document with the new objDoc
+					if(sketchDocArr)
+					{
+						for(var i:int=0; i<sketchDocArr.length; i++)
+						{
+							var tempObj:Object = sketchDocArr.getItemAt(i);
+							
+							if((tempObj.fileName == selectedSketchName) && (tempObj.sketchId == selectedSketchId))
+							{
+								obj = tempObj;
+								break;
+							}
+						}
+					}
+				}
+				
+				if(obj.fileData)
+				{
+					trace("document: " + com.adobe.serialization.json.JSON.encode(obj));
+					//create XML and date object from JSON to create a KSketchDocument object
+					var xml:XML = new XML(obj.fileData);
+					var date:Date = new Date(obj.modified);
+					var docObj:KSketchDocument = new KSketchDocument(obj.fileName, xml, obj.id, date, obj.originalName, obj.version, obj.sketchId, obj.changeDescription);
+					userData.kSketchDocument = docObj;
+					navigateToScreen("CANVAS");
+				}
+				else
+				{
+					_canvasNotice._parent = "SKETCHDOCUMENT";
+					_canvasNotice.open(this, true);
+					PopUpManager.centerPopUp(_canvasNotice);
+				}
+				
+				_isXML = false;
+				
+				stopProgressBar();
+			}
+		
+			private function startNewSketch():void
+			{
+				listSketches_unavailable.visible = true;
+			}
+			
+			private function createSketch():void
+			{
+				KSketch_CanvasView.isNewSketch = true;
+				navigateToScreen('CANVAS');
+			}
+			
+			public function navigateToScreen(screenName:String):void
+			{
+				resetDatagridSelectItem();
+				
+				if(_webControl)
+					_mobileControl.writeToCache(_webControl.informationArr);
+				else if(_mobileControl)
+					_mobileControl.writeToCache(_mobileControl.informationArr);
+				
+				if(screenName.indexOf("CANVAS") == -1) //if screen name is Login
+				{
+					KSketch_LoginView.userData = new Object();
+					
+					//if this is a logout button, then reset view & delete cache
+					if(loginButton.label.indexOf("Login") == -1)
+					{
+						if(!KFileControl.unsavedSketchExist(_mobileControl.informationArr[1]))
+							logout();
+						else
+						{
+							_logoffNotice.open(this,true);
+							PopUpManager.centerPopUp(_logoffNotice);	
+						}
+					}
+					else
+						navigator.pushView(KSketch_LoginView);	
+				}	
+				else //if screen name is Canvas
+					navigator.pushView(KSketch_CanvasView, userData);
+			}
+			
+			public function logout():void
+			{
+				KSketch_LoginView._isLoggedIn = false;
+				data = null;
+				_mobileControl.reset();
+				_mobileControl.writeToCache(_mobileControl.informationArr);
+				_mobileControl = null;
+				_webControl = null;
+				
+				startMonitorConnection();
+			}
+			
+			public function startMonitorConnection():void
+			{
+				//check for network connection
+				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				monitor.addEventListener(StatusEvent.STATUS, monitorConnection);
+				monitor.start();
+			}
+			
+			private function monitorConnection(event:StatusEvent):void
+			{
+				if(monitor.available)
+					_isConnected = true;
+				else
+					_isConnected = false;
+				
+				monitor.stop();
+				monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
+				
+				prepareHomeView();
+			}
+			
+			private function startProgressBar():void
+			{
+				progressBar.visible = true;
+				
+				progressTimer = new Timer(1);
+				progressTimer.addEventListener(TimerEvent.TIMER, progressBarHandler);
+				progressTimer.start();
+			}
+			
+			private function stopProgressBar():void
+			{
+				//stop progress bar
+				progressTimer.stop();
+				progressTimer.removeEventListener(TimerEvent.TIMER, progressBarHandler);
+				progressBar.visible = false;
+			}
+			
+			private function progressBarHandler(event:TimerEvent):void
+			{
+				progressBar.value += .008;
+				
+				if (progressBar.value >= 1)
+					progressBar.value = 0;
+			}
+			
+			private function datagridSelectItem():void
+			{
+				selectedSketchName = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchName;
+				selectedSketchId = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchId;
+				selectedSketchVersion = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedVersion;
+				
+				_isXML = true; //set boolean to true because this JSON retrieval will be XML of sketch
+				
+				//get json object of sketch from the URL and according to sketchid and version number
+				GetUserSketch.url = KSketchWebLinks.jsonurlSketchXML + "/" + selectedSketchId + "/" + selectedSketchVersion;
+				GetUserSketch.send();
+				startProgressBar();
+			}
+			
+			private function resetDatagridSelectItem():void
+			{
+				arrDG.removeAll();
+				selectedSketchName = null;
+				selectedSketchId = null;
+				selectedSketchVersion = null;
+				KSketch_HomeView_IconItemRenderer.selectedSketchName = null;
+				KSketch_HomeView_IconItemRenderer.selectedSketchId = null;
+				KSketch_HomeView_IconItemRenderer.selectedVersion = null;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:Group width="100%" height="100%">
+		<!-- defines the page to arrange 'group' elements from left to right -->
+		<s:layout> <s:HorizontalLayout gap="2"/> </s:layout>
+		
+		<!-- First half of the page -->
+		<s:Group width="33%" height="100%">
+			<!-- sets the background to grey -->
+			<s:Rect width="100%" height="100%">
+				<s:fill> <s:SolidColor color="0xE7E7E7"/> </s:fill>
+			</s:Rect>
+			
+			<s:Group width="100%" height="100%">
+				<!-- defines the page to arrange 'group' elements from top to bottom -->
+				<s:layout> <s:VerticalLayout paddingLeft="15" paddingRight="15" paddingTop="15"/> </s:layout>
+				
+				<!-- Alignment for logo button -->
+				<s:Group width="100%" height="40%">
+					<s:layout> <s:HorizontalLayout paddingLeft="48" paddingTop="10"/> </s:layout>
+					<buttons:KSketch_Button id="logoHolder"
+											width="{KSketchStyles.LOGO_BUTTON_WIDTH}" 
+											height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"
+											click="startMonitorConnection()"/>
+				</s:Group>
+				
+				<s:Group width="100%">
+					<s:layout> <s:VerticalLayout paddingBottom="10"/> </s:layout>
+					<s:Button width="100%" label="Create a Sketch" click="createSketch()"/>
+				</s:Group>
+				
+				<s:Group width="100%">
+					<s:layout> <s:VerticalLayout paddingBottom="10"/> </s:layout>
+					<s:Button id="loginButton" width="100%" click="navigateToScreen('LOGIN')"/>
+				</s:Group>
+				
+				<!-- end alignment for buttons -->
+			</s:Group>
+		</s:Group>
+		<!-- end of first half -->
+		
+		<!-- Second half of the page -->
+		<s:Group width="67%" height="100%">
+			
+			<!-- Background for previewer -->
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xE7E7E7"/>
+				</s:fill>
+			</s:Rect>
+			
+			<!--Previewer portion-->
+			<s:Group width="100%" height="100%">
+				<s:Rect top="15" left="15" right="15" bottom="15">
+					<s:fill>
+						<s:SolidColor color="0xFFFFFF"/>
+					</s:fill>
+					<s:filters>
+						<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
+					</s:filters>
+				</s:Rect>
+				
+				<s:Group top="15" left="15" right="15" bottom="15">
+					<s:List id="listSketches" contentBackgroundAlpha="0" width="100%" height="100%"
+							itemRenderer="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"
+							dataProvider="{arrDG}" change="datagridSelectItem()"
+							>
+					</s:List>
+					<s:Label id="listSketches_unavailable" text="Start a new sketch now!" visible="false"/>
+					
+					<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
+										   horizontalCenter="0" verticalCenter="0" visible="false"/>
+				</s:Group>
+				
+			</s:Group> 
+			<!-- end of previewer portion-->
+		</s:Group>	
+		<!-- end of second half -->
+	</s:Group>
+</s:View>

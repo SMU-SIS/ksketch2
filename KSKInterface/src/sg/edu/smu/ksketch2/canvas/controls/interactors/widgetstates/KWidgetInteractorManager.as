@@ -22,7 +22,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Widget_ContextMenu;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;

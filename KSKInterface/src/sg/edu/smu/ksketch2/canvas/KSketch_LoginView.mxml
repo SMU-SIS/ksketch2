@@ -31,7 +31,7 @@
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.KSketch_User;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar;
-			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
 			private var progressTimer:Timer;
 			private var _stage:Stage;

@@ -26,7 +26,7 @@
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
-			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			
 			public static const ORIGIN:Point = new Point();
 			public static const LEFT:int = 0;

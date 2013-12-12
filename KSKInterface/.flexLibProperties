@@ -20,7 +20,9 @@
     <classEntry path="sg.edu.smu.ksketch2.canvas.controls.interactors.KMoveCenterInteractor"/>
     <classEntry path="sg.edu.smu.ksketch2.KSketchWebLinks"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"/>
-    <classEntry path="sg.edu.smu.ksketch2.utils.KCache"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KFileControl"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KWebControl"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KMobileControl"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

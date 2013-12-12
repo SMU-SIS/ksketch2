@@ -9,7 +9,8 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0"
+						   initialize="init()">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
@@ -17,9 +18,10 @@
 			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
 			private var _homeView:KSketch_HomeView;
+			public var _parent:String;
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
@@ -31,6 +33,14 @@
 			{
 				super.close(commit, data);
 				(FlexGlobals.topLevelApplication as Application).setFocus();
+			}
+		
+			private function init():void
+			{
+				if(_parent == "SYNCSKETCH")
+					notificationLabel.text = "Failed to sync. You need to be connected to the Internet.";
+				else if(_parent == "SKETCHDOCUMENT")
+					notificationLabel.text = "Unable to display sketch. You need to be connected to the Internet.";
 			}
 		]]>
 	</fx:Script>
@@ -51,13 +61,13 @@
 		<s:layout>
 			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:Label fontSize="15" text="This sketch can't be displayed because your device is currently offline."/>
+		<s:Label id="notificationLabel" fontSize="15"/>
 		
 		<s:Group width="100%">
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button label="Cancel" click="close()" fontSize="14"/>
+			<s:Button label="OK" click="close()" fontSize="14"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

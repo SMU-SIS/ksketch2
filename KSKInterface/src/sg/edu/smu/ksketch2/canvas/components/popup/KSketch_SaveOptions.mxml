@@ -33,25 +33,82 @@
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
-			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
-			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
-			import sg.edu.smu.ksketch2.utils.KCache;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.utils.KWebData;
 			
-			public static var isSaved:Boolean = false;
 			public static var returnToHome:Boolean = false;
 			public static var overwriteSave:Boolean = false;
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
+			private var _mobileControl:KMobileControl;
+			
 			private var monitor:URLMonitor;
 			private var _isConnected:Boolean;
 			private var discard:Boolean = false;
-			private var objSketchDoc:Object = new Object();
+			private var success:Boolean;
+			private var objDoc:Object;
 			
 			public var result:Object;
 			public var userData:Object = new Object();
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				userData = _canvasView.saveSketch();
+				_mobileControl = _canvasView._mobileControl;
+				
+				//if this is an attempt to save a new sketch, 
+				//then show the textarea to enter sketch name
+				if(KSketch_CanvasView.isNewSketch)
+				{
+					var saveCounter:int = KSketch_HomeView.autoSaveCounter;
+					sketchName.text = "My Sketch " + (saveCounter + 1);
+				}
+				else
+				{
+					if(userData.kSketchDocument.originalName == "N/A")
+					{
+						sketchName.text = userData.kSketchDocument.name;
+						userData.kSketchDocument.originalName = userData.kSketchDocument.name;
+					}
+					else
+						sketchName.text = userData.kSketchDocument.name;
+					
+					saveAsWarning.visible = true;
+				}
+				
+				super.open(owner, modal);
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				super.close(commit,data);
+				
+				if(!overwriteSave || discard)
+				{
+					if(success)
+						_mobileControl.reset();
+					
+					if(!returnToHome)
+					{
+						_canvasView._interactionControl.reset();
+					}
+					else
+					{
+						_menu._exit();	
+					}
+					
+					overwriteSave = false;
+				}
+				else
+				{
+					_overwriteSaveOptions.open(_canvasView,true);
+					PopUpManager.centerPopUp(_overwriteSaveOptions);
+				}
+			}
 			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, overwriteSave:KSketch_OverwriteSaveOptions):void
 			{
@@ -76,107 +133,35 @@
 				monitor.removeEventListener(StatusEvent.STATUS, isConnected);
 			}
 			
-			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
-			{
-				
-				userData = _canvasView.saveSketch();
-				
-				//if this is an attempt to save a new sketch, 
-				//then show the textarea to enter sketch name
-				if(KSketch_CanvasView.isNewSketch)
-				{
-					var saveCounter:int = KSketch_HomeView.autoSaveCounter;
-					sketchName.text = "My Sketch " + (saveCounter + 1);
-				}
-				else
-				{
-					if(userData.kSketchDocument.originalName == "N/A")
-					{
-						sketchName.text = userData.kSketchDocument.name;
-						userData.kSketchDocument.originalName = userData.kSketchDocument.name;
-					}
-					else
-						sketchName.text = userData.kSketchDocument.originalName;
-					
-					saveAsWarning.visible = true;
-				}
-				
-				super.open(owner, modal);
-			}
-			
-			private function cancel():void
-			{
-				discard = true;
-				close();
-			}
-			
-			override public function close(commit:Boolean=false, data:*=null):void
-			{
-				super.close(commit,data);
-				
-				if(!overwriteSave || discard)
-				{
-					if(!returnToHome)
-						_canvasView._interactionControl.reset();
-					else
-						_menu._exit();
-				}
-				else
-				{
-					overwriteSave = true;
-					_overwriteSaveOptions.open(_canvasView,true);
-					PopUpManager.centerPopUp(_overwriteSaveOptions);
-				}
-				
-				overwriteSave = false;
-			}
-			
 			public function save():void
 			{
+				success = false;
+				
+				var finalFileName:String =  sketchName.text;
+				
+				objDoc = KWebData.prepareSketchDocument(userData, finalFileName);
+				
+				var isNew:Boolean = false;
+				if(!returnToHome)
+					isNew = true;
+				
 				//if connected to network and has logged in, then save to web. Else save to cache
 				if(_isConnected && KSketch_LoginView._isLoggedIn)
 				{
-					objSketchDoc["fileData"] = com.adobe.serialization.json.JSON.encode(KWebData.prepareSketchDoc_Save(userData, sketchName.text));
+					var objSaveToWeb:Object = new Object();
+					objSaveToWeb["fileData"] = com.adobe.serialization.json.JSON.encode(objDoc);
+					
 					if(!overwriteSave)
 						httpService.url = KSketchWebLinks.jsonurlPostXML;
 					else
 						httpService.url = KSketchWebLinks.jsonurlOverwritePostXML;
 					
-					httpService.send(objSketchDoc);
+					httpService.send(objSaveToWeb);
 					httpService.addEventListener(ResultEvent.RESULT, resultHandler);
 					httpService.addEventListener(FaultEvent.FAULT, faultHandler);
 				}
 				else
-					saveToCache();
-			}
-			
-			private function saveToCache():void
-			{
-				/*
-				format: {"count": x, "entities":[array], "en_type": "Sketch", "method": "get_entities_by_criteria_new"} 
-				in array of entities will only be ONE object with one or many data objects
-				{"data": {object}, "id": x, "modified": "", "created": ""}
-				*/
-				
-				var finalFileName:String =  sketchName.text;
-				if(!KSketch_CanvasView.isNewSketch)
-				{
-					var currentDate:String = KWebData.generateTimestamp(null);
-					finalFileName += "_" + currentDate;
-				}
-				
-				var objSketch:Object = new Object();
-				objSketch.data = KWebData.prepareUserSketch(userData, finalFileName, KSketch_CanvasView.isNewSketch);
-				KSketch_HomeView._viewArr[1] = KCache.appendCacheSketch(KSketch_HomeView._viewArr[1], objSketch);
-				
-				objSketchDoc.data = KWebData.prepareSketchDoc_Save(userData, finalFileName);
-				KSketch_HomeView._viewArr[2] = KCache.appendCacheSketchDocuments(KSketch_HomeView._viewArr[2], objSketchDoc);
-				KSketch_HomeView._viewArr[3] = "CACHE";
-				KCache.writeDataToCache(KSketch_HomeView._viewArr);
-				
-				isSaved = true;
-				
-				close();
+					saveToCache(objDoc);
 			}
 			
 			private function resultHandler(event:ResultEvent):void
@@ -187,20 +172,48 @@
 				if (result.status == "success")
 				{
 					overwriteSave = false;
-					isSaved = true;
-					close();	
+					success = true;
 				}
 				else if (result.status == "errorDiscrepancy")
-				{
 					overwriteSave = true;
-					close();
-				}
+				
+				close();
+				
+				//trace("RESULT: " + resultRaw.toString());
 			}
 			
 			private function faultHandler(event:FaultEvent):void
 			{
-				trace("Fault: " + event.toString());
-				saveToCache();
+				if(!KSketch_CanvasView.isNewSketch)
+				{
+					//change properties of objDoc
+					objDoc.fileName = objDoc.fileName + "_" + KWebData.generateTimestamp(null);
+					objDoc.version = 1;
+					objDoc.sketchId = "";
+					objDoc.originalVersion = 0;	//changed
+					objDoc.originalSketch = -1;
+				}
+					
+				saveToCache(objDoc);
+				
+				//trace("FAULT: " +  event.fault.toString());
+			}
+			
+			private function saveToCache(saveObj:Object):void
+			{
+				saveObj.sketchId = "";
+				_mobileControl.initFromCache();
+				_mobileControl.addSketchToList(saveObj);
+				_mobileControl.writeToCache(_mobileControl.informationArr);
+				
+				close();
+			}
+			
+			private function cancel():void
+			{
+				success = true;
+				discard = true;
+				close();
 			}
 		]]>
 	</fx:Script>

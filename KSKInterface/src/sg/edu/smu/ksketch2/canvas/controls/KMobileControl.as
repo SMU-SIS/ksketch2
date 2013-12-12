@@ -41,10 +41,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 		 */
 		public function writeToCache(arr:Array):void
 		{
-			trace("WRITE TO CACHE============");
-			for(var x:int=0; x<arr.length; x++)
-				trace( arr[x]);
-			
 			_mySO.clear();
 			
 			_mySO.data.user = arr[0];

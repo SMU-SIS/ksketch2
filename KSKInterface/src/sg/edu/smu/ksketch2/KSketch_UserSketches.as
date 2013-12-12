@@ -14,7 +14,8 @@ package sg.edu.smu.ksketch2
 	public class KSketch_UserSketches
 	{
 		private var keys:Object = {};
-		public var arrEntities:Array = [];
+		//public var arrEntities:Array = [];
+		
 		public var arrDG:ArrayCollection = new ArrayCollection();
 		
 		/*
@@ -43,40 +44,28 @@ package sg.edu.smu.ksketch2
 		owner_id: Number;
 		*/
 		
-		//this object only carries "entities" property
-		public function KSketch_UserSketches(obj:Object, id:String)
-		{
-			arrEntities = (obj as Array);
-			createArray(id);
-		}	
-		
-		public function createArray(id:String):void
+		public function createArray(arr:ArrayCollection, id:String):void
 		{
 			//sketch image, name, description, date
-			for (var i:String in arrEntities)
+			for (var i:int=0; i<arr.length; i++)
 			{
 				//check if the owner id is the same as logged-in id
-				var tempId:String = arrEntities[i].data.owner_id;
+				var tempId:String = arr.getItemAt(i).owner_id;
 				
 				if(tempId == id || tempId == "n.a")
 				{
 					var tempItem:DataItem = new DataItem();
-					tempItem.name = arrEntities[i].data.fileName;
-					tempItem.date = arrEntities[i].created;
-					tempItem.sketchId = arrEntities[i].data.sketchId;
-					tempItem.version = arrEntities[i].data.version;
-					tempItem.originalName = arrEntities[i].data.originalName;
-					tempItem.originalVersion = arrEntities[i].data.originalVersion;
-					tempItem.image = arrEntities[i].data.thumbnailData;
+					tempItem.name = arr.getItemAt(i).fileName;
+					tempItem.date = arr.getItemAt(i).created;
+					tempItem.sketchId = arr.getItemAt(i).sketchId;
+					tempItem.version = arr.getItemAt(i).version;
+					tempItem.originalName = arr.getItemAt(i).originalName;
+					tempItem.originalVersion = arr.getItemAt(i).originalVersion;
+					tempItem.image = arr.getItemAt(i).thumbnailData;
 					
 					arrDG.addItem(tempItem);
 				}
 			}
-		}
-		
-		public function getUserSketchObj():Object
-		{
-			return arrEntities;
 		}
 		
 		public function getUserSketchArray(sortBy:String):ArrayCollection
@@ -89,6 +78,7 @@ package sg.edu.smu.ksketch2
 			return arrDG;
 		}
 		
+		/*
 		public static function getSketchArrayToSync(arr:Array):ArrayCollection
 		{
 			var syncArr:ArrayCollection = new ArrayCollection();
@@ -124,7 +114,7 @@ package sg.edu.smu.ksketch2
 			}
 			
 			return syncArr;
-		}
+		}*/
 		
 		public static function getSketchDocumentObjectByName(arr:Array, name:String):String
 		{

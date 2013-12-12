@@ -2,13 +2,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 {
 	import com.adobe.serialization.json.JSON;
 	
-	import flash.net.SharedObject;
-	
 	import mx.collections.ArrayCollection;
-	import mx.formatters.DateFormatter;
-	
-	import sg.edu.smu.ksketch2.utils.KSketchDocument;
-	import sg.edu.smu.ksketch2.utils.KWebData;
 	
 	public class KFileControl
 	{

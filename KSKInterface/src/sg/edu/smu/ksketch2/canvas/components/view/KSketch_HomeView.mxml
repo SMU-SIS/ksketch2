@@ -246,7 +246,7 @@
 				var syncSketchArr:ArrayCollection = new ArrayCollection();	//array for list of sketches to sync
 				
 				if(_mobileControl.informationArr[1])
-					syncSketchArr = KFileControl.getSyncSketchObjects(_mobileControl.informationArr[1]);//, _webControl.informationArr[1]);
+					syncSketchArr = KFileControl.getSyncSketchObjects(_mobileControl.informationArr[1]);
 
 				//if there are sketches to sync, then prompt dialog
 				//else just display data
@@ -267,9 +267,6 @@
 			{
 				arrDG.removeAll();							//reset arrDG
 				var sketchArr:ArrayCollection;				//array for list of sketches from web or mobile
-				
-				if(_mobileControl)
-					trace("From HOME: " + _mobileControl.informationArr[1]);
 				
 				if(_mobileControl && _webControl)
 				{

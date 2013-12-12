@@ -17,18 +17,20 @@ package sg.edu.smu.ksketch2.utils
 	[Bindable]
 	public class KWebData
 	{	
-		public static function prepareSketchDoc_Save(userData:Object, sketchName:String):Object
+		public static function prepareSketchDocument(userData:Object, sketchName:String):Object
 		{
 			var data:Object = new Object();
 			data.group_permissions = [];
 			data.thumbnailData = userData.thumbnailData;
 			data.p_edit = true;
 			data.changeDescription = "";
+			data.date = generateTimestamp(null);
 			
 			if(userData.kSketchDocument.originalName != "" && (sketchName == userData.kSketchDocument.originalName))
 			{
 				data.fileName = sketchName;
 				data.sketchId = userData.kSketchDocument.sketchId;
+				trace("sketch id: " + data.sketchId);
 				data.originalVersion = userData.kSketchDocument.originalVersion;
 				data.originalSketch = userData.kSketchDocument.originalSketch;
 				
@@ -39,7 +41,7 @@ package sg.edu.smu.ksketch2.utils
 				data.fileName = sketchName;
 				data.sketchId = "";
 				data.originalVersion = 1;
-				data.originalSketch = 1;
+				data.originalSketch = -1;
 				
 				data.originalName = sketchName;
 			}
@@ -54,59 +56,28 @@ package sg.edu.smu.ksketch2.utils
 			return data;
 		}
 		
-		public static function prepareSketchDoc_Sync(user:Object, docObj:KSketchDocument, thumbnailData:String, fileName:String):Object
+		public static function convertWebObjForMobile(obj:Object):Object
 		{
 			var data:Object = new Object();
-			data.group_permissions = [];
-			data.thumbnailData = thumbnailData;
-			data.sketchId = ""; 
-			data.p_edit = true;
-			data.changeDescription = "";
-			data.fileName = fileName;
 			
-			data.originalVersion = docObj.originalVersion;
-			data.originalSketch = docObj.originalSketch;
-			data.originalName = fileName;
-			
-			data.appver = 1.0;
-			data.version = docObj.version;
-			data.p_view = 1;
-			data.fileData = docObj.xml.toXMLString();
-			data.p_comment = true;
-			data.owner = user.u_realname;
-			data.owner_id = user.id;
-			return data;
-		}
-		
-		public static function prepareUserSketch(userData:Object, sketchName:String, isNewSketch:Boolean):Object
-		{
-			var data:Object = new Object();
-			data.comment = 0;
-			data.thumbnailData = userData.thumbnailData;
-			
-			if(!isNewSketch)
-				data.sketchId = -1;
-			else
-				data.sketchId = userData.kSketchDocument.sketchId;
-			
-			data.originalVersion = userData.kSketchDocument.originalVersion;
-			data.p_edit = true;
-			data.changeDescription = "";
-			data.fileName = sketchName;
-			data.like = 0;
-			
-			if(userData.kSketchDocument.originalName == "")
-				data.originalName = sketchName;
-			else
-				data.originalName = userData.kSketchDocument.originalName;
-			
-			data.appver = 1.0;
-			data.version = userData.kSketchDocument.version;
-			data.p_view = true;
-			data.owner = userData.kUser.u_realname; 
-			data.originalSketch =  userData.kSketchDocument.originalSketch;
-			data.p_comment = true;
-			data.owner_id = userData.kUser.id;
+			data.originalVersion = obj.data.originalVersion;
+			data.thumbnailData = obj.data.thumbnailData;
+			data.changeDescription = obj.data.changeDescription;
+			data.p_comment = obj.data.p_comment;
+			data.originalSketch = obj.data.originalSketch;
+			data.p_view = obj.data.p_view;
+			data.owner = obj.data.owner;
+			data.appver = obj.data.appver;
+			data.owner_id = obj.data.owner_id;
+			data.sketchId = obj.data.sketchId;
+			data.p_edit = obj.data.p_edit;
+			data.version = obj.data.version;
+			data.fileName = obj.data.fileName;
+			data.originalName = obj.data.originalName;
+			data.date = obj.created;
+			data.like = obj.data.like;
+			data.comment = obj.data.comment;
+			data.fileData = obj.data.fileData;
 			
 			return data;
 		}
@@ -118,7 +89,7 @@ package sg.edu.smu.ksketch2.utils
 				timestamp = new Date();
 			}
 			var dateFormatter:DateFormatter = new DateFormatter();
-			dateFormatter.formatString = "YYYY-MM-DDTJJ:NN:SS"
+			dateFormatter.formatString = "DD MMM YYYY, HH:NN:SS";
 			return dateFormatter.format(timestamp);
 		}
 	}

@@ -40,7 +40,7 @@ package sg.edu.smu.ksketch2.utils
  		 * @param date The target date.
  		 * @param description The target description.
  		 */
-		public function KSketchDocument(name:String, xml:XML, id:String,  date:Date, originalName:String, originalVersion:int, sketchId:int, description:String = "")
+		public function KSketchDocument(name:String, xml:XML, id:String,  date:Date, originalName:String, version:int, sketchId:int, description:String = "")
 		{
 			this.xml = xml;						//The model itself, the <scene> tag
 			this.name = name;					//The title of the document, user defined
@@ -58,18 +58,10 @@ package sg.edu.smu.ksketch2.utils
 			else
 				this.originalName = name;
 			
-			if(originalVersion || originalVersion > 0)
-			{
-				this.originalVersion = originalVersion;
-				this.version = "" + (originalVersion + 1);
-				this.originalSketch = sketchId; 
-			}
-			else
-			{
-				this.originalVersion = 1;
-				this.version = "";
-				this.originalSketch = 1;
-			}
+			this.originalVersion = version;
+			this.version = "";
+			this.originalSketch = this.sketchId;
+
 		}
 	}
 }

@@ -17,7 +17,7 @@
 			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
 			private var _homeView:KSketch_HomeView;
 			
@@ -29,7 +29,8 @@
 			
 			private function forceLogout():void
 			{
-				_homeView.endLogout(true);
+				_homeView._mobileControl.informationArr[1] = null;
+				_homeView.navigateToScreen("LOGIN");
 				close();
 			}
 			
@@ -37,9 +38,7 @@
 			{
 				super.close(commit, data);
 				(FlexGlobals.topLevelApplication as Application).setFocus();
-				
-				_homeView._isLoggingOut = false;
-				_homeView.prepareDataList();
+				_homeView.startMonitorConnection();
 			}
 		]]>
 	</fx:Script>

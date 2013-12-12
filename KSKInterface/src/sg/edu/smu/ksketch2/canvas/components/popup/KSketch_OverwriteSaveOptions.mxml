@@ -23,14 +23,11 @@
 	<fx:Script>
 		<![CDATA[
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.mainView.KSketch_CanvasView;
-			
-			public static var isSaved:Boolean = false;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
 			private var _saveOptions:KSketch_SaveOptions;
-			private var _cancel:Boolean = false;
 			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, saveOptions:KSketch_SaveOptions):void
 			{
@@ -47,29 +44,18 @@
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
 				super.close(commit,data);
-				
-				if(!_cancel)
-				{
-					if(!KSketch_SaveOptions.returnToHome)
-						_canvasView._interactionControl.reset();
-					else
-						_menu._exit();
-				}
 			}
-			
-			public function cancel():void
-			{
-				_cancel = true;
-				close();
-				_cancel = false;
-			}
-			
+
 			private function save():void
 			{
 				close();
 				_saveOptions.save();
-				isSaved = true;
-				
+			}
+			
+			private function cancel():void
+			{
+				KSketch_SaveOptions.overwriteSave = false;
+				close();
 			}
 			
 		]]>

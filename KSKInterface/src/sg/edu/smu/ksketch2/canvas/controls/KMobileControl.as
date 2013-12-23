@@ -59,10 +59,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 		}
 		
 		
-		public function addSketchToList(sketchObj:Object):void
+		public function addSketchToList(sketchObj:Object, type:String):void
 		{
 			var sketchArr:ArrayCollection;
-			sketchArr = KFileControl.addNewSketchDocument(informationArr[1], sketchObj);
+			sketchArr = KFileControl.addNewSketchDocument(informationArr[1], sketchObj, type);
 			
 			sketchObj = new Object();
 			if(sketchArr)															
@@ -86,6 +86,29 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var obj:Object;
 			obj = KFileControl.getUserObject(informationArr[0]);
 			return obj;
+		}
+		
+		public function discardSavedSketches():void
+		{
+			//get sketches from cache
+			var cacheArr_sketch:ArrayCollection;
+			cacheArr_sketch = KFileControl.convertStringToArrayCollection(informationArr[1]);
+			
+			var newArr:ArrayCollection = new ArrayCollection();
+			
+			for(var i:int=0; i<cacheArr_sketch.length; i++)
+			{
+				var obj:Object = cacheArr_sketch.getItemAt(i);
+				if(obj.save != -1)
+					newArr.addItem(obj);
+			}
+			
+			var docObj:Object = new Object();
+			docObj.sketches = newArr.source;
+			
+			informationArr[1] = com.adobe.serialization.json.JSON.encode(docObj);	//stringify the JSON objects to store in informationArr[2]
+			cacheArr_sketch.removeAll();
+			newArr.removeAll();	
 		}
 		
 		public function reset():void

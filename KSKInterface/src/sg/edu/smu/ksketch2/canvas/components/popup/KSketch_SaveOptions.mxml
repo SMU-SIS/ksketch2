@@ -42,24 +42,62 @@
 			public static var overwriteSave:Boolean = false;
 			
 			private var _canvasView:KSketch_CanvasView;
-			private var _menu:KSketch_PopUp_Menu;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
-			private var _mobileControl:KMobileControl;
+			private var _discardConfirmation:KSketch_DiscardConfirmation;
+			private var _menu:KSketch_PopUp_Menu;
 			
 			private var monitor:URLMonitor;
 			private var _isConnected:Boolean;
 			private var discard:Boolean = false;
 			private var success:Boolean;
-			private var objDoc:Object;
+			public var objDoc:Object;
 			
 			public var result:Object;
 			public var userData:Object = new Object();
+			public var _mobileControl:KMobileControl;
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
 				userData = _canvasView.saveSketch();
 				_mobileControl = _canvasView._mobileControl;
 				
+				setSketchName();
+				
+				super.open(owner, modal);
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				setSketchName();
+				super.close(commit,data);
+				
+				if(overwriteSave)
+				{
+					_overwriteSaveOptions.open(_canvasView,true);
+					PopUpManager.centerPopUp(_overwriteSaveOptions);
+					overwriteSave = false;
+				}
+				
+				if(discard)
+				{
+					_discardConfirmation.open(_canvasView, true);
+					_discardConfirmation.returnToHome = returnToHome;
+					PopUpManager.centerPopUp(_discardConfirmation);
+					discard = false;
+				}
+				
+				if(success)
+				{
+					_mobileControl.writeToCache(_mobileControl.informationArr);
+					if(!returnToHome)
+						_canvasView._interactionControl.reset();
+					else
+						_menu._exit();	
+				}
+			}
+			
+			private function setSketchName():void
+			{
 				//if this is an attempt to save a new sketch, 
 				//then show the textarea to enter sketch name
 				if(KSketch_CanvasView.isNewSketch)
@@ -79,42 +117,14 @@
 					
 					saveAsWarning.visible = true;
 				}
-				
-				super.open(owner, modal);
 			}
 			
-			override public function close(commit:Boolean=false, data:*=null):void
-			{
-				super.close(commit,data);
-				
-				if(!overwriteSave || discard)
-				{
-					if(success)
-						_mobileControl.reset();
-					
-					if(!returnToHome)
-					{
-						_canvasView._interactionControl.reset();
-					}
-					else
-					{
-						_menu._exit();	
-					}
-					
-					overwriteSave = false;
-				}
-				else
-				{
-					_overwriteSaveOptions.open(_canvasView,true);
-					PopUpManager.centerPopUp(_overwriteSaveOptions);
-				}
-			}
-			
-			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, overwriteSave:KSketch_OverwriteSaveOptions):void
+			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, overwriteSave:KSketch_OverwriteSaveOptions, discardConfirmation:KSketch_DiscardConfirmation):void
 			{
 				_canvasView = canvasView;
-				_menu = menu;
 				_overwriteSaveOptions = overwriteSave;
+				_discardConfirmation = discardConfirmation;
+				_menu = menu;
 				
 				//check for network connection
 				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
@@ -135,33 +145,62 @@
 			
 			public function save():void
 			{
-				success = false;
-				
 				var finalFileName:String =  sketchName.text;
 				
 				objDoc = KWebData.prepareSketchDocument(userData, finalFileName);
+				objDoc.save = -1;
 				
-				var isNew:Boolean = false;
-				if(!returnToHome)
-					isNew = true;
-				
-				//if connected to network and has logged in, then save to web. Else save to cache
-				if(_isConnected && KSketch_LoginView._isLoggedIn)
+				if(objDoc.sketchId == -1)
 				{
-					var objSaveToWeb:Object = new Object();
-					objSaveToWeb["fileData"] = com.adobe.serialization.json.JSON.encode(objDoc);
-					
-					if(!overwriteSave)
-						httpService.url = KSketchWebLinks.jsonurlPostXML;
-					else
-						httpService.url = KSketchWebLinks.jsonurlOverwritePostXML;
-					
-					httpService.send(objSaveToWeb);
-					httpService.addEventListener(ResultEvent.RESULT, resultHandler);
-					httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+					objDoc.version = 1;
+					objDoc.sketchId = "";
+					objDoc.originalVersion = 0;	//changed
+					objDoc.originalSketch = -1;
 				}
+				
+				//save to cache
+				_mobileControl.addSketchToList(objDoc, "save");
+
+				if(_canvasView._isNewSketch)
+				{
+					if(KSketch_LoginView._isLoggedIn)			//logged in
+					{
+						if(_isConnected)						//connected
+							saveToWeb();							//save to web						
+						else									//disconnected
+							navigateBack();							//navigate back
+					}
+					else										//anonymous
+						navigateBack();								//navigate back
+				}
+				else											//existing sketch
+				{
+					if(KSketch_LoginView._isLoggedIn)			//logged in
+					{
+						if(_isConnected)						//connected
+							saveToWeb();							//save to web
+						else									//disconnected
+							overwriteCache();						//overwrite in cache	
+					}
+					else										//anonymous
+						overwriteCache();							//overwrite in cache
+				}
+			}
+			
+			private function saveToWeb():void
+			{
+				//save to web
+				var objSaveToWeb:Object = new Object();
+				objSaveToWeb["fileData"] = com.adobe.serialization.json.JSON.encode(objDoc);
+				
+				if(!overwriteSave)
+					httpService.url = KSketchWebLinks.jsonurlPostXML;
 				else
-					saveToCache(objDoc);
+					httpService.url = KSketchWebLinks.jsonurlOverwritePostXML;
+				
+				httpService.send(objSaveToWeb);
+				httpService.addEventListener(ResultEvent.RESULT, resultHandler);
+				httpService.addEventListener(FaultEvent.FAULT, faultHandler);
 			}
 			
 			private function resultHandler(event:ResultEvent):void
@@ -171,6 +210,10 @@
 				
 				if (result.status == "success")
 				{
+					//save to cache
+					objDoc.save = 0;
+					_mobileControl.addSketchToList(objDoc, "save");
+					
 					overwriteSave = false;
 					success = true;
 				}
@@ -182,36 +225,31 @@
 				//trace("RESULT: " + resultRaw.toString());
 			}
 			
-			private function faultHandler(event:FaultEvent):void
+			private function navigateBack():void
 			{
-				if(!KSketch_CanvasView.isNewSketch)
-				{
-					//change properties of objDoc
-					objDoc.fileName = objDoc.fileName + "_" + KWebData.generateTimestamp(null);
-					objDoc.version = 1;
-					objDoc.sketchId = "";
-					objDoc.originalVersion = 0;	//changed
-					objDoc.originalSketch = -1;
-				}
-					
-				saveToCache(objDoc);
-				
-				//trace("FAULT: " +  event.fault.toString());
-			}
-			
-			private function saveToCache(saveObj:Object):void
-			{
-				saveObj.sketchId = "";
-				_mobileControl.initFromCache();
-				_mobileControl.addSketchToList(saveObj);
-				_mobileControl.writeToCache(_mobileControl.informationArr);
+				overwriteSave = false;
+				discard = false;
+				success = true;
 				
 				close();
 			}
 			
-			private function cancel():void
+			private function overwriteCache():void
 			{
-				success = true;
+				objDoc.save = -1						//flag save to web for existing sketch
+					
+				_mobileControl.addSketchToList(objDoc, "save");	//overwrite cached object	
+				
+				navigateBack();
+			}
+			
+			private function faultHandler(event:FaultEvent):void
+			{
+				overwriteCache();
+			}
+			
+			private function discardSketch():void
+			{
 				discard = true;
 				close();
 			}
@@ -250,29 +288,7 @@
 					<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
 				</s:layout>
 				<s:Button label="Save" click="save()" fontSize="14"/>
-				<s:Button label="Discard" click="close()" fontSize="14"/>
-			</s:Group>
-		</s:Group>
-	</s:Group>
-	
-	<s:Group id="saveExistingSketch" visible="false">
-		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
-			<s:fill>
-				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
-			</s:fill>
-		</s:Rect>
-		<s:Group>
-			<s:layout>
-				<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
-			</s:layout>
-			<s:Label text="Save this sketch?" fontSize="26"/>
-			
-			<s:Group width="100%">
-				<s:layout>
-					<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
-				</s:layout>
-				<s:Button label="Save" click="save()" fontSize="14"/>
-				<s:Button label="Discard" click="cancel()" fontSize="14"/>
+				<s:Button label="Discard" click="discardSketch()" fontSize="14"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

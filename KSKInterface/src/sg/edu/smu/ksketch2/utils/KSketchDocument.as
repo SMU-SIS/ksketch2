@@ -59,7 +59,12 @@ package sg.edu.smu.ksketch2.utils
 				this.originalName = name;
 			
 			this.originalVersion = version;
-			this.version = "";
+			
+			if(version == 0)
+				this.version = "";
+			else
+				this.version = "" + version;
+			
 			this.originalSketch = this.sketchId;
 
 		}

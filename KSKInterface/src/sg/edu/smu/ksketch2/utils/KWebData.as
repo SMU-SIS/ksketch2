@@ -30,7 +30,6 @@ package sg.edu.smu.ksketch2.utils
 			{
 				data.fileName = sketchName;
 				data.sketchId = userData.kSketchDocument.sketchId;
-				trace("sketch id: " + data.sketchId);
 				data.originalVersion = userData.kSketchDocument.originalVersion;
 				data.originalSketch = userData.kSketchDocument.originalSketch;
 				
@@ -87,7 +86,10 @@ package sg.edu.smu.ksketch2.utils
 			if (timestamp == null)
 			{
 				timestamp = new Date();
+				var offsetMilliseconds:Number = timestamp.getTimezoneOffset() * 60 * 1000;
+				timestamp.setTime(timestamp.getTime() + offsetMilliseconds);
 			}
+			
 			var dateFormatter:DateFormatter = new DateFormatter();
 			dateFormatter.formatString = "DD MMM YYYY, HH:NN:SS";
 			return dateFormatter.format(timestamp);

@@ -25,10 +25,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				if(_mobileControl.user)
 				{
 					if(_mobileControl.user.id == userObj.id)
-					{
 						initUser(_mobileControl.user);
-						informationArr[1] = _mobileControl.informationArr[1];	
-					}
 					else
 						setNew = true;
 				}
@@ -39,10 +36,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 				setNew = true;
 			
 			if(setNew)
-			{
 				initUser(userObj);		
-				informationArr[1] = null;
-			}
+				
+			informationArr[1] = null;
 		}
 		
 		public function initUser(userObj:Object):void
@@ -79,10 +75,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 			informationArr[1] = com.adobe.serialization.json.JSON.encode(sketchObj);
 		}
 	
-		public function addSketchToList(docObj:Object):void
+		public function addSketchToList(docObj:Object, type:String):void
 		{
 			var sketchDocsArr:ArrayCollection;
-			sketchDocsArr = KFileControl.addNewSketchDocument(informationArr[1], docObj);
+			sketchDocsArr = KFileControl.addNewSketchDocument(informationArr[1], docObj, type);
 			
 			docObj = new Object();
 			if(sketchDocsArr)															
@@ -99,6 +95,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var arr:ArrayCollection;
 			arr = KFileControl.getSketchArr(informationArr[1]);
 			return arr;
+		}
+		
+		public function reset():void
+		{
+			informationArr[0] = null;
+			informationArr[1] = null;
 		}
 	}
 }

@@ -14,9 +14,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var sync_sketchArr:ArrayCollection = new ArrayCollection();
 		private var sync_sketchDocArr:ArrayCollection = new ArrayCollection();
 		
-		public static function addNewSketchDocument(record:String, obj:Object):ArrayCollection
+		public static function addNewSketchDocument(record:String, obj:Object, type:String):ArrayCollection
 		{
-			//get array of sketch documents from informationArr[2]
+			//get array of sketch documents from informationArr[1]
 			//sketchDocObj = {documents:[]}
 			var arr:ArrayCollection;
 			if(record)
@@ -43,19 +43,46 @@ package sg.edu.smu.ksketch2.canvas.controls
 					{
 						var overwrite:Boolean = false;
 						
-						var datePrev:Date = new Date();
-						datePrev.setTime(Date.parse(arrObj.date));
-					
-						var dateNext:Date = new Date();
-						dateNext.setTime(Date.parse(obj.date));
-						
-						if(dateNext.getTime() > datePrev.getTime())
+						if(type == "saveCurrentFromWeb")
 							overwrite = true;
-						else if(obj.version == arrObj.version)
+						else if (type == "sync")
 						{
-							if(arrObj.fileData == null)
-								overwrite = true;	
+							obj.fileData = arrObj.fileData;
+							overwrite = true;
 						}
+						else
+						{
+							var datePrev:Date = new Date();
+							datePrev.setTime(Date.parse(arrObj.date));
+							
+							var dateNext:Date = new Date();
+							dateNext.setTime(Date.parse(obj.date));
+							
+							//if it is a more recent sketch, overwrite
+							if(dateNext.getTime() > datePrev.getTime())
+								overwrite = true;
+							
+							//if both are same versions and cached sketch doesn't contain any fileData, overwrite
+							if(obj.version == arrObj.version)
+							{
+								if(arrObj.fileData == null)
+									overwrite = true;	
+								
+								if(obj.save == -1)
+									overwrite = true;
+								
+								if(obj.save == 0)
+								{
+									if(obj.revert == 0)
+										overwrite = true;
+								}
+							}
+							
+							//if a save has been made, overwrite
+							if(obj.save == 0)
+								overwrite = true;
+						}
+						
 						
 						if(overwrite)
 						{
@@ -69,6 +96,88 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return arr;
 		}
 
+		public static function solveDiscrepancy(cacheStr:String, webStr:String):String
+		{
+			var newInformationArr:String;
+			
+			//get sketches from cache
+			var cacheArr_sketch:ArrayCollection;
+			cacheArr_sketch = convertStringToArrayCollection(cacheStr);
+			
+			if(!cacheArr_sketch)
+				cacheArr_sketch = new ArrayCollection();
+			
+			//get sketches from the web
+			var webArr_sketch:ArrayCollection;
+			webArr_sketch = convertStringToArrayCollection(webStr);
+			
+			//compare web and mobile objects
+			//if mobile is out of date, then replace with web object
+			if(webArr_sketch)
+			{
+				for(var i:int=0; i<webArr_sketch.length; i++)
+				{
+					var obj:Object = webArr_sketch.getItemAt(i);
+					var index:int = sketchExistIndex(cacheArr_sketch, obj.fileName, obj.sketchId);
+					
+					if(index != -1)
+					{
+						var cacheObj:Object = cacheArr_sketch.getItemAt(index);
+						
+						var datePrev:Date = new Date();
+						datePrev.setTime(Date.parse(cacheObj.date));
+						
+						var dateNext:Date = new Date();
+						dateNext.setTime(Date.parse(obj.date));
+						
+						if(dateNext.getTime() > datePrev.getTime())
+						{
+							if(cacheObj.fileData != null && obj.fileData == null)// && cacheObj.version == "")
+								obj.fileData = cacheObj.fileData;	
+							
+							cacheArr_sketch.removeItemAt(index);
+							obj.save = 0;
+							cacheArr_sketch.addItem(obj);
+						}
+						
+						if(dateNext.getTime() == datePrev.getTime())
+						{
+							if(cacheObj.fileData != null)
+							{
+								obj.fileData = cacheObj.fileData;
+							
+								cacheArr_sketch.removeItemAt(index);
+								obj.save = 0;
+								cacheArr_sketch.addItem(obj);
+							}
+						}
+					}
+					else
+					{
+						obj.save = 0;
+						cacheArr_sketch.addItem(obj);
+					}
+					
+				}
+			}
+			
+			var docObj:Object = new Object();
+			if(cacheArr_sketch)															
+				docObj.sketches = cacheArr_sketch.source;
+			else
+				docObj.sketches = null;
+			
+			newInformationArr = com.adobe.serialization.json.JSON.encode(docObj);
+			
+			if(cacheArr_sketch)
+				cacheArr_sketch.removeAll();
+			
+			if(webArr_sketch)
+				webArr_sketch.removeAll();	
+				
+			return newInformationArr;
+		}
+		
 		public static function getUserObject(userStr:String):Object
 		{
 			var obj:Object;
@@ -95,42 +204,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return sketchArr;
 		}
 		
-		public static function getSyncSketchList(cacheStr:String, webStr:String):ArrayCollection
-		{
-			var sync_sketchArr:ArrayCollection = new ArrayCollection();
-			
-			var tempArr:Array;
-			var tempObj:Object;
-			
-			//get sketches from cache
-			var cacheArr_sketch:ArrayCollection;
-			cacheArr_sketch = convertStringToArrayCollection(cacheStr);
-			
-			//get sketches from the web
-			var webArr_sketch:ArrayCollection;
-			webArr_sketch = convertStringToArrayCollection(webStr);
-			
-			//if there are new objects in cache that don't exist in the web, add them to sync_sketchArr
-			var selectedDoc:Object;
-			if(cacheArr_sketch)
-			{
-				for each(var obj:Object in cacheArr_sketch)
-				{
-					//if it does not exist in new_sketchArr
-					if(!sketchExist(webArr_sketch, obj.fileName, obj.sketchId))
-						sync_sketchArr.addItem(obj);
-				}
-			}
-			
-			return sync_sketchArr;
-		}
-		
 		public static function getSyncSketchObjects(cacheStr:String):ArrayCollection
 		{
 			var sync_sketchArr:ArrayCollection = new ArrayCollection();
-			
-			var tempArr:Array;
-			var tempObj:Object;
 			
 			//get sketches from cache
 			var cacheArr_sketch:ArrayCollection;
@@ -142,7 +218,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var selectedDoc:Object;
 				for each(var obj:Object in cacheArr_sketch)
 				{
-					if(obj.sketchId == "")
+					if(obj.save == -1)
 					{
 						if(!sketchExist(sync_sketchArr, obj.fileName, obj.sketchId))
 							sync_sketchArr.addItem(obj);
@@ -213,6 +289,63 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return exist;
 		}
 		
+		public static function sketchExistIndex(arr:*, fileName:String, sketchId:String):int
+		{
+			var index:int = -1;
+			var i:int;
+			
+			if(arr)
+			{
+				if(arr is Array)
+				{
+					for(i=0; i<arr.length; i++)
+					{
+						if(arr[i].fileName == fileName)
+						{
+							if(arr[i].sketchId == sketchId)
+							{
+								index = i;
+								break;	
+							}
+							else if(arr[i].sketchId != sketchId && arr[i].sketchId == "")
+							{
+								if(arr[i].save == 0)
+								{
+									index = i;
+									break;
+								}
+							}
+							
+						}
+					}
+				}
+				else if(arr is ArrayCollection)
+				{
+					for(i=0; i<arr.length; i++)
+					{
+						if(arr.getItemAt(i).fileName == fileName)
+						{
+							if(arr.getItemAt(i).sketchId == sketchId)
+							{
+								index = i;
+								break;	
+							}
+							else if(arr.getItemAt(i).sketchId != sketchId && arr.getItemAt(i).sketchId == "")
+							{
+								if(arr.getItemAt(i).save == 0)
+								{
+									index = i;
+									break;
+								}
+							}
+							
+						}
+					}
+				}
+			}
+			
+			return index;
+		}
 		
 		public static function unsavedSketchExist(cachedStr:String):Boolean
 		{
@@ -230,7 +363,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var selectedDoc:Object;
 				for each(var obj:Object in cacheArr_sketch)
 				{
-					if(obj.sketchId == "")
+					if(obj.save == -1)
 					{
 						exist = true;
 						break;

@@ -46,6 +46,9 @@
 			private var _isConnected:Boolean;
 			private var _success:Boolean;
 			private var _counterSave:int;
+			private var currentObj:Object;
+			private var resultArr:Array;
+			private var statusArr:Array;
 			
 			public var syncSketchArr:ArrayCollection;
 			public var currentUser:Object;
@@ -66,21 +69,25 @@
 			
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
-				_homeView._mobileControl.reset();
-				if(_success)
-					_homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
+				_homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
 				
 				resetSyncArrays();
 				
 				super.close(commit, data);
 				(FlexGlobals.topLevelApplication as Application).setFocus();
 				
-				if(_homeView)
-					_homeView.startMonitorConnection();
+				if(_homeView && _success)
+					_homeView.updateFromWeb();
+				else if(_homeView)
+					_homeView.displaySketchData();
+					
 			}
 			
 			private function init():void
 			{
+				resultArr = new Array(syncSketchArr.length);
+				statusArr = new Array(syncSketchArr.length);
+				
 				var sketchNo:String;
 				if(syncSketchArr.length > 1)
 					sketchNo = "are " + syncSketchArr.length + " sketches";
@@ -103,15 +110,30 @@
 					
 					if(_isConnected && KSketch_LoginView._isLoggedIn)
 					{
+						currentObj = syncSketchArr.getItemAt(i);
+						currentObj.save = 0;
+						
 						var objToSend:Object = new Object();
-						objToSend["fileData"] = com.adobe.serialization.json.JSON.encode(syncSketchArr.getItemAt(i));
+						objToSend["fileData"] = com.adobe.serialization.json.JSON.encode(currentObj);
 						
 						httpService.url = KSketchWebLinks.jsonurlPostXML;
 						httpService.send(objToSend);
-						httpService.addEventListener(ResultEvent.RESULT, resultHandler);
-						httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+						httpService.addEventListener(ResultEvent.RESULT, resultHandler(currentObj));
+						httpService.addEventListener(FaultEvent.FAULT, faultHandler(currentObj));
 					}	
 				}
+			}
+			
+			private function overwrite_save(obj:Object):void
+			{
+				var objToSend:Object = new Object();
+				objToSend["fileData"] = com.adobe.serialization.json.JSON.encode(obj);
+				
+				httpService.url = KSketchWebLinks.jsonurlOverwritePostXML;
+				httpService.send(objToSend);
+				httpService.addEventListener(ResultEvent.RESULT, resultHandler);
+				httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+				
 			}
 			
 			public function checkConnection():void
@@ -132,34 +154,82 @@
 				_monitor.stop();
 				_monitor.removeEventListener(StatusEvent.STATUS, connectionHandler);
 			}
-
-			private function resultHandler(event:ResultEvent):void
-			{
-				_counterSave ++;
-				_success = true;
-				
-				if(_counterSave == syncSketchArr.length)
-					close();
+			
+			function resultHandler(obj:Object):Function {
+				return function(event:ResultEvent):void {
+					var resultRaw:Object = event.result;
+					var result:Object = com.adobe.serialization.json.JSON.decode(resultRaw.toString());
+					
+					resultArr[_counterSave] = obj;
+					statusArr[_counterSave] = 0;
+					
+					_counterSave ++;
+					
+					if (result.status == "success")
+						_success = true;
+					else if (result.status == "errorDiscrepancy")
+						overwrite_save(currentObj);
+					
+					
+					if(_counterSave == syncSketchArr.length)
+						writeAllToCache();
+					
+				};
 			}
 			
-			private function faultHandler(event:FaultEvent):void
+			function faultHandler(obj:Object):Function {
+				return function(event:FaultEvent):void {
+					obj.save = -1;
+					
+					resultArr[_counterSave] = obj;
+					statusArr[_counterSave] = -1;
+					
+					_counterSave ++;
+					
+					if(_counterSave == syncSketchArr.length)
+					{
+						_success = false;
+						
+						_canvasNotice._parent = "SYNCSKETCH";
+						_canvasNotice.open(_homeView, true);
+						PopUpManager.centerPopUp(_canvasNotice);	
+						
+						writeAllToCache();
+					}
+					
+				};
+			}
+			
+			private function writeAllToCache():void
 			{
-				_canvasNotice._parent = "SYNCSKETCH";
-				_canvasNotice.open(_homeView, true);
-				PopUpManager.centerPopUp(_canvasNotice);	
-				
-				for(var i:int=0; i<syncSketchArr.length; i++)
+				var fail:Boolean = false;
+				var i:int;
+				for(i=0; i<statusArr.length; i++)
 				{
-					_homeView._webControl.addSketchToList(syncSketchArr.getItemAt(i));
-					_homeView._mobileControl.writeToCache(_homeView._webControl.informationArr);
+					if(statusArr[i] == -1)
+					{
+						fail = true;
+						break;
+					}
 				}
 				
-				_success = false;
+				if(!fail)
+				{
+					for(i=0; i<resultArr.length; i++)
+					{
+						resultArr[i].save = 0;
+						_homeView._mobileControl.addSketchToList(resultArr[i], "sync");	
+					}
+				}
+				
+				
 				close();
 			}
 			
 			private function discard():void
 			{
+				_homeView._mobileControl.discardSavedSketches();
+				_homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
 				_success = true;
 				close();
 			}

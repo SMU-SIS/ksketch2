@@ -32,6 +32,7 @@
 			import com.adobe.serialization.json.JSON;
 			
 			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -60,7 +61,7 @@
 			public static var autoSaveCounter:int = 0;
 			
 			//class variables
-			//public static var _viewArr:Array = new Array(4);
+			private var _stage:Stage;
 			private var userData:Object = new Object();
 			private var _mySO:SharedObject;
 			private var _resultSketch:String;
@@ -88,21 +89,42 @@
 			private var selectedSketchId:String;
 			private var selectedSketchVersion:String;
 			
+			private var viewTimer:Timer;
+			
 			public function addedToStageHandler():void
 			{
-				if(stage.deviceOrientation == "unknown") //if(stage.deviceOrientation != "unknown") //
+				_stage = stage;
+				var oldOrientation:String = stage.orientation;
+				
+				if(oldOrientation != "rotatedLeft")
 				{
-					stage.setAspectRatio("landscape");
-					stage.autoOrients = true;
-					stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChangedHandler);
+					if(oldOrientation != "rotatedRight")
+					{
+						if(stage.deviceOrientation == "default" || stage.deviceOrientation == "unknown" || stage.deviceOrientation == "upside_down")
+						{
+							stage.setAspectRatio("landscape");
+							stage.autoOrients = true;
+							stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGING, onOrientationChanging, false, 100, true);
+						}
+					}
 				}
+				
 				startMonitorConnection();
 			}
 			
-			private function orientationChangedHandler(event:StageOrientationEvent):void {
+			protected function onOrientationChanging(event:StageOrientationEvent):void {
 				event.stopImmediatePropagation();
-				if(event.afterOrientation == StageOrientation.ROTATED_RIGHT || event.afterOrientation == StageOrientation.ROTATED_LEFT)
-					trace("Inside orientationChanging()");
+				
+				//Determine whether DEFAULT and UPSIDE_DOWN == landscape, this varies from device to device.
+				var isDefaultLandscape:Boolean = true;
+				if(_stage.orientation == StageOrientation.ROTATED_LEFT || _stage.orientation == StageOrientation.ROTATED_RIGHT){
+					isDefaultLandscape = false;
+				}
+				
+				var goingToDefault:Boolean = (event.afterOrientation == StageOrientation.DEFAULT || event.afterOrientation == StageOrientation.UPSIDE_DOWN || event.afterOrientation == StageOrientation.UNKNOWN);
+				if((goingToDefault && !isDefaultLandscape) || (!goingToDefault && isDefaultLandscape)){
+					event.preventDefault();
+				}
 			}
 			
 			private function init():void
@@ -175,13 +197,28 @@
 				userData.mobileControl = _mobileControl;
 				userData.kSketchDocument = null;
 				
-				if(KSketch_LoginView._isLoggedIn && _isConnected)
+				if(KSketch_LoginView._isLoggedIn)			//logged in
 				{
-					_webControl = new KWebControl(userData.kUser, _mobileControl);
-					updateFromWeb();
+					if(_isConnected)
+					{
+						_webControl = new KWebControl(userData.kUser, _mobileControl);
+						//create a buffer time for scene to prepare itself, implement timer
+						viewTimer = new Timer(1000,1);
+						viewTimer.addEventListener(TimerEvent.TIMER_COMPLETE, loadConnected);
+						viewTimer.start();
+					}
+					else
+						displaySketchData();				//anonymous
 				}
-				else
+				else										//anonymous
 					displaySketchData();
+			}
+			
+			private function loadConnected(event:TimerEvent):void
+			{
+				viewTimer.stop();
+				viewTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, loadConnected);
+				resolveConflict();	
 			}
 			
 			public function updateFromWeb():void
@@ -216,19 +253,18 @@
 							}
 							
 							for each(var obj:Object in newArr)
-								_webControl.addSketchToList(obj);
+								_webControl.addSketchToList(obj, "save");
 								
 						}
-					}
-					if(_isConnected)
-						resolveConflict();		
+					}	
+					
+					reinitializeCache();
 				}
 				
 				if(_isXML)
 				{
 					resultObj = KWebData.convertWebObjForMobile(resultObj);
-					_webControl.addSketchToList(resultObj);
-					displaySketchDocument(resultObj);
+					displaySketchDocument(resultObj, true);
 				}
 					
 			}
@@ -238,7 +274,7 @@
 				if(!_isXML)
 					displaySketchData();
 				else
-					displaySketchDocument(null);
+					displaySketchDocument(null, false);
 			}
 			
 			private function resolveConflict():void
@@ -260,26 +296,24 @@
 					PopUpManager.centerPopUp(_syncOptions);	
 				}
 				else
-					displaySketchData();
+					updateFromWeb();
+			}
+			
+			private function reinitializeCache():void
+			{
+				var newInformationArr:String = KFileControl.solveDiscrepancy(_mobileControl.informationArr[1], _webControl.informationArr[1]);
+				_mobileControl.informationArr[1] = newInformationArr;
+				
+				//reset webcontrol
+				_webControl.reset();
+				
+				displaySketchData();
 			}
 			
 			public function displaySketchData():void
 			{
-				arrDG.removeAll();							//reset arrDG
-				var sketchArr:ArrayCollection;				//array for list of sketches from web or mobile
-				
-				if(_mobileControl && _webControl)
-				{
-					sketchArr = KFileControl.getSyncSketchList(_mobileControl.informationArr[1], _webControl.informationArr[1]);
-					
-					_mobileControl.reset();
-				}
-				
-				if(!sketchArr)
-					sketchArr = new ArrayCollection();
-				
-				if(_webControl && _webControl.sketchList)
-					sketchArr.addAll(_webControl.sketchList);		//display everything from web control
+				arrDG.removeAll();													//reset arrDG
+				var sketchArr:ArrayCollection = new ArrayCollection();				//array for list of sketches from web or mobile
 				
 				if (_mobileControl && _mobileControl.sketchList)
 					sketchArr.addAll(_mobileControl.sketchList);	//display everything from mobile control
@@ -306,41 +340,42 @@
 				stopProgressBar();
 			}
 			
-			private function displaySketchDocument(obj:Object):void
+			private function displaySketchDocument(obj:Object, checkConflict:Boolean):void
 			{
-				//if no obj is passed in as argument, search through the cached data
-				if(!obj)
+				var finalObj:Object = obj;
+				
+				var sketchDocArr:ArrayCollection;
+				sketchDocArr = _mobileControl.sketchList;
+				
+				var i:int;
+				var tempObj:Object;
+				
+				if(sketchDocArr)
 				{
-					var sketchDocArr:ArrayCollection;
-					
-					if(_webControl)
-						sketchDocArr = _webControl.sketchList;
-					else if(_mobileControl)
-						sketchDocArr = _mobileControl.sketchList;
-					
-					//overwrite existing document with the new objDoc
-					if(sketchDocArr)
+					for(i=0; i<sketchDocArr.length; i++)
 					{
-						for(var i:int=0; i<sketchDocArr.length; i++)
+						tempObj = sketchDocArr.getItemAt(i);
+						
+						if((tempObj.fileName == selectedSketchName) && (tempObj.sketchId == selectedSketchId))
 						{
-							var tempObj:Object = sketchDocArr.getItemAt(i);
-							
-							if((tempObj.fileName == selectedSketchName) && (tempObj.sketchId == selectedSketchId))
+							if(!obj || (obj && tempObj.save == -1))
 							{
-								obj = tempObj;
-								break;
+								finalObj = tempObj;
+								break;	
 							}
 						}
 					}
 				}
 				
-				if(obj.fileData)
+				if(finalObj.fileData)
 				{
-					trace("document: " + com.adobe.serialization.json.JSON.encode(obj));
+					_mobileControl.addSketchToList(finalObj, "saveCurrentFromWeb");
+					
 					//create XML and date object from JSON to create a KSketchDocument object
-					var xml:XML = new XML(obj.fileData);
-					var date:Date = new Date(obj.modified);
-					var docObj:KSketchDocument = new KSketchDocument(obj.fileName, xml, obj.id, date, obj.originalName, obj.version, obj.sketchId, obj.changeDescription);
+					var xml:XML = new XML(finalObj.fileData);
+					var date:Date = new Date(finalObj.modified);
+													//(name:String, xml:XML, id:String,  date:Date, originalName:String, version:int, sketchId:int, description:String = "")
+					var docObj:KSketchDocument = new KSketchDocument(finalObj.fileName, xml, finalObj.id, date, finalObj.originalName, finalObj.version, finalObj.sketchId, finalObj.changeDescription);
 					userData.kSketchDocument = docObj;
 					navigateToScreen("CANVAS");
 				}
@@ -371,10 +406,7 @@
 			{
 				resetDatagridSelectItem();
 				
-				if(_webControl)
-					_mobileControl.writeToCache(_webControl.informationArr);
-				else if(_mobileControl)
-					_mobileControl.writeToCache(_mobileControl.informationArr);
+				_mobileControl.writeToCache(_mobileControl.informationArr);
 				
 				if(screenName.indexOf("CANVAS") == -1) //if screen name is Login
 				{
@@ -428,7 +460,10 @@
 				monitor.stop();
 				monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
 				
-				prepareHomeView();
+				if(_isXML)
+					prepareCanvasView();
+				else
+					prepareHomeView();
 			}
 			
 			private function startProgressBar():void
@@ -464,10 +499,29 @@
 				
 				_isXML = true; //set boolean to true because this JSON retrieval will be XML of sketch
 				
-				//get json object of sketch from the URL and according to sketchid and version number
-				GetUserSketch.url = KSketchWebLinks.jsonurlSketchXML + "/" + selectedSketchId + "/" + selectedSketchVersion;
-				GetUserSketch.send();
-				startProgressBar();
+				startMonitorConnection();
+			}
+			
+			private function prepareCanvasView():void
+			{
+				if(_isConnected)
+				{
+					var finalSketchVersion:String = selectedSketchVersion;
+					
+					//retrieve the latest version from the web
+					if(KSketch_LoginView._isLoggedIn && _isConnected)
+						finalSketchVersion = -1 + "";	
+					
+					//get json object of sketch from the URL and according to sketchid and version number
+					GetUserSketch.url = KSketchWebLinks.jsonurlSketchXML + "/" + selectedSketchId + "/" + finalSketchVersion; //selectedSketchVersion;
+					GetUserSketch.send();
+					startProgressBar();	
+				}
+				else
+				{
+					displaySketchDocument(null, false);
+				}
+				
 			}
 			
 			private function resetDatagridSelectItem():void

@@ -89,6 +89,12 @@
 					selectedSketchId = sketchId.text; 
 					selectedVersion = sketchVersion.text; 
 				}
+				
+				setCurrentState("normal", true);
+			}
+			
+			override public function setCurrentState(stateName:String, playTransition:Boolean = true):void {
+				super.setCurrentState(stateName, playTransition);
 			}
 		]]>
 	</fx:Script>

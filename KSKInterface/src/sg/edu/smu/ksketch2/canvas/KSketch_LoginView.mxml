@@ -4,7 +4,7 @@
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
-		addedToStage="addedToStageHandler(event)"
+		viewActivate="viewActivateHandler(event)"
 		>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -26,6 +26,8 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
+			import spark.events.ViewNavigatorEvent;
+			
 			import air.net.URLMonitor;
 			
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
@@ -34,7 +36,6 @@
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
 			private var progressTimer:Timer;
-			private var _stage:Stage;
 			private var _stageWidth:Number;
 			private var _stageHeight:Number;
 			private var monitor:URLMonitor;
@@ -44,6 +45,22 @@
 			
 			public static var _isLoggedIn:Boolean = false;
 			public static var _isLoggedOut:Boolean = false;
+			
+			
+			protected function viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+				data = null;
+				webView.stage = stage;
+				_stageWidth = stage.stageWidth;
+				_stageHeight = stage.stageHeight;
+				
+				//check for network connection
+				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				monitor.addEventListener(StatusEvent.STATUS, prepareView);
+				monitor.start();
+			}
 			
 			private function addedToStageHandler(event:Event):void
 			{

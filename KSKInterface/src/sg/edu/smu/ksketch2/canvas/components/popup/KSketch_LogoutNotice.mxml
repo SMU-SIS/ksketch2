@@ -59,9 +59,8 @@
 		<s:layout>
 			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:Label fontSize="15" text="You have unsaved sketches in your account."/>
-		<s:Label fontSize="15" text="To save, please enable internet connection before logging off."/>
-		<s:Label fontSize="15" text="Otherwise, these sketches will be deleted."/>
+		<s:Label fontSize="15" text="You are currently disconnected."/>
+		<s:Label fontSize="15" text="Logging out will discard unsaved sketches."/>
 		
 		<s:Group width="100%">
 			<s:layout>

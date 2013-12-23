@@ -50,7 +50,7 @@
         <modifiedLaunchParams/>
         <newPackagingParams/>
         <modifiedPackagingParams>
-          <Parameter name="APPLICATION" value="KSketch_V2.2.ipa"/>
+          <Parameter name="APPLICATION" value="KSketch_V2.3.ipa"/>
         </modifiedPackagingParams>
       </airSettings>
       <actionScriptSettings version="1"/>

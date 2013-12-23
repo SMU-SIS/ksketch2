@@ -215,16 +215,14 @@ package sg.edu.smu.ksketch2
 		 */
 		public function generateSceneFromXML(xml:XML):void
 		{
-			// case: the scene graph has children
-			// throw an error
-			if(_sceneGraph.root.children.length() != 0)
-				throw new Error("The scene graph is not clean. clear up the scene graph before loading!");
-			
-			// deserialize the scene graph's XML representation
-			_sceneGraph.deserialize(xml);
-			
-			// broadcast the updated model
-			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
+			if(_sceneGraph.root.children.length() == 0)
+			{
+				// deserialize the scene graph's XML representation
+				_sceneGraph.deserialize(xml);
+				
+				// broadcast the updated model
+				dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
+			}
 		}
 		
 		/**

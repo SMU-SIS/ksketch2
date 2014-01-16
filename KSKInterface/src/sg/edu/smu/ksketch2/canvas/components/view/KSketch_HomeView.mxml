@@ -96,33 +96,17 @@
 				_stage = stage;
 				var oldOrientation:String = stage.orientation;
 				
-				if(oldOrientation != "rotatedLeft")
-				{
-					if(oldOrientation != "rotatedRight")
-					{
-						if(stage.deviceOrientation == "default" || stage.deviceOrientation == "unknown" || stage.deviceOrientation == "upside_down")
-						{
-							stage.setAspectRatio("landscape");
-							stage.autoOrients = true;
-							stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGING, onOrientationChanging, false, 100, true);
-						}
-					}
-				}
+				stage.autoOrients = true;
+				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGING, onOrientationChanging, false, 100, true);
 				
 				startMonitorConnection();
 			}
 			
-			protected function onOrientationChanging(event:StageOrientationEvent):void {
-				event.stopImmediatePropagation();
-				
-				//Determine whether DEFAULT and UPSIDE_DOWN == landscape, this varies from device to device.
-				var isDefaultLandscape:Boolean = true;
-				if(_stage.orientation == StageOrientation.ROTATED_LEFT || _stage.orientation == StageOrientation.ROTATED_RIGHT){
-					isDefaultLandscape = false;
-				}
-				
-				var goingToDefault:Boolean = (event.afterOrientation == StageOrientation.DEFAULT || event.afterOrientation == StageOrientation.UPSIDE_DOWN || event.afterOrientation == StageOrientation.UNKNOWN);
-				if((goingToDefault && !isDefaultLandscape) || (!goingToDefault && isDefaultLandscape)){
+			protected function onOrientationChanging( event:StageOrientationEvent ):void {
+				// If the stage is about to move to an orientation we don't support, lets prevent it
+				// from changing to that stage orientation.
+				if(event.afterOrientation == StageOrientation.ROTATED_LEFT || event.afterOrientation==StageOrientation.ROTATED_RIGHT ) 
+				{
 					event.preventDefault();
 				}
 			}

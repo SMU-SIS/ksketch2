@@ -87,7 +87,7 @@
 					
 					webView.loadURL(KSketchWebLinks.url);
 					webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGE, locationChangedHandler);				//for IOS
-					//webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGING, locationChangingHandler);			//for ANDROID
+					webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGING, locationChangingHandler);			//for ANDROID
 					webView.addEventListener(ErrorEvent.ERROR, errorEventHandler);
 					
 				}
@@ -130,18 +130,12 @@
 				var currentURL:String = event.location.toString();
 				trace("Changing Location: " + currentURL);
 				
+				//if successful login
 				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
 				{
-					webView.stop();
-					webView.viewPort = null;
-					webView.dispose();
-					webView = null;
-					
-					//get json url
-					GetUser.url = KSketchWebLinks.jsonurlUser;
-					GetUser.send();
-					GetUser.addEventListener(FaultEvent.FAULT, faultHandler);
-					startProgressBar();
+					trace("successful login");
+					//retrieve id from HTML page
+					webView.loadURL(KSketchWebLinks.urlUser);
 				}
 				else if((currentURL.indexOf(KSketchWebLinks.redirecturl_skip) >= 0) || (currentURL.indexOf(KSketchWebLinks.redirecturl_index) >= 0))
 				{
@@ -157,13 +151,22 @@
 				
 				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
 				{
+					//retrieve id from HTML page
+					webView.loadURL(KSketchWebLinks.urlUser);
+				}
+				else if ((currentURL.indexOf(KSketchWebLinks.login_success) >= 0))
+				{
 					webView.stop();
 					webView.viewPort = null;
 					webView.dispose();
 					webView = null;
 					
+					var arr:Array = currentURL.split(".html?");
+					var vars:URLVariables = new URLVariables(arr[1]);
+					
+					trace("user token: " + vars.id);
 					//get json url
-					GetUser.url = KSketchWebLinks.jsonurlUser;
+					GetUser.url = KSketchWebLinks.jsonurlUserMobile + "?id=" + vars.id;
 					GetUser.send();
 					GetUser.addEventListener(FaultEvent.FAULT, faultHandler);
 					startProgressBar();
@@ -177,21 +180,23 @@
 			public function ParseJSONObject(event:ResultEvent):void
 			{
 				var rawData:String = String(event.result);
+				trace("Retrieved data: " + rawData);
 				var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 				
 				//check if user data does not exist
 				if(obj != null)
 				{
+					trace("object is not null");
 					// create a new User instance and
 					// save it to data property
 					var kUser:KSketch_User = new KSketch_User(obj);
 					userData.kUser = kUser;
-					
+							
 					_isLoggedIn = true;
 					
 					navigator.pushView(KSketch_HomeView, userData);
 				}
-				
+					
 				progressTimer.stop();
 				progressTimer.removeEventListener(TimerEvent.TIMER, timer_tickHandler);
 				progressBar.visible = false;

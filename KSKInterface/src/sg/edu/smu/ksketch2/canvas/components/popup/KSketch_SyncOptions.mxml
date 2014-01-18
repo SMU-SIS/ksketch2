@@ -49,6 +49,7 @@
 			private var currentObj:Object;
 			private var resultArr:Array;
 			private var statusArr:Array;
+			private var userData:Object;
 			
 			public var syncSketchArr:ArrayCollection;
 			public var currentUser:Object;
@@ -60,6 +61,8 @@
 				successfullySynced = false;
 				_homeView = owner as KSketch_HomeView;
 				super.open(owner, modal);
+				
+				userData = _homeView.userData;
 				
 				_canvasNotice = new KSketch_CanvasNotice();
 				_canvasNotice.createDeferredContent();
@@ -115,6 +118,7 @@
 						
 						var objToSend:Object = new Object();
 						objToSend["fileData"] = com.adobe.serialization.json.JSON.encode(currentObj);
+						objToSend["userid"] = userData.kUser.id;
 						
 						httpService.url = KSketchWebLinks.jsonurlPostXML;
 						httpService.send(objToSend);

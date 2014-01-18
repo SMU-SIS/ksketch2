@@ -192,6 +192,7 @@
 				//save to web
 				var objSaveToWeb:Object = new Object();
 				objSaveToWeb["fileData"] = com.adobe.serialization.json.JSON.encode(objDoc);
+				objSaveToWeb["userid"] = userData.kUser.id;
 				
 				if(!overwriteSave)
 					httpService.url = KSketchWebLinks.jsonurlPostXML;

@@ -62,7 +62,7 @@
 			
 			//class variables
 			private var _stage:Stage;
-			private var userData:Object = new Object();
+			public var userData:Object = new Object();
 			private var _mySO:SharedObject;
 			private var _resultSketch:String;
 			
@@ -218,6 +218,7 @@
 			private function retrieveResultHandler(event:ResultEvent):void
 			{
 				var rawData:String = String(event.result);
+				trace("Home view retrieved data: " + rawData);
 				var resultObj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 				
 				if(!_isXML)
@@ -497,7 +498,7 @@
 						finalSketchVersion = -1 + "";	
 					
 					//get json object of sketch from the URL and according to sketchid and version number
-					GetUserSketch.url = KSketchWebLinks.jsonurlSketchXML + "/" + selectedSketchId + "/" + finalSketchVersion; //selectedSketchVersion;
+					GetUserSketch.url = KSketchWebLinks.jsonurlSketchXML + "/" + selectedSketchId + "/" + finalSketchVersion + "/" + userData.kUser.id; //selectedSketchVersion;
 					GetUserSketch.send();
 					startProgressBar();	
 				}

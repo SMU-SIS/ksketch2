@@ -102,7 +102,7 @@
 				startMonitorConnection();
 			}
 			
-			protected function onOrientationChanging( event:StageOrientationEvent ):void {
+			protected function onOrientationChanging(event:StageOrientationEvent ):void {
 				// If the stage is about to move to an orientation we don't support, lets prevent it
 				// from changing to that stage orientation.
 				if(event.afterOrientation == StageOrientation.ROTATED_LEFT || event.afterOrientation==StageOrientation.ROTATED_RIGHT ) 

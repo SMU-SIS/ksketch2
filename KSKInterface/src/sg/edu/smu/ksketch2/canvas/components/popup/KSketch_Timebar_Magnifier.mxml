@@ -143,7 +143,7 @@
 			 */
 			public function magnify(xPos:Number):void
 			{	
-				//create a label for current time in magnifying glass
+				//create a black line for current time in magnifying glass
 				var bitmapdata:BitmapData = new BitmapData(KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_THICKNESS, _timeControl.height);
 				var currentTimeLabel:Label = new Label();
 				bitmapdata.draw(currentTimeLabel);

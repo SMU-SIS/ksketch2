@@ -78,8 +78,8 @@ package sg.edu.smu.ksketch2
 		public static const MAGNIFIER_ARROW_PROPORTION:Number = 0.4;
 		public static const MAGNIFIER_INDICATOR_THICKNESS:Number = 3;
 		
-		public static const MAGNIFIER_CURRENTTIMELABEL_THICKNESS:Number = 2;
-		public static const MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER:Number = 255;
+		public static const MAGNIFIER_CURRENTTIMELABEL_THICKNESS:Number = 1;
+		public static const MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER:Number = 100;
 		
 		public static const TOGGLEBUTTON_ON_COLOR:uint = 0xFFFFFF;
 		public static const TOGGLEBUTTON_OFF_COLOR:uint = 0x000000;

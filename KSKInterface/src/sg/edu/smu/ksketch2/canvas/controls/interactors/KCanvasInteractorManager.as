@@ -66,6 +66,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _activeInteractor:IInteractor;						// the active interactor
 		private var _startPoint:Point;									// the start point
 		private var _keyDown:Boolean;									// the key down boolean flag
+		public var lasso:Boolean;										// the lasso boolean flag
 		
 		/**
 		 * The main constructor for the KCanvasInteractorManager class.
@@ -212,8 +213,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				return;
 			
 			// switch interactor based on draw gesture's nTouches
-			if(_keyDown || _drawGesture.touchesCount == 2)
-				_activeInteractor = _loopSelectInteractor;	
+			if(lasso)// || _drawGesture.touchesCount == 2)
+				_activeInteractor = _loopSelectInteractor;
 			else if(_drawGesture.touchesCount == 1)
 				_activeInteractor = _drawInteractor;
 			

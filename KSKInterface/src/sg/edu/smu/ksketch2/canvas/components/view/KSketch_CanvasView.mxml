@@ -162,26 +162,28 @@
 				_magnifier.init(canvas_component, timeControl);
 				_options.init(this, _menuPopUp);
 				
-				if(!isWeb)
-				{
-					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions, _discardConfirmation);
-					_overwriteSaveOptions.init(this, _saveOptions);
-					_discardConfirmation.init(this, _menuPopUp);
-					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl);
-					_saveOptions.createDeferredContent();
-				}
-				else
-					_menuPopUp.init(canvas_component, this, _options, null, _KSketch, _interactionControl);
-				
-				_options.createDeferredContent();
-				_menuPopUp.createDeferredContent();
-				
 				//Initiate the controls
 				if(!isPlayer)
 				{
 					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
 					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, _feedbackPopUp);
 				}
+				
+				if(!isWeb)
+				{
+					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions, _discardConfirmation);
+					_overwriteSaveOptions.init(this, _saveOptions);
+					_discardConfirmation.init(this, _menuPopUp);
+					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl, _selectionHelper);
+					_saveOptions.createDeferredContent();
+				}
+				else
+					_menuPopUp.init(canvas_component, this, _options, null, _KSketch, _interactionControl, _selectionHelper);
+				
+				_options.createDeferredContent();
+				_menuPopUp.createDeferredContent();
+				
+				
 				
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl,_interactionControl);
 				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _keyMenu);

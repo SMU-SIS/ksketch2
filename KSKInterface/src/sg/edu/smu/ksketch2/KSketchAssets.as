@@ -239,6 +239,14 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_images_down:Class;
 		
+		[Embed("assets/Button_Texture_Lasso.png")] 
+		[Bindable] 
+		public static var texture_lasso:Class;
+		
+		[Embed("assets/Button_Texture_Lasso_Down.png")] 
+		[Bindable] 
+		public static var texture_lasso_down:Class;
+		
 		[Embed("assets/Button_Texture_Center.png")] 
 		[Bindable] 
 		public static var texture_center:Class;

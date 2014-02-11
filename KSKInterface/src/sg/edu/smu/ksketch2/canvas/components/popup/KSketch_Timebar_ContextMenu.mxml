@@ -30,6 +30,7 @@
 			import sg.edu.smu.ksketch2.events.KSketchEvent;
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 			import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
+			import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 			import sg.edu.smu.ksketch2.utils.KSelection;	
 			
 			public static const STUDYMODE_K:int = 0;						// Version K value
@@ -41,17 +42,17 @@
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
 			private var _timeControl:KSketch_TimeControl;
-			
-			
+			private var _googleAnalytics:GoogleAnalytics;
 			
 			[Bindable]
 			private var _onTop:Boolean = true;
 			
-			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, timeControl:KSketch_TimeControl):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, timeControl:KSketch_TimeControl, googleAnalytics:GoogleAnalytics):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
+				_googleAnalytics = googleAnalytics;
 			}
 			
 			private function _updateInsertKey():void
@@ -130,8 +131,8 @@
 				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down);
 				clearButton.initSkin();
 				
-				leftFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.LEFT);
-				rightFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.RIGHT);
+				leftFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.LEFT, _googleAnalytics);
+				rightFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.RIGHT, _googleAnalytics);
 			}
 			
 			public function set position(value:int):void
@@ -175,6 +176,8 @@
 			
 			private function _insertKey(event:MouseEvent = null):void
 			{
+				_googleAnalytics.tracker.trackPageview( "/timebar/insertKey" );
+				
 				_interactionControl.begin_interaction_operation();
 				
 				var activeKey:KSpatialKeyFrame;
@@ -230,6 +233,7 @@
 			
 			private function _removeKey(event:MouseEvent = null):void
 			{
+				_googleAnalytics.tracker.trackPageview( "/timebar/removeKey" );
 				_interactionControl.begin_interaction_operation();
 				_interactionControl.selection.objects.getObjectAt(0).transformInterface.removeKeyFrame(_KSketch.time, _interactionControl.currentInteraction);
 				_interactionControl.end_interaction_operation(null,_interactionControl.selection);
@@ -242,6 +246,7 @@
 			
 			private function _clearKeys(event:MouseEvent = null):void
 			{
+				_googleAnalytics.tracker.trackPageview( "/timebar/clearKey" );
 				if(!_interactionControl.selection.objects)
 					return;
 				

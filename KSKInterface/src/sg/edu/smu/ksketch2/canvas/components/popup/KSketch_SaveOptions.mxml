@@ -100,7 +100,7 @@
 			{
 				//if this is an attempt to save a new sketch, 
 				//then show the textarea to enter sketch name
-				if(KSketch_CanvasView.isNewSketch)
+				if(KSketch_CanvasView.createNewSketch)
 				{
 					var saveCounter:int = KSketch_HomeView.autoSaveCounter;
 					sketchName.text = "My Sketch " + (saveCounter + 1);

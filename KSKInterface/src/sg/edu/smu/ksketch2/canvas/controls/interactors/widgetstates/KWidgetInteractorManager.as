@@ -22,15 +22,16 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Widget_ContextMenu;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.KMoveCenterInteractor;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	/**
  	 * The KWidgetInteractorManager class serves as the concrete class
@@ -44,7 +45,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		protected var _modelSpace:DisplayObject;					// the model space
 		protected var _widgetSpace:DisplayObject;					// the widget space
 		protected var _contextMenu:KSketch_Widget_ContextMenu;		// the context menu
-	
+		
 		private var _modeGesture:TapGesture;						// the mode gesture
 		private var _activateMenuGesture:TapGesture;				// the activate menu gesture
 
@@ -70,7 +71,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
  		 * @param modelSpace The model space.
  		 */
 		public function KWidgetInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
-												 widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject)
+												 widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject, googleAnalytics:GoogleAnalytics)
 		{
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
@@ -83,7 +84,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_contextMenu.init(_KSketch, _interactionControl, this);
 			
 			
-			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace);
+			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace, googleAnalytics);
 			centerMode = new KMoveCenterMode(_KSketch, _interactionControl, _widget, modelSpace);
 			activeMode = defaultMode;
 			

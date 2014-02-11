@@ -17,6 +17,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
 	/**
@@ -28,6 +29,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		public static const PIx2:Number = 6.283185307;		// the constant pi value
 		private var _rotateGesture:PanGesture;				// the rotate gesture
 		private var _theta:Number;							// the rotational value
+		private var _googleAnalytics:GoogleAnalytics;
 
 		private var _center:Point;							// the center point
 		private var _previousPoint:Point;					// the previous point
@@ -42,11 +44,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
  -		 * @param modelSpace The model space display object.
  -		 */
 		public function KRotateInteractor(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
-											inputComponent:DisplayObject, modelSpace:DisplayObject)
+											inputComponent:DisplayObject, modelSpace:DisplayObject,
+											googleAnalytics:GoogleAnalytics)
 		{
 			super(KSketchInstance, interactionControl, modelSpace);
 			_rotateGesture = new PanGesture(inputComponent);
 			_rotateGesture.maxNumTouchesRequired = 1;
+			_googleAnalytics = googleAnalytics;
 		}
 		
 		override public function reset():void
@@ -72,6 +76,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		
 		override protected function _interaction_begin(event:GestureEvent):void
 		{
+			_googleAnalytics.tracker.trackPageview("/canvas/rotate");
 			super._interaction_begin(event);
 			
 			_theta = 0;

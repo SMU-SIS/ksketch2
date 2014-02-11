@@ -48,8 +48,10 @@
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+			import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
+			
 			public static const PLUG_IN:String = "PlugIn";
 			
 			[Bindable]
@@ -61,7 +63,7 @@
 			[Bindable]
 			public static var isWeb:Boolean = true;
 			
-			public static var isNewSketch:Boolean = false;
+			public static var createNewSketch:Boolean = false;
 			
 			private var userData:Object = new Object();
 			private var _imageData:BitmapData;
@@ -84,6 +86,8 @@
 			private var _keyMenu:KSketch_Timebar_ContextMenu;
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
+			
+			private var _googleAnalytics:GoogleAnalytics;
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
@@ -147,8 +151,7 @@
 				
 				//Actual setting up starts here
 				_KSketch = new KSketch2();
-				_interactionControl = new KInteractionControl(_KSketch, timeControl);
-				
+				_interactionControl = new KInteractionControl(_KSketch, timeControl);			
 				//Initiate pop ups
 				_feedbackPopUp = new KSketch_Feedback_Message();
 				_feedbackPopUp.init(this);
@@ -162,11 +165,15 @@
 				_magnifier.init(canvas_component, timeControl);
 				_options.init(this, _menuPopUp);
 				
+				//initialize GoogleAnalytics
+				_googleAnalytics = new GoogleAnalytics();
+				_googleAnalytics.init(this);
+				
 				//Initiate the controls
 				if(!isPlayer)
 				{
-					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, _feedbackPopUp);
+					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay, _googleAnalytics);
+					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, _feedbackPopUp, _googleAnalytics);
 				}
 				
 				if(!isWeb)
@@ -174,32 +181,30 @@
 					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions, _discardConfirmation);
 					_overwriteSaveOptions.init(this, _saveOptions);
 					_discardConfirmation.init(this, _menuPopUp);
-					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl, _selectionHelper);
+					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp, _googleAnalytics);
 					_saveOptions.createDeferredContent();
 				}
 				else
-					_menuPopUp.init(canvas_component, this, _options, null, _KSketch, _interactionControl, _selectionHelper);
+					_menuPopUp.init(canvas_component, this, _options, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp, _googleAnalytics);
 				
 				_options.createDeferredContent();
 				_menuPopUp.createDeferredContent();
 				
-				
-				
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl,_interactionControl);
-				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _keyMenu);
+				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _keyMenu, _googleAnalytics);
 				
-				leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
-				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
+				leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT, _googleAnalytics);
+				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT, _googleAnalytics);
 				
 				//initialize keymenu after TimeControl is set up
-				_keyMenu.init(_KSketch, _interactionControl, timeControl);
+				_keyMenu.init(_KSketch, _interactionControl, timeControl, _googleAnalytics);
 				_keyMenu.createDeferredContent();
 				
 				modelDisplay.init(_KSketch, _interactionControl);
 				motionDisplay.init(_KSketch, _interactionControl);
 				
 				//This is the layer that blocks interaction whenever the app is playing
-				playButton.init(timeControl, _interactionControl,_KSketch, _menuPopUp);
+				playButton.init(timeControl, _interactionControl,_KSketch, _menuPopUp, _googleAnalytics);
 				_interactionControl.reset();
 				
 				_options.applyPreferences();

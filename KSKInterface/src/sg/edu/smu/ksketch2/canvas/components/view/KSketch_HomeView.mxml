@@ -383,7 +383,7 @@
 			
 			private function createSketch():void
 			{
-				KSketch_CanvasView.isNewSketch = true;
+				KSketch_CanvasView.createNewSketch = true;
 				navigateToScreen('CANVAS');
 			}
 			

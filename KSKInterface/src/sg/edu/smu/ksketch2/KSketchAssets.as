@@ -119,6 +119,22 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_options_down:Class;
 		
+		[Embed("assets/Button_Texture_Undo.png")] 
+		[Bindable] 
+		public static var texture_undo:Class;
+		
+		[Embed("assets/Button_Texture_Undo_Down.png")] 
+		[Bindable] 
+		public static var texture_undo_down:Class;
+		
+		[Embed("assets/Button_Texture_Redo.png")] 
+		[Bindable] 
+		public static var texture_redo:Class;
+		
+		[Embed("assets/Button_Texture_Redo_Down.png")] 
+		[Bindable] 
+		public static var texture_redo_down:Class;
+		
 		[Embed("assets/Button_Texture_DocumentScreen.png")] 
 		[Bindable] 
 		public static var texture_document:Class;

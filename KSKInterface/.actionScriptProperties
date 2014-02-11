@@ -31,6 +31,7 @@
       <libraryPathEntry kind="3" linkType="1" path="/Gestouch/bin/Gestouch.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/KSKLibrary/bin/KSKLibrary.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/as3corelib-master/bin/as3corelib-master.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/gaforflash/lib/analytics.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

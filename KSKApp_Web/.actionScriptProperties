@@ -16,6 +16,7 @@
       <libraryPathEntry kind="3" linkType="1" path="/KSKInterface/bin/KSKInterface.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/FLV Encoder/bin/FLV Encoder.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/KSKLibrary/bin/KSKLibrary.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/gaforflash/lib/analytics.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

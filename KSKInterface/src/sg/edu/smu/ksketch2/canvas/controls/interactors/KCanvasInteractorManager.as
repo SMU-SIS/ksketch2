@@ -22,13 +22,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
+	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KLoopSelectInteractor;
-	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
+	import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	/**
 	 * The KCanvasInteractorManager class serves as the concrete class for
@@ -54,6 +55,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _inputComponent:UIComponent;						// the input component
 		private var _modelDisplay:KModelDisplay;						// the model display
 		private var _feedbackMessage:KSketch_Feedback_Message;			// the feedback manager
+		private var _googleAnalytics:GoogleAnalytics;
 		
 		private var _tapGesture:TapGesture;								// the tap gesture
 		private var _doubleTap:TapGesture;								// the double-tap gesture
@@ -77,7 +79,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * @param modelDisplay The model display linked to the given ksketch object.
 		 * @param feedbackMessage The feedback message.
 		 */
-		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, inputComponent:UIComponent, modelDisplay:KModelDisplay, feedbackMessage:KSketch_Feedback_Message)
+		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
+												 inputComponent:UIComponent, modelDisplay:KModelDisplay, 
+												 feedbackMessage:KSketch_Feedback_Message, googleAnalytics:GoogleAnalytics)
 		{
 			// set up the canvas interactor manager
 			super(this);								// set up the event dispatcher
@@ -87,6 +91,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_modelDisplay = modelDisplay;				// initialize the model display
 			_feedbackMessage = feedbackMessage;			// initialize the feedback display
 			_keyDown = false;							// set the key down boolean flag as off
+			_googleAnalytics = googleAnalytics;
 
 			/**
 			 * set the draw, tap, and loop select interactors
@@ -166,25 +171,51 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		{
 			var left:Boolean = (_doubleTap.location.x/_inputComponent.width <= 0.5)? true:false;
 			
-			if(left)
+			doubleTapAction(left, null);
+		}
+		
+		public function doubleTapAction(actionUndo:Boolean, feedback:KSketch_Feedback_Message):void
+		{
+			var feedbackMessage:String;
+			var location:Point;
+			
+			if(feedback)
 			{
+				_feedbackMessage = feedback;
+				if(actionUndo)
+					location = new Point(250, 300);
+				else
+					location = new Point(800, 300);
+			}
+			else
+				location = _doubleTap.location;
+			
+			if(actionUndo)
+			{
+				_googleAnalytics.tracker.trackPageview("/canvas/undo");
 				if(_interactionControl.hasUndo)
 				{
 					_interactionControl.undo();
-					_feedbackMessage.showMessage("Undo", _doubleTap.location);
+					feedbackMessage = "Undo";
 				}
 				else
-					_feedbackMessage.showMessage("No Undo", _doubleTap.location);
+					feedbackMessage = "No Undo";
 			}
 			else
 			{
+				_googleAnalytics.tracker.trackPageview("/canvas/redo");
 				if(_interactionControl.hasRedo)
 				{
 					_interactionControl.redo();
-					_feedbackMessage.showMessage("Redo", _doubleTap.location);
+					feedbackMessage = "Redo";
 				}
 				else
-					_feedbackMessage.showMessage("No Redo", _doubleTap.location);
+					feedbackMessage = "No Redo"; 
+			}
+			
+			if(feedbackMessage)
+			{
+				_feedbackMessage.showMessage(feedbackMessage, location);
 			}
 		}
 		
@@ -209,6 +240,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _recogniseDraw(event:GestureEvent):void
 		{
+			_googleAnalytics.tracker.trackPageview( "/canvas/draw" );
 			if(_interactionControl.currentInteraction)
 				return;
 			

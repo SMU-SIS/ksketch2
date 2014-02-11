@@ -28,6 +28,7 @@
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
+			import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 			
 			public static const ORIGIN:Point = new Point();
 			public static const LEFT:int = 0;
@@ -48,10 +49,12 @@
 			private var _canvasView:KSketch_CanvasView;
 			private var _options:KSketch_Options;
 			private var _saveOptions:KSketch_SaveOptions;
+			private var _feedback:KSketch_Feedback_Message;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
 			private var _canvasControl:KCanvasInteractorManager;
+			private var _googleAnalytics:GoogleAnalytics;
 			
 			/**
 			 * @referenceComponent: the component that this menu will refer to for positioning itself
@@ -62,7 +65,8 @@
 			public function init(referenceComponent:UIComponent,
 								 canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options,
 								 savePanel:KSketch_SaveOptions, KSketchInstance:KSketch2, 
-								 interactionControl:KInteractionControl, canvasControl:KCanvasInteractorManager):void
+								 interactionControl:KInteractionControl, canvasControl:KCanvasInteractorManager,
+								 feedback:KSketch_Feedback_Message,googleAnalytics:GoogleAnalytics):void
 			{
 				_referenceComponent = referenceComponent;
 				_canvasOrigin = referenceComponent.localToGlobal(_canvasOrigin);
@@ -73,6 +77,8 @@
 				_interactionControl = interactionControl;
 				_canvasControl = canvasControl;
 				_options = optionsPanel;
+				_feedback = feedback;
+				_googleAnalytics = googleAnalytics;
 				
 				if(savePanel)
 					_saveOptions = savePanel;
@@ -80,6 +86,10 @@
 			
 			public function _initButtons():void
 			{
+				undoButton.init(KSketchAssets.texture_undo, KSketchAssets.texture_undo_down);
+				undoButton.initSkin();
+				redoButton.init(KSketchAssets.texture_redo, KSketchAssets.texture_redo_down);
+				redoButton.initSkin();
 				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down);
 				optionButton.initSkin();
 				imageButton.init(KSketchAssets.texture_images, KSketchAssets.texture_images_down);
@@ -162,6 +172,8 @@
 			
 			private function _setPen(button:KSketch_Toggle_Button):void
 			{
+				_googleAnalytics.tracker.trackPageview( "/popupmenu/" + button.id);
+				
 				if(_selectedButton)
 					_selectedButton.selected = false;
 				
@@ -206,6 +218,8 @@
 			 */
 			private function _clear():void
 			{
+				_googleAnalytics.tracker.trackPageview( "/popupmenu/clearCanvas" );
+				
 				KSketch_SaveOptions.returnToHome = false;
 				if(_canvasView._interactionControl.hasUndo)
 				{
@@ -216,11 +230,23 @@
 					_interactionControl.reset();
 			}
 			
+			
+			/**
+			 * Triggers undo/redo action
+			 */
+			public function _undoRedoAction(action:Boolean):void
+			{
+				_canvasControl.doubleTapAction(action, _feedback);
+			}
+			
+			
 			/**
 			 * Triggers exit
 			 */
 			public function _saveExit():void
 			{
+				_googleAnalytics.tracker.trackPageview( "/popupmenu/exitCanvas" );
+				
 				KSketch_SaveOptions.returnToHome = true;
 				if(_canvasView._interactionControl.hasUndo)
 				{
@@ -235,7 +261,7 @@
 			{
 				close();
 				_canvasView.exit();
-				KSketch_CanvasView.isNewSketch = false;
+				KSketch_CanvasView.createNewSketch = false;
 			}
 			
 			/**
@@ -243,6 +269,7 @@
 			 */
 			private function _openOptions():void
 			{
+				_googleAnalytics.tracker.trackPageview( "/popupmenu/openOptions" );
 				_options.open(_canvasView,true);
 				PopUpManager.centerPopUp(_options);
 			}
@@ -261,6 +288,7 @@
 			 */
 			private function _importImage():void				
 			{
+				_googleAnalytics.tracker.trackPageview( "/popupmenu/importImage" );
 				var newImageWindow:KSketch_ImageImport_Control = new KSketch_ImageImport_Control();
 				newImageWindow.init(_KSketch, _interactionControl, _canvasView);
 				newImageWindow.createDeferredContent();
@@ -307,9 +335,22 @@
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			visible="false"
 			/>
+		<buttons:KSketch_Button
+			click="_undoRedoAction(true)"
+			id="undoButton"
+			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+			/>
+		<buttons:KSketch_Button
+			click="_undoRedoAction(false)"
+			id="redoButton"
+			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+			/>
+		<!-- add in separator -->
 		<buttons:KSketch_Toggle_Button
-			click="{_setPen(eraserToggle)}"
-			id="eraserToggle"
+			click="{_setPen(lassoToggle)}"
+			id="lassoToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
@@ -338,11 +379,12 @@
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 		<buttons:KSketch_Toggle_Button
-			click="{_setPen(lassoToggle)}"
-			id="lassoToggle"
+			click="{_setPen(eraserToggle)}"
+			id="eraserToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
+		<!-- add in separator -->
 		<buttons:KSketch_Button
 			click="_openOptions()"
 			id="optionButton"

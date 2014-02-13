@@ -10,20 +10,20 @@ package sg.edu.smu.ksketch2
 {
 	public class KSketchWebLinks
 	{
-		public static const url:String = "http://ksketchweb.appspot.com/app/login.html";								//Page displayed on stagewebview
-		public static const jsonurlUser:String = "http://ksketchweb.appspot.com/user/getuser";							//To retrieve user information after login
-		public static const jsonurlUserMobile:String = "http://ksketchweb.appspot.com/user/getusermobile";				//To retrieve user information after login using ID
-		public static const urlUser:String = "http://ksketchweb.appspot.com/user/urlUser";								//To retrieve user id through URL
+		public static const url:String = "http://ksketch.smu.edu.sg/app/login.html";								//Page displayed on stagewebview
+		public static const jsonurlUser:String = "http://ksketch.smu.edu.sg/user/getuser";							//To retrieve user information after login
+		public static const jsonurlUserMobile:String = "http://ksketch.smu.edu.sg/user/getusermobile";				//To retrieve user information after login using ID
+		public static const urlUser:String = "http://ksketch.smu.edu.sg/user/urlUser";								//To retrieve user id through URL
 		
-		public static const login_success:String = "http://ksketchweb.appspot.com/app/login_successful";		
-		public static const redirecturl_login:String = "http://ksketchweb.appspot.com/app/profile.html";				//Indicates successful login
-		public static const redirecturl_index:String = "http://ksketchweb.appspot.com/app/index.html";					
-		public static const redirecturl_skip:String = "http://ksketchweb.appspot.com/app/skip.html";					//Indicates user chooses to skip login process
+		public static const login_success:String = "http://ksketch.smu.edu.sg/app/login_successful";		
+		public static const redirecturl_login:String = "http://ksketch.smu.edu.sg/app/profile.html";				//Indicates successful login
+		public static const redirecturl_index:String = "http://ksketch.smu.edu.sg/app/index.html";					
+		public static const redirecturl_skip:String = "http://ksketch.smu.edu.sg/app/skip.html";					//Indicates user chooses to skip login process
 		
-		public static const jsonurlSketch:String = "http://ksketchweb.appspot.com/list/sketch/user/"; 					//To retrieve list of sketches
-		public static const jsonurlSketchXML:String = "http://ksketchweb.appspot.com/get/sketch/view"; 					//To retrieve XML of a specific sketch
+		public static const jsonurlSketch:String = "http://ksketch.smu.edu.sg/list/sketch/user/"; 					//To retrieve list of sketches
+		public static const jsonurlSketchXML:String = "http://ksketch.smu.edu.sg/get/sketch/view"; 					//To retrieve XML of a specific sketch
 		
-		public static const jsonurlPostXML:String = "http://ksketchweb.appspot.com/post/sketchxml";						//To save a sketch to Datastore
-		public static const jsonurlOverwritePostXML:String = "http://ksketchweb.appspot.com/post/overwritesketchxml";	//To save a sketch from an older version to Datastore
+		public static const jsonurlPostXML:String = "http://ksketch.smu.edu.sg/post/sketchxml";						//To save a sketch to Datastore
+		public static const jsonurlOverwritePostXML:String = "http://ksketch.smu.edu.sg/post/overwritesketchxml";	//To save a sketch from an older version to Datastore
 	}
 }

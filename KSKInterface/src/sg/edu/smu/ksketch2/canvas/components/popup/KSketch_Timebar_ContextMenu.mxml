@@ -171,6 +171,8 @@
 			
 			private function _handleMouseDownOutside(event:FlexMouseEvent):void
 			{
+				if(event.stageY > 680)
+					_timeControl._touchDown(event);
 				close();
 			}
 			

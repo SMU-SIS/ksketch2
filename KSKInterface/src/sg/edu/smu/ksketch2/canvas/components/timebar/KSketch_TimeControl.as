@@ -216,7 +216,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		{	
 			//upon touchdown, start grabbedTickTimer to time how long the touchdown is
 			//if timer completes (means longPress), grab the tick at that particular time
-			grabbedTickTimer = new Timer(800,1);
+			grabbedTickTimer = new Timer(500,1);
 			grabbedTickTimer.start();
 			grabbedTickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _triggerLongTouch);
 			

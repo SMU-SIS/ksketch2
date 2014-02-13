@@ -347,13 +347,25 @@
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		<!-- add in separator -->
-		<buttons:KSketch_Toggle_Button
-			click="{_setPen(lassoToggle)}"
-			id="lassoToggle"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
+		
+		<!-- add in separator to the next button-->
+		<s:Group>
+			<s:layout> <s:HorizontalLayout gap="5"/> </s:layout>
+			<s:Group width="100%">
+				<s:Line xFrom="0" xTo="0" yFrom="0" yTo="50">
+					<s:stroke>
+						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
+					</s:stroke>
+				</s:Line>
+			</s:Group>
+			<buttons:KSketch_Toggle_Button
+				click="{_setPen(lassoToggle)}"
+				id="lassoToggle"
+				width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+				height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+				/>
+		</s:Group>
+		
 		<buttons:KSketch_Toggle_Button
 			click="{_setPen(blackToggle)}"
 			id="blackToggle"
@@ -384,13 +396,25 @@
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		<!-- add in separator -->
-		<buttons:KSketch_Button
-			click="_openOptions()"
-			id="optionButton"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
+		
+		<!-- add in separator to the next button-->
+		<s:Group>
+			<s:layout> <s:HorizontalLayout gap="5"/> </s:layout>
+			<s:Group width="100%">
+				<s:Line xFrom="0" xTo="0" yFrom="0" yTo="50">
+					<s:stroke>
+						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
+					</s:stroke>
+				</s:Line>
+			</s:Group>
+			<buttons:KSketch_Button
+				click="_openOptions()"
+				id="optionButton"
+				width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+				height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+				/>
+		</s:Group>
+		
 		<buttons:KSketch_Button
 			click="_importImage()"
 			id="imageButton"

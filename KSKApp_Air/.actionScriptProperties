@@ -21,9 +21,9 @@
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/spark_dmv.swc" useDefaultLinkType="false"/>
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation.swc" useDefaultLinkType="false"/>
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_dmv.swc" useDefaultLinkType="false"/>
-          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_flashflexkit.swc" useDefaultLinkType="false"/>
-          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/air/applicationupdater_ui.swc" useDefaultLinkType="false"/>
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/air/airframework.swc" useDefaultLinkType="false"/>
+          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/air/applicationupdater_ui.swc" useDefaultLinkType="false"/>
+          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_flashflexkit.swc" useDefaultLinkType="false"/>
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_agent.swc" useDefaultLinkType="false"/>
         </excludedEntries>
       </libraryPathEntry>
@@ -42,30 +42,30 @@
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
   <buildTargets>
-    <buildTarget buildTargetName="device" iosSettingsVersion="2" isCurrent="true" platformId="com.adobe.flexide.multiplatform.ios.platform" provisioningFile="/Users/nurcamelliaz/Documents/ksketch2/2014-02-04.latest/KSketch.mobileprovision" releasePackageType="ipa-app-store">
+    <buildTarget buildTargetName="device" iosSettingsVersion="2" isCurrent="true" platformId="com.adobe.flexide.multiplatform.ios.platform" provisioningFile="/Users/nurcamelliaz/Documents/2014-02-04.latest/KSketch.mobileprovision" releasePackageType="ipa-app-store">
       <multiPlatformSettings enabled="true" hideAneLibSymbols="0" includePlatformLibs="false" platformID="com.adobe.flexide.multiplatform.ios.platform" reducedSizePackaging="false" version="1"/>
-      <airSettings airCertificatePath="/Users/nurcamelliaz/Documents/ksketch2/2014-02-04.latest/KsketchDevelop-2014-10-01.p12" airTimestamp="true" anePathSet="true" version="1">
+      <airSettings airCertificatePath="/Users/nurcamelliaz/Documents/2014-02-04.latest/KsketchDevelop-2014-10-01.p12" airTimestamp="true" anePathSet="true" version="1">
         <airExcludes/>
         <anePaths/>
         <newLaunchParams/>
         <modifiedLaunchParams/>
         <newPackagingParams/>
         <modifiedPackagingParams>
-          <Parameter name="APPLICATION" value="KSketch_2.7.ipa"/>
+          <Parameter name="APPLICATION" value="KSketch_2.7_debug.ipa"/>
         </modifiedPackagingParams>
       </airSettings>
       <actionScriptSettings version="1"/>
     </buildTarget>
     <buildTarget airDownloadURL="https://market.android.com/details?id=com.adobe.air" androidSettingsVersion="2" buildTargetName="device" isCurrent="true" platformId="com.adobe.flexide.multiplatform.android.platform">
       <multiPlatformSettings enabled="true" hideAneLibSymbols="0" includePlatformLibs="false" platformID="com.adobe.flexide.multiplatform.android.platform" reducedSizePackaging="false" version="1"/>
-      <airSettings airCertificatePath="/Users/nurcamelliaz/Desktop/untitled folder/KsketchAndroidDeveloper-2014.p12" airTimestamp="true" anePathSet="true" version="1">
+      <airSettings airCertificatePath="/Volumes/ksketch/Releases/2014-02-04.latest/Android/KsketchAndroidDeveloper.p12" airTimestamp="true" anePathSet="true" version="1">
         <airExcludes/>
         <anePaths/>
         <newLaunchParams/>
         <modifiedLaunchParams/>
         <newPackagingParams/>
         <modifiedPackagingParams>
-          <Parameter name="APPLICATION" value="KSketch_v2.5.apk"/>
+          <Parameter name="APPLICATION" value="KSketch_2.0.1.apk"/>
         </modifiedPackagingParams>
       </airSettings>
       <actionScriptSettings version="1"/>

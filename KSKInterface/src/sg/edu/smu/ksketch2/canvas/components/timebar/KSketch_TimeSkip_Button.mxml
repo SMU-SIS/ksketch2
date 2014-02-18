@@ -69,7 +69,6 @@
 				for(i = 0; i<length; i++)
 				{
 					timeList.push(_timeControl.timings[i]);
-					trace("Timing: " + _timeControl.timings[i]);
 				}
 				
 				timeList.unshift(0);

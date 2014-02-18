@@ -175,6 +175,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				maximum = value;
 
 			_currentFrame = timeToFrame(value);
+			
 			_KSketch.time = _currentFrame * KSketch2.ANIMATION_INTERVAL;
 			
 			if(KSketch_TimeControl.DEFAULT_MAX_TIME < time)
@@ -196,7 +197,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		}
 		
 		/**
-		 * Current time value for this application in milliseconds
+		 * Current time value for this application in second
 		 */
 		public function get time():Number
 		{
@@ -302,6 +303,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//Rout interaction into the tick mark control if there is a grabbed tick
 			if(!KSketch_CanvasView.isPlayer && (_tickmarkControl.grabbedTick && _longTouch))
 			{
+				xPos = roundToNearestTenth(xPos);
 				_tickmarkControl.move_markers(xPos);
 				_magnifier.magnify(timeToX(xToTime(xPos)));
 				_autoSnap(xPos);
@@ -490,7 +492,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function timeToFrame(value:Number):int
 		{
-			return value/KSketch2.ANIMATION_INTERVAL; //int(Math.floor(value/KSketch2.ANIMATION_INTERVAL));
+			return int(value/KSketch2.ANIMATION_INTERVAL);
 		}
 		
 		/**
@@ -498,7 +500,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function timeToX(value:Number):Number
 		{
-			return timeToFrame(value)/(_maxFrame*1.0) * backgroundFill.width;
+			var xPos: Number = timeToFrame(value)/(_maxFrame*1.0) * backgroundFill.width;
+			xPos = roundToNearestTenth(xPos);
+			return xPos;
 		}
 		
 		/**
@@ -506,7 +510,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function xToTime(value:Number):Number
 		{
-			var currentFrame:int = Math.round(value/pixelPerFrame);
+			var currentFrame:int = Math.ceil(value/pixelPerFrame);
 			return currentFrame * KSketch2.ANIMATION_INTERVAL;
 		}
 		
@@ -537,6 +541,12 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			var timeCode:String = strSeconds + '.' + strMilliseconds;
 			return timeCode;
+		}
+		
+		public static function roundToNearestTenth(value:Number):int
+		{
+			var newValue:int = Math.floor(value/10) * 10;
+			return newValue;
 		}
 	}
 }

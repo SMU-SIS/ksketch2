@@ -378,7 +378,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//On Pan compute how much finger moved (_changeX)
 			var currentX:Number = locationX;
 			var changeX:Number = currentX - _startX;
-			changeX = Math.floor(changeX/_pixelPerFrame)*_pixelPerFrame;
+			changeX = (changeX/_pixelPerFrame)*_pixelPerFrame;
 			
 			//If _changeX -ve use before
 			//If _changeX +ve use after
@@ -396,8 +396,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				for(i = 0; i < length; i++)
 				{
 					tick = _before[i];	
-					tickChangeX = Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
-						//Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
+					tickChangeX = ((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
 					
 					if(tickChangeX < 0)
 						tick.moveToX(tick.originalPosition + tickChangeX, _pixelPerFrame);
@@ -416,7 +415,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					tick = _after[i];	
 					
 					tickChangeX = ((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
-						//Math.floor((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
 					
 					if(tickChangeX > 0)
 						tick.moveSelfAndNext(tick.originalPosition + tickChangeX, _pixelPerFrame);
@@ -471,8 +469,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					maxTime = currentTick.time;
 				
 				_KSketch.editKeyTime(allObjects.getObjectByID(currentTick.associatedObjectID),
-					currentTick.key, currentTick.time,
-					_interactionControl.currentInteraction);
+									currentTick.key, currentTick.time,
+									_interactionControl.currentInteraction);
 			}
 			
 			//Update the time control's maximum time if needed

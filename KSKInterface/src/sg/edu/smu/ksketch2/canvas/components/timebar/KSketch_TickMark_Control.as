@@ -399,9 +399,13 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					tickChangeX = ((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
 					
 					if(tickChangeX < 0)
+					{
 						tick.moveToX(tick.originalPosition + tickChangeX, _pixelPerFrame);
+					}	
 					else
-						tick.x = tick.originalPosition;		
+					{
+						tick.x = tick.originalPosition;	
+					}	
 				}
 			}
 			
@@ -445,17 +449,12 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//Redraw markers
 			_drawTicks();
 			_changeX = changeX;
+			_update_object_model();
+			
 		}
 		
-		/**
-		 * Makes changes to the model
-		 * Right now it is very brute force, all key frames
-		 * refered in existing markers are being updated regardless of them being
-		 * changed or not.
-		 */
-		public function end_move_markers():void
+		public function _update_object_model():void
 		{
-			
 			//Update the model
 			var i:int;
 			var length:int = _ticks.length;
@@ -469,8 +468,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					maxTime = currentTick.time;
 				
 				_KSketch.editKeyTime(allObjects.getObjectByID(currentTick.associatedObjectID),
-									currentTick.key, currentTick.time,
-									_interactionControl.currentInteraction);
+					currentTick.key, currentTick.time,
+					_interactionControl.currentInteraction);
 			}
 			
 			//Update the time control's maximum time if needed
@@ -479,7 +478,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				_timeControl.maximum = maxTime;
 			else
 				_timeControl.maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
-			
+		}
+		
+		/**
+		 * Makes changes to the model
+		 * Right now it is very brute force, all key frames
+		 * refered in existing markers are being updated regardless of them being
+		 * changed or not.
+		 */
+		public function end_move_markers():void
+		{
 			if(_interactionControl.currentInteraction)
 			{
 				if(_interactionControl.currentInteraction.length > 0)

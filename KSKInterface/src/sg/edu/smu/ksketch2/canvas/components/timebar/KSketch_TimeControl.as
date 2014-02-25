@@ -305,6 +305,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			{
 				xPos = roundToNearestTenth(xPos);
 				_tickmarkControl.move_markers(xPos);
+				
 				_magnifier.magnify(timeToX(xToTime(xPos)));
 				_autoSnap(xPos);
 				

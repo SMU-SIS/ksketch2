@@ -238,8 +238,8 @@
 				</s:layout>
 				<s:Button label="Top" click="_menuTop()" fontSize="14"/>
 				<s:Button label="Bottom" click="_menuBottom()" fontSize="14"/>
-				<s:Button label="Left" click="_menuLeft()" fontSize="14"/>
-				<s:Button label="Right" click="_menuRight()" fontSize="14"/>
+				<!--<s:Button label="Left" click="_menuLeft()" fontSize="14"/>
+				<s:Button label="Right" click="_menuRight()" fontSize="14"/>-->
 			</s:Group>
 		</s:Group>
 		<s:Group>

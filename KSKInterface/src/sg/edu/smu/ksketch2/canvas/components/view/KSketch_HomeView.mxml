@@ -140,10 +140,9 @@
 					{
 						var errorMessage:String = String(data);
 						
-						if(errorMessage == "Lost Connection")
-							listSketches_unavailable.text = "Failed to login. You are not connected to the Internet.";
-						else if(errorMessage == "Janrain Failed")
-							listSketches_unavailable.text = "Our login provider is not accessible at the moment. Please try again later.";
+						if(errorMessage == "Lost Connection" || errorMessage == "Janrain Failed") 
+							//listSketches_unavailable.text = "Failed to login. You are not connected to the Internet.";
+							listSketches_unavailable.source = KSketchAssets.image_error;
 					}
 					
 					var obj:Object = new Object();
@@ -589,8 +588,8 @@
 							dataProvider="{arrDG}" change="datagridSelectItem()"
 							>
 					</s:List>
-					<s:Label id="listSketches_unavailable" text="Start a new sketch now!" visible="false"/>
-					
+					<!--<s:Label id="listSketches_unavailable" text="Start a new sketch now!" visible="false"/>-->
+					<s:Image id="listSketches_unavailable" source="{KSketchAssets.image_new}" width="100%" height="100%" visible="false"/>
 					<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
 										   horizontalCenter="0" verticalCenter="0" visible="false"/>
 				</s:Group>

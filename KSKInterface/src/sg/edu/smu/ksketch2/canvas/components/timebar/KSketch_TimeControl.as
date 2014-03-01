@@ -150,7 +150,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function set maximum(value:Number):void
 		{
-			_maxFrame = value/KSketch2.ANIMATION_INTERVAL;
+			var newVal:int = Math.ceil(value/1000) * 1000;
+			_maxFrame = newVal/KSketch2.ANIMATION_INTERVAL;
 			dispatchEvent(new Event(KTimeChangedEvent.EVENT_MAX_TIME_CHANGED));
 		}
 		
@@ -173,7 +174,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				value = MAX_ALLOWED_TIME;
 			if(maximum < value)
 				maximum = value;
-
+			
 			_currentFrame = timeToFrame(value);
 			
 			_KSketch.time = _currentFrame * KSketch2.ANIMATION_INTERVAL;

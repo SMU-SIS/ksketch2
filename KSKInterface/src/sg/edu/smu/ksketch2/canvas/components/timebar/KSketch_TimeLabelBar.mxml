@@ -66,16 +66,18 @@
 				{
 					if(i != last)
 					{
-						trace("inside");
 						var myLabel:KSketch_TimeLabel = _labelPool[i];
 						myLabel.timeLabelText.text = (Math.ceil((i+1)*timePerDivision)).toString()+"s";
 						labels.addElement(myLabel);
 					}
 					else
 					{
-						trace("inside 2");
 						labels.addElement(_lastPartition);
-						_lastPartition.width = _timeControl.timeToX(_timeControl.maximum) - _timeControl.timeToX(i*1000);
+						
+						if(timePerDivision > 1)
+							_lastPartition.width = _timeControl.timeToX(_timeControl.maximum) - _timeControl.timeToX(i*timePerDivision*1000);
+						else
+							_lastPartition.width = _timeControl.timeToX(_timeControl.maximum) - _timeControl.timeToX(i*1000);
 					}
 				}
 			}

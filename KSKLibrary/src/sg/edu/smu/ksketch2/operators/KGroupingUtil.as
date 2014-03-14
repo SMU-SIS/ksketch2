@@ -145,12 +145,24 @@ package sg.edu.smu.ksketch2.operators
 			
 			// create the new parent and put it under the grandparent
 			var newParent:KGroup = new KGroup(scene.nextHighestID);
+			newParent.parent = commonParent;
+			
 			scene.registerObject(newParent, op);
 			newParent.init(groupTime, new KCompositeOperation());
 
 			// add the objects in the given list to the new parent 
 			for(var i:int = 0; i< objects.length(); i++)
+			{
+				trace("object id: " + objects.getObjectAt(i).id);
+				trace("object parent: " + objects.getObjectAt(i).parent.id);
+				trace("new parent: " + newParent.id);
+				
+				if(newParent.parent)
+					trace("new parent parent: " + newParent.parent.id);
+				trace("===============================");
+				
 				op.addOperation(addObjectToParent(objects.getObjectAt(i), newParent));
+			}
 			
 			// return the newly-created grouped list of objects
 			return newParent;

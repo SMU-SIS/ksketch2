@@ -27,6 +27,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	public class KRotateInteractor extends KTransitionInteractor
 	{
 		public static const PIx2:Number = 6.283185307;		// the constant pi value
+		public static var rotateFlag:Boolean = false;		// the rotate flag
 		private var _rotateGesture:PanGesture;				// the rotate gesture
 		private var _theta:Number;							// the rotational value
 		private var _googleAnalytics:GoogleAnalytics;
@@ -60,6 +61,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			_theta = NaN;
 			
 			activate();
+			
+			rotateFlag = false;
 		}
 		
 		override public function activate():void
@@ -76,6 +79,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		
 		override protected function _interaction_begin(event:GestureEvent):void
 		{
+			rotateFlag = true;
+			
 			_googleAnalytics.tracker.trackPageview("/canvas/rotate");
 			super._interaction_begin(event);
 			

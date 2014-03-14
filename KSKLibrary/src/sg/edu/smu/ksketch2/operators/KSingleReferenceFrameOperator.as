@@ -1297,16 +1297,14 @@ package sg.edu.smu.ksketch2.operators
 			Doesn't matter anyway!!!
 			*/
 			
-			//This function is really very very very very long.
-			//It only really became this long because of optimisations, trying to cut loops here and there
-			//Now, it is barely good enough to run on ipads, maybe the next better programmer can do better :S
-			
 			var sourceInterface:KSingleReferenceFrameOperator = sourceObject.transformInterface.clone() as KSingleReferenceFrameOperator;
 			var oldInterface:KSingleReferenceFrameOperator = this.clone() as KSingleReferenceFrameOperator;
 			var toMergeRefFrame:KReferenceFrame = new KReferenceFrame();
 			var toModifyKey:KSpatialKeyFrame;
 			var currentKey:KSpatialKeyFrame = sourceInterface.getActiveKey(-1) as KSpatialKeyFrame;
 			var dummyOp:KCompositeOperation = new KCompositeOperation();
+			
+			trace("At KSingleReferenceFrameOperator mergeTransform: " + sourceObject.id + " , " + sourceObject + " < " + _object.id);
 			
 			//Clone the source object's reference frame and modify the this operator's reference frame 
 			//Such that it is the same as the source reference frame
@@ -1385,11 +1383,17 @@ package sg.edu.smu.ksketch2.operators
 				}
 				
 				oldPath = toModifyKey.rotatePath.clone();
-				toModifyKey.rotatePath.mergePath(currentKey.rotatePath);
+				if(currentKey.rotatePath.points.length != 0)
+					toModifyKey.rotatePath.mergePath(currentKey.rotatePath);
+				else
+					trace("there is no rotatePath points length");
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.rotatePath, oldPath, KSketch2.TRANSFORM_ROTATION));
 				
 				oldPath = toModifyKey.scalePath.clone();
-				toModifyKey.scalePath.mergePath(currentKey.scalePath);
+				if(currentKey.scalePath.points.length != 0)
+					toModifyKey.scalePath.mergePath(currentKey.scalePath);
+				else
+					trace("there is no scalePath points length");
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.scalePath, oldPath, KSketch2.TRANSFORM_SCALE));
 				
 				oldPath = toModifyKey.translatePath.clone();

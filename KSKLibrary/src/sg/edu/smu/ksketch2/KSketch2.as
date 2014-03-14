@@ -356,8 +356,13 @@ package sg.edu.smu.ksketch2
 			else
 				commonParent = _sceneGraph.root;
 			
+			if(!commonParent)
+				commonParent = _sceneGraph.root;
+			
 			// perform the grouping first
-			var groupResult:KObject = _groupingUtil.group(objects,_sceneGraph.root, groupTime, _sceneGraph, op);
+			trace("COMMON PARENT: " + commonParent.id);
+			var groupResult:KObject = _groupingUtil.group(objects, commonParent, groupTime, _sceneGraph, op);
+			//cammie: var groupResult:KObject = _groupingUtil.group(objects,_sceneGraph.root, groupTime, _sceneGraph, op);
 
 			// remove singleton groups
 			_groupingUtil.removeSingletonGroups(root, _sceneGraph, op);
@@ -372,7 +377,8 @@ package sg.edu.smu.ksketch2
 				result.add(groupResult);
 				
 				// broadcast that the model has been updated 
-				dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
+				dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, commonParent));
+				//cammie: dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 			}
 			
 			// return the hierarachical grouping, if any

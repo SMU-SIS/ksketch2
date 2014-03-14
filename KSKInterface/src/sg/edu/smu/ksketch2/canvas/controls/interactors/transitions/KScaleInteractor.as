@@ -25,6 +25,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
  	 */
 	public class KScaleInteractor extends KTransitionInteractor
 	{
+		public static var scaleFlag:Boolean = false	// the scale flag
+		
 		private var _scaleGesture:PanGesture;		// the scale gesture
 		private var _previousPoint:Point;			// the previous point
 		private var _center:Point;					// the center point
@@ -57,6 +59,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			activate();
 			_scale = 1;
+			
+			scaleFlag = false;
 		}
 		
 		override public function activate():void
@@ -73,6 +77,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		
 		override protected function _interaction_begin(event:GestureEvent):void
 		{
+			scaleFlag = true;
+			
 			_googleAnalytics.tracker.trackPageview("/canvas/scale");
 			super._interaction_begin(event);
 			

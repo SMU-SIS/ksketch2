@@ -37,6 +37,7 @@ package sg.edu.smu.ksketch2.operators
 			if(objects.length() == 0)
 				throw new Error("KGroupUtil.groupStatic: No objects in the objectlist given. Wth dood");
 			
+			trace("THIS IS CALLED: " + objects.getObjectAt(0).id + " , " + commonParent.id);
 			_static_CollapseHierarchy(objects, commonParent, groupTime, scene, op);
 			
 			//RIght, we need to deal with the case of breaking ONE bloody object out.
@@ -44,14 +45,17 @@ package sg.edu.smu.ksketch2.operators
 			{
 				var the_one_object:KObject = objects.getObjectAt(0);
 				
+				/*Cammie Changes*/
+				op.addOperation(KGroupingUtil.addObjectToParent(the_one_object, commonParent));
+				
 				//Group that dude to the root if needed
 				if(the_one_object.parent != scene.root)
-					op.addOperation(KGroupingUtil.addObjectToParent(the_one_object, scene.root));
+					op.addOperation(KGroupingUtil.addObjectToParent(the_one_object, scene.root));	
 				
 				return the_one_object;
 			}
 			else
-				return _groupObjects(objects, commonParent, groupTime, scene, op);
+				return _groupObjects(objects, commonParent, groupTime, scene, op);		
 		}
 		
 		/**

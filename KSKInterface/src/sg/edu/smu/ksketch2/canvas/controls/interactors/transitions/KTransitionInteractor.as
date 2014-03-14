@@ -18,6 +18,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	public class KTransitionInteractor
@@ -88,9 +89,19 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			_interactionControl.begin_interaction_operation();
 			var savedTransitionMode:int = _interactionControl.transitionMode;
 
+			/*Cammie changes*/
+			//If interaction is a rotation or scale demonstration, flag for possibility of a common parent for grouped objects
+			var breakToRoot:Boolean = true;
+			
+			if(KWidgetInteractorManager.demonstrationFlag && (KRotateInteractor.rotateFlag || KScaleInteractor.scaleFlag))
+				breakToRoot = false;
+			
 			if(rawSelection.objects.length() > 1 )
 			{
-				var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, false, op);
+				/*Cammie changes*/
+				var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, breakToRoot, op);
+				//var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, false, op);
+				
 				_interactionControl.selection = new KSelection(newObjectList);
 				_interactionControl.transitionMode = savedTransitionMode;
 				_interactionControl.currentInteraction.addOperation(op);

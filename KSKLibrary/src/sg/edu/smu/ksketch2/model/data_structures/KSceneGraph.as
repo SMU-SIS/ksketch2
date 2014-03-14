@@ -106,7 +106,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 		{
 			_highestID++;
 		
-			var addOp:IModelOperation = KGroupingUtil.addObjectToParent(newObject, _root);
+			/*Cammie changes*/
+			var parent:KGroup = null;
+			
+			if(newObject.parent)
+				parent = newObject.parent;
+			else
+				parent = _root;
+			
+			var addOp:IModelOperation = KGroupingUtil.addObjectToParent(newObject, parent);
+			//End of Cammie changes*/
+			
+			//cammie: var addOp:IModelOperation = KGroupingUtil.addObjectToParent(newObject, _root);
 			
 			if(op)
 				op.addOperation(addOp);

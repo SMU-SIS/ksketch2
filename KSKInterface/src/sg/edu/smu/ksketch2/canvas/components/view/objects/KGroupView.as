@@ -9,7 +9,6 @@
 package sg.edu.smu.ksketch2.canvas.components.view.objects
 {
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
-	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 
 	public class KGroupView extends KObjectView

@@ -98,9 +98,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			if(rawSelection.objects.length() > 1 )
 			{
-				/*Cammie changes*/
 				var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, breakToRoot, op);
-				//var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, false, op);
+				//cammie: var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, false, op);
 				
 				_interactionControl.selection = new KSelection(newObjectList);
 				_interactionControl.transitionMode = savedTransitionMode;

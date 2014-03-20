@@ -134,7 +134,8 @@ package sg.edu.smu.ksketch2.model.objects
 		public function add(object:KObject, index:int = -1):void
 		{
 			_children.add(object, index);
-			updateCenter();
+			if(!containsGroup())
+				updateCenter();
 			dispatchEvent(new KGroupEvent(KGroupEvent.OBJECT_ADDED,this, object));
 		}
 		
@@ -147,6 +148,22 @@ package sg.edu.smu.ksketch2.model.objects
 		public function contains(obj:KObject):Boolean
 		{
 			return _children.contains(obj);
+		}
+		
+		public function containsGroup():Boolean
+		{
+			var contains:Boolean = false;
+			
+			for(var i:int=0; i<_children.length(); i++)
+			{
+				if(_children.getObjectAt(i) is KGroup)
+				{
+					contains = true;
+					break;
+				}
+			}
+			
+			return contains;
 		}
 		
 		public function remove(object:KObject):void

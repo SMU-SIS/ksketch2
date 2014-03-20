@@ -17,7 +17,9 @@ package sg.edu.smu.ksketch2.canvas.components.view
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
+	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
 	public class KObjectMotions extends Sprite
@@ -178,11 +180,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			
 			_motionPath.graphics.clear();
 			_generateMotionPath(activeKey,firstKeyTime,lastKeyTime);
-			
-			/*this is the original implementation
-			if(activeKey.next)
-				_generateMotionPath(activeKey.next as KSpatialKeyFrame);
-			*/
 		}
 		
 		private function _generateMotionPath(key:KSpatialKeyFrame, firstKeyTime:Number, lastKeyTime:Number):void
@@ -209,7 +206,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			//This iteration generates an object's position and transform values
 			while(firstKeyTime <= lastKeyTime)
 			{
-				matrix = _object.fullPathMatrix(firstKeyTime);
+				matrix = _object.fullPathMatrix(firstKeyTime); //cammie: _object.transformMatrix(firstKeyTime);
 				position = matrix.transformPoint(centroid);
 				translatePath.push(position);
 

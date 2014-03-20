@@ -346,26 +346,19 @@ package sg.edu.smu.ksketch2
 			// create the common parent
 			var commonParent:KGroup;
 			
-			// there is more than one object in the list and the break to root boolean flag is disabled
-			// set the common parent to be the lowest common parent in the list of objects
-			if(1 < objects.length() && !breakToRoot)
+			//cammie: NEW IMPLEMENTATION
+			if(1 < objects.length())
 				commonParent = _groupingUtil.lowestCommonParent(objects);
-			
-			// case: the break to root boolean flag is enabled
-			// set the common parent to be the scene graph's root node
-			else
-				commonParent = _sceneGraph.root;
 			
 			if(!commonParent)
 				commonParent = _sceneGraph.root;
 			
-			// perform the grouping first
-			trace("COMMON PARENT: " + commonParent.id);
-			var groupResult:KObject = _groupingUtil.group(objects, commonParent, groupTime, _sceneGraph, op);
-			//cammie: var groupResult:KObject = _groupingUtil.group(objects,_sceneGraph.root, groupTime, _sceneGraph, op);
-
+			var groupResult:KObject = _groupingUtil.group(objects, commonParent, groupTime, _sceneGraph, op, breakToRoot);
+			//cammie: END NEW IMPLEMENTATION
+			
 			// remove singleton groups
-			_groupingUtil.removeSingletonGroups(root, _sceneGraph, op);
+			_groupingUtil.removeSingletonGroups(commonParent, _sceneGraph, op);
+			//cammie: _groupingUtil.removeSingletonGroups(root, _sceneGraph, op);
 			
 			// initialize the hierarchical group
 			var result:KModelObjectList = new KModelObjectList();
@@ -378,7 +371,6 @@ package sg.edu.smu.ksketch2
 				
 				// broadcast that the model has been updated 
 				dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, commonParent));
-				//cammie: dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 			}
 			
 			// return the hierarachical grouping, if any

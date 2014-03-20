@@ -9,7 +9,6 @@
 package sg.edu.smu.ksketch2.operators
 {
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
-	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.data_structures.KSceneGraph;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -32,13 +31,16 @@ package sg.edu.smu.ksketch2.operators
 			super();
 		}
 		
-		override public function group(objects:KModelObjectList, commonParent:KGroup, groupTime:Number, scene:KSceneGraph, op:KCompositeOperation):KObject
+		override public function group(objects:KModelObjectList, commonParent:KGroup, groupTime:Number, scene:KSceneGraph, op:KCompositeOperation, breakToRoot:Boolean):KObject
 		{
 			if(objects.length() == 0)
 				throw new Error("KGroupUtil.groupStatic: No objects in the objectlist given. Wth dood");
 			
-			trace("THIS IS CALLED: " + objects.getObjectAt(0).id + " , " + commonParent.id);
-			_static_CollapseHierarchy(objects, commonParent, groupTime, scene, op);
+			var tempTime:Number = groupTime;
+			if(commonParent.parent)
+				tempTime = commonParent.transformInterface.lastKeyTime;
+			
+			_static_CollapseHierarchy(objects, commonParent, tempTime, scene, op);
 			
 			//RIght, we need to deal with the case of breaking ONE bloody object out.
 			if(objects.length() == 1)
@@ -55,7 +57,7 @@ package sg.edu.smu.ksketch2.operators
 				return the_one_object;
 			}
 			else
-				return _groupObjects(objects, commonParent, groupTime, scene, op);		
+				return _groupObjects(objects, commonParent, groupTime, scene, op, breakToRoot);		
 		}
 		
 		/**
@@ -119,24 +121,26 @@ package sg.edu.smu.ksketch2.operators
 			var currentObject:KObject;
 			var parent:KGroup;
 			
-			var translatePath:KPath;
 			//Iterate through the list of objects
 			for(var i:int = 0; i<objects.length(); i++)
 			{
 				currentObject = objects.getObjectAt(i);
-				_topDownCollapse(currentObject, stopParent, stopCollapseTime,scene, op)
+				_topDownCollapse(currentObject, stopParent, stopCollapseTime,scene, op);
 			}
 		}
 		
 		private function _topDownCollapse(object:KObject, stopParent:KGroup, stopCollapseTime:Number,
-										  scene:KSceneGraph, op:KCompositeOperation):void
+										  scene:KSceneGraph, op:KCompositeOperation):KObject
 		{
+			var tempObj:KObject = object.parent;
 			if(object.parent != stopParent && object.parent != scene.root)
 			{
 				_topDownCollapse(object.parent, stopParent, stopCollapseTime,scene, op);
 				object.transformInterface.mergeTransform(object.parent, stopCollapseTime, op);
 				op.addOperation(KGroupingUtil.addObjectToParent(object, object.parent.parent));
 			}
+			
+			return tempObj;
 		}
 		
 		override public function removeSingletonGroups(currentGroup:KGroup, model:KSceneGraph, op:KCompositeOperation):void

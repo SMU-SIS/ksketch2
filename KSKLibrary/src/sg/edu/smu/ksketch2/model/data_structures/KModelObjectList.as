@@ -92,6 +92,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return _objectList[index];
 		}
 		
+		public function getAllObjectsInArray():Array
+		{
+			var array:Array = new Array(_objectList.length);
+			// iterate through the model object list
+			for(var i:int = 0; i<_objectList.length; i++)
+			{
+				array[i] = _objectList[i];
+			}
+			
+			return array;
+		}
+		
 		/**
 		 * Gets the list of IDs for each KObject in the model object list.
 		 * 

@@ -63,9 +63,9 @@ package sg.edu.smu.ksketch2.operators
 		 * @param op The corresponding composite operation.
 		 * @return The grouped list of objects.
 		 */
-		public function group(objects:KModelObjectList, commonParent:KGroup, groupTime:Number, scene:KSceneGraph, op:KCompositeOperation):KObject
+		public function group(objects:KModelObjectList, commonParent:KGroup, groupTime:Number, scene:KSceneGraph, op:KCompositeOperation, breakToRoot:Boolean):KObject
 		{
-			return _groupObjects(objects, commonParent, groupTime, scene, op);
+			return _groupObjects(objects, commonParent, groupTime, scene, op, breakToRoot);
 		}
 		
 		/**
@@ -136,7 +136,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param op The corresponding composite operation.
 		 * @return The grouped list of objects.
 		 */
-		protected function _groupObjects(objects:KModelObjectList, commonParent:KGroup, groupTime:Number, scene:KSceneGraph, op:KCompositeOperation):KGroup
+		protected function _groupObjects(objects:KModelObjectList, commonParent:KGroup, groupTime:Number, scene:KSceneGraph, op:KCompositeOperation, breakToRoot:Boolean):KGroup
 		{	
 			// case: there is at most one oject in the group
 			// throw an error
@@ -145,7 +145,8 @@ package sg.edu.smu.ksketch2.operators
 			
 			// create the new parent and put it under the grandparent
 			var newParent:KGroup = new KGroup(scene.nextHighestID);
-			newParent.parent = commonParent;
+			if(!breakToRoot)
+				newParent.parent = commonParent;
 			
 			scene.registerObject(newParent, op);
 			newParent.init(groupTime, new KCompositeOperation());

@@ -30,6 +30,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.KMoveCenterInteractor;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
@@ -272,8 +273,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				
 			
 			_widget.visible = true;
-		
-			//Need to localise the point
+			
 			var selectionCenter:Point = _interactionControl.selection.centerAt(_KSketch.time);
 			selectionCenter = _modelSpace.localToGlobal(selectionCenter);
 			selectionCenter = _widgetSpace.globalToLocal(selectionCenter);
@@ -301,6 +301,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				
 				//Need to localise the point
 				var selectionCenter:Point = _interactionControl.selection.centerAt(_KSketch.time);
+				
 				selectionCenter = _modelSpace.localToGlobal(selectionCenter);
 				selectionCenter = _widgetSpace.globalToLocal(selectionCenter);
 				

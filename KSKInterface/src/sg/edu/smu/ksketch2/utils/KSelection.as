@@ -12,6 +12,7 @@ package sg.edu.smu.ksketch2.utils
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 
 	/**
@@ -109,6 +110,7 @@ package sg.edu.smu.ksketch2.utils
 			for(i; i<length; i++)
 			{
 				currentObject = _visibleSelection.getObjectAt(i);
+				
 				matrix = currentObject.fullPathMatrix(time);
 				objectCentroid = matrix.transformPoint(currentObject.center);
 				
@@ -183,6 +185,22 @@ package sg.edu.smu.ksketch2.utils
 				return true;
 			
 			return completeSelection.isDifferent(anotherSelection.completeSelection);
+		}
+		
+		public function isKObject(groupSelection:KGroup):KObject
+		{
+			var obj:KObject;
+			
+			for(var i:int = 0; i<groupSelection.children.length(); i++)
+			{
+				if(groupSelection.children.getObjectAt(i) is KObject)
+				{
+					obj = groupSelection.children.getObjectAt(i);
+					return obj;
+				}
+			}
+			
+			return null;
 		}
 		
 		/**

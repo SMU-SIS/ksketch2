@@ -1385,15 +1385,11 @@ package sg.edu.smu.ksketch2.operators
 				oldPath = toModifyKey.rotatePath.clone();
 				if(currentKey.rotatePath.points.length != 0)
 					toModifyKey.rotatePath.mergePath(currentKey.rotatePath);
-				else
-					trace("there is no rotatePath points length");
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.rotatePath, oldPath, KSketch2.TRANSFORM_ROTATION));
 				
 				oldPath = toModifyKey.scalePath.clone();
 				if(currentKey.scalePath.points.length != 0)
 					toModifyKey.scalePath.mergePath(currentKey.scalePath);
-				else
-					trace("there is no scalePath points length");
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.scalePath, oldPath, KSketch2.TRANSFORM_SCALE));
 				
 				oldPath = toModifyKey.translatePath.clone();

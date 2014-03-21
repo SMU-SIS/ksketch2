@@ -51,7 +51,7 @@ package sg.edu.smu.ksketch2.operators
 		public static const STUDYMODE_K:int = 0;						// Version K value
 		public static const STUDYMODE_P:int = 1;						// Version P value
 		public static const STUDYMODE_KP:int = 2;						// Version KP value
-		public static const STUDYMODE_KP2:int = 3;							// Version KP2 value
+		public static const STUDYMODE_KP2:int = 3;						// Version KP2 value
 		
 		public static var studyMode: int = STUDYMODE_KP2;				// default study mode set to 3
 		public static var always_allow_interpolate:Boolean = false;		// always interpolate state flag
@@ -605,9 +605,12 @@ package sg.edu.smu.ksketch2.operators
 					//Just dump the new values in for demonstrated transitions
 					elapsedTime = time - _startTime;
 					
-					_TStoredPath.push(dx, dy, elapsedTime);
-					_RStoredPath.push(dTheta, 0, elapsedTime);
-					_SStoredPath.push(dScale, 0, elapsedTime);
+					if(elapsedTime != 0)
+					{
+						_TStoredPath.push(dx, dy, elapsedTime);
+						_RStoredPath.push(dTheta, 0, elapsedTime);
+						_SStoredPath.push(dScale, 0, elapsedTime);
+					}
 				}
 			}
 			
@@ -712,7 +715,6 @@ package sg.edu.smu.ksketch2.operators
 				//So we just insert a key at time, if there is a need to insert key
 				if(canInsertKey(time))
 				{
-					trace("can insert another key frame here???");
 					insertBlankKeyFrame(time, op, false);
 				}
 				//Then we grab that key
@@ -762,39 +764,12 @@ package sg.edu.smu.ksketch2.operators
 				op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.translatePath, _TStoredPath, KSketch2.TRANSFORM_TRANSLATION));
 				op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.rotatePath, _RStoredPath, KSketch2.TRANSFORM_ROTATION));
 				op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.scalePath, _SStoredPath, KSketch2.TRANSFORM_SCALE));
-				/*
-				op.addOperation(new KInsertKeyOperation(_interpolationKey.previous, _interpolationKey.next, _interpolationKey));	
-				if((TRANSLATE_THRESHOLD < _magX) || (TRANSLATE_THRESHOLD < _magY))
-					op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.translatePath, _TStoredPath, KSketch2.TRANSFORM_TRANSLATION));
-				
-				if(ROTATE_THRESHOLD < _magTheta)
-					op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.rotatePath, _RStoredPath, KSketch2.TRANSFORM_ROTATION));
-				
-				if(SCALE_THRESHOLD < _magSigma)
-					op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.scalePath, _SStoredPath, KSketch2.TRANSFORM_SCALE));
-				*/
 				
 				if(_nextInterpolationKey)
 				{
-					//original implementation
 					op.addOperation(new KReplacePathOperation(_nextInterpolationKey, _nextInterpolationKey.translatePath, _TStoredPath2, KSketch2.TRANSFORM_TRANSLATION));
 					op.addOperation(new KReplacePathOperation(_nextInterpolationKey, _nextInterpolationKey.rotatePath, _RStoredPath2, KSketch2.TRANSFORM_ROTATION));
 					op.addOperation(new KReplacePathOperation(_nextInterpolationKey, _nextInterpolationKey.scalePath, _SStoredPath2, KSketch2.TRANSFORM_SCALE));
-					
-					/*
-					op.addOperation(new KInsertKeyOperation(_nextInterpolationKey.previous, _nextInterpolationKey.next, _nextInterpolationKey));
-					
-					//Then I need to put the usable paths into the object
-					if((TRANSLATE_THRESHOLD < _magX) || (TRANSLATE_THRESHOLD < _magY))
-						op.addOperation(new KReplacePathOperation(_nextInterpolationKey, _nextInterpolationKey.translatePath, _TStoredPath2, KSketch2.TRANSFORM_TRANSLATION));
-					
-					if(ROTATE_THRESHOLD < _magTheta)
-						op.addOperation(new KReplacePathOperation(_nextInterpolationKey, _nextInterpolationKey.rotatePath, _RStoredPath2, KSketch2.TRANSFORM_ROTATION));
-					
-					if(SCALE_THRESHOLD < _magSigma)
-						op.addOperation(new KReplacePathOperation(_nextInterpolationKey, _nextInterpolationKey.scalePath, _SStoredPath2, KSketch2.TRANSFORM_SCALE));
-					*/
-					
 				}
 			}
 		}

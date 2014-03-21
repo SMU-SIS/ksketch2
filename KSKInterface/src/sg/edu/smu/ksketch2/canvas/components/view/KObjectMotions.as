@@ -17,9 +17,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
-	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
-	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
 	public class KObjectMotions extends Sprite

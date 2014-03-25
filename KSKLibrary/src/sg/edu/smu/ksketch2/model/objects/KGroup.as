@@ -11,6 +11,7 @@ package sg.edu.smu.ksketch2.model.objects
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.events.KGroupEvent;
+	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.IModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
@@ -204,7 +205,11 @@ package sg.edu.smu.ksketch2.model.objects
 			for(var i:int = 0; i<length; i++)
 			{
 				point = _children.getObjectAt(i).center;
-				point = _children.getObjectAt(i).fullPathMatrix(_creationTime).transformPoint(point);
+				
+				var tempTime:Number = _creationTime;
+				
+				if(isNaN(_creationTime))
+					point = _children.getObjectAt(i).fullPathMatrix(_creationTime).transformPoint(point);
 				
 				if(point.x < minX)
 					minX = point.x;

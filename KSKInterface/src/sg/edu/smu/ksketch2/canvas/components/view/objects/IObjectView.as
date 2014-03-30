@@ -24,7 +24,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		 * Update parent switches the parent of this view object in the flash display list
 		 * If the new parent is not in the scenegraph, this view object will not be displayed
 		 */
-		function updateParent(newParent:IObjectView):void;
+		function updateParent(newParent:IObjectView, rootView:IObjectView):void;
 		
 		/**
 		 * Removes this object from its view parent

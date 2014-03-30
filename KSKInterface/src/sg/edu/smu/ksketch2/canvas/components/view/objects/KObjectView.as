@@ -16,6 +16,8 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
+	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
@@ -37,6 +39,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			
 			if(_object)
 			{
+				trace("KObjectView object: " + object.id);
 				_object.addEventListener(KObjectEvent.OBJECT_SELECTION_CHANGED, _updateSelection);
 				_object.addEventListener(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _handle_object_Updated);
 				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _handle_object_Updated);
@@ -62,11 +65,14 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		/**
 		 * Switches the parent of this KObjectView to newParent
 		 */
-		public function updateParent(newParent:IObjectView):void
+		public function updateParent(newParent:IObjectView, rootView:IObjectView):void
 		{
+			trace("updateParent: " + (newParent as KGroupView).object.id + "  this: " + this.object.id);
+			
+			
 			(newParent as KObjectView).addChild(this);
 			if(_ghost)
-				(newParent as KObjectView).addGhost(_ghost);
+				(rootView as KObjectView).addGhost(_ghost);
 		}
 		
 		public function addGhost(childGhost:Sprite):void
@@ -100,6 +106,27 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 				return;
 			
 			transform.matrix = _object.transformMatrix(time);
+		}
+		
+		/**
+		 * Updates the transform for this KObject
+		 * You can update anything related to time here
+		 */
+		public function updateGhost(time:Number, selectedParent:KGroup):void
+		{
+			_ghost.transform.matrix = _object.transformMatrix(time);
+			
+			//if ghost has children, update the transform matrix of children as well
+			if(_ghost.numChildren != 0 && selectedParent)
+			{
+				_ghost.transform.matrix = selectedParent.transformMatrix(time);
+				
+				if(selectedParent.parent)
+				{
+					if(selectedParent.parent.id != 0)
+						_ghost.transform.matrix = selectedParent.parent.transformMatrix(time);
+				}
+			}
 		}
 		
 		/**
@@ -146,7 +173,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 				_ghost.visible = true;
 				var currentMatrix:Matrix = _object.transformInterface.matrix(event.time);
 				if(object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
-				{
+				{ 
 					if((_object.transformInterface as KSingleReferenceFrameOperator).hasRotate
 						||(_object.transformInterface as KSingleReferenceFrameOperator).hasScale)
 					{
@@ -154,7 +181,12 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 					}
 					else
 					{
-						_ghost.visible = false;
+						//only show ghost if object is rotating or scaling
+						if(KSketch2.translateFlag)
+							_ghost.visible = false;
+						else 
+							_ghost.visible = true;
+								
 						return;
 					}
 					

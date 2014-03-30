@@ -96,6 +96,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			if(KWidgetInteractorManager.demonstrationFlag && (KRotateInteractor.rotateFlag || KScaleInteractor.scaleFlag))
 				breakToRoot = false;
 			
+			if(KTranslateInteractor.translateFlag)
+				KSketch2.translateFlag = true;
+			
 			if(rawSelection.objects.length() > 1 )
 			{
 				var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, breakToRoot, op);

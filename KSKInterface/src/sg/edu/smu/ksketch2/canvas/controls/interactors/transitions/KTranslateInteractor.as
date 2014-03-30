@@ -27,6 +27,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	 */
 	public class KTranslateInteractor extends KTransitionInteractor
 	{
+		public static var translateFlag:Boolean = false;		// the translate flag
+		
 		private var _translateGesture:PanGesture;	// the translate gesture
 		private var _previousPoint:Point;			// the previous point
 		private var _startPoint:Point;				// the start point
@@ -57,6 +59,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			_startPoint = null;
 			
 			activate();
+			
+			translateFlag = false;
 		}
 		
 		override public function activate():void
@@ -73,6 +77,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		
 		override protected function _interaction_begin(event:GestureEvent):void
 		{
+			translateFlag = true;
+			
 			_googleAnalytics.tracker.trackPageview("/canvas/translate");
 			super._interaction_begin(event);
 			

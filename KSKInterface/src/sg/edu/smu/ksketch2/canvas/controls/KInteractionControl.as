@@ -49,7 +49,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _KSketch:KSketch2;								// the current ksketch object
 		private var _transitionMode:int;							// the current transition mode
 		private var _selection:KSelection;							// the current selection
-		private var _timeControl:KSketch_TimeControl;				// the current time control
+		public var _timeControl:KSketch_TimeControl;				// the current time control
 		
 		private var _undoStack:Vector.<IModelOperation>;			// the undo stack
 		private var _redoStack:Vector.<IModelOperation>;			// the redo stack

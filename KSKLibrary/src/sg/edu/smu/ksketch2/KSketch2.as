@@ -49,6 +49,8 @@ package sg.edu.smu.ksketch2
 		public static var returnRotationInterpolationToZero:Boolean = false;		// the return rotation interpolation to zero state flag
 		public static var returnScaleInterpolationToZero:Boolean = false;			// the return scale interpolation to zero state flag
 		
+		public static var translateFlag:Boolean = false;
+		
 		public var scaleX:Number = 1;		// the x-scaling value
 		public var scaleY:Number = 1;		// the y-scaling value
 		
@@ -445,6 +447,7 @@ package sg.edu.smu.ksketch2
 		{
 			object.transformInterface.endTransition(time, op);
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
+			translateFlag = false;
 		}
 		
 		/**

@@ -8,9 +8,12 @@
  */
 package sg.edu.smu.ksketch2.canvas.components.view.objects
 {
+import mx.collections.ArrayList;
+
 import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 import sg.edu.smu.ksketch2.events.KObjectEvent;
 import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+import sg.edu.smu.ksketch2.model.objects.KGroup;
 import sg.edu.smu.ksketch2.model.objects.KObject;
 import sg.edu.smu.ksketch2.model.objects.KStroke;
 import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
@@ -35,17 +38,37 @@ import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 		
 		public function drawObject(objectList:KModelObjectList):void
 		{
-			var ghostArray:Array = new Array(objectList.length());
+			var ghostArray:ArrayList = new ArrayList();
+			var tempArr:Array;
+			var currObject:KStroke;
+			
 			for(var i:int=0; i<objectList.length(); i++)
 			{
-				trace("draw object: " + objectList.getObjectAt(i).id + " under group " + _object.id);
-				var currObject:KStroke = (objectList.getObjectAt(i) as KStroke);
+				if(objectList.getObjectAt(i) is KGroup)
+				{
+					var childrenLength:int = (objectList.getObjectAt(i) as KGroup).children.length();
+					for(var j:int=0; j<childrenLength; j++)
+					{
+						currObject = ((objectList.getObjectAt(i) as KGroup).children.getObjectAt(j) as KStroke);
+						
+						tempArr = new Array(3);
+						tempArr[0]= currObject.points;
+						tempArr[1] = currObject.color;
+						tempArr[2] = currObject.thickness;
+						ghostArray.addItem(tempArr);
+					}
+				}
+				else
+				{
+					currObject = (objectList.getObjectAt(i) as KStroke);
+					
+					tempArr = new Array(3);
+					tempArr[0]= currObject.points;
+					tempArr[1] = currObject.color;
+					tempArr[2] = currObject.thickness;
+					ghostArray.addItem(tempArr);
+				}
 				
-				var tempArr:Array = new Array(3);
-				tempArr[0]= currObject.points;
-				tempArr[1] = currObject.color;
-				tempArr[2] = currObject.thickness;
-				ghostArray[i] = tempArr;
 			}
 			
 			_ghost = new KGroupGhost(ghostArray);

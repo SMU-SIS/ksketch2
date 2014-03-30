@@ -249,7 +249,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		
 		protected function _handler_UpdateObjectView(event:KObjectEvent):void
 		{
-			trace("HIERARCHY UNGROUP");
 			var view:IObjectView = _viewsTable[event.object];
 
 			if(!view)

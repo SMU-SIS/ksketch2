@@ -11,7 +11,6 @@ package sg.edu.smu.ksketch2.model.objects
 	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.events.KGroupEvent;
-	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.IModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;

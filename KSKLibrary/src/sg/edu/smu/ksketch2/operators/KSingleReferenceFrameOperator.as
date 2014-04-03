@@ -975,7 +975,7 @@ package sg.edu.smu.ksketch2.operators
 			if(sourceKey != toMergeKey)
 			{
 				_refFrame.insertKey(sourceKey);
-				op.addOperation(new KInsertKeyOperation(sourceKey.previous, sourceKey.next, sourceKey));
+				op.addOperation(new KInsertKeyOperation(sourceKey.previous, sourceKey.next, sourceKey));	
 			}
 		}
 
@@ -1112,29 +1112,6 @@ package sg.edu.smu.ksketch2.operators
 					key.passthrough = false;
 				
 				op.addOperation(new KInsertKeyOperation(key.previous, null, key));	
-				/*
-				// case: the corresponding composite operation exists
-				// update the composite operation
-				if(op)
-				{
-					var prevKey:KSpatialKeyFrame = key.previous as KSpatialKeyFrame;
-					
-					if(prevKey)
-					{
-						trace(key.time + ", " + prevKey.time );
-						trace(key.translatePath);
-						trace(key.rotatePath);
-						trace(key.scalePath);
-						op.addOperation(new KReplacePathOperation(key,key.translatePath,key.translatePath,KSketch2.TRANSFORM_TRANSLATION));	
-						
-						op.addOperation(new KReplacePathOperation(key,key.rotatePath,key.rotatePath,KSketch2.TRANSFORM_ROTATION));	
-						
-						op.addOperation(new KReplacePathOperation(key,key.scalePath,key.scalePath,KSketch2.TRANSFORM_SCALE));	
-					}
-					
-					op.addOperation(new KInsertKeyOperation(key.previous, key.next, key));	
-				}
-				*/
 			}
 			
 			// enable the dirty state flag due to the object's blank key frame insertion
@@ -1278,8 +1255,6 @@ package sg.edu.smu.ksketch2.operators
 			var toModifyKey:KSpatialKeyFrame;
 			var currentKey:KSpatialKeyFrame = sourceInterface.getActiveKey(-1) as KSpatialKeyFrame;
 			var dummyOp:KCompositeOperation = new KCompositeOperation();
-			
-			trace("At KSingleReferenceFrameOperator mergeTransform: " + sourceObject.id + " , " + sourceObject + " < " + _object.id);
 			
 			//Clone the source object's reference frame and modify the this operator's reference frame 
 			//Such that it is the same as the source reference frame

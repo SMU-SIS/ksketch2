@@ -86,7 +86,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			if(rawSelection && rawSelection.objects.length() == 1)
 				_KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, true, _interactionControl.currentInteraction);
-				//_KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, false, _interactionControl.currentInteraction);
 			
 			_startPoint = _translateGesture.location;
 			

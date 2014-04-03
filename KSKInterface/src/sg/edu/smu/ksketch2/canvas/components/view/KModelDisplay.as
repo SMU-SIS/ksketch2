@@ -44,7 +44,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		protected var _interactionControl:KInteractionControl;
 		protected var _viewsTable:Dictionary;
 		private var _isInteracting:Boolean = false;
-		private var _updateGhost:Boolean = false;
 		
 		/**
 		 * KModel Display is in charge of displaying things from the scene graph
@@ -84,7 +83,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		{
 			_isInteracting = false;
 			_drawBounds();
-			_updateGhost = false;
 		}
 		
 		override public function set scaleX(value:Number):void
@@ -140,6 +138,8 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				{
 					var selectionLength:int = _interactionControl.currentInteraction.oldSelection.objects.length();
 					
+					(view as KGroupView).resetDrawObject();
+					
 					for(var i:int=0; i<selectionLength; i++)
 						(view as KGroupView).drawObject(_interactionControl.currentInteraction.oldSelection.objects);
 				}
@@ -173,13 +173,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			var newChildView:IObjectView = _viewsTable[newChild];
 			
 			//if child view exist, update the position of the view to the current object's position
-			if(newChildView)
-			{
-				var currTime:Number = _interactionControl._timeControl.time;
-				if(newChildView is KStrokeView)
-					(newChildView as KStrokeView).updateGhost(currTime, null);
-			}
-			else
+			if(!newChildView)
 				newChildView = view_addObject(newChild);
 			
 			newChildView.updateParent(parentView as KGroupView, rootView as KGroupView);
@@ -199,49 +193,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		 */
 		protected function _handler_UpdateAllViews(event:Event):void
 		{
-			
-			var view:Object
-			
-			if(!_updateGhost)
-			{
-				var selectedObjects:KModelObjectList;
-				var selectedParent:KGroup;
-				
-				if(_interactionControl.currentInteraction)
-				{
-					//get the selection of individual objects
-					if(_interactionControl.currentInteraction.oldSelection)
-						selectedObjects = _interactionControl.currentInteraction.oldSelection.objects;
-					
-					//get the common parent of the objects - the first one will do
-					if(selectedObjects)
-						selectedParent = selectedObjects.getObjectAt(0).parent;
-				}
-				
-				//traverse all objects parented to _root and choose the one that correspond to selectedParent
-				if(selectedParent)
-				{
-					for(var i:int=0; i<_KSketch.root.children.getAllObjectsInArray().length; i++)
-					{
-						if((_KSketch.root.children.getAllObjectsInArray()[i] as KObject).id == selectedParent.id)
-						{
-							selectedParent = (_KSketch.root.children.getAllObjectsInArray()[i] as KGroup);
-							break;
-						}
-					}
-				}
-				
-				for(view in _viewsTable)
-				{
-					var currTime:Number = _interactionControl._timeControl.time;
-					if(_viewsTable[view] is KGroupView)
-						(_viewsTable[view] as KGroupView).updateGhost(currTime, selectedParent);	
-				}
-				
-				_updateGhost = true;	
-			}
-			
-			for(view in _viewsTable)
+			for(var view:Object in _viewsTable)
 				_viewsTable[view].updateView(_KSketch.time);
 				
 			_drawBounds();

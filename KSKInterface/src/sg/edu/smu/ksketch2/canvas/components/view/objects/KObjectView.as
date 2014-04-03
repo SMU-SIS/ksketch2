@@ -18,7 +18,6 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
 	public class KObjectView extends Sprite implements IObjectView
@@ -38,7 +37,6 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			
 			if(_object)
 			{
-				trace("KObjectView object: " + object.id);
 				_object.addEventListener(KObjectEvent.OBJECT_SELECTION_CHANGED, _updateSelection);
 				_object.addEventListener(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _handle_object_Updated);
 				_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _handle_object_Updated);
@@ -58,7 +56,6 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		
 		public function eraseIfHit(xPoint:Number, yPoint:Number, time:Number, op:KCompositeOperation):void
 		{
-			
 		}
 		
 		/**
@@ -66,9 +63,6 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		 */
 		public function updateParent(newParent:IObjectView, rootView:IObjectView):void
 		{
-			trace("updateParent: " + (newParent as KGroupView).object.id + "  this: " + this.object.id);
-			
-			
 			(newParent as KObjectView).addChild(this);
 			if(_ghost)
 				(rootView as KObjectView).addGhost(_ghost);
@@ -108,27 +102,6 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		}
 		
 		/**
-		 * Updates the transform for this KObject
-		 * You can update anything related to time here
-		 */
-		public function updateGhost(time:Number, selectedParent:KGroup):void
-		{
-			_ghost.transform.matrix = _object.transformMatrix(time);
-			
-			//if ghost has children, update the transform matrix of children as well
-			if(_ghost.numChildren != 0 && selectedParent)
-			{
-				_ghost.transform.matrix = selectedParent.transformMatrix(time);
-				
-				if(selectedParent.parent)
-				{
-					if(selectedParent.parent.id != 0)
-						_ghost.transform.matrix = selectedParent.parent.transformMatrix(time);
-				}
-			}
-		}
-		
-		/**
 		 * Updates the alpha value of this KObjectView
 		 */
 		protected function _handle_object_Updated(event:KObjectEvent):void
@@ -160,7 +133,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		
 		protected function _transformBegin(event:KObjectEvent):void
 		{
-			_originalPosition = _object.transformInterface.matrix(event.time).transformPoint(_object.center);			
+			_originalPosition = _object.fullPathMatrix(event.time).transformPoint(_object.center);
 			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _updateGhost);
 			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);
 		}
@@ -170,35 +143,27 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			if(_object && _ghost)
 			{
 				_ghost.visible = true;
-				var currentMatrix:Matrix = _object.transformInterface.matrix(event.time);
+				
+				var currentMatrix:Matrix = _object.fullPathMatrix(event.time);
+				
 				if(object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 				{ 
-					if((_object.transformInterface as KSingleReferenceFrameOperator).hasRotate
-						||(_object.transformInterface as KSingleReferenceFrameOperator).hasScale)
+					//only show ghost if object is rotating or scaling
+					if(KSketch2.translateFlag)
 					{
-						_ghost.visible = true;
-					}
-					else
-					{
-						//only show ghost if object is rotating or scaling
-						if(KSketch2.translateFlag)
-							_ghost.visible = false;
-						else 
-							_ghost.visible = true;
-								
+						_ghost.visible = false;
 						return;
 					}
-					
-					currentMatrix = _object.transformInterface.matrix(event.time);
+					else 
+						_ghost.visible = true;
+						
+					currentMatrix = _object.fullPathMatrix(event.time);
 					var currentPosition:Point = currentMatrix.transformPoint(_object.center);
 					var positionDifferences:Point = currentPosition.subtract(_originalPosition);
 					
-					if(positionDifferences.x > 1 || positionDifferences.y > 1)
-					{
-						_ghost.visible = true;
-						currentMatrix.translate(-positionDifferences.x, -positionDifferences.y);
-						_ghost.transform.matrix = currentMatrix;
-					}
+					_ghost.visible = true;
+					currentMatrix.translate(-positionDifferences.x, -positionDifferences.y);
+					_ghost.transform.matrix = currentMatrix;
 				}
 				else
 				{

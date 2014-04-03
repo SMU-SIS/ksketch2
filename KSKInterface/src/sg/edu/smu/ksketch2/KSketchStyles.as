@@ -23,7 +23,8 @@ package sg.edu.smu.ksketch2
 		public static const LOGIN_CONNECTION_FONT_SIZE:Number = 23;
 		//Canvas
 		public static const CANVAS_BUTTON_NORMAL:uint = 0xC8CCCE;
-		public static const CANVAS_BUTTON_ACTIVATED:uint = 0xDD1F26;
+		public static const CANVAS_BUTTON_ACTIVATED:uint = 0x505050;
+		public static const CANVAS_BUTTON_PLAY_ACTIVATED:uint = 0xDD1F26;
 		public static const CANVAS_BUTTON_SHADOW_COLOR:uint = 0x000000;
 		public static const CANVAS_BUTTON_SHADOW_STRENGTH:Number = 0.5;
 		public static const CANVAS_BUTTON_SHADOW_ALPHA:Number = 0.6;

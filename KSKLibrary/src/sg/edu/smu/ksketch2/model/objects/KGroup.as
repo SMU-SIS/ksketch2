@@ -236,7 +236,7 @@ package sg.edu.smu.ksketch2.model.objects
 		 */
 		override public function get center():Point
 		{			
-			if(!_center)
+			//if(!_center)
 				updateCenter();
 
 			return _center.clone();

@@ -102,22 +102,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param newObject The target object.
 		 * @param op The corresponding composite operation.
 		 */
-		public function registerObject(newObject:KObject, op:KCompositeOperation = null):void
+		public function registerObject(newObject:KObject, newParent:KGroup, op:KCompositeOperation = null):void
 		{
 			_highestID++;
 		
-			/*Cammie changes*/
 			var parent:KGroup = null;
 			
-			if(newObject.parent)
-				parent = newObject.parent;
+			if(newParent)
+				parent = newParent;
 			else
 				parent = _root;
 			
 			var addOp:IModelOperation = KGroupingUtil.addObjectToParent(newObject, parent);
-			//End of Cammie changes*/
-			
-			//cammie: var addOp:IModelOperation = KGroupingUtil.addObjectToParent(newObject, _root);
 			
 			if(op)
 				op.addOperation(addOp);
@@ -172,7 +168,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 				deserializedObject.deserialize(currentSerial);
 				objectInfo.object = deserializedObject;
 				objectInfo.parentID = int(currentSerial.parent.@id);
-				registerObject(objectInfo.object);
+				registerObject(objectInfo.object, null);
 				objects.push(objectInfo);
 			}
 			

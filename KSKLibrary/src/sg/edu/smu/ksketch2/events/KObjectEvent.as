@@ -69,7 +69,7 @@ package sg.edu.smu.ksketch2.events
 		{
 			super(type);
 			_targetObject = targetObject;
-			_parent = parent;
+			_parent = targetObject.parent;
 			_time = eventTime;
 		}
 		

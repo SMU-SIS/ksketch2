@@ -227,7 +227,10 @@
 					PopUpManager.centerPopUp(_saveOptions);
 				}
 				else
+				{
+					KSketch_CanvasView.createNewSketch = true;
 					_interactionControl.reset();
+				}
 			}
 			
 			

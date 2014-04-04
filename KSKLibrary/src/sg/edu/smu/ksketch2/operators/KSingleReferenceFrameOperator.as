@@ -1077,8 +1077,6 @@ package sg.edu.smu.ksketch2.operators
 		// ############
 		public function moveCenter(dx:Number, dy:Number, time:Number):void
 		{
-			trace("moveCenter in KSingleReferenceOperator: " + _object.id + " center: " + _object.center.x + "," + _object.center.y);
-			trace("updated x and y: " + dx + "," + dy);
 			// set the new center of the object
 			_object.center = _object.center.add(new Point(dx, dy));
 			

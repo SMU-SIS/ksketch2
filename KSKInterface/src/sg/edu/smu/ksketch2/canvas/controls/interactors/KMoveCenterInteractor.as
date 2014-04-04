@@ -11,9 +11,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
+	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KChangeCenterOperation;
+	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	/**
 	 * The KCanvasInteractorManager class serves as the concrete class for
@@ -29,6 +32,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _previousPoint:Point;
 		private var _oldCenter:Point;
 		private var _center:Point;
+		
+		private var op:KCompositeOperation;
 		
 		/**
 		 * The main constructor of the KMoveCenterInteractor class.
@@ -73,22 +78,25 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _interaction_begin(event:GestureEvent):void
 		{
+			var object:KObject;
+			op = new KCompositeOperation();
+			
 			_previousPoint = _panGesture.location;
-			
-			trace("KMOVECENTERINTERACTION : " + _interactionControl.selection.objects.toIDs());
-			if(_interactionControl.selection.objects.length()==1)
-			{
-				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
-				
-				if(object is KGroup)
-					(object as KGroup).moveCenter = true;
-				
-				_oldCenter = object.center;
-			}
-			else
-				trace("CAMMIE: need to implement update center for more than 1 objects");
-			
 			_interactionControl.begin_interaction_operation();
+			
+			if(_interactionControl.selection.objects.length()>1)
+			{
+				var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(_interactionControl.selection.objects, _KSketch.time, false, op);	
+				_interactionControl.selection = new KSelection(newObjectList);
+			}
+			
+			object = _interactionControl.selection.objects.getObjectAt(0);
+			
+			if(object is KGroup)
+				(object as KGroup).moveCenter = true;
+			
+			_oldCenter = object.center;
+			
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Move);
 			_panGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			
 		}
@@ -108,10 +116,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
 				_KSketch.moveCenter(object, change.x, change.y);
 			}
-			else
-			{
-				trace("CAMMIE: need to implement move center for groups");
-			}
 			
 			_previousPoint = touchLocation;
 		}
@@ -128,9 +132,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			{
 				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
 				changeCenterOp = new KChangeCenterOperation(object, _oldCenter,object.center);
+				op.addOperation(changeCenterOp);
 			}
 			
-			_interactionControl.end_interaction_operation(changeCenterOp, _interactionControl.selection);
+			_interactionControl.end_interaction_operation(op, _interactionControl.selection);
 			
 			var log:XML = <op/>;
 			var date:Date = new Date();

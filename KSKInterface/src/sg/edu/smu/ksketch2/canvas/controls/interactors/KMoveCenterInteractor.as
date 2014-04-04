@@ -11,6 +11,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KChangeCenterOperation;
 	
@@ -74,11 +75,18 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		{
 			_previousPoint = _panGesture.location;
 			
+			trace("KMOVECENTERINTERACTION : " + _interactionControl.selection.objects.toIDs());
 			if(_interactionControl.selection.objects.length()==1)
 			{
 				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
+				
+				if(object is KGroup)
+					(object as KGroup).moveCenter = true;
+				
 				_oldCenter = object.center;
 			}
+			else
+				trace("CAMMIE: need to implement update center for more than 1 objects");
 			
 			_interactionControl.begin_interaction_operation();
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Move);
@@ -99,6 +107,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			{
 				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
 				_KSketch.moveCenter(object, change.x, change.y);
+			}
+			else
+			{
+				trace("CAMMIE: need to implement move center for groups");
 			}
 			
 			_previousPoint = touchLocation;

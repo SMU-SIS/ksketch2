@@ -22,6 +22,7 @@ package sg.edu.smu.ksketch2.model.objects
 	public class KGroup extends KObject implements IModelObjectList
 	{
 		private var _children:KModelObjectList;		// the group's list of children
+		public var moveCenter:Boolean;
 		
 		/**
 		 * The main constructor of the KGroup class.
@@ -33,6 +34,7 @@ package sg.edu.smu.ksketch2.model.objects
 			super(id);
 			_children = new KModelObjectList();
 			_center = new Point();
+			moveCenter = false;
 			transformInterface = new KSingleReferenceFrameOperator(this);
 		}
 		
@@ -236,10 +238,10 @@ package sg.edu.smu.ksketch2.model.objects
 		 */
 		override public function get center():Point
 		{			
-			//if(!_center)
+			if(!moveCenter)
 				updateCenter();
 
-			return _center.clone();
+			return _center;//.clone();
 		}
 		
 		override public function set selected(value:Boolean):void

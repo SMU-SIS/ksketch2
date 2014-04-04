@@ -22,6 +22,7 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KModifyPassthroughOperation;
@@ -1076,11 +1077,13 @@ package sg.edu.smu.ksketch2.operators
 		// ############
 		public function moveCenter(dx:Number, dy:Number, time:Number):void
 		{
+			trace("moveCenter in KSingleReferenceOperator: " + _object.id + " center: " + _object.center.x + "," + _object.center.y);
+			trace("updated x and y: " + dx + "," + dy);
 			// set the new center of the object
 			_object.center = _object.center.add(new Point(dx, dy));
 			
 			// enable the object's dirty state flag due to the object's changed center
-			_dirty = true;
+		 	_dirty = true;
 			
 			// change the object's transform operation
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 

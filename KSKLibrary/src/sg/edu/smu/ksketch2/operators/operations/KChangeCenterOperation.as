@@ -2,6 +2,7 @@ package sg.edu.smu.ksketch2.operators.operations
 {
 	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 
 	/**
@@ -72,6 +73,9 @@ package sg.edu.smu.ksketch2.operators.operations
 		{
 			// set the object's current center to the older center
 			_object.center = _oldCenter;
+			
+			if(_object is KGroup)
+				(_object as KGroup).moveCenter = false;
 		}
 		
 		/**
@@ -82,6 +86,9 @@ package sg.edu.smu.ksketch2.operators.operations
 		{
 			// set the object's current center to the newer center
 			_object.center = _newCenter;
+			
+			if(_object is KGroup)
+				(_object as KGroup).moveCenter = true;
 		}
 		
 		/**

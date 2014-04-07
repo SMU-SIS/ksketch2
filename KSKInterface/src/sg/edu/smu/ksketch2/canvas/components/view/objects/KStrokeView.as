@@ -41,9 +41,9 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 				_points = new Vector.<Point>();
 
 			
-			var filter:GlowFilter = new GlowFilter(_color, 1,14,14,32,1, false, true);
+			var filter:GlowFilter = new GlowFilter(_color, 1,14,14,32,1, false, false);
 			_glowFilter = [filter];
-			_render_DrawStroke();
+			_render_DrawStroke(_color);
 			cacheAsBitmap = true;
 		}
 		
@@ -59,7 +59,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		public function set points(newPoints:Vector.<Point>):void
 		{
 			_points = newPoints;
-			_render_DrawStroke();
+			_render_DrawStroke(_color);
 		}
 		
 		/**
@@ -68,7 +68,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		public function edit_AddPoint(newPoint:Point):void
 		{
 			_points.push(newPoint);
-			_render_DrawStroke();
+			_render_DrawStroke(_color);
 		}
 		
 		/**
@@ -77,7 +77,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		public function set color(newColor:uint):void
 		{
 			_color = newColor;
-			_render_DrawStroke();
+			_render_DrawStroke(_color);
 		}
 		
 		/**
@@ -86,13 +86,13 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		public function set thickness(newThickness:Number):void
 		{
 			_thickness = newThickness;
-			_render_DrawStroke();
+			_render_DrawStroke(_color);
 		}
 		
 		/**
 		 * Draws this stroke view
 		 */
-		protected function _render_DrawStroke():void
+		protected function _render_DrawStroke(newColor:uint):void
 		{
 			graphics.clear();
 			if(!_points)
@@ -103,7 +103,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			if(length < 2)
 				return;
 			
-			graphics.lineStyle(_thickness, _color);
+			graphics.lineStyle(_thickness, newColor);
 
 			graphics.moveTo(_points[0].x, _points[0].y);
 			
@@ -119,10 +119,15 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		{
 			if(_object.selected)
 			{
+				_render_DrawStroke(0xffffff);
 				filters = _glowFilter;
 			}
 			else
+			{
+				_render_DrawStroke(_color);
 				filters = [];
+			}
+				
 			
 			super._updateSelection(event);
 		}

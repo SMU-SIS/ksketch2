@@ -22,7 +22,6 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KModifyPassthroughOperation;
@@ -63,6 +62,10 @@ package sg.edu.smu.ksketch2.operators
 		protected var _dirty:Boolean = true;							// dirty state flag
 		protected var _lastQueryTime:Number;								// previous query time 
 		protected var _cachedMatrix:Matrix = new Matrix();				// cached matrix 
+		
+		// move center variables
+		protected var _move:Boolean = false;
+		protected var _moveMatrix:Matrix = new Matrix();
 		
 		// current transformation storage variables
 		protected var _interpolationKey:KSpatialKeyFrame;				// current interpolation spatial key frame
@@ -177,6 +180,19 @@ package sg.edu.smu.ksketch2.operators
 			if(!currentKey)
 				return new Matrix();
 			
+			if(_move)
+			{
+				// create the resultant matrix from the extracted valued
+				var moveResult:Matrix = _moveMatrix;
+				
+				_cachedMatrix = moveResult.clone();
+				_lastQueryTime = time;
+				_dirty = false;
+				
+				// return the resultant matrix
+				return moveResult;
+			}
+			
 			// set the initial key frame path values
 			var x:Number = 0;
 			var y:Number = 0;
@@ -226,7 +242,7 @@ package sg.edu.smu.ksketch2.operators
 			
 			// create the resultant matrix from the extracted valued
 			var result:Matrix = new Matrix();
-			result.translate(-_object.center.x,-_object.center.y);
+			result.translate(-_object.center.x, -_object.center.y);
 			result.rotate(theta);
 			result.scale(sigma, sigma);
 			result.translate(_object.center.x, _object.center.y);
@@ -1075,19 +1091,38 @@ package sg.edu.smu.ksketch2.operators
 		// ############
 		// # Modifers #
 		// ############
+		public function beginMoveCenter(time:Number):void
+		{
+			if(!_move)
+			{
+				_moveMatrix = _object.fullPathMatrix(time);
+				_move = true;
+			}
+		}
+		
 		public function moveCenter(dx:Number, dy:Number, time:Number):void
 		{
 			// set the new center of the object
 			_object.center = _object.center.add(new Point(dx, dy));
 			
+			if(_object.fullPathMatrix(time).b != 0 && _object.fullPathMatrix(time).c != 0)
+			{
+				//trace("there is a rotation and cursor will go opposite direction -- PLEASE CORRECT IT");
+			}
+			
 			// enable the object's dirty state flag due to the object's changed center
-		 	_dirty = true;
+			_dirty = true; 
 			
 			// change the object's transform operation
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_CHANGED, _object, time)); 
 			
 			// update the object's transform operation
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _object, time)); 
+		}
+		
+		public function endMoveCenter():void
+		{
+			_move = false;
 		}
 		
 		public function insertBlankKeyFrame(time:Number, op:KCompositeOperation, keyframe:Boolean):void

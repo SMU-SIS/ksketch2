@@ -169,6 +169,14 @@ package sg.edu.smu.ksketch2.operators
 		// ############
 		// # Modifers #
 		// ############
+		/**
+		 * Preps the object for moving center by getting the 
+		 * full path matrix before the object is being moved
+		 * and setting move boolean variable to true
+		 * 
+		 * @param time The target time.
+		 */
+		function beginMoveCenter(time:Number):void;
 		
 		/**
 		 * Moves the center of the object.
@@ -178,6 +186,12 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 */
 		function moveCenter(dx:Number, dy:Number, time:Number):void;
+		
+		/**
+		 * Completes moving center operation by 
+		 * resetting move boolean variable to false
+		 */
+		function endMoveCenter():void;
 		
 		/**
 		 * Inserts a blank key frame into the key frame list under the following

@@ -261,8 +261,9 @@ package sg.edu.smu.ksketch2.model.objects
 		 */
 		public function serialize():XML
 		{
-			var objectXML:XML = <KObject id="" type="" centroid=""/>;
+			var objectXML:XML = <KObject id="" creationTime="" type="" centroid=""/>;
 			objectXML.@id = id.toString();
+			objectXML.@creationTime = _creationTime.toString();
 			if(_center)
 				objectXML.@centroid = _center.x.toString()+","+_center.y.toString();
 			
@@ -289,6 +290,12 @@ package sg.edu.smu.ksketch2.model.objects
 				if(centroidPosition[0].length > 0 && centroidPosition[1].length > 0)
 					_center = new Point(centroidPosition[0], centroidPosition[1]);
 			}
+			
+			if(xml.@creationTime)
+			{
+				_creationTime = Number((xml.@creationTime).toString());
+			}
+				
 			visibilityControl.deserializeVisibility(new XML(xml.Activity));
 			transformInterface.deserializeTransform(new XML(xml.transform));
 		}

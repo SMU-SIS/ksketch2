@@ -451,16 +451,6 @@ package sg.edu.smu.ksketch2
 		}
 		
 		/**
-		 * Preps moving the center of the ksketch.
-		 * 
-		 * @param object The target object.
-		 */
-		public function beginMoveCenter(object:KObject):void
-		{
-			object.transformInterface.beginMoveCenter(time);
-		}
-		
-		/**
 		 * Moves the center of the ksketch.
 		 * 
 		 * @param object The target object.
@@ -474,16 +464,6 @@ package sg.edu.smu.ksketch2
 			
 			// broadcast the updated model
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
-		}
-		
-		/**
-		 * Finishes moving the center of the ksketch.
-		 * 
-		 * @param object The target object.
-		 */
-		public function endMoveCenter(object:KObject):void
-		{
-			object.transformInterface.endMoveCenter();
 		}
 		
 		/**

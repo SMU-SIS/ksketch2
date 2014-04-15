@@ -2,16 +2,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
-	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
 	import org.gestouch.events.GestureEvent;
-	import org.gestouch.gestures.TransformGesture;
+	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.KSketchStyles;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
@@ -19,7 +16,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KChangeCenterOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
-	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	/**
@@ -30,9 +26,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	{
 		public static const CENTER_CHANGE_ENDED:String = "Center Change Ended";
 		
-		private var _panGesture:TransformGesture;
+		private var _panGesture:PanGesture;
 		
-		private var _widget:DisplayObject;
 		private var _modelSpace:DisplayObject;
 		private var _previousPoint:Point;
 		private var _oldCenter:Point;
@@ -40,7 +35,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		
 		private var op:KCompositeOperation;
 		
-		public var isMoving:Boolean = false;
 		/**
 		 * The main constructor of the KMoveCenterInteractor class.
 		 * 
@@ -53,22 +47,22 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		{
 			super(KSketchInstance, interactionControl);
 			
-			_widget = inputComponent;
 			_modelSpace = modelSpace;
-			_panGesture = new TransformGesture(_widget);
-			trace("Constructor: " + (_panGesture.target as DisplayObject).transform.matrix.toString());
+			_panGesture = new PanGesture(inputComponent);
+			_panGesture.maxNumTouchesRequired = 1;
 		}
 		
 		override public function reset():void
 		{
 			super.reset();
 			_panGesture.removeAllEventListeners();
+			
+			activate();
 		}
 		
 		override public function activate():void
 		{
 			super.activate();
-			_enlargeSelectArea();
 			_panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _interaction_begin);
 		}
 		
@@ -102,7 +96,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				(object as KGroup).moveCenter = true;
 			
 			_oldCenter = object.center;
-			_KSketch.beginMoveCenter(object);
 			
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Move);
 			_panGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			
@@ -115,31 +108,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _update_Move(event:GestureEvent):void
 		{
-			const gesture:TransformGesture = event.target as TransformGesture;
-			
 			var touchLocation:Point = _panGesture.location;
-			//var change:Point = touchLocation.clone().subtract(_previousPoint);
+			var change:Point = touchLocation.clone().subtract(_previousPoint);
 			
 			if(_interactionControl.selection.objects.length()==1)
 			{
 				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
-				
-				//if there is a rotation in object's fullpathmatrix
-				if(object.fullPathMatrix(_KSketch.time).b != 0 && object.fullPathMatrix(_KSketch.time).c != 0)
-				{
-					//get angle of rotation
-					var rot:Number = KMathUtil.getRotation(object.fullPathMatrix(_KSketch.time));
-					
-					//set widget's transform matrix to rotate same angle
-					var testMatrix:Matrix = (_panGesture.target as DisplayObject).transform.matrix;
-					testMatrix.rotate(rot);
-					(_panGesture.target as DisplayObject).transform.matrix = testMatrix;
-					trace("WTF 1: " + (_panGesture.target as DisplayObject).transform.matrix.toString());
-				}
-				
-				//change = touchLocation.subtract(_previousPoint);
-				_KSketch.moveCenter(object, gesture.offsetX, gesture.offsetY); //change.x, change.y);
-				
+				_KSketch.moveCenter(object, change.x, change.y);
 			}
 			
 			_previousPoint = touchLocation;
@@ -151,24 +126,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * @param event The gesture event.
 		 */
 		private function _interaction_end(event:GestureEvent):void
-		{	
+		{
 			var changeCenterOp:KChangeCenterOperation;
 			if(_oldCenter)
 			{
 				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
 				changeCenterOp = new KChangeCenterOperation(object, _oldCenter,object.center);
 				op.addOperation(changeCenterOp);
-				
-				_KSketch.endMoveCenter(object);
-				
-				//reset widget to original matrix
-				var testMatrix:Matrix = (_panGesture.target as DisplayObject).transform.matrix;
-				testMatrix.a = 1;
-				testMatrix.b = 0;
-				testMatrix.c = 0;
-				testMatrix.d = 1;
-				(_panGesture.target as DisplayObject).transform.matrix = testMatrix;
-				trace("WTF 2 !!! " + (_panGesture.target as DisplayObject).transform.matrix.toString());
 			}
 			
 			_interactionControl.end_interaction_operation(op, _interactionControl.selection);
@@ -183,26 +147,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			_interactionControl.dispatchEvent(new Event(CENTER_CHANGE_ENDED));
 			
-			_resetSelectArea();
-			
 			reset();
-		}
-		
-		private function _enlargeSelectArea():void
-		{
-			(_widget as KSketch_Widget_Component).centroid.graphics.beginFill(0x000000, 0);
-			(_widget as KSketch_Widget_Component).centroid.graphics.drawCircle(0,0,60);
-			(_widget as KSketch_Widget_Component).centroid.graphics.endFill();
-		}
-		
-		private function _resetSelectArea():void
-		{
-			(_widget as KSketch_Widget_Component).centroid.graphics.clear();
-			(_widget as KSketch_Widget_Component).strokeColor = KSketchStyles.WIDGET_INTERPOLATE_COLOR;
-			
-			(_widget as KSketch_Widget_Component).centroid.graphics.beginFill(KSketchStyles.WIDGET_PERFORM_COLOR);
-			(_widget as KSketch_Widget_Component).centroid.graphics.drawCircle(0,0,KSketchStyles.WIDGET_CENTROID_SIZE);
-			(_widget as KSketch_Widget_Component).centroid.graphics.endFill();
 		}
 	}
 }

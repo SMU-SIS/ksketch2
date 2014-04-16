@@ -36,12 +36,14 @@
 				{
 					textureControl.source = _down;
 					(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchStyles.CANVAS_BUTTON_ACTIVATED;
+					(skin as KSketch_Canvas_Button_Skin).upColor = KSketchStyles.CANVAS_BUTTON_ACTIVATED;
 				}
 				else
 				{
 					textureControl.source = _up;
 					(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchStyles.CANVAS_BUTTON_NORMAL;
 				}
+				
 			}
 		]]>
 	</fx:Script>

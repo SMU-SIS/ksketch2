@@ -32,6 +32,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public static const RECORD_STOP:String = "Stop Recording";
 		public static const EVENT_POSITION_CHANGED:String = "position changed";
 
+		public static const TIMEBAR_LIMIT:int = -10;
 		public static const SNAP_DOWN:int = 20;
 		public static const SNAP_MOVE:int = 20;
 		
@@ -70,6 +71,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		private var _substantialMovement:Boolean = false;
 		
 		private var grabbedTickTimer:Timer;
+		private var grabbedTickIndex:int;
 		private var nearTick: Number;
 		private var _longTouch:Boolean = false;
 		private var isNearTick: Boolean = false;
@@ -234,15 +236,30 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(_tickmarkControl._ticks)
 			{
 				var i:int;
-				for( i=0; i<_tickmarkControl._ticks.length; i++)
+				var roundXPos:Number = roundToNearestTenth(xPos);
+				for(i=0; i<_tickmarkControl._ticks.length; i++)
 				{
-					var tempTick:Number = _tickmarkControl._ticks[i].x;
-					if(Math.round(xPos) >= (Math.round(tempTick) - SNAP_DOWN) && Math.round(xPos) <= (Math.round(tempTick) + SNAP_DOWN))
+					if(roundXPos == _tickmarkControl._ticks[i].x)
 					{
 						xPosIsTick = true;
-						nearTick = tempTick;
+						nearTick = roundXPos;
 						break;
 					}
+				}
+				
+				//implement autosnapping if xpos is not yet a tick
+				if(!xPosIsTick)
+				{
+					for(i=0; i<_tickmarkControl._ticks.length; i++)
+					{
+						var tempTick:Number = _tickmarkControl._ticks[i].x;
+						if(Math.round(xPos) >= (Math.round(tempTick) - SNAP_DOWN) && Math.round(xPos) <= (Math.round(tempTick) + SNAP_DOWN))
+						{
+							xPosIsTick = true;
+							nearTick = tempTick;
+							break;
+						}
+					}	
 				}
 			}
 			
@@ -285,10 +302,11 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_substantialMovement = true;
 
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
+			var i:int;
 			
 			if(_tickmarkControl._ticks)
 			{
-				for(var i:int=0; i<_tickmarkControl._ticks.length; i++)
+				for(i=0; i<_tickmarkControl._ticks.length; i++)
 				{
 					nearTick = _tickmarkControl._ticks[i].x;
 					if(Math.floor(xPos) >= (Math.round(nearTick) - SNAP_MOVE) && Math.floor(xPos) <= (Math.round(nearTick) + SNAP_MOVE))
@@ -304,12 +322,47 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//Rout interaction into the tick mark control if there is a grabbed tick
 			if(!KSketch_CanvasView.isPlayer && (_tickmarkControl.grabbedTick && _longTouch))
 			{
+				var oldXPos:Number;
+				
 				xPos = roundToNearestTenth(xPos);
 				_tickmarkControl.move_markers(xPos);
 				
+				//If tickmark moves to the left and causes stacking of previous keyframes
+				if(_tickmarkControl.moveLeft)
+				{
+					var length:int = _tickmarkControl._ticks.length;
+					for(i=0; i<length; i++)
+					{
+						//get hold of the grabbed tick mark index first
+						if(!grabbedTickIndex)
+						{
+							if(_tickmarkControl.grabbedTick.x == _tickmarkControl._ticks[i].x)
+								grabbedTickIndex = i;
+						}
+						
+						if(grabbedTickIndex)
+						{
+							//to prevent grabbing of near tick marks when stacking occurs, 
+							//reposition xPos to the initial grabbed tick mark's x pos 
+							if(i != grabbedTickIndex)
+							{
+								if(xPos == _tickmarkControl._ticks[i].x)
+									xPos = _tickmarkControl._ticks[grabbedTickIndex].x;
+							}
+							else
+								oldXPos = _tickmarkControl._ticks[i].x;
+						}
+					}
+				}
+				
+				//if there is already a grabbed tick and xPos goes beyond the time bar limit
+				if(grabbedTickIndex && xPos <= TIMEBAR_LIMIT)
+				{
+					xPos = oldXPos;
+				}
+				
 				_magnifier.magnify(timeToX(xToTime(xPos)));
 				_autoSnap(xPos);
-				
 				moveTick = true;
 			}
 			else if(isNearTick)
@@ -358,6 +411,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_magnifier.removeMagnification();
 			_longTouch = false;
 			moveTick = false;
+			grabbedTickIndex = null;
 			isNearTick = false;
 			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
@@ -379,9 +433,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public function _showMagnifier(event:TimerEvent):void
 		{
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
-			{
-				var toShowTime:Number = xToTime(_tickmarkControl.grabbedTick.x);
+			{	
 				
+				var toShowTime:Number = xToTime(_tickmarkControl.grabbedTick.x);
 				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(toShowTime));
 				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
 			}

@@ -35,6 +35,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	public class KSketch_TickMark_Control
 	{	
 		public static const GRAB_THRESHOLD:Number = 10;
+		public var moveLeft:Boolean = false;
 		
 		private var _KSketch:KSketch2;
 		private var _timeControl:KSketch_TimeControl;
@@ -291,22 +292,12 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function grabTick(locationX:Number):void
 		{
-			//Panning begins
-			//Split markers into two sets before/after
-			_startX = locationX;
-			
 			var i:int;
 			var length:int = _ticks.length;
 			var currentTick:KSketch_TickMark;
 			
-			//Snap the start x to the closest tick
-			var dx:Number;
-			var smallestdx:Number = Number.POSITIVE_INFINITY;
+			_startX = locationX;
 			
-			//Collision Detection for grabbing
-			//Iterates thru every tick
-			//Grabs the nearest
-			//If there are many nearest ticks, the first one will be picked
 			for(i = 0; i < length; i++)
 			{
 				currentTick = _ticks[i];
@@ -315,16 +306,10 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					if(!currentTick.selected)
 						continue;
 				
-				dx = Math.abs(currentTick.x - _startX);
-				
-				if(dx > GRAB_THRESHOLD)
-					continue;
-				
-				if(dx < smallestdx)
+				if(locationX == currentTick.x)
 				{
-					smallestdx = dx;
-					_startX = currentTick.x;
 					_grabbedTick = currentTick;
+					break;
 				}
 			}
 			
@@ -342,7 +327,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				currentTick = _ticks[i];
 				currentTick.originalPosition = currentTick.x;
 				
-				if(currentTick.x <= _startX)
+				if(currentTick.x <= locationX)
 				{
 					if(_grabbedTick.selected == currentTick.selected)
 						_before.push(currentTick);
@@ -351,13 +336,13 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				//After ticks are a bit special
 				//Only add in the first degree ticks
 				//because a tick will be pushed by the marker before itself
-				if(currentTick.x >= _startX)
+				if(currentTick.x >= locationX)
 				{
 					if(_grabbedTick.selected == currentTick.selected)
 					{
 						if(!currentTick.prev )
 							_after.push(currentTick);
-						else if(currentTick.prev.x < _startX)
+						else if(currentTick.prev.x < locationX)
 							_after.push(currentTick)
 					}
 				}
@@ -391,6 +376,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//Moving towards the left causes stacking
 			if(changeX <= 0)
 			{
+				moveLeft = true;
 				length = _before.length;
 				
 				for(i = 0; i < length; i++)
@@ -399,13 +385,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					tickChangeX = ((currentX - tick.originalPosition)/_pixelPerFrame)*_pixelPerFrame;
 					
 					if(tickChangeX < 0)
-					{
 						tick.moveToX(tick.originalPosition + tickChangeX, _pixelPerFrame);
-					}	
 					else
-					{
 						tick.x = tick.originalPosition;	
-					}	
 				}
 			}
 			
@@ -499,6 +481,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				_interactionControl.cancel_interaction_operation();
 			
 			_grabbedTick = null;
+			moveLeft = false;
 		}
 	}
 }

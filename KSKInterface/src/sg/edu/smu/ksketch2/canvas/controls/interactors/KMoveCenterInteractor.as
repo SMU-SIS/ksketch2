@@ -8,7 +8,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.KSketchStyles;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
@@ -27,7 +29,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		public static const CENTER_CHANGE_ENDED:String = "Center Change Ended";
 		
 		private var _panGesture:PanGesture;
-		
+		private var _widget:DisplayObject;
 		private var _modelSpace:DisplayObject;
 		private var _previousPoint:Point;
 		private var _oldCenter:Point;
@@ -47,6 +49,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		{
 			super(KSketchInstance, interactionControl);
 			
+			_widget = inputComponent;
 			_modelSpace = modelSpace;
 			_panGesture = new PanGesture(inputComponent);
 			_panGesture.maxNumTouchesRequired = 1;
@@ -56,13 +59,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		{
 			super.reset();
 			_panGesture.removeAllEventListeners();
-			
-			activate();
 		}
 		
 		override public function activate():void
 		{
 			super.activate();
+			
+			_enlargeSelectArea();
+			
 			_panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _interaction_begin);
 		}
 		
@@ -147,7 +151,26 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			_interactionControl.dispatchEvent(new Event(CENTER_CHANGE_ENDED));
 			
+			_resetSelectArea();
+			
 			reset();
+		}
+		
+		private function _enlargeSelectArea():void
+		{
+			(_widget as KSketch_Widget_Component).centroid.graphics.beginFill(0x000000, 0);
+			(_widget as KSketch_Widget_Component).centroid.graphics.drawRect(-125,-125,250,250);
+			(_widget as KSketch_Widget_Component).centroid.graphics.endFill();
+		}
+		
+		private function _resetSelectArea():void
+		{
+			(_widget as KSketch_Widget_Component).centroid.graphics.clear();
+			(_widget as KSketch_Widget_Component).strokeColor = KSketchStyles.WIDGET_INTERPOLATE_COLOR;
+			
+			(_widget as KSketch_Widget_Component).centroid.graphics.beginFill(KSketchStyles.WIDGET_PERFORM_COLOR);
+			(_widget as KSketch_Widget_Component).centroid.graphics.drawCircle(0,0,KSketchStyles.WIDGET_CENTROID_SIZE);
+			(_widget as KSketch_Widget_Component).centroid.graphics.endFill();
 		}
 	}
 }

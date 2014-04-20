@@ -236,6 +236,10 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			
 			var savedTime:Number = _KSketch.time;
 			
+			//deselect all interaction when necessary
+			if(_interactionControl.selection)
+				_interactionControl.selection = null;
+			
 			_KSketch.time = time;
 			var bitmapData:BitmapData = new BitmapData(captureArea.width, captureArea.height, false, 0xFFFFFF);	
 			bitmapData.draw(this, matrix);				

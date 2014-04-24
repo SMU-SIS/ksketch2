@@ -53,7 +53,7 @@
 			
 			private function cancel():void
 			{
-				_saveOptions._mobileControl.reset();
+				_saveOptions.mobileControl.reset();
 				KSketch_SaveOptions.overwriteSave = false;
 				close();
 			}

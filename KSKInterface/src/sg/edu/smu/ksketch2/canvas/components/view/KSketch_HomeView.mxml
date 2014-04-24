@@ -49,6 +49,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_CanvasNotice;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_LogoutNotice;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SyncOptions;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
 			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KWebControl;
@@ -319,7 +320,10 @@
 					listSketches_unavailable.visible = false;
 				}
 				else
+				{
+					autoSaveCounter = 0;
 					startNewSketch();
+				}
 				
 				stopProgressBar();
 			}
@@ -416,7 +420,9 @@
 			
 			public function logout():void
 			{
-				KSketch_LoginView._isLoggedIn = false;
+				KSketch_LoginView._isLoggedIn = false; 
+				//KSketch_SaveOptions.canvasDirty = false;
+				KSketch_SaveOptions.saveCounter = 0;
 				data = null;
 				_mobileControl.reset();
 				_mobileControl.writeToCache(_mobileControl.informationArr);

@@ -270,8 +270,16 @@
 				_magnifier.open(this);
 			}
 			
-			public function saveSketch():Object
+			public function saveSketch(confirmSave:Boolean):Object
 			{
+				//if save is confirmed, set all interaction selection to null
+				//to generate an "unselected" thumbnail
+				if(confirmSave)
+				{
+					if(_interactionControl.selection)
+						_interactionControl.selection = null;
+				}
+				
 				//get existing KSketchDocument object
 				var kSketchDocumentObj:KSketchDocument = (createReturnObject() as KSketchDocument); 
 				
@@ -303,6 +311,8 @@
 			public function exit():void
 			{
 				viewDeactivated();
+				KSketch_SaveOptions.canvasDirty = false;
+				KSketch_SaveOptions.saveCounter = 0;
 				navigator.pushView(KSketch_HomeView, userData);
 			}
 			

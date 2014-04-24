@@ -60,6 +60,7 @@
 			{
 				successfullySynced = false;
 				_homeView = owner as KSketch_HomeView;
+				KSketch_SaveOptions.saveCounter = 0;
 				super.open(owner, modal);
 				
 				userData = _homeView.userData;
@@ -235,6 +236,7 @@
 				_homeView._mobileControl.discardSavedSketches();
 				_homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
 				_success = true;
+				KSketch_HomeView.autoSaveCounter = 0;
 				close();
 			}
 			

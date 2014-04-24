@@ -223,7 +223,7 @@
 				KSketch_SaveOptions.returnToHome = false;
 				if(_canvasView._interactionControl.hasUndo)
 				{
-					_saveOptions.open(_canvasView,true);
+					_saveOptions.open(_canvasView);
 					PopUpManager.centerPopUp(_saveOptions);
 				}
 				else
@@ -253,7 +253,7 @@
 				KSketch_SaveOptions.returnToHome = true;
 				if(_canvasView._interactionControl.hasUndo)
 				{
-					_saveOptions.open(_canvasView,true);
+					_saveOptions.open(_canvasView);
 					PopUpManager.centerPopUp(_saveOptions);
 				}
 				else
@@ -282,7 +282,7 @@
 			 */
 			private function _openSaveOptions():void
 			{
-				_saveOptions.open(_canvasView,true);
+				_saveOptions.open(_canvasView);
 				PopUpManager.centerPopUp(_saveOptions);
 			}
 			

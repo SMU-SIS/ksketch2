@@ -34,21 +34,24 @@
 				_menu = menu;
 				
 				//set the studyMode to default
-				studyMode = KSingleReferenceFrameOperator.studyMode;
+				//studyMode = KSingleReferenceFrameOperator.studyMode;
+				
+				_menu.open(_canvasView);
+				KSketch_CanvasView_Preferences.menuOpen = KSketch_CanvasView_Preferences.OPEN;
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
 				super.open(owner, modal);
 				
-				switch(KSketch_CanvasView_Preferences.menuOpen)
+				/*switch(KSketch_CanvasView_Preferences.menuOpen)
 				{
 					case KSketch_CanvasView_Preferences.OPEN:
 						menuOpen.selected = false;
 						break;
 					default:
 						menuOpen.selected = true;
-				}
+				}*/
 				
 				switch(KSketch_CanvasView_Preferences.autoInsert)
 				{
@@ -71,7 +74,7 @@
 						_timebarBottom();
 				}
 				
-				switch(KSketch_CanvasView_Preferences.menuOpen)
+				/*switch(KSketch_CanvasView_Preferences.menuOpen)
 				{
 					case KSketch_CanvasView_Preferences.OPEN:
 						menuOpen.selected = false;
@@ -80,7 +83,7 @@
 					default:
 						menuOpen.selected = true;
 						_menuOpen(true);
-				}
+				}*/
 
 				switch(KSketch_CanvasView_Preferences.menuPosition)
 				{
@@ -171,6 +174,7 @@
 			{
 				if(value)
 				{
+					_setStudy(2);
 					KSingleReferenceFrameOperator.always_allow_interpolate = true;
 					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.AUTO;
 				}
@@ -242,6 +246,7 @@
 				<s:Button label="Right" click="_menuRight()" fontSize="14"/>-->
 			</s:Group>
 		</s:Group>
+		<!-- disable option for release
 		<s:Group>
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
@@ -257,17 +262,19 @@
 				<s:RadioButton label="KP2" click="_setStudy(3)" fontSize="14"/>
 			</s:Group>
 		</s:Group>
+		
 		<s:Group>
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="10" verticalAlign="middle"/>
 			</s:layout>
 			<s:CheckBox label="Menu Auto Open" id="menuOpen" click="_menuOpen(menuOpen.selected)" fontSize="14"/>
 		</s:Group>
+		-->
 		<s:Group>
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="10" verticalAlign="middle"/>
 			</s:layout>
-			<s:CheckBox id="autoInsertKey" label="Auto Insert Key" click="_autoInsertKey(autoInsertKey.selected)" fontSize="14"/>
+			<s:CheckBox id="autoInsertKey" label="Insert Key Frames Automatically" click="_autoInsertKey(autoInsertKey.selected)" fontSize="14"/>
 		</s:Group>
 		<s:Group width="100%">
 			<s:layout>

@@ -92,8 +92,8 @@
 				redoButton.initSkin();
 				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down);
 				optionButton.initSkin();
-				imageButton.init(KSketchAssets.texture_images, KSketchAssets.texture_images_down);
-				imageButton.initSkin();
+				//imageButton.init(KSketchAssets.texture_images, KSketchAssets.texture_images_down);
+				//imageButton.initSkin();
 				
 				if(_saveOptions)
 				{
@@ -417,13 +417,13 @@
 				height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 				/>
 		</s:Group>
-		
+		<!--
 		<buttons:KSketch_Button
 			click="_importImage()"
 			id="imageButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		
+		-->
 	</s:Group>
 </s:SkinnablePopUpContainer>

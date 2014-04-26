@@ -32,7 +32,6 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DiscardConfirmation;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_OverwriteSaveOptions;
@@ -81,7 +80,6 @@
 			private var _options:KSketch_Options;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
-			private var _discardConfirmation:KSketch_DiscardConfirmation;
 			private var _magnifier:KSketch_Timebar_Magnifier;
 			private var _keyMenu:KSketch_Timebar_ContextMenu;
 			private var _transitionHelper:KWidgetInteractorManager;
@@ -159,7 +157,6 @@
 				_keyMenu = new KSketch_Timebar_ContextMenu();
 				_saveOptions = new KSketch_SaveOptions();
 				_overwriteSaveOptions = new KSketch_OverwriteSaveOptions();
-				_discardConfirmation = new KSketch_DiscardConfirmation();
 				_menuPopUp = new KSketch_PopUp_Menu();
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
@@ -178,9 +175,8 @@
 				
 				if(!isWeb)
 				{
-					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions, _discardConfirmation);
+					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions);
 					_overwriteSaveOptions.init(this, _saveOptions);
-					_discardConfirmation.init(this, _menuPopUp);
 					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp, _googleAnalytics);
 					_saveOptions.createDeferredContent();
 				}

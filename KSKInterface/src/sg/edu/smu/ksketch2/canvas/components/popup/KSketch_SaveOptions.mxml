@@ -28,8 +28,6 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
-			import spark.core.IEditableText;
-			
 			import air.net.URLMonitor;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
@@ -46,12 +44,10 @@
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
-			private var _discardConfirmation:KSketch_DiscardConfirmation;
 			private var _menu:KSketch_PopUp_Menu;
 			
 			private var _monitor:URLMonitor;
 			private var _isConnected:Boolean;
-			private var _discard:Boolean = false;
 			private var _success:Boolean;
 			
 			public var objDoc:Object;
@@ -91,14 +87,6 @@
 					overwriteSave = false;
 				}
 				
-				if(_discard)
-				{
-					_discardConfirmation.open(_canvasView, true);
-					_discardConfirmation.returnToHome = returnToHome;
-					PopUpManager.centerPopUp(_discardConfirmation);
-					_discard = false;
-				}
-				
 				if(_success)
 				{
 					mobileControl.writeToCache(mobileControl.informationArr);
@@ -116,6 +104,7 @@
 					_success = false;
 					incrementSaveCounter();
 				}
+				
 			}
 			
 			public function setSketchName():void
@@ -148,11 +137,10 @@
 				}
 			}
 			
-			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, overwriteSave:KSketch_OverwriteSaveOptions, discardConfirmation:KSketch_DiscardConfirmation):void
+			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, overwriteSave:KSketch_OverwriteSaveOptions):void
 			{
 				_canvasView = canvasView;
 				_overwriteSaveOptions = overwriteSave;
-				_discardConfirmation = discardConfirmation;
 				_menu = menu;
 				
 				//check for network connection
@@ -261,7 +249,6 @@
 			private function navigateBack():void
 			{
 				overwriteSave = false;
-				_discard = false;
 				_success = true;
 				
 				close();
@@ -283,8 +270,25 @@
 			
 			private function discardSketch():void
 			{
-				_discard = true;
 				close();
+				
+				if(!returnToHome)
+				{
+					KSketch_SaveOptions.canvasDirty = true;
+					_canvasView._interactionControl.reset();
+				}
+					
+				else
+				{
+					KSketch_SaveOptions.canvasDirty = true;
+					_menu._exit();	
+				}
+			}
+			
+			private function cancel():void
+			{
+				close();
+				KSketch_CanvasView.createNewSketch = false;
 			}
 			
 			public function incrementSaveCounter():void
@@ -344,10 +348,11 @@
 			</s:Group>
 			<s:Group width="100%">
 				<s:layout>
-					<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+					<s:HorizontalLayout gap="10" horizontalAlign="right"/>
 				</s:layout>
 				<s:Button label="Save" click="save()" fontSize="14"/>
 				<s:Button label="Discard" click="discardSketch()" fontSize="14"/>
+				<s:Button label="Cancel" click="cancel()" fontSize="14"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

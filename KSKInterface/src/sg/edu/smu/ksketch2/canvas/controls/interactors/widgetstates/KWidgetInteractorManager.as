@@ -30,7 +30,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.KMoveCenterInteractor;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.model.objects.KStroke;
+	import sg.edu.smu.ksketch2.operators.KVisibilityControl;
 	import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	/**
@@ -214,8 +217,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			}
 			else
 			{
-				var currentObject:KObject = _interactionControl.selection.objects.getObjectAt(0);
-				
 				if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl._isPlaying)
 					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 				else if(KSketch_TimeControl._isPlaying)
@@ -246,6 +247,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		 */
 		public function updateWidget(event:Event):void
 		{
+			_widget.visible = false;
+			
 			if(event.type == KInteractionControl.EVENT_INTERACTION_BEGIN)
 				_isInteracting = true;
 			
@@ -270,21 +273,74 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			if(KSketch_TimeControl._isPlaying && !_isInteracting)
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 				
+			var _isErasedObject:Boolean = isSelectionErased();
+			if(!_isErasedObject)
+			{
+				_widget.visible = true;
+				
+				var selectionCenter:Point = _interactionControl.selection.centerAt(_KSketch.time);
+				selectionCenter = _modelSpace.localToGlobal(selectionCenter);
+				selectionCenter = _widgetSpace.globalToLocal(selectionCenter);
+				
+				_widget.x = selectionCenter.x;
+				_widget.y = selectionCenter.y;
+				
+				if(_interactionControl.selection.selectionTransformable(_KSketch.time) ||
+					KSketch_TimeControl._isPlaying)
+					enabled = true;
+				else
+					enabled = false;	
+				
+				_isErasedObject = false;
+			}
 			
-			_widget.visible = true;
+		}
+		
+		public function isSelectionErased():Boolean
+		{
+			var isErasedObject:Boolean = false;
 			
-			var selectionCenter:Point = _interactionControl.selection.centerAt(_KSketch.time);
-			selectionCenter = _modelSpace.localToGlobal(selectionCenter);
-			selectionCenter = _widgetSpace.globalToLocal(selectionCenter);
+			if(_interactionControl.selection)
+			{
+				var currentObject:KObject = _interactionControl.selection.objects.getObjectAt(0);
+				//if object selected is a single object (KStroke)
+				if(currentObject is KStroke)
+				{
+					if(currentObject.visibilityControl.alpha(_KSketch.time) == KVisibilityControl.GHOST_ALPHA)
+						isErasedObject = true;
+				}
+					//if object selected is a group of objects (KGroup), only disable if all objects in the group are erased
+				else if(currentObject is KGroup)
+				{
+					var visibilityArr:Array = new Array((currentObject as KGroup).children.length());
+					var i:int;
+					
+					for(i=0; i<visibilityArr.length; i++)
+					{
+						var child:KObject = (currentObject as KGroup).children.getObjectAt(i);
+						
+						visibilityArr[i] = 0;
+						if(child.visibilityControl.alpha(_KSketch.time) == KVisibilityControl.GHOST_ALPHA)
+							visibilityArr[i] = 1;
+					}
+					
+					var checkNum:Number=0;
+					
+					for(i=0; i< visibilityArr.length; ++i)
+					{
+						if(visibilityArr[0] == visibilityArr[i])
+							++checkNum;
+					}
+					
+					if(checkNum==visibilityArr.length)
+					{
+						if(visibilityArr[0] == 1)
+							isErasedObject = true;
+					}
+				}
+			}
 			
-			_widget.x = selectionCenter.x;
-			_widget.y = selectionCenter.y;
-			
-			if(_interactionControl.selection.selectionTransformable(_KSketch.time) ||
-				KSketch_TimeControl._isPlaying)
-				enabled = true;
-			else
-				enabled = false;
+			return isErasedObject;
 		}
 		
 		/**
@@ -316,9 +372,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
  		 */
 		public function set transitionMode(mode:int):void
 		{
-			if(KSketch2.studyMode == KSketch2.STUDYMODE_K)
-				mode = KSketch2.TRANSITION_INTERPOLATED
-			
+			//if(KSketch2.studyMode == KSketch2.STUDYMODE_K)
+			//	mode = KSketch2.TRANSITION_INTERPOLATED
 			_interactionControl.transitionMode = mode;
 			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)

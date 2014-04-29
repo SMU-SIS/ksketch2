@@ -18,9 +18,9 @@
 			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 			import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 			
@@ -111,6 +111,18 @@
 						autoInsertKey.selected = false;
 						_autoInsertKey(false);
 				}
+			}
+			
+			private function _timebarPos1():void
+			{
+				_timebarBottom();
+				_menuTop();
+			}
+			
+			private function _timebarPos2():void
+			{
+				_timebarTop();
+				_menuBottom();
 			}
 			
 			private function _timebarTop():void
@@ -215,9 +227,25 @@
 	</s:Rect>
 	<s:Group>
 		<s:layout>
-			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+			<s:VerticalLayout gap="20" paddingLeft="15" paddingRight="10" paddingTop="20" paddingBottom="10"/>
 		</s:layout>
 		<s:Label text="Options" fontSize="26"/>
+		
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout paddingLeft="10"/>
+			</s:layout>
+			<s:Label text="Timebar position" fontSize="18"/>
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout/>
+				</s:layout>
+				<s:RadioButton id="timebarPos1" label="Toolbar top and Timebar bottom" click="_timebarPos1()" fontSize="14"/>
+				<s:RadioButton label="Toolbar bottom and Timebar top" click="_timebarPos2()" fontSize="14"/>
+			</s:Group>
+		</s:Group>
+		
+		<!-- disable option for release
 		<s:Group>
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
@@ -231,6 +259,7 @@
 				<s:Button label="Bottom" click="_timebarBottom()" fontSize="14"/>
 			</s:Group>
 		</s:Group>
+		
 		<s:Group>
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
@@ -242,11 +271,11 @@
 				</s:layout>
 				<s:Button label="Top" click="_menuTop()" fontSize="14"/>
 				<s:Button label="Bottom" click="_menuBottom()" fontSize="14"/>
-				<!--<s:Button label="Left" click="_menuLeft()" fontSize="14"/>
-				<s:Button label="Right" click="_menuRight()" fontSize="14"/>-->
+				<s:Button label="Left" click="_menuLeft()" fontSize="14"/>
+				<s:Button label="Right" click="_menuRight()" fontSize="14"/>
 			</s:Group>
 		</s:Group>
-		<!-- disable option for release
+		
 		<s:Group>
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
@@ -272,7 +301,7 @@
 		-->
 		<s:Group>
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" verticalAlign="middle"/>
+				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
 			</s:layout>
 			<s:CheckBox id="autoInsertKey" label="Insert Key Frames Automatically" click="_autoInsertKey(autoInsertKey.selected)" fontSize="14"/>
 		</s:Group>

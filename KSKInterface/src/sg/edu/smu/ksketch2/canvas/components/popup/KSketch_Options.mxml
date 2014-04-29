@@ -231,6 +231,7 @@
 		</s:layout>
 		<s:Label text="Options" fontSize="26"/>
 		
+		<!-- disable option for release
 		<s:Group>
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
@@ -240,12 +241,11 @@
 				<s:layout>
 					<s:VerticalLayout/>
 				</s:layout>
-				<s:RadioButton id="timebarPos1" label="Toolbar top and Timebar bottom" click="_timebarPos1()" fontSize="14"/>
+				<s:RadioButton label="Toolbar top and Timebar bottom" click="_timebarPos1()" fontSize="14"/>
 				<s:RadioButton label="Toolbar bottom and Timebar top" click="_timebarPos2()" fontSize="14"/>
 			</s:Group>
 		</s:Group>
 		
-		<!-- disable option for release
 		<s:Group>
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>

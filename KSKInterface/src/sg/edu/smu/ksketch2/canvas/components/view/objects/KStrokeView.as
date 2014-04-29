@@ -50,7 +50,11 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		override public function eraseIfHit(xPoint:Number, yPoint:Number, time:Number, op:KCompositeOperation):void
 		{
 			if(hitTestPoint(xPoint, yPoint, true))
+			{
 				_object.visibilityControl.setVisibility(false, time, op);
+				_object.transformInterface.clearAllMotionsAfterTime(time, op);	
+			}
+				
 		}
 		
 		/**

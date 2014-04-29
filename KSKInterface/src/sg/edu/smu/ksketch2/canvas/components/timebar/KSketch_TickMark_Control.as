@@ -214,12 +214,11 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				for(i = 0; i<_ticks.length; i++)
 				{
 					currentMarker = _ticks[i];
-					
 					if(!currentMarker.selected)
 						continue;
 					
 					//Draw the selected stuffs first
-					if(currentX < currentMarker.x)
+					if(currentX <= currentMarker.x)
 					{
 						currentX = currentMarker.x;
 						

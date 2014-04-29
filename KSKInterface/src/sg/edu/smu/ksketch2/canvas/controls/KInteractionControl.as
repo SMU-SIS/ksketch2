@@ -16,6 +16,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.operations.IModelOperation;
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
@@ -211,6 +214,53 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function get currentInteraction():KInteractionOperation
 		{
 			return _currentInteraction;
+		}
+		
+		public function isSelectionErased(newSelection:KSelection):Boolean
+		{
+			var isErasedObject:Boolean = false;
+			
+			if(newSelection)
+			{
+				var currentObject:KObject = newSelection.objects.getObjectAt(0);
+				//if object selected is a single object (KStroke)
+				if(currentObject is KStroke)
+				{
+					if(currentObject.visibilityControl.alpha(_KSketch.time) == 0)
+						isErasedObject = true;
+				}
+					//if object selected is a group of objects (KGroup), only disable if all objects in the group are erased
+				else if(currentObject is KGroup)
+				{
+					var visibilityArr:Array = new Array((currentObject as KGroup).children.length());
+					var i:int;
+					
+					for(i=0; i<visibilityArr.length; i++)
+					{
+						var child:KObject = (currentObject as KGroup).children.getObjectAt(i);
+						
+						visibilityArr[i] = 0;
+						if(child.visibilityControl.alpha(_KSketch.time) == 0)
+							visibilityArr[i] = 1;
+					}
+					
+					var checkNum:Number=0;
+					
+					for(i=0; i< visibilityArr.length; ++i)
+					{
+						if(visibilityArr[0] == visibilityArr[i])
+							++checkNum;
+					}
+					
+					if(checkNum==visibilityArr.length)
+					{
+						if(visibilityArr[0] == 1)
+							isErasedObject = true;
+					}
+				}
+			}
+			
+			return isErasedObject;
 		}
 		
 		/**

@@ -10,6 +10,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
@@ -40,7 +41,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
  	 * The KWidgetInteractorManager class serves as the concrete class
  	 * for managing widget interactors in K-Sketch.
  	 */
-	public class KWidgetInteractorManager
+	public class KWidgetInteractorManager extends EventDispatcher
 	{		
 		protected var _KSketch:KSketch2;							// the ksketch instance
 		protected var _interactionControl:KInteractionControl;		// the interaction control
@@ -273,7 +274,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			if(KSketch_TimeControl._isPlaying && !_isInteracting)
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 				
-			var _isErasedObject:Boolean = isSelectionErased();
+			var _isErasedObject:Boolean = _interactionControl.isSelectionErased(_interactionControl.selection);
 			if(!_isErasedObject)
 			{
 				_widget.visible = true;
@@ -291,56 +292,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				else
 					enabled = false;	
 				
-				_isErasedObject = false;
 			}
-			
-		}
-		
-		public function isSelectionErased():Boolean
-		{
-			var isErasedObject:Boolean = false;
-			
-			if(_interactionControl.selection)
-			{
-				var currentObject:KObject = _interactionControl.selection.objects.getObjectAt(0);
-				//if object selected is a single object (KStroke)
-				if(currentObject is KStroke)
-				{
-					if(currentObject.visibilityControl.alpha(_KSketch.time) == KVisibilityControl.GHOST_ALPHA)
-						isErasedObject = true;
-				}
-					//if object selected is a group of objects (KGroup), only disable if all objects in the group are erased
-				else if(currentObject is KGroup)
-				{
-					var visibilityArr:Array = new Array((currentObject as KGroup).children.length());
-					var i:int;
-					
-					for(i=0; i<visibilityArr.length; i++)
-					{
-						var child:KObject = (currentObject as KGroup).children.getObjectAt(i);
-						
-						visibilityArr[i] = 0;
-						if(child.visibilityControl.alpha(_KSketch.time) == KVisibilityControl.GHOST_ALPHA)
-							visibilityArr[i] = 1;
-					}
-					
-					var checkNum:Number=0;
-					
-					for(i=0; i< visibilityArr.length; ++i)
-					{
-						if(visibilityArr[0] == visibilityArr[i])
-							++checkNum;
-					}
-					
-					if(checkNum==visibilityArr.length)
-					{
-						if(visibilityArr[0] == 1)
-							isErasedObject = true;
-					}
-				}
-			}
-			
-			return isErasedObject;
+			//else
+			//	_interactionControl.selection = null;
 		}
 		
 		/**

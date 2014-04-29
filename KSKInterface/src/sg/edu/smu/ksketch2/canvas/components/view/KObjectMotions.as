@@ -96,7 +96,19 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		
 		public function _updateObjectMotion(time:int):void	
 		{
-			_updateMotionPath(time);
+			var _isErasedObject:Boolean = _interactionControl.isSelectionErased(_interactionControl.selection);
+			if(!_isErasedObject)
+			{
+				_motionPath.visible = true;
+				_rotationMotionPath.visible = true;
+				_updateMotionPath(time);
+			}
+				
+			else
+			{
+				_motionPath.visible = false;
+				_rotationMotionPath.visible = false;
+			}
 		}
 		
 		private function _transformBegin(event:KObjectEvent):void
@@ -263,13 +275,15 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			}	
 		}
 		
-		private function clearTemp(event:Event):void
+		private function _hideMotion():void
 		{
 			if(_motionPath)
-				_motionPath.graphics.clear();
+				_motionPath.graphics.lineStyle(0,0xffffff);//.beginFill(0xffffff,1);
+				//_motionPath.graphics.clear();
 			
 			if(_rotationMotionPath)
-				_rotationMotionPath.graphics.clear();
+				_rotationMotionPath.graphics.lineStyle(0,0xffffff);//.beginFill(0xffffff,1);
+				//_rotationMotionPath.graphics.clear();
 		}
 	}
 }

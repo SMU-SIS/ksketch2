@@ -195,8 +195,12 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		{
 			for(var view:Object in _viewsTable)
 				_viewsTable[view].updateView(_KSketch.time);
-				
-			_drawBounds();
+			
+			var _isErasedObject:Boolean = _interactionControl.isSelectionErased(_interactionControl.selection);
+			if(!_isErasedObject)
+				_drawBounds();
+			else
+				graphics.clear();
 		}
 		
 		protected function _handler_UpdateObjectView(event:KObjectEvent):void

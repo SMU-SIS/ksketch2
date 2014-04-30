@@ -56,7 +56,7 @@ package sg.edu.smu.ksketch2
 		
 		public static const TIME_LABEL_FONT_SIZE:Number = 10;
 		public static const TIME_LABEL_FONT_COLOR:Number = 0x404041;
-		public static const TIME_PARTITION_FONT_SIZE:Number = 9;
+		public static const TIME_PARTITION_FONT_SIZE:Number = 10.5;
 		
 		public static const TIME_TICK_KEYFRAME:uint = 0x000000;		//for keyframes (passthrough = false)
 		public static const TIME_TICK_CONTROLPOINT:uint = 0xB5B5B5; //for controlpoints (passthroug = true)
@@ -73,7 +73,7 @@ package sg.edu.smu.ksketch2
 		public static const MAGNIFIER_IMAGE_UNSCALED_WIDTH:Number = 50;
 		public static const MAGNIFIER_SCALE:Number = 2;
 		public static const MAGNIFIER_PADDING:Number = 5;
-		public static const MAGNIFIER_FONT_SIZE:Number = 10;
+		public static const MAGNIFIER_FONT_SIZE:Number = 11;
 		public static const MAGNIFIER_FONT_COLOR:Number = 0xFFFFFF;
 		
 		public static const MAGNIFIER_ARROW_PROPORTION:Number = 0.4;

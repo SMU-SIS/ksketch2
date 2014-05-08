@@ -16,7 +16,7 @@
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
 		initialize="init()"
-		addedToStage="addedToStageHandler()"
+		addedToStage="startMonitorConnection()"
 		viewActivate="init()"
 		destructionPolicy="never"
 		>
@@ -91,26 +91,6 @@
 			private var selectedSketchVersion:String;
 			
 			private var viewTimer:Timer;
-			
-			public function addedToStageHandler():void
-			{
-				_stage = stage;
-				var oldOrientation:String = stage.orientation;
-				
-				stage.autoOrients = true;
-				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGING, onOrientationChanging, false, 100, true);
-				
-				startMonitorConnection();
-			}
-			
-			protected function onOrientationChanging(event:StageOrientationEvent ):void {
-				// If the stage is about to move to an orientation we don't support, lets prevent it
-				// from changing to that stage orientation.
-				if(event.afterOrientation == StageOrientation.ROTATED_LEFT || event.afterOrientation==StageOrientation.ROTATED_RIGHT ) 
-				{
-					event.preventDefault();
-				}
-			}
 			
 			private function init():void
 			{	

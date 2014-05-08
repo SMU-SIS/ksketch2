@@ -17,9 +17,6 @@ package sg.edu.smu.ksketch2
 		public var u_isactive:String;
 		public var u_version:String;
 		public var u_email:String;
-		//{"status": "success", "u_realname": "Cammie Mo", "u_logincount": 10, "u_lastlogin": "07 Nov 2013 02:29:23", "u_isadmin": false, "id": 5444553947480064, 
-		//"g_hash": "017aa2385f487263f51024a34656ada3", "u_name": "Cammie Mo", "u_created": "06 Nov 2013 09:09:37", "u_login": true, "u_isactive": true, "u_version": 1.0, "u_email": "mocammie@gmail.com"}
-
 		
 		public function KSketch_User(obj:Object)
 		{

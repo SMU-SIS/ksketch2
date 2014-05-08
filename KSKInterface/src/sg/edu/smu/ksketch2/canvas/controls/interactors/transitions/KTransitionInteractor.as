@@ -89,7 +89,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			_interactionControl.begin_interaction_operation();
 			var savedTransitionMode:int = _interactionControl.transitionMode;
 
-			/*Cammie changes*/
 			//If interaction is a rotation or scale demonstration, flag for possibility of a common parent for grouped objects
 			var breakToRoot:Boolean = true;
 			
@@ -102,7 +101,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			if(rawSelection.objects.length() > 1 )
 			{
 				var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, breakToRoot, op);
-				//cammie: var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, false, op);
 				
 				_interactionControl.selection = new KSelection(newObjectList);
 				_interactionControl.transitionMode = savedTransitionMode;

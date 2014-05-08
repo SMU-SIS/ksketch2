@@ -47,7 +47,6 @@ package sg.edu.smu.ksketch2.operators
 			{
 				var the_one_object:KObject = objects.getObjectAt(0);
 				
-				/*Cammie Changes*/
 				op.addOperation(KGroupingUtil.addObjectToParent(the_one_object, commonParent));
 				
 				//Group that dude to the root if needed

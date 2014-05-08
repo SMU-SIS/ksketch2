@@ -348,7 +348,6 @@ package sg.edu.smu.ksketch2
 			// create the common parent
 			var commonParent:KGroup;
 			
-			//cammie: NEW IMPLEMENTATION
 			if(1 < objects.length())
 				commonParent = _groupingUtil.lowestCommonParent(objects);
 			
@@ -356,11 +355,9 @@ package sg.edu.smu.ksketch2
 				commonParent = _sceneGraph.root;
 			
 			var groupResult:KObject = _groupingUtil.group(objects, commonParent, groupTime, _sceneGraph, op, breakToRoot);
-			//cammie: END NEW IMPLEMENTATION
 			
 			// remove singleton groups
 			_groupingUtil.removeSingletonGroups(commonParent, _sceneGraph, op);
-			//cammie: _groupingUtil.removeSingletonGroups(root, _sceneGraph, op);
 			
 			// initialize the hierarchical group
 			var result:KModelObjectList = new KModelObjectList();

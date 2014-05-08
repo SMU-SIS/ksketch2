@@ -10,6 +10,7 @@ package sg.edu.smu.ksketch2
 {
 	public class KSketchWebLinks
 	{
+		public static const pingurl:String = "http://google.com";
 		public static const url:String = "http://ksketch.smu.edu.sg/app/login.html";								//Page displayed on stagewebview
 		public static const jsonurlUser:String = "http://ksketch.smu.edu.sg/user/getuser";							//To retrieve user information after login
 		public static const jsonurlUserMobile:String = "http://ksketch.smu.edu.sg/user/getusermobile";				//To retrieve user information after login using ID

@@ -30,6 +30,8 @@
 			
 			import air.net.URLMonitor;
 			
+			import org.osmf.events.TimeEvent;
+			
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.KSketch_User;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar;
@@ -39,6 +41,7 @@
 			private var _stageWidth:Number;
 			private var _stageHeight:Number;
 			private var monitor:URLMonitor;
+			private var monitorTimer:Timer;
 			
 			public static var userData:Object = new Object();
 			private var webView:StageWebView = new StageWebView();
@@ -57,9 +60,25 @@
 				_stageHeight = stage.stageHeight;
 				
 				//check for network connection
+				monitorTimer = new Timer(3000);
 				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				
+				monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
 				monitor.addEventListener(StatusEvent.STATUS, prepareView);
+				
+				monitorTimer.start();
 				monitor.start();
+			}
+			
+			private function endMonitor(event:TimerEvent):void
+			{
+				monitorTimer.stop();
+				monitor.stop();
+				
+				monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				monitor.removeEventListener(StatusEvent.STATUS, prepareView);
+				
+				skipConnection("Lost Connection");
 			}
 			
 			private function prepareView(event:StatusEvent):void

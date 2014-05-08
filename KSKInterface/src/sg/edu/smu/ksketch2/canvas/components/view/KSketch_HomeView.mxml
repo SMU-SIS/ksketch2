@@ -415,7 +415,7 @@
 			public function startMonitorConnection():void
 			{
 				//check for network connection
-				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.pingurl));
 				monitor.addEventListener(StatusEvent.STATUS, monitorConnection);
 				monitor.start();
 			}

@@ -10,7 +10,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 {
 	import flash.display.Shape;
 	import flash.display.Sprite;
-	import flash.events.Event;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
@@ -216,7 +215,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			//This iteration generates an object's position and transform values
 			while(firstKeyTime <= lastKeyTime)
 			{
-				matrix = _object.fullPathMatrix(firstKeyTime); //cammie: _object.transformMatrix(firstKeyTime);
+				matrix = _object.fullPathMatrix(firstKeyTime);
 				position = matrix.transformPoint(centroid);
 				translatePath.push(position);
 
@@ -231,7 +230,12 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			_drawTranslatePath(translatePath);
 			
 			if(key == _prevActiveKey)
-				_drawRotatePath(rotatePath);
+			{
+				var hasRotation:Boolean = _hasRotation(rotatePath);
+				
+				if(hasRotation)
+					_drawRotatePath(rotatePath);
+			}
 		}
 		
 		//Translate paths are just hte points themselves, shown on the screen
@@ -274,16 +278,20 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				}
 			}	
 		}
-		
-		private function _hideMotion():void
+	
+		private function _hasRotation(path:Vector.<Number>):Boolean
 		{
-			if(_motionPath)
-				_motionPath.graphics.lineStyle(0,0xffffff);//.beginFill(0xffffff,1);
-				//_motionPath.graphics.clear();
+			var hasRotation:Boolean = false;
 			
-			if(_rotationMotionPath)
-				_rotationMotionPath.graphics.lineStyle(0,0xffffff);//.beginFill(0xffffff,1);
-				//_rotationMotionPath.graphics.clear();
+			for(var i:int=0; i<path.length; i++)
+			{
+				if(path[i] > 0)
+				{
+					hasRotation = true;
+					break;
+				}
+			}
+			return hasRotation;
 		}
 	}
 }

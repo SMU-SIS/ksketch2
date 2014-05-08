@@ -117,6 +117,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				}
 				
 				_objectsWithPath.add(currentObject);
+				_visibleMotionDisplays[currentObject]._updateObjectMotion(_KSketch.time);
 			}
 		}
 		

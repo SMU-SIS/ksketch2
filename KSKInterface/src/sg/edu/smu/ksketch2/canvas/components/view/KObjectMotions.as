@@ -171,6 +171,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			{
 				_prevActiveKey = null;
 				_motionPath.graphics.clear();
+				_rotationMotionPath.graphics.clear();
 				return;
 			}
 			

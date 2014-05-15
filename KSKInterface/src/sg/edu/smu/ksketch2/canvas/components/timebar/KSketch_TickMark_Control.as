@@ -21,6 +21,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import sg.edu.smu.ksketch2.model.data_structures.ISpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.SortingFunctions;
 	
@@ -107,10 +108,20 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				
 				//Generate markers for each set of transform keys
 				for(j = 0; j < transformKeyHeaders.length; j++)
+				{
 					_generateTicks(transformKeyHeaders[j], currentObject.id, currentObject.selected);
+					
+					if(_interactionControl.selection)
+						if(_interactionControl.selection.objects.getObjectAt(0) is KGroup)
+							break;
+				}	
 				
 				//Generate markers for visibility key
 				_generateTicks(currentObject.visibilityControl.visibilityKeyHeader, currentObject.id, currentObject.selected);
+				
+				if(_interactionControl.selection)
+					if(_interactionControl.selection.objects.getObjectAt(0) is KGroup)
+						break;
 			}
 			
 			_ticks.sort(SortingFunctions._compare_x_property);

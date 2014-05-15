@@ -100,7 +100,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			{
 				_motionPath.visible = true;
 				_rotationMotionPath.visible = true;
-				_updateMotionPath(time);
+				updateMotionPath(time);
 			}
 				
 			else
@@ -148,7 +148,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			_motionPath.visible = true;
 			_rotationMotionPath.visible = true;
 			
-			_updateMotionPath(event.time);
+			updateMotionPath(event.time);
 			
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);	
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _transformUpdating);
@@ -158,7 +158,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		/**
 		 * Generate a motion path at time
 		 */
-		private function _updateMotionPath(time:Number):void
+		public function updateMotionPath(time:Number):void
 		{
 			if(!(_rotationMotionPath.visible && _motionPath.visible))
 				return;
@@ -293,6 +293,21 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				}
 			}
 			return hasRotation;
+		}
+	
+		public function undoPath(time:Number):void
+		{
+			if(_motionPath.visible && _rotationMotionPath.visible)
+			{
+				var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(time) as KSpatialKeyFrame;			
+				var firstKeyTime:Number = _object.transformInterface.firstKeyTime;
+				var lastKeyTime:Number = _object.transformInterface.lastKeyTime;
+				
+				if(activeKey)
+					_determineAndGeneratePaths(activeKey,firstKeyTime,lastKeyTime);				
+			}
+			
+			updateMotionPath(time);
 		}
 	}
 }

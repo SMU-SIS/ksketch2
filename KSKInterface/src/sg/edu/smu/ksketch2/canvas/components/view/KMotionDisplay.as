@@ -68,6 +68,13 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			_motionDisplays[object] = newObjectMotion;
 		}
 		
+		public function undoObjectMotions(object:KObject):void
+		{
+			var newObjectMotion:KObjectMotions = _visibleMotionDisplays[object];
+			newObjectMotion.object = object;
+			newObjectMotion.undoPath(_KSketch.time);	
+		}
+		
 		/**
 		 * Invoked when the selection set changes (object composition changes)
 		 * Deals with path visibility, detailed changes to the motion paths
@@ -124,7 +131,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		/**
 		 * Updates the view of each object in the views table.
 		 */
-		private function _handler_UpdateAllViews(event:Event):void
+		public function _handler_UpdateAllViews(event:Event):void
 		{
 			for(var view:Object in _visibleMotionDisplays)
 				_visibleMotionDisplays[view]._updateObjectMotion(_KSketch.time);

@@ -24,11 +24,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
+	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KLoopSelectInteractor;
+	import sg.edu.smu.ksketch2.events.KSketchEvent;
+
 	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	/**
@@ -54,6 +57,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _interactionControl:KInteractionControl;			// the interaction control
 		private var _inputComponent:UIComponent;						// the input component
 		private var _modelDisplay:KModelDisplay;						// the model display
+		private var _motionDisplay:KMotionDisplay;
 		private var _feedbackMessage:KSketch_Feedback_Message;			// the feedback manager
 		//web:private var _googleAnalytics:GoogleAnalytics;
 		
@@ -80,7 +84,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * @param feedbackMessage The feedback message.
 		 */
 		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
-												 inputComponent:UIComponent, modelDisplay:KModelDisplay, 
+												 inputComponent:UIComponent, modelDisplay:KModelDisplay, motionDisplay:KMotionDisplay,
 												 feedbackMessage:KSketch_Feedback_Message)
 												 //web:feedbackMessage:KSketch_Feedback_Message, googleAnalytics:GoogleAnalytics)
 		{
@@ -90,6 +94,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_interactionControl = interactionControl;	// initialize the interaction control
 			_inputComponent = inputComponent;			// initialize the input component
 			_modelDisplay = modelDisplay;				// initialize the model display
+			_motionDisplay = motionDisplay;
 			_feedbackMessage = feedbackMessage;			// initialize the feedback display
 			_keyDown = false;							// set the key down boolean flag as off
 			//web:_googleAnalytics = googleAnalytics;
@@ -191,6 +196,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			else
 				location = _doubleTap.location;
 			
+			//_motionDisplay
 			if(actionUndo)
 			{
 				//web:_googleAnalytics.tracker.trackPageview("/canvas/undo");
@@ -218,6 +224,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			{
 				_feedbackMessage.showMessage(feedbackMessage, location);
 			}
+			
+			if(_interactionControl.selection)
+				_motionDisplay.undoObjectMotions(_interactionControl.selection.objects.getObjectAt(0));
 		}
 		
 		/**

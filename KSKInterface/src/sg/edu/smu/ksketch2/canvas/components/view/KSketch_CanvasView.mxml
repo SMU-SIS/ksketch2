@@ -178,7 +178,7 @@
 					//web:_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, _feedbackPopUp, _googleAnalytics);
 					
 					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, _feedbackPopUp);
+					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, motionDisplay, _feedbackPopUp);
 				}
 				
 				if(!isWeb)

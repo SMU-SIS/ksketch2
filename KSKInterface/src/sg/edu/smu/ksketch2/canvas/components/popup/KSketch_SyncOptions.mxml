@@ -233,8 +233,6 @@
 				_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SYNC;
 				_canvasNotice.open(_homeView, true);
 				PopUpManager.centerPopUp(_canvasNotice);	
-				
-				
 			}
 			
 			private function writeAllToCache():void

@@ -66,7 +66,7 @@
 				_monitor.addEventListener(StatusEvent.STATUS, isConnected);
 				_monitor.start();
 				
-				_monitorTimer = new Timer(2000);
+				_monitorTimer = new Timer(2500);
 				_monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
 				_monitorTimer.start();
 				

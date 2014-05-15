@@ -95,7 +95,7 @@
 			
 			private var viewTimer:Timer;
 			private var canvasTimer:Timer;
-			
+			private var displayFailedMessage:int = 0;	//display failed message variable (0) for login, (1) for sync
 			public static var canvasTimerDisabled:Boolean = false;
 			public static var hasBeenNotified:Boolean = false;
 			
@@ -158,8 +158,12 @@
 						
 						if(errorMessage == "Lost Connection" || errorMessage == "Janrain Failed") 
 						{
-							//listSketches_unavailable.text = "Failed to login. You are not connected to the Internet.";
-							listSketches_unavailable.source = KSketchAssets.image_error;	
+							displayFailedMessage = 0;
+							canvasTimer = new Timer(500);
+							canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedNotification);
+							canvasTimer.start();
+							
+							hasBeenNotified = true;
 							_failedLogin = true;
 						}
 					}
@@ -186,9 +190,10 @@
 						
 						if(!_isConnected && !hasBeenNotified)
 						{
-							_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SYNC;
-							_canvasNotice.open(this, true);
-							PopUpManager.centerPopUp(_canvasNotice);
+							displayFailedMessage = 1;
+							canvasTimer = new Timer(500);
+							canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedNotification);
+							canvasTimer.start();
 							
 							hasBeenNotified = true;
 						}
@@ -352,8 +357,9 @@
 					
 					if(_failedLogin)
 					{
+						displayFailedMessage = 0;
 						canvasTimer = new Timer(500);
-						canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedLogin);
+						canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedNotification);
 						canvasTimer.start();
 					}
 				}
@@ -366,16 +372,21 @@
 				stopProgressBar();
 			}
 			
-			private function displayFailedLogin(event:TimerEvent):void
+			private function displayFailedNotification(event:TimerEvent):void
 			{
 				canvasTimer.stop();
-				canvasTimer.removeEventListener(TimerEvent.TIMER, displayFailedLogin);
+				canvasTimer.removeEventListener(TimerEvent.TIMER, displayFailedNotification);
 				
-				_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_LOGIN;
+				if(displayFailedMessage == 0)
+					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_LOGIN;
+				else if(displayFailedMessage == 1)
+					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SYNC;
+				
 				_canvasNotice.open(this, true);
 				PopUpManager.centerPopUp(_canvasNotice);
 				
 				_failedLogin = false;
+				displayFailedMessage = 0;
 			}
 			
 			private function displaySketchDocument(obj:Object, checkConflict:Boolean):void
@@ -672,7 +683,6 @@
 								dataProvider="{arrDG}" change="datagridSelectItem()"
 								>
 						</s:List>
-						<!--<s:Label id="listSketches_unavailable" text="Start a new sketch now!" visible="false"/>-->
 						<s:Image id="listSketches_unavailable" source="{KSketchAssets.image_new}" width="100%" height="100%" visible="false"/>
 						<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
 											   horizontalCenter="0" verticalCenter="0" visible="false"/>

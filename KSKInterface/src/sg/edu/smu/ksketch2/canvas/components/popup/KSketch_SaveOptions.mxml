@@ -47,6 +47,7 @@
 			private var _menu:KSketch_PopUp_Menu;
 			
 			private var _monitor:URLMonitor;
+			private var _monitorTimer:Timer;
 			private var _isConnected:Boolean;
 			private var _success:Boolean;
 			
@@ -60,6 +61,15 @@
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
+				//check for network connection
+				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				_monitor.addEventListener(StatusEvent.STATUS, isConnected);
+				_monitor.start();
+				
+				_monitorTimer = new Timer(2000);
+				_monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
+				_monitorTimer.start();
+				
 				var confirmSave:Boolean = false;
 				userData = _canvasView.saveSketch(confirmSave);
 				mobileControl = _canvasView._mobileControl;
@@ -143,10 +153,10 @@
 				_overwriteSaveOptions = overwriteSave;
 				_menu = menu;
 				
-				//check for network connection
+				/*check for network connection
 				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
 				_monitor.addEventListener(StatusEvent.STATUS, isConnected);
-				_monitor.start();
+				_monitor.start();*/
 			}
 			
 			private function isConnected(event:StatusEvent):void
@@ -157,7 +167,21 @@
 					_isConnected = false;
 				
 				_monitor.stop();
+				_monitorTimer.stop();
+				
 				_monitor.removeEventListener(StatusEvent.STATUS, isConnected);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+			}
+			
+			private function endMonitor(event:TimerEvent):void
+			{
+				_isConnected = false;
+				
+				_monitor.stop();
+				_monitorTimer.stop();
+				
+				_monitor.removeEventListener(StatusEvent.STATUS, isConnected);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
 			}
 			
 			public function save():void

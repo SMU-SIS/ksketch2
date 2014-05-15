@@ -43,6 +43,7 @@
 			private var _homeView:KSketch_HomeView;
 			private var _canvasNotice:KSketch_CanvasNotice;
 			private var _monitor:URLMonitor;
+			private var _monitorTimer:Timer;
 			private var _isConnected:Boolean;
 			private var _success:Boolean;
 			private var _counterSave:int;
@@ -67,8 +68,6 @@
 				
 				_canvasNotice = new KSketch_CanvasNotice();
 				_canvasNotice.createDeferredContent();
-				
-				checkConnection();
 			}
 			
 			override public function close(commit:Boolean=false, data:*=null):void
@@ -106,6 +105,8 @@
 			
 			public function save():void
 			{
+				checkConnection();
+				
 				for(var i:int=0; i<syncSketchArr.length; i++)
 				{
 					_success = false;
@@ -125,7 +126,13 @@
 						httpService.send(objToSend);
 						httpService.addEventListener(ResultEvent.RESULT, resultHandler(currentObj));
 						httpService.addEventListener(FaultEvent.FAULT, faultHandler(currentObj));
-					}	
+					}
+					else
+					{
+						failToSync();
+						close();
+					}
+						
 				}
 			}
 			
@@ -145,8 +152,24 @@
 			{
 				//check for network connection
 				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				_monitorTimer = new Timer(2000);
+				
 				_monitor.addEventListener(StatusEvent.STATUS, connectionHandler);
+				_monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
+				
 				_monitor.start();
+				_monitorTimer.start();
+			}
+			
+			private function endMonitor(event:TimerEvent):void
+			{
+				_isConnected = false;
+				
+				_monitor.stop();
+				_monitorTimer.stop();
+				
+				_monitor.removeEventListener(StatusEvent.STATUS, connectionHandler);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
 			}
 			
 			private function connectionHandler(event:StatusEvent):void
@@ -157,7 +180,10 @@
 					_isConnected = false;
 				
 				_monitor.stop();
+				_monitorTimer.stop();
+				
 				_monitor.removeEventListener(StatusEvent.STATUS, connectionHandler);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
 			}
 			
 			function resultHandler(obj:Object):Function {
@@ -193,16 +219,22 @@
 					
 					if(_counterSave == syncSketchArr.length)
 					{
-						_success = false;
-						
-						_canvasNotice._parent = "SYNCSKETCH";
-						_canvasNotice.open(_homeView, true);
-						PopUpManager.centerPopUp(_canvasNotice);	
-						
+						failToSync();
 						writeAllToCache();
 					}
 					
 				};
+			}
+			
+			private function failToSync():void
+			{
+				_success = false;
+				
+				_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SYNC;
+				_canvasNotice.open(_homeView, true);
+				PopUpManager.centerPopUp(_canvasNotice);	
+				
+				
 			}
 			
 			private function writeAllToCache():void

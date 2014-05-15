@@ -60,7 +60,7 @@
 			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
 		<s:Label fontSize="15" text="You are currently disconnected."/>
-		<s:Label fontSize="15" text="Logging out will discard unsaved sketches."/>
+		<s:Label fontSize="15" text="Logging out will discard unsynced sketches."/>
 		
 		<s:Group width="100%">
 			<s:layout>

@@ -20,27 +20,44 @@
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
+			public static const CANVASNOTICE_FAILED_SYNC:String = "FAILEDSYNC";
+			public static const CANVASNOTICE_FAILED_SKETCH:String = "FAILEDSKETCH";
+			public static const CANVASNOTICE_FAILED_LOGIN:String = "FAILEDLOGIN";
+			
+			private var timer:Timer;
 			private var _homeView:KSketch_HomeView;
 			public var _parent:String;
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
+				init();
+				
+				timer = new Timer(2500);
+				timer.addEventListener(TimerEvent.TIMER, close);
+				timer.start();
+				
 				_homeView = owner as KSketch_HomeView;
 				super.open(owner, modal);
 			}
 			
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
+				timer.stop();
+				timer.removeEventListener(TimerEvent.TIMER, close);
 				super.close(commit, data);
 				(FlexGlobals.topLevelApplication as Application).setFocus();
 			}
 		
 			private function init():void
 			{
-				if(_parent == "SYNCSKETCH")
-					notificationLabel.text = "Failed to sync. You need to be connected to the Internet.";
-				else if(_parent == "SKETCHDOCUMENT")
-					notificationLabel.text = "Unable to display sketch. You need to be connected to the Internet.";
+				if(_parent == CANVASNOTICE_FAILED_SYNC)
+					notificationLabel.text = "Connection lost.\nSaving to your web account has been disabled until reconnected.";
+				else if(_parent == CANVASNOTICE_FAILED_SKETCH)
+					notificationLabel.text = "Unable to display sketch.\nYou need to be connected to the Internet.";
+				else if(_parent == CANVASNOTICE_FAILED_LOGIN)
+					notificationLabel.text = "Unable to login.\nConnection to K-Sketch Web is lost.";
+				
+				notificationLabel.setStyle('textAlign', 'center');
 			}
 		]]>
 	</fx:Script>
@@ -59,15 +76,18 @@
 	</s:Rect>
 	<s:Group width="50%">
 		<s:layout>
-			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalAlign="middle" horizontalAlign="center"/>
+			<s:VerticalLayout gap="20" paddingLeft="5" paddingRight="5" paddingTop="20" paddingBottom="20" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
 		<s:Label id="notificationLabel" fontSize="15"/>
 		
+		<!--
 		<s:Group width="100%">
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
 			</s:layout>
 			<s:Button label="OK" click="close()" fontSize="14"/>
 		</s:Group>
+		-->
+		
 	</s:Group>
 </s:SkinnablePopUpContainer>

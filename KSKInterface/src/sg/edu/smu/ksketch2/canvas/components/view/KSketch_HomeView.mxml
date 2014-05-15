@@ -48,8 +48,8 @@
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_CanvasNotice;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_LogoutNotice;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SyncOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SyncOptions;
 			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KWebControl;
@@ -62,8 +62,8 @@
 			public static var autoSaveCounter:int = 0;
 			
 			//class variables
-			private var _stage:Stage;
 			public var userData:Object = new Object();
+			private var _stage:Stage;
 			private var _mySO:SharedObject;
 			private var _resultSketch:String;
 			
@@ -78,6 +78,9 @@
 			//variables for connection
 			public var _isConnected:Boolean;
 			private var monitor:URLMonitor;
+			private var monitorTimer:Timer;
+			private var _failedLogin:Boolean = false;
+			private var _lostLogin:Boolean = false;
 			
 			//variables for web or cache retrieval
 			private var _isXML:Boolean;
@@ -91,9 +94,41 @@
 			private var selectedSketchVersion:String;
 			
 			private var viewTimer:Timer;
+			private var canvasTimer:Timer;
+			
+			public static var canvasTimerDisabled:Boolean = false;
+			public static var hasBeenNotified:Boolean = false;
+			
+			private function timerComplete(event:TimerEvent):void
+			{
+				canvasTimer.removeEventListener(TimerEvent.TIMER, timerComplete);
+				canvasTimer.stop();
+				
+				canvasCover.visible = false;
+				canvasTimerDisabled = true;
+			}
 			
 			private function init():void
 			{	
+				if(stage.deviceOrientation == StageOrientation.UNKNOWN)
+				{
+					if(KSketch_SplashView.initialOrientation == StageOrientation.DEFAULT || 
+					   KSketch_SplashView.initialOrientation == StageOrientation.UPSIDE_DOWN)
+						stage.setOrientation(StageOrientation.ROTATED_RIGHT);
+					else
+						stage.setOrientation(KSketch_SplashView.initialOrientation);
+				}
+				
+				
+				if(!canvasTimerDisabled)
+				{
+					canvasTimer = new Timer(2000);
+					canvasTimer.addEventListener(TimerEvent.TIMER, timerComplete);
+					canvasTimer.start();	
+				}
+				else
+					canvasCover.visible = false;
+				
 				_fileControl = new KFileControl();
 				
 				_syncOptions = new KSketch_SyncOptions();
@@ -122,8 +157,11 @@
 						var errorMessage:String = String(data);
 						
 						if(errorMessage == "Lost Connection" || errorMessage == "Janrain Failed") 
+						{
 							//listSketches_unavailable.text = "Failed to login. You are not connected to the Internet.";
-							listSketches_unavailable.source = KSketchAssets.image_error;
+							listSketches_unavailable.source = KSketchAssets.image_error;	
+							_failedLogin = true;
+						}
 					}
 					
 					var obj:Object = new Object();
@@ -143,10 +181,24 @@
 						userData.kUser = dataProxy.kUser;
 					
 					if(KSketch_LoginView._isLoggedIn)
+					{
 						loginButton.label = "Logout, "+ userData.kUser.u_realname;
+						
+						if(!_isConnected && !hasBeenNotified)
+						{
+							_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SYNC;
+							_canvasNotice.open(this, true);
+							PopUpManager.centerPopUp(_canvasNotice);
+							
+							hasBeenNotified = true;
+						}
+					}
+						
 					else
 						loginButton.label = "Login";
 				}
+				
+				createButton.label = "Create a Sketch";
 				
 				prepareDataList();
 			}
@@ -198,7 +250,6 @@
 			private function retrieveResultHandler(event:ResultEvent):void
 			{
 				var rawData:String = String(event.result);
-				trace("Home view retrieved data: " + rawData);
 				var resultObj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 				
 				if(!_isXML)
@@ -297,7 +348,14 @@
 					else
 						arrDG.addAll(userSketch.getUserSketchArray(sortBy));
 					
-					listSketches_unavailable.visible = false;
+					listSketches_unavailable.visible = false;	
+					
+					if(_failedLogin)
+					{
+						canvasTimer = new Timer(500);
+						canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedLogin);
+						canvasTimer.start();
+					}
 				}
 				else
 				{
@@ -306,6 +364,18 @@
 				}
 				
 				stopProgressBar();
+			}
+			
+			private function displayFailedLogin(event:TimerEvent):void
+			{
+				canvasTimer.stop();
+				canvasTimer.removeEventListener(TimerEvent.TIMER, displayFailedLogin);
+				
+				_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_LOGIN;
+				_canvasNotice.open(this, true);
+				PopUpManager.centerPopUp(_canvasNotice);
+				
+				_failedLogin = false;
 			}
 			
 			private function displaySketchDocument(obj:Object, checkConflict:Boolean):void
@@ -349,7 +419,7 @@
 				}
 				else
 				{
-					_canvasNotice._parent = "SKETCHDOCUMENT";
+					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SKETCH;
 					_canvasNotice.open(this, true);
 					PopUpManager.centerPopUp(_canvasNotice);
 				}
@@ -415,20 +485,46 @@
 			public function startMonitorConnection():void
 			{
 				//check for network connection
-				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.pingurl));
+				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
 				monitor.addEventListener(StatusEvent.STATUS, monitorConnection);
 				monitor.start();
+				
+				monitorTimer = new Timer(2000);
+				monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
+				monitorTimer.start();
+			}
+			
+			private function endMonitor(event:TimerEvent):void
+			{
+				monitor.stop();
+				monitorTimer.stop();
+				
+				_isConnected = false;
+				
+				monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
+				monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				
+				if(_isXML)
+					prepareCanvasView();
+				else
+					prepareHomeView();
 			}
 			
 			private function monitorConnection(event:StatusEvent):void
 			{
 				if(monitor.available)
+				{
 					_isConnected = true;
+					hasBeenNotified = false;
+				}
 				else
 					_isConnected = false;
 				
 				monitor.stop();
+				monitorTimer.stop();
+				
 				monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
+				monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
 				
 				if(_isXML)
 					prepareCanvasView();
@@ -507,82 +603,96 @@
 			
 		]]>
 	</fx:Script>
-	
 	<s:Group width="100%" height="100%">
-		<!-- defines the page to arrange 'group' elements from left to right -->
-		<s:layout> <s:HorizontalLayout gap="2"/> </s:layout>
 		
-		<!-- First half of the page -->
-		<s:Group width="33%" height="100%">
-			<!-- sets the background to grey -->
-			<s:Rect width="100%" height="100%">
-				<s:fill> <s:SolidColor color="0xE7E7E7"/> </s:fill>
-			</s:Rect>
+		<!-- start of first layer -->
+		<s:Group width="100%" height="100%">
+			<!-- defines the page to arrange 'group' elements from left to right -->
+			<s:layout> <s:HorizontalLayout gap="2"/> </s:layout>
 			
-			<s:Group width="100%" height="100%">
-				<!-- defines the page to arrange 'group' elements from top to bottom -->
-				<s:layout> <s:VerticalLayout paddingLeft="15" paddingRight="15" paddingTop="15"/> </s:layout>
-				
-				<!-- Alignment for logo button -->
-				<s:Group width="100%" height="40%">
-					<s:layout> <s:HorizontalLayout paddingLeft="48" paddingTop="10"/> </s:layout>
-					<buttons:KSketch_Button id="logoHolder"
-											width="{KSketchStyles.LOGO_BUTTON_WIDTH}" 
-											height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"
-											click="startMonitorConnection()"/>
-				</s:Group>
-				
-				<s:Group width="100%">
-					<s:layout> <s:VerticalLayout paddingBottom="10"/> </s:layout>
-					<s:Button width="100%" label="Create a Sketch" click="createSketch()"/>
-				</s:Group>
-				
-				<s:Group width="100%">
-					<s:layout> <s:VerticalLayout paddingBottom="10"/> </s:layout>
-					<s:Button id="loginButton" width="100%" click="navigateToScreen('LOGIN')"/>
-				</s:Group>
-				
-				<!-- end alignment for buttons -->
-			</s:Group>
-		</s:Group>
-		<!-- end of first half -->
-		
-		<!-- Second half of the page -->
-		<s:Group width="67%" height="100%">
-			
-			<!-- Background for previewer -->
-			<s:Rect width="100%" height="100%">
-				<s:fill>
-					<s:SolidColor color="0xE7E7E7"/>
-				</s:fill>
-			</s:Rect>
-			
-			<!--Previewer portion-->
-			<s:Group width="100%" height="100%">
-				<s:Rect top="15" left="15" right="15" bottom="15">
-					<s:fill>
-						<s:SolidColor color="0xFFFFFF"/>
-					</s:fill>
-					<s:filters>
-						<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
-					</s:filters>
+			<!-- First half of the page -->
+			<s:Group width="33%" height="100%">
+				<!-- sets the background to grey -->
+				<s:Rect width="100%" height="100%">
+					<s:fill> <s:SolidColor color="0xE7E7E7"/> </s:fill>
 				</s:Rect>
 				
-				<s:Group top="15" left="15" right="15" bottom="15">
-					<s:List id="listSketches" contentBackgroundAlpha="0" width="100%" height="100%"
-							itemRenderer="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"
-							dataProvider="{arrDG}" change="datagridSelectItem()"
-							>
-					</s:List>
-					<!--<s:Label id="listSketches_unavailable" text="Start a new sketch now!" visible="false"/>-->
-					<s:Image id="listSketches_unavailable" source="{KSketchAssets.image_new}" width="100%" height="100%" visible="false"/>
-					<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
-										   horizontalCenter="0" verticalCenter="0" visible="false"/>
+				<s:Group width="100%" height="100%">
+					<!-- defines the page to arrange 'group' elements from top to bottom -->
+					<s:layout> <s:VerticalLayout paddingLeft="15" paddingRight="15" paddingTop="15"/> </s:layout>
+					
+					<!-- Alignment for logo button -->
+					<s:Group width="100%" height="40%">
+						<s:layout> <s:HorizontalLayout paddingLeft="48" paddingTop="10"/> </s:layout>
+						<buttons:KSketch_Button id="logoHolder"
+												width="{KSketchStyles.LOGO_BUTTON_WIDTH}" 
+												height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"
+												click="startMonitorConnection()"/>
+					</s:Group>
+					
+					<s:Group width="100%">
+						<s:layout> <s:VerticalLayout paddingBottom="10"/> </s:layout>
+						<s:Button id="createButton" width="100%" click="createSketch()"/>
+					</s:Group>
+					
+					<s:Group width="100%">
+						<s:layout> <s:VerticalLayout paddingBottom="10"/> </s:layout>
+						<s:Button id="loginButton" width="100%" click="navigateToScreen('LOGIN')"/>
+					</s:Group>
+					
+					<!-- end alignment for buttons -->
 				</s:Group>
+			</s:Group>
+			<!-- end of first half -->
+			
+			<!-- Second half of the page -->
+			<s:Group width="67%" height="100%">
 				
-			</s:Group> 
-			<!-- end of previewer portion-->
-		</s:Group>	
-		<!-- end of second half -->
+				<!-- Background for previewer -->
+				<s:Rect width="100%" height="100%">
+					<s:fill>
+						<s:SolidColor color="0xE7E7E7"/>
+					</s:fill>
+				</s:Rect>
+				
+				<!--Previewer portion-->
+				<s:Group width="100%" height="100%">
+					<s:Rect top="15" left="15" right="15" bottom="15">
+						<s:fill>
+							<s:SolidColor color="0xFFFFFF"/>
+						</s:fill>
+						<s:filters>
+							<s:DropShadowFilter angle="90" distance="1" color="0xdfdfdf"/>
+						</s:filters>
+					</s:Rect>
+					
+					<s:Group top="15" left="15" right="15" bottom="15">
+						<s:List id="listSketches" contentBackgroundAlpha="0" width="100%" height="100%"
+								itemRenderer="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"
+								dataProvider="{arrDG}" change="datagridSelectItem()"
+								>
+						</s:List>
+						<!--<s:Label id="listSketches_unavailable" text="Start a new sketch now!" visible="false"/>-->
+						<s:Image id="listSketches_unavailable" source="{KSketchAssets.image_new}" width="100%" height="100%" visible="false"/>
+						<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
+											   horizontalCenter="0" verticalCenter="0" visible="false"/>
+					</s:Group>
+					
+				</s:Group> 
+				<!-- end of previewer portion-->
+			</s:Group>	
+			<!-- end of second half -->
+		</s:Group>
+		<!-- end of first layer -->
+		
+		<!-- start of second layer -->
+		<s:Group id="canvasCover" width="100%" height="100%" visible="true">
+			<s:Rect  width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xffffff"/>
+				</s:fill>
+			</s:Rect>
+		</s:Group>
+		<!-- end of second layer -->
 	</s:Group>
 </s:View>

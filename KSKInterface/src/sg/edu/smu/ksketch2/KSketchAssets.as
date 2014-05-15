@@ -282,5 +282,9 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Home_KSketch_Error.png")] 
 		[Bindable] 
 		public static var image_error:Class;
+		
+		[Embed("assets/Splash_KSketch.png")] 
+		[Bindable] 
+		public static var image_splash:Class;
 	}
 }

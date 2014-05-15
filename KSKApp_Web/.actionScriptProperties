@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <actionScriptProperties analytics="false" mainApplicationPath="KSKWeb.mxml" projectUUID="99d9dbf4-ff95-4925-8425-d94af196fafc" version="11">
-  <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" useFlashSDK="false" verifyDigests="true" warn="true">
+  <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="false" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" useFlashSDK="false" verifyDigests="true" warn="true">
     <compilerSourcePath/>
-    <libraryPath defaultLinkType="3">
+    <libraryPath defaultLinkType="1">
+      <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/gaforflash/lib/analytics.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="4" path="">
         <excludedEntries>
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/flex.swc" useDefaultLinkType="false"/>
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/core.swc" useDefaultLinkType="false"/>
         </excludedEntries>
       </libraryPathEntry>
+      <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/servicemonitor.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/mobile/mobilecomponents.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/CollisionDetectionKit_v15/bin/CollisionDetectionKit_v15.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/Gestouch/bin/Gestouch.swc" useDefaultLinkType="false"/>
@@ -16,7 +18,6 @@
       <libraryPathEntry kind="3" linkType="1" path="/KSKInterface/bin/KSKInterface.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/FLV Encoder/bin/FLV Encoder.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/KSKLibrary/bin/KSKLibrary.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/gaforflash/lib/analytics.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

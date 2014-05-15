@@ -28,7 +28,7 @@
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
-			import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
+			//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 			
 			public static const ORIGIN:Point = new Point();
 			public static const LEFT:int = 0;
@@ -54,7 +54,7 @@
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
 			private var _canvasControl:KCanvasInteractorManager;
-			private var _googleAnalytics:GoogleAnalytics;
+			//web:private var _googleAnalytics:GoogleAnalytics;
 			
 			/**
 			 * @referenceComponent: the component that this menu will refer to for positioning itself
@@ -66,7 +66,8 @@
 								 canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options,
 								 savePanel:KSketch_SaveOptions, KSketchInstance:KSketch2, 
 								 interactionControl:KInteractionControl, canvasControl:KCanvasInteractorManager,
-								 feedback:KSketch_Feedback_Message,googleAnalytics:GoogleAnalytics):void
+							     feedback:KSketch_Feedback_Message):void
+								 //web:feedback:KSketch_Feedback_Message,googleAnalytics:GoogleAnalytics):void
 			{
 				_referenceComponent = referenceComponent;
 				_canvasOrigin = referenceComponent.localToGlobal(_canvasOrigin);
@@ -78,7 +79,7 @@
 				_canvasControl = canvasControl;
 				_options = optionsPanel;
 				_feedback = feedback;
-				_googleAnalytics = googleAnalytics;
+				//web:_googleAnalytics = googleAnalytics;
 				
 				if(savePanel)
 					_saveOptions = savePanel;
@@ -172,7 +173,7 @@
 			
 			private function _setPen(button:KSketch_Toggle_Button):void
 			{
-				_googleAnalytics.tracker.trackPageview( "/popupmenu/" + button.id);
+				//web:_googleAnalytics.tracker.trackPageview( "/popupmenu/" + button.id);
 				
 				if(_selectedButton)
 					_selectedButton.selected = false;
@@ -218,7 +219,7 @@
 			 */
 			private function _clear():void
 			{
-				_googleAnalytics.tracker.trackPageview( "/popupmenu/clearCanvas" );
+				//web:_googleAnalytics.tracker.trackPageview( "/popupmenu/clearCanvas" );
 				
 				KSketch_SaveOptions.returnToHome = false;
 				if(_canvasView._interactionControl.hasUndo)
@@ -248,7 +249,7 @@
 			 */
 			public function _saveExit():void
 			{
-				_googleAnalytics.tracker.trackPageview( "/popupmenu/exitCanvas" );
+				//web:_googleAnalytics.tracker.trackPageview( "/popupmenu/exitCanvas" );
 				
 				KSketch_SaveOptions.returnToHome = true;
 				if(_canvasView._interactionControl.hasUndo)
@@ -272,7 +273,7 @@
 			 */
 			private function _openOptions():void
 			{
-				_googleAnalytics.tracker.trackPageview( "/popupmenu/openOptions" );
+				//web:_googleAnalytics.tracker.trackPageview( "/popupmenu/openOptions" );
 				_options.open(_canvasView,true);
 				PopUpManager.centerPopUp(_options);
 			}
@@ -291,7 +292,7 @@
 			 */
 			private function _importImage():void				
 			{
-				_googleAnalytics.tracker.trackPageview( "/popupmenu/importImage" );
+				//web:_googleAnalytics.tracker.trackPageview( "/popupmenu/importImage" );
 				var newImageWindow:KSketch_ImageImport_Control = new KSketch_ImageImport_Control();
 				newImageWindow.init(_KSketch, _interactionControl, _canvasView);
 				newImageWindow.createDeferredContent();

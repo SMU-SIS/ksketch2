@@ -22,7 +22,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
-	import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
+	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	public class KSketch_TimeControl extends KSketch_TimeSlider implements ITimeControl
 	{
@@ -54,7 +54,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		protected var _transitionHelper:KWidgetInteractorManager;
 		protected var _magnifier:KSketch_Timebar_Magnifier;
 		protected var _keyMenu:KSketch_Timebar_ContextMenu;
-		protected var _googleAnalytics:GoogleAnalytics;
+		//web:protected var _googleAnalytics:GoogleAnalytics;
 		
 		public static var _isPlaying:Boolean = false;
 		protected var _timer:Timer;
@@ -86,8 +86,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control,
 							 transitionHelper:KWidgetInteractorManager,
-							 magnifier:KSketch_Timebar_Magnifier, keyMenu:KSketch_Timebar_ContextMenu,
-							 googleAnalytics:GoogleAnalytics):void
+							 magnifier:KSketch_Timebar_Magnifier, keyMenu:KSketch_Timebar_ContextMenu):void
+							 //web:googleAnalytics:GoogleAnalytics):void
 		{
 
 			_KSketch = KSketchInstance;
@@ -95,7 +95,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_transitionHelper = transitionHelper;
 			_magnifier = magnifier;
 			_keyMenu = keyMenu;
-			_googleAnalytics = googleAnalytics;
+			//web:_googleAnalytics = googleAnalytics;
 			timeLabels.init(this);
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
@@ -284,7 +284,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		protected function _touchMove(event:MouseEvent):void
 		{
-			_googleAnalytics.tracker.trackPageview( "/timebar/moveTime" );
+			//web:_googleAnalytics.tracker.trackPageview( "/timebar/moveTime" );
 			//remove grabbed tick timer if it hasn't completed countdown when user enters move
 			if(grabbedTickTimer.currentCount == 0)
 			{
@@ -422,7 +422,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		private function _triggerLongTouch(event:TimerEvent):void
 		{
-			_googleAnalytics.tracker.trackPageview( "/timebar/grabTick" );
+			//web:_googleAnalytics.tracker.trackPageview( "/timebar/grabTick" );
 			_longTouch = true;
 			
 			_showMagnifier(event);
@@ -513,7 +513,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function startRecording():void
 		{
-			_googleAnalytics.tracker.trackPageview( "/timebar/recording" );
+			//web:_googleAnalytics.tracker.trackPageview( "/timebar/recording" );
 			if(recordingSpeed <= 0)
 				throw new Error("One does not record in 0 or negative time!");
 			

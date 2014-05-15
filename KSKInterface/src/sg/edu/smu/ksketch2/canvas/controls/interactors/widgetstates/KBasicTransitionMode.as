@@ -17,7 +17,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KRotateInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KScaleInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTranslateInteractor;
-	import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
+	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	/**
 	 * The KBasicTransitionMode class serves as the concrete class for
@@ -38,16 +38,21 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		 * @param modelSpace The model space.
 		 */
 		public function KBasicTransitionMode(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
-											 widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject,
-											 googleAnalytics:GoogleAnalytics)
+											 widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject)
+											 //googleAnalytics:GoogleAnalytics)
 		{
 			super(KSketchInstance, interactionControl, widgetBase);
 			
-			_translateInteractor = new KTranslateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace, googleAnalytics);
-			_rotateInteractor = new KRotateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace, googleAnalytics);
-			_scaleInteractor = new KScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger, modelSpace, googleAnalytics);
-		}
+			//web:_translateInteractor = new KTranslateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace, googleAnalytics);
+			//web:_rotateInteractor = new KRotateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace, googleAnalytics);
+			//web:_scaleInteractor = new KScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger, modelSpace, googleAnalytics);
 		
+			_translateInteractor = new KTranslateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace);
+			_rotateInteractor = new KRotateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace);
+			_scaleInteractor = new KScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger, modelSpace);
+			
+		}
+			
 		override public function activate():void
 		{
 			demonstrationMode = false;

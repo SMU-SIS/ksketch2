@@ -18,7 +18,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
+	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	/**
@@ -32,7 +32,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		private var _translateGesture:PanGesture;	// the translate gesture
 		private var _previousPoint:Point;			// the previous point
 		private var _startPoint:Point;				// the start point
-		private var _googleAnalytics:GoogleAnalytics;
+		//web:private var _googleAnalytics:GoogleAnalytics;
 		
 		/**
  		 * The main constructor for the KTranslateInteractor class.
@@ -43,13 +43,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
  		 * @param modelSpace The model space display control.
  		 */
 		public function KTranslateInteractor(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
-											inputComponent:DisplayObject, modelSpace:DisplayObject,
-											googleAnalytics:GoogleAnalytics)
+											inputComponent:DisplayObject, modelSpace:DisplayObject)
+											//web:googleAnalytics:GoogleAnalytics)
 		{
 			super(KSketchInstance, interactionControl, modelSpace);
 			_translateGesture = new PanGesture(inputComponent);
 			_translateGesture.maxNumTouchesRequired = 1;
-			_googleAnalytics = googleAnalytics;
+			//web:_googleAnalytics = googleAnalytics;
 		}
 		
 		override public function reset():void
@@ -79,7 +79,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		{
 			translateFlag = true;
 			
-			_googleAnalytics.tracker.trackPageview("/canvas/translate");
+			//web:_googleAnalytics.tracker.trackPageview("/canvas/translate");
 			super._interaction_begin(event);
 			
 			var rawSelection:KSelection = _interactionControl.selection;

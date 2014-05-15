@@ -17,6 +17,7 @@
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
 		initialize="_initCanvas()"
 		add="_checkForImageData()"
+		addedToStage="_addedToStageHandler()"
 		creationPolicy="all"
 		destructionPolicy="never" 
 		viewActivate="_enterView_ProcessData()"
@@ -47,7 +48,7 @@
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
-			import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
+			//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			
@@ -85,7 +86,7 @@
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
 			
-			private var _googleAnalytics:GoogleAnalytics;
+			//web:private var _googleAnalytics:GoogleAnalytics;
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
@@ -95,6 +96,13 @@
 			//add: _checkForImageData() //This can be done during addedToStage too
 			//viewActivated: _viewActivateHandler - loads data/ insert images 
 			//				A lot of times, this happens first, so we go back to addedToStage
+			
+			private function _addedToStageHandler():void
+			{
+				//initialize GoogleAnalytics
+				//web:_googleAnalytics = new GoogleAnalytics();
+				//web:_googleAnalytics.init(this);
+			}
 			
 			private function _saveHandler(event:KIOEvent):void
 			{
@@ -115,7 +123,6 @@
 			public function _initCanvas():void
 			{	
 				userData = data;
-				_mobileControl = userData.mobileControl;
 				
 				//We shouldn't make a new ksketch if one already exists
 				if(_KSketch)
@@ -128,7 +135,6 @@
 					isMobile = true;
 				else
 					isMobile = false;
-				
 				
 				isWeb = (Capabilities.playerType == PLUG_IN);
 				if(isWeb)
@@ -147,6 +153,9 @@
 						throw new Error("Load call back not added");
 				}
 				
+				if(!isWeb)
+					_mobileControl = userData.mobileControl;
+				
 				//Actual setting up starts here
 				_KSketch = new KSketch2();
 				_interactionControl = new KInteractionControl(_KSketch, timeControl);			
@@ -162,45 +171,52 @@
 				_magnifier.init(canvas_component, timeControl);
 				_options.init(this, _menuPopUp);
 				
-				//initialize GoogleAnalytics
-				_googleAnalytics = new GoogleAnalytics();
-				_googleAnalytics.init(this);
-				
 				//Initiate the controls
 				if(!isPlayer)
 				{
-					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay, _googleAnalytics);
-					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, _feedbackPopUp, _googleAnalytics);
+					//web:_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay, _googleAnalytics);
+					//web:_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, _feedbackPopUp, _googleAnalytics);
+					
+					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
+					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, _feedbackPopUp);
 				}
 				
 				if(!isWeb)
 				{
 					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions);
 					_overwriteSaveOptions.init(this, _saveOptions);
-					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp, _googleAnalytics);
+					//web:_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp, _googleAnalytics);
+					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 					_saveOptions.createDeferredContent();
 				}
 				else
-					_menuPopUp.init(canvas_component, this, _options, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp, _googleAnalytics);
+					_menuPopUp.init(canvas_component, this, _options, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
+					//web:_menuPopUp.init(canvas_component, this, _options, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp, _googleAnalytics);
 				
 				_options.createDeferredContent();
 				_menuPopUp.createDeferredContent();
+				//_menuPopUp.alpha = 0;
 				
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl,_interactionControl);
-				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _keyMenu, _googleAnalytics);
+				//web:timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _keyMenu, _googleAnalytics);
+				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _keyMenu);
 				
-				leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT, _googleAnalytics);
-				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT, _googleAnalytics);
+				//web:leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT, _googleAnalytics);
+				//web:rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT, _googleAnalytics);
+				leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
+				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
 				
 				//initialize keymenu after TimeControl is set up
-				_keyMenu.init(_KSketch, _interactionControl, timeControl, _googleAnalytics);
+				//web:_keyMenu.init(_KSketch, _interactionControl, timeControl, _googleAnalytics);
+				_keyMenu.init(_KSketch, _interactionControl, timeControl);
 				_keyMenu.createDeferredContent();
 				
 				modelDisplay.init(_KSketch, _interactionControl);
 				motionDisplay.init(_KSketch, _interactionControl);
 				
 				//This is the layer that blocks interaction whenever the app is playing
-				playButton.init(timeControl, _interactionControl,_KSketch, _menuPopUp, _googleAnalytics);
+				//web:playButton.init(timeControl, _interactionControl,_KSketch, _menuPopUp, _googleAnalytics);
+				playButton.init(timeControl, _interactionControl,_KSketch, _menuPopUp);
 				_interactionControl.reset();
 				
 				_options.applyPreferences();
@@ -309,6 +325,11 @@
 				viewDeactivated();
 				KSketch_SaveOptions.canvasDirty = false;
 				KSketch_SaveOptions.saveCounter = 0;
+				
+				KSketch_HomeView.canvasTimerDisabled = true;
+				if(KSketch_HomeView.hasBeenNotified)
+					KSketch_HomeView.hasBeenNotified = true;
+				
 				navigator.pushView(KSketch_HomeView, userData);
 			}
 			

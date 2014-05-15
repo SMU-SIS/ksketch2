@@ -29,7 +29,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KLoopSelectInteractor;
-	import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
+	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	/**
 	 * The KCanvasInteractorManager class serves as the concrete class for
@@ -55,7 +55,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _inputComponent:UIComponent;						// the input component
 		private var _modelDisplay:KModelDisplay;						// the model display
 		private var _feedbackMessage:KSketch_Feedback_Message;			// the feedback manager
-		private var _googleAnalytics:GoogleAnalytics;
+		//web:private var _googleAnalytics:GoogleAnalytics;
 		
 		private var _tapGesture:TapGesture;								// the tap gesture
 		private var _doubleTap:TapGesture;								// the double-tap gesture
@@ -81,7 +81,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
 												 inputComponent:UIComponent, modelDisplay:KModelDisplay, 
-												 feedbackMessage:KSketch_Feedback_Message, googleAnalytics:GoogleAnalytics)
+												 feedbackMessage:KSketch_Feedback_Message)
+												 //web:feedbackMessage:KSketch_Feedback_Message, googleAnalytics:GoogleAnalytics)
 		{
 			// set up the canvas interactor manager
 			super(this);								// set up the event dispatcher
@@ -91,7 +92,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_modelDisplay = modelDisplay;				// initialize the model display
 			_feedbackMessage = feedbackMessage;			// initialize the feedback display
 			_keyDown = false;							// set the key down boolean flag as off
-			_googleAnalytics = googleAnalytics;
+			//web:_googleAnalytics = googleAnalytics;
 
 			/**
 			 * set the draw, tap, and loop select interactors
@@ -192,7 +193,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			if(actionUndo)
 			{
-				_googleAnalytics.tracker.trackPageview("/canvas/undo");
+				//web:_googleAnalytics.tracker.trackPageview("/canvas/undo");
 				if(_interactionControl.hasUndo)
 				{
 					_interactionControl.undo();
@@ -203,7 +204,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 			else
 			{
-				_googleAnalytics.tracker.trackPageview("/canvas/redo");
+				//web:_googleAnalytics.tracker.trackPageview("/canvas/redo");
 				if(_interactionControl.hasRedo)
 				{
 					_interactionControl.redo();
@@ -240,7 +241,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _recogniseDraw(event:GestureEvent):void
 		{
-			_googleAnalytics.tracker.trackPageview( "/canvas/draw" );
+			//web:_googleAnalytics.tracker.trackPageview( "/canvas/draw" );
 			if(_interactionControl.currentInteraction)
 				return;
 			

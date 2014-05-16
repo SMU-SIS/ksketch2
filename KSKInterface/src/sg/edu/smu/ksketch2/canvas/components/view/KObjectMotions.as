@@ -47,7 +47,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			super();
 			
 			_interactionControl = interactionControl;
-			//_interactionControl.addEventListener(KInteractionControl.EVENT_UNDO_REDO, clearTemp);
 			
 			_motionPath = new Shape();
 			addChild(_motionPath);
@@ -189,6 +188,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			var path:Vector.<Point>;
 			
 			_motionPath.graphics.clear();
+			_rotationMotionPath.graphics.clear();
 			_generateMotionPath(activeKey,firstKeyTime,lastKeyTime);
 		}
 		

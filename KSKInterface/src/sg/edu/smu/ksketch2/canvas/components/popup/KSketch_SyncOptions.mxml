@@ -105,8 +105,6 @@
 			
 			public function save():void
 			{
-				checkConnection();
-				
 				for(var i:int=0; i<syncSketchArr.length; i++)
 				{
 					_success = false;
@@ -145,7 +143,6 @@
 				httpService.send(objToSend);
 				httpService.addEventListener(ResultEvent.RESULT, resultHandler);
 				httpService.addEventListener(FaultEvent.FAULT, faultHandler);
-				
 			}
 			
 			public function checkConnection():void
@@ -170,6 +167,8 @@
 				
 				_monitor.removeEventListener(StatusEvent.STATUS, connectionHandler);
 				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				
+				save();
 			}
 			
 			private function connectionHandler(event:StatusEvent):void
@@ -184,6 +183,8 @@
 				
 				_monitor.removeEventListener(StatusEvent.STATUS, connectionHandler);
 				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				
+				save();
 			}
 			
 			function resultHandler(obj:Object):Function {
@@ -302,7 +303,7 @@
 				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
 			</s:layout>
 			
-			<s:Button id="syncWeb" label="Sync to Web" click="save()" fontSize="14"/>
+			<s:Button id="syncWeb" label="Sync to Web" click="checkConnection()" fontSize="14"/>
 			<s:Button id="discardAll" label="Discard all" click="discard()" fontSize="14"/>
 			
 		</s:Group>

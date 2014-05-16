@@ -56,6 +56,9 @@
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			import sg.edu.smu.ksketch2.utils.KWebData;
 			
+			private static const DISPLAY_FAILED_LOGIN:int = 0;
+			private static const DISPLAY_FAILED_SYNC:int = 1;
+			
 			[Bindable]
 			private var arrDG:ArrayCollection = new ArrayCollection();
 			
@@ -158,10 +161,7 @@
 						
 						if(errorMessage == "Lost Connection" || errorMessage == "Janrain Failed") 
 						{
-							displayFailedMessage = 0;
-							canvasTimer = new Timer(500);
-							canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedNotification);
-							canvasTimer.start();
+							startDisplayFailedNotification(DISPLAY_FAILED_LOGIN, 500);
 							
 							hasBeenNotified = true;
 							_failedLogin = true;
@@ -190,11 +190,7 @@
 						
 						if(!_isConnected && !hasBeenNotified)
 						{
-							displayFailedMessage = 1;
-							canvasTimer = new Timer(500);
-							canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedNotification);
-							canvasTimer.start();
-							
+							startDisplayFailedNotification(DISPLAY_FAILED_SYNC, 2500);
 							hasBeenNotified = true;
 						}
 					}
@@ -356,12 +352,7 @@
 					listSketches_unavailable.visible = false;	
 					
 					if(_failedLogin)
-					{
-						displayFailedMessage = 0;
-						canvasTimer = new Timer(500);
-						canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedNotification);
-						canvasTimer.start();
-					}
+						startDisplayFailedNotification(DISPLAY_FAILED_LOGIN, 500);
 				}
 				else
 				{
@@ -372,6 +363,14 @@
 				stopProgressBar();
 			}
 			
+			private function startDisplayFailedNotification(input:int, time:Number):void
+			{
+				displayFailedMessage = input;
+				canvasTimer = new Timer(time);
+				canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedNotification);
+				canvasTimer.start();
+			}
+
 			private function displayFailedNotification(event:TimerEvent):void
 			{
 				canvasTimer.stop();

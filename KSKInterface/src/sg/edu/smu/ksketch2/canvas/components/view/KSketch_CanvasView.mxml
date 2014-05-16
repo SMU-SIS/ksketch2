@@ -123,6 +123,7 @@
 			public function _initCanvas():void
 			{	
 				userData = data;
+				_mobileControl = userData.mobileControl;
 				
 				//We shouldn't make a new ksketch if one already exists
 				if(_KSketch)
@@ -152,9 +153,6 @@
 					else
 						throw new Error("Load call back not added");
 				}
-				
-				if(!isWeb)
-					_mobileControl = userData.mobileControl;
 				
 				//Actual setting up starts here
 				_KSketch = new KSketch2();

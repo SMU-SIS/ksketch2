@@ -13,6 +13,9 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 	
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
+	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	
@@ -53,8 +56,52 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			{
 				_object.visibilityControl.setVisibility(false, time, op);
 				_object.transformInterface.clearAllMotionsAfterTime(time, op);	
-			}
 				
+				//do a check if object belongs to a group and if all the objects in the group are erased at that time
+				
+				var parent:KGroup = _object.parent;
+				while(parent.id > 0)
+				{
+					var isErasedGroup:Boolean = false;
+					var children:KModelObjectList = parent.children;
+					
+					var visibilityArr:Array = new Array(children.length());
+					var i:int;
+					
+					for(i=0; i<visibilityArr.length; i++)
+					{
+						var child:KObject = children.getObjectAt(i);
+						
+						visibilityArr[i] = 0;
+						if(child.visibilityControl.alpha(time) == 0.2 || child.visibilityControl.alpha(time) == 0)
+							visibilityArr[i] = 1;
+					}
+					
+					var checkNum:Number=0;
+					
+					for(i=0; i< visibilityArr.length; ++i)
+					{
+						if(visibilityArr[0] == visibilityArr[i])
+							++checkNum;
+					}
+					
+					if(checkNum==visibilityArr.length)
+					{
+						if(visibilityArr[0] == 1)
+							isErasedGroup = true;
+					}
+					
+					if(isErasedGroup)
+					{
+						//parent.visibilityControl.setVisibility(false, time, op);
+						parent.transformInterface.clearAllMotionsAfterTime(time, op);
+						parent = parent.parent;
+					}
+					else
+						break;
+						
+				}
+			}
 		}
 		
 		/**

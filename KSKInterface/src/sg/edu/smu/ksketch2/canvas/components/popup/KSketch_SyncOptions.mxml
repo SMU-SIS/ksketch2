@@ -93,12 +93,12 @@
 				
 				var sketchNo:String;
 				if(syncSketchArr.length > 1)
-					sketchNo = "are " + syncSketchArr.length + " sketches";
+					sketchNo = syncSketchArr.length + " sketches";
 				else
-					sketchNo = "is 1 sketch";
+					sketchNo = "1 sketch";
 				
 				var accName:String = currentUser.u_realname;
-				syncLabel.text = "There " + sketchNo + " on this device. Add to '" + accName + "' account? " ;
+				syncLabel.text = "You have " + sketchNo + " on this device that have not been saved\nto your '" + accName + "' account. Do you want to save them now?" ;
 				
 				_counterSave = 0;
 			}

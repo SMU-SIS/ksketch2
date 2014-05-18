@@ -266,7 +266,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//check if slider is on top if xPosIsTick is true
 			if(xPosIsTick)
 			{
-				_tickmarkControl.grabTick(nearTick);
+				if(!KSketch_CanvasView.isWeb)
+					_tickmarkControl.grabTick(nearTick);
 				_autoSnap(nearTick);
 				nearTick = 0;
 			}
@@ -395,7 +396,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				_autoSnap(timeToX(time));
 			}
 			
-			if(_longTouch && !moveTick)
+			if(_longTouch && !moveTick && !KSketch_CanvasView.isWeb)
 			{
 				_keyMenu.open(contentGroup,true);
 				_keyMenu.x = _magnifier.x;
@@ -432,7 +433,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		public function _showMagnifier(event:TimerEvent):void
 		{
-			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
+			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick && !KSketch_CanvasView.isWeb)
 			{	
 				
 				var toShowTime:Number = xToTime(_tickmarkControl.grabbedTick.x);

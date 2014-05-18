@@ -15,7 +15,7 @@
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:transformWidget2="sg.edu.smu.ksketch2.canvas.components.transformWidget.*"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
-		initialize="_initCanvas()"
+		initialize="_initCanvas(true)"
 		add="_checkForImageData()"
 		addedToStage="_addedToStageHandler()"
 		creationPolicy="all"
@@ -48,7 +48,6 @@
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
-			//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			
@@ -62,6 +61,9 @@
 			
 			[Bindable]
 			public static var isWeb:Boolean = true;
+			
+			[Bindable]
+			public static var isWebViewer:Boolean = false;
 			
 			public static var createNewSketch:Boolean = false;
 			
@@ -120,10 +122,10 @@
 			}
 			
 			//Starts up the canvas in the following order
-			public function _initCanvas():void
+			public function _initCanvas(isView:Boolean):void
 			{	
 				userData = data;
-				_mobileControl = userData.mobileControl;
+				isWebViewer = isView;
 				
 				//We shouldn't make a new ksketch if one already exists
 				if(_KSketch)
@@ -153,6 +155,9 @@
 					else
 						throw new Error("Load call back not added");
 				}
+				
+				if(!isWeb)
+					_mobileControl = userData.mobileControl;
 				
 				//Actual setting up starts here
 				_KSketch = new KSketch2();
@@ -193,7 +198,9 @@
 				
 				_options.createDeferredContent();
 				_menuPopUp.createDeferredContent();
-				//_menuPopUp.alpha = 0;
+				
+				if(isWebViewer)
+					_menuPopUp.alpha = 0;
 				
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl,_interactionControl);
 				//web:timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _keyMenu, _googleAnalytics);

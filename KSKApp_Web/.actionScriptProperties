@@ -3,7 +3,6 @@
   <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="false" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" useFlashSDK="false" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="1">
-      <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/gaforflash/lib/analytics.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="4" path="">
         <excludedEntries>
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/flex.swc" useDefaultLinkType="false"/>
@@ -12,9 +11,10 @@
       </libraryPathEntry>
       <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/servicemonitor.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/mobile/mobilecomponents.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/gaforflash/lib/analytics.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/as3corelib.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/CollisionDetectionKit_v15/bin/CollisionDetectionKit_v15.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/Gestouch/bin/Gestouch.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/as3corelib-master/bin/as3corelib-master.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/KSKInterface/bin/KSKInterface.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/FLV Encoder/bin/FLV Encoder.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/KSKLibrary/bin/KSKLibrary.swc" useDefaultLinkType="false"/>

@@ -114,7 +114,7 @@
 					var finalHeight_1:Number = height;
 					var finalHeight_2:Number = maxY;
 					
-					if(KSketch_CanvasView.isWeb && KSketch_CanvasView.isWebViewer)
+					if(KSketch_CanvasView.isWebViewer)
 					{
 						finalHeight_1 += 20;
 						finalHeight_2 -= 20;

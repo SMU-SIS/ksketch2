@@ -199,7 +199,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			//_motionDisplay
 			if(actionUndo)
 			{
-				//web:_googleAnalytics.tracker.trackPageview("/canvas/undo");
+				KSketch_CanvasView.tracker.trackPageview("/canvas/undo");
 				if(_interactionControl.hasUndo)
 				{
 					_interactionControl.undo();
@@ -210,7 +210,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 			else
 			{
-				//web:_googleAnalytics.tracker.trackPageview("/canvas/redo");
+				KSketch_CanvasView.tracker.trackPageview("/canvas/redo");
 				if(_interactionControl.hasRedo)
 				{
 					_interactionControl.redo();
@@ -250,7 +250,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _recogniseDraw(event:GestureEvent):void
 		{
-			//web:_googleAnalytics.tracker.trackPageview( "/canvas/draw" );
+			KSketch_CanvasView.tracker.trackPageview( "/canvas/draw" );
 			if(_interactionControl.currentInteraction)
 				return;
 			

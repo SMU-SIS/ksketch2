@@ -25,8 +25,8 @@
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
-			//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 			import sg.edu.smu.ksketch2.utils.KSelection;
 			
 			private var _KSketch:KSketch2;
@@ -37,14 +37,11 @@
 			private var _oldSelection:KSelection;
 			private var _menu:SkinnablePopUpContainer;
 			private var _wasMenuOpen:Boolean = false;
-			//web:private var _googleAnalytics:GoogleAnalytics;
 			
 			private const SHOW_PLAY:int = 0;
 			private const SHOW_PAUSE:int = 1;
 			
 			
-			//web:public function init(timeControl:KSketch_TimeControl, interactionControl:KInteractionControl,
-			//													  KSketchInstance:KSketch2, menu:SkinnablePopUpContainer, googleAnalytics:GoogleAnalytics):void
 			public function init(timeControl:KSketch_TimeControl, interactionControl:KInteractionControl,
 								KSketchInstance:KSketch2, menu:SkinnablePopUpContainer):void
 			{
@@ -52,7 +49,6 @@
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
 				_menu = menu;
-				//web:_googleAnalytics = googleAnalytics;
 				
 				timeControl.addEventListener(KSketch_TimeControl.PLAY_START, _handlePlayPause);
 				timeControl.addEventListener(KSketch_TimeControl.PLAY_STOP, _handlePlayPause);
@@ -74,7 +70,7 @@
 				
 				if(event.type == KSketch_TimeControl.PLAY_START)
 				{
-					//web:_googleAnalytics.tracker.trackPageview("/timebar/pause");
+					KSketch_CanvasView.tracker.trackPageview("/timebar/pause");
 					buttonState = SHOW_PAUSE;
 					_oldSelection =_interactionControl.selection;
 					_interactionControl.selection = null; 
@@ -89,7 +85,7 @@
 				}
 				else
 				{
-					//web:_googleAnalytics.tracker.trackPageview("/timebar/play");
+					KSketch_CanvasView.tracker.trackPageview("/timebar/play");
 					buttonState = SHOW_PLAY;	// IF IT IS PAUSING,THEN SHOW PLAY!
 					
 					if(_wasMenuOpen)

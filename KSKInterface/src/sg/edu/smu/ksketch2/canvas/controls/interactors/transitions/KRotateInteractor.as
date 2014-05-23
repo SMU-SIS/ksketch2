@@ -16,8 +16,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
 	/**
@@ -81,7 +81,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		{
 			rotateFlag = true;
 			
-			//web:_googleAnalytics.tracker.trackPageview("/canvas/rotate");
+			KSketch_CanvasView.tracker.trackPageview("/canvas/rotate");
 			super._interaction_begin(event);
 			
 			_theta = 0;

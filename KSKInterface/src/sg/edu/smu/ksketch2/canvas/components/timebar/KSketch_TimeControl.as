@@ -285,7 +285,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		protected function _touchMove(event:MouseEvent):void
 		{
-			//web:_googleAnalytics.tracker.trackPageview( "/timebar/moveTime" );
+			KSketch_CanvasView.tracker.trackPageview( "/timebar/moveTime" );
 			//remove grabbed tick timer if it hasn't completed countdown when user enters move
 			if(grabbedTickTimer.currentCount == 0)
 			{
@@ -423,7 +423,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		private function _triggerLongTouch(event:TimerEvent):void
 		{
-			//web:_googleAnalytics.tracker.trackPageview( "/timebar/grabTick" );
+			KSketch_CanvasView.tracker.trackPageview( "/timebar/grabTick" );
 			_longTouch = true;
 			
 			_showMagnifier(event);
@@ -514,7 +514,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function startRecording():void
 		{
-			//web:_googleAnalytics.tracker.trackPageview( "/timebar/recording" );
+			KSketch_CanvasView.tracker.trackPageview( "/timebar/recording" );
 			if(recordingSpeed <= 0)
 				throw new Error("One does not record in 0 or negative time!");
 			

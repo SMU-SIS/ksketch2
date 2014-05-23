@@ -15,15 +15,17 @@
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:transformWidget2="sg.edu.smu.ksketch2.canvas.components.transformWidget.*"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
-		initialize="_initCanvas(true)"
+		initialize="_initCanvas(false)"
 		add="_checkForImageData()"
-		addedToStage="_addedToStageHandler()"
 		creationPolicy="all"
 		destructionPolicy="never" 
 		viewActivate="_enterView_ProcessData()"
 		>
 	<fx:Script>
 		<![CDATA[
+			import com.google.analytics.AnalyticsTracker;
+			import com.google.analytics.GATracker;
+			
 			import mx.events.FlexEvent;
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.utils.Base64Encoder;
@@ -67,6 +69,8 @@
 			
 			public static var createNewSketch:Boolean = false;
 			
+			public static var tracker:AnalyticsTracker = null;
+			
 			private var userData:Object = new Object();
 			private var _imageData:BitmapData;
 			private var _needToProcessData:Boolean;
@@ -88,8 +92,6 @@
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
 			
-			//web:private var _googleAnalytics:GoogleAnalytics;
-			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
 			//Starting up is hopefully done in the following stages
@@ -101,9 +103,6 @@
 			
 			private function _addedToStageHandler():void
 			{
-				//initialize GoogleAnalytics
-				//web:_googleAnalytics = new GoogleAnalytics();
-				//web:_googleAnalytics.init(this);
 			}
 			
 			private function _saveHandler(event:KIOEvent):void
@@ -126,6 +125,9 @@
 			{	
 				userData = data;
 				isWebViewer = isView;
+				
+				if(!tracker)
+					tracker = new GATracker(this, "UA-47832938-1", "AS3", false);
 				
 				//We shouldn't make a new ksketch if one already exists
 				if(_KSketch)
@@ -243,6 +245,9 @@
 			//This should be the last process of canvas start up.
 			private function _enterView_ProcessData():void
 			{	
+				if(!tracker)
+					tracker = new GATracker(this, "UA-47832938-1", "AS3", false);
+				
 				//Fail safe measure, we cannot depend on start up events firing properly
 				//Cancel activate handler if the events screwed up their order
 				if(!_KSketch)

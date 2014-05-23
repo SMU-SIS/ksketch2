@@ -16,8 +16,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	/**
  	 * The KScaleInteractor class serves as the concrete class for
@@ -79,7 +79,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		{
 			scaleFlag = true;
 			
-			//web:_googleAnalytics.tracker.trackPageview("/canvas/scale");
+			KSketch_CanvasView.tracker.trackPageview("/canvas/scale");
 			super._interaction_begin(event);
 			
 			_scale = 1;

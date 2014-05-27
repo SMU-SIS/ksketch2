@@ -14,7 +14,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var sync_sketchArr:ArrayCollection = new ArrayCollection();
 		private var sync_sketchDocArr:ArrayCollection = new ArrayCollection();
 		
-		public static function addNewSketchDocument(record:String, obj:Object, type:String):ArrayCollection
+		public function addNewSketchDocument(record:String, obj:Object, type:String):ArrayCollection
 		{
 			//get array of sketch documents from informationArr[1]
 			//sketchDocObj = {documents:[]}
@@ -95,8 +95,50 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			return arr;
 		}
+		
+		public function deleteSketchDocument(record:String, obj:Object, type:String):ArrayCollection
+		{
+			//get array of sketch documents from informationArr[1]
+			//sketchDocObj = {documents:[]}
+			var arr:ArrayCollection;
+			if(record)
+			{
+				var tempObj:Object = com.adobe.serialization.json.JSON.decode(record, true);
+				var tempArr:Array = (tempObj.sketches as Array);
+				
+				if(tempArr)
+					arr = convertArrayToArrayCollection(tempArr);
+			}
+			
+			//overwrite existing document with the new objDoc
+			if(!arr)
+				arr = new ArrayCollection();
+			
+			if(sketchExist(arr, obj.fileName, obj.sketchId))
+			{
+				for(var i:int=0; i<arr.length; i++)
+				{
+					var arrObj:Object = arr.getItemAt(i);
+					if(arrObj.fileName == obj.fileName && arrObj.sketchId == obj.sketchId)
+					{
+						if(type == "deleteFromWeb")
+						{
+							obj.deleteFlag = 1;
+							arr.removeItemAt(i);
+							arr.addItem(obj);
+						}
+						else if (type == "deleteFromCache")
+						{
+							arr.removeItemAt(i);
+						}
+					}
+				}
+			}
+			
+			return arr;
+		}
 
-		public static function solveDiscrepancy(cacheStr:String, webStr:String):String
+		public function solveDiscrepancy(cacheStr:String, webStr:String):String
 		{
 			var newInformationArr:String;
 			
@@ -178,7 +220,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return newInformationArr;
 		}
 		
-		public static function getUserObject(userStr:String):Object
+		public function getUserObject(userStr:String):Object
 		{
 			var obj:Object;
 			
@@ -188,7 +230,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return obj;
 		}
 		
-		public static function getSketchArr(sketchString:String):ArrayCollection
+		public function getSketchArr(sketchString:String):ArrayCollection
 		{
 			var sketchArr:ArrayCollection;
 			
@@ -198,13 +240,23 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var tempArr:Array = (sketchObj.sketches as Array);
 				
 				if(tempArr)
+				{
+					for(var i:int=0; i<tempArr.length; i++)
+					{
+						var currentObj:Object = tempArr[i];
+					
+						if(currentObj.deleteFlag == 1)
+							tempArr.splice(tempArr.indexOf(i), 1);	
+					}
+					
 					sketchArr = convertArrayToArrayCollection(tempArr);
+				}
 			}
 			
 			return sketchArr;
 		}
 		
-		public static function getSyncSketchObjects(cacheStr:String):ArrayCollection
+		public function getSyncSketchObjects(cacheStr:String, deleteSketch:Boolean):ArrayCollection
 		{
 			var sync_sketchArr:ArrayCollection = new ArrayCollection();
 			
@@ -218,17 +270,28 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var selectedDoc:Object;
 				for each(var obj:Object in cacheArr_sketch)
 				{
-					if(obj.save == -1)
+					if(deleteSketch)
 					{
-						if(!sketchExist(sync_sketchArr, obj.fileName, obj.sketchId))
-							sync_sketchArr.addItem(obj);
+						if(obj.deleteFlag == 1)
+						{
+							if(!sketchExist(sync_sketchArr, obj.fileName, obj.sketchId))
+								sync_sketchArr.addItem(obj);
+						}
+					}
+					else
+					{
+						if(obj.save == -1)
+						{
+							if(!sketchExist(sync_sketchArr, obj.fileName, obj.sketchId))
+								sync_sketchArr.addItem(obj);
+						}
 					}
 				}
 			}
 			return sync_sketchArr;
 		}
 		
-		public static function convertArrayToArrayCollection(arr:Array):ArrayCollection
+		public function convertArrayToArrayCollection(arr:Array):ArrayCollection
 		{
 			var arrColl:ArrayCollection = new ArrayCollection();
 			
@@ -238,7 +301,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return arrColl;
 		}
 		
-		public static function convertStringToArrayCollection(arrStr:String):ArrayCollection
+		public function convertStringToArrayCollection(arrStr:String):ArrayCollection
 		{
 			var arr:ArrayCollection;
 			if(arrStr)
@@ -255,7 +318,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		/**
 		 * Check if filename falready exist in the exisiting record of sketches
 		 */
-		public static function sketchExist(arr:*, fileName:String, sketchId:String):Boolean
+		public function sketchExist(arr:*, fileName:String, sketchId:String):Boolean
 		{
 			var exist:Boolean = false;
 			var i:int;
@@ -289,7 +352,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return exist;
 		}
 		
-		public static function sketchExistIndex(arr:*, fileName:String, sketchId:String):int
+		public function sketchExistIndex(arr:*, fileName:String, sketchId:String):int
 		{
 			var index:int = -1;
 			var i:int;
@@ -347,7 +410,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return index;
 		}
 		
-		public static function unsavedSketchExist(cachedStr:String):Boolean
+		public function unsavedSketchExist(cachedStr:String):Boolean
 		{
 			var exist:Boolean = false;
 			var tempArr:Array;

@@ -3,18 +3,15 @@ package sg.edu.smu.ksketch2
 	import com.adobe.serialization.json.JSON;
 	
 	import mx.collections.ArrayCollection;
-	import mx.collections.Sort;
-	import mx.collections.SortField;
 	
 	import spark.utils.DataItem;
 	
 	import sg.edu.smu.ksketch2.utils.SortingFunctions;
-
+	
 	[Bindable]
 	public class KSketch_UserSketches
 	{
 		private var keys:Object = {};
-		//public var arrEntities:Array = [];
 		
 		public var arrDG:ArrayCollection = new ArrayCollection();
 		
@@ -78,44 +75,6 @@ package sg.edu.smu.ksketch2
 			return arrDG;
 		}
 		
-		/*
-		public static function getSketchArrayToSync(arr:Array):ArrayCollection
-		{
-			var syncArr:ArrayCollection = new ArrayCollection();
-			
-			for(var i:int=0; i<arr.length; i++)
-			{
-				if(arr[i].data.sketchId == "-1")
-				{
-					if(!syncArr.contains(arr[i]))
-						syncArr.addItem(arr[i]);		
-				}
-			}
-			
-			return syncArr;
-		}
-		
-		public static function getSketchDocumentArrayToSync(arr:Array, arrColl:ArrayCollection):ArrayCollection
-		{
-			var syncArr:ArrayCollection = new ArrayCollection();
-			
-			//only get documents that belong to sketches in arrColl
-			for(var i:int=0; i<arr.length; i++)
-			{
-				var sketchDocObj:Object = com.adobe.serialization.json.JSON.decode(arr[i], true);
-				for(var j:int=0; j<arrColl.length; j++)
-				{
-					if(!sketchDocObj.data.sketchId && (sketchDocObj.data.originalName == arrColl.getItemAt(j).data.fileName))
-					{
-						if(!syncArr.contains(arr[i]))
-							syncArr.addItem(arr[i]);	
-					}
-				}
-			}
-			
-			return syncArr;
-		}*/
-		
 		public static function getSketchDocumentObjectByName(arr:Array, name:String):String
 		{
 			var rawData:String;
@@ -163,7 +122,7 @@ package sg.edu.smu.ksketch2
 			return hasToSync;
 		}
 		
-		public static function initializeAutoSaveSketchName(arrUserSketch:KSketch_UserSketches):int
+		public function initializeAutoSaveSketchName(arrUserSketch:KSketch_UserSketches):int
 		{
 			var autoSaveCounter:int = 0;
 			var sortBy:String = "fileName";
@@ -188,21 +147,5 @@ package sg.edu.smu.ksketch2
 			
 			return autoSaveCounter;
 		}
-		
-		/*
-		private function removedDuplicates(item:Object):Boolean {
-			if (keys.hasOwnProperty(item.name)) {
-				// If the keys Object already has this property,
-				//return false and discard this item.
-				return false;
-			} else {
-				//Else the keys Object does *NOT* already have
-				//this key, so add this item to the new data
-				//provider.
-				keys[item.name] = item;
-				return true;
-			}
-		}
-		*/
 	}	
 }

@@ -62,11 +62,11 @@
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
 				//check for network connection
-				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.pingurl));
 				_monitor.addEventListener(StatusEvent.STATUS, isConnected);
 				_monitor.start();
 				
-				_monitorTimer = new Timer(2500);
+				_monitorTimer = new Timer(5000);
 				_monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
 				_monitorTimer.start();
 				
@@ -193,6 +193,7 @@
 				
 				objDoc = KWebData.prepareSketchDocument(userData, finalFileName);
 				objDoc.save = -1;
+				objDoc.deleteFlag = 0;
 				
 				if(objDoc.sketchId == -1)
 				{
@@ -266,8 +267,6 @@
 					overwriteSave = true;
 				
 				close();
-				
-				//trace("RESULT: " + resultRaw.toString());
 			}
 			
 			private function navigateBack():void

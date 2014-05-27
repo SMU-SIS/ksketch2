@@ -26,5 +26,7 @@ package sg.edu.smu.ksketch2
 		
 		public static const jsonurlPostXML:String = "http://ksketch.smu.edu.sg/post/sketchxml";						//To save a sketch to Datastore
 		public static const jsonurlOverwritePostXML:String = "http://ksketch.smu.edu.sg/post/overwritesketchxml";	//To save a sketch from an older version to Datastore
+		
+		public static const jsonurlDeleteSketch:String = "http://ksketch.smu.edu.sg/post/deletesketch";				//To delete a sketch from Datastore
 	}
 }

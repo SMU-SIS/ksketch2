@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-					xmlns:s="library://ns.adobe.com/flex/spark" 
-					xmlns:mx="library://ns.adobe.com/flex/mx"
-					currentState="normal"
-					>
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:views="sg.edu.smu.ksketch2.canvas.components.view.*"
+				currentState="default" autoDrawBackground="false"
+				creationComplete="iconitemrenderer1_creationCompleteHandler(event)" 
+				>
 	<s:states>
-		<s:State name="normal"/>
-		<s:State name="myState"/>
-		<s:State name="selected"/>
+		<s:State name="default"/>
+		<s:State name="show"/>
 	</s:states>
 	
-	<s:HGroup id="bc" horizontalAlign="center" height="120" verticalAlign="middle" paddingLeft="15" paddingRight="15">
+	<s:HGroup id="bc" horizontalAlign="center" height="120" verticalAlign="middle" paddingLeft="15">
 		<s:Image id="imgData"/>
 		
 		<s:VGroup>
@@ -29,10 +30,12 @@
 			import mx.utils.Base64Decoder;
 			
 			private var _myIcon:Bitmap;
+			private var _oldSelection:String;
 			
 			public static var selectedSketchName:String;
 			public static var selectedSketchId:String;
 			public static var selectedVersion:String;
+			public static var openActionBar:Boolean = false;
 			
 			protected function state1_enterStateHandler(event:FlexEvent):void
 			{
@@ -43,7 +46,7 @@
 			{
 				if(value.image)
 				{
-					super.data = value
+					super.data = value;
 					
 					//set name and date properties
 					sketchName.text = value.name;
@@ -87,16 +90,71 @@
 				{
 					selectedSketchName = sketchName.text;
 					selectedSketchId = sketchId.text; 
-					selectedVersion = sketchVersion.text; 
+					selectedVersion = sketchVersion.text;
+					
+					if(!openActionBar)
+						autoDrawBackground = true;
 				}
 				
-				setCurrentState("normal", true);
+				setCurrentState("default", true);
 			}
 			
 			override public function setCurrentState(stateName:String, playTransition:Boolean = true):void {
 				super.setCurrentState(stateName, playTransition);
 			}
+			
+			protected function iconitemrenderer1_creationCompleteHandler(event:FlexEvent):void
+			{
+				Multitouch.inputMode = MultitouchInputMode.GESTURE;
+				this.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
+				this.addEventListener(MouseEvent.MOUSE_DOWN, onDown);
+			}
+			
+			protected function onSwipe(event:TransformGestureEvent):void
+			{
+				timerTest.stop();
+				timerTest.removeEventListener(TimerEvent.TIMER, onLongPress);
+				
+				if(actBar.stage)
+				{
+					openActionBar = false;
+					this.removeElement(actBar);
+				}
+				
+				if(event.offsetX == -1){
+					this.addElement(actBar);
+					
+					actBar.visible = true;
+					actBar.x = 575;
+					
+					openActionBar = true;
+				}
+			}
+			
+			private var timerTest:Timer;
+			
+			protected function onDown(event:MouseEvent):void
+			{
+				timerTest = new Timer(200,1);
+				timerTest.start();
+				timerTest.addEventListener(TimerEvent.TIMER, onLongPress);	
+			}
+			
+			protected function onLongPress(event:TimerEvent):void
+			{
+				timerTest.stop();
+				timerTest.removeEventListener(TimerEvent.TIMER, onLongPress);
+				
+				if(!actBar.stage)
+				{
+					autoDrawBackground = true;
+					openActionBar = false;
+				}
+			}
+			
 		]]>
 	</fx:Script>
-	
+	<fx:Declarations>
+		<views:KSketch_HomeView_ListActions id="actBar" width="100%" height="100%"/>
+	</fx:Declarations>
 </s:ItemRenderer>

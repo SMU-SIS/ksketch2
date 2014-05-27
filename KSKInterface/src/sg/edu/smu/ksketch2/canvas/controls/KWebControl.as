@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public var informationArr:Array;
 		private var _mobileControl:KMobileControl;
 		private var _isConnected:Boolean;
+		private var _fileControl:KFileControl = new KFileControl();
 		
 		public function KWebControl(userObj:Object, mobileControl:KMobileControl)
 		{	
@@ -57,7 +58,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var tempArr:Array = (sketchObj.entities as Array);
 			if(tempArr.length > 0)
 			{
-				var newTempArr:ArrayCollection = KFileControl.convertArrayToArrayCollection(tempArr);
+				var newTempArr:ArrayCollection = _fileControl.convertArrayToArrayCollection(tempArr);
 				for each(var tempObj:Object in newTempArr)
 				{
 					tempObj = KWebData.convertWebObjForMobile(tempObj);
@@ -77,8 +78,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 	
 		public function addSketchToList(docObj:Object, type:String):void
 		{
+			var fileControl:KFileControl = new KFileControl();
 			var sketchDocsArr:ArrayCollection;
-			sketchDocsArr = KFileControl.addNewSketchDocument(informationArr[1], docObj, type);
+			sketchDocsArr = fileControl.addNewSketchDocument(informationArr[1], docObj, type);
 			
 			docObj = new Object();
 			if(sketchDocsArr)															
@@ -93,7 +95,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function get sketchList():ArrayCollection
 		{
 			var arr:ArrayCollection;
-			arr = KFileControl.getSketchArr(informationArr[1]);
+			arr = _fileControl.getSketchArr(informationArr[1]);
 			return arr;
 		}
 		

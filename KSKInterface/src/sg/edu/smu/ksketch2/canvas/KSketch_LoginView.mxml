@@ -135,12 +135,10 @@
 			private function locationChangingHandler(event:LocationChangeEvent):void
 			{
 				var currentURL:String = event.location.toString();
-				trace("Changing Location: " + currentURL);
 				
 				//if successful login
 				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
 				{
-					trace("successful login");
 					//retrieve id from HTML page
 					webView.loadURL(KSketchWebLinks.urlUser);
 				}
@@ -154,7 +152,6 @@
 			private function locationChangedHandler(event:LocationChangeEvent):void
 			{
 				var currentURL:String = event.location.toString();
-				trace("CHANGE Location: " + currentURL);
 				
 				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
 				{
@@ -171,7 +168,6 @@
 					var arr:Array = currentURL.split(".html?");
 					var vars:URLVariables = new URLVariables(arr[1]);
 					
-					trace("user token: " + vars.id);
 					//get json url
 					GetUser.url = KSketchWebLinks.jsonurlUserMobile + "?id=" + vars.id;
 					GetUser.send();
@@ -193,7 +189,6 @@
 				//check if user data does not exist
 				if(obj != null)
 				{
-					trace("object is not null");
 					// create a new User instance and
 					// save it to data property
 					var kUser:KSketch_User = new KSketch_User(obj);

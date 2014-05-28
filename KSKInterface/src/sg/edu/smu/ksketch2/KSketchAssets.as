@@ -271,6 +271,10 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_center_down:Class;
 		
+		[Embed("assets/Logo_KSketch.png")] 
+		[Bindable] 
+		public static var texture_logo:Class;
+		
 		[Embed("assets/Home_KSketch_New.png")] 
 		[Bindable] 
 		public static var image_new:Class;

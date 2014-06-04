@@ -30,8 +30,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			if (_mySO.data) {
 				if(_mySO.data.user)
-					informationArr[0] = _mySO.data.user;	
-				
+					informationArr[0] = _mySO.data.user;
 				if(_mySO.data.userSketch)
 					informationArr[1] = _mySO.data.userSketch;
 			}
@@ -58,7 +57,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 			else
 				informationArr[0] = null;
 		}
-		
 		
 		public function addSketchToList(sketchObj:Object, type:String):void
 		{
@@ -105,6 +103,18 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			var obj:Object;
 			obj = _fileControl.getUserObject(informationArr[0]);
+			return obj;
+		}
+		
+		public function set user(userObj:Object):void
+		{
+			informationArr[0] = com.adobe.serialization.json.JSON.encode(userObj);
+		}
+			
+		public function get userSketch():Object
+		{
+			var obj:Object;
+			obj = _fileControl.getUserObject(informationArr[1]);
 			return obj;
 		}
 		

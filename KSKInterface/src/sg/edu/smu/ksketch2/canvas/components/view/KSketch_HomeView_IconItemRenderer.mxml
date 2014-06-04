@@ -112,12 +112,16 @@
 			
 			protected function onSwipe(event:TransformGestureEvent):void
 			{
-				timerTest.stop();
-				timerTest.removeEventListener(TimerEvent.TIMER, onLongPress);
+				if(timerTest)
+				{
+					timerTest.stop();
+					timerTest.removeEventListener(TimerEvent.TIMER, onLongPress);
+				}
 				
 				if(actBar.stage)
 				{
 					openActionBar = false;
+					wipeEffectOut.play();
 					this.removeElement(actBar);
 				}
 				
@@ -128,6 +132,7 @@
 					actBar.x = 575;
 					
 					openActionBar = true;
+					wipeEffect.play();
 				}
 			}
 			
@@ -142,8 +147,12 @@
 			
 			protected function onLongPress(event:TimerEvent):void
 			{
-				timerTest.stop();
-				timerTest.removeEventListener(TimerEvent.TIMER, onLongPress);
+				if(timerTest)
+				{
+					timerTest.stop();
+					timerTest.removeEventListener(TimerEvent.TIMER, onLongPress);
+						
+				}
 				
 				if(!actBar.stage)
 				{
@@ -155,6 +164,14 @@
 		]]>
 	</fx:Script>
 	<fx:Declarations>
+		<s:Parallel id="wipeEffect" target="{actBar}">
+			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
+			<s:Move duration="150" xFrom="{this.width}" xTo="575"/>
+		</s:Parallel>
+		<s:Parallel id="wipeEffectOut" target="{actBar}">
+			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
+			<s:Move duration="150" xTo="{this.width}" xFrom="575"/>
+		</s:Parallel>
 		<views:KSketch_HomeView_ListActions id="actBar" width="100%" height="100%"/>
 	</fx:Declarations>
 </s:ItemRenderer>

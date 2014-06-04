@@ -60,7 +60,12 @@ package sg.edu.smu.ksketch2
 					tempItem.originalVersion = arr.getItemAt(i).originalVersion;
 					tempItem.image = arr.getItemAt(i).thumbnailData;
 					
-					arrDG.addItem(tempItem);
+					if(!arr.getItemAt(i).deleteFlag)
+					{
+						arrDG.addItem(tempItem);
+					}
+					
+					
 				}
 			}
 		}

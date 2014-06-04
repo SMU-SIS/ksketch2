@@ -37,8 +37,10 @@
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
+			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+			
 			
 			private var _homeView:KSketch_HomeView;
 			private var _canvasNotice:KSketch_CanvasNotice;
@@ -51,12 +53,12 @@
 			private var resultArr:Array;
 			private var statusArr:Array;
 			private var userData:Object;
-			private var deleteFlag:Boolean = false;
 			
 			public var syncSketchArr:ArrayCollection;
 			public var currentUser:Object;
+			public var deleteFlag:Boolean = false;
 			
-			public static var successfullySynced:Boolean;
+			public var successfullySynced:Boolean;
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
@@ -153,7 +155,6 @@
 				
 				for(var i:int=0; i<delArr.length; i++)
 				{
-					deleteFlag = true;
 					currentObj = delArr.getItemAt(i);
 					currentObj.save = 0;
 					
@@ -232,10 +233,7 @@
 							writeAllToCache();
 					}
 					else
-					{
-						deleteFlag = false;
-						_homeView.deleteSketchDocument(obj, "deleteFromCache");
-					}
+						_homeView.deleteSketchDocument(obj, KFileControl.DELETE_CACHE);
 				};
 			}
 			
@@ -256,8 +254,6 @@
 							writeAllToCache();
 						}
 					}
-					else
-						deleteFlag = false;
 				};
 			}
 			
@@ -288,11 +284,9 @@
 					for(i=0; i<resultArr.length; i++)
 					{
 						resultArr[i].save = 0;
-						_homeView._mobileControl.addSketchToList(resultArr[i], "sync");	
+						_homeView._mobileControl.addSketchToList(resultArr[i], KFileControl.ADD_SYNC);	
 					}
 				}
-				
-				
 				close();
 			}
 			

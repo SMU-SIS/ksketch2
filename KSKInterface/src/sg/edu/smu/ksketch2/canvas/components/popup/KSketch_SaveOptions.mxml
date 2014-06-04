@@ -36,10 +36,9 @@
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 			import sg.edu.smu.ksketch2.utils.KWebData;
 			
-			public static var returnToHome:Boolean = false;
-			public static var overwriteSave:Boolean = false;
 			public static var saveCounter:int = 0;
 			
 			private var _canvasView:KSketch_CanvasView;
@@ -57,7 +56,9 @@
 			public var userData:Object = new Object();
 			public var mobileControl:KMobileControl;
 			
-			public static var canvasDirty:Boolean = false;
+			public var returnToHome:Boolean = false;
+			public var overwriteSave:Boolean = false;
+			public var canvasDirty:Boolean = false;
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
@@ -104,6 +105,7 @@
 					{
 						canvasDirty = true;
 						_canvasView._interactionControl.reset();
+						incrementSaveCounter();
 					}
 					else
 					{
@@ -112,7 +114,6 @@
 					}
 					
 					_success = false;
-					incrementSaveCounter();
 				}
 				
 			}
@@ -152,11 +153,6 @@
 				_canvasView = canvasView;
 				_overwriteSaveOptions = overwriteSave;
 				_menu = menu;
-				
-				/*check for network connection
-				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
-				_monitor.addEventListener(StatusEvent.STATUS, isConnected);
-				_monitor.start();*/
 			}
 			
 			private function isConnected(event:StatusEvent):void
@@ -204,7 +200,7 @@
 				}
 				
 				//save to cache
-				mobileControl.addSketchToList(objDoc, "save");
+				mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
 
 				if(_canvasView._isNewSketch)
 				{
@@ -258,13 +254,16 @@
 				{
 					//save to cache
 					objDoc.save = 0;
-					mobileControl.addSketchToList(objDoc, "save");
+					mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
 					
 					overwriteSave = false;
 					_success = true;
 				}
 				else if (result.status == "errorDiscrepancy")
+				{
 					overwriteSave = true;
+					_success = false;
+				}
 				
 				close();
 			}
@@ -281,7 +280,7 @@
 			{
 				objDoc.save = -1						//flag save to web for existing sketch
 					
-				mobileControl.addSketchToList(objDoc, "save");	//overwrite cached object	
+				mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);	//overwrite cached object	
 				
 				navigateBack();
 			}
@@ -297,13 +296,13 @@
 				
 				if(!returnToHome)
 				{
-					KSketch_SaveOptions.canvasDirty = true;
+					canvasDirty = true;
 					_canvasView._interactionControl.reset();
 				}
 					
 				else
 				{
-					KSketch_SaveOptions.canvasDirty = true;
+					canvasDirty = true;
 					_menu._exit();	
 				}
 			}

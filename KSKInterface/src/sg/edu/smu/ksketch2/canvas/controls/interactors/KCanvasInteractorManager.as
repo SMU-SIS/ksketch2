@@ -30,10 +30,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KLoopSelectInteractor;
-	import sg.edu.smu.ksketch2.events.KSketchEvent;
 
-	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
-	
 	/**
 	 * The KCanvasInteractorManager class serves as the concrete class for
 	 * managing canvas interactions in K-Sketch. Specifically, it serves
@@ -59,7 +56,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _modelDisplay:KModelDisplay;						// the model display
 		private var _motionDisplay:KMotionDisplay;
 		private var _feedbackMessage:KSketch_Feedback_Message;			// the feedback manager
-		//web:private var _googleAnalytics:GoogleAnalytics;
 		
 		private var _tapGesture:TapGesture;								// the tap gesture
 		private var _doubleTap:TapGesture;								// the double-tap gesture
@@ -86,7 +82,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
 												 inputComponent:UIComponent, modelDisplay:KModelDisplay, motionDisplay:KMotionDisplay,
 												 feedbackMessage:KSketch_Feedback_Message)
-												 //web:feedbackMessage:KSketch_Feedback_Message, googleAnalytics:GoogleAnalytics)
 		{
 			// set up the canvas interactor manager
 			super(this);								// set up the event dispatcher
@@ -97,7 +92,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_motionDisplay = motionDisplay;
 			_feedbackMessage = feedbackMessage;			// initialize the feedback display
 			_keyDown = false;							// set the key down boolean flag as off
-			//web:_googleAnalytics = googleAnalytics;
 
 			/**
 			 * set the draw, tap, and loop select interactors

@@ -6,6 +6,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 	
 	public class KFileControl
 	{
+		public static const DELETE_CACHE:String = "deleteFromCache";
+		public static const DELETE_WEB:String = "deleteFromWeb";
+		
+		public static const ADD_SAVE_CACHE:String = "save";
+		public static const ADD_SAVE_WEB:String = "saveCurrentFromWeb";
+		public static const ADD_SYNC:String = "sync";
+		
 		//main variable to store information
 		//[0] = user information
 		//[1] = list of sketches
@@ -43,9 +50,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 					{
 						var overwrite:Boolean = false;
 						
-						if(type == "saveCurrentFromWeb")
+						if(type == ADD_SAVE_WEB)
 							overwrite = true;
-						else if (type == "sync")
+						else if (type == ADD_SYNC)
 						{
 							obj.fileData = arrObj.fileData;
 							overwrite = true;
@@ -121,13 +128,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 					var arrObj:Object = arr.getItemAt(i);
 					if(arrObj.fileName == obj.fileName && arrObj.sketchId == obj.sketchId)
 					{
-						if(type == "deleteFromWeb")
+						if(type == DELETE_WEB)
 						{
 							obj.deleteFlag = 1;
 							arr.removeItemAt(i);
 							arr.addItem(obj);
 						}
-						else if (type == "deleteFromCache")
+						else if (type == DELETE_CACHE)
 						{
 							arr.removeItemAt(i);
 						}
@@ -241,14 +248,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 				
 				if(tempArr)
 				{
-					for(var i:int=0; i<tempArr.length; i++)
-					{
-						var currentObj:Object = tempArr[i];
-					
-						if(currentObj.deleteFlag == 1)
-							tempArr.splice(tempArr.indexOf(i), 1);	
-					}
-					
 					sketchArr = convertArrayToArrayCollection(tempArr);
 				}
 			}

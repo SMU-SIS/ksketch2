@@ -32,7 +32,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		private var _center:Point;					// the center point
 		private var _startScaleDistance:Number;		// the start scale distance
 		private var _scale:Number;					// the scaling value
-		//web:private var _googleAnalytics:GoogleAnalytics;
 		
 		/**
  		 * The main constructor for the KScaleInteractor class.
@@ -44,12 +43,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
  		 */
 		public function KScaleInteractor(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 										inputComponent:DisplayObject, modelSpace:DisplayObject)
-										//web:googleAnalytics:GoogleAnalytics)
 		{
 			super(KSketchInstance, interactionControl, modelSpace);
 			_scaleGesture = new PanGesture(inputComponent);
 			_scaleGesture.maxNumTouchesRequired = 1;
-			//web:_googleAnalytics = googleAnalytics;
 		}
 		
 		override public function reset():void

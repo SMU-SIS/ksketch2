@@ -32,7 +32,6 @@
 			import com.adobe.serialization.json.JSON;
 			
 			import mx.collections.ArrayCollection;
-			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -59,6 +58,7 @@
 			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
 			import sg.edu.smu.ksketch2.utils.KWebData;
 			
+			private static const DISPLAY_FAILED_DEFAULT:int = -1;
 			private static const DISPLAY_FAILED_LOGIN:int = 0;
 			private static const DISPLAY_FAILED_SYNC:int = 1;
 			
@@ -94,7 +94,7 @@
 			
 			//fail notifications for login and sync variables
 			private var canvasTimer:Timer;
-			private var displayFailedMessage:int = 0;				//display failed message variable (0) for login, (1) for sync
+			private var displayFailedMessage:int = -1;				//display failed message variable (0) for login, (1) for sync
 			public static var canvasTimerDisabled:Boolean = false;
 			public static var hasBeenNotified:Boolean = false;
 			
@@ -157,16 +157,22 @@
 			
 			private function prepareHomeView():void
 			{
+				_mobileControl = new KMobileControl();
+				
 				//initialize login button and KUser object
-				if(!data || data == "Skip Login" || data == "Lost Connection" || data == "Janrain Failed")
+				if(!data || data == KSketch_LoginView.LOGIN_CANCEL 
+				|| data == KSketch_LoginView.LOGIN_LOSTCONN 
+				|| data == KSketch_LoginView.LOGIN_JANRAINFAIL)
 				{
 					if(data)
 					{
 						var errorMessage:String = String(data);
 						
-						if(errorMessage == "Lost Connection" || errorMessage == "Janrain Failed") 
+						if(errorMessage == KSketch_LoginView.LOGIN_LOSTCONN
+						|| errorMessage == KSketch_LoginView.LOGIN_JANRAINFAIL) 
 						{
-							startDisplayFailedNotification(DISPLAY_FAILED_LOGIN, 500);
+							displayFailedMessage = DISPLAY_FAILED_LOGIN;
+							startDisplayFailedNotification(1000);
 							
 							hasBeenNotified = true;
 							_failedLogin = true;
@@ -174,12 +180,26 @@
 					}
 					
 					var obj:Object = new Object();
-					obj.status = "failed";
-					obj.u_login = "n.a";
-					var kUser:KSketch_User = new KSketch_User(obj);
-					userData.kUser = kUser;
+					var kUser:KSketch_User;
 					
-					loginButton.label = "Login";
+					if(_mobileControl.user != null)
+					{
+						obj = _mobileControl.user;
+						kUser = new KSketch_User(obj);
+						userData.kUser = kUser;
+						
+						KSketch_LoginView._isLoggedIn = true;
+						loginButton.label = "Logout, "+ userData.kUser.u_realname;
+					}
+					else
+					{
+						obj.status = "failed";
+						obj.u_login = "n.a";
+						kUser = new KSketch_User(obj);
+						userData.kUser = kUser;
+						
+						loginButton.label = "Login";
+					}
 				}
 				else
 				{
@@ -189,17 +209,18 @@
 					if(dataProxy.kUser)
 						userData.kUser = dataProxy.kUser;
 					
-					if(KSketch_LoginView._isLoggedIn)
+					if(userData.kUser.id != "n.a")
 					{
+						_mobileControl.user = userData.kUser;
 						loginButton.label = "Logout, "+ userData.kUser.u_realname;
 						
 						if(!_isConnected && !hasBeenNotified)
 						{
-							startDisplayFailedNotification(DISPLAY_FAILED_SYNC, 2500);
+							displayFailedMessage = DISPLAY_FAILED_SYNC;
+							startDisplayFailedNotification(3500);
 							hasBeenNotified = true;
 						}
 					}
-						
 					else
 						loginButton.label = "Login";
 				}
@@ -213,7 +234,7 @@
 			{
 				startProgressBar();
 				
-				_mobileControl = new KMobileControl();
+				//cammie: _mobileControl = new KMobileControl();
 				
 				userData.homeView = this;
 				userData.mobileControl = _mobileControl;
@@ -303,7 +324,7 @@
 				else if (_isXML && !_deleteSketchFlag)
 					displaySketchDocument(null, false);
 				else if(_deleteSketchFlag)
-					deleteSketchDocument(null, "deleteFromWeb");
+					deleteSketchDocument(null, KFileControl.DELETE_WEB);
 			}
 			
 			private function resolveConflict():void
@@ -323,6 +344,7 @@
 				{
 					if(syncSketchArr.length > 0)
 					{
+						_syncOptions.deleteFlag = false;
 						_syncOptions.resetSyncArrays();
 						
 						_syncOptions.currentUser = userData.kUser;
@@ -332,7 +354,10 @@
 					}
 					
 					if(deletedSketchArr.length > 0)
+					{
+						_syncOptions.deleteFlag = true;
 						_syncOptions.deleteSketch(deletedSketchArr, this);
+					}		
 				}
 				else
 					updateFromWeb();
@@ -371,8 +396,7 @@
 					else
 						arrDG.addAll(userSketch.getUserSketchArray(sortBy));
 					
-					listSketches_unavailable.visible = false;	
-					
+					listSketches_unavailable.visible = false;		
 				}
 				else
 				{
@@ -381,31 +405,34 @@
 				}
 				
 				stopProgressBar();
+				_mobileControl.writeToCache(_mobileControl.informationArr);
 			}
 			
-			private function startDisplayFailedNotification(input:int, time:Number):void
+			private function startDisplayFailedNotification(time:Number):void
 			{
-				displayFailedMessage = input;
-				canvasTimer = new Timer(time);
-				canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedNotification);
+				canvasTimer = new Timer(time,1);
+				canvasTimer.addEventListener(TimerEvent.TIMER_COMPLETE, displayFailedNotification);
 				canvasTimer.start();
 			}
 			
 			private function displayFailedNotification(event:TimerEvent):void
 			{
-				canvasTimer.stop();
-				canvasTimer.removeEventListener(TimerEvent.TIMER, displayFailedNotification);
-				
-				if(displayFailedMessage == 0)
+				if(displayFailedMessage == DISPLAY_FAILED_LOGIN)
 					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_LOGIN;
-				else if(displayFailedMessage == 1)
+				else if(displayFailedMessage == DISPLAY_FAILED_SYNC)
 					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SYNC;
+					
+				if(displayFailedMessage != DISPLAY_FAILED_DEFAULT)
+				{
+					_canvasNotice.open(this, true);
+					PopUpManager.centerPopUp(_canvasNotice);
+					
+					_failedLogin = false;
+					displayFailedMessage = DISPLAY_FAILED_DEFAULT;	
+				}
 				
-				_canvasNotice.open(this, true);
-				PopUpManager.centerPopUp(_canvasNotice);
-				
-				_failedLogin = false;
-				displayFailedMessage = 0;
+				//canvasTimer.stop();
+				canvasTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, displayFailedNotification);
 			}
 			
 			private function displaySketchDocument(obj:Object, checkConflict:Boolean):void
@@ -437,7 +464,7 @@
 				
 				if(finalObj.fileData)
 				{
-					_mobileControl.addSketchToList(finalObj, "saveCurrentFromWeb");
+					_mobileControl.addSketchToList(finalObj, KFileControl.ADD_SAVE_WEB);
 					
 					//create XML and date object from JSON to create a KSketchDocument object
 					var xml:XML = new XML(finalObj.fileData);
@@ -522,19 +549,19 @@
 				_monitor.start();
 				
 				_monitorTimer = new Timer(2000);
-				_monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
+				_monitorTimer.addEventListener(TimerEvent.TIMER_COMPLETE, endMonitor);
 				_monitorTimer.start();
 			}
 			
 			private function endMonitor(event:TimerEvent):void
 			{
+				_isConnected = false;
+				
 				_monitor.stop();
 				_monitorTimer.stop();
 				
-				_isConnected = false;
-				
 				_monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
-				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, endMonitor);
 				
 				if(_isXML)
 					prepareCanvasView();
@@ -556,7 +583,7 @@
 				_monitorTimer.stop();
 				
 				_monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
-				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, endMonitor);
 				
 				if(_isXML)
 					prepareCanvasView();
@@ -613,7 +640,6 @@
 				
 			}
 			
-			//cammie: need to implement delete sketch on python
 			private function prepareDeleteSketch():void
 			{
 				if(_isConnected && KSketch_LoginView._isLoggedIn)
@@ -631,12 +657,12 @@
 						startProgressBar();	
 					}
 					
-					deleteSketchDocument(null, "deleteFromCache");
+					deleteSketchDocument(null, KFileControl.DELETE_CACHE);
 				}
 				else if(KSketch_LoginView._isLoggedIn)
-					deleteSketchDocument(null, "deleteFromWeb");
+					deleteSketchDocument(null, KFileControl.DELETE_WEB);
 				else
-					deleteSketchDocument(null, "deleteFromCache");
+					deleteSketchDocument(null, KFileControl.DELETE_CACHE);
 			}
 			
 			public function deleteSketchDocument(obj:Object, type:String):void
@@ -644,8 +670,14 @@
 				//close action bar
 				if(_oldEvent)
 				{
-					KSketch_HomeView_IconItemRenderer.openActionBar = false;
-					(_oldEvent.target as KSketch_HomeView_IconItemRenderer).removeElement((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar);
+					if(_oldEvent.target is KSketch_HomeView_IconItemRenderer)
+						if((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar)
+							if((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar.stage)
+							{
+								KSketch_HomeView_IconItemRenderer.openActionBar = false;
+								(_oldEvent.target as KSketch_HomeView_IconItemRenderer).removeElement((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar);
+							}
+					
 					_oldEvent = null;
 				}
 				
@@ -666,7 +698,7 @@
 						if((tempObj.fileName == _selectedSketchName) && (tempObj.sketchId == _selectedSketchId))
 						{
 							if(_selectedSketchId == "")
-								type = "deleteFromCache";
+								type = KFileControl.DELETE_CACHE;
 							finalObj = tempObj;
 							break;	
 						}
@@ -693,7 +725,10 @@
 					{
 						if(event.target as KSketch_HomeView_IconItemRenderer)
 						{
-							if((_oldEvent.target as KSketch_HomeView_IconItemRenderer) != (event.target as KSketch_HomeView_IconItemRenderer))
+							if((_oldEvent.target is KSketch_HomeView_IconItemRenderer) 
+								&& (event.target is KSketch_HomeView_IconItemRenderer) 
+								&& ((_oldEvent.target as KSketch_HomeView_IconItemRenderer) != (event.target as KSketch_HomeView_IconItemRenderer)
+								))
 							{
 								currentSelectedSketchName = (event.target as KSketch_HomeView_IconItemRenderer).sketchName.text;
 								

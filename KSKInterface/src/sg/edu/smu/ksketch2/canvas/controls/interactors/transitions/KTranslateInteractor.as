@@ -32,7 +32,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		private var _translateGesture:PanGesture;	// the translate gesture
 		private var _previousPoint:Point;			// the previous point
 		private var _startPoint:Point;				// the start point
-		//web:private var _googleAnalytics:GoogleAnalytics;
 		
 		/**
  		 * The main constructor for the KTranslateInteractor class.
@@ -44,12 +43,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
  		 */
 		public function KTranslateInteractor(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 											inputComponent:DisplayObject, modelSpace:DisplayObject)
-											//web:googleAnalytics:GoogleAnalytics)
 		{
 			super(KSketchInstance, interactionControl, modelSpace);
 			_translateGesture = new PanGesture(inputComponent);
 			_translateGesture.maxNumTouchesRequired = 1;
-			//web:_googleAnalytics = googleAnalytics;
 		}
 		
 		override public function reset():void

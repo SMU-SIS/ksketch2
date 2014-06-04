@@ -35,79 +35,82 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
+			public static const LOGIN_CANCEL:String = "Skip Login";
+			public static const LOGIN_LOSTCONN:String = "Lost Connection";
+			public static const LOGIN_JANRAINFAIL:String = "Janrain Failed";
+			
+			
+			public static var userData:Object = new Object();
+			public static var _isLoggedIn:Boolean = false;
+			
 			private var progressTimer:Timer;
 			private var _stageWidth:Number;
 			private var _stageHeight:Number;
-			private var monitor:URLMonitor;
-			private var monitorTimer:Timer;
-			
-			public static var userData:Object = new Object();
-			private var webView:StageWebView = new StageWebView();
-			
-			public static var _isLoggedIn:Boolean = false;
-			public static var _isLoggedOut:Boolean = false;
-			
+			private var _monitor:URLMonitor;
+			private var _monitorTimer:Timer;
+			private var _webView:StageWebView = new StageWebView();
+			private var _isLoggedOut:Boolean = false;
 			
 			protected function viewActivateHandler(event:ViewNavigatorEvent):void
 			{
 				// TODO Auto-generated method stub
 				
 				data = null;
-				webView.stage = stage;
+				_webView.stage = stage;
 				_stageWidth = stage.stageWidth;
 				_stageHeight = stage.stageHeight;
 				
 				//check for network connection
-				monitorTimer = new Timer(3000);
-				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				_monitorTimer = new Timer(3000);
+				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
 				
-				monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
-				monitor.addEventListener(StatusEvent.STATUS, prepareView);
+				_monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
+				_monitor.addEventListener(StatusEvent.STATUS, prepareView);
 				
-				monitorTimer.start();
-				monitor.start();
+				_monitorTimer.start();
+				_monitor.start();
 			}
 			
 			private function endMonitor(event:TimerEvent):void
 			{
-				monitorTimer.stop();
-				monitor.stop();
+				_monitorTimer.stop();
+				_monitor.stop();
 				
-				monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
-				monitor.removeEventListener(StatusEvent.STATUS, prepareView);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				_monitor.removeEventListener(StatusEvent.STATUS, prepareView);
 				
-				skipConnection("Lost Connection");
+				skipConnection(LOGIN_LOSTCONN);
 			}
 			
 			private function prepareView(event:StatusEvent):void
 			{
 				//only show Webview (which is Janrain login page) when there is a connection
-				if(monitor.available)
+				if(_monitor.available)
 				{
 					if(_stageWidth > _stageHeight)
-						webView.viewPort = new Rectangle(0, 0, _stageWidth, _stageHeight);
+						_webView.viewPort = new Rectangle(0, 0, _stageWidth, _stageHeight);
 					else
-						webView.viewPort = new Rectangle(0, 0, _stageHeight, _stageWidth);
+						_webView.viewPort = new Rectangle(0, 0, _stageHeight, _stageWidth);
 					
-					webView.loadURL(KSketchWebLinks.url);
-					webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGE, locationChangedHandler);				//for IOS
-					webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGING, locationChangingHandler);			//for ANDROID
-					webView.addEventListener(ErrorEvent.ERROR, errorEventHandler);
+					_webView.loadURL(KSketchWebLinks.url);
+					_webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGE, locationChangedHandler);				//for IOS
+					_webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGING, locationChangingHandler);			//for ANDROID
+					_webView.addEventListener(ErrorEvent.ERROR, errorEventHandler);
 					
 				}
 				else
 				{
 					if(_isLoggedOut)
-						skipConnection("Skip Login");
+						skipConnection(LOGIN_CANCEL);
 					else
-						skipConnection("Lost Connection");
+						skipConnection(LOGIN_LOSTCONN);
 				}
 				
-				monitorTimer.stop();
-				monitor.stop();
+				_monitorTimer.stop();
+				_monitor.stop();
 				
-				monitor.removeEventListener(StatusEvent.STATUS, prepareView);
-				monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				_monitor.removeEventListener(StatusEvent.STATUS, prepareView);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
 			}
 			
 			public function skipConnection(errorHandled:String):void
@@ -115,16 +118,16 @@
 				if(GetUser.hasEventListener(FaultEvent.FAULT))
 					GetUser.removeEventListener(FaultEvent.FAULT, faultHandler);
 					
-				if(webView)
+				if(_webView)
 				{
 					//remove error event listeners
-					if(webView.hasEventListener(ErrorEvent.ERROR))
-						webView.removeEventListener(ErrorEvent.ERROR, errorEventHandler);
+					if(_webView.hasEventListener(ErrorEvent.ERROR))
+						_webView.removeEventListener(ErrorEvent.ERROR, errorEventHandler);
 					
-					webView.stop();
-					webView.viewPort = null;
-					webView.dispose();
-					webView = null;
+					_webView.stop();
+					_webView.viewPort = null;
+					_webView.dispose();
+					_webView = null;
 				}
 				
 				_isLoggedOut = false;
@@ -140,11 +143,11 @@
 				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
 				{
 					//retrieve id from HTML page
-					webView.loadURL(KSketchWebLinks.urlUser);
+					_webView.loadURL(KSketchWebLinks.urlUser);
 				}
 				else if((currentURL.indexOf(KSketchWebLinks.redirecturl_skip) >= 0) || (currentURL.indexOf(KSketchWebLinks.redirecturl_index) >= 0))
 				{
-					skipConnection("Skip Login");
+					skipConnection(LOGIN_CANCEL);
 				}
 			}
 			
@@ -156,14 +159,14 @@
 				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
 				{
 					//retrieve id from HTML page
-					webView.loadURL(KSketchWebLinks.urlUser);
+					_webView.loadURL(KSketchWebLinks.urlUser);
 				}
 				else if ((currentURL.indexOf(KSketchWebLinks.login_success) >= 0))
 				{
-					webView.stop();
-					webView.viewPort = null;
-					webView.dispose();
-					webView = null;
+					_webView.stop();
+					_webView.viewPort = null;
+					_webView.dispose();
+					_webView = null;
 					
 					var arr:Array = currentURL.split(".html?");
 					var vars:URLVariables = new URLVariables(arr[1]);
@@ -176,7 +179,7 @@
 				}
 				else if((currentURL.indexOf(KSketchWebLinks.redirecturl_skip) >= 0) || (currentURL.indexOf(KSketchWebLinks.redirecturl_index) >= 0))
 				{
-					skipConnection("Skip Login");
+					skipConnection(LOGIN_CANCEL);
 				}
 			}
 			
@@ -223,53 +226,16 @@
 			
 			private function faultHandler(event:FaultEvent):void
 			{
-				skipConnection("Janrain Failed");
+				skipConnection(LOGIN_JANRAINFAIL);
 			}
 			
 			private function errorEventHandler(event:ErrorEvent):void
 			{
-				skipConnection("Lost Connection");
+				skipConnection(LOGIN_LOSTCONN);
 			}
 			
 		]]>
 	</fx:Script>
 	<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
 						   horizontalCenter="0" verticalCenter="0" visible="false"/>
-	<!--
-	<s:Group width="100%" height="100%">
-		<s:Rect width="100%" height="100%">
-			<s:fill> <s:SolidColor color="0xE7E7E7"/> </s:fill>
-		</s:Rect>
-		
-		<s:Group width="100%" height="100%">
-			<s:layout> <s:VerticalLayout gap="2"/> </s:layout>
-			
-			<s:Group id="disconnectedContent" width="100%" height="100%" visible="false">
-				<s:layout> <s:HorizontalLayout gap="5" paddingLeft="50" paddingRight="50" paddingTop="50"/> </s:layout>
-				
-				<s:Group width="40%" height="40%">
-					<s:layout> <s:HorizontalLayout paddingLeft="68" paddingTop="10"/> </s:layout>
-					<buttons:KSketch_Button id="logoHolder"
-											width="{KSketchStyles.LOGO_BUTTON_WIDTH}" 
-											height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"/>
-				</s:Group>
-				
-				
-				<s:Group width="60%">
-					<s:layout> <s:VerticalLayout paddingLeft="10" paddingTop="50"/> </s:layout>
-					<s:Label width="80%" fontFamily="{KSketchStyles.APP_FONT_FAMILY}" 
-							 fontSize="{KSketchStyles.LOGIN_CONNECTION_FONT_SIZE}"
-							 text="Whoops! No network connection is detected, though it would be great to have you logged in. What would you like to do?" />
-					
-					<s:Group width="100%">
-						<s:layout><s:HorizontalLayout gap="50" paddingTop="30"/></s:layout>
-						
-						<s:Button width="25%" label="Try Again" click="checkNetworkConnection()"/>
-						<s:Button width="25%" label="Skip" click="skipConnection()"/>
-					</s:Group>
-				</s:Group>
-			</s:Group>
-		</s:Group>
-	</s:Group>
-	-->
 </s:View>

@@ -22,7 +22,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
-	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	public class KSketch_TimeControl extends KSketch_TimeSlider implements ITimeControl
 	{
@@ -54,7 +53,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		protected var _transitionHelper:KWidgetInteractorManager;
 		protected var _magnifier:KSketch_Timebar_Magnifier;
 		protected var _keyMenu:KSketch_Timebar_ContextMenu;
-		//web:protected var _googleAnalytics:GoogleAnalytics;
 		
 		public static var _isPlaying:Boolean = false;
 		protected var _timer:Timer;
@@ -87,7 +85,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control,
 							 transitionHelper:KWidgetInteractorManager,
 							 magnifier:KSketch_Timebar_Magnifier, keyMenu:KSketch_Timebar_ContextMenu):void
-							 //web:googleAnalytics:GoogleAnalytics):void
 		{
 
 			_KSketch = KSketchInstance;
@@ -95,7 +92,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_transitionHelper = transitionHelper;
 			_magnifier = magnifier;
 			_keyMenu = keyMenu;
-			//web:_googleAnalytics = googleAnalytics;
 			timeLabels.init(this);
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);

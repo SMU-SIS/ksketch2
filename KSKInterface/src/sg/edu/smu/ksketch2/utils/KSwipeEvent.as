@@ -4,8 +4,6 @@ package sg.edu.smu.ksketch2.utils
 	
 	public class KSwipeEvent extends Event
 	{
-		public static const SCROLLING_STARTED:String ="SCROLLING_STARTED"; 
-		public static const SCROLLING_STOPPED:String ="SCROLLING_STOPPED";
 		public static const TAP_ACTION:String ="TAP_ACTION";
 		public static const DELETE_ACTION:String ="DELETE_ACTION";
 		

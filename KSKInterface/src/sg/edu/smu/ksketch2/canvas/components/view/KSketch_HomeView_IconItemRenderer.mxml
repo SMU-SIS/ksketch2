@@ -29,6 +29,8 @@
 			import mx.events.FlexEvent;
 			import mx.utils.Base64Decoder;
 			
+			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
+			
 			private var _myIcon:Bitmap;
 			private var _oldSelection:String;
 			
@@ -107,17 +109,11 @@
 			{
 				Multitouch.inputMode = MultitouchInputMode.GESTURE;
 				this.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
-				this.addEventListener(MouseEvent.MOUSE_DOWN, onDown);
+				stage.addEventListener(KSwipeEvent.TAP_ACTION, swipeTap);
 			}
 			
-			protected function onSwipe(event:TransformGestureEvent):void
+			public function onSwipe(event:TransformGestureEvent):void
 			{
-				if(timerTest)
-				{
-					timerTest.stop();
-					timerTest.removeEventListener(TimerEvent.TIMER, onLongPress);
-				}
-				
 				if(actBar.stage)
 				{
 					openActionBar = false;
@@ -136,29 +132,10 @@
 				}
 			}
 			
-			private var timerTest:Timer;
-			
-			protected function onDown(event:MouseEvent):void
+			public function swipeTap(event:KSwipeEvent):void
 			{
-				timerTest = new Timer(200,1);
-				timerTest.start();
-				timerTest.addEventListener(TimerEvent.TIMER, onLongPress);	
-			}
-			
-			protected function onLongPress(event:TimerEvent):void
-			{
-				if(timerTest)
-				{
-					timerTest.stop();
-					timerTest.removeEventListener(TimerEvent.TIMER, onLongPress);
-						
-				}
+				autoDrawBackground = false;
 				
-				if(!actBar.stage)
-				{
-					autoDrawBackground = true;
-					openActionBar = false;
-				}
 			}
 			
 		]]>

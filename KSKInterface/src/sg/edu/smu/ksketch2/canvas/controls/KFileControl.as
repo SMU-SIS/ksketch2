@@ -430,6 +430,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 						exist = true;
 						break;
 					}
+					
+					if(obj.deleteFlag == 1)
+					{
+						exist = true;
+						break;
+					}
 				}
 			}
 			return exist;

@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
 
 	/**
 	 * The ITransformInterface class serves as the interface class
@@ -244,7 +245,23 @@ package sg.edu.smu.ksketch2.operators
 		 * @param op The corresponding composite operation.
 		 */
 		function mergeTransform(sourceObject:KObject, stopMergeTime:Number, op:KCompositeOperation):void;
+
+		/**
+		 * Returns an interator that gives the times of all translate events, in order from beginning to end. 
+		 */
+		function translateTimeIterator():INumberIterator;
+
+		/**
+		 * Returns an interator that gives the times of all rotate events, in order from beginning to end. 
+		 */
+		function rotateTimeIterator():INumberIterator;
 		
+		/**
+		 * Returns an interator that gives the times of all scale events, in order from beginning to end. 
+		 */
+		function scaleTimeIterator():INumberIterator;
+		
+
 		/**
 		 * Gets a copy of the transform operator.
 		 * 

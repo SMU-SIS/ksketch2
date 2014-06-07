@@ -8,8 +8,11 @@
  */
 package sg.edu.smu.ksketch2.utils
 {
+	import flash.errors.IllegalOperationError;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
+	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 
 	/**
@@ -33,24 +36,20 @@ package sg.edu.smu.ksketch2.utils
 		{
 			if(path.length == 0)
 				throw new Error("Given path is empty, can't interpolate");
-			
+
 			var points:Vector.<KTimedPoint> = path.points;
 			var index:int = 0;
 			var duration:int = path.pathDuration;
-			var currentProportion:Number = 0;;
+			var currentProportion:Number = 0;
 			var currentPoint:KTimedPoint;
 			
 			// if the duration of this path is 0
-			// offset the whole thing with dx and dy
+			// offset the last point with dx and dy
 			if(duration == 0)
 			{
 				index = 0;
-				for(index; index < points.length; index++)
-				{
-					currentPoint = points[index];
-					currentPoint.x += dx;
-					currentPoint.y += dy;
-				}
+				points[points.length-1].x += dx;
+				points[points.length-1].y += dy;
 			}
 			else
 			{
@@ -92,9 +91,13 @@ package sg.edu.smu.ksketch2.utils
 		 * @param backKeyDuration The time duration of the back key frame.
 		 * @return The joined path.
 		 */
-		public static function joinPaths(pathBefore:KPath, pathAfter:KPath, frontKeyDuration:int, backKeyDuration:int):KPath
+		public static function joinPaths(pathBefore:KPath, pathAfter:KPath, durationBefore:int, durationAfter:int):KPath
 		{
-			var joinedPath:KPath = new KPath();
+			if (pathBefore.type != pathAfter.type)
+			{
+				throw new IllegalOperationError("Cannot join a type " + pathBefore + " path and a type " + pathAfter + " path.");
+			}
+			var joinedPath:KPath = new KPath(pathBefore.type);
 			
 			var i:int;
 			var length:int = pathBefore.length; 		
@@ -103,25 +106,37 @@ package sg.edu.smu.ksketch2.utils
 			if(length == 0 && length2 == 0)
 			{
 				joinedPath.points.push(new KTimedPoint(0,0,0));
-				joinedPath.points.push(new KTimedPoint(0,0,frontKeyDuration+backKeyDuration));				
+				joinedPath.points.push(new KTimedPoint(0,0,durationBefore+durationAfter));				
 			}
 			else
 			{
 				var currentPoint:KTimedPoint;
 				var accumulatedPoint:KTimedPoint;
+				var pathDurationBefore:Number = pathBefore.points[pathBefore.length-1].time - pathBefore.points[0].time;
+				var pathDurationAfter:Number = pathAfter.points[pathAfter.length-1].time - pathAfter.points[0].time;
+				var beforeScale:Number = durationBefore / pathDurationBefore;
+				var afterScale:Number = durationAfter / pathDurationAfter;
 				
 				if(length > 0)
 				{
 					for(i = 0; i<length; i++)
 					{
 						currentPoint = pathBefore.points[i].clone();
+						if (i < length - 1)
+						{
+							currentPoint.time *= beforeScale;
+						}
+						else
+						{
+							currentPoint.time = durationBefore;
+						}
 						joinedPath.points.push(currentPoint);
 					}
 				}
 				else
 				{
 					joinedPath.points.push(new KTimedPoint(0,0,0));
-					joinedPath.points.push(new KTimedPoint(0,0,frontKeyDuration));
+					joinedPath.points.push(new KTimedPoint(0,0,durationBefore));
 				}
 				
 				accumulatedPoint = joinedPath.points[joinedPath.length-1];
@@ -129,18 +144,18 @@ package sg.edu.smu.ksketch2.utils
 				
 				if(length2 > 0)
 				{
-					for(i = 0; i<length2; i++)
+					for(i = 1; i<length2; i++)
 					{
 						currentPoint = pathAfter.points[i].clone();
 						currentPoint.x = currentPoint.x + accumulatedPoint.x;
 						currentPoint.y = currentPoint.y + accumulatedPoint.y;
-						currentPoint.time = currentPoint.time + accumulatedPoint.time;
+						currentPoint.time = currentPoint.time*afterScale + accumulatedPoint.time;
 						joinedPath.points.push(currentPoint);
 					}
 				}
 				else
 				{
-					joinedPath.push(accumulatedPoint.x, accumulatedPoint.y, accumulatedPoint.time + backKeyDuration);
+					joinedPath.push(accumulatedPoint.x, accumulatedPoint.y, accumulatedPoint.time + durationAfter);
 				}
 			}
 			
@@ -157,7 +172,7 @@ package sg.edu.smu.ksketch2.utils
 		 * 
 		 * @param path The target path.
 		 */
-		public static function normalisePathDensity(path:KPath):void
+		public static function normalisePathDensity(path:KPath, keyFrame:KSpatialKeyFrame):void
 		{
 			if(path.length == 0)
 				return;
@@ -180,12 +195,83 @@ package sg.edu.smu.ksketch2.utils
 			
 			for(currentTime; currentTime <= duration; currentTime += KSketch2.ANIMATION_INTERVAL)
 			{
-				currentPoint = path.find_Point(currentTime/duration);
+				currentPoint = path.find_Point(currentTime/duration, keyFrame);
 				refinedPoints.push(currentPoint);
 			}
 			
 			path.points = refinedPoints;
 		}
+
+		
+		/**
+		 * Limits path segment length by splitting segments that exceed a given maximum.
+		 * 
+		 * @param path The target path.
+		 * @maram maximum Segments with x or y length above this maximum will be split.
+		 */
+		public static function limitSegmentLength(path:KPath, maximum:Number):void
+		{
+			if(path.length < 2)
+				return;
+			
+			var points:Vector.<KTimedPoint> = path.points;
+			var i:int;
+			var exceed:Boolean = false;
+			
+			// Scan path to see if any segments exceed the maximum.
+			for (i=1; i<points.length; i++)
+			{
+				if (maximum < points[i].x - points[i-1].x ||
+					maximum < points[i].y - points[i-1].y)
+				{
+					exceed = true;
+					break;
+				}
+			}
+
+			// If any segment exceeded the maximum, replace the points with split points
+			if (exceed)
+			{
+				var numSegments:int, j:int, xStep:Number, yStep:Number, tStep:Number, newPoint:KTimedPoint;
+				var refinedPoints:Vector.<KTimedPoint> = new Vector.<KTimedPoint>();
+				refinedPoints.push(points[0]);
+				
+				for (i=1; i<points.length; i++)
+				{
+					if (Math.abs(points[i].x - points[i-1].x) <= maximum &&
+						Math.abs(points[i].y - points[i-1].y) <= maximum)
+					{
+						refinedPoints.push(points[i]);
+					}
+					else
+					{
+						numSegments = Math.max(	
+							Math.ceil(Math.abs(points[i].x - points[i-1].x) / maximum), 
+							Math.ceil(Math.abs(points[i].y - points[i-1].y) / maximum));
+						xStep = (points[i].x - points[i-1].x) / numSegments;
+						yStep = (points[i].y - points[i-1].y) / numSegments;
+						tStep = (points[i].time - points[i-1].time) / numSegments;
+						for (j=1; j<=numSegments; j++)
+						{
+							if (j != numSegments)
+							{
+								newPoint = new KTimedPoint(
+									points[i-1].x + xStep*j,
+									points[i-1].y + yStep*j,
+									points[i-1].time + tStep*j);
+								refinedPoints.push(newPoint);
+							}
+							else
+							{
+								refinedPoints.push(points[i]);
+							}
+						}
+					}		
+				}
+				path.points = refinedPoints;
+			}
+		}
+		
 		
 		/**
 		 * Makes a path linear versus the time.

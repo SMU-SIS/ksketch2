@@ -14,6 +14,8 @@ package sg.edu.smu.ksketch2.model.objects
 	import sg.edu.smu.ksketch2.model.data_structures.IModelObjectList;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
+	import sg.edu.smu.ksketch2.utils.iterators.IKObjectIterator;
+	import sg.edu.smu.ksketch2.utils.iterators.KKObjectIteratorVector;
 
 	/**
 	 * The KGroup class serves as the concrete class for representing
@@ -188,7 +190,15 @@ package sg.edu.smu.ksketch2.model.objects
 		{
 			return _children.toIDs();
 		}
-		
+
+		/**
+		 * Returns an interator that gives the KObjects in this list, in order from beginning to end. 
+		 */
+		public function iterator():IKObjectIterator
+		{
+			return _children.iterator();
+		}
+
 		/**
 		 * Updates the group's geometric center.
 		 */

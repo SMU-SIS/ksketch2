@@ -8,6 +8,8 @@
  */
 package sg.edu.smu.ksketch2.model.data_structures
 {
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
+
 	/**
 	 * The IKeyFrameList interface serves as the interface class for a key frame list in K-Sketch.
 	 */
@@ -70,6 +72,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 */
 		function removeKeyFrame(key:IKeyFrame):void
 		
+		/**
+		 * Returns an interator that gives the times of all events in this list, in order from beginning to end. 
+		 */
+		function timeIterator():INumberIterator;
+					
 		/**
 		 * Serializes the key frame list to an XML object.
 		 * 

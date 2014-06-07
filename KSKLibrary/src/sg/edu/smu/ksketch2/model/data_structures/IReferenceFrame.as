@@ -9,6 +9,8 @@
 package sg.edu.smu.ksketch2.model.data_structures
 {
 	import flash.geom.Matrix;
+	
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
 
 	/**
 	 * The IReferenceFrame interface serves as the interface class for a reference
@@ -23,5 +25,21 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @return The concatenated matrix for the reference frame from time 0 to the given time.
 		 */
 		function matrix(time:Number):Matrix;
+		
+		/**
+		 * Returns an interator that gives the times of all translate events, in order from beginning to end. 
+		 */
+		function translateTimeIterator():INumberIterator;
+		
+		/**
+		 * Returns an interator that gives the times of all rotate events, in order from beginning to end. 
+		 */
+		function rotateTimeIterator():INumberIterator;
+		
+		/**
+		 * Returns an interator that gives the times of all scale events, in order from beginning to end. 
+		 */
+		function scaleTimeIterator():INumberIterator;		
+
 	}
 }

@@ -9,6 +9,8 @@
 package sg.edu.smu.ksketch2.model.data_structures
 {
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
+	import sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorIKeyFrame;
 
 	/**
 	 * The KKeyFrameList class serves as the abstract class for a key frame list in K-Sketch.
@@ -219,7 +221,17 @@ package sg.edu.smu.ksketch2.model.data_structures
 			
 			return key;
 		}
+
 		
+		/**
+		 * Returns an interator that gives the times of all events in this list, in order from beginning to end. 
+		 */
+		public function timeIterator():INumberIterator
+		{
+			return new KNumberIteratorIKeyFrame(_head);
+		}
+		
+
 		/**
 		 * Serializes the key frame list to an XML object.
 		 * 
@@ -282,7 +294,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 			if(nextKey)
 				(nextKey as KKeyFrame).previous = prevKey;
 		}
-		
+
 		/**
 		 * Splits the given key frame at the time, and returns the front portion.
 		 * Throws an error if the given key frame does not exist in the list.

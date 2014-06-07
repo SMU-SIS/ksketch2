@@ -21,14 +21,16 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.model.data_structures.KReferenceFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
-	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KModifyPassthroughOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KRemoveKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation;
 	import sg.edu.smu.ksketch2.utils.KPathProcessing;
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
+	import sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorVectorKTimedPoint;
 	
 	//Yay monster class! Good luck reading this
 	
@@ -53,6 +55,8 @@ package sg.edu.smu.ksketch2.operators
 		public static const STUDYMODE_P:int = 1;						// Version P value
 		public static const STUDYMODE_KP:int = 2;						// Version KP value
 		public static const STUDYMODE_KP2:int = 3;						// Version KP2 value
+		
+		private static const MAX_ROTATE_STEP:Number = Math.PI - 0.1;
 		
 		public static var studyMode: int = STUDYMODE_KP2;				// default study mode set to 3
 		public static var always_allow_interpolate:Boolean = false;		// always interpolate state flag
@@ -194,7 +198,7 @@ package sg.edu.smu.ksketch2.operators
 					var proportionKeyFrame:Number = currentKey.findProportion(time);
 					
 					// locate the point in the current key frame's translated path at the proportional value
-					point = currentKey.translatePath.find_Point(proportionKeyFrame);
+					point = currentKey.translatePath.find_Point(proportionKeyFrame, currentKey);
 					// case: the located point is not null
 					// extract the located point's x- and y-positions
 					if(point)
@@ -204,7 +208,7 @@ package sg.edu.smu.ksketch2.operators
 					}
 					
 					// locate the point in the current key frame's rotated path at the proportional value
-					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
+					point = currentKey.rotatePath.find_Point(proportionKeyFrame, currentKey);
 					
 					// case: the located point is not null
 					// increment the rotational value
@@ -212,7 +216,7 @@ package sg.edu.smu.ksketch2.operators
 						theta += point.x;
 					
 					// locate the point in the current key frame's scaled path at the proportional value
-					point = currentKey.scalePath.find_Point(proportionKeyFrame);
+					point = currentKey.scalePath.find_Point(proportionKeyFrame, currentKey);
 					
 					// case: the located point is not null
 					// increment the scaling value
@@ -307,7 +311,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(!hasTranslate)
 				{
-					point = currentKey.translatePath.find_Point(proportionKeyFrame);
+					point = currentKey.translatePath.find_Point(proportionKeyFrame, currentKey);
 					if(Math.abs(_transitionX) <= EPSILON || Math.abs(_transitionY) <= EPSILON)
 					{
 						if(point)
@@ -330,7 +334,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(!hasRotate)
 				{
-					point = currentKey.rotatePath.find_Point(proportionKeyFrame);
+					point = currentKey.rotatePath.find_Point(proportionKeyFrame, currentKey);
 					if(_magTheta <= EPSILON)
 					{
 						if(point)
@@ -347,7 +351,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(!hasScale)
 				{
-					point = currentKey.scalePath.find_Point(proportionKeyFrame);
+					point = currentKey.scalePath.find_Point(proportionKeyFrame, currentKey);
 					if(_magSigma <= EPSILON)
 					{
 						if(point)
@@ -498,11 +502,11 @@ package sg.edu.smu.ksketch2.operators
 			
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
-				_TStoredPath = new KPath();
+				_TStoredPath = new KPath(KPath.TRANSLATE);
 				_TStoredPath.push(0,0,0);
-				_RStoredPath = new KPath();
+				_RStoredPath = new KPath(KPath.ROTATE);
 				_RStoredPath.push(0,0,0);
-				_SStoredPath = new KPath();
+				_SStoredPath = new KPath(KPath.SCALE);
 				_SStoredPath.push(0,0,0);
 			}
 			else
@@ -528,18 +532,18 @@ package sg.edu.smu.ksketch2.operators
 				if( _startTime < currentKey.time)
 					break;
 				
-				point = currentKey.translatePath.find_Point(1);
+				point = currentKey.translatePath.find_Point(1, currentKey);
 				if(point)
 				{
 					_cachedX += point.x;
 					_cachedY += point.y;
 				}
 				
-				point = currentKey.rotatePath.find_Point(1);
+				point = currentKey.rotatePath.find_Point(1, currentKey);
 				if(point)
 					_cachedTheta += point.x;
 				
-				point = currentKey.scalePath.find_Point(1);
+				point = currentKey.scalePath.find_Point(1, currentKey);
 				if(point)
 					_cachedScale += point.x;
 				
@@ -796,11 +800,18 @@ package sg.edu.smu.ksketch2.operators
 			//Process the paths here first
 			//Do w/e you want to the paths here!
 			
-			//Make sure there is only one point at one frame
-			KPathProcessing.normalisePathDensity(_TStoredPath);
-			KPathProcessing.normalisePathDensity(_RStoredPath);
-			KPathProcessing.normalisePathDensity(_SStoredPath);
+			// Spread out the times for these points.
+//			_TStoredPath.distributePathPointTimes();
+//			_RStoredPath.distributePathPointTimes();
+//			_SStoredPath.distributePathPointTimes();
 			
+			//Make sure there is only one point at one frame
+			_TStoredPath.discardRedundantPathPoints();
+			_RStoredPath.discardRedundantPathPoints();
+			_SStoredPath.discardRedundantPathPoints();			
+	
+			// Make sure rotation doesn't move too fast, or the motion path won't render correctly.
+			KPathProcessing.limitSegmentLength(_RStoredPath, MAX_ROTATE_STEP);
 			
 			if(KSketch2.discardTransitionTimings)
 			{
@@ -889,14 +900,17 @@ package sg.edu.smu.ksketch2.operators
 				}
 				
 				//Should fill the paths with points here
-				KPathProcessing.normalisePathDensity(targetPath);
+				//KPathProcessing.normalisePathDensity(targetPath);
 			}
 			else
 			{
 				if(targetKey.time == time) //Case 2:interpolate at key time
-					KPathProcessing.interpolateSpan(targetPath, 0,proportionElapsed,dx, dy);
+					KPathProcessing.interpolateSpan(targetPath,0,proportionElapsed,dx, dy);
 				else	//case 3:interpolate between two keys
 					KPathProcessing.interpolateSpan(targetPath,0,proportionElapsed,dx, dy);
+				
+				if (targetPath == targetKey.rotatePath)
+					KPathProcessing.limitSegmentLength(targetPath, MAX_ROTATE_STEP);
 			}	
 		}
 		
@@ -1025,7 +1039,7 @@ package sg.edu.smu.ksketch2.operators
 				{
 					trace("_normaliseForOverwriting translate");
 					oldPath = currentKey.translatePath;
-					currentKey.translatePath = new KPath();
+					currentKey.translatePath = new KPath(KPath.TRANSLATE);
 					newPath = currentKey.translatePath;
 					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
 				}
@@ -1034,7 +1048,7 @@ package sg.edu.smu.ksketch2.operators
 				{
 					trace("_normaliseForOverwriting rotate");
 					oldPath = currentKey.rotatePath;
-					currentKey.rotatePath = new KPath();
+					currentKey.rotatePath = new KPath(KPath.ROTATE);
 					newPath = currentKey.rotatePath;
 					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_ROTATION));
 				}
@@ -1043,7 +1057,7 @@ package sg.edu.smu.ksketch2.operators
 				{
 					trace("_normaliseForOverwriting scale");
 					oldPath = currentKey.scalePath;
-					currentKey.scalePath = new KPath();
+					currentKey.scalePath = new KPath(KPath.SCALE);
 					newPath = currentKey.scalePath;
 					op.addOperation(new KReplacePathOperation(currentKey, newPath, oldPath, KSketch2.TRANSFORM_SCALE));
 				}
@@ -1154,7 +1168,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				var oldPath:KPath = nextKey.translatePath.clone();
 				var proportionKeyFrame:Number = nextKey.findProportion(nextKey.time);
-				var point:KTimedPoint = nextKey.translatePath.find_Point(proportionKeyFrame);
+				var point:KTimedPoint = nextKey.translatePath.find_Point(proportionKeyFrame, nextKey);
 				
 				nextKey.translatePath = KPathProcessing.joinPaths(key.translatePath, nextKey.translatePath,key.duration, nextKey.duration);
 				op.addOperation(new KReplacePathOperation(nextKey, nextKey.translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
@@ -1319,7 +1333,7 @@ package sg.edu.smu.ksketch2.operators
 			
 			var centroid:Point = _object.center;
 			var centroidDiff:Point = sourceObject.center.subtract(_object.center);
-			var alteredPath:KPath;
+			var alteredTranslatePath:KPath;
 			var centroidPath:KPath;
 			
 			while(currentKey && currentKey.time <= stopMergeTime)
@@ -1335,21 +1349,21 @@ package sg.edu.smu.ksketch2.operators
 				
 				oldPath = toModifyKey.rotatePath.clone();
 				if(currentKey.rotatePath.points.length != 0)
-					toModifyKey.rotatePath.mergePath(currentKey.rotatePath);
+					toModifyKey.rotatePath.mergePath(currentKey.rotatePath, currentKey);
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.rotatePath, oldPath, KSketch2.TRANSFORM_ROTATION));
 				
 				oldPath = toModifyKey.scalePath.clone();
 				if(currentKey.scalePath.points.length != 0)
-					toModifyKey.scalePath.mergePath(currentKey.scalePath);
+					toModifyKey.scalePath.mergePath(currentKey.scalePath, currentKey);
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.scalePath, oldPath, KSketch2.TRANSFORM_SCALE));
 				
 				oldPath = toModifyKey.translatePath.clone();
 				
 				keyStartTime = toModifyKey.startTime;
 				currentTime = toModifyKey.startTime;
-				alteredPath = new KPath();
+				alteredTranslatePath = new KPath(KPath.TRANSLATE);
 				
-				alteredPath.push(0,0,0);
+				alteredTranslatePath.push(0,0,0);
 				
 				if(currentKey.duration == 0)
 				{
@@ -1358,7 +1372,7 @@ package sg.edu.smu.ksketch2.operators
 					newPosition = matrix(currentTime).transformPoint(centroid);
 					difference = oldPosition.subtract(newPosition);
 					
-					alteredPath.push(difference.x, difference.y, currentTime-keyStartTime);
+					alteredTranslatePath.push(difference.x, difference.y, currentTime-keyStartTime);
 				}
 				else
 				{
@@ -1369,12 +1383,12 @@ package sg.edu.smu.ksketch2.operators
 						newPosition = matrix(currentTime).transformPoint(centroid);
 						difference = oldPosition.subtract(newPosition);
 						
-						alteredPath.push(difference.x, difference.y, currentTime-keyStartTime);
+						alteredTranslatePath.push(difference.x, difference.y, currentTime-keyStartTime);
 						currentTime += KSketch2.ANIMATION_INTERVAL;
 					}
 				}
 				
-				toModifyKey.translatePath.mergePath(alteredPath);
+				toModifyKey.translatePath.mergePath(alteredTranslatePath, toModifyKey);
 				
 				op.addOperation(new KReplacePathOperation(toModifyKey, toModifyKey.translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
 				
@@ -1395,6 +1409,31 @@ package sg.edu.smu.ksketch2.operators
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_FINALISED, _object, stopMergeTime));
 		}
 		
+		/**
+		 * Returns an interator that gives the times of all translate events, in order from beginning to end. 
+		 */
+		public function translateTimeIterator():INumberIterator
+		{
+			return _refFrame.translateTimeIterator();
+		}
+		
+		/**
+		 * Returns an interator that gives the times of all rotate events, in order from beginning to end. 
+		 */
+		public function rotateTimeIterator():INumberIterator
+		{
+			return _refFrame.rotateTimeIterator();
+		}
+		
+		/**
+		 * Returns an interator that gives the times of all scale events, in order from beginning to end. 
+		 */
+		public function scaleTimeIterator():INumberIterator
+		{
+			return _refFrame.scaleTimeIterator();
+		}
+		
+
 		public function clone():ITransformInterface
 		{
 			var newTransformInterface:KSingleReferenceFrameOperator = new KSingleReferenceFrameOperator(_object);

@@ -15,6 +15,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation;
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
 	
 	/**
 	 * The KSpatialKeyFrame class serves as the concrete class that defines the core
@@ -55,9 +56,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 			_isDirty = true;
 			_center = center.clone();
 			
-			translatePath = new KPath();
-			rotatePath = new KPath();
-			scalePath = new KPath();
+			translatePath = new KPath(KPath.TRANSLATE);
+			rotatePath = new KPath(KPath.ROTATE);
+			scalePath = new KPath(KPath.SCALE);
 			
 			// initialize the temporary variables
 			tempX = 0;
@@ -166,12 +167,46 @@ package sg.edu.smu.ksketch2.model.data_structures
 			matrix.translate(_center.x, _center.y);
 			return matrix;
 		}
+
+		/**
+		 * Returns an iterator that gives the times of all translate events, in order from beginning to end. 
+		 * If this key frame has no previous key frame, returns null.
+		 * 
+		 * @return An iterator for all transate event times.
+		 */
+		public function translateTimeIterator():INumberIterator
+		{
+			return translatePath.timeIterator(_previous.time, _time);
+		}
 		
+		/**
+		 * Returns an iterator that gives the times of all rotate events, in order from beginning to end. 
+		 * If this key frame has no previous key frame, returns null.
+		 * 
+		 * @return An iterator for all rotate event times.
+		 */
+		public function rotateTimeIterator():INumberIterator
+		{
+			return rotatePath.timeIterator(_previous.time, _time);
+		}
+		
+		/**
+		 * Returns an iterator that gives the times of all scale events, in order from beginning to end. 
+		 * If this key frame has no previous key frame, returns null.
+		 * 
+		 * @return An iterator for all scale event times.
+		 */
+		public function scaleTimeIterator():INumberIterator
+		{
+			return scalePath.timeIterator(_previous.time, _time);
+		}
+		
+
 		/**
 		 * Find the transforms.
 		 * 
 		 * @param getTime The target time.
-		 * @return The found transforms.
+		 * @return The found transforms in an array of four Numbers: [rotation, scale, x translation, y translation].
 		 */
 		private function _findTransforms(getTime:Number):Array
 		{
@@ -197,18 +232,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 			
 			// return the full path transform
 			theta = tempTheta;
-			point = rotatePath.find_Point(proportion);
+			point = rotatePath.find_Point(proportion, this);
 			if(point)
 				theta += point.x;
 			
 			sigma = 1+tempSigma;
-			point = scalePath.find_Point(proportion);
+			point = scalePath.find_Point(proportion, this);
 			if(point)
 				sigma += point.x;
 
 			dx = tempX;
 			dy = tempY;
-			point = translatePath.find_Point(proportion);
+			point = translatePath.find_Point(proportion, this);
 			if(point)
 			{
 				dx += point.x;
@@ -263,15 +298,15 @@ package sg.edu.smu.ksketch2.model.data_structures
 			var oldPath:KPath;
 			
 			oldPath = translatePath.clone();
-			frontKey.translatePath = translatePath.splitPath(proportion);
+			frontKey.translatePath = translatePath.splitPath(proportion, this);
 			op.addOperation(new KReplacePathOperation(this, translatePath, oldPath, KSketch2.TRANSFORM_TRANSLATION));
 				
 			oldPath = rotatePath.clone();	
-			frontKey.rotatePath = rotatePath.splitPath(proportion);
+			frontKey.rotatePath = rotatePath.splitPath(proportion, this);
 			op.addOperation(new KReplacePathOperation(this, rotatePath, oldPath, KSketch2.TRANSFORM_ROTATION));
 			
 			oldPath = scalePath.clone();	
-			frontKey.scalePath = scalePath.splitPath(proportion);
+			frontKey.scalePath = scalePath.splitPath(proportion, this);
 			op.addOperation(new KReplacePathOperation(this, scalePath, oldPath, KSketch2.TRANSFORM_SCALE));
 			
 			frontKey.previous = previous;

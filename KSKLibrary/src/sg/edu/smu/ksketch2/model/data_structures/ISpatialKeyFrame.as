@@ -11,6 +11,8 @@ package sg.edu.smu.ksketch2.model.data_structures
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
+	
 	/**
 	 * The ISpatialKeyFrame interface serves as the interface class that defines the core
 	 * implementations of spatial key frames in K-Sketch. Spatial key frames contain
@@ -45,5 +47,30 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @return The spatial key's partial matrix.
 		 */
 		function partialMatrix(time:Number):Matrix;
+		
+		/**
+		 * Returns an iterator that gives the times of all translate events, in order from beginning to end. 
+		 * If this key frame has no previous key frame, returns null.
+		 * 
+		 * @return An iterator for all transate event times.
+		 */
+		function translateTimeIterator():INumberIterator;
+		
+		/**
+		 * Returns an iterator that gives the times of all rotate events, in order from beginning to end. 
+		 * If this key frame has no previous key frame, returns null.
+		 * 
+		 * @return An iterator for all rotate event times.
+		 */
+		function rotateTimeIterator():INumberIterator;
+		
+		/**
+		 * Returns an iterator that gives the times of all scale events, in order from beginning to end. 
+		 * If this key frame has no previous key frame, returns null.
+		 * 
+		 * @return An iterator for all scale event times.
+		 */
+		function scaleTimeIterator():INumberIterator;		
+
 	}
 }

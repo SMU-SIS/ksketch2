@@ -10,6 +10,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 {
 	import flash.geom.Matrix;
 	
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
+	import sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorISpatialKeyFrame;
+	
 	/**
 	 * The KReferenceFrame class serves as the concrete class that defines the core
 	 * implementations of reference frames in K-Sketch. A reference frame is a key
@@ -43,6 +46,35 @@ package sg.edu.smu.ksketch2.model.data_structures
 			
 			return activeKey.fullMatrix(time);
 		}
+		
+		/**
+		 * Returns an interator that gives the times of all translate events, in order from beginning to end. 
+		 */
+		public function translateTimeIterator():INumberIterator
+		{
+			return new KNumberIteratorISpatialKeyFrame(_head as KSpatialKeyFrame, 
+				KNumberIteratorISpatialKeyFrame.TRANSLATE);
+		}
+		
+		/**
+		 * Returns an interator that gives the times of all rotate events, in order from beginning to end. 
+		 */
+		public function rotateTimeIterator():INumberIterator
+		{
+			return new KNumberIteratorISpatialKeyFrame(_head as KSpatialKeyFrame, 
+				KNumberIteratorISpatialKeyFrame.ROTATE);
+		}
+		
+		/**
+		 * Returns an interator that gives the times of all scale events, in order from beginning to end. 
+		 */
+		public function scaleTimeIterator():INumberIterator
+		{
+			return new KNumberIteratorISpatialKeyFrame(_head as KSpatialKeyFrame, 
+				KNumberIteratorISpatialKeyFrame.SCALE);
+		}
+		
+
 		
 		/**
 		 * Serializes the reference frame to an XML object.

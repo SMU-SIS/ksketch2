@@ -9,6 +9,8 @@
 package sg.edu.smu.ksketch2.model.data_structures
 {
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.utils.iterators.IKObjectIterator;
+	import sg.edu.smu.ksketch2.utils.iterators.KKObjectIteratorVector;
 	
 	/**
 	 * The KModelObjectList class serves as the concrete class for a list of
@@ -125,6 +127,14 @@ package sg.edu.smu.ksketch2.model.data_structures
 			return ints;
 		}
 		
+		/**
+		 * Returns an interator that gives the KObjects in this list, in order from beginning to end. 
+		 */
+		public function iterator():IKObjectIterator
+		{
+			return new KKObjectIteratorVector(_objectList);
+		}
+
 		/**
 		 * Gets the string representation of the model object list.
 		 * 

@@ -4,6 +4,13 @@
     <classEntry path="sg.edu.smu.ksketch2.utils.KPathProcessing"/>
     <classEntry path="sg.edu.smu.ksketch2.utils.ImageProcessing"/>
     <classEntry path="sg.edu.smu.ksketch2.operators.operations.KChangeCenterOperation"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.iterators.INumberIterator"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorVectorKTimedPoint"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorComposite"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorIKeyFrame"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorISpatialKeyFrame"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.iterators.IKObjectIterator"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.iterators.KKObjectIteratorVector"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -8,9 +8,14 @@
  */
 package sg.edu.smu.ksketch2.model.data_structures
 {
+	import flash.geom.Point;
+	
 	import mx.utils.StringUtil;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.utils.KMathUtil;
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
+	import sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorVectorKTimedPoint;
 
 	/**
 	 * The KPath class serves as the concrete class that defines the core
@@ -20,15 +25,41 @@ package sg.edu.smu.ksketch2.model.data_structures
 	{
 		public var points:Vector.<KTimedPoint>;		// the set of points in the key frame path
 		public var pointProperty:Object;
+
+		private var _type:uint;						// TRANSLATE, ROTATE, or SCALE
+		
+		public static const TRANSLATE:uint = 0;
+		public static const ROTATE:uint = 1;
+		public static const SCALE:uint = 2;
+		
+		public static const LINEAR:uint = 0;
+		public static const CATMULL_ROM:uint = 1;
 		
 		/**
 		 * The default constructor for the KPath object. The constructor initializes
 		 * an empty list of points in the key frame path.
+		 * 
+		 * @param keyFrame the key frame that will contain this path.
+		 * @param type KPath.TRANSLATE, KPath.ROTATE, or KPath.SCALE.
 		 */
-		public function KPath()
+		public function KPath(type:uint)
 		{
 			// initialize an empty list of points in the key frame path
 			points = new Vector.<KTimedPoint>();
+			
+			if (type != TRANSLATE && type != ROTATE && type != SCALE)
+			{
+				throw new RangeError("KPath does not recognize type " + type + ".");
+			}
+			_type = type;
+		}
+		
+		/**
+		 * Returns the type of this KPath.
+		 */
+		public function get type():uint
+		{
+			return _type;
 		}
 		
 		/**
@@ -88,20 +119,20 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 */
 		public function get pathDuration():int
 		{
-			// case: zero-length path since no path exists yet
-			// return a zero-time
-			if(length == 0)
+			// case: zero or one point path has zero time
+			if(length < 2)
 				return 0;
 			
-			// case: single-point path since only the first point of the path has been recorded
-			// return the time of the single point recorded
-			else if (length == 1)
-				return points[0].time;
+//			// case: single-point path since only the first point of the path has been recorded
+//			// return the time of the single point recorded
+//			// RCD: WRONG! This should also return 0 
+//			else if (length == 1)
+//				return points[0].time;
 			
 			// case: positive-length path
 			// return the time duration between the first and last point
 			else
-				return points[length-1].time - points[0].time;;			
+				return points[length-1].time - points[0].time;		
 		}
 		
 		/**
@@ -136,11 +167,16 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @param proportion The target value proportional to
 		 * the total duration of time of the key frames path.
+		 * @param keyFrame The spatial key frame that contains this path
+		 * @param interpolation The interplation style (KPath.LINEAR or KPath.CATMULL_ROM)
+		 * @param parameterization The parmeterization for Catmull-Rom curves 
+		 * (KMathUtil.NATURAL, KMathUtil.UNIFORM, KMathUtil.CHORDAL, KMathUtil.CENTRIPETAL) 
 		 * @return The timed point located at the given
 		 * proportional value relative to the key frames path's
 		 * total time; else null if the path is empty.
 		 */
-		public function find_Point(proportion:Number):KTimedPoint
+		public function find_Point(proportion:Number, keyFrame:KSpatialKeyFrame, interpolation:uint = KPath.CATMULL_ROM, 
+								   parameterization:uint = KMathUtil.CHORDAL):KTimedPoint
 		{	
 			// case: the path is empty
 			// return no points (i.e., null)
@@ -163,24 +199,148 @@ package sg.edu.smu.ksketch2.model.data_structures
 			var baseIndex:int = find_IndexAtOrBeforeProportion(proportion);
 
 			var nextIndex:int = baseIndex+1;
-			var basePoint:KTimedPoint = points[baseIndex];
-			var nextPoint:KTimedPoint = points[nextIndex];
+			var p0:KTimedPoint = (0 < baseIndex) ? points[baseIndex-1] : _getPreviousPoint(keyFrame);
+			var p1:KTimedPoint = points[baseIndex];
+			var p2:KTimedPoint = points[nextIndex];
+			var p3:KTimedPoint = (nextIndex < length-1) ? points[nextIndex+1] : _getNextPoint(keyFrame);
 			
-			var baseProportion:Number = basePoint.time/duration;
+			var baseProportion:Number = p1.time/duration;
 			var numerator:Number = proportion - baseProportion;
 			
 			if(numerator == 0)
-				return basePoint.clone();
+				return p1.clone();
 			
-			var denominator:Number = (nextPoint.time - basePoint.time)/duration;
+			var denominator:Number = (p2.time - p1.time)/duration;
 			var interpolationFactor:Number = numerator/denominator;
 			
-			var x:Number = (nextPoint.x-basePoint.x)*interpolationFactor + basePoint.x;
-			var y:Number = (nextPoint.y-basePoint.y)*interpolationFactor + basePoint.y;
-			var time:Number = (nextPoint.time-basePoint.time)*interpolationFactor + basePoint.time;
+			var newPoint:KTimedPoint;
+			if (interpolation == LINEAR)
+			{
+				newPoint = new KTimedPoint(
+					(p2.x-p1.x)*interpolationFactor + p1.x, 
+					(p2.y-p1.y)*interpolationFactor + p1.y, 
+					(p2.time-p1.time)*interpolationFactor + p1.time);				
+			}
+			else
+			{
+				newPoint = KMathUtil.catmullRomC1CurvePoint((p2.time-p1.time)*interpolationFactor + p1.time,
+					p0, p1, p2, p3, parameterization);
+			}
 			
-			return new KTimedPoint(x,y,time);
+			return newPoint;
 		}
+		
+		/**
+		 * Gets the next-last point from the previous key frame, if any.
+		 * The point is adjusted so that it
+		 * is positioned correctly relative to the current path.
+		 * 
+		 * @pram keyFrame The key frame that contains this path.
+		 * @return the repositioned point, or null.
+		 */
+		private function _getPreviousPoint(keyFrame:KSpatialKeyFrame):KTimedPoint
+		{
+			var prevKey:KSpatialKeyFrame = keyFrame.previous as KSpatialKeyFrame;
+			if (prevKey == null || prevKey.previous == null)
+			{
+				// The first key frame for an object should be instantaneous, and
+				// the path is used for positioning only, so ignore it. 
+				return null;
+			}
+			
+			var prevPath:KPath;
+			switch (type)
+			{
+				case TRANSLATE:
+					prevPath = prevKey.translatePath;
+					break;
+				case ROTATE:
+					prevPath = prevKey.rotatePath;
+					break;
+				case SCALE:
+					prevPath = prevKey.scalePath;
+					break;
+				default:
+					throw new Error("KPath._getPreviousPoint encountered unknown type " + type + ".");				
+			}
+
+			if (prevPath == null || prevPath.length < 2)
+			{
+				// In this case, there is no transition in the previous path, so the path should end.
+				return null;
+			}
+			
+			var pThisFirst:KTimedPoint = points[0];
+			var pThisLast:KTimedPoint = points[points.length-1];
+			var pPrevFirst:KTimedPoint = prevPath.points[0];
+			var pPrevLast:KTimedPoint = prevPath.points[prevPath.points.length-1];
+			var pPrevPenultimate:KTimedPoint = prevPath.points[prevPath.points.length-2];
+			
+			var actualTimeDiff:Number = (pPrevLast.time - pPrevPenultimate.time)*
+				((prevKey.time - prevKey.previous.time)/(pPrevLast.time - pPrevFirst.time));
+			var scaledTimeDiff:Number = actualTimeDiff*((pThisLast.time - pThisFirst.time)/(keyFrame.time - prevKey.time));
+			
+			return new KTimedPoint(
+				pThisFirst.x - (pPrevLast.x - pPrevPenultimate.x),
+				pThisFirst.y - (pPrevLast.y - pPrevPenultimate.y),
+				pThisFirst.time - scaledTimeDiff);
+		}
+
+		/**
+		 * Gets the second point from the next key frame, if any.
+		 * The point is adjusted so that it
+		 * is positioned correctly relative to the current path.
+		 * 
+		 * @pram keyFrame The key frame that contains this path.
+		 * @return the repositioned point, or null.
+		 */
+		private function _getNextPoint(keyFrame:KSpatialKeyFrame):KTimedPoint
+		{
+			var nextKey:KSpatialKeyFrame = keyFrame.next as KSpatialKeyFrame;
+			if (keyFrame.next == null)
+			{
+				// There really is nothing else, so return null.
+				return null;
+			}
+
+			var nextPath:KPath;
+			switch (type)
+			{
+				case TRANSLATE:
+					nextPath = nextKey.translatePath;
+					break;
+				case ROTATE:
+					nextPath = nextKey.rotatePath;
+					break;
+				case SCALE:
+					nextPath = nextKey.scalePath;
+					break;
+				default:
+					throw new Error("KPath._getNextPoint encountered unknown type " + type + ".");				
+			}
+			
+			if (nextPath == null || nextPath.length < 2)
+			{
+				// In this case, there is no transition in the next path, so this path should end.
+				return null;
+			}
+			
+			var pThisFirst:KTimedPoint = points[0];
+			var pThisLast:KTimedPoint = points[points.length-1];
+			var pNextFirst:KTimedPoint = nextPath.points[0];
+			var pNextLast:KTimedPoint = nextPath.points[nextPath.points.length-1];
+			var pNextSecond:KTimedPoint = nextPath.points[1];
+			
+			var actualTimeDiff:Number = (pNextSecond.time - pNextFirst.time)*
+				((nextKey.time - keyFrame.time)/(pNextLast.time - pNextFirst.time));
+			var scaledTimeDiff:Number = actualTimeDiff*((pThisLast.time - pThisFirst.time)/(keyFrame.time - keyFrame.previous.time));
+			
+			return new KTimedPoint(
+				pThisLast.x + (pNextSecond.x - pNextFirst.x),
+				pThisLast.y + (pNextSecond.y - pNextFirst.y),
+				pThisLast.time + scaledTimeDiff);
+		}
+		
 		
 		/**
 		 * Finds the timed point at the given proportional time
@@ -379,10 +539,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * transition times are set.
 		 * @return The front split key frame path of the original key frame path.
 		 */
-		public function splitPath(proportion:Number):KPath
+		public function splitPath(proportion:Number, keyFrame:KSpatialKeyFrame):KPath
 		{
 			// create the front split path
-			var frontPath:KPath = new KPath();
+			var frontPath:KPath = new KPath(type);
 			
 			// handle special cases by optimizing the special cases
 			// case: no proportional value
@@ -417,7 +577,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 										find_IndexAtOrBeforeProportion(proportion);
 			
 			// find the splice point between the front and back split key frame paths
-			var splitPoint:KTimedPoint = find_Point(proportion);
+			var splitPoint:KTimedPoint = find_Point(proportion, keyFrame);
 			
 			// initialize the front split key frames paths as the set of points
 			// from the first index to the index before the proportional value
@@ -468,7 +628,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @param sourchPath The other key frame path to merge with.
 		 */
-		public function mergePath(sourcePath:KPath):void
+		public function mergePath(sourcePath:KPath, sourcekeyFrame:KSpatialKeyFrame):void
 		{
 			var i:int;
 			var currentPoint:KTimedPoint;	
@@ -486,7 +646,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 				{
 					currentPoint = points[i];
 					proportion = i/pathLength;
-					currentPoint.add(sourcePath.find_Point(proportion));
+					currentPoint.add(sourcePath.find_Point(proportion, sourcekeyFrame));
 				}
 			}
 			else
@@ -498,7 +658,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 				{
 					currentPoint = points[i];
 					proportion = (currentPoint.time - offSetTime)/duration;
-					currentPoint.add(sourcePath.find_Point(proportion));
+					currentPoint.add(sourcePath.find_Point(proportion, sourcekeyFrame));
 				}
 			}
 		}
@@ -530,6 +690,122 @@ package sg.edu.smu.ksketch2.model.data_structures
 				points.push(currentPoint);
 			}
 		}
+	
+	
+		
+		/**
+		 * Modifies the path to distribute points that have the same time.
+		 * Does nothing if all points have the same time.
+		 */
+		public  function distributePathPointTimes():void
+		{
+			if (points.length < 2)
+			{
+				return;
+			}
+			
+			var i:int;
+			// Scan to find the first point at a time after points[0].time.
+			for (i = 1; i < points.length && points[i].time == points[0].time; i++)
+			{
+			}
+
+			var firstIdx:int;
+			var j:int;
+			var step:Number;
+			for (; i < points.length; i++) {
+				// Here, points[i] should be the first point with points[i].time 
+				// (which should be later than points[0].time).
+				firstIdx = i;
+				
+				// Scan to find the last index i that has points[i].time == points[firstIdx].time
+				for (; i+1 < points.length && points[i+1].time == points[firstIdx].time; i++)
+				{
+				}
+				
+				if (points[0].time == points[firstIdx-1].time && 1 < firstIdx) 
+				{
+					// Use this in the special case where multiple points have points[0].time
+					// Set firstIdx to 1, so the later process will modify the times betweem points[1] and points[i-1].
+					firstIdx = 1;
+				}
+				
+				if (i != firstIdx) 
+				{
+					// Use this in the normal case
+					// Modify the times betweem points[firstIdx] and points[i-1].
+					step = (points[i].time - points[firstIdx-1].time) / (i + 1 - firstIdx);
+					for (j = 0; firstIdx + j < i; j++)
+					{
+						points[firstIdx+j].time = points[firstIdx-1].time + (j+1)*step;
+					}
+				}
+			}
+		}
+		
+		
+		/**
+		 * Modifies the path to keep only the first and last point and no more than 
+		 * one point for every set of points with the same time.
+		 * Will not reduce the number of points to less than 2.
+		 */
+		public  function discardRedundantPathPoints():void
+		{
+			if(points.length <= 2)
+				return;
+			
+			var delay:int = 0;
+			var i:int;
+			
+			//Find the delay that should be used (if possible) when choosing the point at each time.
+			for (i = points.length-2; i >= 0; i--) {
+				if (points[i].time != points[points.length-1].time) {
+					delay = points.length - (i+2);
+					break;
+				}
+			}
+			
+			var newPoints:Vector.<KTimedPoint> = new Vector.<KTimedPoint>();
+			newPoints.push(points[0]);
+
+			var currentTime:Number = -1;
+			i = 1;
+			while (i < points.length) {
+				// At this point, points[i] should be the first point with points[i].time
+				// (In the first iteration, points[i].time could be the same as points[i-1].time, but it's good enough.
+				currentTime = points[i].time;
+				
+				// If there is a point with the right delay and the right time, 
+				//then take it and move to the next time.
+				if ((i+delay) < points.length   &&  points[i+delay].time == currentTime) {
+					newPoints.push(points[i+delay]);
+					for (i = i + delay + 1; i < points.length && points[i].time == currentTime; i++) {
+					}
+					continue;
+				} 
+				
+				// Otherwise, scan for the last point at the current time, and take that one.
+				for (i = i + 1; i < points.length && points[i].time == currentTime; i++) {
+				}
+				newPoints.push(points[i-1]);			
+			}
+
+			points = newPoints;
+		}
+		
+
+		/**
+		 * Returns an iterator that gives the times of points in this KPath.
+		 * Times are scaled to start and and at specified moments.
+		 * 
+		 * @param start The start of the period 
+		 * @param end The end of the period.
+		 */
+		public function timeIterator(start:Number, end:Number):INumberIterator
+		{
+			return new KNumberIteratorVectorKTimedPoint(points).scale(start,end);
+		}
+
 		
 		/**
 		 * Gets a clone of the key frame path.
@@ -538,7 +814,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 */
 		public function clone():KPath
 		{
-			var clone:KPath = new KPath();
+			var clone:KPath = new KPath(type);
 			
 			var i:int = 0;
 			var pathLength:int = length;

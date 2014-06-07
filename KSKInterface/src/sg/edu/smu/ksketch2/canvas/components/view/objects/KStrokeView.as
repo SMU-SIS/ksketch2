@@ -18,6 +18,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
 	public class KStrokeView extends KObjectView
 	{
@@ -146,21 +147,54 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		protected function _render_DrawStroke(newColor:uint):void
 		{
 			graphics.clear();
-			if(!_points)
+			if(!_points || _points.length == 0)
 				return;
 			
-			var length:int = _points.length;
+			// Initialize for rendering the path				
 
-			if(length < 2)
-				return;
-			
-			graphics.lineStyle(_thickness, newColor);
-
-			graphics.moveTo(_points[0].x, _points[0].y);
+			if (_points.length == 1 || (_points.length == 2 && _points[0].x == _points[1].x && _points[0].y == _points[1].y))
+			{
+				graphics.lineStyle();
+				graphics.beginFill(newColor);
+				graphics.drawCircle(_points[0].x, _points[0].y, 0.5*_thickness);
+				graphics.endFill();				
+				return;	
+			}
 			
 			var i:int;
-			for(i = 1; i < length; i++)
-				graphics.lineTo(_points[i].x, _points[i].y);
+			var p0:Point = null;
+			var p1:Point = null;
+			var p2:Point = null;
+			var p3:Point = null;
+			
+			var b0:Point = new Point(0,0);
+			var b1:Point = new Point(0,0);
+			var b2:Point = new Point(0,0);
+			var b3:Point = new Point(0,0);
+			
+
+			p1 = _points[0];
+			p2 = _points[1];
+			if (_points.length > 2) {
+				p3 = _points[2];
+			} 
+			graphics.lineStyle(_thickness, newColor);
+			graphics.moveTo(p1.x, p1.y);
+
+			// Draw the line
+			for (i = 1; i < _points.length; i++) 
+			{
+				// Draw the curve segment
+				if (KMathUtil.catmullRomToBezier(p0, p1, p2, p3, b0, b1, b2, b3))
+				{
+					graphics.cubicCurveTo(b1.x, b1.y, b2.x, b2.y, b3.x, b3.y);
+				}
+				
+				p0 = p1;
+				p1 = p2;
+				p2 = p3;
+				p3 = (i + 1 < _points.length) ?  _points[i+1] : null;
+			}
 		}
 		
 		/**

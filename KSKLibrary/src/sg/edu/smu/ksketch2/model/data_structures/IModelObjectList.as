@@ -9,6 +9,7 @@
 package sg.edu.smu.ksketch2.model.data_structures
 {
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.utils.iterators.IKObjectIterator;
 
 	/**
 	 * The IModelObjectList interface serves as the interface class for a model object list in K-Sketch.
@@ -60,5 +61,12 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @return The list of IDs for each KObject in the model object list.
 		 */
 		function toIDs():Vector.<int>;
+
+		/**
+		 * Returns an interator that gives the KObjects in this list, in order from beginning to end. 
+		 */
+		function iterator():IKObjectIterator;
+		
+	
 	}
 }

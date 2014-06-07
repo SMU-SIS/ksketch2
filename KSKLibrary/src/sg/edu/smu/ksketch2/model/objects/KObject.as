@@ -19,6 +19,8 @@ package sg.edu.smu.ksketch2.model.objects
 	import sg.edu.smu.ksketch2.operators.IVisibilityControl;
 	import sg.edu.smu.ksketch2.operators.KVisibilityControl;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
+	import sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorComposite;
 	
 	/**
 	 * The KObject class serves as the abstract class for representing
@@ -253,6 +255,59 @@ package sg.edu.smu.ksketch2.model.objects
 		{
 			_center = point.clone();
 		}
+		
+		
+		/**
+		 * Returns an interator that gives the times of all translate events for this object or its parents
+		 * in order from beginning to end. 
+		 */
+		public function translateTimeIterator():INumberIterator
+		{
+			if (_parent == null)
+			{
+				return transformInterface.translateTimeIterator()
+			}
+			else
+			{
+				return new KNumberIteratorComposite(transformInterface.translateTimeIterator(), 
+					_parent.translateTimeIterator());		
+			}
+		}
+		
+		/**
+		 * Returns an interator that gives the times of all rotate events for this object or its parents
+		 * in order from beginning to end. 
+		 */
+		public function rotateTimeIterator():INumberIterator
+		{
+			if (_parent == null)
+			{
+				return transformInterface.rotateTimeIterator()
+			}
+			else
+			{
+				return new KNumberIteratorComposite(transformInterface.rotateTimeIterator(), 
+					_parent.rotateTimeIterator());		
+			}
+		}
+		
+		/**
+		 * Returns an interator that gives the times of all scale events for this object or its parents
+		 * in order from beginning to end. 
+		 */
+		public function scaleTimeIterator():INumberIterator
+		{
+			if (_parent == null)
+			{
+				return transformInterface.scaleTimeIterator()
+			}
+			else
+			{
+				return new KNumberIteratorComposite(transformInterface.scaleTimeIterator(), 
+					_parent.scaleTimeIterator());		
+			}
+		}
+		
 		
 		/**
 		 * Serializes the object to an XML object.

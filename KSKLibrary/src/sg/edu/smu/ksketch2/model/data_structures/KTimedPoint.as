@@ -8,6 +8,8 @@
  */
 package sg.edu.smu.ksketch2.model.data_structures
 {
+	import flash.geom.Point;
+
 	/**
 	 * The KTimedPoint class serves as the concrete class that defines the core
 	 * implementations of timed points in K-Sketch. Timed points consist of points
@@ -39,10 +41,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @param another_Point The other timed point to add from.
 		 */
-		public function add(another_Point:KTimedPoint):void
+		public function add(another_Point:KTimedPoint):KTimedPoint
 		{
 			x += another_Point.x;	// add the x-positions from both timed points
 			y += another_Point.y;	// add the y-positions from both timed points
+			return this;
 		}
 		
 		/**
@@ -50,12 +53,21 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * 
 		 * @param another_Point The other timed point to subtract from.
 		 */
-		public function subtract(another_Point:KTimedPoint):void
+		public function subtract(another_Point:KTimedPoint):KTimedPoint
 		{
 			x -= another_Point.x;	// subtract the x-positions from both timed points
 			y -= another_Point.y;	// subtract the y-positions from both timed points
+			return this;
 		}
-		
+	
+		/**
+		 * The length of the line segment from (0,0) to this KTimedPoint
+		 */
+		public function get length():Number
+		{
+			return Math.sqrt(x*x + y*y);
+		}
+
 		/**
 		 * Checks whether the timed point is equivalent to the other timed point.
 		 * If all spatial and temporal information of the timed point is equivalent

@@ -17,7 +17,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KRotateInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KScaleInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.transitions.KTranslateInteractor;
-	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	/**
 	 * The KBasicTransitionMode class serves as the concrete class for
@@ -39,13 +38,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		 */
 		public function KBasicTransitionMode(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
 											 widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject)
-											 //googleAnalytics:GoogleAnalytics)
 		{
 			super(KSketchInstance, interactionControl, widgetBase);
-			
-			//web:_translateInteractor = new KTranslateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace, googleAnalytics);
-			//web:_rotateInteractor = new KRotateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace, googleAnalytics);
-			//web:_scaleInteractor = new KScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger, modelSpace, googleAnalytics);
 		
 			_translateInteractor = new KTranslateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace);
 			_rotateInteractor = new KRotateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace);

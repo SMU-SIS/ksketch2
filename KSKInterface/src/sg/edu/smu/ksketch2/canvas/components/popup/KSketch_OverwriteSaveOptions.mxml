@@ -46,7 +46,7 @@
 
 			private function save():void
 			{
-				KSketch_SaveOptions.overwriteSave = true;
+				_saveOptions.overwriteSave = true;
 				close();
 				_saveOptions.save();
 			}
@@ -54,7 +54,7 @@
 			private function cancel():void
 			{
 				_saveOptions.mobileControl.reset();
-				KSketch_SaveOptions.overwriteSave = false;
+				_saveOptions.overwriteSave = false;
 				close();
 			}
 			

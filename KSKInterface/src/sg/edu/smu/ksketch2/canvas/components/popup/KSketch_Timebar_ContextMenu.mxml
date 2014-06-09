@@ -129,9 +129,7 @@
 				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down);
 				clearButton.initSkin();
 				
-				//web:leftFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.LEFT, _googleAnalytics);
 				leftFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.LEFT);
-				//web:rightFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.RIGHT, _googleAnalytics);
 				rightFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.RIGHT);
 			}
 			

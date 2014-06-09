@@ -30,7 +30,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		public static var rotateFlag:Boolean = false;		// the rotate flag
 		private var _rotateGesture:PanGesture;				// the rotate gesture
 		private var _theta:Number;							// the rotational value
-		//web:private var _googleAnalytics:GoogleAnalytics;
 
 		private var _center:Point;							// the center point
 		private var _previousPoint:Point;					// the previous point
@@ -46,12 +45,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
  -		 */
 		public function KRotateInteractor(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 											inputComponent:DisplayObject, modelSpace:DisplayObject)
-											//web:googleAnalytics:GoogleAnalytics)
 		{
 			super(KSketchInstance, interactionControl, modelSpace);
 			_rotateGesture = new PanGesture(inputComponent);
 			_rotateGesture.maxNumTouchesRequired = 1;
-			//web:_googleAnalytics = googleAnalytics;
 		}
 		
 		override public function reset():void

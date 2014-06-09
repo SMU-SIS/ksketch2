@@ -35,7 +35,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.KVisibilityControl;
-	//web:import sg.edu.smu.ksketch2.utils.GoogleAnalytics;
 	
 	/**
  	 * The KWidgetInteractorManager class serves as the concrete class
@@ -76,7 +75,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
  		 */
 		public function KWidgetInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 												 widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject)
-												 //web:widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject, googleAnalytics:GoogleAnalytics)
 		{
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
@@ -88,8 +86,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_contextMenu = new KSketch_Widget_ContextMenu();
 			_contextMenu.init(_KSketch, _interactionControl, this);
 			
-			
-			//web:defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace, googleAnalytics);
 			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace);
 			centerMode = new KMoveCenterMode(_KSketch, _interactionControl, _widget, modelSpace);
 			activeMode = defaultMode;

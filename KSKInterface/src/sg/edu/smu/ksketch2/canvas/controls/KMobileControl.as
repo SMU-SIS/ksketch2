@@ -11,6 +11,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		//class variables
 		public var informationArr:Array;
 		private var _mySO:SharedObject = SharedObject.getLocal("mydata");
+		private var _fileControl:KFileControl = new KFileControl();
 		
 		public function KMobileControl()
 		{
@@ -29,8 +30,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			if (_mySO.data) {
 				if(_mySO.data.user)
-					informationArr[0] = _mySO.data.user;	
-				
+					informationArr[0] = _mySO.data.user;
 				if(_mySO.data.userSketch)
 					informationArr[1] = _mySO.data.userSketch;
 			}
@@ -58,11 +58,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 				informationArr[0] = null;
 		}
 		
-		
 		public function addSketchToList(sketchObj:Object, type:String):void
 		{
 			var sketchArr:ArrayCollection;
-			sketchArr = KFileControl.addNewSketchDocument(informationArr[1], sketchObj, type);
+			sketchArr = _fileControl.addNewSketchDocument(informationArr[1], sketchObj, type);
 			
 			sketchObj = new Object();
 			if(sketchArr)															
@@ -74,17 +73,48 @@ package sg.edu.smu.ksketch2.canvas.controls
 			sketchArr.removeAll();														//empty array used
 		}
 		
+		public function deleteSketchFromList(sketchObj:Object, type:String):void
+		{
+			var arr:ArrayCollection;
+			arr = sketchList;
+			var sketchArr:ArrayCollection;
+			sketchArr = _fileControl.deleteSketchDocument(informationArr[1], sketchObj, type);
+			
+			sketchObj = new Object();
+			if(sketchArr)															
+				sketchObj.sketches = sketchArr.source;
+			else
+				sketchObj.sketches = null;
+			
+			informationArr[1] = com.adobe.serialization.json.JSON.encode(sketchObj);	//stringify the JSON objects to store in informationArr[2]
+			
+			writeToCache(informationArr);
+			sketchArr.removeAll();				
+		}
+		
 		public function get sketchList():ArrayCollection
 		{
 			var arr:ArrayCollection;
-			arr = KFileControl.getSketchArr(informationArr[1]);
+			arr = _fileControl.getSketchArr(informationArr[1]);
 			return arr;
 		}
 		
 		public function get user():Object
 		{
 			var obj:Object;
-			obj = KFileControl.getUserObject(informationArr[0]);
+			obj = _fileControl.getUserObject(informationArr[0]);
+			return obj;
+		}
+		
+		public function set user(userObj:Object):void
+		{
+			informationArr[0] = com.adobe.serialization.json.JSON.encode(userObj);
+		}
+			
+		public function get userSketch():Object
+		{
+			var obj:Object;
+			obj = _fileControl.getUserObject(informationArr[1]);
 			return obj;
 		}
 		
@@ -92,7 +122,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			//get sketches from cache
 			var cacheArr_sketch:ArrayCollection;
-			cacheArr_sketch = KFileControl.convertStringToArrayCollection(informationArr[1]);
+			cacheArr_sketch = _fileControl.convertStringToArrayCollection(informationArr[1]);
 			
 			var newArr:ArrayCollection = new ArrayCollection();
 			

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-					xmlns:s="library://ns.adobe.com/flex/spark" 
-					xmlns:mx="library://ns.adobe.com/flex/mx"
-					currentState="normal"
-					>
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:views="sg.edu.smu.ksketch2.canvas.components.view.*"
+				currentState="default" autoDrawBackground="false"
+				creationComplete="iconitemrenderer1_creationCompleteHandler(event)" 
+				>
 	<s:states>
-		<s:State name="normal"/>
-		<s:State name="myState"/>
-		<s:State name="selected"/>
+		<s:State name="default"/>
+		<s:State name="show"/>
 	</s:states>
 	
-	<s:HGroup id="bc" horizontalAlign="center" height="120" verticalAlign="middle" paddingLeft="15" paddingRight="15">
+	<s:HGroup id="bc" horizontalAlign="center" height="120" verticalAlign="middle" paddingLeft="15">
 		<s:Image id="imgData"/>
 		
 		<s:VGroup>
@@ -28,11 +29,15 @@
 			import mx.events.FlexEvent;
 			import mx.utils.Base64Decoder;
 			
+			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
+			
 			private var _myIcon:Bitmap;
+			private var _oldSelection:String;
 			
 			public static var selectedSketchName:String;
 			public static var selectedSketchId:String;
 			public static var selectedVersion:String;
+			public static var openActionBar:Boolean = false;
 			
 			protected function state1_enterStateHandler(event:FlexEvent):void
 			{
@@ -43,7 +48,7 @@
 			{
 				if(value.image)
 				{
-					super.data = value
+					super.data = value;
 					
 					//set name and date properties
 					sketchName.text = value.name;
@@ -87,16 +92,63 @@
 				{
 					selectedSketchName = sketchName.text;
 					selectedSketchId = sketchId.text; 
-					selectedVersion = sketchVersion.text; 
+					selectedVersion = sketchVersion.text;
+					
+					if(!openActionBar)
+						autoDrawBackground = true;
 				}
 				
-				setCurrentState("normal", true);
+				setCurrentState("default", true);
 			}
 			
 			override public function setCurrentState(stateName:String, playTransition:Boolean = true):void {
 				super.setCurrentState(stateName, playTransition);
 			}
+			
+			protected function iconitemrenderer1_creationCompleteHandler(event:FlexEvent):void
+			{
+				Multitouch.inputMode = MultitouchInputMode.GESTURE;
+				this.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
+				stage.addEventListener(KSwipeEvent.TAP_ACTION, swipeTap);
+			}
+			
+			public function onSwipe(event:TransformGestureEvent):void
+			{
+				if(actBar.stage)
+				{
+					openActionBar = false;
+					wipeEffectOut.play();
+					this.removeElement(actBar);
+				}
+				
+				if(event.offsetX == -1){
+					this.addElement(actBar);
+					
+					actBar.visible = true;
+					actBar.x = 575;
+					
+					openActionBar = true;
+					wipeEffect.play();
+				}
+			}
+			
+			public function swipeTap(event:KSwipeEvent):void
+			{
+				autoDrawBackground = false;
+				
+			}
+			
 		]]>
 	</fx:Script>
-	
+	<fx:Declarations>
+		<s:Parallel id="wipeEffect" target="{actBar}">
+			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
+			<s:Move duration="150" xFrom="{this.width}" xTo="575"/>
+		</s:Parallel>
+		<s:Parallel id="wipeEffectOut" target="{actBar}">
+			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
+			<s:Move duration="150" xTo="{this.width}" xFrom="575"/>
+		</s:Parallel>
+		<views:KSketch_HomeView_ListActions id="actBar" width="100%" height="100%"/>
+	</fx:Declarations>
 </s:ItemRenderer>

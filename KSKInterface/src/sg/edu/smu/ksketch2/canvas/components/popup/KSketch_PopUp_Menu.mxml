@@ -76,7 +76,6 @@
 				_canvasControl = canvasControl;
 				_options = optionsPanel;
 				_feedback = feedback;
-				//web:_googleAnalytics = googleAnalytics;
 				
 				if(savePanel)
 					_saveOptions = savePanel;
@@ -218,7 +217,7 @@
 			{
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/clearCanvas" );
 				
-				KSketch_SaveOptions.returnToHome = false;
+				_saveOptions.returnToHome = false;
 				if(_canvasView._interactionControl.hasUndo)
 				{
 					_saveOptions.open(_canvasView);
@@ -248,7 +247,7 @@
 			{
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/exitCanvas" );
 				
-				KSketch_SaveOptions.returnToHome = true;
+				_saveOptions.returnToHome = true;
 				if(_canvasView._interactionControl.hasUndo)
 				{
 					_saveOptions.open(_canvasView);

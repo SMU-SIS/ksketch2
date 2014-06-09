@@ -37,8 +37,10 @@
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
+			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+			
 			
 			private var _homeView:KSketch_HomeView;
 			private var _canvasNotice:KSketch_CanvasNotice;
@@ -54,8 +56,9 @@
 			
 			public var syncSketchArr:ArrayCollection;
 			public var currentUser:Object;
+			public var deleteFlag:Boolean = false;
 			
-			public static var successfullySynced:Boolean;
+			public var successfullySynced:Boolean;
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
@@ -93,12 +96,12 @@
 				
 				var sketchNo:String;
 				if(syncSketchArr.length > 1)
-					sketchNo = syncSketchArr.length + " sketches";
+					sketchNo = syncSketchArr.length + " sketches on this device that have";
 				else
-					sketchNo = "1 sketch";
+					sketchNo = "1 sketch on this device that has";
 				
 				var accName:String = currentUser.u_realname;
-				syncLabel.text = "You have " + sketchNo + " on this device that have not been saved\nto your '" + accName + "' account. Do you want to save them now?" ;
+				syncLabel.text = "You have " + sketchNo + " not been saved\nto your '" + accName + "' account. Do you want to save them now?" ;
 				
 				_counterSave = 0;
 			}
@@ -145,6 +148,27 @@
 				httpService.addEventListener(FaultEvent.FAULT, faultHandler);
 			}
 			
+			public function deleteSketch(delArr:ArrayCollection, homeView:KSketch_HomeView):void
+			{
+				if(!_homeView)
+					_homeView = homeView;
+				
+				for(var i:int=0; i<delArr.length; i++)
+				{
+					currentObj = delArr.getItemAt(i);
+					currentObj.save = 0;
+					
+					var objToSend:Object = new Object();
+					objToSend["sketchid"] = com.adobe.serialization.json.JSON.encode(currentObj.sketchId);
+					objToSend["userid"] = currentObj.owner_id;//userData.kUser.id;
+					
+					httpService.url = KSketchWebLinks.jsonurlDeleteSketch;
+					httpService.send(objToSend);
+					httpService.addEventListener(ResultEvent.RESULT, resultHandler(currentObj));
+					httpService.addEventListener(FaultEvent.FAULT, faultHandler(currentObj));
+				}
+			}
+			
 			public function checkConnection():void
 			{
 				//check for network connection
@@ -189,41 +213,47 @@
 			
 			function resultHandler(obj:Object):Function {
 				return function(event:ResultEvent):void {
-					var resultRaw:Object = event.result;
-					var result:Object = com.adobe.serialization.json.JSON.decode(resultRaw.toString());
-					
-					resultArr[_counterSave] = obj;
-					statusArr[_counterSave] = 0;
-					
-					_counterSave ++;
-					
-					if (result.status == "success")
-						_success = true;
-					else if (result.status == "errorDiscrepancy")
-						overwrite_save(currentObj);
-					
-					
-					if(_counterSave == syncSketchArr.length)
-						writeAllToCache();
-					
+					if(!deleteFlag)
+					{
+						var resultRaw:Object = event.result;
+						var result:Object = com.adobe.serialization.json.JSON.decode(resultRaw.toString());
+						
+						resultArr[_counterSave] = obj;
+						statusArr[_counterSave] = 0;
+						
+						_counterSave ++;
+						
+						if (result.status == "success")
+							_success = true;
+						else if (result.status == "errorDiscrepancy")
+							overwrite_save(currentObj);
+						
+						
+						if(_counterSave == syncSketchArr.length)
+							writeAllToCache();
+					}
+					else
+						_homeView.deleteSketchDocument(obj, KFileControl.DELETE_CACHE);
 				};
 			}
 			
 			function faultHandler(obj:Object):Function {
 				return function(event:FaultEvent):void {
-					obj.save = -1;
-					
-					resultArr[_counterSave] = obj;
-					statusArr[_counterSave] = -1;
-					
-					_counterSave ++;
-					
-					if(_counterSave == syncSketchArr.length)
+					if(!deleteFlag)
 					{
-						failToSync();
-						writeAllToCache();
+						obj.save = -1;
+						
+						resultArr[_counterSave] = obj;
+						statusArr[_counterSave] = -1;
+						
+						_counterSave ++;
+						
+						if(_counterSave == syncSketchArr.length)
+						{
+							failToSync();
+							writeAllToCache();
+						}
 					}
-					
 				};
 			}
 			
@@ -254,11 +284,9 @@
 					for(i=0; i<resultArr.length; i++)
 					{
 						resultArr[i].save = 0;
-						_homeView._mobileControl.addSketchToList(resultArr[i], "sync");	
+						_homeView._mobileControl.addSketchToList(resultArr[i], KFileControl.ADD_SYNC);	
 					}
 				}
-				
-				
 				close();
 			}
 			

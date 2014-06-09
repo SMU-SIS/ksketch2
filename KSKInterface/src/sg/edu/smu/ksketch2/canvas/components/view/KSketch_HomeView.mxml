@@ -32,11 +32,12 @@
 			import com.adobe.serialization.json.JSON;
 			
 			import mx.collections.ArrayCollection;
-			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.utils.ObjectProxy;
+			
+			import spark.events.IndexChangeEvent;
 			
 			import air.net.URLMonitor;
 			
@@ -54,8 +55,10 @@
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KWebControl;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
+			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
 			import sg.edu.smu.ksketch2.utils.KWebData;
 			
+			private static const DISPLAY_FAILED_DEFAULT:int = -1;
 			private static const DISPLAY_FAILED_LOGIN:int = 0;
 			private static const DISPLAY_FAILED_SYNC:int = 1;
 			
@@ -80,27 +83,29 @@
 			
 			//variables for connection
 			public var _isConnected:Boolean;
-			private var monitor:URLMonitor;
-			private var monitorTimer:Timer;
+			private var _viewTimer:Timer;
+			private var _monitor:URLMonitor;
+			private var _monitorTimer:Timer;
 			private var _failedLogin:Boolean = false;
-			private var _lostLogin:Boolean = false;
 			
-			//variables for web or cache retrieval
-			private var _isXML:Boolean;
+			//progress bar variables
+			private var progressTimer:Timer;
 			
-			//timer variables
-			private var progressTimer:Timer;	//for progressBar
-			
-			//sketch selection variables
-			private var selectedSketchName:String;
-			private var selectedSketchId:String;
-			private var selectedSketchVersion:String;
-			
-			private var viewTimer:Timer;
+			//fail notifications for login and sync variables
 			private var canvasTimer:Timer;
-			private var displayFailedMessage:int = 0;	//display failed message variable (0) for login, (1) for sync
+			private var displayFailedMessage:int = -1;				//display failed message variable (0) for login, (1) for sync
 			public static var canvasTimerDisabled:Boolean = false;
 			public static var hasBeenNotified:Boolean = false;
+			
+			//list of sketches variables
+			private var _isSwipe:Boolean;
+			private var _swipeTimer:Timer;
+			private var _oldEvent:Event;
+			private var _isXML:Boolean = false;
+			private var _deleteSketchFlag:Boolean = false;
+			private var _selectedSketchName:String;
+			private var _selectedSketchId:String;
+			private var _selectedSketchVersion:String;
 			
 			private function timerComplete(event:TimerEvent):void
 			{
@@ -116,7 +121,7 @@
 				if(stage.deviceOrientation == StageOrientation.UNKNOWN)
 				{
 					if(KSketch_SplashView.initialOrientation == StageOrientation.DEFAULT || 
-					   KSketch_SplashView.initialOrientation == StageOrientation.UPSIDE_DOWN)
+						KSketch_SplashView.initialOrientation == StageOrientation.UPSIDE_DOWN)
 						stage.setOrientation(StageOrientation.ROTATED_RIGHT);
 					else
 						stage.setOrientation(KSketch_SplashView.initialOrientation);
@@ -148,20 +153,27 @@
 				
 				GetUserSketch.addEventListener(FaultEvent.FAULT, retrieveFaultHandler);
 				GetUserSketch.addEventListener(ResultEvent.RESULT, retrieveResultHandler);
+				stage.addEventListener(KSwipeEvent.DELETE_ACTION, listSketches_deleteSketchHandler);
+				listSketches.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
 			}
 			
 			private function prepareHomeView():void
 			{
+				_mobileControl = new KMobileControl();
+				
 				//initialize login button and KUser object
-				if(!data || data == "Skip Login" || data == "Lost Connection" || data == "Janrain Failed")
+				if(!data || data == KSketch_LoginView.LOGIN_CANCEL 
+				|| data == KSketch_LoginView.LOGIN_LOSTCONN 
+				|| data == KSketch_LoginView.LOGIN_JANRAINFAIL)
 				{
 					if(data)
 					{
 						var errorMessage:String = String(data);
 						
-						if(errorMessage == "Lost Connection" || errorMessage == "Janrain Failed") 
+						if((errorMessage == KSketch_LoginView.LOGIN_LOSTCONN || errorMessage == KSketch_LoginView.LOGIN_JANRAINFAIL) && !_failedLogin)
 						{
-							startDisplayFailedNotification(DISPLAY_FAILED_LOGIN, 500);
+							displayFailedMessage = DISPLAY_FAILED_LOGIN;
+							startDisplayFailedNotification(1000);
 							
 							hasBeenNotified = true;
 							_failedLogin = true;
@@ -169,12 +181,26 @@
 					}
 					
 					var obj:Object = new Object();
-					obj.status = "failed";
-					obj.u_login = "n.a";
-					var kUser:KSketch_User = new KSketch_User(obj);
-					userData.kUser = kUser;
+					var kUser:KSketch_User;
 					
-					loginButton.label = "Login";
+					if(_mobileControl.user != null)
+					{
+						obj = _mobileControl.user;
+						kUser = new KSketch_User(obj);
+						userData.kUser = kUser;
+						
+						KSketch_LoginView._isLoggedIn = true;
+						loginButton.label = "Logout, "+ userData.kUser.u_realname;
+					}
+					else
+					{
+						obj.status = "failed";
+						obj.u_login = "n.a";
+						kUser = new KSketch_User(obj);
+						userData.kUser = kUser;
+						
+						loginButton.label = "Login";
+					}
 				}
 				else
 				{
@@ -184,19 +210,22 @@
 					if(dataProxy.kUser)
 						userData.kUser = dataProxy.kUser;
 					
-					if(KSketch_LoginView._isLoggedIn)
+					if(userData.kUser.id != "n.a")
 					{
+						_mobileControl.user = userData.kUser;
 						loginButton.label = "Logout, "+ userData.kUser.u_realname;
 						
 						if(!_isConnected && !hasBeenNotified)
 						{
-							startDisplayFailedNotification(DISPLAY_FAILED_SYNC, 2500);
+							displayFailedMessage = DISPLAY_FAILED_SYNC;
+							startDisplayFailedNotification(3500);
 							hasBeenNotified = true;
 						}
 					}
-						
 					else
 						loginButton.label = "Login";
+				
+					_failedLogin = false;
 				}
 				
 				createButton.label = "Create a Sketch";
@@ -208,7 +237,7 @@
 			{
 				startProgressBar();
 				
-				_mobileControl = new KMobileControl();
+				//cammie: _mobileControl = new KMobileControl();
 				
 				userData.homeView = this;
 				userData.mobileControl = _mobileControl;
@@ -220,9 +249,9 @@
 					{
 						_webControl = new KWebControl(userData.kUser, _mobileControl);
 						//create a buffer time for scene to prepare itself, implement timer
-						viewTimer = new Timer(1000,1);
-						viewTimer.addEventListener(TimerEvent.TIMER_COMPLETE, loadConnected);
-						viewTimer.start();
+						_viewTimer = new Timer(1000,1);
+						_viewTimer.addEventListener(TimerEvent.TIMER_COMPLETE, loadConnected);
+						_viewTimer.start();
 					}
 					else
 						displaySketchData();				//anonymous
@@ -233,8 +262,8 @@
 			
 			private function loadConnected(event:TimerEvent):void
 			{
-				viewTimer.stop();
-				viewTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, loadConnected);
+				_viewTimer.stop();
+				_viewTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, loadConnected);
 				resolveConflict();	
 			}
 			
@@ -253,7 +282,7 @@
 				var rawData:String = String(event.result);
 				var resultObj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 				
-				if(!_isXML)
+				if(!_isXML && !_deleteSketchFlag)
 				{
 					var syncSketchArr:ArrayCollection;
 					if(resultObj)
@@ -262,7 +291,7 @@
 						var tempArr:Array = (resultObj.entities as Array);
 						if(tempArr.length > 0)
 						{
-							var newTempArr:ArrayCollection = KFileControl.convertArrayToArrayCollection(tempArr);
+							var newTempArr:ArrayCollection = _fileControl.convertArrayToArrayCollection(tempArr);
 							for each(var tempObj:Object in newTempArr)
 							{
 								tempObj = KWebData.convertWebObjForMobile(tempObj);
@@ -270,47 +299,68 @@
 							}
 							
 							for each(var obj:Object in newArr)
-								_webControl.addSketchToList(obj, "save");
-								
+							_webControl.addSketchToList(obj, "save");
+							
 						}
 					}	
 					
 					reinitializeCache();
 				}
 				
-				if(_isXML)
+				if(_isXML && !_deleteSketchFlag)
 				{
 					resultObj = KWebData.convertWebObjForMobile(resultObj);
 					displaySketchDocument(resultObj, true);
 				}
-					
+				
+				if(_deleteSketchFlag)
+				{
+					_deleteSketchFlag = false;
+					startMonitorConnection();
+				}
 			}
 			
 			private function retrieveFaultHandler(event:FaultEvent):void
 			{
-				if(!_isXML)
+				if(!_isXML && !_deleteSketchFlag)
 					displaySketchData();
-				else
+				else if (_isXML && !_deleteSketchFlag)
 					displaySketchDocument(null, false);
+				else if(_deleteSketchFlag)
+					deleteSketchDocument(null, KFileControl.DELETE_WEB);
 			}
 			
 			private function resolveConflict():void
 			{
 				var syncSketchArr:ArrayCollection = new ArrayCollection();	//array for list of sketches to sync
+				var deletedSketchArr:ArrayCollection = new ArrayCollection();
 				
 				if(_mobileControl.informationArr[1])
-					syncSketchArr = KFileControl.getSyncSketchObjects(_mobileControl.informationArr[1]);
-
+				{
+					syncSketchArr = _fileControl.getSyncSketchObjects(_mobileControl.informationArr[1], false);
+					deletedSketchArr = _fileControl.getSyncSketchObjects(_mobileControl.informationArr[1], true);
+				}
+					
 				//if there are sketches to sync, then prompt dialog
 				//else just display data
-				if(syncSketchArr.length > 0)
+				if(syncSketchArr.length > 0 || deletedSketchArr.length > 0)
 				{
-					_syncOptions.resetSyncArrays();
+					if(syncSketchArr.length > 0)
+					{
+						_syncOptions.deleteFlag = false;
+						_syncOptions.resetSyncArrays();
+						
+						_syncOptions.currentUser = userData.kUser;
+						_syncOptions.syncSketchArr = syncSketchArr;
+						_syncOptions.open(this,true);
+						PopUpManager.centerPopUp(_syncOptions);	
+					}
 					
-					_syncOptions.currentUser = userData.kUser;
-					_syncOptions.syncSketchArr = syncSketchArr;
-					_syncOptions.open(this,true);
-					PopUpManager.centerPopUp(_syncOptions);	
+					if(deletedSketchArr.length > 0)
+					{
+						_syncOptions.deleteFlag = true;
+						_syncOptions.deleteSketch(deletedSketchArr, this);
+					}		
 				}
 				else
 					updateFromWeb();
@@ -318,7 +368,7 @@
 			
 			private function reinitializeCache():void
 			{
-				var newInformationArr:String = KFileControl.solveDiscrepancy(_mobileControl.informationArr[1], _webControl.informationArr[1]);
+				var newInformationArr:String = _fileControl.solveDiscrepancy(_mobileControl.informationArr[1], _webControl.informationArr[1]);
 				_mobileControl.informationArr[1] = newInformationArr;
 				
 				//reset webcontrol
@@ -340,7 +390,7 @@
 					var userSketch:KSketch_UserSketches = new KSketch_UserSketches();
 					userSketch.createArray(sketchArr, userData.kUser.id);
 					
-					autoSaveCounter = KSketch_UserSketches.initializeAutoSaveSketchName(userSketch);
+					autoSaveCounter = userSketch.initializeAutoSaveSketchName(userSketch);
 					
 					//Set DataGrid array to user sketches collection
 					var sortBy:String = "sketchId";
@@ -349,10 +399,7 @@
 					else
 						arrDG.addAll(userSketch.getUserSketchArray(sortBy));
 					
-					listSketches_unavailable.visible = false;	
-					
-					if(_failedLogin)
-						startDisplayFailedNotification(DISPLAY_FAILED_LOGIN, 500);
+					listSketches_unavailable.visible = false;		
 				}
 				else
 				{
@@ -361,31 +408,32 @@
 				}
 				
 				stopProgressBar();
+				_mobileControl.writeToCache(_mobileControl.informationArr);
 			}
 			
-			private function startDisplayFailedNotification(input:int, time:Number):void
+			private function startDisplayFailedNotification(time:Number):void
 			{
-				displayFailedMessage = input;
-				canvasTimer = new Timer(time);
-				canvasTimer.addEventListener(TimerEvent.TIMER, displayFailedNotification);
+				canvasTimer = new Timer(time,1);
+				canvasTimer.addEventListener(TimerEvent.TIMER_COMPLETE, displayFailedNotification);
 				canvasTimer.start();
 			}
-
+			
 			private function displayFailedNotification(event:TimerEvent):void
 			{
-				canvasTimer.stop();
-				canvasTimer.removeEventListener(TimerEvent.TIMER, displayFailedNotification);
-				
-				if(displayFailedMessage == 0)
+				if(displayFailedMessage == DISPLAY_FAILED_LOGIN)
 					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_LOGIN;
-				else if(displayFailedMessage == 1)
+				else if(displayFailedMessage == DISPLAY_FAILED_SYNC)
 					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SYNC;
+					
+				if(displayFailedMessage != DISPLAY_FAILED_DEFAULT)
+				{
+					_canvasNotice.open(this, true);
+					PopUpManager.centerPopUp(_canvasNotice);
+					
+					displayFailedMessage = DISPLAY_FAILED_DEFAULT;	
+				}
 				
-				_canvasNotice.open(this, true);
-				PopUpManager.centerPopUp(_canvasNotice);
-				
-				_failedLogin = false;
-				displayFailedMessage = 0;
+				canvasTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, displayFailedNotification);
 			}
 			
 			private function displaySketchDocument(obj:Object, checkConflict:Boolean):void
@@ -404,7 +452,7 @@
 					{
 						tempObj = sketchDocArr.getItemAt(i);
 						
-						if((tempObj.fileName == selectedSketchName) && (tempObj.sketchId == selectedSketchId))
+						if((tempObj.fileName == _selectedSketchName) && (tempObj.sketchId == _selectedSketchId))
 						{
 							if(!obj || (obj && tempObj.save == -1))
 							{
@@ -417,12 +465,12 @@
 				
 				if(finalObj.fileData)
 				{
-					_mobileControl.addSketchToList(finalObj, "saveCurrentFromWeb");
+					_mobileControl.addSketchToList(finalObj, KFileControl.ADD_SAVE_WEB);
 					
 					//create XML and date object from JSON to create a KSketchDocument object
 					var xml:XML = new XML(finalObj.fileData);
 					var date:Date = new Date(finalObj.modified);
-													//(name:String, xml:XML, id:String,  date:Date, originalName:String, version:int, sketchId:int, description:String = "")
+					//(name:String, xml:XML, id:String,  date:Date, originalName:String, version:int, sketchId:int, description:String = "")
 					var docObj:KSketchDocument = new KSketchDocument(finalObj.fileName, xml, finalObj.id, date, finalObj.originalName, finalObj.version, finalObj.sketchId, finalObj.changeDescription);
 					userData.kSketchDocument = docObj;
 					navigateToScreen("CANVAS");
@@ -438,7 +486,7 @@
 				
 				stopProgressBar();
 			}
-		
+			
 			private function startNewSketch():void
 			{
 				listSketches_unavailable.visible = true;
@@ -463,7 +511,7 @@
 					//if this is a logout button, then reset view & delete cache
 					if(loginButton.label.indexOf("Login") == -1)
 					{
-						if(!KFileControl.unsavedSketchExist(_mobileControl.informationArr[1]))
+						if(!_fileControl.unsavedSketchExist(_mobileControl.informationArr[1]))
 							logout();
 						else
 						{
@@ -475,13 +523,15 @@
 						navigator.pushView(KSketch_LoginView);	
 				}	
 				else //if screen name is Canvas
+				{
+					Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 					navigator.pushView(KSketch_CanvasView, userData);
+				}
 			}
 			
 			public function logout():void
 			{
 				KSketch_LoginView._isLoggedIn = false; 
-				//KSketch_SaveOptions.canvasDirty = false;
 				KSketch_SaveOptions.saveCounter = 0;
 				data = null;
 				_mobileControl.reset();
@@ -495,24 +545,24 @@
 			public function startMonitorConnection():void
 			{
 				//check for network connection
-				monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
-				monitor.addEventListener(StatusEvent.STATUS, monitorConnection);
-				monitor.start();
+				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
+				_monitor.addEventListener(StatusEvent.STATUS, monitorConnection);
+				_monitor.start();
 				
-				monitorTimer = new Timer(2000);
-				monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
-				monitorTimer.start();
+				_monitorTimer = new Timer(2000);
+				_monitorTimer.addEventListener(TimerEvent.TIMER_COMPLETE, endMonitor);
+				_monitorTimer.start();
 			}
 			
 			private function endMonitor(event:TimerEvent):void
 			{
-				monitor.stop();
-				monitorTimer.stop();
-				
 				_isConnected = false;
 				
-				monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
-				monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				_monitor.stop();
+				_monitorTimer.stop();
+				
+				_monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, endMonitor);
 				
 				if(_isXML)
 					prepareCanvasView();
@@ -522,7 +572,7 @@
 			
 			private function monitorConnection(event:StatusEvent):void
 			{
-				if(monitor.available)
+				if(_monitor.available)
 				{
 					_isConnected = true;
 					hasBeenNotified = false;
@@ -530,14 +580,16 @@
 				else
 					_isConnected = false;
 				
-				monitor.stop();
-				monitorTimer.stop();
+				_monitor.stop();
+				_monitorTimer.stop();
 				
-				monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
-				monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+				_monitor.removeEventListener(StatusEvent.STATUS, monitorConnection);
+				_monitorTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, endMonitor);
 				
 				if(_isXML)
 					prepareCanvasView();
+				else if(_deleteSketchFlag)
+					prepareDeleteSketch();
 				else
 					prepareHomeView();
 			}
@@ -567,29 +619,18 @@
 					progressBar.value = 0;
 			}
 			
-			private function datagridSelectItem():void
-			{
-				selectedSketchName = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchName;
-				selectedSketchId = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedSketchId;
-				selectedSketchVersion = sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer.selectedVersion;
-				
-				_isXML = true; //set boolean to true because this JSON retrieval will be XML of sketch
-				
-				startMonitorConnection();
-			}
-			
 			private function prepareCanvasView():void
 			{
 				if(_isConnected)
 				{
-					var finalSketchVersion:String = selectedSketchVersion;
+					var finalSketchVersion:String = _selectedSketchVersion;
 					
 					//retrieve the latest version from the web
 					if(KSketch_LoginView._isLoggedIn && _isConnected)
 						finalSketchVersion = -1 + "";	
 					
 					//get json object of sketch from the URL and according to sketchid and version number
-					GetUserSketch.url = KSketchWebLinks.jsonurlSketchXML + "/" + selectedSketchId + "/" + finalSketchVersion + "/" + userData.kUser.id; //selectedSketchVersion;
+					GetUserSketch.url = KSketchWebLinks.jsonurlSketchXML + "/" + _selectedSketchId + "/" + finalSketchVersion + "/" + userData.kUser.id; //selectedSketchVersion;
 					GetUserSketch.send();
 					startProgressBar();	
 				}
@@ -600,12 +641,163 @@
 				
 			}
 			
+			private function prepareDeleteSketch():void
+			{
+				if(_isConnected && KSketch_LoginView._isLoggedIn)
+				{
+					if(_selectedSketchId && (parseInt(_selectedSketchId) > -1))
+					{
+						var objToSend:Object = new Object();
+						objToSend["sketchid"] = parseInt(_selectedSketchId);
+						objToSend["userid"] = userData.kUser.id;
+						
+						//get json object of sketch from the URL and according to sketchid and version number
+						GetUserSketch.url = KSketchWebLinks.jsonurlDeleteSketch;
+						GetUserSketch.send(objToSend);
+						
+						startProgressBar();	
+					}
+					
+					deleteSketchDocument(null, KFileControl.DELETE_CACHE);
+				}
+				else if(KSketch_LoginView._isLoggedIn)
+					deleteSketchDocument(null, KFileControl.DELETE_WEB);
+				else
+					deleteSketchDocument(null, KFileControl.DELETE_CACHE);
+			}
+			
+			public function deleteSketchDocument(obj:Object, type:String):void
+			{
+				//close action bar
+				if(_oldEvent)
+				{
+					if(_oldEvent.target is KSketch_HomeView_IconItemRenderer)
+						if((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar)
+							if((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar.stage)
+							{
+								KSketch_HomeView_IconItemRenderer.openActionBar = false;
+								(_oldEvent.target as KSketch_HomeView_IconItemRenderer).removeElement((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar);
+							}
+					
+					_oldEvent = null;
+				}
+				
+				var finalObj:Object = obj;
+				
+				var sketchDocArr:ArrayCollection;
+				sketchDocArr = _mobileControl.sketchList;
+				
+				var i:int;
+				var tempObj:Object;
+				
+				if(sketchDocArr)
+				{
+					for(i=0; i<sketchDocArr.length; i++)
+					{
+						tempObj = sketchDocArr.getItemAt(i);
+						
+						if((tempObj.fileName == _selectedSketchName) && (tempObj.sketchId == _selectedSketchId))
+						{
+							if(_selectedSketchId == "")
+								type = KFileControl.DELETE_CACHE;
+							finalObj = tempObj;
+							break;	
+						}
+					}
+				}
+				
+				if(finalObj)
+					_mobileControl.deleteSketchFromList(finalObj, type);
+				
+				_deleteSketchFlag = false;
+				stopProgressBar();
+				startMonitorConnection();
+			}
+			
+			protected function listSketches_mouseDownHandler(event:MouseEvent):void
+			{
+				//TODO Auto-generated method stub
+				if(!_oldEvent)
+					_oldEvent = event;
+				else
+				{
+					var currentSelectedSketchName:String;
+					if(event.target)
+					{
+						if(event.target as KSketch_HomeView_IconItemRenderer)
+						{
+							if((_oldEvent.target is KSketch_HomeView_IconItemRenderer) 
+								&& (event.target is KSketch_HomeView_IconItemRenderer) 
+								&& ((_oldEvent.target as KSketch_HomeView_IconItemRenderer) != (event.target as KSketch_HomeView_IconItemRenderer)
+								))
+							{
+								currentSelectedSketchName = (event.target as KSketch_HomeView_IconItemRenderer).sketchName.text;
+								
+								if((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar)
+									if((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar.stage)
+									{
+										KSketch_HomeView_IconItemRenderer.openActionBar = false;
+										(_oldEvent.target as KSketch_HomeView_IconItemRenderer).removeElement((_oldEvent.target as KSketch_HomeView_IconItemRenderer).actBar);
+									}
+								
+								_oldEvent = event;
+							}
+						}
+					}	
+				}
+			}
+			
+			protected function onSwipe(event:TransformGestureEvent):void
+			{
+				_isSwipe = true;
+				_swipeTimer = new Timer(2000,1);
+				_swipeTimer.start();
+				_swipeTimer.addEventListener(TimerEvent.TIMER_COMPLETE, resetSwipe);
+			}
+			
+			protected function resetSwipe(event:TimerEvent):void
+			{
+				_isSwipe = false;
+				_swipeTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, resetSwipe)
+			}
+			
+			protected function listSketches_changeSelectedHandler(event:Event):void
+			{
+				_selectedSketchName = KSketch_HomeView_IconItemRenderer.selectedSketchName;
+				_selectedSketchId = KSketch_HomeView_IconItemRenderer.selectedSketchId;
+				_selectedSketchVersion = KSketch_HomeView_IconItemRenderer.selectedVersion;
+				
+				if(_isSwipe)
+				{
+					listSketches.selectedIndex = -1;
+					stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.TAP_ACTION));
+				}
+				
+				//if action bar is displayed, reset selection to -1
+				if(KSketch_HomeView_IconItemRenderer.openActionBar)
+					listSketches.selectedIndex = -1;
+				
+				//if action bar is not displayed and there is no additional flag
+				if(!KSketch_HomeView_IconItemRenderer.openActionBar && !_deleteSketchFlag && !_isSwipe)
+					_isXML = true;
+					
+				if(_isXML || _deleteSketchFlag)
+					startMonitorConnection();
+				
+				_isSwipe = false;
+			}
+			
+			protected function listSketches_deleteSketchHandler(event:KSwipeEvent):void
+			{
+				_deleteSketchFlag = true;
+			}
+			
 			private function resetDatagridSelectItem():void
 			{
 				arrDG.removeAll();
-				selectedSketchName = null;
-				selectedSketchId = null;
-				selectedSketchVersion = null;
+				_selectedSketchName = null;
+				_selectedSketchId = null;
+				_selectedSketchVersion = null;
 				KSketch_HomeView_IconItemRenderer.selectedSketchName = null;
 				KSketch_HomeView_IconItemRenderer.selectedSketchId = null;
 				KSketch_HomeView_IconItemRenderer.selectedVersion = null;
@@ -679,8 +871,7 @@
 					<s:Group top="15" left="15" right="15" bottom="15">
 						<s:List id="listSketches" contentBackgroundAlpha="0" width="100%" height="100%"
 								itemRenderer="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"
-								dataProvider="{arrDG}" change="datagridSelectItem()"
-								>
+								dataProvider="{arrDG}" horizontalScrollPolicy="off" mouseDown="listSketches_mouseDownHandler(event)" change="listSketches_changeSelectedHandler(event)">
 						</s:List>
 						<s:Image id="listSketches_unavailable" source="{KSketchAssets.image_new}" width="100%" height="100%" visible="false"/>
 						<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"

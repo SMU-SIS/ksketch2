@@ -70,6 +70,9 @@
 			</s:Path>
 		</s:Graphic>
 	</s:Group>
+	
+	<s:Group id="centroid"/>
+	
 	<s:Group id="middleTrigger">
 		<s:Graphic>
 			<s:Ellipse x="-49.5894" y="-53.0474" width="110.589" height="108.515">
@@ -90,5 +93,7 @@
 			</s:Path>
 		</s:Graphic>
 	</s:Group>
-	<s:Group id="centroid"/>
+	
+	<s:Group id="centroidMove"/>
+	
 </s:Group>

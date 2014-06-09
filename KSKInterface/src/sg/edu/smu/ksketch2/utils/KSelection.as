@@ -167,7 +167,7 @@ package sg.edu.smu.ksketch2.utils
 		 */
 		public function selectionTransformable(time:Number):Boolean
 		{
-			if(objects.length() == 1)
+			if(objects.length() >= 1)
 				return _visibleSelection.getObjectAt(0).transformInterface.canInterpolate(time);
 			else
 				return false;

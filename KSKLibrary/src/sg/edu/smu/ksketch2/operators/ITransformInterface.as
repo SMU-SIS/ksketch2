@@ -197,7 +197,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 * @param op The corresponding target composite operation.
 		 */
-		function changeToKeyFrame(time:Number, op:KCompositeOperation):void;
+		function changeKeyPassthrough(time:Number, op:KCompositeOperation, value:Boolean):void;
 		
 		/**
 		 * Removes the key frame from the key frame list. Any transitions
@@ -208,7 +208,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 * @param op The corresponding composite operation.
 		 */
-		function removeKeyFrame(time:Number, op:KCompositeOperation):void;
+		function removeKey(time:Number, op:KCompositeOperation):void;
 		
 		/**
 		 * Clears all the motions after the given time. If there is no active

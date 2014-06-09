@@ -191,7 +191,7 @@
 					if(studyMode == STUDYMODE_KP2)
 					{
 						if(activeKey != null && activeKey.time == _KSketch.time) //the key is a controlpoint, so change the passthrough property to be a keyframe
-							_interactionControl.selection.objects.getObjectAt(0).transformInterface.changeToKeyFrame(_KSketch.time, _interactionControl.currentInteraction);
+							_interactionControl.selection.objects.getObjectAt(0).transformInterface.changeKeyPassthrough(_KSketch.time, _interactionControl.currentInteraction, false);
 						
 						else //there is no active key, so insert blank keyframe at that time for the object
 							_interactionControl.selection.objects.getObjectAt(0).transformInterface.insertBlankKeyFrame(_KSketch.time, _interactionControl.currentInteraction, true);
@@ -213,7 +213,7 @@
 						if(studyMode == STUDYMODE_KP2)
 						{
 							if(activeKey != null && activeKey.time == _KSketch.time) //the key is a controlpoint, so change the passthrough property to be a keyframe
-								_interactionControl.selection.objects.getObjectAt(0).transformInterface.changeToKeyFrame(_KSketch.time,_interactionControl.currentInteraction);
+								_interactionControl.selection.objects.getObjectAt(0).transformInterface.changeKeyPassthrough(_KSketch.time,_interactionControl.currentInteraction, false);
 							
 							else //there is no active key, so insert blank keyframe at that time for the object
 								_interactionControl.selection.objects.getObjectAt(0).transformInterface.insertBlankKeyFrame(_KSketch.time, _interactionControl.currentInteraction, true);
@@ -235,7 +235,7 @@
 			{
 				KSketch_CanvasView.tracker.trackPageview( "/timebar/removeKey" );
 				_interactionControl.begin_interaction_operation();
-				_interactionControl.selection.objects.getObjectAt(0).transformInterface.removeKeyFrame(_KSketch.time, _interactionControl.currentInteraction);
+				_interactionControl.selection.objects.getObjectAt(0).transformInterface.removeKey(_KSketch.time, _interactionControl.currentInteraction);
 				_interactionControl.end_interaction_operation(null,_interactionControl.selection);
 				
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));

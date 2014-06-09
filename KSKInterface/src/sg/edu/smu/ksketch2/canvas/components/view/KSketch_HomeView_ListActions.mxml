@@ -6,8 +6,6 @@
 		<![CDATA[
 			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
 			
-			public static var deleteSelected:Boolean;
-			
 			protected function button_deleteHandler(event:MouseEvent):void
 			{
 				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.DELETE_ACTION));

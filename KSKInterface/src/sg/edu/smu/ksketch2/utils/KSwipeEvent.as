@@ -15,7 +15,7 @@ package sg.edu.smu.ksketch2.utils
 			super(type, bubbles, cancelable);
 		}
 		
-		public function get userId():int
+		/*public function get userId():int
 		{
 			return _userId;
 		}
@@ -33,7 +33,7 @@ package sg.edu.smu.ksketch2.utils
 		public function set userObj(value:Object):void
 		{
 			_userObj = value;
-		}
+		}*/
 		
 	}
 }

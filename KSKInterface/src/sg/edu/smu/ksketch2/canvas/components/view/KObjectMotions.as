@@ -193,13 +193,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			var lastKeyTime:Number = _object.transformInterface.lastKeyTime;
 			
 			if(!activeKey)
-			{
-				_prevActiveKey = null;
-				_prevActiveKeyTime = -1;
-				_motionPath.graphics.clear();
-				_rotationMotionPath.graphics.clear();
 				return;
-			}
 			
 			if(activeKey != _prevActiveKey || activeKeyTime != _prevActiveKeyTime)
 			{

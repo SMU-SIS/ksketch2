@@ -221,8 +221,8 @@ package sg.edu.smu.ksketch2.utils
 			// Scan path to see if any segments exceed the maximum.
 			for (i=1; i<points.length; i++)
 			{
-				if (maximum < points[i].x - points[i-1].x ||
-					maximum < points[i].y - points[i-1].y)
+				if (maximum < Math.abs(points[i].x - points[i-1].x) ||
+					maximum < Math.abs(points[i].y - points[i-1].y))
 				{
 					exceed = true;
 					break;

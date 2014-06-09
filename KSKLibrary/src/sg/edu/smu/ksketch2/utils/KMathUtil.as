@@ -375,7 +375,7 @@ package sg.edu.smu.ksketch2.utils
 													parameterization:uint = NATURAL): KTimedPoint
 		{
 			// Check for the degenerate case where p1 and p2 are the same.
-			if (p1.x == p2.x && p1.y == p2.y)
+			if (Math.abs(p2.x - p1.x) < EPSILON && Math.abs(p2.y - p1.y) < EPSILON)
 			{
 				return new KTimedPoint(p1.x, p1.y, t);
 			}
@@ -537,15 +537,15 @@ package sg.edu.smu.ksketch2.utils
 												  b0:Point, b1:Point, b2:Point, b3:Point, param:uint=CHORDAL): Boolean
 		{
 			// Check for degenerate cases
-			if (p1.equals(p2))
+			if (Math.abs(p2.x - p1.x) < EPSILON && Math.abs(p2.y - p1.y) < EPSILON)
 			{
 				return false;
 			}
-			if (p0 && p0.equals(p1))
+			if (p0 && Math.abs(p1.x - p0.x) < EPSILON && Math.abs(p1.y - p0.y) < EPSILON)
 			{
 				p0 = null;
 			}
-			if (p3 && p3.equals(p2))
+			if (p3 && Math.abs(p3.x - p2.x) < EPSILON && Math.abs(p3.y - p2.y) < EPSILON)
 			{
 				p3 = null;
 			}

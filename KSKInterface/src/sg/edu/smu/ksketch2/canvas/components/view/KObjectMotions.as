@@ -157,7 +157,13 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				var lastKeyTime:Number = _object.transformInterface.lastKeyTime;
 				
 				if(activeKey)
+				{
 					_determineAndGeneratePaths(activeKey,firstKeyTime,lastKeyTime);				
+				}
+				var position:Point = _object.fullPathMatrix(event.time).transformPoint(_object.center);
+				_rotationMotionPath.x = position.x;
+				_rotationMotionPath.y = position.y;
+
 			}
 		}
 		

@@ -239,6 +239,10 @@
 				_canvasControl.doubleTapAction(action, _feedback);
 			}
 			
+			public function turnOnDoubleTapAction(value:Boolean):void
+			{
+				_canvasControl.doubleTapOn = value;
+			}
 			
 			/**
 			 * Triggers exit

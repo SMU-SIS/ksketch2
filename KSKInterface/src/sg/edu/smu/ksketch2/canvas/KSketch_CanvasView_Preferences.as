@@ -62,6 +62,16 @@ package sg.edu.smu.ksketch2.canvas
 		public static const NOT_AUTO:String = "NOT AUTO";
 		
 		/**
+		 * Double-tap enabled status.
+		 */
+		public static const DOUBLETAP_ON:String = "DOUBLETAP_ON";
+		
+		/**
+		 * Double-tap disabled status status.
+		 */
+		public static const DOUBLETAP_OFF:String = "DOUBLETAP_OFF";
+		
+		/**
  		 * Gets the shared object.
  		 * 
  		 * @return The shared object.
@@ -174,6 +184,32 @@ package sg.edu.smu.ksketch2.canvas
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
 			prefs.data.autoInsert = value;
+			prefs.flush();
+		}
+		
+		/**
+		 * Gets the double tap feature value.
+		 * 
+		 * @return The double tap value.
+		 */
+		public static function get doubleTap():String
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.doubleTap)
+				return prefs.data.doubleTap;
+			else
+				return CLOSE;
+		}
+		
+		/**
+		 * Sets the double tap feature value.
+		 * 
+		 * @param value The target double tap value.
+		 */
+		public static function set doubleTap(value:String):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.doubleTap = value;
 			prefs.flush();
 		}
 	}

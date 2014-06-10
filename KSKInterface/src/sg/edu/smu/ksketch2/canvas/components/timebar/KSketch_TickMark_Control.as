@@ -111,17 +111,23 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				{
 					_generateTicks(transformKeyHeaders[j], currentObject.id, currentObject.selected);
 					
-					if(_interactionControl.selection)
-						if(_interactionControl.selection.objects.getObjectAt(0) is KGroup)
-							break;
+					if(currentObject.selected)
+					{
+						if(_interactionControl.selection)
+							if(_interactionControl.selection.objects.getObjectAt(0) is KGroup)
+								break;
+					}
 				}	
 				
 				//Generate markers for visibility key
 				_generateTicks(currentObject.visibilityControl.visibilityKeyHeader, currentObject.id, currentObject.selected);
 				
-				if(_interactionControl.selection)
-					if(_interactionControl.selection.objects.getObjectAt(0) is KGroup)
-						break;
+				if(currentObject.selected)
+				{
+					if(_interactionControl.selection)
+						if(_interactionControl.selection.objects.getObjectAt(0) is KGroup)
+							break;
+				}
 			}
 			
 			_ticks.sort(SortingFunctions._compare_x_property);
@@ -225,6 +231,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				for(i = 0; i<_ticks.length; i++)
 				{
 					currentMarker = _ticks[i];
+					
 					if(!currentMarker.selected)
 						continue;
 					

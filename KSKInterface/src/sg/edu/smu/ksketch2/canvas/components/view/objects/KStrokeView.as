@@ -108,6 +108,26 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			}
 		}
 		
+		public function checkObjectErased(time:Number):Boolean
+		{
+			var isErased:Boolean = false;
+			
+			var parent:KGroup = _object.parent;
+			var isInGroup:Boolean = false;
+			
+			if(parent)
+				if(parent.id > 0)
+					isInGroup = true;
+			
+			if(!isInGroup)
+			{
+				if(_object.visibilityControl.alpha(time) <= 0.2)
+					isErased = true;
+			}
+			
+			return isErased;
+		}
+		
 		/**
 		 * Setting this explicitly changes the points that will be drawn
 		 */

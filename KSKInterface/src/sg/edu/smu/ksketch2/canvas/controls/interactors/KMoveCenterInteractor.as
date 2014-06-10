@@ -72,6 +72,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		
 		public function deactivate():void
 		{
+			_resetSelectArea();
 			_panGesture.removeAllEventListeners();
 		}
 		
@@ -158,19 +159,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		
 		private function _enlargeSelectArea():void
 		{
-			(_widget as KSketch_Widget_Component).centroid.graphics.beginFill(0x000000, 0);
-			(_widget as KSketch_Widget_Component).centroid.graphics.drawRect(-125,-125,250,250);
-			(_widget as KSketch_Widget_Component).centroid.graphics.endFill();
+			(_widget as KSketch_Widget_Component).centroidMove.graphics.beginFill(0x000000, 0);
+			(_widget as KSketch_Widget_Component).centroidMove.graphics.drawRect(-125,-125,250,250);
+			(_widget as KSketch_Widget_Component).centroidMove.graphics.endFill();
 		}
 		
 		private function _resetSelectArea():void
 		{
-			(_widget as KSketch_Widget_Component).centroid.graphics.clear();
-			(_widget as KSketch_Widget_Component).strokeColor = KSketchStyles.WIDGET_INTERPOLATE_COLOR;
-			
-			(_widget as KSketch_Widget_Component).centroid.graphics.beginFill(KSketchStyles.WIDGET_PERFORM_COLOR);
-			(_widget as KSketch_Widget_Component).centroid.graphics.drawCircle(0,0,KSketchStyles.WIDGET_CENTROID_SIZE);
-			(_widget as KSketch_Widget_Component).centroid.graphics.endFill();
+			(_widget as KSketch_Widget_Component).centroidMove.graphics.clear();
 		}
 	}
 }

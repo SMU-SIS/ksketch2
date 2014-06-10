@@ -68,7 +68,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _activeInteractor:IInteractor;						// the active interactor
 		private var _startPoint:Point;									// the start point
 		private var _keyDown:Boolean;									// the key down boolean flag
+		
 		public var lasso:Boolean;										// the lasso boolean flag
+		public var doubleTapOn:Boolean = false;							// the double tap feature flag
 		
 		/**
 		 * The main constructor for the KCanvasInteractorManager class.
@@ -169,9 +171,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _recogniseDoubleTap(event:GestureEvent):void
 		{
-			var left:Boolean = (_doubleTap.location.x/_inputComponent.width <= 0.5)? true:false;
-			
-			doubleTapAction(left, null);
+			if(doubleTapOn)
+			{
+				var left:Boolean = (_doubleTap.location.x/_inputComponent.width <= 0.5)? true:false;
+				
+				doubleTapAction(left, null);	
+			}
 		}
 		
 		public function doubleTapAction(actionUndo:Boolean, feedback:KSketch_Feedback_Message):void
@@ -230,11 +235,15 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _recogniseTap(event:GestureEvent):void
 		{
+			var selected:Boolean = false;
 			if(_interactionControl.currentInteraction)
 				return;
 			
 			_activeInteractor = _tapSelectInteractor;
-			_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
+			selected = _tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location),_KSketch.time);
+			
+			if(!selected)
+				_recogniseDraw(event);
 		}
 		
 		/**

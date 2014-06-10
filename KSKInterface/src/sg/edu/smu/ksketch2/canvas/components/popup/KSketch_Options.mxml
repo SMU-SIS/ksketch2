@@ -33,9 +33,6 @@
 				_canvasView = canvasView;
 				_menu = menu;
 				
-				//set the studyMode to default
-				//studyMode = KSingleReferenceFrameOperator.studyMode;
-				
 				_menu.open(_canvasView);
 				KSketch_CanvasView_Preferences.menuOpen = KSketch_CanvasView_Preferences.OPEN;
 			}
@@ -60,6 +57,15 @@
 						break;
 					default:
 						autoInsertKey.selected = false;
+				}
+				
+				switch(KSketch_CanvasView_Preferences.doubleTap)
+				{
+					case KSketch_CanvasView_Preferences.DOUBLETAP_ON:
+						doubleTap.selected = true;
+						break;
+					default:
+						doubleTap.selected = false;
 				}
 			}
 			
@@ -110,6 +116,17 @@
 					default:
 						autoInsertKey.selected = false;
 						_autoInsertKey(false);
+				}
+				
+				switch(KSketch_CanvasView_Preferences.doubleTap)
+				{
+					case KSketch_CanvasView_Preferences.DOUBLETAP_ON:
+						doubleTap.selected = true;
+						_doubleTap(true);
+						break;
+					default:
+						doubleTap.selected = false;
+						_doubleTap(false);
 				}
 			}
 			
@@ -194,6 +211,20 @@
 				{
 					KSingleReferenceFrameOperator.always_allow_interpolate = false;
 					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.NOT_AUTO;
+				}
+			}
+			
+			private function _doubleTap(value:Boolean):void
+			{
+				if(value)
+				{
+					_menu.turnOnDoubleTapAction(true);
+					KSketch_CanvasView_Preferences.doubleTap = KSketch_CanvasView_Preferences.DOUBLETAP_ON;
+				}
+				else
+				{
+					_menu.turnOnDoubleTapAction(false);
+					KSketch_CanvasView_Preferences.doubleTap = KSketch_CanvasView_Preferences.DOUBLETAP_OFF;
 				}
 			}
 			
@@ -305,6 +336,14 @@
 			</s:layout>
 			<s:CheckBox id="autoInsertKey" label="Insert Key Frames Automatically" click="_autoInsertKey(autoInsertKey.selected)" fontSize="14"/>
 		</s:Group>
+		
+		<s:Group>
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
+			</s:layout>
+			<s:CheckBox id="doubleTap" label="Enable double-tap for undo and redo" click="_doubleTap(doubleTap.selected)" fontSize="14"/>
+		</s:Group>
+		
 		<s:Group width="100%">
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10" horizontalAlign="right"/>

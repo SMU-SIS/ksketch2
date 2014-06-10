@@ -66,7 +66,10 @@ package sg.edu.smu.ksketch2.operators.operations
 		public function undo():void
 		{
 			// set the keyframe's visibility to the older visibility
-			_key.passthrough = true;
+			if(_key.passthrough)
+				_key.passthrough = false
+			else
+				_key.passthrough = true;
 		}
 		
 		/**
@@ -76,7 +79,10 @@ package sg.edu.smu.ksketch2.operators.operations
 		public function redo():void
 		{
 			// set the key frame's visibility to the newer visibility
-			_key.passthrough = false;
+			if(_key.passthrough)
+				_key.passthrough = false;
+			else
+				_key.passthrough = true;
 		}
 		
 		/**

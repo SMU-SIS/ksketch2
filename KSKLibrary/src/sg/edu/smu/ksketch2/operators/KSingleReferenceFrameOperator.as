@@ -451,7 +451,11 @@ package sg.edu.smu.ksketch2.operators
 				// case: the key frame either has no next key frame or is the head key frame
 				// set the remove key frame check as false false
 				if(!key.next)
-					canRemove = false;
+				{
+					if(key.passthrough)
+						canRemove = false;	
+				}
+					
 				if(key == _refFrame.head)
 					canRemove = false;
 			}
@@ -1136,13 +1140,13 @@ package sg.edu.smu.ksketch2.operators
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 		}
 		
-		public function changeToKeyFrame(time:Number, op:KCompositeOperation):void
+		public function changeKeyPassthrough(time:Number, op:KCompositeOperation, value:Boolean):void
 		{
 			var key:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
 			
 			if(op && key.time == time)
 			{
-				key.passthrough = false;
+				key.passthrough = value;
 				var keyOp:KModifyPassthroughOperation = new KModifyPassthroughOperation(key);
 				op.addOperation(keyOp);
 			}
@@ -1154,7 +1158,27 @@ package sg.edu.smu.ksketch2.operators
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_TRANSFORM_ENDED, _object, time)); 
 		}
 		
-		public function removeKeyFrame(time:Number, op:KCompositeOperation):void
+		public function removeKey(time:Number, op:KCompositeOperation):void
+		{
+			// get the key frame after the given time
+			var key:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
+			
+			//if this is the last key, check if it is a keyframe
+			if(!key.next)
+			{
+				//if key is a keyframe
+				if(!key.passthrough)
+				{
+					//change keyframe to control point
+					changeKeyPassthrough(time, op, true);
+					return;
+				}
+			}
+			
+			removeKeyFrame(time, op);
+		}
+		
+		private function removeKeyFrame(time:Number, op:KCompositeOperation):void
 		{
 			// get the key frame after the given time
 			var key:KSpatialKeyFrame = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;

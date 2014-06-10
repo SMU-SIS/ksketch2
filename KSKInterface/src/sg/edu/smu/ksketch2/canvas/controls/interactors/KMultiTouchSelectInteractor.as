@@ -15,16 +15,16 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import flash.utils.Dictionary;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
-	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
-	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
-	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KImageView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
+	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
+	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
+	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	/**
 	 * The KMultiTouchSelectInteractor class serves as the concrete class
@@ -61,16 +61,18 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * 
 		 * @param location The target point location of the tap.
 		 */
-		public function tap(location:Point):Boolean
+		public function tap(location:Point, time:Number):Boolean
 		{
 			var selected:Boolean = false;
+			
 			_selectionArea.graphics.clear();
 			_selectionArea.graphics.beginFill(0x000000, 1);
 			_selectionArea.graphics.drawCircle(location.x, location.y, DETECTION_RADIUS);
 			_selectionArea.graphics.endFill();
 			
 			_modelDisplay.addChild(_selectionArea);
-			selected = detectObjects();
+			
+			selected = detectObjects(time);
 			
 			_modelDisplay.removeChild(_selectionArea);
 			
@@ -82,9 +84,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * versus model data to maintain consistency. View collision
 		 * detection cannot handle more than twenty objects.
 		 */
-		public function detectObjects():Boolean
+		public function detectObjects(time:Number):Boolean
 		{
-			var selected:Boolean = false;
 			var collisionList:CollisionList = new CollisionList(_selectionArea);
 			collisionList.cannonicalSpace = _modelDisplay;
 			var viewsTable:Dictionary = _modelDisplay.viewsTable;
@@ -93,27 +94,35 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			{
 				var display:KObjectView = view.displayable();
 				
-				if(display is KStrokeView || display is KImageView)
+				if(display is KImageView)
+					collisionList.addItem(display);
+				else if (display is KStrokeView)
 					collisionList.addItem(display);
 			}
 			
 			var result:Array = collisionList.checkCollisions();
-
 			var bestResult:Object;
+			
 			if(result.length > 0)
 			{
 				for each(var resultPair:* in result)
 				{
 					if(bestResult)
 					{
-						if(resultPair.overlapping.length > bestResult.overlapping.length)
-							bestResult = resultPair;
+						var isErased:Boolean = false;
+						
+						if(resultPair.collidedObject is KStrokeView)
+							isErased = (resultPair.collidedObject as KStrokeView).checkObjectErased(time);
+							
+						if(!isErased)
+							bestResult = resultPair;	
 					}
 					else
 						bestResult = resultPair;
 				}
 			}
 			
+			var selected:Boolean = false;
 			if(bestResult)
 			{
 				select(bestResult.collidedObject);

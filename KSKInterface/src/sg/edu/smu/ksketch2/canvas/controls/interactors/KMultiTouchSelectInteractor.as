@@ -61,16 +61,20 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * 
 		 * @param location The target point location of the tap.
 		 */
-		public function tap(location:Point):void
+		public function tap(location:Point):Boolean
 		{
+			var selected:Boolean = false;
 			_selectionArea.graphics.clear();
 			_selectionArea.graphics.beginFill(0x000000, 1);
 			_selectionArea.graphics.drawCircle(location.x, location.y, DETECTION_RADIUS);
 			_selectionArea.graphics.endFill();
 			
 			_modelDisplay.addChild(_selectionArea);
-			detectObjects();
+			selected = detectObjects();
+			
 			_modelDisplay.removeChild(_selectionArea);
+			
+			return selected;
 		}
 		
 		/**
@@ -78,8 +82,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * versus model data to maintain consistency. View collision
 		 * detection cannot handle more than twenty objects.
 		 */
-		public function detectObjects():void
+		public function detectObjects():Boolean
 		{
+			var selected:Boolean = false;
 			var collisionList:CollisionList = new CollisionList(_selectionArea);
 			collisionList.cannonicalSpace = _modelDisplay;
 			var viewsTable:Dictionary = _modelDisplay.viewsTable;
@@ -110,9 +115,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 			
 			if(bestResult)
+			{
 				select(bestResult.collidedObject);
+				selected = true;
+			}
 			else
 				select(null);
+			
+			return selected;
 		}
 		
 		/**

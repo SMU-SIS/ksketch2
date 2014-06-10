@@ -235,11 +235,16 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _recogniseTap(event:GestureEvent):void
 		{
+			var selected:Boolean;
+			
 			if(_interactionControl.currentInteraction)
 				return;
 			
 			_activeInteractor = _tapSelectInteractor;
-			_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
+			selected = _tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
+			
+			if(!selected)
+				_recogniseDraw(event);
 		}
 		
 		/**
@@ -256,7 +261,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			// switch interactor based on draw gesture's nTouches
 			if(lasso)// || _drawGesture.touchesCount == 2)
 				_activeInteractor = _loopSelectInteractor;
-			else if(_drawGesture.touchesCount == 1)
+			else if(_drawGesture.touchesCount <= 1)
 				_activeInteractor = _drawInteractor;
 			
 			_interactionControl.selection = null;
@@ -269,6 +274,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_drawGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updateDraw);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_ENDED, _endDraw);
 			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_BEGIN));
+			
+			if(_drawGesture.touchesCount == 0)
+				_updateDraw(event);
 		}
 		
 		/**
@@ -287,6 +295,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			// make sure the input coordinates are in the correct coordinate space
 			_activeInteractor.interaction_Update(_modelDisplay.globalToLocal(_drawGesture.lastTouchLocation));
+			
+			if(_drawGesture.touchesCount == 0)
+				_endDraw(event);
 		}
 		
 		/**

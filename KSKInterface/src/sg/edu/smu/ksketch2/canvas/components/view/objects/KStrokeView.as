@@ -66,43 +66,16 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 					while(parent.id > 0)
 					{
 						var isErasedGroup:Boolean = false;
-						var children:KModelObjectList = parent.children;
 						
-						var visibilityArr:Array = new Array(children.length());
-						var i:int;
-						
-						for(i=0; i<visibilityArr.length; i++)
-						{
-							var child:KObject = children.getObjectAt(i);
-							
-							visibilityArr[i] = 0;
-							if(child.visibilityControl.alpha(time) == 0.2 || child.visibilityControl.alpha(time) == 0)
-								visibilityArr[i] = 1;
-						}
-						
-						var checkNum:Number=0;
-						
-						for(i=0; i< visibilityArr.length; ++i)
-						{
-							if(visibilityArr[0] == visibilityArr[i])
-								++checkNum;
-						}
-						
-						if(checkNum==visibilityArr.length)
-						{
-							if(visibilityArr[0] == 1)
-								isErasedGroup = true;
-						}
+						isErasedGroup = checkEraseInGroup(parent, time);
 						
 						if(isErasedGroup)
 						{
-							//parent.visibilityControl.setVisibility(false, time, op);
 							parent.transformInterface.clearAllMotionsAfterTime(time, op);
 							parent = parent.parent;
 						}
 						else
 							break;
-						
 					}
 				}
 			}
@@ -122,6 +95,43 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			if(!isInGroup)
 			{
 				if(_object.visibilityControl.alpha(time) <= 0.2)
+					isErased = true;
+			}
+			else
+				isErased = checkEraseInGroup(parent, time);
+			
+			return isErased;
+		}
+		
+		private function checkEraseInGroup(parent:KGroup, time:Number):Boolean
+		{
+			var isErased:Boolean = false;
+			
+			var children:KModelObjectList = parent.children;
+			
+			var visibilityArr:Array = new Array(children.length());
+			var i:int;
+			
+			for(i=0; i<visibilityArr.length; i++)
+			{
+				var child:KObject = children.getObjectAt(i);
+				
+				visibilityArr[i] = 0;
+				if(child.visibilityControl.alpha(time) == 0.2 || child.visibilityControl.alpha(time) == 0)
+					visibilityArr[i] = 1;
+			}
+			
+			var checkNum:Number=0;
+			
+			for(i=0; i< visibilityArr.length; ++i)
+			{
+				if(visibilityArr[0] == visibilityArr[i])
+					++checkNum;
+			}
+			
+			if(checkNum==visibilityArr.length)
+			{
+				if(visibilityArr[0] == 1)
 					isErased = true;
 			}
 			

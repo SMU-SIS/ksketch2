@@ -195,10 +195,9 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			if(!activeKey)
 				return;
 			
-			if(activeKey != _prevActiveKey || activeKeyTime != _prevActiveKeyTime)
-			{
+			if(activeKey != _prevActiveKey || activeKeyTime != _prevActiveKeyTime || (activeKeyTime == 0 && _prevActiveKeyTime == 0))
 				_determineAndGeneratePaths(activeKey, firstKeyTime, lastKeyTime);
-			}
+			
 			var position:Point = _object.fullPathMatrix(time).transformPoint(_object.center);
 			_rotationMotionPath.x = position.x;
 			_rotationMotionPath.y = position.y;

@@ -21,7 +21,6 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.model.data_structures.KReferenceFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
-	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KInsertKeyOperation;
@@ -30,7 +29,6 @@ package sg.edu.smu.ksketch2.operators
 	import sg.edu.smu.ksketch2.operators.operations.KReplacePathOperation;
 	import sg.edu.smu.ksketch2.utils.KPathProcessing;
 	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
-	import sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorVectorKTimedPoint;
 	
 	//Yay monster class! Good luck reading this
 	

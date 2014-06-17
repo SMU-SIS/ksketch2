@@ -130,10 +130,11 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		
 		private function _transformBegin(event:KObjectEvent):void
 		{
-			//If performance, need to hide paths
-			//Init ghosts here?			
 			if(_object.transformInterface.transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
+				_motionPath.graphics.clear();
+				_rotationMotionPath.graphics.clear();
+				
 				_motionPath.visible = false;
 				_rotationMotionPath.visible = false;
 			}
@@ -163,7 +164,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				var position:Point = _object.fullPathMatrix(event.time).transformPoint(_object.center);
 				_rotationMotionPath.x = position.x;
 				_rotationMotionPath.y = position.y;
-
 			}
 		}
 		

@@ -239,10 +239,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			if(_interactionControl.currentInteraction)
 				return;
 			
+			var prevSelection:Boolean = false;
+			if(_interactionControl.selection)
+				prevSelection = true;
+			
 			_activeInteractor = _tapSelectInteractor;
 			selected = _tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location),_KSketch.time);
 			
-			if(!selected)
+			if(!selected && !prevSelection)
 				_recogniseDraw(event);
 		}
 		

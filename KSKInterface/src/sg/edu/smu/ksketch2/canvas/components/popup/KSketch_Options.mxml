@@ -209,6 +209,7 @@
 				}
 				else
 				{
+					_setStudy(3);
 					KSingleReferenceFrameOperator.always_allow_interpolate = false;
 					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.NOT_AUTO;
 				}

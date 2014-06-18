@@ -4,6 +4,8 @@ package sg.edu.smu.ksketch2.operators.operations
 	
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
+	
+	import sg.edu.smu.ksketch2.KSketch2;
 
 	/**
 	 * The KChangeCenterOperation class serves as the concrete class for
@@ -27,6 +29,13 @@ package sg.edu.smu.ksketch2.operators.operations
 			_object = object;			// set the current object
 			_oldCenter = oldCenter;		// set the older center
 			_newCenter = newCenter;		// set the newer center
+		
+			var log:XML = <op/>;
+			log.@type = "Change Center";
+			log.@oldCenter = _oldCenter.toString();
+			log.@newCenter = _newCenter.toString();
+			log.appendChild(_object.serialize());
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**

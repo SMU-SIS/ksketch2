@@ -8,6 +8,7 @@
  */
 package sg.edu.smu.ksketch2.operators.operations
 {
+	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 	
@@ -36,6 +37,26 @@ package sg.edu.smu.ksketch2.operators.operations
 			// throw an error
 			if(!isValid())
 				throw new Error(errorMessage);
+			
+			var log:XML = <op/>;
+			log.@type = "Insert Key";
+			log.appendChild(_newKey.serialize());
+			
+			if(before)
+			{
+				var beforeLog:XML = <beforeKey/>;
+				beforeLog.appendChild(before.serialize());
+				log.appendChild(beforeLog);
+			}
+			
+			if(after)
+			{
+				var afterLog:XML = <afterKey/>;
+				afterLog.appendChild(after.serialize());
+				log.appendChild(afterLog);
+			}
+			
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**

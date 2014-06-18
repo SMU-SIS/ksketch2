@@ -96,9 +96,9 @@ package sg.edu.smu.ksketch2
 		
 		private var _groupingUtil:KGroupingUtil;			// the grouping utility
 		private var _sceneGraph:KSceneGraph;				// the scene graph
-		private var _time:Number;								// the time
+		private var _time:Number;							// the time
 		
-		public var log:XML;									// the log
+		public static var log:XML;							// the log
 		public var logStartTime:Number;						// the log's start time
 		
 		// ###############

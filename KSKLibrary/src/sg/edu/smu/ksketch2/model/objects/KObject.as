@@ -316,16 +316,19 @@ package sg.edu.smu.ksketch2.model.objects
 		 */
 		public function serialize():XML
 		{
-			var objectXML:XML = <KObject id="" creationTime="" type="" centroid=""/>;
+			var objectXML:XML = <KObject/>;
 			objectXML.@id = id.toString();
 			objectXML.@creationTime = _creationTime.toString();
 			if(_center)
 				objectXML.@centroid = _center.x.toString()+","+_center.y.toString();
 			
-			var parentXML:XML = <parent id=""/>;
-			parentXML.@id=parent.id.toString();
+			if(parent)
+			{
+				var parentXML:XML = <parent/>;
+				parentXML.@id=parent.id.toString();	
+				objectXML.appendChild(parentXML);
+			}
 			
-			objectXML.appendChild(parentXML);
 			objectXML.appendChild(visibilityControl.serializeVisibility());
 			objectXML.appendChild(transformInterface.serializeTransform());
 			

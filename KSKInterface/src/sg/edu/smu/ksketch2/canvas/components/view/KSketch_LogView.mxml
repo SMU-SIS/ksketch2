@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false" 
+		initialize="_init()"
+		creationPolicy="all"
+		destructionPolicy="never" 
+		>
+	<fx:Script>
+		<![CDATA[
+			[Bindable]
+			private var sketchTitle:String = "Log: ";
+			
+			private var userData:Object = new Object();
+			
+			
+			public function _init():void
+			{	
+				userData = data;
+				sketchTitle += userData.kSketchDocument.name;
+				text_area.text = userData.kSketchDocument.xml.toXMLString();
+			}
+
+			public function exit():void
+			{
+				sketchTitle = "Log: ";
+				text_area.text = "";
+				navigator.pushView(KSketch_HomeView, userData);
+			}
+
+		]]>
+	</fx:Script>
+	
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center"/>
+		</s:layout>
+		<s:Label text="{sketchTitle}" fontSize="20"/>
+		
+		<!-- Text area scrollable for viewing log -->	
+		<s:TextArea id="text_area" width="95%" height="90%" editable="false"/>
+		
+		<!-- Button to close view -->
+		<s:Button id="exit_button" label="Back" click="exit()" fontSize="14"/>	
+	</s:Group>
+</s:View>

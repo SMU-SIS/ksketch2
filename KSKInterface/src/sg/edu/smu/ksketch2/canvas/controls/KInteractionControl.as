@@ -162,14 +162,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 			undoOp.undo();
 			_redoStack.push(undoOp);
 			
-			var log:XML = <op/>;
-			var date:Date = new Date();
-			
-			log.@category = "Undo";
-			log.@type = "Undo";
-			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-			_KSketch.log.appendChild(log);
-			
 			dispatchEvent(new Event(EVENT_UNDO_REDO));
 		}
 		
@@ -184,14 +176,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var redoOp:IModelOperation = _redoStack.pop();
 			redoOp.redo();
 			_undoStack.push(redoOp);
-			
-			var log:XML = <op/>;
-			var date:Date = new Date();
-			
-			log.@category = "Undo";
-			log.@type = "Redo";
-			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-			_KSketch.log.appendChild(log);
 			
 			dispatchEvent(new Event(EVENT_UNDO_REDO));
 		}

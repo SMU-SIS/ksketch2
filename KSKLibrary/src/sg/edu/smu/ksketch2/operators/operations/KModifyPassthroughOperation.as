@@ -8,6 +8,7 @@
  */
 package sg.edu.smu.ksketch2.operators.operations
 {
+	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 	
@@ -35,6 +36,11 @@ package sg.edu.smu.ksketch2.operators.operations
 			// throw an error
 			if(!isValid())
 				throw new Error(errorMessage);
+			
+			var log:XML = <op/>;
+			log.@type = "Modify Passthrough";
+			log.appendChild(_key.serialize());
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**

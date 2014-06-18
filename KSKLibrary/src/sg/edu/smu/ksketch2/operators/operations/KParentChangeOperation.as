@@ -8,6 +8,7 @@
  */
 package sg.edu.smu.ksketch2.operators.operations
 {
+	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 
@@ -39,6 +40,27 @@ package sg.edu.smu.ksketch2.operators.operations
 			// throw an error
 			if(!isValid())
 				throw new Error(errorMessage);
+			
+			var log:XML = <op/>;
+			log.@type = "Parent Change";
+			
+			log.appendChild(_child.serialize());
+			
+			if(_newParent)
+			{
+				var newParentLog:XML = <newParent/>;
+				newParentLog.appendChild(_newParent.serialize());
+				log.appendChild(newParentLog);
+			}
+			
+			if(_oldParent)
+			{
+				var oldParentLog:XML = <oldParent/>;
+				oldParentLog.appendChild(_oldParent.serialize());
+				log.appendChild(oldParentLog);
+			}
+			
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**

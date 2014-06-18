@@ -8,8 +8,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.KSketchStyles;
-	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
@@ -141,14 +139,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 			
 			_interactionControl.end_interaction_operation(op, _interactionControl.selection);
-			
-			var log:XML = <op/>;
-			var date:Date = new Date();
-			
-			log.@category = "Widget";
-			log.@type = "Move Center";
-			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-			_KSketch.log.appendChild(log);
 			
 			_interactionControl.dispatchEvent(new Event(CENTER_CHANGE_ENDED));
 			

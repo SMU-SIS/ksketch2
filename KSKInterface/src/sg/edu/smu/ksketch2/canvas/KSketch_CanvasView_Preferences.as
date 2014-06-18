@@ -72,6 +72,16 @@ package sg.edu.smu.ksketch2.canvas
 		public static const DOUBLETAP_OFF:String = "DOUBLETAP_OFF";
 		
 		/**
+		 * Auto-log enabled status.
+		 */
+		public static const AUTOLOG_ON:String = "AUTOLOG_ON";
+		
+		/**
+		 * Auto-log disabled status status.
+		 */
+		public static const AUTOLOG_OFF:String = "AUTOLOG_OFF";
+		
+		/**
  		 * Gets the shared object.
  		 * 
  		 * @return The shared object.
@@ -210,6 +220,32 @@ package sg.edu.smu.ksketch2.canvas
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
 			prefs.data.doubleTap = value;
+			prefs.flush();
+		}
+		
+		/**
+		 * Gets the auto log feature value.
+		 * 
+		 * @return The auto log value.
+		 */
+		public static function get autoLog():String
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.autoLog)
+				return prefs.data.autoLog;
+			else
+				return CLOSE;
+		}
+		
+		/**
+		 * Sets the auto log feature value.
+		 * 
+		 * @param value The target auto log value.
+		 */
+		public static function set autoLog(value:String):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.autoLog = value;
 			prefs.flush();
 		}
 	}

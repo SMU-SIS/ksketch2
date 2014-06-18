@@ -125,8 +125,6 @@
 					this.addElement(actBar);
 					
 					actBar.visible = true;
-					actBar.x = 575;
-					
 					openActionBar = true;
 					wipeEffect.play();
 				}
@@ -143,11 +141,11 @@
 	<fx:Declarations>
 		<s:Parallel id="wipeEffect" target="{actBar}">
 			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
-			<s:Move duration="150" xFrom="{this.width}" xTo="575"/>
+			<s:Move duration="150" xFrom="{this.width}" xTo="500"/>
 		</s:Parallel>
 		<s:Parallel id="wipeEffectOut" target="{actBar}">
 			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
-			<s:Move duration="150" xTo="{this.width}" xFrom="575"/>
+			<s:Move duration="150" xTo="{this.width}" xFrom="500"/>
 		</s:Parallel>
 		<views:KSketch_HomeView_ListActions id="actBar" width="100%" height="100%"/>
 	</fx:Declarations>

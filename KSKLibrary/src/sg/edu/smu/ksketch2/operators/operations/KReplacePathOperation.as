@@ -43,6 +43,29 @@ package sg.edu.smu.ksketch2.operators.operations
 			// return an error
 			if(!isValid())
 				throw new Error(errorMessage);
+			
+			var log:XML = <op/>;
+			log.@type = "Replace Path";
+			
+			var temp:String = "";
+			if(_type == 0)
+				temp = "translate";
+			else if(_type == 1)
+				temp = "rotate";
+			else
+				temp = "scale";
+			log.@pathType = temp;
+			log.appendChild(_key.serialize());
+			
+			var newPathLog:XML = <newPath/>;
+			newPathLog.appendChild(_newPath.serialize());
+			
+			var oldPathLog:XML = <oldPath/>;
+			oldPathLog.appendChild(_oldPath.serialize());
+			
+			log.appendChild(newPathLog);
+			log.appendChild(oldPathLog);
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**

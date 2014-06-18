@@ -6,6 +6,7 @@ package sg.edu.smu.ksketch2.utils
 	{
 		public static const TAP_ACTION:String ="TAP_ACTION";
 		public static const DELETE_ACTION:String ="DELETE_ACTION";
+		public static const LOG_ACTION:String = "LOG_ACTION";
 		
 		private var _userObj:Object;
 		private var _userId:int;

@@ -10,10 +10,18 @@
 			{
 				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.DELETE_ACTION));
 			}
+			
+			protected function button_logHandler(event:MouseEvent):void
+			{
+				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.LOG_ACTION));
+			}
 		]]>
 	</fx:Script>
-	<s:HGroup verticalAlign="top" horizontalAlign="right" width="100%" height="100%">
+	<s:HGroup verticalAlign="top" horizontalAlign="right" width="100%" height="100%" gap="-20">
+		<s:Button icon="@Embed('assets/Button_ActionList_Log.png')" click="button_logHandler(event)" 
+				  skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Transparent_Button_Skin"/>
 		<s:Button icon="@Embed('assets/Button_ActionList_Delete.png')" click="button_deleteHandler(event)" 
-				  skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Transparent_Button_Skin" x="980"/>	
+				  skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Transparent_Button_Skin"/>
+		
 	</s:HGroup>
 </s:Group>

@@ -530,11 +530,13 @@
 					Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 					
 					if(_logSketchFlag)
+					{	
+						_logSketchFlag = false;
+						KSketch_HomeView_IconItemRenderer.openActionBar = false;
 						navigator.pushView(KSketch_LogView, userData);	
+					}
 					else
 						navigator.pushView(KSketch_CanvasView, userData);
-					
-					_logSketchFlag = false;
 				}
 			}
 			
@@ -787,14 +789,14 @@
 					listSketches.selectedIndex = -1;
 				
 				//if action bar is not displayed and there is no additional flag
-				if(!KSketch_HomeView_IconItemRenderer.openActionBar && !_deleteSketchFlag && !_isSwipe)
+				if(!KSketch_HomeView_IconItemRenderer.openActionBar && !_deleteSketchFlag && !_isSwipe && !_logSketchFlag)
 					_isXML = true;
 					
 				//if action bar is displayed and there is a log sketch flag
 				if(KSketch_HomeView_IconItemRenderer.openActionBar && _logSketchFlag)
 					_isXML = true;
 				
-				if(_isXML || _deleteSketchFlag)
+				if(_isXML || _deleteSketchFlag || _logSketchFlag)
 					startMonitorConnection();
 				
 				_isSwipe = false;

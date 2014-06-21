@@ -327,8 +327,6 @@
 					KSketch_HomeView.hasBeenNotified = true;
 				
 				navigator.pushView(KSketch_HomeView, userData);
-				
-				//trace(KSketch2.log);
 			}
 			
 			public function viewDeactivated():void

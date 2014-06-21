@@ -29,6 +29,7 @@
 			import mx.events.FlexEvent;
 			import mx.utils.Base64Decoder;
 			
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
 			
 			private var _myIcon:Bitmap;
@@ -110,6 +111,9 @@
 				Multitouch.inputMode = MultitouchInputMode.GESTURE;
 				this.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
 				stage.addEventListener(KSwipeEvent.TAP_ACTION, swipeTap);
+				
+				if(KSketch_CanvasView_Preferences.autoLog == KSketch_CanvasView_Preferences.AUTOLOG_OFF)
+					actBar.logButton.visible = false;
 			}
 			
 			public function onSwipe(event:TransformGestureEvent):void

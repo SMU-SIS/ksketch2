@@ -154,12 +154,10 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			if(_motionPath.visible && _rotationMotionPath.visible)
 			{
 				var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(event.time) as KSpatialKeyFrame;			
-				var firstKeyTime:Number = _object.transformInterface.firstKeyTime;
-				var lastKeyTime:Number = _object.transformInterface.lastKeyTime;
 				
 				if(activeKey)
 				{
-					_determineAndGeneratePaths(activeKey,firstKeyTime,lastKeyTime);				
+					_determineAndGeneratePaths(activeKey);				
 				}
 				var position:Point = _object.fullPathMatrix(event.time).transformPoint(_object.center);
 				_rotationMotionPath.x = position.x;
@@ -189,21 +187,19 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			
 			var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(time) as KSpatialKeyFrame;			
 			var activeKeyTime:Number = activeKey ? activeKey.time : -1;
-			var firstKeyTime:Number = _object.transformInterface.firstKeyTime;
-			var lastKeyTime:Number = _object.transformInterface.lastKeyTime;
 			
 			if(!activeKey)
 				return;
 			
 			if(activeKey != _prevActiveKey || activeKeyTime != _prevActiveKeyTime || (activeKeyTime == 0 && _prevActiveKeyTime == 0))
-				_determineAndGeneratePaths(activeKey, firstKeyTime, lastKeyTime);
+				_determineAndGeneratePaths(activeKey);
 			
 			var position:Point = _object.fullPathMatrix(time).transformPoint(_object.center);
 			_rotationMotionPath.x = position.x;
 			_rotationMotionPath.y = position.y;
 		}
 		
-		private function _determineAndGeneratePaths(activeKey:KSpatialKeyFrame, firstKeyTime:Number, lastKeyTime:Number):void
+		private function _determineAndGeneratePaths(activeKey:KSpatialKeyFrame):void
 		{
 			_prevActiveKey = activeKey;
 			_prevActiveKeyTime = activeKey ? activeKey.time : -1;
@@ -211,10 +207,10 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			
 			_motionPath.graphics.clear();
 			_rotationMotionPath.graphics.clear();
-			_generateMotionPath(activeKey,firstKeyTime,lastKeyTime);
+			_generateMotionPath(activeKey);
 		}
 		
-		private function _generateMotionPath(key:KSpatialKeyFrame, firstKeyTime:Number, lastKeyTime:Number):void
+		private function _generateMotionPath(key:KSpatialKeyFrame):void
 		{			
 			if(!key)
 				throw new Error("Unable to generate a motion path if there is no active key");
@@ -266,7 +262,8 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				totalX += Math.abs(p1.x - p0.x);
 				totalY += Math.abs(p1.y - p0.y);
 			}
-
+			
+			//BUG: p1.x and p1.y are NaN???
 			// Do the rest only if there is a path to render
 			if (KMathUtil.EPSILON < totalX || KMathUtil.EPSILON < totalY)
 			{
@@ -525,12 +522,10 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		{
 			if(_motionPath.visible && _rotationMotionPath.visible)
 			{
-				var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(time) as KSpatialKeyFrame;			
-				var firstKeyTime:Number = _object.transformInterface.firstKeyTime;
-				var lastKeyTime:Number = _object.transformInterface.lastKeyTime;
+				var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(time) as KSpatialKeyFrame;	
 				
 				if(activeKey)
-					_determineAndGeneratePaths(activeKey,firstKeyTime,lastKeyTime);				
+					_determineAndGeneratePaths(activeKey);				
 			}
 			
 			updateMotionPath(time);

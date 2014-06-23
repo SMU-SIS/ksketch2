@@ -259,18 +259,14 @@
 				
 				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
 				
-				object.visibilityControl.setVisibility(false, _KSketch.time, _interactionControl.currentInteraction);
-				if(_KSketch.time > 0)
-					object.visibilityControl.setVisibility(true, _KSketch.time, _interactionControl.currentInteraction);
+				object.visibilityControl.setVisibility(true, _KSketch.time, _interactionControl.currentInteraction, true);
 				
 				if(object is KGroup)
 					setChildVisibility(object as KGroup);
 				
-				_interactionControl.selection.objects.getObjectAt(0).transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
-				_interactionControl.end_interaction_operation(null, _interactionControl.selection);
+				object.transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
 				
-				if(_KSketch.time == 0)
-					_interactionControl.selection = null;
+				_interactionControl.end_interaction_operation(null, _interactionControl.selection);
 				
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 				close();
@@ -286,11 +282,7 @@
 					if(childObj is KGroup)
 						setChildVisibility(childObj as KGroup);
 					else
-					{
-						childObj.visibilityControl.setVisibility(false, _KSketch.time, _interactionControl.currentInteraction);
-						if(_KSketch.time > 0)
-							childObj.visibilityControl.setVisibility(true, _KSketch.time, _interactionControl.currentInteraction);
-					}
+						childObj.visibilityControl.setVisibility(true, _KSketch.time, _interactionControl.currentInteraction, true);
 				}
 			}
 			

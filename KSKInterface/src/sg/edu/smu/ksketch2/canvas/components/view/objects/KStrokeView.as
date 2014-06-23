@@ -57,7 +57,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			{
 				//do a check if object belongs to a group and if all the objects in the group are erased at that time
 				var parent:KGroup = _object.parent;
-				_object.visibilityControl.setVisibility(false, time, op);
+				_object.visibilityControl.setVisibility(false, time, op, false);
 				_object.transformInterface.clearAllMotionsAfterTime(time, op);	
 				
 				if(parent.id > 0)
@@ -68,8 +68,8 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 					
 					if(isErasedGroup)
 					{
-						parent.visibilityControl.setVisibility(true, time, op);
-						parent.visibilityControl.setVisibility(false, time, op);
+						parent.visibilityControl.setVisibility(true, time, op, false);
+						parent.visibilityControl.setVisibility(false, time, op, false);
 						parent.transformInterface.clearAllMotionsAfterTime(time, op);
 						parent = parent.parent;
 					}

@@ -68,13 +68,13 @@ package sg.edu.smu.ksketch2.model.objects
 			// handle cases for different derived classes
 			if(this is KGroup)
 			{
-				visibilityControl.setVisibility(true, 0, op);
+				visibilityControl.setVisibility(true, 0, op, false);
 				transformInterface.insertBlankKeyFrame(0, op, false);
 			}
 				
 			else
 			{
-				visibilityControl.setVisibility(true, time, op);
+				visibilityControl.setVisibility(true, time, op, false);
 				// insert a blank key at the given time in the transform
 				transformInterface.insertBlankKeyFrame(time, op, false);
 			}

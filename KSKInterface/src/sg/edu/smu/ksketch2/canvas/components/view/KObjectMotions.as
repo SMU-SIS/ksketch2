@@ -260,10 +260,15 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				p0 = p1;
 				p1 = _object.fullPathMatrix(t1).transformPoint(centroid);
 				totalX += Math.abs(p1.x - p0.x);
-				totalY += Math.abs(p1.y - p0.y);
 			}
 			
-			//BUG: p1.x and p1.y are NaN???
+			if(isNaN(totalX) || isNaN(totalY))
+			{
+				p0 = p1;
+				totalX = p1.x;
+				totalY = p1.y;
+			}
+			
 			// Do the rest only if there is a path to render
 			if (KMathUtil.EPSILON < totalX || KMathUtil.EPSILON < totalY)
 			{
@@ -301,6 +306,9 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				{ 
 					t3 = numIter.next(); 
 					p3 = _object.fullPathMatrix(t3).transformPoint(centroid);
+					
+					if(isNaN(p3.x) || isNaN(p3.y))
+						p3 = p2;
 				} 
 				
 				while (more)

@@ -295,13 +295,15 @@ package sg.edu.smu.ksketch2.canvas.components.view
 					t1 = numIter.next(); 
 					p1 = _object.fullPathMatrix(t1).transformPoint(centroid);
 					_motionPath.graphics.moveTo(p1.x, p1.y);
-				} 
+				}
+				
 				if (numIter.hasNext()) 
 				{ 
 					t2 = numIter.next(); 
 					p2 = _object.fullPathMatrix(t2).transformPoint(centroid);
 					more = true;
 				} 
+				
 				if (numIter.hasNext()) 
 				{ 
 					t3 = numIter.next(); 
@@ -316,13 +318,20 @@ package sg.edu.smu.ksketch2.canvas.components.view
 					// Draw the curve segment
 					if (KMathUtil.catmullRomToBezier(p0, p1, p2, p3, b0, b1, b2, b3))
 					{
-						if (DRAW_SEGMENT_DOTS)
+						var notNumber:Boolean = false;
+						if((isNaN(b0.x) || isNaN(b0.y)) || (isNaN(b1.x) || isNaN(b1.y)) || (isNaN(b2.x) || isNaN(b2.y)) || (isNaN(b3.x) || isNaN(b3.y)))
+							notNumber = true;
+						
+						if(!notNumber)
 						{
-							_motionPath.graphics.drawCircle(p2.x, p2.y, SEGMENT_DOT_RADIUS);
-							_motionPath.graphics.moveTo(p1.x, p1.y);							
+							if (DRAW_SEGMENT_DOTS)
+							{
+								_motionPath.graphics.drawCircle(p2.x, p2.y, SEGMENT_DOT_RADIUS);
+								_motionPath.graphics.moveTo(p1.x, p1.y);							
+							}
+							
+							_motionPath.graphics.cubicCurveTo(b1.x, b1.y, b2.x, b2.y, b3.x, b3.y);
 						}
-
-						_motionPath.graphics.cubicCurveTo(b1.x, b1.y, b2.x, b2.y, b3.x, b3.y);
 					}
 					
 					// Prepare for the next iteration.

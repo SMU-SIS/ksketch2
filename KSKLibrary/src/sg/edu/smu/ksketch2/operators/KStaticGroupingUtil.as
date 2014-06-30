@@ -39,17 +39,15 @@ package sg.edu.smu.ksketch2.operators
 			var tempTime:Number = groupTime;
 			if(commonParent.parent)
 				tempTime = commonParent.transformInterface.lastKeyTime;
-			
+		
 			_static_CollapseHierarchy(objects, commonParent, tempTime, scene, op);
 			
-			//RIght, we need to deal with the case of breaking ONE bloody object out.
 			if(objects.length() == 1)
 			{
 				var the_one_object:KObject = objects.getObjectAt(0);
 				
 				op.addOperation(KGroupingUtil.addObjectToParent(the_one_object, commonParent));
 				
-				//Group that dude to the root if needed
 				if(the_one_object.parent != scene.root)
 					op.addOperation(KGroupingUtil.addObjectToParent(the_one_object, scene.root));	
 				
@@ -118,7 +116,6 @@ package sg.edu.smu.ksketch2.operators
 			//of object combinations possible ie. objects with common parents will
 			//be given as one KGroup
 			var currentObject:KObject;
-			var parent:KGroup;
 			
 			//Iterate through the list of objects
 			for(var i:int = 0; i<objects.length(); i++)
@@ -129,17 +126,14 @@ package sg.edu.smu.ksketch2.operators
 		}
 		
 		private function _topDownCollapse(object:KObject, stopParent:KGroup, stopCollapseTime:Number,
-										  scene:KSceneGraph, op:KCompositeOperation):KObject
+										  scene:KSceneGraph, op:KCompositeOperation):void
 		{
-			var tempObj:KObject = object.parent;
 			if(object.parent != stopParent && object.parent != scene.root)
 			{
 				_topDownCollapse(object.parent, stopParent, stopCollapseTime,scene, op);
 				object.transformInterface.mergeTransform(object.parent, stopCollapseTime, op);
 				op.addOperation(KGroupingUtil.addObjectToParent(object, object.parent.parent));
 			}
-			
-			return tempObj;
 		}
 		
 		override public function removeSingletonGroups(currentGroup:KGroup, model:KSceneGraph, op:KCompositeOperation):void

@@ -128,6 +128,17 @@
 						doubleTap.selected = false;
 						_doubleTap(false);
 				}
+				
+				switch(KSketch_CanvasView_Preferences.autoLog)
+				{
+					case KSketch_CanvasView_Preferences.AUTOLOG_ON:
+						autoLog.selected = true;
+						_autoLog(true);
+						break;
+					default:
+						autoLog.selected = false;
+						_autoLog(false);
+				}
 			}
 			
 			private function _timebarPos1():void
@@ -226,6 +237,20 @@
 				{
 					_menu.turnOnDoubleTapAction(false);
 					KSketch_CanvasView_Preferences.doubleTap = KSketch_CanvasView_Preferences.DOUBLETAP_OFF;
+				}
+			}
+			
+			private function _autoLog(value:Boolean):void
+			{
+				if(value)
+				{
+					_canvasView.enableLog = true;
+					KSketch_CanvasView_Preferences.autoLog = KSketch_CanvasView_Preferences.AUTOLOG_ON;
+				}
+				else
+				{
+					_canvasView.enableLog = false;
+					KSketch_CanvasView_Preferences.autoLog = KSketch_CanvasView_Preferences.AUTOLOG_OFF;
 				}
 			}
 			
@@ -343,6 +368,13 @@
 				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
 			</s:layout>
 			<s:CheckBox id="doubleTap" label="Enable double-tap for undo and redo" click="_doubleTap(doubleTap.selected)" fontSize="14"/>
+		</s:Group>
+		
+		<s:Group>
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
+			</s:layout>
+			<s:CheckBox id="autoLog" label="Enable Log" click="_autoLog(autoLog.selected)" fontSize="14"/>
 		</s:Group>
 		
 		<s:Group width="100%">

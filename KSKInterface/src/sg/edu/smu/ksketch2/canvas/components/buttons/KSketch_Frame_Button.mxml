@@ -54,26 +54,16 @@
 			 */
 			private function _handleTap(event:org.gestouch.events.GestureEvent):void
 			{
-				var log:XML = <op/>;
-				var date:Date = new Date();
-				
-				log.@category = "Timeline";
-				
 				if(_type == LEFT)
 				{
 					KSketch_CanvasView.tracker.trackPageview( "/timebar/previousFrame" );
 					_timeControl.time -= KSketch2.ANIMATION_INTERVAL;
-					log.@type = "Prev Frame";
 				}
 				else
 				{
 					KSketch_CanvasView.tracker.trackPageview( "/timebar/nextFrame" );
 					_timeControl.time += KSketch2.ANIMATION_INTERVAL;
-					log.@type = "Next Frame";
 				}
-				
-				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-				_KSketch.log.appendChild(log);
 			}
 			
 			private function _initSkin():void

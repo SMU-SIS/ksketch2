@@ -102,6 +102,7 @@
 			private var _swipeTimer:Timer;
 			private var _oldEvent:Event;
 			private var _isXML:Boolean = false;
+			private var _logSketchFlag:Boolean = false;
 			private var _deleteSketchFlag:Boolean = false;
 			private var _selectedSketchName:String;
 			private var _selectedSketchId:String;
@@ -154,6 +155,7 @@
 				GetUserSketch.addEventListener(FaultEvent.FAULT, retrieveFaultHandler);
 				GetUserSketch.addEventListener(ResultEvent.RESULT, retrieveResultHandler);
 				stage.addEventListener(KSwipeEvent.DELETE_ACTION, listSketches_deleteSketchHandler);
+				stage.addEventListener(KSwipeEvent.LOG_ACTION, listSketches_logSketchHandler);
 				listSketches.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
 			}
 			
@@ -473,6 +475,7 @@
 					//(name:String, xml:XML, id:String,  date:Date, originalName:String, version:int, sketchId:int, description:String = "")
 					var docObj:KSketchDocument = new KSketchDocument(finalObj.fileName, xml, finalObj.id, date, finalObj.originalName, finalObj.version, finalObj.sketchId, finalObj.changeDescription);
 					userData.kSketchDocument = docObj;
+					
 					navigateToScreen("CANVAS");
 				}
 				else
@@ -525,7 +528,15 @@
 				else //if screen name is Canvas
 				{
 					Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
-					navigator.pushView(KSketch_CanvasView, userData);
+					
+					if(_logSketchFlag)
+					{	
+						_logSketchFlag = false;
+						KSketch_HomeView_IconItemRenderer.openActionBar = false;
+						navigator.pushView(KSketch_LogView, userData);	
+					}
+					else
+						navigator.pushView(KSketch_CanvasView, userData);
 				}
 			}
 			
@@ -778,10 +789,14 @@
 					listSketches.selectedIndex = -1;
 				
 				//if action bar is not displayed and there is no additional flag
-				if(!KSketch_HomeView_IconItemRenderer.openActionBar && !_deleteSketchFlag && !_isSwipe)
+				if(!KSketch_HomeView_IconItemRenderer.openActionBar && !_deleteSketchFlag && !_isSwipe && !_logSketchFlag)
 					_isXML = true;
 					
-				if(_isXML || _deleteSketchFlag)
+				//if action bar is displayed and there is a log sketch flag
+				if(KSketch_HomeView_IconItemRenderer.openActionBar && _logSketchFlag)
+					_isXML = true;
+				
+				if(_isXML || _deleteSketchFlag || _logSketchFlag)
 					startMonitorConnection();
 				
 				_isSwipe = false;
@@ -790,6 +805,11 @@
 			protected function listSketches_deleteSketchHandler(event:KSwipeEvent):void
 			{
 				_deleteSketchFlag = true;
+			}
+			
+			protected function listSketches_logSketchHandler(event:KSwipeEvent):void
+			{
+				_logSketchFlag = true;
 			}
 			
 			private function resetDatagridSelectItem():void

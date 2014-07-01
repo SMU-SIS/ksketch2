@@ -31,6 +31,8 @@
 			import sg.edu.smu.ksketch2.events.KSketchEvent;
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 			import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
+			import sg.edu.smu.ksketch2.model.objects.KGroup;
+			import sg.edu.smu.ksketch2.model.objects.KObject;
 			import sg.edu.smu.ksketch2.utils.KSelection;	
 			
 			public static const STUDYMODE_K:int = 0;						// Version K value
@@ -254,12 +256,36 @@
 					return;
 				
 				_interactionControl.begin_interaction_operation();
-				_interactionControl.selection.objects.getObjectAt(0).transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
+				
+				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
+				
+				object.visibilityControl.setVisibility(true, _KSketch.time, _interactionControl.currentInteraction, true);
+				
+				if(object is KGroup)
+					setChildVisibility(object as KGroup);
+				
+				object.transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
+				
 				_interactionControl.end_interaction_operation(null, _interactionControl.selection);
 				
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 				close();
 			}
+			
+			private function setChildVisibility(object:KGroup):void
+			{
+				var children:KModelObjectList = object.children;
+				for(var i:int=0; i<children.length(); i++)	
+				{
+					var childObj:KObject = children.getObjectAt(i);
+					
+					if(childObj is KGroup)
+						setChildVisibility(childObj as KGroup);
+					else
+						childObj.visibilityControl.setVisibility(true, _KSketch.time, _interactionControl.currentInteraction, true);
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	<s:Group width="100%" height="100%" id="actualContentContainer" y="{_onTop?0: -arrowHead.height - arrowHeadBottom.height - calloutContents.height}">

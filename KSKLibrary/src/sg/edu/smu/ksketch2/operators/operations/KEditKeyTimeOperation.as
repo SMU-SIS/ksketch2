@@ -8,6 +8,7 @@
  */
 package sg.edu.smu.ksketch2.operators.operations
 {
+	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -43,6 +44,14 @@ package sg.edu.smu.ksketch2.operators.operations
 			// throw an error
 			if(!isValid())
 				throw new Error(errorMessage)
+		
+			var log:XML = <op/>;
+			log.@type = "Edit Key Time";
+			log.@newTime = _newTime;
+			log.@oldTime = _oldTime;
+			log.appendChild(_object.serialize());
+			log.appendChild(_key.serialize());
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**

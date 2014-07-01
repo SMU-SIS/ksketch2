@@ -1281,11 +1281,6 @@ package sg.edu.smu.ksketch2.operators
 		
 		public function mergeTransform(sourceObject:KObject, stopMergeTime:Number, op:KCompositeOperation):void
 		{
-			/*
-			Passthrough edit - This method is not being used. Not sure what passthrough value should be
-			Doesn't matter anyway!!!
-			*/
-			
 			var sourceInterface:KSingleReferenceFrameOperator = sourceObject.transformInterface.clone() as KSingleReferenceFrameOperator;
 			var oldInterface:KSingleReferenceFrameOperator = this.clone() as KSingleReferenceFrameOperator;
 			var toMergeRefFrame:KReferenceFrame = new KReferenceFrame();

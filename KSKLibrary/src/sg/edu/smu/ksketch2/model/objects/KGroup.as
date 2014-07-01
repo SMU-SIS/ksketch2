@@ -15,7 +15,6 @@ package sg.edu.smu.ksketch2.model.objects
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 	import sg.edu.smu.ksketch2.utils.iterators.IKObjectIterator;
-	import sg.edu.smu.ksketch2.utils.iterators.KKObjectIteratorVector;
 
 	/**
 	 * The KGroup class serves as the concrete class for representing

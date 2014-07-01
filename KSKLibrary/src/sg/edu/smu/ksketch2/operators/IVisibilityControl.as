@@ -34,7 +34,7 @@ package sg.edu.smu.ksketch2.operators
 		 * @param time The target time.
 		 * @param op The corresponding composite operation.
 		 */
-		function setVisibility(visible:Boolean, time:Number, op:KCompositeOperation):void;
+		function setVisibility(visible:Boolean, time:Number, op:KCompositeOperation, clearKey:Boolean):void;
 		
 		/**
 		 * Gets the head key frame of the visibility key frame list.

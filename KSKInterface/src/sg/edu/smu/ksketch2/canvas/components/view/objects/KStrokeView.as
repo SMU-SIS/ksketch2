@@ -55,27 +55,23 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		{
 			if(hitTestPoint(xPoint, yPoint, true))
 			{
-				_object.visibilityControl.setVisibility(false, time, op);
+				//do a check if object belongs to a group and if all the objects in the group are erased at that time
+				var parent:KGroup = _object.parent;
+				_object.visibilityControl.setVisibility(false, time, op, false);
 				_object.transformInterface.clearAllMotionsAfterTime(time, op);	
 				
-				//do a check if object belongs to a group and if all the objects in the group are erased at that time
-				
-				var parent:KGroup = _object.parent;
-				if(parent)
+				if(parent.id > 0)
 				{
-					while(parent.id > 0)
+					var isErasedGroup:Boolean = false;
+					
+					isErasedGroup = checkEraseInGroup(parent, time);
+					
+					if(isErasedGroup)
 					{
-						var isErasedGroup:Boolean = false;
-						
-						isErasedGroup = checkEraseInGroup(parent, time);
-						
-						if(isErasedGroup)
-						{
-							parent.transformInterface.clearAllMotionsAfterTime(time, op);
-							parent = parent.parent;
-						}
-						else
-							break;
+						parent.visibilityControl.setVisibility(true, time, op, false);
+						parent.visibilityControl.setVisibility(false, time, op, false);
+						parent.transformInterface.clearAllMotionsAfterTime(time, op);
+						parent = parent.parent;
 					}
 				}
 			}
@@ -108,6 +104,9 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			var isErased:Boolean = false;
 			
 			var children:KModelObjectList = parent.children;
+			
+			if(children.length() < 1)
+				return true;
 			
 			var visibilityArr:Array = new Array(children.length());
 			var i:int;

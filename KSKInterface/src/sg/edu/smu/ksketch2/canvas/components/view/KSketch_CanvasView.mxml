@@ -75,6 +75,7 @@
 			private var _imageData:BitmapData;
 			private var _needToProcessData:Boolean;
 			public var _currentDocument:KSketchDocument;
+			public var enableLog:Boolean = false;
 			
 			private var _KSketch:KSketch2;
 			public var _mobileControl:KMobileControl;
@@ -233,6 +234,9 @@
 				if(!tracker)
 					tracker = new GATracker(this, "UA-47832938-1", "AS3", false);
 				
+				_KSketch.time = 0;
+				_KSketch.beginSession();
+				
 				//Fail safe measure, we cannot depend on start up events firing properly
 				//Cancel activate handler if the events screwed up their order
 				if(!_KSketch)
@@ -269,10 +273,7 @@
 					}
 					
 					data = null;
-					_KSketch.time = 0;
-					_KSketch.beginSession();
 				}
-				
 				_options.applyPreferences();
 				_magnifier.open(this);
 			}
@@ -345,17 +346,16 @@
 				
 				if(_currentDocument != null)
 				{
-					saveXML = _currentDocument.xml;
-					delete(saveXML.scene);
-					sceneXML = _KSketch.sceneXML;
-					logXML = _KSketch.sessionLog;
+					delete(_currentDocument.xml.scene);
 				}
-				else
-				{
-					sceneXML = _KSketch.sceneXML;
-					logXML = _KSketch.sessionLog;
-					saveXML = logXML;
-				}
+				
+				sceneXML = _KSketch.sceneXML;
+				
+				if(!enableLog)
+					_KSketch.beginSession();
+				
+				logXML = _KSketch.sessionLog;
+				saveXML = logXML;
 				
 				if(0 < sceneXML.children().length())
 				{

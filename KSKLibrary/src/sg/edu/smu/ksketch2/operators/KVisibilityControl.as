@@ -72,7 +72,7 @@ package sg.edu.smu.ksketch2.operators
 			return currentKey.time;
 		}
 		
-		public function setVisibility(visible:Boolean, time:Number, op:KCompositeOperation):void
+		public function setVisibility(visible:Boolean, time:Number, op:KCompositeOperation, clearKey:Boolean):void
 		{
 			// look for the relevant key frame at the given time first
 			var key:IVisibilityKey = _visibilityKeys.getActiveKey(time);
@@ -80,20 +80,28 @@ package sg.edu.smu.ksketch2.operators
 			// case: the key frame exists
 			if(key)
 			{				
-				if(time  == _object.transformInterface.firstKeyTime)
+				if(!clearKey)
 				{
-					op.addOperation(new KParentChangeOperation(_object, null, _object.parent));
-					_object.parent = null;
-					return;
+					if(time  == _object.transformInterface.firstKeyTime)
+					{
+						op.addOperation(new KParentChangeOperation(_object, null, _object.parent));
+						_object.parent = null;
+						return;
+					}
+					
+					if(key.visible == visible)
+						return;
 				}
-				
-				if(key.visible == visible)
-					return;
 				
 				if(key.time == time)
 				{	
+					var afterKey:IKeyFrame = _visibilityKeys.getKeyAftertime(time);
+					if(afterKey)
+						_visibilityKeys.removeKeyFrame(afterKey);
+					
 					if(op)
 						op.addOperation(new KVisibilityChangedOperation(key, key.visible, visible));
+					
 					key.visible = visible;
 					_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
 					return;

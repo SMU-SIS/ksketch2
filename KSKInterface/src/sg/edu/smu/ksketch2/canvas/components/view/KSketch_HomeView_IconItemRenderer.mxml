@@ -29,6 +29,7 @@
 			import mx.events.FlexEvent;
 			import mx.utils.Base64Decoder;
 			
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
 			
 			private var _myIcon:Bitmap;
@@ -110,6 +111,9 @@
 				Multitouch.inputMode = MultitouchInputMode.GESTURE;
 				this.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
 				stage.addEventListener(KSwipeEvent.TAP_ACTION, swipeTap);
+				
+				if(KSketch_CanvasView_Preferences.autoLog == KSketch_CanvasView_Preferences.AUTOLOG_OFF)
+					actBar.logButton.visible = false;
 			}
 			
 			public function onSwipe(event:TransformGestureEvent):void
@@ -125,8 +129,6 @@
 					this.addElement(actBar);
 					
 					actBar.visible = true;
-					actBar.x = 575;
-					
 					openActionBar = true;
 					wipeEffect.play();
 				}
@@ -143,11 +145,11 @@
 	<fx:Declarations>
 		<s:Parallel id="wipeEffect" target="{actBar}">
 			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
-			<s:Move duration="150" xFrom="{this.width}" xTo="575"/>
+			<s:Move duration="150" xFrom="{this.width}" xTo="500"/>
 		</s:Parallel>
 		<s:Parallel id="wipeEffectOut" target="{actBar}">
 			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
-			<s:Move duration="150" xTo="{this.width}" xFrom="575"/>
+			<s:Move duration="150" xTo="{this.width}" xFrom="500"/>
 		</s:Parallel>
 		<views:KSketch_HomeView_ListActions id="actBar" width="100%" height="100%"/>
 	</fx:Declarations>

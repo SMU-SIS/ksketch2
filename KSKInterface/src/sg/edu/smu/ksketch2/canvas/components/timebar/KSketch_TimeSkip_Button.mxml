@@ -59,11 +59,6 @@
 				
 				var timeList:Vector.<Number> = new Vector.<Number>();
 				
-				var log:XML = <op/>;
-				var date:Date = new Date();
-				
-				log.@category = "Timeline";
-				
 				for(i = 0; i<length; i++)
 				{
 					timeList.push(_timeControl.timings[i]);
@@ -94,9 +89,6 @@
 						toTime = 0;
 					else
 						toTime = timeList[currentIndex];
-					
-					log.@type = "Prev Key";
-
 				}
 				else
 				{
@@ -121,14 +113,9 @@
 					}
 					else
 						toTime = _KSketch.time;
-					
-					log.@type = "Next Key";
 				}
 				
 				_timeControl.time = toTime;
-
-				log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-				_KSketch.log.appendChild(log);
 			}
 			
 			private function _initSkin():void

@@ -29,7 +29,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		public static const STUDYMODE_K:int = 0;						// Version K value
 		public static const STUDYMODE_P:int = 1;						// Version P value
 		public static const STUDYMODE_KP:int = 2;						// Version KP value
-		public static const STUDYMODE_KP2:int = 3;							// Version KP2 value
+		public static const STUDYMODE_KP2:int = 3;						// Version KP2 value
 		public static var studyMode: int = STUDYMODE_KP2;
 		/**
 		 * The main constructor for the KKeyFrame object. Do not instantiate this

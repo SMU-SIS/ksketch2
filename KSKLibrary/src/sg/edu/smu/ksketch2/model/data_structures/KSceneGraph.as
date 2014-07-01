@@ -38,7 +38,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 			_root = new KGroup(_highestID);
 			
 			// set the scene graph's root node to visible at the initial time 0
-			_root.visibilityControl.setVisibility(true, 0, null);
+			_root.visibilityControl.setVisibility(true, 0, null, false);
 			
 			// initialize the ID of the scene graph's highest object to 1
 			_highestID = 1;

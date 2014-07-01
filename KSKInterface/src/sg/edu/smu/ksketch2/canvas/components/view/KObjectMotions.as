@@ -262,12 +262,15 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				totalX += Math.abs(p1.x - p0.x);
 			}
 			
+			
+			/*Issue #18
 			if(isNaN(totalX) || isNaN(totalY))
 			{
 				p0 = p1;
 				totalX = p1.x;
 				totalY = p1.y;
 			}
+			*/
 			
 			// Do the rest only if there is a path to render
 			if (KMathUtil.EPSILON < totalX || KMathUtil.EPSILON < totalY)
@@ -318,8 +321,12 @@ package sg.edu.smu.ksketch2.canvas.components.view
 					// Draw the curve segment
 					if (KMathUtil.catmullRomToBezier(p0, p1, p2, p3, b0, b1, b2, b3))
 					{
+						/*Issue #18
 						var notNumber:Boolean = false;
-						if((isNaN(b0.x) || isNaN(b0.y)) || (isNaN(b1.x) || isNaN(b1.y)) || (isNaN(b2.x) || isNaN(b2.y)) || (isNaN(b3.x) || isNaN(b3.y)))
+						if((isNaN(b0.x) && isNaN(b0.y)) 
+						|| (isNaN(b1.x) && isNaN(b1.y)) 
+						|| (isNaN(b2.x) && isNaN(b2.y)) 
+						|| (isNaN(b3.x) && isNaN(b3.y)))
 							notNumber = true;
 						
 						if(!notNumber)
@@ -332,6 +339,15 @@ package sg.edu.smu.ksketch2.canvas.components.view
 							
 							_motionPath.graphics.cubicCurveTo(b1.x, b1.y, b2.x, b2.y, b3.x, b3.y);
 						}
+						*/
+						
+						if (DRAW_SEGMENT_DOTS)
+						{
+							_motionPath.graphics.drawCircle(p2.x, p2.y, SEGMENT_DOT_RADIUS);
+							_motionPath.graphics.moveTo(p1.x, p1.y);							
+						}
+						
+						_motionPath.graphics.cubicCurveTo(b1.x, b1.y, b2.x, b2.y, b3.x, b3.y);
 					}
 					
 					// Prepare for the next iteration.

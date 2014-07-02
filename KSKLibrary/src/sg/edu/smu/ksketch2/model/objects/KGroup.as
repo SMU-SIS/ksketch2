@@ -216,10 +216,10 @@ package sg.edu.smu.ksketch2.model.objects
 			{
 				point = _children.getObjectAt(i).center;
 				
-				var tempTime:Number = _creationTime;
-				
-				if(isNaN(_creationTime))
-					point = _children.getObjectAt(i).fullPathMatrix(_creationTime).transformPoint(point);
+				if(!isNaN(_creationTime))
+				{
+					point = _children.getObjectAt(i).transformMatrix(_creationTime).transformPoint(point);
+				}	
 				
 				if(point.x < minX)
 					minX = point.x;

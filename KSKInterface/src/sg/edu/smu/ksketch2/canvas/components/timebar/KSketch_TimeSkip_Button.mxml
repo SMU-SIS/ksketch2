@@ -79,9 +79,11 @@
 				}
 				
 				var toTime:Number = 0;
+				var frame:String;
 				
 				if(_type == LEFT)
 				{
+					frame = "Previous Time";
 					KSketch_CanvasView.tracker.trackPageview("/timebar/previousTime");
 					currentIndex -= 1;
 					
@@ -92,6 +94,7 @@
 				}
 				else
 				{
+					frame = "Next Time";
 					KSketch_CanvasView.tracker.trackPageview("/timebar/nextTime");
 					if(currentIndex < timeList.length)
 					{
@@ -116,6 +119,15 @@
 				}
 				
 				_timeControl.time = toTime;
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Time Bar Control";
+				log.@type = "Skip to " + frame;
+				trace("Action " + _KSketch.logCounter + ": Skip to " + frame);
+				KSketch2.log.appendChild(log);
 			}
 			
 			private function _initSkin():void

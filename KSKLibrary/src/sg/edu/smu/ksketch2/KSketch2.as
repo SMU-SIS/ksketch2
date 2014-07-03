@@ -98,6 +98,7 @@ package sg.edu.smu.ksketch2
 		private var _sceneGraph:KSceneGraph;				// the scene graph
 		private var _time:Number;							// the time
 		
+		public var logCounter:int = 0;
 		public static var log:XML;							// the log
 		public var logStartTime:Number;						// the log's start time
 		
@@ -145,6 +146,8 @@ package sg.edu.smu.ksketch2
 		{
 			// reinitialize the ksketch
 			init();
+			
+			log = null;
 			
 			// broadcast the initialized ksketch and updated model
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_KSKETCH_INIT));

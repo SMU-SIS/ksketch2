@@ -178,6 +178,7 @@
 			
 			private function _insertKey(event:MouseEvent = null):void
 			{
+				var objectNum:String;
 				KSketch_CanvasView.tracker.trackPageview( "/timebar/insertKey" );
 				
 				_interactionControl.begin_interaction_operation();
@@ -187,6 +188,7 @@
 				//if an object is selected
 				if(_interactionControl.selection)
 				{
+					objectNum = " on an object";
 					//check if the object has an existing key
 					activeKey = _interactionControl.selection.objects.getObjectAt(0).transformInterface.getActiveKey(_KSketch.time) as KSpatialKeyFrame;
 					
@@ -204,6 +206,7 @@
 				//else if no object is selected, grab all the objects on canvas
 				else
 				{
+					objectNum = " on all objects";
 					var objectList:KModelObjectList = _KSketch.root.children;
 					for(var i:int=0; i<objectList.length(); i++)
 					{
@@ -231,6 +234,15 @@
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 				_updateInsertKey();
 				close();
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Time Bar Context Menu";
+				log.@type = "Insert Key" + objectNum;
+				trace("Action " + _KSketch.logCounter + ": Insert key for " + objectNum);
+				KSketch2.log.appendChild(log);
 			}
 			
 			private function _removeKey(event:MouseEvent = null):void
@@ -244,6 +256,15 @@
 				
 				_updateInsertKey();
 				close();
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Time Bar Context Menu";
+				log.@type = "Remove Key";
+				trace("Action " + _KSketch.logCounter + ": Remove key from an animation");
+				KSketch2.log.appendChild(log);
 			}
 			
 			private function _clearKeys(event:MouseEvent = null):void
@@ -270,6 +291,15 @@
 				
 				_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 				close();
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Time Bar Context Menu";
+				log.@type = "Clear Keys";
+				trace("Action " + _KSketch.logCounter + ": Clear keys of animation");
+				KSketch2.log.appendChild(log);
 			}
 			
 			private function setChildVisibility(object:KGroup):void

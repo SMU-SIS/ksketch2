@@ -54,16 +54,28 @@
 			 */
 			private function _handleTap(event:org.gestouch.events.GestureEvent):void
 			{
+				var frame:String;
 				if(_type == LEFT)
 				{
+					frame = "Previous Frame";
 					KSketch_CanvasView.tracker.trackPageview( "/timebar/previousFrame" );
 					_timeControl.time -= KSketch2.ANIMATION_INTERVAL;
 				}
 				else
 				{
+					frame = "Next Frame";
 					KSketch_CanvasView.tracker.trackPageview( "/timebar/nextFrame" );
 					_timeControl.time += KSketch2.ANIMATION_INTERVAL;
 				}
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Time Bar Context Menu";
+				log.@type = "Go to " + frame;
+				trace("Action " + _KSketch.logCounter + ": Go to " + frame);
+				KSketch2.log.appendChild(log);
 			}
 			
 			private function _initSkin():void

@@ -8,6 +8,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
@@ -145,6 +146,15 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_resetSelectArea();
 			
 			reset();
+			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Move Center";
+			log.@type = "Perform Rotate";
+			trace("Action " + _KSketch.logCounter + ": Move Center of Object");
+			KSketch2.log.appendChild(log);
 		}
 		
 		private function _enlargeSelectArea():void

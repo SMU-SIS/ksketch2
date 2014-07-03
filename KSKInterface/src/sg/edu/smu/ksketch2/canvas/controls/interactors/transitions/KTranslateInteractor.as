@@ -16,10 +16,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.utils.KSelection;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+	
 	
 	/**
 	 * The KTranslateInteractor class serves as the concrete class for
@@ -100,20 +102,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		
 		override protected function _interaction_end(event:GestureEvent):void
 		{
-			/*
-			var log:XML = <op/>;
-			var date:Date = new Date();
-			
-			log.@category = "Transition";
-			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
-				log.@type = "Perform Translate";
-			else
-				log.@type = "Interpolate Translate";
-
-			log.@KSketchDuration = KSketch_TimeControl.toTimeCode(_KSketch.time - _startTime);
-			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-			_KSketch.log.appendChild(log);
-			*/
 			var i:int = 0;
 			var length:int = _transitionObjects.length();
 			var currentObject:KObject;
@@ -124,6 +112,27 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			super._interaction_end(event);
 			
 			reset();
+			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Transition";
+			
+			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
+			{
+				log.@type = "Perform Translate";
+				trace("Action " + _KSketch.logCounter + ": Perform Translate");
+			}
+			else
+			{
+				log.@type = "Interpolate Translate";
+				trace("Action " + _KSketch.logCounter + ": Interpolate Translate");
+			}
+			
+			log.@KSketchDuration = KSketch_TimeControl.toTimeCode(_KSketch.time - _startTime);
+			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			KSketch2.log.appendChild(log);
 		}
 		
 		private function _update_Translate(event:GestureEvent):void

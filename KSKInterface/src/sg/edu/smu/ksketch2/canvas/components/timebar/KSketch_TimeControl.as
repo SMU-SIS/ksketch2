@@ -42,6 +42,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public static const TIME_EXTENSION:Number = 5000;
 		public static var recordingSpeed:Number = 1;
 		
+		public var action:String = "";
 		public var recordingSpeed:Number = 1;
 		private var _editMarkers:Boolean;
 		
@@ -214,6 +215,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function _touchDown(event:MouseEvent):void
 		{	
+			action = "Tap on Time Bar";
 			//upon touchdown, start grabbedTickTimer to time how long the touchdown is
 			//if timer completes (means longPress), grab the tick at that particular time
 			grabbedTickTimer = new Timer(500,1);
@@ -281,6 +283,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		protected function _touchMove(event:MouseEvent):void
 		{
+			action = "Move time slider on Time Bar";
+			
 			KSketch_CanvasView.tracker.trackPageview( "/timebar/moveTime" );
 			//remove grabbed tick timer if it hasn't completed countdown when user enters move
 			if(grabbedTickTimer.currentCount == 0)
@@ -390,6 +394,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				_tickmarkControl.end_move_markers();
 				_magnifier.showTime(toTimeCode(time), timeToFrame(time),timeToX(time));
 				_autoSnap(timeToX(time));
+				action = "Move Tick Mark on Time Bar";
 			}
 			
 			if(_longTouch && !moveTick && !KSketch_CanvasView.isWebViewer)
@@ -402,6 +407,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					_keyMenu.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y + 3;
 				else
 					_keyMenu.y = contentGroup.localToGlobal(new Point()).y
+				
+				action = "Open Time Bar Context Menu";
 			}
 			
 			//reset boolean properties
@@ -415,6 +422,15 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);
 			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
 			_magnifier.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Time Bar Control";
+			log.@type = action;
+			trace("Action " + _KSketch.logCounter + ": " + action);
+			KSketch2.log.appendChild(log);
 		}
 		
 		private function _triggerLongTouch(event:TimerEvent):void

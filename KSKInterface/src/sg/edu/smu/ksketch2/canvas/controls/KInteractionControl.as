@@ -82,6 +82,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_timeControl.reset();
 			
 			_KSketch.reset();
+			_KSketch.logCounter = 0;
+			_KSketch.time = 0;
+			_KSketch.beginSession();
 		}
 		
 		public function set transitionMode(mode:int):void

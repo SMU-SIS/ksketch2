@@ -210,24 +210,45 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
  		 */
 		private function _handleModeSwitch(event:Event):void
 		{
+			var action:String;
+			
 			if(_isLongPress)
 			{
+				action = "Open Widget Menu";
 				_handleOpenMenu();
 			}
 			else
 			{
 				if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl._isPlaying)
+				{
+					action = "Activate Demonstration Mode";
 					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
+				}	
 				else if(KSketch_TimeControl._isPlaying)
+				{
+					action = "Activate Demonstration Mode";
 					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
+				}
 				else
-					transitionMode = KSketch2.TRANSITION_INTERPOLATED;	
+				{
+					action = "Deactivate Demonstration Mode";
+					transitionMode = KSketch2.TRANSITION_INTERPOLATED;
+				}
+						
 			}
 			
 			_modeGesture.removeEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
 			_modeGesture.removeEventListener(GestureEvent.GESTURE_FAILED, _handleTapFail);
 			_modeGesture.addEventListener(GestureEvent.GESTURE_POSSIBLE, _handleTapStart);
 			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Widget";
+			log.@type = action;
+			trace("Action " + _KSketch.logCounter + ": " + action);
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**

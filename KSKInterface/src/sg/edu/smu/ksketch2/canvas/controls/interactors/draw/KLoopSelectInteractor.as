@@ -132,6 +132,24 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		{
 			_reset();
 			_gestureComponent.removeChild(_loopView);
+			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Loop Selector";
+			
+			if(_interactionControl.selection != null)
+			{
+				log.@type = "Loop Selected";
+				trace("Action " + _KSketch.logCounter + ": Draw a loop around object(s) to select");
+			}
+			else
+			{
+				log.@type = "Loop Unselected";
+				trace("Action " + _KSketch.logCounter + ": Draw using a lasso tool");
+			}
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**

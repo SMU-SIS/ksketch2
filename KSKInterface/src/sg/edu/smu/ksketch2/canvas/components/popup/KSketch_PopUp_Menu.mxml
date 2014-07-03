@@ -116,7 +116,7 @@
 				lassoToggle.init(KSketchAssets.texture_lasso, KSketchAssets.texture_lasso_down);
 				lassoToggle.initSkin();
 				
-				_setPen(blackToggle);
+				_setPen(blackToggle, true);
 			}
 			
 			public function set position(value:int):void
@@ -167,7 +167,7 @@
 				}
 			}
 			
-			private function _setPen(button:KSketch_Toggle_Button):void
+			private function _setPen(button:KSketch_Toggle_Button, init:Boolean):void
 			{
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/" + button.id);
 				
@@ -176,37 +176,55 @@
 				
 				button.selected = true;
 				_selectedButton = button;
+				var selectedTool:String = "";
 				
 				switch(_selectedButton)
 				{
 					case eraserToggle:
 						KMultiTouchDrawInteractor.eraser = true;
 						_canvasControl.lasso = false;
+						selectedTool = "Eraser";
 						break;
 					case blackToggle:
 						KMultiTouchDrawInteractor.eraser = false;
 						_canvasControl.lasso = false;
 						KDrawInteractor.penColor = KSketchStyles.BLACK_PEN;
+						selectedTool = "Black Pen";
 						break;
 					case blueToggle:
 						KMultiTouchDrawInteractor.eraser = false;
 						_canvasControl.lasso = false;
 						KDrawInteractor.penColor = KSketchStyles.BLUE_PEN;
+						selectedTool = "Blue Pen";
 						break;
 					case redToggle:
 						KMultiTouchDrawInteractor.eraser = false;
 						_canvasControl.lasso = false;
 						KDrawInteractor.penColor = KSketchStyles.RED_PEN;
+						selectedTool = "Red Pen";
 						break;
 					case greenToggle:
 						KMultiTouchDrawInteractor.eraser = false;
 						_canvasControl.lasso = false;
 						KDrawInteractor.penColor = KSketchStyles.GREEN_PEN;
+						selectedTool = "Green Pen";
 						break;
 					case lassoToggle:
 						KMultiTouchDrawInteractor.eraser = false;
 						_canvasControl.lasso = true;
+						selectedTool = "Lasso";
 						break;
+				}
+				//LOG
+				if(!init)
+				{
+					_KSketch.logCounter ++;
+					var log:XML = <Action/>;
+					var date:Date = new Date();
+					log.@category = "Pop Up Menu";
+					log.@type = "Set " + selectedTool;
+					trace("Action " + _KSketch.logCounter + ": Selected a " + selectedTool);
+					KSketch2.log.appendChild(log);
 				}
 			}
 			
@@ -215,6 +233,15 @@
 			 */
 			private function _clear():void
 			{
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Pop Up Menu";
+				log.@type = "Set New Canvas";
+				trace("Action " + _KSketch.logCounter + ": Set up a new canvas");
+				KSketch2.log.appendChild(log);
+				
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/clearCanvas" );
 				
 				_saveOptions.returnToHome = false;
@@ -249,6 +276,15 @@
 			 */
 			public function _saveExit():void
 			{
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Pop Up Menu";
+				log.@type = "Exit Canvas";
+				trace("Action " + _KSketch.logCounter + ": Exit canvas");
+				KSketch2.log.appendChild(log);
+				
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/exitCanvas" );
 				
 				_saveOptions.returnToHome = true;
@@ -273,6 +309,15 @@
 			 */
 			private function _openOptions():void
 			{
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Pop Up Menu";
+				log.@type = "Open Option Box";
+				trace("Action " + _KSketch.logCounter + ": Open option box");
+				KSketch2.log.appendChild(log);
+				
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
 				_options.open(_canvasView,true);
 				PopUpManager.centerPopUp(_options);
@@ -363,7 +408,7 @@
 				</s:Line>
 			</s:Group>
 			<buttons:KSketch_Toggle_Button
-				click="{_setPen(lassoToggle)}"
+				click="{_setPen(lassoToggle, false)}"
 				id="lassoToggle"
 				width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 				height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
@@ -371,31 +416,31 @@
 		</s:Group>
 		
 		<buttons:KSketch_Toggle_Button
-			click="{_setPen(blackToggle)}"
+			click="{_setPen(blackToggle, false)}"
 			id="blackToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 		<buttons:KSketch_Toggle_Button
-			click="{_setPen(redToggle)}"
+			click="{_setPen(redToggle, false)}"
 			id="redToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 		<buttons:KSketch_Toggle_Button
-			click="{_setPen(blueToggle)}"
+			click="{_setPen(blueToggle, false)}"
 			id="blueToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 		<buttons:KSketch_Toggle_Button
-			click="{_setPen(greenToggle)}"
+			click="{_setPen(greenToggle, false)}"
 			id="greenToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 		<buttons:KSketch_Toggle_Button
-			click="{_setPen(eraserToggle)}"
+			click="{_setPen(eraserToggle, false)}"
 			id="eraserToggle"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"

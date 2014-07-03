@@ -129,6 +129,15 @@
 				_interactionControl.selection = new KSelection(newObjectList);
 				_interactionControl.end_interaction_operation(op, _interactionControl.selection);
 				close();
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Widget";
+				log.@type = "Group a selection of objects";
+				trace("Action " + _KSketch.logCounter + ": Group a selection of objects");
+				KSketch2.log.appendChild(log);
 			}
 			
 			private function _updateUngroup():void
@@ -155,6 +164,15 @@
 				_interactionControl.selection = new KSelection(newObjectList);
 				_interactionControl.end_interaction_operation(op, _interactionControl.selection);
 				close();
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Widget";
+				log.@type = "Ungroup a group of objects";
+				trace("Action " + _KSketch.logCounter + ": Ungroup a group of objects");
+				KSketch2.log.appendChild(log);
 			}
 			
 			private function _updateMoveCenter():void

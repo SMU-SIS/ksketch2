@@ -65,11 +65,13 @@
 			
 			private function _handlePlayPause(event:Event):void
 			{
+				var action:String;
 				var app:Application = FlexGlobals.topLevelApplication as Application;
 				//_interceptor.graphics.clear();
 				
 				if(event.type == KSketch_TimeControl.PLAY_START)
 				{
+					action = "Pause";
 					KSketch_CanvasView.tracker.trackPageview("/timebar/pause");
 					buttonState = SHOW_PAUSE;
 					_oldSelection =_interactionControl.selection;
@@ -85,12 +87,22 @@
 				}
 				else
 				{
+					action = "Play";
 					KSketch_CanvasView.tracker.trackPageview("/timebar/play");
 					buttonState = SHOW_PLAY;	// IF IT IS PAUSING,THEN SHOW PLAY!
 					
 					if(_wasMenuOpen)
 						_menu.open(app);
 				}
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Time Bar Control";
+				log.@type = action;
+				trace("Action " + _KSketch.logCounter + ": " + action);
+				KSketch2.log.appendChild(log);
 			}
 			
 			private function set buttonState(value:int):void

@@ -183,6 +183,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		{
 			var feedbackMessage:String;
 			var location:Point;
+			var action:String;
 			
 			if(feedback)
 			{
@@ -198,6 +199,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			//_motionDisplay
 			if(actionUndo)
 			{
+				action = "Undo";
 				KSketch_CanvasView.tracker.trackPageview("/canvas/undo");
 				if(_interactionControl.hasUndo)
 				{
@@ -209,6 +211,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 			else
 			{
+				action = "Redo";
 				KSketch_CanvasView.tracker.trackPageview("/canvas/redo");
 				if(_interactionControl.hasRedo)
 				{
@@ -226,6 +229,15 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			if(_interactionControl.selection)
 				_motionDisplay.undoObjectMotions(_interactionControl.selection.objects.getObjectAt(0));
+		
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Pop Up Menu";
+			log.@type = action;
+			trace("Action " + _KSketch.logCounter + ": " + action);
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**
@@ -245,6 +257,24 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			_activeInteractor = _tapSelectInteractor;
 			selected = _tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location),_KSketch.time);
+			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Multi Touch Tap";
+			
+			if(selected)
+			{
+				log.@type = "Tap to select object";
+				trace("Action " + _KSketch.logCounter + ": Tap to select Object");
+			}
+			else
+			{
+				log.@type = "Tap to deselect object";
+				trace("Action " + _KSketch.logCounter + ": Tap to deselect Object");
+			}
+			KSketch2.log.appendChild(log);
 			
 			if(!selected && !prevSelection)
 				_recogniseDraw(event);

@@ -15,8 +15,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
@@ -98,29 +99,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		
 		override protected function _interaction_end(event:GestureEvent):void
 		{
-			// initialize the XML logging values
-			/*
-			var log:XML = <op/>;
-			var date:Date = new Date();
-			
-			// set the XML logging values
-			log.@category = "Transition";
-			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
-			log.@type = "Perform Rotate";
-			else
-			log.@type = "Interpolate Rotate";
-			
-			// log the interaction
-			log.@KSketchDuration = KSketch_TimeControl.toTimeCode(_KSketch.time - _startTime);
-			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-			_KSketch.log.appendChild(log);
-			*/
-			
 			// iterate through each transition object
 			// transform the ksketch
 			var i:int = 0;									// loop counter (i.e., initial 0 value)
 			var length:int = _transitionObjects.length();	// loop size (i.e, number of transition objects)
-			var currentObject:KObject;						// loop object (i.e., the first transition object)
 			
 			// stop the rotation
 			for(i; i < length; i++)
@@ -131,6 +113,27 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			// reset the interaction
 			reset();
+			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Transition";
+			
+			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
+			{
+				log.@type = "Perform Rotate";
+				trace("Action " + _KSketch.logCounter + ": Perform Rotate");
+			}
+			else
+			{
+				log.@type = "Interpolate Rotate";
+				trace("Action " + _KSketch.logCounter + ": Interpolate Rotate");
+			}
+			
+			log.@KSketchDuration = KSketch_TimeControl.toTimeCode(_KSketch.time - _startTime);
+			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
+			KSketch2.log.appendChild(log);
 		}
 
 		
@@ -152,7 +155,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			var i:int = 0;									// loop variable
 			var length:int = _transitionObjects.length();	// loop size
-			var currentObject:KObject;						// current object
 			
 			// update the rotation
 			for(i; i < length; i++)

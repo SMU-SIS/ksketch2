@@ -13,11 +13,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import spark.core.SpriteVisualElement;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
-	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;
+	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	
 	/**
 	 * The KMultiTouchDrawInteractor serves as the multi-touch version
@@ -75,6 +75,24 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				super.interaction_End();
 			else
 				_interactionControl.end_interaction_operation();
+			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Multi Touch Draw";
+			
+			if(!eraser)
+			{
+				log.@type = "Draw";
+				trace("Action " + _KSketch.logCounter + ": Draw an Object");
+			}
+			else
+			{
+				log.@type = "Erase";
+				trace("Action " + _KSketch.logCounter + ": Erase Object(s)");
+			}
+			KSketch2.log.appendChild(log);
 		}
 	}
 }

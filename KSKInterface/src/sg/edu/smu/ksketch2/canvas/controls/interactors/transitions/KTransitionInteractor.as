@@ -100,7 +100,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			if(rawSelection.objects.length() > 1 )
 			{
-				_KSketch.hierarchy_Ungroup(rawSelection.objects, _KSketch.time, op);
+				if(breakToRoot)
+					_KSketch.hierarchy_Ungroup(rawSelection.objects, _KSketch.time, op);
+				
 				var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(rawSelection.objects, _KSketch.time, breakToRoot, op);
 				
 				_interactionControl.selection = new KSelection(newObjectList);

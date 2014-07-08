@@ -9,7 +9,7 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" initialize="initStyle()">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
@@ -27,6 +27,15 @@
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
 			public var studyMode:int;
+			
+			private function initStyle():void
+			{
+				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
+				autoInsertKey.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				doubleTap.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				autoLog.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				closeButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			}
 			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu):void
 			{
@@ -286,7 +295,7 @@
 		<s:layout>
 			<s:VerticalLayout gap="20" paddingLeft="15" paddingRight="10" paddingTop="20" paddingBottom="10"/>
 		</s:layout>
-		<s:Label text="Options" fontSize="26"/>
+		<s:Label id="header" text="Options"/>
 		
 		<!-- disable option for release
 		<s:Group>
@@ -360,28 +369,28 @@
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
 			</s:layout>
-			<s:CheckBox id="autoInsertKey" label="Insert Key Frames Automatically" click="_autoInsertKey(autoInsertKey.selected)" fontSize="14"/>
+			<s:CheckBox id="autoInsertKey" label="Insert Key Frames Automatically" click="_autoInsertKey(autoInsertKey.selected)"/>
 		</s:Group>
 		
 		<s:Group>
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
 			</s:layout>
-			<s:CheckBox id="doubleTap" label="Enable double-tap for undo and redo" click="_doubleTap(doubleTap.selected)" fontSize="14"/>
+			<s:CheckBox id="doubleTap" label="Enable double-tap for undo and redo" click="_doubleTap(doubleTap.selected)"/>
 		</s:Group>
 		
 		<s:Group>
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
 			</s:layout>
-			<s:CheckBox id="autoLog" label="Enable Log" click="_autoLog(autoLog.selected)" fontSize="14"/>
+			<s:CheckBox id="autoLog" label="Enable Log" click="_autoLog(autoLog.selected)"/>
 		</s:Group>
 		
 		<s:Group width="100%">
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button label="Close" click="close()" fontSize="14"/>
+			<s:Button id="closeButton" label="Close" click="close()"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

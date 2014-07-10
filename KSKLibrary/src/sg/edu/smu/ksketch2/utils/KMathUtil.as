@@ -374,10 +374,20 @@ package sg.edu.smu.ksketch2.utils
 													p2:KTimedPoint, p3:KTimedPoint,
 													parameterization:uint = NATURAL): KTimedPoint
 		{
+			// Check for the degenerate case where p0 and p1 are the same.
+			if (p0 && Math.abs(p1.x - p0.x) < EPSILON && Math.abs(p1.y - p0.y) < EPSILON)
+			{
+				p0 = null;
+			}
 			// Check for the degenerate case where p1 and p2 are the same.
 			if (Math.abs(p2.x - p1.x) < EPSILON && Math.abs(p2.y - p1.y) < EPSILON)
 			{
 				return new KTimedPoint(p1.x, p1.y, t);
+			}
+			// Check for the degenerate case where p2 and p3 are the same.
+			if (p3 && Math.abs(p3.x - p2.x) < EPSILON && Math.abs(p3.y - p2.y) < EPSILON)
+			{
+				p3 = null;
 			}
 			//trace("-------- catmullRomC1CurvePoint (param = " + parameterization + ") (As received) -------------------")
 			//trace("t  = " + t)

@@ -16,6 +16,7 @@
 		>
 	<fx:Script>
 		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketchStyles;
 			[Bindable]
 			private var sketchTitle:String = "Log: ";
 			
@@ -24,6 +25,9 @@
 			
 			public function _init():void
 			{	
+				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
+				exit_button.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				
 				userData = data;
 				sketchTitle += userData.kSketchDocument.name;
 				text_area.text = userData.kSketchDocument.xml.toXMLString();
@@ -43,12 +47,12 @@
 		<s:layout>
 			<s:VerticalLayout horizontalAlign="center"/>
 		</s:layout>
-		<s:Label text="{sketchTitle}" fontSize="20"/>
+		<s:Label id="header" text="{sketchTitle}"/>
 		
 		<!-- Text area scrollable for viewing log -->	
 		<s:TextArea id="text_area" width="95%" height="90%" editable="false"/>
 		
 		<!-- Button to close view -->
-		<s:Button id="exit_button" label="Back" click="exit()" fontSize="14"/>	
+		<s:Button id="exit_button" label="Back" click="exit()"/>	
 	</s:Group>
 </s:View>

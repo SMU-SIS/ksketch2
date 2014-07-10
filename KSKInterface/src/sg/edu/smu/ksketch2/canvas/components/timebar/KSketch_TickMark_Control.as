@@ -265,7 +265,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 								{
 									if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
 									{
-										drawTarget.graphics.beginFill(KSketchStyles.ACTIVITY_COLOR);
+										drawTarget.graphics.beginFill(KSketchStyles.ACTIVITY_COLOR, 0.6);
 										drawTarget.graphics.drawRect(currentMarker.prev.x, 0, currentMarker.x - currentMarker.prev.x, drawTarget.height);	
 										drawTarget.graphics.endFill();	
 									}

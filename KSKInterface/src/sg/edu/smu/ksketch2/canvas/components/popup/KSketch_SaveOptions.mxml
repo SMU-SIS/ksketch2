@@ -9,7 +9,7 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" >
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" initialize="initStyle()" >
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<s:HTTPService id="httpService"
@@ -35,8 +35,8 @@
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
-			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.utils.KWebData;
 			
 			public static var saveCounter:int = 0;
@@ -59,6 +59,16 @@
 			public var returnToHome:Boolean = false;
 			public var overwriteSave:Boolean = false;
 			public var canvasDirty:Boolean = false;
+			
+			private function initStyle():void
+			{
+				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
+				title.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				saveAsWarning.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SMALL_FONT);
+				saveButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				discardButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				cancelButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
@@ -358,13 +368,13 @@
 			<s:layout>
 				<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
 			</s:layout>
-			<s:Label text="Save this sketch?" fontSize="26"/>
+			<s:Label id="header" text="Save this sketch?"/>
 			
 			<s:Group>
 				<s:layout>
 					<s:VerticalLayout paddingLeft="10"/>
 				</s:layout>
-				<s:Label text="Sketch Name" fontSize="18"/>
+				<s:Label id="title" text="Sketch Name"/>
 				<s:TextArea id="sketchName"/>
 				<s:Label id="saveAsWarning" text="A different filename will save this sketch as a new copy" fontSize="10" visible="false"/>
 			</s:Group>
@@ -372,9 +382,9 @@
 				<s:layout>
 					<s:HorizontalLayout gap="10" horizontalAlign="right"/>
 				</s:layout>
-				<s:Button label="Save" click="save()" fontSize="14"/>
-				<s:Button label="Discard" click="discardSketch()" fontSize="14"/>
-				<s:Button label="Cancel" click="cancel()" fontSize="14"/>
+				<s:Button id="saveButton" label="Save" click="save()"/>
+				<s:Button id="discardButton" label="Discard" click="discardSketch()"/>
+				<s:Button id="cancelButton" label="Cancel" click="cancel()"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

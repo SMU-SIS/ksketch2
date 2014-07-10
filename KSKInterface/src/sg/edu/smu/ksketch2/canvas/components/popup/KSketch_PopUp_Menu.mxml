@@ -399,9 +399,9 @@
 		
 		<!-- add in separator to the next button-->
 		<s:Group>
-			<s:layout> <s:HorizontalLayout gap="5"/> </s:layout>
+			<s:layout> <s:HorizontalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
 			<s:Group width="100%">
-				<s:Line xFrom="0" xTo="0" yFrom="0" yTo="50">
+				<s:Line xFrom="0" xTo="0" yFrom="0" yTo="{KSketchStyles.POPUP_SEPARATOR_LINE}">
 					<s:stroke>
 						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
 					</s:stroke>
@@ -448,9 +448,9 @@
 		
 		<!-- add in separator to the next button-->
 		<s:Group>
-			<s:layout> <s:HorizontalLayout gap="5"/> </s:layout>
+			<s:layout> <s:HorizontalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
 			<s:Group width="100%">
-				<s:Line xFrom="0" xTo="0" yFrom="0" yTo="50">
+				<s:Line xFrom="0" xTo="0" yFrom="0" yTo="{KSketchStyles.POPUP_SEPARATOR_LINE}">
 					<s:stroke>
 						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
 					</s:stroke>

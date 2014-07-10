@@ -286,5 +286,13 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Splash_KSketch.png")] 
 		[Bindable] 
 		public static var image_splash:Class;
+		
+		[Embed("assets/Button_ActionList_Delete.png")] 
+		[Bindable] 
+		public static var actionList_delete:Class;
+		
+		[Embed("assets/Button_ActionList_Log.png")] 
+		[Bindable] 
+		public static var actionList_log:Class;
 	}
 }

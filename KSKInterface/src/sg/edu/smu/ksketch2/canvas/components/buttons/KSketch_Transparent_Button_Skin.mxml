@@ -30,6 +30,7 @@ in accordance with the terms of the license agreement accompanying it.
 -->
 <s:SparkButtonSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
 				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:ksketch2="sg.edu.smu.ksketch2.*"
 				   alpha.disabled="0.5">
 	
 	<fx:Metadata>
@@ -52,5 +53,12 @@ in accordance with the terms of the license agreement accompanying it.
 	<s:Label id="labelDisplay" left="0" right="0" top="0" bottom="0"
 			 horizontalCenter="0" verticalCenter="0"
 			 textAlign="center" maxDisplayedLines="1" verticalAlign="middle"/>
+	
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+		</s:layout>
+		<s:Image id="texture" width="100%" height="100%" smooth="true" smoothingQuality="high"/>
+	</s:Group>
 	
 </s:SparkButtonSkin>

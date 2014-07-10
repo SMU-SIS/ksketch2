@@ -159,6 +159,13 @@ package sg.edu.smu.ksketch2
 		public static var DIALOG_BUTTON_HEADER:int = 26;
 		public static var DIALOG_BUTTON_NORMAL_FONT:int = 18;
 		public static var DIALOG_BUTTON_SMALL_FONT:int = 10;
+		public static var DIALOG_PADDING_20:int = 20;
+		public static var DIALOG_PADDING_15:int = 15;
+		public static var DIALOG_PADDING_10:int = 10;
+		public static var DIALOG_PADDING_5:int = 5;
+		public static var DIALOG_MEASUREMENT_25:int = 50;
+		public static var DIALOG_MEASUREMENT_50:int = 50;
+		public static var DIALOG_MEASUREMENT_300:int = 300;
 	
 		public static function scaleUp(scaleFactor:Number):void
 		{
@@ -178,11 +185,11 @@ package sg.edu.smu.ksketch2
 			TIME_TICK_THICKNESS = 4 * scaleFactor;
 			TIME_TICK_THICKNESS_A = 3 * scaleFactor;
 			TIME_TICK_THICKNESS_B = 7 * scaleFactor;
-			MAGNIFIER_IMAGE_UNSCALED_WIDTH = 50 * scaleFactor;
-			MAGNIFIER_SCALE = 2 * (scaleFactor-0.5);
+			MAGNIFIER_IMAGE_UNSCALED_WIDTH = 50 * (scaleFactor);
+			MAGNIFIER_SCALE = 2 * (scaleFactor-0.8);
 			MAGNIFIER_PADDING = 5 * scaleFactor;
 			MAGNIFIER_FONT_SIZE = 11 * scaleFactor;
-			MAGNIFIER_ARROW_PROPORTION = 0.4 * scaleFactor;
+			MAGNIFIER_ARROW_PROPORTION = 0.4 * (scaleFactor-0.5);
 			MAGNIFIER_INDICATOR_THICKNESS = 3 * scaleFactor;
 			MAGNIFIER_CURRENTTIMELABEL_THICKNESS = 1 * scaleFactor;
 			MAGNIFIER_CIRCLE_1 = 18 * (scaleFactor - 0.8);
@@ -204,7 +211,7 @@ package sg.edu.smu.ksketch2
 			MENU_BUTTON_GAP = 10 * scaleFactor;
 			MENU_BUTTON_WIDTH = 35 * scaleFactor;
 			MENU_BUTTON_HEIGHT = 35 * scaleFactor;
-			WIDGET_CENTROID_SIZE = 10 * (scaleFactor - 0.5);
+			WIDGET_CENTROID_SIZE = 10 * (scaleFactor - 0.8);
 			LOGO_BUTTON_WIDTH = 200 * scaleFactor;
 			LOGO_BUTTON_HEIGHT = 200 * scaleFactor;
 			LOGO_PADDING_LEFT = 48 * scaleFactor;
@@ -219,11 +226,17 @@ package sg.edu.smu.ksketch2
 			POPUP_SEPARATOR_LINE = 50 * scaleFactor;
 			POPUP_SEPARATOR_GAP = 5 * scaleFactor;
 			BUTTON_SIZE = 15 * (scaleFactor - 0.5);
-			DIALOG_BUTTON_SIZE = 14 * (scaleFactor - 0.5);
-			DIALOG_BUTTON_HEADER = 26 * (scaleFactor - 0.5);
-			DIALOG_BUTTON_NORMAL_FONT = 18 * (scaleFactor - 0.5);
-			DIALOG_BUTTON_SMALL_FONT = 10 * (scaleFactor - 0.5);
-			
+			DIALOG_BUTTON_SIZE = 14 * scaleFactor;
+			DIALOG_BUTTON_HEADER = 26 * scaleFactor;
+			DIALOG_BUTTON_NORMAL_FONT = 18 * scaleFactor;
+			DIALOG_BUTTON_SMALL_FONT = 10 * scaleFactor;
+			DIALOG_PADDING_20 = 20 * scaleFactor;
+			DIALOG_PADDING_15 = 15 * scaleFactor;
+			DIALOG_PADDING_10 = 10 * scaleFactor;
+			DIALOG_PADDING_5 = 5 * scaleFactor;
+			DIALOG_MEASUREMENT_25 = 25 * (scaleFactor * 2);
+			DIALOG_MEASUREMENT_50 = 50 * scaleFactor;
+			DIALOG_MEASUREMENT_300 = 300 * scaleFactor;
 		}
 	}
 }

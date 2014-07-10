@@ -91,6 +91,10 @@
 			
 			private function init():void
 			{
+				syncLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				syncWeb.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				discardAll.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				
 				resultArr = new Array(syncSketchArr.length);
 				statusArr = new Array(syncSketchArr.length);
 				
@@ -322,17 +326,17 @@
 	</s:Rect>
 	<s:Group width="50%">
 		<s:layout>
-			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}"/>
 		</s:layout>
-		<s:Label id="syncLabel" fontSize="15"/>
+		<s:Label id="syncLabel"/>
 		
 		<s:Group width="100%">
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
 			</s:layout>
 			
-			<s:Button id="syncWeb" label="Sync to Web" click="checkConnection()" fontSize="14"/>
-			<s:Button id="discardAll" label="Discard all" click="discard()" fontSize="14"/>
+			<s:Button id="syncWeb" label="Sync to Web" click="checkConnection()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			<s:Button id="discardAll" label="Discard all" click="discard()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
 			
 		</s:Group>
 	</s:Group>

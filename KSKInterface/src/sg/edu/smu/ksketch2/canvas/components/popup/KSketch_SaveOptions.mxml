@@ -359,32 +359,32 @@
 			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
 	</s:filters>
 	<s:Group id="saveNewSketch" visible="true">
-		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+		<s:Rect id="saveBox" width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
 			<s:fill>
 				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+				<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}"/>
 			</s:layout>
 			<s:Label id="header" text="Save this sketch?"/>
 			
 			<s:Group>
 				<s:layout>
-					<s:VerticalLayout paddingLeft="10"/>
+					<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}"/>
 				</s:layout>
 				<s:Label id="title" text="Sketch Name"/>
-				<s:TextArea id="sketchName"/>
-				<s:Label id="saveAsWarning" text="A different filename will save this sketch as a new copy" fontSize="10" visible="false"/>
+				<s:TextArea id="sketchName" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_300}"/>
+				<s:Label id="saveAsWarning" text="A different filename will save this sketch as a new copy" visible="false"/>
 			</s:Group>
 			<s:Group width="100%">
 				<s:layout>
-					<s:HorizontalLayout gap="10" horizontalAlign="right"/>
+					<s:HorizontalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
 				</s:layout>
-				<s:Button id="saveButton" label="Save" click="save()"/>
-				<s:Button id="discardButton" label="Discard" click="discardSketch()"/>
-				<s:Button id="cancelButton" label="Cancel" click="cancel()"/>
+				<s:Button id="saveButton" label="Save" click="save()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				<s:Button id="discardButton" label="Discard" click="discardSketch()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				<s:Button id="cancelButton" label="Cancel" click="cancel()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

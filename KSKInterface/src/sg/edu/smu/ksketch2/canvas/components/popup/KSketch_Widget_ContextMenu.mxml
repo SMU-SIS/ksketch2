@@ -26,8 +26,12 @@
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
+			import sg.edu.smu.ksketch2.events.KObjectEvent;
+			import sg.edu.smu.ksketch2.events.KSketchEvent;
+			import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
+			import sg.edu.smu.ksketch2.model.objects.KObject;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KSelection;
 			
@@ -163,6 +167,8 @@
 				var newObjectList:KModelObjectList = _KSketch.hierarchy_Ungroup(_interactionControl.selection.objects, _KSketch.time, op);	
 				_interactionControl.selection = new KSelection(newObjectList);
 				_interactionControl.end_interaction_operation(op, _interactionControl.selection);
+				
+				//update model here_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
 				close();
 				
 				//LOG

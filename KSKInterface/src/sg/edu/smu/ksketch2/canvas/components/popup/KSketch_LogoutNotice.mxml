@@ -9,7 +9,7 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" initialize="initStyle()">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
@@ -20,6 +20,14 @@
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
 			private var _homeView:KSketch_HomeView;
+			
+			private function initStyle():void
+			{
+				label_1.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				label_2.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				cancelButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				logoutButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
@@ -57,17 +65,17 @@
 	</s:Rect>
 	<s:Group width="50%">
 		<s:layout>
-			<s:VerticalLayout gap="10" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalAlign="middle" horizontalAlign="center"/>
+			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:Label fontSize="15" text="You are currently disconnected."/>
-		<s:Label fontSize="15" text="Logging out will discard all unsaved changes."/>
+		<s:Label id="label_1" text="You are currently disconnected."/>
+		<s:Label id="label_2" text="Logging out will discard all unsaved changes."/>
 		
 		<s:Group width="100%">
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button label="Cancel" click="close()" fontSize="14"/>
-			<s:Button label="Logout" click="forceLogout()" fontSize="14"/>
+			<s:Button id="cancelButton" label="Cancel" click="close()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			<s:Button id="logoutButton" label="Logout" click="forceLogout()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

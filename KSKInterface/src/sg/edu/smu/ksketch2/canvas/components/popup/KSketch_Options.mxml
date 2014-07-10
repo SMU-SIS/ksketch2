@@ -293,7 +293,7 @@
 	</s:Rect>
 	<s:Group>
 		<s:layout>
-			<s:VerticalLayout gap="20" paddingLeft="15" paddingRight="10" paddingTop="20" paddingBottom="10"/>
+			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_20}" paddingLeft="{KSketchStyles.DIALOG_PADDING_15}" paddingRight="{KSketchStyles.DIALOG_PADDING_10}" paddingTop="{KSketchStyles.DIALOG_PADDING_20}" paddingBottom="{KSketchStyles.DIALOG_PADDING_10}"/>
 		</s:layout>
 		<s:Label id="header" text="Options"/>
 		
@@ -367,30 +367,30 @@
 		-->
 		<s:Group>
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
 			</s:layout>
 			<s:CheckBox id="autoInsertKey" label="Insert Key Frames Automatically" click="_autoInsertKey(autoInsertKey.selected)"/>
 		</s:Group>
 		
 		<s:Group>
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
 			</s:layout>
 			<s:CheckBox id="doubleTap" label="Enable double-tap for undo and redo" click="_doubleTap(doubleTap.selected)"/>
 		</s:Group>
 		
 		<s:Group>
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" paddingRight="15" verticalAlign="middle"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
 			</s:layout>
 			<s:CheckBox id="autoLog" label="Enable Log" click="_autoLog(autoLog.selected)"/>
 		</s:Group>
 		
 		<s:Group width="100%">
 			<s:layout>
-				<s:VerticalLayout paddingLeft="10" horizontalAlign="right"/>
+				<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button id="closeButton" label="Close" click="close()"/>
+			<s:Button id="closeButton" label="Close" click="close()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

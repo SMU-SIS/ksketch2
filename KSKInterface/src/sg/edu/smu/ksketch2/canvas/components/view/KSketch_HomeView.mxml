@@ -18,7 +18,7 @@
 		initialize="init()"
 		addedToStage="startMonitorConnection()"
 		viewActivate="init()"
-		destructionPolicy="never"
+		destructionPolicy="auto"
 		>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -123,8 +123,8 @@
 				//set KSketch Logo
 				logoHolder.init(KSketchAssets.texture_logo, KSketchAssets.texture_logo);
 				
-				createButton.setStyle("fontSize",KSketchStyles.LIST_SKETCH_FONT);
-				loginButton.setStyle("fontSize",KSketchStyles.LIST_SKETCH_FONT);
+				createButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
+				loginButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
 				
 				if(stage.deviceOrientation == StageOrientation.UNKNOWN)
 				{
@@ -819,6 +819,12 @@
 			
 			private function resetDatagridSelectItem():void
 			{
+				GetUserSketch.removeEventListener(FaultEvent.FAULT, retrieveFaultHandler);
+				GetUserSketch.removeEventListener(ResultEvent.RESULT, retrieveResultHandler);
+				stage.removeEventListener(KSwipeEvent.DELETE_ACTION, listSketches_deleteSketchHandler);
+				stage.removeEventListener(KSwipeEvent.LOG_ACTION, listSketches_logSketchHandler);
+				listSketches.removeEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
+				
 				arrDG.removeAll();
 				_selectedSketchName = null;
 				_selectedSketchId = null;

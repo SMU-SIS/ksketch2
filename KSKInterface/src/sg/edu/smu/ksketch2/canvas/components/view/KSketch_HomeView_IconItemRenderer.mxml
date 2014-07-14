@@ -4,7 +4,7 @@
 				xmlns:mx="library://ns.adobe.com/flex/mx"
 				xmlns:views="sg.edu.smu.ksketch2.canvas.components.view.*"
 				currentState="default" autoDrawBackground="false"
-				creationComplete="iconitemrenderer1_creationCompleteHandler(event)" 
+				creationComplete="iconitemrenderer1_creationCompleteHandler(event)" cacheAsBitmap="true"
 				>
 	<s:states>
 		<s:State name="default"/>
@@ -35,6 +35,7 @@
 			
 			private var _myIcon:Bitmap;
 			private var _oldSelection:String;
+			private var _loader:Loader
 			
 			public static var selectedSketchName:String;
 			public static var selectedSketchId:String;
@@ -70,14 +71,15 @@
 					decoder.decode(value.image);
 					var bytes:ByteArray = decoder.toByteArray();
 					
-					var loader:Loader = new Loader();
-					loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
-					loader.loadBytes(bytes);
+					_loader = new Loader();
+					_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
+					_loader.loadBytes(bytes);
 				}
 			}
 			
 			private function onComplete(event:Event):void
 			{
+				_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onComplete);
 				_myIcon = new Bitmap();
 				_myIcon.bitmapData = Bitmap(LoaderInfo(event.target).content).bitmapData;
 				imgData.source = _myIcon;
@@ -109,6 +111,8 @@
 			
 			protected function iconitemrenderer1_creationCompleteHandler(event:FlexEvent):void
 			{
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, iconitemrenderer1_creationCompleteHandler);
+				
 				Multitouch.inputMode = MultitouchInputMode.GESTURE;
 				this.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
 				stage.addEventListener(KSwipeEvent.TAP_ACTION, swipeTap);

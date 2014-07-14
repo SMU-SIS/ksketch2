@@ -18,7 +18,7 @@
 		initialize="_initCanvas(false)"
 		add="_checkForImageData()"
 		creationPolicy="all"
-		destructionPolicy="never" 
+		destructionPolicy="auto" 
 		viewActivate="_enterView_ProcessData()"
 		>
 	<fx:Script>

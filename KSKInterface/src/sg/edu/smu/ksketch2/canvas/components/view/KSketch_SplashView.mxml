@@ -13,7 +13,7 @@
 		xmlns:mx="library://ns.adobe.com/flex/mx" 
 		actionBarVisible="false" 
 		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
-		destructionPolicy="never"
+		destructionPolicy="auto"
 		addedToStage="addedToStageHandler()"
 		>
 	<fx:Script>

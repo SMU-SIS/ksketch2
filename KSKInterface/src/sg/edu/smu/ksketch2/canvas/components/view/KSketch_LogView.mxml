@@ -12,7 +12,7 @@
 		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false" 
 		initialize="_init()"
 		creationPolicy="all"
-		destructionPolicy="never" 
+		destructionPolicy="auto" 
 		>
 	<fx:Script>
 		<![CDATA[

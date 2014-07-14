@@ -8,7 +8,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
@@ -97,7 +96,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			object = _interactionControl.selection.objects.getObjectAt(0);
 			
 			if(object is KGroup)
-				(object as KGroup).moveCenter = true;
+				(object as KGroup).updateCenter();
 			
 			_oldCenter = object.center;
 			

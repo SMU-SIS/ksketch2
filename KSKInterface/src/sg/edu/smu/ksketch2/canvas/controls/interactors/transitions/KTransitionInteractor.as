@@ -15,6 +15,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import org.gestouch.events.GestureEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
@@ -100,6 +101,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			if(rawSelection.objects.length() > 1 )
 			{
+				for(var i:int=0; i<rawSelection.objects.length(); i++)
+				{
+					if(rawSelection.objects.getObjectAt(i) is KGroup)
+						breakToRoot = false;
+				}
+				
 				if(breakToRoot)
 					_KSketch.hierarchy_Ungroup(rawSelection.objects, _KSketch.time, op);
 				

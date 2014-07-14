@@ -84,7 +84,7 @@ package sg.edu.smu.ksketch2.operators.operations
 			_object.center = _oldCenter;
 			
 			if(_object is KGroup)
-				(_object as KGroup).moveCenter = false;
+				(_object as KGroup).setMoveCenter();
 		}
 		
 		/**
@@ -97,7 +97,7 @@ package sg.edu.smu.ksketch2.operators.operations
 			_object.center = _newCenter;
 			
 			if(_object is KGroup)
-				(_object as KGroup).moveCenter = true;
+				(_object as KGroup).setMoveCenter();
 		}
 		
 		/**

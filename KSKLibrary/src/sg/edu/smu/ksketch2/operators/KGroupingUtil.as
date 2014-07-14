@@ -146,6 +146,7 @@ package sg.edu.smu.ksketch2.operators
 			// create the new group
 			var newGroup:KGroup = new KGroup(scene.nextHighestID);
 			var newParent:KGroup;
+			
 			if(!breakToRoot)
 				newParent = commonParent;
 			

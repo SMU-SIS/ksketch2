@@ -112,6 +112,10 @@ package sg.edu.smu.ksketch2.utils
 				currentObject = _visibleSelection.getObjectAt(i);
 				
 				matrix = currentObject.fullPathMatrix(time);
+				
+				if(currentObject is KGroup)
+					(currentObject as KGroup).updateCenter();
+				
 				objectCentroid = matrix.transformPoint(currentObject.center);
 				
 				centroid.x += objectCentroid.x;

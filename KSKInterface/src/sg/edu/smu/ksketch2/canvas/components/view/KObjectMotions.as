@@ -145,7 +145,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			}
 			
 			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);
-			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _transformUpdating);
+			//_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _transformUpdating);
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _transformBegin);
 		}
 		
@@ -167,13 +167,26 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		
 		private function _transformEnd(event:KObjectEvent):void
 		{				
+			if(_motionPath.visible && _rotationMotionPath.visible)
+			{
+				var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(event.time) as KSpatialKeyFrame;			
+				
+				if(activeKey)
+				{
+					_determineAndGeneratePaths(activeKey);				
+				}
+				var position:Point = _object.fullPathMatrix(event.time).transformPoint(_object.center);
+				_rotationMotionPath.x = position.x;
+				_rotationMotionPath.y = position.y;
+			}
+			
 			_motionPath.visible = true;
 			_rotationMotionPath.visible = true;
 			
 			updateMotionPath(event.time);
 			
 			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_ENDED, _transformEnd);	
-			_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _transformUpdating);
+			//_object.removeEventListener(KObjectEvent.OBJECT_TRANSFORM_UPDATING, _transformUpdating);
 			_object.addEventListener(KObjectEvent.OBJECT_TRANSFORM_BEGIN, _transformBegin);
 		}
 		

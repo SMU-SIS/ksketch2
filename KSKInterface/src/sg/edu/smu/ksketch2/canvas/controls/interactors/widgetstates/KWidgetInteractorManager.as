@@ -31,10 +31,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.KMoveCenterInteractor;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
-	import sg.edu.smu.ksketch2.model.objects.KGroup;
-	import sg.edu.smu.ksketch2.model.objects.KObject;
-	import sg.edu.smu.ksketch2.model.objects.KStroke;
-	import sg.edu.smu.ksketch2.operators.KVisibilityControl;
 	
 	/**
  	 * The KWidgetInteractorManager class serves as the concrete class
@@ -312,8 +308,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 					enabled = false;	
 				
 			}
-			//else
-			//	_interactionControl.selection = null;
 		}
 		
 		/**

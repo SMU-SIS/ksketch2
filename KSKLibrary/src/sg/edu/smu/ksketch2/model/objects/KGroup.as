@@ -23,7 +23,7 @@ package sg.edu.smu.ksketch2.model.objects
 	public class KGroup extends KObject implements IModelObjectList
 	{
 		private var _children:KModelObjectList;		// the group's list of children
-		public var moveCenter:Boolean;
+		private var _moveCenter:Boolean;
 		
 		/**
 		 * The main constructor of the KGroup class.
@@ -35,7 +35,7 @@ package sg.edu.smu.ksketch2.model.objects
 			super(id);
 			_children = new KModelObjectList();
 			_center = new Point();
-			moveCenter = false;
+			_moveCenter = true;
 			transformInterface = new KSingleReferenceFrameOperator(this);
 		}
 		
@@ -137,8 +137,8 @@ package sg.edu.smu.ksketch2.model.objects
 		public function add(object:KObject, index:int = -1):void
 		{
 			_children.add(object, index);
-			if(!containsGroup())
-				updateCenter();
+			//if(containsGroup())
+			updateCenter();
 			dispatchEvent(new KGroupEvent(KGroupEvent.OBJECT_ADDED,this, object));
 		}
 		
@@ -197,6 +197,14 @@ package sg.edu.smu.ksketch2.model.objects
 		{
 			return _children.iterator();
 		}
+		
+		public function setMoveCenter():void
+		{
+			if(_moveCenter)
+				_moveCenter = false;
+			else
+				_moveCenter = true;
+		}
 
 		/**
 		 * Updates the group's geometric center.
@@ -238,6 +246,8 @@ package sg.edu.smu.ksketch2.model.objects
 			
 			_center.x = (minX+maxX)/2;
 			_center.y = (minY+maxY)/2;
+			
+			_moveCenter = false;
 		}
 		
 		/**
@@ -247,7 +257,7 @@ package sg.edu.smu.ksketch2.model.objects
 		 */
 		override public function get center():Point
 		{			
-			if(!moveCenter)
+			if(_moveCenter)
 				updateCenter();
 
 			return _center;//.clone();

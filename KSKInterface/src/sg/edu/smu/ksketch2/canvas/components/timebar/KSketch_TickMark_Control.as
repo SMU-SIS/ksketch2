@@ -101,33 +101,36 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			var currentObject:KObject;
 			var transformKeyHeaders:Vector.<IKeyFrame>;
 			
+			var isSelected:Boolean;
+			var selectedGroup:KGroup;
 			for(i = 0; i<length; i++)
 			{
 				currentObject = allObjects.getObjectAt(i);
+				isSelected = currentObject.selected;
 				transformKeyHeaders = currentObject.transformInterface.getAllKeyFrames();
 				
 				//Generate markers for each set of transform keys
 				for(j = 0; j < transformKeyHeaders.length; j++)
 				{
-					_generateTicks(transformKeyHeaders[j], currentObject.id, currentObject.selected);
-					
 					if(currentObject.selected)
 					{
 						if(_interactionControl.selection)
+						{
 							if(_interactionControl.selection.objects.getObjectAt(0) is KGroup)
-								break;
+							{
+								selectedGroup = _interactionControl.selection.objects.getObjectAt(0) as KGroup;
+								if(currentObject.parent.id == selectedGroup.id)
+									if(currentObject is KObject)
+										isSelected = false;
+							}
+						}		
 					}
+					
+					_generateTicks(transformKeyHeaders[j], currentObject.id, isSelected);
 				}	
 				
-				//Generate markers for visibility key
-				_generateTicks(currentObject.visibilityControl.visibilityKeyHeader, currentObject.id, currentObject.selected);
-				
-				if(currentObject.selected)
-				{
-					if(_interactionControl.selection)
-						if(_interactionControl.selection.objects.getObjectAt(0) is KGroup)
-							break;
-				}
+				//visibility keys
+				_generateTicks(currentObject.visibilityControl.visibilityKeyHeader, currentObject.id, isSelected);
 			}
 			
 			_ticks.sort(SortingFunctions._compare_x_property);

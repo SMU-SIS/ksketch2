@@ -105,10 +105,10 @@
 					indicatorTouch.graphics.clear();
 					indicator.graphics.lineStyle(KSketchStyles.MAGNIFIER_INDICATOR_THICKNESS,KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
 					indicatorTouch.graphics.beginFill(KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
-					indicatorTouch.graphics.drawCircle(0, maxY-23, KSketchStyles.MAGNIFIER_CIRCLE_1);
+					indicatorTouch.graphics.drawCircle(0, maxY-KSketchStyles.MAGNIFIER_CIRCLE_POS, KSketchStyles.MAGNIFIER_CIRCLE_1);
 					indicatorTouch.graphics.endFill();
 					indicatorTouch.graphics.beginFill(0xffffff);
-					indicatorTouch.graphics.drawCircle(0, maxY-23, KSketchStyles.MAGNIFIER_CIRCLE_2);
+					indicatorTouch.graphics.drawCircle(0, maxY-KSketchStyles.MAGNIFIER_CIRCLE_POS, KSketchStyles.MAGNIFIER_CIRCLE_2);
 					indicatorTouch.graphics.endFill();
 					
 					var finalHeight_1:Number = height;

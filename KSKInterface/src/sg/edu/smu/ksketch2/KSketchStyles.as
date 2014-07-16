@@ -82,6 +82,7 @@ package sg.edu.smu.ksketch2
 		public static var MAGNIFIER_INDICATOR_THICKNESS:Number = 3;
 		public static var MAGNIFIER_CIRCLE_1:int = 18;
 		public static var MAGNIFIER_CIRCLE_2:int = 14;
+		public static var MAGNIFIER_CIRCLE_POS:int = 23;
 		public static var MAGNIFIER_CURRENTTIMELABEL_THICKNESS:Number = 1;
 		public static const MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER:Number = 100;
 		
@@ -192,8 +193,9 @@ package sg.edu.smu.ksketch2
 			MAGNIFIER_ARROW_PROPORTION = 0.4 * (scaleFactor-0.5);
 			MAGNIFIER_INDICATOR_THICKNESS = 3 * scaleFactor;
 			MAGNIFIER_CURRENTTIMELABEL_THICKNESS = 1 * scaleFactor;
-			MAGNIFIER_CIRCLE_1 = 18 * (scaleFactor - 0.8);
-			MAGNIFIER_CIRCLE_2 = 14 * (scaleFactor - 0.8);
+			MAGNIFIER_CIRCLE_1 = 18 * (scaleFactor - 0.2);
+			MAGNIFIER_CIRCLE_2 = 14 * (scaleFactor - 0.2);
+			MAGNIFIER_CIRCLE_POS = 23 * (scaleFactor);
 			TOGGLEBUTTON_PADDING = 2 * scaleFactor;
 			TOGGLEBUTTON_FONT_SIZE = 9 * scaleFactor;
 			TOGGLEBUTTON_CORNERS = 2 * scaleFactor;
@@ -211,7 +213,7 @@ package sg.edu.smu.ksketch2
 			MENU_BUTTON_GAP = 10 * scaleFactor;
 			MENU_BUTTON_WIDTH = 35 * scaleFactor;
 			MENU_BUTTON_HEIGHT = 35 * scaleFactor;
-			WIDGET_CENTROID_SIZE = 10 * (scaleFactor - 0.8);
+			WIDGET_CENTROID_SIZE = 10 * (scaleFactor - 0.7);
 			LOGO_BUTTON_WIDTH = 200 * scaleFactor;
 			LOGO_BUTTON_HEIGHT = 200 * scaleFactor;
 			LOGO_PADDING_LEFT = 48 * scaleFactor;

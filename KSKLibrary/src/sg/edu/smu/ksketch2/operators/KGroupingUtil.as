@@ -153,6 +153,7 @@ package sg.edu.smu.ksketch2.operators
 			scene.registerObject(newGroup, newParent, op);
 			newGroup.init(groupTime, op);
 			newGroup.updateCenter();
+			newGroup.setMoveCenter();
 			
 			// add the objects in the given list to the new parent 
 			for(var i:int = 0; i< objects.length(); i++)

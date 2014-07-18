@@ -137,7 +137,6 @@ package sg.edu.smu.ksketch2.model.objects
 		public function add(object:KObject, index:int = -1):void
 		{
 			_children.add(object, index);
-			//if(containsGroup())
 			updateCenter();
 			dispatchEvent(new KGroupEvent(KGroupEvent.OBJECT_ADDED,this, object));
 		}
@@ -211,6 +210,7 @@ package sg.edu.smu.ksketch2.model.objects
 		 */
 		public function updateCenter():void
 		{
+			_moveCenter = true;
 			var minX:Number = Number.MAX_VALUE;
 			var minY:Number = Number.MAX_VALUE;
 			
@@ -246,8 +246,6 @@ package sg.edu.smu.ksketch2.model.objects
 			
 			_center.x = (minX+maxX)/2;
 			_center.y = (minY+maxY)/2;
-			
-			_moveCenter = false;
 		}
 		
 		/**
@@ -258,7 +256,10 @@ package sg.edu.smu.ksketch2.model.objects
 		override public function get center():Point
 		{			
 			if(_moveCenter)
+			{
 				updateCenter();
+				setMoveCenter();
+			}
 
 			return _center;//.clone();
 		}

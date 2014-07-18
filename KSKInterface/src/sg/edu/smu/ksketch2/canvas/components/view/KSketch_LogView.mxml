@@ -16,6 +16,8 @@
 		>
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			[Bindable]
 			private var sketchTitle:String = "Log: ";
@@ -25,6 +27,8 @@
 			
 			public function _init():void
 			{	
+				this.removeEventListener(FlexEvent.INITIALIZE, _init);
+				
 				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
 				exit_button.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 				

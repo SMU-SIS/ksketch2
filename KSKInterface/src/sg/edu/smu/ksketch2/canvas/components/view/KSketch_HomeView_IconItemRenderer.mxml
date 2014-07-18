@@ -145,6 +145,10 @@
 				
 			}
 			
+			public function deleteIconRenderer():void
+			{
+				
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>

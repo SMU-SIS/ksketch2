@@ -230,9 +230,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			if(_interactionControl.selection)
 				_motionDisplay.undoObjectMotions(_interactionControl.selection.objects.getObjectAt(0));
 			
-			_KSketch.time = _KSketch.time + 1;
-			_KSketch.time = _KSketch.time - 1;
-		
 			//LOG
 			_KSketch.logCounter ++;
 			var log:XML = <Action/>;

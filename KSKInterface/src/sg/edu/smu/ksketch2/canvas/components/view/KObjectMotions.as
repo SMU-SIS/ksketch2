@@ -111,7 +111,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				visible = true;
 		}
 		
-		public function _updateObjectMotion(time:int):void	
+		public function updateObjectMotion(time:int):void	
 		{
 			var _isErasedObject:Boolean = _interactionControl.isSelectionErased(_interactionControl.selection);
 			if(!_isErasedObject)

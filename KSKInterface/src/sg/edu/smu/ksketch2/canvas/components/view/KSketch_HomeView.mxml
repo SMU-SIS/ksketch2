@@ -17,7 +17,6 @@
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
 		initialize="init()"
 		addedToStage="startMonitorConnection()"
-		viewActivate="init()"
 		destructionPolicy="auto"
 		>
 	<fx:Declarations>
@@ -120,6 +119,8 @@
 			
 			private function init():void
 			{	
+				this.removeEventListener(FlexEvent.INITIALIZE, init);
+				
 				//set KSketch Logo
 				logoHolder.init(KSketchAssets.texture_logo, KSketchAssets.texture_logo);
 				
@@ -543,6 +544,8 @@
 					else
 						navigator.pushView(KSketch_CanvasView, userData);
 				}
+				
+				System.pauseForGCIfCollectionImminent();
 			}
 			
 			public function logout():void
@@ -560,6 +563,8 @@
 			
 			public function startMonitorConnection():void
 			{
+				this.removeEventListener(Event.ADDED_TO_STAGE, startMonitorConnection);
+				
 				//check for network connection
 				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
 				_monitor.addEventListener(StatusEvent.STATUS, monitorConnection);

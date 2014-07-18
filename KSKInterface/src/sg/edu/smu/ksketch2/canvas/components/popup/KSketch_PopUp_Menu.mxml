@@ -83,6 +83,7 @@
 			
 			public function _initButtons():void
 			{
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, _initButtons);
 				undoButton.init(KSketchAssets.texture_undo, KSketchAssets.texture_undo_down);
 				undoButton.initSkin();
 				redoButton.init(KSketchAssets.texture_redo, KSketchAssets.texture_redo_down);
@@ -142,6 +143,8 @@
 			
 			public function updateMenuDisplay():void
 			{
+				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, updateMenuDisplay);
+				
 				if(_referenceComponent)
 					_canvasOrigin = _referenceComponent.localToGlobal(ORIGIN);
 				

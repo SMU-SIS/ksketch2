@@ -30,6 +30,7 @@
 			
 			private function initStyle():void
 			{
+				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
 				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
 				autoInsertKey.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
 				doubleTap.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);

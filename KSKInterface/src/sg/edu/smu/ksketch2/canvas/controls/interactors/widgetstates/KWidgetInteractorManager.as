@@ -60,7 +60,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		public var centerMode:IWidgetMode;							// the center widget mode
 		public var freeTransformMode:IWidgetMode;					// the free transform widget mode
 		
-		public static var demonstrationFlag:Boolean = false;		// the demonstration flag
 		/**
  		 * The main constructor for the KWidgetInteractorManager class.
  		 * 
@@ -349,16 +348,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 					enabled = true;	
 				
 				_activeMode.demonstrationMode = true;
-				
-				demonstrationFlag = true;
 			}
 			else if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED)
 			{
 				if(_interactionControl.selection && !_isInteracting)
 					enabled = _interactionControl.selection.selectionTransformable(_KSketch.time);
 				_activeMode.demonstrationMode = false;
-				
-				demonstrationFlag = false;
 			}
 			else
 				throw new Error("Unknow transition mode. Check what kind of modes the transition delegate is setting");

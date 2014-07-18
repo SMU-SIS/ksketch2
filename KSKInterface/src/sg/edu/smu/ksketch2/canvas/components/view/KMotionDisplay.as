@@ -124,7 +124,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				}
 				
 				_objectsWithPath.add(currentObject);
-				_visibleMotionDisplays[currentObject]._updateObjectMotion(_KSketch.time);
+				_visibleMotionDisplays[currentObject].updateObjectMotion(_KSketch.time);
 			}
 		}
 		
@@ -134,7 +134,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		public function _handler_UpdateAllViews(event:Event):void
 		{
 			for(var view:Object in _visibleMotionDisplays)
-				_visibleMotionDisplays[view]._updateObjectMotion(_KSketch.time);
+				_visibleMotionDisplays[view].updateObjectMotion(_KSketch.time);
 		}
 		
 		public function reset(event:KSketchEvent = null):void

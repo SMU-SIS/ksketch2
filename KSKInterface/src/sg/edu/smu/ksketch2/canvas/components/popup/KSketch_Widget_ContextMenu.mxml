@@ -17,6 +17,7 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 			import mx.events.FlexMouseEvent;
 			
 			import spark.components.Application;
@@ -52,6 +53,8 @@
 			
 			private function _initButtons():void
 			{
+				this.removeEventListener(FlexEvent.INITIALIZE, _initButtons);
+				
 				groupButton.init(KSketchAssets.texture_group, KSketchAssets.texture_group_down);
 				groupButton.initSkin();
 				
@@ -168,7 +171,6 @@
 				_interactionControl.selection = new KSelection(newObjectList);
 				_interactionControl.end_interaction_operation(op, _interactionControl.selection);
 				
-				//update model here_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_UNDO_REDO));
 				close();
 				
 				//LOG

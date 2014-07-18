@@ -17,6 +17,7 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 			import mx.events.FlexMouseEvent;
 			
 			import spark.components.Application;
@@ -122,6 +123,8 @@
 			
 			private function _initButtons():void
 			{
+				this.removeEventListener(FlexEvent.INITIALIZE, _initButtons);
+				
 				insertButton.init(KSketchAssets.texture_insert, KSketchAssets.texture_insert_down);
 				insertButton.initSkin();
 				

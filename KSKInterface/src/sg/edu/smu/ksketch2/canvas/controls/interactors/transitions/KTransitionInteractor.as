@@ -93,7 +93,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			//If interaction is a rotation or scale demonstration, flag for possibility of a common parent for grouped objects
 			var breakToRoot:Boolean = true;
 			
-			if(KWidgetInteractorManager.demonstrationFlag && (KRotateInteractor.rotateFlag || KScaleInteractor.scaleFlag))
+			if(KRotateInteractor.rotateFlag || KScaleInteractor.scaleFlag)
 				breakToRoot = false;
 			
 			if(KTranslateInteractor.translateFlag)

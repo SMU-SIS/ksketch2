@@ -27,6 +27,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -37,9 +38,9 @@
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
-			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 			
 			
 			private var _homeView:KSketch_HomeView;
@@ -91,6 +92,8 @@
 			
 			private function init():void
 			{
+				this.removeEventListener(FlexEvent.INITIALIZE, init);
+				
 				syncLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
 				syncWeb.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 				discardAll.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);

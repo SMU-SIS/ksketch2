@@ -14,6 +14,7 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 			
 			import spark.components.Application;
 			import spark.components.mediaClasses.DynamicStreamingVideoItem;
@@ -25,8 +26,8 @@
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.KSketch_ImageEditingView;
-			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.ImageProcessing;
@@ -77,6 +78,8 @@
 			
 			private function _onCreateHandler():void
 			{
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, _onCreateHandler);
+				
 				x = 0;
 				y = 0;
 				width = (FlexGlobals.topLevelApplication as Application).width;

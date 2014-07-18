@@ -22,6 +22,8 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			
@@ -30,6 +32,7 @@
 			
 			private function initStyle():void
 			{
+				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
 				label.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
 				cancelButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 				saveButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);

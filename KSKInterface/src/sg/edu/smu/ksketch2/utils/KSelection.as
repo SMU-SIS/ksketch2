@@ -114,8 +114,11 @@ package sg.edu.smu.ksketch2.utils
 				matrix = currentObject.fullPathMatrix(time);
 				
 				if(currentObject is KGroup)
+				{
 					(currentObject as KGroup).updateCenter();
-				
+					(currentObject as KGroup).setMoveCenter();
+				}
+					
 				objectCentroid = matrix.transformPoint(currentObject.center);
 				
 				centroid.x += objectCentroid.x;

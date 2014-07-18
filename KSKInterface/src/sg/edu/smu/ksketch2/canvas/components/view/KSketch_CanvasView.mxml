@@ -119,6 +119,8 @@
 			//Starts up the canvas in the following order
 			public function _initCanvas(isView:Boolean):void
 			{	
+				this.removeEventListener(FlexEvent.INITIALIZE, _initCanvas);
+				
 				userData = data;
 				isWebViewer = isView;
 				
@@ -171,6 +173,12 @@
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
 				_options.init(this, _menuPopUp);
+				
+				/*motionDisplay.cacheAsBitmap = true;
+				motionDisplay.cacheAsBitmapMatrix = new Matrix();
+				
+				modelDisplay.cacheAsBitmap = true;
+				modelDisplay.cacheAsBitmapMatrix = new Matrix();*/
 				
 				//Initiate the controls
 				if(!isPlayer)
@@ -328,6 +336,8 @@
 					KSketch_HomeView.hasBeenNotified = true;
 				
 				navigator.pushView(KSketch_HomeView, userData);
+				
+				System.pauseForGCIfCollectionImminent();
 			}
 			
 			public function viewDeactivated():void

@@ -25,6 +25,8 @@
 			
 			private function addedToStageHandler():void
 			{
+				this.removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+				
 				if(!initialOrientation)
 					initialOrientation = stage.orientation;
 					

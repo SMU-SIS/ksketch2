@@ -495,7 +495,9 @@
 							
 							
 							<buttons:KSketch_Play_Button
+								doubleClickEnabled="true"
 								click="playButton.playToggle()"
+								doubleClick="playButton.doubleClick()"
 								id="playButton"
 								width="{KSketchStyles.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
 							

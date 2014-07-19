@@ -472,16 +472,18 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		/**
 		 * Enters the playing state machien
 		 */
-		public function play():void
+		public function play(playFromStart:Boolean):void
 		{
 			_isPlaying = true;
 			_timer.delay = KSketch2.ANIMATION_INTERVAL;
 			_timer.addEventListener(TimerEvent.TIMER, playHandler);
 			_timer.start();
 			
-			if(_KSketch.maxTime <= time)
+			if(playFromStart)
 				time = 0;
-			
+			else
+				time = _KSketch.time;
+		
 			_maxPlayTime = _KSketch.maxTime + PLAY_ALLOWANCE;
 			
 			_rewindToTime = time;

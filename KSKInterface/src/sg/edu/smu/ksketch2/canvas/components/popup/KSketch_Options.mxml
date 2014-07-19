@@ -370,7 +370,7 @@
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
 			</s:layout>
-			<s:CheckBox id="autoInsertKey" label="Insert Key Frames Automatically" click="_autoInsertKey(autoInsertKey.selected)"/>
+			<s:CheckBox id="autoInsertKey" label="Insert keys automatically" click="_autoInsertKey(autoInsertKey.selected)"/>
 		</s:Group>
 		
 		<s:Group>

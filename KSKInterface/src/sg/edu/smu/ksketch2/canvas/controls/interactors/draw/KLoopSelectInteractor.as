@@ -16,6 +16,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 	import spark.core.SpriteVisualElement;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.canvas.components.view.KFilteredLoopView;
 	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.selectors.ISelectionArbiter;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.selectors.KPortion;
@@ -27,7 +28,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	import sg.edu.smu.ksketch2.utils.KSelection;
-	import sg.edu.smu.ksketch2.canvas.components.view.KFilteredLoopView;
 	
 	/**
 	 * The KLoopSelectInteractor class serves as the concrete class for
@@ -125,6 +125,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 			// selection happens here
 			// a new set of selection is gather on every update
 			var selectedObjects:KModelObjectList = (_arbiter as KSimpleArbiter).bestGuess(_portions, _KSketch.time, _root);
+			
 			_interactionControl.selection = new KSelection(selectedObjects);
 		}
 		
@@ -132,6 +133,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		{
 			_reset();
 			_gestureComponent.removeChild(_loopView);
+			
+			if(_interactionControl.selection)
+			{
+				var selectedObjects:KModelObjectList = (_arbiter as KSimpleArbiter).filterByVisibility(_interactionControl.selection.objects, _KSketch.time, 0);
+				_interactionControl.selection = new KSelection(selectedObjects);
+			}
 			
 			//LOG
 			_KSketch.logCounter ++;

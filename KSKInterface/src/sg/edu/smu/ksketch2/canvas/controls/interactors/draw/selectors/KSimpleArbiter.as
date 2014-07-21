@@ -42,6 +42,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw.selectors
 			// reduce the raw selection set to a minimum selection set
 			_reduceSelectionSet(selectionSet, searchRoot);
 			
+			//filter selected objects based on visibility here
+			if(selectionSet)
+				selectionSet = filterByVisibility(selectionSet, time, 0.2);
+			
 			// return the best guess of the selection set
 			return selectionSet;
 		}
@@ -160,6 +164,69 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw.selectors
 					}
 				}
 			}
+		}
+		
+		/**
+		 * When selecting, it should be possible to select things erased on the current
+		 * frame, but if any of the selection contains unerased things,
+		 * then the erased things should be removed from the selection.
+		 */
+		public function filterByVisibility(list:KModelObjectList, time:Number, alphaValue:Number):KModelObjectList
+		{
+			var i:int = 0;
+			var object:KObject;
+			var newList:KModelObjectList = new KModelObjectList();
+			
+			for(i = 0; i < list.length(); i++)
+			{
+				object = list.getObjectAt(i);
+				
+				var isErased:Boolean = true;
+				if(object is KGroup)
+				{
+					isErased = checkEraseInGroup((object as KGroup), time, alphaValue);
+						if(!isErased)
+							newList.add(object);
+				}
+				else
+				{
+					if(object.visibilityControl.alpha(time) > alphaValue)
+						newList.add(object);	
+				}
+			}
+			
+			if(newList.length() > 0 || alphaValue == 0)
+				return newList
+			else
+				return list;
+		}
+		
+		private function checkEraseInGroup(group:KGroup, time:Number, alphaValue:Number):Boolean
+		{
+			var isErased:Boolean = true;
+			
+			var children:KModelObjectList = group.children;
+			for(var i:int=0; i<children.length(); i++)
+			{
+				var object:KObject = children.getObjectAt(i);
+				
+				if(object is KGroup)
+				{
+					isErased = checkEraseInGroup((object as KGroup), time, alphaValue);
+					if(!isErased)
+						return isErased;
+				}
+				else
+				{
+					if(object.visibilityControl.alpha(time) > alphaValue)
+					{
+						isErased = false;
+						return isErased;
+					}
+				}
+			}
+			
+			return isErased;
 		}
 		
 		/**

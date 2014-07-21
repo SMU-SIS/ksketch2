@@ -1484,7 +1484,7 @@ package sg.edu.smu.ksketch2.operators
 				newCenter.x = Number(centerValues[0]);
 				newCenter.y = Number(centerValues[1]);
 				
-				var newKey:KSpatialKeyFrame = new KSpatialKeyFrame(currentKeyXML.@time, new Point());
+				var newKey:KSpatialKeyFrame = new KSpatialKeyFrame(new Number(currentKeyXML.@time), new Point());
 				newKey.deserialize(currentKeyXML);
 				_refFrame.insertKey(newKey);
 			}

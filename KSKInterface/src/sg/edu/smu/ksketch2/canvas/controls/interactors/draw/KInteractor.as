@@ -27,8 +27,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		// variables for operations
 		protected var _oldSelection:KSelection;						// the old selection
 		protected var _newSelection:KSelection;						// the new selection
-		protected var _interactionStartTime:int;					// the interaction start time
-		protected var _interactionEndTime:int;						// the interaction end time
+		protected var _interactionStartTime:Number;					// the interaction start time
+		protected var _interactionEndTime:Number;						// the interaction end time
 		
 		/**
 		 * The main constructor of the KInteractor class.

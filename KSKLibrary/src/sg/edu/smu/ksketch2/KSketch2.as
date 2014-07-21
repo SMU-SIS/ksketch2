@@ -346,7 +346,7 @@ package sg.edu.smu.ksketch2
 		 * @param op The corresponding composite operation.
 		 * @return The hierarchical grouping of the given list of objects up to the given time.
 		 */
-		public function hierarchy_Group(objects:KModelObjectList, groupTime:int, breakToRoot:Boolean, op:KCompositeOperation):KModelObjectList
+		public function hierarchy_Group(objects:KModelObjectList, groupTime:Number, breakToRoot:Boolean, op:KCompositeOperation):KModelObjectList
 		{
 			// create the common parent
 			var commonParent:KGroup;

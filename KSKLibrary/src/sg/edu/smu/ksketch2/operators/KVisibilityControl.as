@@ -148,7 +148,7 @@ package sg.edu.smu.ksketch2.operators
 				else
 					passthrough = true;
 				
-				var newVisibilityKey:KVisibilityKey = new KVisibilityKey(int(keyXML[i].@time),passthrough);
+				var newVisibilityKey:KVisibilityKey = new KVisibilityKey(new Number(keyXML[i].@time),passthrough);
 				
 				if(keyXML[i].@visibility == "true")
 					newVisibilityKey.visible = true;

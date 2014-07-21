@@ -21,7 +21,6 @@ package sg.edu.smu.ksketch2.operators
 	 */
 	public class KStaticGroupingUtil extends KGroupingUtil
 	{
-		public static var STATIC_GROUP_TIME:int = 0;	// static variable for handling static group time
 		
 		/**
 		 * The main constructor of the KStaticGroupingUtil class.

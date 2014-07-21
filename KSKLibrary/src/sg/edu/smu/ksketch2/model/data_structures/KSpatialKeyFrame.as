@@ -115,7 +115,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param getTime The target time.
 		 * @return A pair of matrices from the previous key frames.
 		 */
-		public function getMatrixPair(getTime:int):Array
+		public function getMatrixPair(getTime:Number):Array
 		{
 			var tMat:Matrix;
 			var rsMat:Matrix;

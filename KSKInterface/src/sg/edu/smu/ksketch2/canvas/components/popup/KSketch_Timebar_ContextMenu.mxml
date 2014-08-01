@@ -101,25 +101,31 @@
 			
 			private function _updateClearKeys():void
 			{
+				if(_KSketch.root.children.length() == 0)
+				{
+					clearButton.enabled = false;
+					return;
+				}
+				
 				if(!_interactionControl.selection)
-				{	
+				{
+					//check all objects to see if there is at least 1 object that can clear key
+					var objectList:KModelObjectList = _KSketch.root.children;
+					for(var i:int = 0; i<objectList.length(); i++)
+					{
+						var object:KObject = objectList.getObjectAt(i);
+						if(object.transformInterface.canClearKeys(_KSketch.time))
+						{
+							clearButton.enabled = true;
+							return;
+						}
+					}
+					
 					clearButton.enabled = false;
 					return;
 				}
 				
-				if(_interactionControl.selection.objects.length() != 1)
-				{
-					clearButton.enabled = false;
-					return;
-				}
-				
-				if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canClearKeys(_KSketch.time))
-				{
-					clearButton.enabled = true;
-					return;
-				}
-				
-				clearButton.enabled = false;
+				clearButton.enabled = true;
 			}
 			
 			private function _initButtons():void
@@ -281,22 +287,29 @@
 			private function _clearKeys(event:MouseEvent = null):void
 			{
 				KSketch_CanvasView.tracker.trackPageview( "/timebar/clearKey" );
-				if(!_interactionControl.selection.objects)
-					return;
-				
-				if(_interactionControl.selection.objects.length() == 0)
-					return;
 				
 				_interactionControl.begin_interaction_operation();
 				
-				var object:KObject = _interactionControl.selection.objects.getObjectAt(0);
+				var objectList:KModelObjectList;
+				if(!_interactionControl.selection)
+					objectList = _KSketch.root.children;
+				else
+					objectList = _interactionControl.selection.objects
 				
-				object.visibilityControl.setVisibility(true, _KSketch.time, _interactionControl.currentInteraction, true);
-				
-				if(object is KGroup)
-					setChildVisibility(object as KGroup);
-				
-				object.transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
+				for(var i:int=0; i<objectList.length(); i++)
+				{
+					var object:KObject = objectList.getObjectAt(i);
+					
+					if(object.transformInterface.canClearKeys(_KSketch.time))
+					{
+						object.visibilityControl.setVisibility(true, _KSketch.time, _interactionControl.currentInteraction, true);
+						
+						if(object is KGroup)
+							setChildVisibility(object as KGroup);
+						
+						object.transformInterface.clearAllMotionsAfterTime(_KSketch.time, _interactionControl.currentInteraction);
+					}
+				}
 				
 				_interactionControl.end_interaction_operation(null, _interactionControl.selection);
 				

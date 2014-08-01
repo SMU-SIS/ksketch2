@@ -291,6 +291,11 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			{
 				currentMarker = _ticks[i];
 				
+				if(_interactionControl.selection && _interactionControl.selection.objects.length() > 1)
+				{
+					currentMarker.selected = false;
+				}
+				
 				if(!currentMarker.selected)
 				{
 					currentX = currentMarker.x;

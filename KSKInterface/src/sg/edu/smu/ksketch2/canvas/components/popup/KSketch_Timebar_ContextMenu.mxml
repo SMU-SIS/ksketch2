@@ -34,6 +34,7 @@
 			import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
 			import sg.edu.smu.ksketch2.model.objects.KObject;
+			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KSelection;	
 			
 			public static const STUDYMODE_K:int = 0;						// Version K value
@@ -194,6 +195,13 @@
 					objectNum = " on an object";
 					//check if the object has an existing key
 					activeKey = _interactionControl.selection.objects.getObjectAt(0).transformInterface.getActiveKey(_KSketch.time) as KSpatialKeyFrame;
+					
+					//if selection is more than one object, group the objects first
+					if(_interactionControl.selection.objects.length() > 1)
+					{
+						var newObjectList:KModelObjectList = _KSketch.hierarchy_Group(_interactionControl.selection.objects, _KSketch.time, true, _interactionControl.currentInteraction);
+						_interactionControl.selection = new KSelection(newObjectList);
+					}
 					
 					if(studyMode == STUDYMODE_KP2)
 					{

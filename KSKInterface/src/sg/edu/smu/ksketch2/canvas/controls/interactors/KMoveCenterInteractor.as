@@ -94,12 +94,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 			
 			object = _interactionControl.selection.objects.getObjectAt(0);
-			
-			if(object is KGroup)
-			{
-				(object as KGroup).updateCenter();
-				(object as KGroup).setMoveCenter();
-			}
 				
 			_oldCenter = object.center;
 			

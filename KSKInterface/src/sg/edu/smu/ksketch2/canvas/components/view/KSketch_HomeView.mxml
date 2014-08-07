@@ -121,11 +121,9 @@
 			{	
 				this.removeEventListener(FlexEvent.INITIALIZE, init);
 				
-				//set KSketch Logo
-				logoHolder.init(KSketchAssets.texture_logo, KSketchAssets.texture_logo);
-				
 				createButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
 				loginButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
+				refreshButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
 				
 				if(stage.deviceOrientation == StageOrientation.UNKNOWN)
 				{
@@ -198,6 +196,7 @@
 						
 						KSketch_LoginView._isLoggedIn = true;
 						loginButton.label = "Logout, "+ userData.kUser.u_realname;
+						refreshButton.label = "Refresh";
 					}
 					else
 					{
@@ -207,6 +206,7 @@
 						userData.kUser = kUser;
 						
 						loginButton.label = "Login";
+						refreshButton.visible = false;
 					}
 				}
 				else
@@ -221,6 +221,7 @@
 					{
 						_mobileControl.user = userData.kUser;
 						loginButton.label = "Logout, "+ userData.kUser.u_realname;
+						refreshButton.label = "Refresh";
 						
 						if(!_isConnected && !hasBeenNotified)
 						{
@@ -861,20 +862,24 @@
 					<!-- Alignment for logo button -->
 					<s:Group width="100%" height="40%">
 						<s:layout> <s:HorizontalLayout paddingLeft="{KSketchStyles.LOGO_PADDING_LEFT}" paddingTop="{KSketchStyles.LOGO_PADDING_TOP}"/> </s:layout>
-						<buttons:KSketch_Button id="logoHolder"
-												width="{KSketchStyles.LOGO_BUTTON_WIDTH}" 
-												height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"
-												click="startMonitorConnection()"/>
+						<s:Image id="logoHolder" source="{KSketchAssets.texture_logo}"
+								 width="{KSketchStyles.LOGO_BUTTON_WIDTH}"
+								 height="{KSketchStyles.LOGO_BUTTON_HEIGHT}"/>
 					</s:Group>
 					
 					<s:Group width="100%">
-						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.LOGO_PADDING_TOP}"/> </s:layout>
+						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.LOGO_PADDING_BUTTON}"/> </s:layout>
 						<s:Button id="createButton" width="100%" click="createSketch()"/>
 					</s:Group>
 					
 					<s:Group width="100%">
-						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.LOGO_PADDING_TOP}"/> </s:layout>
+						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.LOGO_PADDING_BUTTON}"/> </s:layout>
 						<s:Button id="loginButton" width="100%" click="navigateToScreen('LOGIN')"/>
+					</s:Group>
+					
+					<s:Group width="100%">
+						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.LOGO_PADDING_BUTTON}"/> </s:layout>
+						<s:Button id="refreshButton" width="100%" click="startMonitorConnection()"/>
 					</s:Group>
 					
 					<!-- end alignment for buttons -->

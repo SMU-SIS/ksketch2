@@ -136,10 +136,11 @@ package sg.edu.smu.ksketch2
 		public static var WIDGET_CENTROID_SIZE:Number = 10; //PIVOT
 		
 		//Logo
-		public static var LOGO_BUTTON_WIDTH:Number = 200;
-		public static var LOGO_BUTTON_HEIGHT:Number = 200;
-		public static var LOGO_PADDING_LEFT:Number = 48;
-		public static var LOGO_PADDING_TOP:Number = 10;
+		public static var LOGO_BUTTON_WIDTH:Number = 150;
+		public static var LOGO_BUTTON_HEIGHT:Number = 150;
+		public static var LOGO_PADDING_LEFT:Number = 80;
+		public static var LOGO_PADDING_TOP:Number = 40;
+		public static var LOGO_PADDING_BUTTON:Number = 10;
 		
 		//List of sketches
 		public static const LIST_SKETCH_GAP:int = 0;
@@ -218,10 +219,11 @@ package sg.edu.smu.ksketch2
 			MENU_BUTTON_WIDTH = 35 * scaleFactor;
 			MENU_BUTTON_HEIGHT = 35 * scaleFactor;
 			WIDGET_CENTROID_SIZE = 10 * (scaleFactor - 0.7);
-			LOGO_BUTTON_WIDTH = 200 * scaleFactor;
-			LOGO_BUTTON_HEIGHT = 200 * scaleFactor;
-			LOGO_PADDING_LEFT = 48 * scaleFactor;
-			LOGO_PADDING_TOP = 10 * scaleFactor;
+			LOGO_BUTTON_WIDTH = 150 * scaleFactor;
+			LOGO_BUTTON_HEIGHT = 150 * scaleFactor;
+			LOGO_PADDING_LEFT = 80 * scaleFactor;
+			LOGO_PADDING_TOP = 40 * scaleFactor;
+			LOGO_PADDING_BUTTON = 10 * scaleFactor;
 			BUTTON_SIZE = 12 * scaleFactor;
 			LIST_SKETCH_FONT = 20 * (scaleFactor - 0.5);
 			LIST_SKETCH_LINE = 1000 * (scaleFactor - 0.5); 

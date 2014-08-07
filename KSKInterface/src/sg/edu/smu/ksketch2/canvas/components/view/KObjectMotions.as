@@ -533,7 +533,14 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				var activeKey:KSpatialKeyFrame = _object.transformInterface.getActiveKey(time) as KSpatialKeyFrame;	
 				
 				if(activeKey)
-					_determineAndGeneratePaths(activeKey);				
+					_determineAndGeneratePaths(activeKey);	
+				else
+				{
+					_motionPath.graphics.clear();
+					_rotationMotionPath.graphics.clear();
+					_drawTranslatePath();
+					_drawRotatePath();	
+				}
 			}
 			
 			updateMotionPath(time);

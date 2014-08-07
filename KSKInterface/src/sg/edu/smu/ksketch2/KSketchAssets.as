@@ -118,6 +118,14 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_Texture_Options_Down.png")] 
 		[Bindable] 
 		public static var texture_options_down:Class;
+	
+		[Embed("assets/Button_Texture_Help.png")] 
+		[Bindable] 
+		public static var texture_help:Class;
+		
+		[Embed("assets/Button_Texture_Help_Down.png")] 
+		[Bindable] 
+		public static var texture_help_down:Class;
 		
 		[Embed("assets/Button_Texture_Undo.png")] 
 		[Bindable] 
@@ -286,6 +294,10 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Splash_KSketch.png")] 
 		[Bindable] 
 		public static var image_splash:Class;
+		
+		[Embed("assets/Help_KSketch.png")] 
+		[Bindable] 
+		public static var image_help:Class;
 		
 		[Embed("assets/Button_ActionList_Delete.png")] 
 		[Bindable] 

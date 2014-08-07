@@ -167,6 +167,10 @@ package sg.edu.smu.ksketch2
 		public static var DIALOG_MEASUREMENT_25:int = 50;
 		public static var DIALOG_MEASUREMENT_50:int = 50;
 		public static var DIALOG_MEASUREMENT_300:int = 300;
+		
+		//Help screen
+		public static var X_POS_BUTTON:int = 600;
+		public static var Y_POS_BUTTON:int = 450;
 	
 		public static function scaleUp(scaleFactor:Number):void
 		{
@@ -239,6 +243,8 @@ package sg.edu.smu.ksketch2
 			DIALOG_MEASUREMENT_25 = 25 * (scaleFactor * 2);
 			DIALOG_MEASUREMENT_50 = 50 * scaleFactor;
 			DIALOG_MEASUREMENT_300 = 300 * scaleFactor;
+			X_POS_BUTTON = 600 * scaleFactor;
+			Y_POS_BUTTON = 450 * scaleFactor;
 		}
 	}
 }

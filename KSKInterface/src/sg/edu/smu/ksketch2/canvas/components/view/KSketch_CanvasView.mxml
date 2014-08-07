@@ -36,6 +36,7 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Help;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_OverwriteSaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
@@ -86,6 +87,7 @@
 			private var _feedbackPopUp:KSketch_Feedback_Message;
 			private var _menuPopUp:KSketch_PopUp_Menu;
 			private var _options:KSketch_Options;
+			private var _help:KSketch_Help;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
 			private var _magnifier:KSketch_Timebar_Magnifier;
@@ -166,12 +168,14 @@
 				_feedbackPopUp = new KSketch_Feedback_Message();
 				_feedbackPopUp.init(this);
 				_options = new KSketch_Options();
+				_help = new KSketch_Help();
 				_keyMenu = new KSketch_Timebar_ContextMenu();
 				_saveOptions = new KSketch_SaveOptions();
 				_overwriteSaveOptions = new KSketch_OverwriteSaveOptions();
 				_menuPopUp = new KSketch_PopUp_Menu();
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
+				_help.init(this, _menuPopUp);
 				_options.init(this, _menuPopUp);
 				
 				/*motionDisplay.cacheAsBitmap = true;
@@ -192,13 +196,14 @@
 					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions);
 					_overwriteSaveOptions.init(this, _saveOptions);
 					
-					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
+					_menuPopUp.init(canvas_component, this, _options, _help, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 					_saveOptions.createDeferredContent();
 				}
 				else
-					_menuPopUp.init(canvas_component, this, _options, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
+					_menuPopUp.init(canvas_component, this, _options, _help, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 				
 				_options.createDeferredContent();
+				_help.createDeferredContent();
 				_menuPopUp.createDeferredContent();
 				
 				if(isWebViewer)
@@ -344,6 +349,7 @@
 			{
 				//comment out these two lines to get toolbar stay when it is reactivated.
 				_options.close();
+				_help.close();
 				_menuPopUp.close();
 				_feedbackPopUp.close();
 				_magnifier.close();

@@ -47,6 +47,7 @@
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _options:KSketch_Options;
+			private var _help:KSketch_Help;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _feedback:KSketch_Feedback_Message;
 			
@@ -61,7 +62,7 @@
 			 * @ksketchInstance: The canvas's ksketch instance
 			 */
 			public function init(referenceComponent:UIComponent,
-								 canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options,
+								 canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options, helpPanel:KSketch_Help,
 								 savePanel:KSketch_SaveOptions, KSketchInstance:KSketch2, 
 								 interactionControl:KInteractionControl, canvasControl:KCanvasInteractorManager,
 							     feedback:KSketch_Feedback_Message):void
@@ -75,6 +76,7 @@
 				_interactionControl = interactionControl;
 				_canvasControl = canvasControl;
 				_options = optionsPanel;
+				_help = helpPanel;
 				_feedback = feedback;
 				
 				if(savePanel)
@@ -90,6 +92,8 @@
 				redoButton.initSkin();
 				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down);
 				optionButton.initSkin();
+				helpButton.init(KSketchAssets.texture_help, KSketchAssets.texture_help_down);
+				helpButton.initSkin();
 				//imageButton.init(KSketchAssets.texture_images, KSketchAssets.texture_images_down);
 				//imageButton.initSkin();
 				
@@ -327,7 +331,26 @@
 			}
 			
 			/**
-			 * Opens the options dialog box
+			 * Opens the help dialog box
+			 */
+			private function _openHelp():void
+			{
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Pop Up Menu";
+				log.@type = "Open Help";
+				trace("Action " + _KSketch.logCounter + ": Open help");
+				KSketch2.log.appendChild(log);
+				
+				//KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
+				_help.open(_canvasView,true);
+				PopUpManager.centerPopUp(_help);
+			}
+			
+			/**
+			 * Opens the save dialog box
 			 */
 			private function _openSaveOptions():void
 			{
@@ -466,6 +489,13 @@
 				height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 				/>
 		</s:Group>
+		
+		<buttons:KSketch_Button
+			click="_openHelp()"
+			id="helpButton"
+			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+			/>
 		<!--
 		<buttons:KSketch_Button
 			click="_importImage()"

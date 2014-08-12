@@ -377,7 +377,7 @@
 			<s:layout>
 				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
 			</s:layout>
-			<s:CheckBox id="doubleTap" label="Enable double-tap for undo and redo" click="_doubleTap(doubleTap.selected)"/>
+			<s:CheckBox id="doubleTap" label="Double-tap left/right for undo/redo" click="_doubleTap(doubleTap.selected)"/>
 		</s:Group>
 		
 		<s:Group>

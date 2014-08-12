@@ -78,7 +78,7 @@
 		<s:Label id="header" text="Help"/>
 		
 		<s:Group>
-			<s:Image id="help_image" source="{KSketchAssets.image_help}"/>
+			<s:Image id="help_image" source="{KSketchAssets.image_help}" width="{KSketchStyles.IMAGE_HELP_WIDTH}" height="{KSketchStyles.IMAGE_HELP_HEIGHT}"/>
 			
 			<s:Group width="100%" x="{KSketchStyles.X_POS_BUTTON}" y="{KSketchStyles.Y_POS_BUTTON}">
 				<s:layout>

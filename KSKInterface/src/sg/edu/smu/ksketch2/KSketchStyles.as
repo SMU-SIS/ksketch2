@@ -172,6 +172,8 @@ package sg.edu.smu.ksketch2
 		//Help screen
 		public static var X_POS_BUTTON:int = 600;
 		public static var Y_POS_BUTTON:int = 450;
+		public static var IMAGE_HELP_WIDTH:int = 750;
+		public static var IMAGE_HELP_HEIGHT:int = 512;
 	
 		public static function scaleUp(scaleFactor:Number):void
 		{
@@ -247,6 +249,8 @@ package sg.edu.smu.ksketch2
 			DIALOG_MEASUREMENT_300 = 300 * scaleFactor;
 			X_POS_BUTTON = 600 * scaleFactor;
 			Y_POS_BUTTON = 450 * scaleFactor;
+			IMAGE_HELP_WIDTH = 750 * scaleFactor;
+			IMAGE_HELP_HEIGHT = 512 * scaleFactor;
 		}
 	}
 }

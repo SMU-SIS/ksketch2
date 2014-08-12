@@ -44,6 +44,9 @@
 		
 			private function init():void
 			{
+				notificationLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				okButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				
 				this.removeEventListener(FlexEvent.INITIALIZE, init);
 				if(_parent == CANVASNOTICE_FAILED_SYNC)
 					notificationLabel.text = "Connection lost. Check your network connection or contact the K-Sketch team at ksketch@smu.edu.sg.\nYour changes will be saved when the connection is re-established.";
@@ -71,14 +74,14 @@
 	</s:Rect>
 	<s:Group width="50%">
 		<s:layout>
-			<s:VerticalLayout gap="20" paddingLeft="5" paddingRight="5" paddingTop="20" paddingBottom="20" verticalAlign="middle" horizontalAlign="center"/>
+			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_20}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_20}" paddingBottom="{KSketchStyles.DIALOG_PADDING_20}" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
-		<s:Label id="notificationLabel" fontSize="15"/>
+		<s:Label id="notificationLabel"/>
 		<s:Group width="100%">
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" horizontalAlign="right"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button label="OK" click="close()" fontSize="14"/>
+			<s:Button id="okButton" label="OK" click="close()"/>
 		</s:Group>
 		
 	</s:Group>

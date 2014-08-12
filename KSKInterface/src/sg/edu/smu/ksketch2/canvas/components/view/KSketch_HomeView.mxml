@@ -231,7 +231,11 @@
 						}
 					}
 					else
+					{
 						loginButton.label = "Login";
+						refreshButton.visible = false;
+					}
+						
 				
 					_failedLogin = false;
 				}
@@ -239,6 +243,7 @@
 				createButton.label = "Create a Sketch";
 				createButton.setStyle("fontSize", KSketchStyles.BUTTON_SIZE);
 				loginButton.setStyle("fontSize", KSketchStyles.BUTTON_SIZE);
+				refreshButton.setStyle("fontSize", KSketchStyles.BUTTON_SIZE);
 				prepareDataList();
 			}
 			

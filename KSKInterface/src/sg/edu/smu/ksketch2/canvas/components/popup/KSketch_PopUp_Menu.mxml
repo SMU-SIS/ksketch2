@@ -344,7 +344,7 @@
 				trace("Action " + _KSketch.logCounter + ": Open help");
 				KSketch2.log.appendChild(log);
 				
-				//KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
+				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
 				_help.open(_canvasView,true);
 				PopUpManager.centerPopUp(_help);
 			}

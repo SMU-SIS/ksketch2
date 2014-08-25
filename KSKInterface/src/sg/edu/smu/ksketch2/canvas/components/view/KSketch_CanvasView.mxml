@@ -499,11 +499,16 @@
 									width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
 							</s:Group>
 							
-							
+							<!--
 							<buttons:KSketch_Play_Button
 								doubleClickEnabled="true"
 								click="playButton.playToggle()"
 								doubleClick="playButton.doubleClick()"
+								id="playButton"
+								width="{KSketchStyles.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
+							-->
+							<buttons:KSketch_Play_Button
+								click="playButton.playToggle()"
 								id="playButton"
 								width="{KSketchStyles.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
 							

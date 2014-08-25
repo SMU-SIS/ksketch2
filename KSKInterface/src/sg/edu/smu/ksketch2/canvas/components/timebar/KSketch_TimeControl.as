@@ -216,6 +216,10 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public function _touchDown(event:MouseEvent):void
 		{	
 			action = "Tap on Time Bar";
+			
+			if(_isPlaying)
+				stop();
+			
 			//upon touchdown, start grabbedTickTimer to time how long the touchdown is
 			//if timer completes (means longPress), grab the tick at that particular time
 			grabbedTickTimer = new Timer(500,1);
@@ -479,11 +483,13 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_timer.addEventListener(TimerEvent.TIMER, playHandler);
 			_timer.start();
 			
-			if(playFromStart)
+			/*if(playFromStart)
 				time = 0;
 			else
 				time = _KSketch.time;
-		
+			*/
+			time = 0;
+			
 			_maxPlayTime = _KSketch.maxTime + PLAY_ALLOWANCE;
 			
 			_rewindToTime = time;

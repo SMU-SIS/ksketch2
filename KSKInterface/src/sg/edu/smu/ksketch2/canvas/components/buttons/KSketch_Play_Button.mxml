@@ -63,9 +63,11 @@
 				
 				if(_buttonState == SHOW_PLAY)
 				{
-					_doubleClickTimer = new Timer(200,1);
+					/*_doubleClickTimer = new Timer(200,1);
 					_doubleClickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, triggerPlay);
 					_doubleClickTimer.start();
+					*/
+					_timeControl.play(_doubleClickTrigger);
 				}
 				else
 					_timeControl.stop();

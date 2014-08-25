@@ -55,6 +55,9 @@
 				if(!_timeControl.timings)
 					return;
 				
+				if(KSketch_TimeControl._isPlaying)
+					_timeControl.stop();
+				
 				var i:int;
 				var length:int = _timeControl.timings.length;
 				

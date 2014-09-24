@@ -242,7 +242,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			var date:Date = new Date();
 			log.@category = "Widget";
 			log.@type = action;
-			trace("Action " + _KSketch.logCounter + ": " + action);
+			//trace("ACTION " + _KSketch.logCounter + ": " + action);
 			KSketch2.log.appendChild(log);
 		}
 		

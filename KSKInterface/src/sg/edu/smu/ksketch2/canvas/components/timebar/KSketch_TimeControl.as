@@ -433,7 +433,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			var date:Date = new Date();
 			log.@category = "Time Bar Control";
 			log.@type = action;
-			trace("Action " + _KSketch.logCounter + ": " + action);
+			//trace("ACTION " + _KSketch.logCounter + ": " + action);
 			KSketch2.log.appendChild(log);
 		}
 		

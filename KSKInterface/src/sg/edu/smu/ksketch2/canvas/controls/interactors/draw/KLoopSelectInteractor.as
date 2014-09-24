@@ -149,12 +149,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 			if(_interactionControl.selection != null)
 			{
 				log.@type = "Loop Selected";
-				trace("Action " + _KSketch.logCounter + ": Draw a loop around object(s) to select");
+				//trace("ACTION " + _KSketch.logCounter + ": Draw a loop around object(s) to select");
 			}
 			else
 			{
 				log.@type = "Loop Unselected";
-				trace("Action " + _KSketch.logCounter + ": Draw using a lasso tool");
+				//trace("ACTION " + _KSketch.logCounter + ": Draw using a lasso tool");
 			}
 			KSketch2.log.appendChild(log);
 		}

@@ -122,12 +122,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				log.@type = "Perform Translate";
-				trace("Action " + _KSketch.logCounter + ": Perform Translate");
+				//trace("ACTION " + _KSketch.logCounter + ": Perform Translate");
 			}
 			else
 			{
 				log.@type = "Interpolate Translate";
-				trace("Action " + _KSketch.logCounter + ": Interpolate Translate");
+				//trace("ACTION " + _KSketch.logCounter + ": Interpolate Translate");
 			}
 			
 			log.@KSketchDuration = KSketch_TimeControl.toTimeCode(_KSketch.time - _startTime);

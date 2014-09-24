@@ -149,7 +149,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			var date:Date = new Date();
 			log.@category = "Move Center";
 			log.@type = "Perform Rotate";
-			trace("Action " + _KSketch.logCounter + ": Move Center of Object");
+			//trace("ACTION " + _KSketch.logCounter + ": Move Center of Object");
 			KSketch2.log.appendChild(log);
 		}
 		

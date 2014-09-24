@@ -230,7 +230,7 @@
 					var date:Date = new Date();
 					log.@category = "Pop Up Menu";
 					log.@type = "Set " + selectedTool;
-					trace("Action " + _KSketch.logCounter + ": Selected a " + selectedTool);
+					//trace("ACTION " + _KSketch.logCounter + ": Selected a " + selectedTool);
 					KSketch2.log.appendChild(log);
 				}
 			}
@@ -246,7 +246,7 @@
 				var date:Date = new Date();
 				log.@category = "Pop Up Menu";
 				log.@type = "Set New Canvas";
-				trace("Action " + _KSketch.logCounter + ": Set up a new canvas");
+				//trace("ACTION " + _KSketch.logCounter + ": Set up a new canvas");
 				KSketch2.log.appendChild(log);
 				
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/clearCanvas" );
@@ -289,7 +289,7 @@
 				var date:Date = new Date();
 				log.@category = "Pop Up Menu";
 				log.@type = "Exit Canvas";
-				trace("Action " + _KSketch.logCounter + ": Exit canvas");
+				//trace("ACTION " + _KSketch.logCounter + ": Exit canvas");
 				KSketch2.log.appendChild(log);
 				
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/exitCanvas" );
@@ -322,7 +322,7 @@
 				var date:Date = new Date();
 				log.@category = "Pop Up Menu";
 				log.@type = "Open Option Box";
-				trace("Action " + _KSketch.logCounter + ": Open option box");
+				//trace("ACTION " + _KSketch.logCounter + ": Open option box");
 				KSketch2.log.appendChild(log);
 				
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
@@ -341,7 +341,7 @@
 				var date:Date = new Date();
 				log.@category = "Pop Up Menu";
 				log.@type = "Open Help";
-				trace("Action " + _KSketch.logCounter + ": Open help");
+				//trace("ACTION " + _KSketch.logCounter + ": Open help");
 				KSketch2.log.appendChild(log);
 				
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );

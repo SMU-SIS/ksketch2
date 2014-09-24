@@ -84,7 +84,7 @@
 				(FlexGlobals.topLevelApplication as Application).setFocus();
 				
 				if(_homeView && _success)
-					_homeView.updateFromWeb();
+					_homeView.refresh();//updateFromWeb(); //
 				else if(_homeView)
 					_homeView.displaySketchData();
 					
@@ -115,6 +115,8 @@
 			
 			public function save():void
 			{
+				_homeView.userData.resolveConflict = 1;
+				
 				for(var i:int=0; i<syncSketchArr.length; i++)
 				{
 					_success = false;
@@ -130,7 +132,7 @@
 						objToSend["fileData"] = com.adobe.serialization.json.JSON.encode(currentObj);
 						objToSend["userid"] = userData.kUser.id;
 						
-						httpService.url = KSketchWebLinks.jsonurlPostXML;
+						httpService.url = KSketchWebLinks.jsonurlGetXML;
 						httpService.send(objToSend);
 						httpService.addEventListener(ResultEvent.RESULT, resultHandler(currentObj));
 						httpService.addEventListener(FaultEvent.FAULT, faultHandler(currentObj));
@@ -149,7 +151,7 @@
 				var objToSend:Object = new Object();
 				objToSend["fileData"] = com.adobe.serialization.json.JSON.encode(obj);
 				
-				httpService.url = KSketchWebLinks.jsonurlOverwritePostXML;
+				httpService.url = KSketchWebLinks.jsonurlOverwriteGetXML;
 				httpService.send(objToSend);
 				httpService.addEventListener(ResultEvent.RESULT, resultHandler);
 				httpService.addEventListener(FaultEvent.FAULT, faultHandler);

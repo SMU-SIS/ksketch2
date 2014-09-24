@@ -187,6 +187,8 @@
 					
 					var obj:Object = new Object();
 					var kUser:KSketch_User;
+					userData.listSketches = "";
+					userData.resolveConflict = 0;
 					
 					if(_mobileControl.user != null)
 					{
@@ -213,6 +215,8 @@
 				{
 					//cast data from previous view to ObjectProxy. This is to avoid getting IEventDispatcher error
 					var dataProxy:ObjectProxy = new ObjectProxy(data);
+					userData.listSketches = dataProxy.listSketches;
+					userData.resolveConflict = dataProxy.resolveConflict;
 					
 					if(dataProxy.kUser)
 						userData.kUser = dataProxy.kUser;
@@ -251,8 +255,6 @@
 			{
 				startProgressBar();
 				
-				//cammie: _mobileControl = new KMobileControl();
-				
 				userData.homeView = this;
 				userData.mobileControl = _mobileControl;
 				userData.kSketchDocument = null;
@@ -268,7 +270,7 @@
 						_viewTimer.start();
 					}
 					else
-						displaySketchData();				//anonymous
+						displaySketchData();
 				}
 				else										//anonymous
 					displaySketchData();
@@ -278,8 +280,17 @@
 			{
 				_viewTimer.stop();
 				_viewTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, loadConnected);
-				resolveConflict();	
+				
+				if(userData.resolveConflict == 1)
+				{
+					resolveConflict();
+					data.resolveConflict = 0;
+				}	
+				else
+					updateFromWeb();
 			}
+			
+			
 			
 			public function updateFromWeb():void
 			{
@@ -287,7 +298,16 @@
 				
 				//get json object of user's list of sketches from the URL
 				//returned result will be a stringified JSON object
-				GetUserSketch.url = KSketchWebLinks.jsonurlSketch + userData.kUser.id;
+				var parameter:String;
+				if(data)
+					parameter = "{\"sketchID\":[" + data.listSketches + "],\"userid\":" + userData.kUser.id + "}";
+				else
+				{
+					data = userData;
+					parameter = "";
+				}
+				
+				GetUserSketch.url = KSketchWebLinks.jsonurlSketch + "/" + parameter;
 				GetUserSketch.send();
 			}
 			
@@ -301,24 +321,21 @@
 					var syncSketchArr:ArrayCollection;
 					if(resultObj)
 					{
-						var newArr:ArrayCollection = new ArrayCollection();
+						
+						
 						var tempArr:Array = (resultObj.entities as Array);
-						if(tempArr.length > 0)
+						for each(var tempObj:Object in tempArr)
 						{
-							var newTempArr:ArrayCollection = _fileControl.convertArrayToArrayCollection(tempArr);
-							for each(var tempObj:Object in newTempArr)
-							{
-								tempObj = KWebData.convertWebObjForMobile(tempObj);
-								newArr.addItem(tempObj);
-							}
-							
-							for each(var obj:Object in newArr)
-							_webControl.addSketchToList(obj, "save");
-							
+							tempObj = KWebData.convertWebObjForMobile(tempObj);
+							_mobileControl.informationArr[1] = _fileControl.solveDiscrepancy(_mobileControl.informationArr[1], tempObj);
 						}
-					}	
+						tempArr = null;
+						data.listSketches = "";
+					}
 					
-					reinitializeCache();
+					//reset webcontrol
+					_webControl.reset();
+					displaySketchData();
 				}
 				
 				if(_isXML && !_deleteSketchFlag)
@@ -351,44 +368,35 @@
 				
 				if(_mobileControl.informationArr[1])
 				{
-					syncSketchArr = _fileControl.getSyncSketchObjects(_mobileControl.informationArr[1], false);
-					deletedSketchArr = _fileControl.getSyncSketchObjects(_mobileControl.informationArr[1], true);
+					var tempObj:Object = _fileControl.getSyncSketchObjects(_mobileControl.informationArr[1]);
+					syncSketchArr = tempObj.syncArr;
+					deletedSketchArr = tempObj.delArr;
+					tempObj = null;
 				}
 					
 				//if there are sketches to sync, then prompt dialog
 				//else just display data
-				if(syncSketchArr.length > 0 || deletedSketchArr.length > 0)
+				if(syncSketchArr.length > 0)
 				{
-					if(syncSketchArr.length > 0)
-					{
-						_syncOptions.deleteFlag = false;
-						_syncOptions.resetSyncArrays();
-						
-						_syncOptions.currentUser = userData.kUser;
-						_syncOptions.syncSketchArr = syncSketchArr;
-						_syncOptions.open(this,true);
-						PopUpManager.centerPopUp(_syncOptions);	
-					}
+					_syncOptions.deleteFlag = false;
+					_syncOptions.resetSyncArrays();
 					
-					if(deletedSketchArr.length > 0)
-					{
-						_syncOptions.deleteFlag = true;
-						_syncOptions.deleteSketch(deletedSketchArr, this);
-					}		
+					_syncOptions.currentUser = userData.kUser;
+					_syncOptions.syncSketchArr = syncSketchArr;
+					_syncOptions.open(this,true);
+					PopUpManager.centerPopUp(_syncOptions);	
 				}
-				else
+				
+				if(deletedSketchArr.length > 0)
+				{
+					
 					updateFromWeb();
-			}
-			
-			private function reinitializeCache():void
-			{
-				var newInformationArr:String = _fileControl.solveDiscrepancy(_mobileControl.informationArr[1], _webControl.informationArr[1]);
-				_mobileControl.informationArr[1] = newInformationArr;
+					_syncOptions.deleteFlag = true;
+					_syncOptions.deleteSketch(deletedSketchArr, this);
+				}	
 				
-				//reset webcontrol
-				_webControl.reset();
-				
-				displaySketchData();
+				if(syncSketchArr.length == 0 && deletedSketchArr.length == 0)
+					updateFromWeb();
 			}
 			
 			public function displaySketchData():void
@@ -404,7 +412,8 @@
 					var userSketch:KSketch_UserSketches = new KSketch_UserSketches();
 					userSketch.createArray(sketchArr, userData.kUser.id);
 					
-					autoSaveCounter = userSketch.initializeAutoSaveSketchName(userSketch);
+					autoSaveCounter = userSketch.autoSaveCounter;
+					userSketch.autoSaveCounter = 0;
 					
 					//Set DataGrid array to user sketches collection
 					var sortBy:String = "sketchId";
@@ -414,6 +423,17 @@
 						arrDG.addAll(userSketch.getUserSketchArray(sortBy));
 					
 					listSketches_unavailable.visible = false;		
+					
+					//record down list of sketches after display
+					for(var i:int; i<arrDG.length; i++)
+					{
+						if(data.listSketches == "")
+							data.listSketches = arrDG.getItemAt(i).sketchId;
+						else
+							data.listSketches += "," + arrDG.getItemAt(i).sketchId;
+						
+						userData.listSketches = data.listSketches;
+					}
 				}
 				else
 				{
@@ -567,6 +587,12 @@
 				startMonitorConnection();
 			}
 			
+			public function refresh():void
+			{
+				data.listSketches = "";
+				startMonitorConnection();
+			}
+			
 			public function startMonitorConnection():void
 			{
 				this.removeEventListener(Event.ADDED_TO_STAGE, startMonitorConnection);
@@ -670,6 +696,8 @@
 			
 			private function prepareDeleteSketch():void
 			{
+				data.resolveConflict = 1;
+				
 				if(_isConnected && KSketch_LoginView._isLoggedIn)
 				{
 					if(_selectedSketchId && (parseInt(_selectedSketchId) > -1))
@@ -709,36 +737,30 @@
 					_oldEvent = null;
 				}
 				
-				var finalObj:Object = obj;
-				
-				var sketchDocArr:ArrayCollection;
-				sketchDocArr = _mobileControl.sketchList;
-				
 				var i:int;
-				var tempObj:Object;
-				
-				if(sketchDocArr)
+				if(!obj)
 				{
+					var sketchDocArr:ArrayCollection = _mobileControl.sketchList;
 					for(i=0; i<sketchDocArr.length; i++)
 					{
-						tempObj = sketchDocArr.getItemAt(i);
+						var tempObj:Object = sketchDocArr.getItemAt(i);
 						
 						if((tempObj.fileName == _selectedSketchName) && (tempObj.sketchId == _selectedSketchId))
 						{
 							if(_selectedSketchId == "")
 								type = KFileControl.DELETE_CACHE;
-							finalObj = tempObj;
+							
+							obj = tempObj;
 							break;	
 						}
 					}
 				}
 				
-				if(finalObj)
-					_mobileControl.deleteSketchFromList(finalObj, type);
+				_mobileControl.deleteSketchFromList(obj, type);
 				
 				_deleteSketchFlag = false;
 				stopProgressBar();
-				startMonitorConnection();
+				displaySketchData();
 			}
 			
 			protected function listSketches_mouseDownHandler(event:MouseEvent):void
@@ -884,7 +906,7 @@
 					
 					<s:Group width="100%">
 						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.LOGO_PADDING_BUTTON}"/> </s:layout>
-						<s:Button id="refreshButton" width="100%" click="startMonitorConnection()"/>
+						<s:Button id="refreshButton" width="100%" click="refresh()"/>
 					</s:Group>
 					
 					<!-- end alignment for buttons -->

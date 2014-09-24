@@ -248,9 +248,9 @@
 				objSaveToWeb["userid"] = userData.kUser.id;
 				
 				if(!overwriteSave)
-					httpService.url = KSketchWebLinks.jsonurlPostXML;
+					httpService.url = KSketchWebLinks.jsonurlGetXML;
 				else
-					httpService.url = KSketchWebLinks.jsonurlOverwritePostXML;
+					httpService.url = KSketchWebLinks.jsonurlOverwriteGetXML;
 				
 				httpService.send(objSaveToWeb);
 				httpService.addEventListener(ResultEvent.RESULT, resultHandler);

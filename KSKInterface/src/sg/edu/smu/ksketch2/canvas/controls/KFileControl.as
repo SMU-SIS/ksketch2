@@ -32,7 +32,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var tempArr:Array = (tempObj.sketches as Array);
 				
 				if(tempArr)
-					arr = convertArrayToArrayCollection(tempArr);
+					arr = new ArrayCollection(tempArr);
 			}
 			
 			//overwrite existing document with the new objDoc
@@ -59,15 +59,25 @@ package sg.edu.smu.ksketch2.canvas.controls
 						}
 						else
 						{
-							var datePrev:Date = new Date();
-							datePrev.setTime(Date.parse(arrObj.date));
+							var dateCache:Date = new Date();
+							dateCache.setTime(Date.parse(arrObj.date));
+							if(dateCache.hours == 24)
+								dateCache.hours = 0;
 							
-							var dateNext:Date = new Date();
-							dateNext.setTime(Date.parse(obj.date));
+							var dateWeb:Date = new Date();
+							dateWeb.setTime(Date.parse(obj.date));
+							if(dateWeb.hours == 24)
+								dateCache.hours = 0;
 							
-							//if it is a more recent sketch, overwrite
-							if(dateNext.getTime() > datePrev.getTime())
+							if((dateCache.date < dateWeb.date) && (dateCache.month < dateWeb.month) && (dateCache.fullYear < dateWeb.fullYear))
 								overwrite = true;
+							else if((dateCache.date == dateWeb.date) && (dateCache.month == dateWeb.month) && (dateCache.fullYear == dateWeb.fullYear))
+							{
+								if(dateWeb.time >= dateCache.time )
+									overwrite = true;
+								else if((dateCache.hours == dateWeb.hours) && ((dateCache.minutes == dateWeb.minutes) || ((dateCache.minutes - dateWeb.minutes) <= 1)))
+									overwrite = true;
+							}
 							
 							//if both are same versions and cached sketch doesn't contain any fileData, overwrite
 							if(obj.version == arrObj.version)
@@ -107,45 +117,106 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			//get array of sketch documents from informationArr[1]
 			//sketchDocObj = {documents:[]}
-			var arr:ArrayCollection;
-			if(record)
-			{
-				var tempObj:Object = com.adobe.serialization.json.JSON.decode(record, true);
-				var tempArr:Array = (tempObj.sketches as Array);
-				
-				if(tempArr)
-					arr = convertArrayToArrayCollection(tempArr);
-			}
 			
-			//overwrite existing document with the new objDoc
-			if(!arr)
-				arr = new ArrayCollection();
+			var tempObj:Object = com.adobe.serialization.json.JSON.decode(record, true);
+			var tempArr:Array = (tempObj.sketches as Array);
 			
-			if(sketchExist(arr, obj.fileName, obj.sketchId))
+			var arr:ArrayCollection = new ArrayCollection(tempArr);
+			
+			for(var i:int=0; i<arr.length; i++)
 			{
-				for(var i:int=0; i<arr.length; i++)
+				var arrObj:Object = arr.getItemAt(i);
+				if(arrObj.fileName == obj.fileName && arrObj.sketchId == obj.sketchId)
 				{
-					var arrObj:Object = arr.getItemAt(i);
-					if(arrObj.fileName == obj.fileName && arrObj.sketchId == obj.sketchId)
+					if(type == DELETE_WEB)
 					{
-						if(type == DELETE_WEB)
-						{
-							obj.deleteFlag = 1;
-							arr.removeItemAt(i);
-							arr.addItem(obj);
-						}
-						else if (type == DELETE_CACHE)
-						{
-							arr.removeItemAt(i);
-						}
+						obj.deleteFlag = 1;
+						arr.removeItemAt(i);
+						arr.addItem(obj);
 					}
+					else if (type == DELETE_CACHE)
+						arr.removeItemAt(i);
+				
+					break;
 				}
 			}
-			
 			return arr;
 		}
 
-		public function solveDiscrepancy(cacheStr:String, webStr:String):String
+		public function solveDiscrepancy(cacheStr:String, webObj:Object):String
+		{
+			var newInformationArr:String;
+			
+			//get sketches from cache
+			var cacheArr_sketch:ArrayCollection;
+			if(cacheStr)
+				cacheArr_sketch = convertStringToArrayCollection(cacheStr);
+			else
+				cacheArr_sketch = new ArrayCollection();
+			
+			var index:int = -1;
+			if(cacheArr_sketch.length > 0)
+				index = sketchExistIndex(cacheArr_sketch, webObj.fileName, webObj.sketchId);
+			
+			if(index != -1)
+			{
+				var overwrite:Boolean = false;
+				
+				var cacheObj:Object = cacheArr_sketch.getItemAt(index);
+				
+				var dateCache:Date = new Date();
+				dateCache.setTime(Date.parse(cacheObj.date));
+				if(dateCache.hours == 24)
+					dateCache.hours = 0;
+				
+				var dateWeb:Date = new Date();
+				dateWeb.setTime(Date.parse(webObj.date));
+				if(dateWeb.hours == 24)
+					dateCache.hours = 0;
+				
+				if((dateCache.date < dateWeb.date) && (dateCache.month < dateWeb.month) && (dateCache.fullYear < dateWeb.fullYear))
+					overwrite = true;
+				else if((dateCache.date == dateWeb.date) && (dateCache.month == dateWeb.month) && (dateCache.fullYear == dateWeb.fullYear))
+				{
+					if(dateWeb.time >= dateCache.time )
+						overwrite = true;
+					else if(cacheObj.version > webObj.version)
+						overwrite = true;
+						//((dateCache.hours == dateWeb.hours) && ((dateCache.minutes == dateWeb.minutes) || ((dateCache.minutes - dateWeb.minutes) <= 1)))
+						//overwrite = true;
+				}	
+				
+				if(overwrite)
+				{
+					if(cacheObj.fileData != null && webObj.fileData == null)
+						webObj.fileData = cacheObj.fileData;	
+					
+					cacheArr_sketch.removeItemAt(index);
+					webObj.save = 0;
+					cacheArr_sketch.addItem(webObj);
+				}
+			}
+			else
+			{
+				webObj.save = 0;
+				cacheArr_sketch.addItem(webObj);
+			}
+			
+			var docObj:Object = new Object();
+			if(cacheArr_sketch)															
+				docObj.sketches = cacheArr_sketch.source;
+			else
+				docObj.sketches = null;
+			
+			newInformationArr = com.adobe.serialization.json.JSON.encode(docObj);
+			
+			if(cacheArr_sketch)
+				cacheArr_sketch.removeAll();
+			
+			return newInformationArr;
+		}
+		
+		/*public function solveDiscrepancy(cacheStr:String, webStr:String):String
 		{
 			var newInformationArr:String;
 			
@@ -167,38 +238,45 @@ package sg.edu.smu.ksketch2.canvas.controls
 				for(var i:int=0; i<webArr_sketch.length; i++)
 				{
 					var obj:Object = webArr_sketch.getItemAt(i);
-					var index:int = sketchExistIndex(cacheArr_sketch, obj.fileName, obj.sketchId);
+					
+					var index:int = -1;
+					if(cacheArr_sketch)
+						index = sketchExistIndex(cacheArr_sketch, obj.fileName, obj.sketchId);
 					
 					if(index != -1)
 					{
+						var overwrite:Boolean = false;
+						
 						var cacheObj:Object = cacheArr_sketch.getItemAt(index);
 						
-						var datePrev:Date = new Date();
-						datePrev.setTime(Date.parse(cacheObj.date));
+						var dateCache:Date = new Date();
+						dateCache.setTime(Date.parse(cacheObj.date));
+						if(dateCache.hours == 24)
+							dateCache.hours = 0;
 						
-						var dateNext:Date = new Date();
-						dateNext.setTime(Date.parse(obj.date));
+						var dateWeb:Date = new Date();
+						dateWeb.setTime(Date.parse(obj.date));
+						if(dateWeb.hours == 24)
+							dateCache.hours = 0;
 						
-						if(dateNext.getTime() > datePrev.getTime())
+						if((dateCache.date < dateWeb.date) && (dateCache.month < dateWeb.month) && (dateCache.fullYear < dateWeb.fullYear))
+							overwrite = true;
+						else if((dateCache.date == dateWeb.date) && (dateCache.month == dateWeb.month) && (dateCache.fullYear == dateWeb.fullYear))
 						{
-							if(cacheObj.fileData != null && obj.fileData == null)// && cacheObj.version == "")
+							if(dateWeb.time >= dateCache.time )
+								overwrite = true;
+							else if((dateCache.hours == dateWeb.hours) && ((dateCache.minutes == dateWeb.minutes) || ((dateCache.minutes - dateWeb.minutes) <= 1)))
+								overwrite = true;
+						}	
+						
+						if(overwrite)
+						{
+							if(cacheObj.fileData != null && obj.fileData == null)
 								obj.fileData = cacheObj.fileData;	
 							
 							cacheArr_sketch.removeItemAt(index);
 							obj.save = 0;
 							cacheArr_sketch.addItem(obj);
-						}
-						
-						if(dateNext.getTime() == datePrev.getTime())
-						{
-							if(cacheObj.fileData != null)
-							{
-								obj.fileData = cacheObj.fileData;
-							
-								cacheArr_sketch.removeItemAt(index);
-								obj.save = 0;
-								cacheArr_sketch.addItem(obj);
-							}
 						}
 					}
 					else
@@ -225,7 +303,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				webArr_sketch.removeAll();	
 				
 			return newInformationArr;
-		}
+		}*/
 		
 		public function getUserObject(userStr:String):Object
 		{
@@ -247,17 +325,17 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var tempArr:Array = (sketchObj.sketches as Array);
 				
 				if(tempArr)
-				{
-					sketchArr = convertArrayToArrayCollection(tempArr);
-				}
+					sketchArr = new ArrayCollection(tempArr);
 			}
 			
 			return sketchArr;
 		}
 		
-		public function getSyncSketchObjects(cacheStr:String, deleteSketch:Boolean):ArrayCollection
+		public function getSyncSketchObjects(cacheStr:String):Object
 		{
-			var sync_sketchArr:ArrayCollection = new ArrayCollection();
+			var result:Object = new Object();
+			var syncArr:ArrayCollection = new ArrayCollection();
+			var delArr:ArrayCollection = new ArrayCollection();
 			
 			//get sketches from cache
 			var cacheArr_sketch:ArrayCollection;
@@ -269,25 +347,31 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var selectedDoc:Object;
 				for each(var obj:Object in cacheArr_sketch)
 				{
-					if(deleteSketch)
+					if(obj.deleteFlag == 1)
 					{
-						if(obj.deleteFlag == 1)
-						{
-							if(!sketchExist(sync_sketchArr, obj.fileName, obj.sketchId))
-								sync_sketchArr.addItem(obj);
-						}
+						if(!delArr.contains(obj))
+							delArr.addItem(obj);
+						//if(!sketchExist(delArr, obj.fileName, obj.sketchId))
+						//	delArr.addItem(obj);
 					}
-					else
+					
+					if(obj.save == -1)
 					{
-						if(obj.save == -1)
-						{
-							if(!sketchExist(sync_sketchArr, obj.fileName, obj.sketchId))
-								sync_sketchArr.addItem(obj);
-						}
+						if(!syncArr.contains(obj))
+							syncArr.addItem(obj);
+						//if(!sketchExist(syncArr, obj.fileName, obj.sketchId))
+						//	syncArr.addItem(obj);
 					}
 				}
 			}
-			return sync_sketchArr;
+			
+			result.syncArr = syncArr;
+			result.delArr = delArr;
+			syncArr = null;
+			delArr = null;
+			cacheArr_sketch = null;
+			
+			return result;
 		}
 		
 		public function convertArrayToArrayCollection(arr:Array):ArrayCollection
@@ -309,7 +393,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var tempArr:Array = (tempObj.sketches as Array);	
 				
 				if(tempArr)
-					arr = convertArrayToArrayCollection(tempArr);
+					arr = new ArrayCollection(tempArr);
 			}
 			return arr;
 		}
@@ -351,57 +435,24 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return exist;
 		}
 		
-		public function sketchExistIndex(arr:*, fileName:String, sketchId:String):int
+		public function sketchExistIndex(arr:ArrayCollection, fileName:String, sketchId:String):int
 		{
 			var index:int = -1;
 			var i:int;
 			
-			if(arr)
+			for(i=0; i<arr.length; i++)
 			{
-				if(arr is Array)
+				if(arr.getItemAt(i).fileName == fileName && arr.getItemAt(i).sketchId == sketchId)
 				{
-					for(i=0; i<arr.length; i++)
-					{
-						if(arr[i].fileName == fileName)
-						{
-							if(arr[i].sketchId == sketchId)
-							{
-								index = i;
-								break;	
-							}
-							else if(arr[i].sketchId != sketchId && arr[i].sketchId == "")
-							{
-								if(arr[i].save == 0)
-								{
-									index = i;
-									break;
-								}
-							}
-							
-						}
-					}
+					index = i;
+					break;	
 				}
-				else if(arr is ArrayCollection)
+				else if(arr.getItemAt(i).fileName == fileName && (arr.getItemAt(i).sketchId != sketchId && arr.getItemAt(i).sketchId == ""))
 				{
-					for(i=0; i<arr.length; i++)
+					if(arr.getItemAt(i).save == 0)
 					{
-						if(arr.getItemAt(i).fileName == fileName)
-						{
-							if(arr.getItemAt(i).sketchId == sketchId)
-							{
-								index = i;
-								break;	
-							}
-							else if(arr.getItemAt(i).sketchId != sketchId && arr.getItemAt(i).sketchId == "")
-							{
-								if(arr.getItemAt(i).save == 0)
-								{
-									index = i;
-									break;
-								}
-							}
-							
-						}
+						index = i;
+						break;
 					}
 				}
 			}

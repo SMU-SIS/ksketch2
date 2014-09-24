@@ -75,10 +75,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function deleteSketchFromList(sketchObj:Object, type:String):void
 		{
-			var arr:ArrayCollection;
-			arr = sketchList;
-			var sketchArr:ArrayCollection;
-			sketchArr = _fileControl.deleteSketchDocument(informationArr[1], sketchObj, type);
+			var sketchArr:ArrayCollection = _fileControl.deleteSketchDocument(informationArr[1], sketchObj, type);
 			
 			sketchObj = new Object();
 			if(sketchArr)															
@@ -89,7 +86,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 			informationArr[1] = com.adobe.serialization.json.JSON.encode(sketchObj);	//stringify the JSON objects to store in informationArr[2]
 			
 			writeToCache(informationArr);
-			sketchArr.removeAll();				
+			
+			sketchArr = null;	
+			sketchObj = null;
 		}
 		
 		public function get sketchList():ArrayCollection

@@ -68,6 +68,66 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
+		 * Gets the total x (horizontal) translation difference for the spatial key frame.
+		 * 
+		 * @return The total horizontal translation difference.
+		 */
+		public function get dX():Number
+		{
+			if (2 <= translatePath.length) {
+				return translatePath.points[translatePath.length -1].x - translatePath.points[0].x;			
+			}
+			else {
+				return 0;
+			}
+		}
+		
+		/**
+		 * Gets the total y (vertical) translation difference for the spatial key frame.
+		 * 
+		 * @return The total vertical translation difference.
+		 */
+		public function get dY():Number
+		{
+			if (2 <= translatePath.length) {
+				return translatePath.points[translatePath.length -1].y - translatePath.points[0].y;			
+			}
+			else {
+				return 0;
+			}
+		}
+		
+		/**
+		 * Gets the total rotation difference for the spatial key frame.
+		 * 
+		 * @return The total rotaion difference.
+		 */
+		public function get dTheta():Number
+		{
+			if (2 <= rotatePath.length) {
+				return rotatePath.points[rotatePath.length -1].x - rotatePath.points[0].x;			
+			}
+			else {
+				return 0;
+			}
+		}
+		
+		/**
+		 * Gets the total scale difference for the spatial key frame.
+		 * 
+		 * @return The total scale difference.
+		 */
+		public function get dSigma():Number
+		{
+			if (2 <= scalePath.length) {
+				return scalePath.points[scalePath.length -1].x - scalePath.points[0].x;			
+			}
+			else {
+				return 0;
+			}
+		}
+		
+		/**
 		 * Dirties the key and all future keys, forcing recomputation of its matrix when it is required.
 		 */
 		public function dirtyKey():void

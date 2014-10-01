@@ -427,10 +427,10 @@ package sg.edu.smu.ksketch2
 		 * Updates the ksketch's transform.
 		 * 
 		 * @param object The target object.
-		 * @param dx The x-position displacement.
-		 * @param dy The y-position displacement.
-		 * @param dTheta The rotation displacement.
-		 * @param dScale The scaling displacement.
+		 * @param dx The x-position displacement from when the interaction began.
+		 * @param dy The y-position displacement from when the interaction began.
+		 * @param dTheta The rotation displacement from when the interaction began.
+		 * @param dScale The scaling displacement from when the interaction began.
 		 */
 		public function updateTransform(object:KObject, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
 		{

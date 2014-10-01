@@ -10,6 +10,7 @@ package sg.edu.smu.ksketch2.operators
 {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
+	import flash.utils.Dictionary;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -33,9 +34,7 @@ package sg.edu.smu.ksketch2.operators
 	//Yay monster class! Good luck reading this
 	
 	/**
-	 * The KChangeCenterOperation class serves as the concrete class for
-	 * handling change center operations in K-Sketch. Specifically, the
-	 * class serves as the transform interface for dealing with the
+	 * Serves as the transform interface for dealing with the
 	 * single reference frame model.
 	 */
 	public class KSingleReferenceFrameOperator implements ITransformInterface
@@ -67,16 +66,35 @@ package sg.edu.smu.ksketch2.operators
 		protected var _cachedMatrix:Matrix = new Matrix();				// cached matrix 
 		
 		// current transformation storage variables
-		protected var _interpolationKey:KSpatialKeyFrame;				// current interpolation spatial key frame
-		protected var _TStoredPath:KPath;								// stored transformation path
-		protected var _RStoredPath:KPath;								// stored rotation path
-		protected var _SStoredPath:KPath;								// stored scaling path
+		protected var _interpolationKey:KSpatialKeyFrame;				// Spatial key frame at the current time (to be interpolated)
+		protected var _nextInterpolationKey:KSpatialKeyFrame;			// Holds the first interpolation (passthrough == false) spatial key frame after the current time (if any)
+		protected var _TStoredPath:KPath;								// stored translation path for interpolation before current time
+		protected var _RStoredPath:KPath;								// stored rotation path for interpolation before current time
+		protected var _SStoredPath:KPath;								// stored scaling path for interpolation before current time
+
+		// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
+		//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
+		//         sX:Number, sY:Number, eX:Number, eY:Number, dirty:Boolean
+		private   var _stretchTransParams:Dictionary;					// Parameters used for stretching translation paths before current time
+		private   var _stretchRotParams:Dictionary;						// Parameters used for stretching rotation paths before current time
+		private   var _stretchScaleParams:Dictionary;					// Parameters used for stretching scale paths before current time
+		private   var _stretchTrans2Params:Dictionary;					// Parameters used for stretching translation paths after current time
+		private   var _stretchRot2Params:Dictionary;					// Parameters used for stretching rotation paths after current time
+		private   var _stretchScale2Params:Dictionary;					// Parameters used for stretching scale paths after current time
 		
-		// subsequent transformation storage variables
-		protected var _nextInterpolationKey:KSpatialKeyFrame;			// next interpolation spatial key frame
-		protected var _TStoredPath2:KPath;								// other stored transformation path
-		protected var _RStoredPath2:KPath;								// other stored rotation path
-		protected var _SStoredPath2:KPath;								// other stored scaling path
+		
+//		// subsequent transformation storage variables
+//		protected var _nextInterpolationKey:KSpatialKeyFrame;			// First interpolation (passthrough == false) spatial key frame after the current time (if any)
+//		protected var _TStoredPath2:KPath;								// stored translation path for interpolation after current time
+//		protected var _RStoredPath2:KPath;								// stored rotation path for interpolation after current time
+//		protected var _SStoredPath2:KPath;								// stored scaling path for interpolation after current time
+		
+//		private   var _stretchTransParams:Point;						// Parameters used for stretching translation paths
+//		private   var _stretchRotParams:Point;							// Parameters used for stretching rotation paths
+//		private   var _stretchScaleParams:Point;						// Parameters used for stretching scale paths
+//		private   var _stretchTransVector:Point;						// Vector used for stretching translation paths
+//		private   var _stretchRotVector:Point;							// Vector used for stretching rotation paths
+//		private   var _stretchScaleVector:Point;						// Vector used for stretching scale paths
 		
 		// transition time variables
 		protected var _startTime:Number;									// starting time
@@ -85,22 +103,22 @@ package sg.edu.smu.ksketch2.operators
 		protected var _transitionType:int;								// transition state type
 		
 		// transition space variables
-		protected var _transitionX:Number;								// transition's x-value
-		protected var _transitionY:Number;								// transition's y-value
-		protected var _transitionTheta:Number;							// transition's theta value
-		protected var _transitionSigma:Number;							// transition's sigma value
+		protected var _transitionX:Number;								// Current x difference from when interaction started.
+		protected var _transitionY:Number;								// Current y difference from when interaction started.
+		protected var _transitionTheta:Number;							// Current theta difference from when interaction started.
+		protected var _transitionSigma:Number;							// Current sigma difference from when interaction started.
 		
 		// magnitude variables
-		protected var _magX:Number;										// magnitude's x-value
-		protected var _magY:Number;										// magnitude's y-value
-		protected var _magTheta:Number;									// magnitude's rotational (theta) value
-		protected var _magSigma:Number;									// magnitude's scaling (sigma) value
+		protected var _magX:Number;										// The sum of all horizontal distance (x) changes (absolute value) since interaction started.
+		protected var _magY:Number;										// The sum of all horizontal distance (x) changes (absolute value) since interaction started.
+		protected var _magTheta:Number;									// The sum of all rotational (theta) changes (absolute value) since interaction started.
+		protected var _magSigma:Number;									// The sum of all scaling (sigma) changes (absolute value) since interaction started.
 
 		// cache variables
-		protected var _cachedX:Number;									// cached x-vaue
-		protected var _cachedY:Number;									// cached y-value
-		protected var _cachedTheta:Number;								// cached rotational (theta) value
-		protected var _cachedScale:Number;								// cached scaling value [note: why is it not called _cachedSigma?]
+		protected var _cachedX:Number;									// cache of x-vaue at the time interaction began
+		protected var _cachedY:Number;									// cache of y-value at the time interaction began
+		protected var _cachedTheta:Number;								// cache of rotation (theta) value at the time interaction began
+		protected var _cachedSigma:Number;								// cache of scale (sigma) value at the time interaction began
 		
 		// transformation state flag variables
 		public var hasTranslate:Boolean;								// transition state flag
@@ -109,7 +127,7 @@ package sg.edu.smu.ksketch2.operators
 		
 		
 		public var tempArr: ArrayCollection = new ArrayCollection();
-		public var interpolationKeylist:ArrayCollection = new ArrayCollection();
+		public var interpolationKeylist:ArrayCollection = new ArrayCollection();   // All interpolation spatial key frames after the current time.
 		// ###############
 		// # Constructor #
 		// ###############
@@ -137,6 +155,33 @@ package sg.edu.smu.ksketch2.operators
 			_transitionY = 0;						// set the initial transition y-position
 			_transitionTheta = 0;					// set the initial transition's theta
 			_transitionSigma = 0;					// set the initial transition's theta
+	
+			// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
+			//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
+			//         sX:Number, sY:Number, eX:Number, eY:Number
+
+			// Allocate temporary variables
+			_stretchTransParams = new Dictionary();		
+			_stretchRotParams = new Dictionary();	
+			_stretchScaleParams = new Dictionary();
+			_stretchTrans2Params = new Dictionary();		
+			_stretchRot2Params = new Dictionary();	
+			_stretchScale2Params = new Dictionary();
+
+
+//			_stretchTransParams = new Point();		
+//			_stretchRotParams = new Point();	
+//			_stretchScaleParams = new Point();
+//			_stretchTransVector = new Point();
+//			_stretchRotVector = new Point();
+//			_stretchScaleVector = new Point();
+//			
+//			_TStoredPathStart = new Point();
+//			_RStoredPathStart = new Point();
+//			_SStoredPathStart = new Point();
+//			_TStoredPath2Start = new Point();
+//			_RStoredPath2Start = new Point();
+//			_SStoredPath2Start = new Point();
 		}
 		
 		
@@ -358,7 +403,7 @@ package sg.edu.smu.ksketch2.operators
 					else
 					{
 						if(point)
-							_cachedScale += point.x;
+							_cachedSigma += point.x;
 						
 						hasScale = true;
 					}
@@ -370,7 +415,7 @@ package sg.edu.smu.ksketch2.operators
 			var result:Matrix = new Matrix();
 			result.translate(-_object.center.x,-_object.center.y);
 			result.rotate(theta+_cachedTheta);
-			result.scale(sigma+_cachedScale, sigma+_cachedScale);
+			result.scale(sigma+_cachedSigma, sigma+_cachedSigma);
 			result.translate(_object.center.x, _object.center.y);
 			result.translate(x+_cachedX, y+_cachedY);
 			return result;	
@@ -522,7 +567,7 @@ package sg.edu.smu.ksketch2.operators
 			_cachedX = 0;
 			_cachedY = 0;
 			_cachedTheta = 0;
-			_cachedScale = 0;
+			_cachedSigma = 0;
 			
 			var currentProportion:Number = 1;
 			var point:KTimedPoint;
@@ -547,7 +592,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				point = currentKey.scalePath.find_Point(1, currentKey);
 				if(point)
-					_cachedScale += point.x;
+					_cachedSigma += point.x;
 				
 				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
@@ -565,22 +610,22 @@ package sg.edu.smu.ksketch2.operators
 		 * Updates the object during the transition.
 		 * 
 		 * @param time The target time.
-		 * @param dx The target x-position.
-		 * @param dy The target y-position.
-		 * @param dTheta The target rotation value.
-		 * @param dScale The target scaling value.
+		 * @param dx The x-position displacement from when the interaction began.
+		 * @param dy The y-position displacement from when the interaction began.
+		 * @param dTheta The rotation displacement from when the interaction began.
+		 * @param dScale The scaling displacement from when the interaction began.
 		 */
 		public function updateTransition(time:Number, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
 		{
 			var changeX:Number = dx - _transitionX;
 			var changeY:Number = dy - _transitionY;
 			var changeTheta:Number = dTheta - _transitionTheta;
-			var changeScale:Number = dScale - _transitionSigma;
+			var changeSigma:Number = dScale - _transitionSigma;
 			
-			_magX += Math.abs(dx - _transitionX);
-			_magY += Math.abs(dy - _transitionY);
-			_magTheta += Math.abs(dTheta - _transitionTheta);
-			_magSigma += Math.abs(dScale - _transitionSigma);
+			_magX += Math.abs(changeX);
+			_magY += Math.abs(changeY);
+			_magTheta += Math.abs(changeTheta);
+			_magSigma += Math.abs(changeSigma);
 			
 			_transitionX = dx;
 			_transitionY = dy;
@@ -625,50 +670,86 @@ package sg.edu.smu.ksketch2.operators
 			{
 				if(!_interpolationKey)
 					throw new Error("No Keys to interpolate!");
-				
+
 				//We need to interpolate the relevant keys during every update for interpolated transitions
-				if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
-					_interpolate(changeX, changeY, _interpolationKey, KSketch2.TRANSFORM_TRANSLATION, time);
-				if(Math.abs(_transitionTheta) > EPSILON)
-					_interpolate(changeTheta, 0, _interpolationKey, KSketch2.TRANSFORM_ROTATION, time);
-				if(Math.abs(_transitionSigma) > EPSILON)
-					_interpolate(changeScale, 0, _interpolationKey, KSketch2.TRANSFORM_SCALE, time);
-					
+				//dx:Number, dy:Number, time:Number, params:Dictionary
+				if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON)) {
+					_stretch(_transitionX, _transitionY, time, _stretchTransParams);
+					//_interpolate(changeX, changeY, time, _stretchTransParams);
+				}
+				if(Math.abs(_transitionTheta) > EPSILON) {
+					//_stretch(_transitionTheta, 0, time, _stretchRotParams);
+					_interpolate(changeTheta, 0, time, _stretchRotParams);
+				}
+				if(Math.abs(_transitionSigma) > EPSILON) {
+					//_stretch(_transitionSigma, 0, time, _stretchScaleParams);
+					_interpolate(changeSigma, 0, time, _stretchScaleParams);
+				}
+									
 				//if studymode kp2, then do Interpolation for next frame
 				if(studyMode == STUDYMODE_KP2)
 				{
-					var interpolatePassthrough:Boolean = false;
+					// *****************************************************************
+					// *****************************************************************
+					// *****************************************************************
+					// *****************************************************************
+					// *****************************************************************
+					// *****************************************************************
+					// *****************************************************************
+					// *****************************************************************
+					// *****************************************************************
+					// *****************************************************************
+					// *****************************************************************
 					
-					if(interpolationKeylist.length != 0)
-					{
-						for(var i:int = 0; i<interpolationKeylist.length; i++)
-						{
-							var tempKey:KSpatialKeyFrame = interpolationKeylist.getItemAt(i) as KSpatialKeyFrame;
-							interpolatePassthrough = tempKey.passthrough;
-							
-							if(!interpolatePassthrough)
-							{
-								if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
-									_interpolate(-changeX,-changeY, tempKey, KSketch2.TRANSFORM_TRANSLATION, tempKey.time);
-								if(Math.abs(_transitionTheta) > EPSILON)
-									_interpolate(-changeTheta, 0, tempKey, KSketch2.TRANSFORM_ROTATION, tempKey.time);
-								if(Math.abs(_transitionSigma) > EPSILON)
-									_interpolate(-changeScale, 0, tempKey, KSketch2.TRANSFORM_SCALE, tempKey.time);	
-								break;
-							}
+					if (_nextInterpolationKey) {
+						if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON)) {
+							_stretch(-_transitionX, -_transitionY, time, _stretchTrans2Params);
+							//_interpolate(-changeX,-changeY, time, _stretchTrans2Params);
 						}
+						if(Math.abs(_transitionTheta) > EPSILON) {
+							//_stretch(-_transitionTheta, 0, time, _stretchRot2Params);
+							_interpolate(-changeTheta, 0, time, _stretchRot2Params);
+						}
+						if(Math.abs(_transitionSigma) > EPSILON) {
+							//_stretch(-_transitionSigma, 0, time, _stretchScale2Params);
+							_interpolate(-changeSigma, 0, time, _stretchScale2Params);
+						}						
 					}
+					
+//					var interpolatePassthrough:Boolean = false;
+//					if(interpolationKeylist.length != 0)
+//					{
+//						for(var i:int = 0; i<interpolationKeylist.length; i++)
+//						{
+//							var tempKey:KSpatialKeyFrame = interpolationKeylist.getItemAt(i) as KSpatialKeyFrame;
+//							interpolatePassthrough = tempKey.passthrough;
+//							
+//							if(!interpolatePassthrough) 
+//							{
+//								if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON)) {
+//									_interpolate(-changeX,-changeY, tempKey, KSketch2.TRANSFORM_TRANSLATION, tempKey.time);
+//								}
+//								if(Math.abs(_transitionTheta) > EPSILON) {
+//									_interpolate(-changeTheta, 0, tempKey, KSketch2.TRANSFORM_ROTATION, tempKey.time);
+//								}
+//								if(Math.abs(_transitionSigma) > EPSILON) {
+//									_interpolate(-changeSigma, 0, tempKey, KSketch2.TRANSFORM_SCALE, tempKey.time);	
+//								}
+//								break;
+//							}
+//						}
+//					}
 				}	
 				else if(studyMode != STUDYMODE_P)
 				{
 					if(_nextInterpolationKey)
 					{
 						if((Math.abs(_transitionX) > EPSILON) || (Math.abs(_transitionY) > EPSILON))
-							_interpolate(-changeX,-changeY, _nextInterpolationKey, KSketch2.TRANSFORM_TRANSLATION, _nextInterpolationKey.time);
+							_interpolate(-changeX,-changeY, time, _stretchTrans2Params);
 						if(Math.abs(_transitionTheta) > EPSILON)
-							_interpolate(-changeTheta, 0, _nextInterpolationKey, KSketch2.TRANSFORM_ROTATION, _nextInterpolationKey.time);
+							_interpolate(-changeTheta, 0, time, _stretchRot2Params);
 						if(Math.abs(_transitionSigma) > EPSILON)
-							_interpolate(-changeScale, 0, _nextInterpolationKey, KSketch2.TRANSFORM_SCALE, _nextInterpolationKey.time);	
+							_interpolate(-changeSigma, 0, time, _stretchScale2Params);	
 					}
 				}
 			}
@@ -716,6 +797,10 @@ package sg.edu.smu.ksketch2.operators
 		
 		private function _beginTransition_process_interpolation(time:Number, op:KCompositeOperation):void
 		{
+			var tmpCurrent:KSpatialKeyFrame, tmpNext:KSpatialKeyFrame, tmpKeyVec:Vector.<KSpatialKeyFrame>, tmpDict:Dictionary;
+			var point:KTimedPoint, endKey:KSpatialKeyFrame, afterInerpTime:Boolean, key:Object; 
+			var x:Number, y:Number, theta:Number, sigma:Number;
+			
 			if(_transitionType == KSketch2.TRANSITION_INTERPOLATED)
 			{
 				//For interpolation, there will always be a key inserted at given time
@@ -724,59 +809,268 @@ package sg.edu.smu.ksketch2.operators
 				{
 					insertBlankKeyFrame(time, op, false);
 				}
+				trace("_beginTransition_process_interpolation");
+				trace(_refFrame);
 				//Then we grab that key
 				_interpolationKey = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
-				
-				//Then we deal with the interpolation
-				if(_interpolationKey.time == time)
-				{
-					_nextInterpolationKey = _interpolationKey.next as KSpatialKeyFrame;
-					
-					//Only if study mode is KP2, we need to get all the keys after the selected time
-					if(studyMode == STUDYMODE_KP2)
-					{
-						var tempCurrent:KSpatialKeyFrame = _interpolationKey;
-						var tempNext:KSpatialKeyFrame = _nextInterpolationKey;
-						
-						interpolationKeylist.removeAll();
-						while(tempNext)
-						{
-							interpolationKeylist.addItem(tempNext);
-							tempCurrent = tempNext;
-							tempNext = tempCurrent.next as KSpatialKeyFrame;
-						}
-					}
-					
-					if(_nextInterpolationKey)
-					{
-						_TStoredPath2 = _nextInterpolationKey.translatePath.clone();
-						_RStoredPath2 = _nextInterpolationKey.rotatePath.clone();
-						_SStoredPath2 = _nextInterpolationKey.scalePath.clone();
-					}
-				}
-				else
-					_nextInterpolationKey = null;
+				trace("_interpolationKey.time = " + _interpolationKey.time);
 				
 				_TStoredPath = _interpolationKey.translatePath.clone();
 				_RStoredPath = _interpolationKey.rotatePath.clone();
 				_SStoredPath = _interpolationKey.scalePath.clone();
+				
+				// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
+				//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
+				//         sX:Number, sY:Number, eX:Number, eY:Number, dirty:Boolean
+				_stretchTransParams["type"] = KSketch2.TRANSFORM_TRANSLATION;		
+				tmpKeyVec = new Vector.<KSpatialKeyFrame>();
+				tmpKeyVec.push(_interpolationKey);
+				_stretchTransParams["keys"] = tmpKeyVec;
+				tmpDict = new Dictionary();
+				tmpDict[_interpolationKey] = _TStoredPath;
+				_stretchTransParams["sourcePaths"] = tmpDict;
+				tmpDict = new Dictionary();
+				tmpDict[_interpolationKey] = _interpolationKey.translatePath;
+				_stretchTransParams["targetPaths"] = tmpDict;
+				_stretchTransParams["startPoints"] = new Dictionary();
+				_stretchTransParams["dirty"] = false;
+
+				_stretchRotParams["type"] = KSketch2.TRANSFORM_ROTATION;	
+				tmpKeyVec = new Vector.<KSpatialKeyFrame>();
+				tmpKeyVec.push(_interpolationKey);
+				_stretchRotParams["keys"] = tmpKeyVec;
+				tmpDict = new Dictionary();
+				tmpDict[_interpolationKey] = _RStoredPath;
+				_stretchRotParams["sourcePaths"] = tmpDict;
+				tmpDict = new Dictionary();
+				tmpDict[_interpolationKey] = _interpolationKey.rotatePath;
+				_stretchRotParams["targetPaths"] = tmpDict;
+				_stretchRotParams["startPoints"] = new Dictionary();
+				_stretchRotParams["dirty"] = false;
+				
+				_stretchScaleParams["type"] = KSketch2.TRANSFORM_SCALE;			
+				tmpKeyVec = new Vector.<KSpatialKeyFrame>();
+				tmpKeyVec.push(_interpolationKey);
+				_stretchScaleParams["keys"] = tmpKeyVec;
+				tmpDict = new Dictionary();
+				tmpDict[_interpolationKey] = _SStoredPath;
+				_stretchScaleParams["sourcePaths"] = tmpDict;
+				tmpDict = new Dictionary();
+				tmpDict[_interpolationKey] = _interpolationKey.scalePath;
+				_stretchScaleParams["targetPaths"] = tmpDict;
+				_stretchScaleParams["startPoints"] = new Dictionary();
+				_stretchScaleParams["dirty"] = false;
+
+
+				_nextInterpolationKey = null;
+				interpolationKeylist.removeAll();
+				if(_interpolationKey.time == time)
+				{
+					//Then we deal with the interpolation
+					
+					//Only if study mode is KP2, we need to get all the keys after the selected time
+					if(studyMode == STUDYMODE_KP2)
+					{
+						tmpCurrent = _interpolationKey;
+						tmpNext = tmpCurrent.next as KSpatialKeyFrame;
+						
+						trace("interpolationKeylist times");
+						while(tmpNext)
+						{
+							interpolationKeylist.addItem(tmpNext);
+							trace(tmpNext.time);
+							if (!_nextInterpolationKey) {
+								if (!tmpNext.passthrough) {
+									_nextInterpolationKey = tmpNext;
+								}
+							}
+							tmpCurrent = tmpNext;
+							tmpNext = tmpCurrent.next as KSpatialKeyFrame;
+						}
+					}
+					
+					_nextInterpolationKey ? trace("_nextInterpolationKey.time = " + _nextInterpolationKey.time): null;
+					
+				}
+				
+				if(_interpolationKey)
+				{
+					x = 0;
+					y = 0;
+					theta = 0;
+					sigma = 1;
+					
+					afterInerpTime = false;
+					endKey = _nextInterpolationKey ? _nextInterpolationKey.next as KSpatialKeyFrame : _interpolationKey.next as KSpatialKeyFrame;
+					tmpCurrent = _refFrame.head as KSpatialKeyFrame;
+					
+					// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
+					//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
+					//         sX:Number, sY:Number, eX:Number, eY:Number, dirty:Boolean
+					while(tmpCurrent !== endKey) {
+						
+						if (tmpCurrent === _interpolationKey) {
+							// When the first key is found, set the start times
+							_stretchTransParams["sX"] = x;
+							_stretchTransParams["sY"] = y;
+							tmpDict = _stretchTransParams["startPoints"] as Dictionary;
+							tmpDict[_interpolationKey] = new Point(x, y);
+
+							_stretchRotParams["sX"] = theta;
+							_stretchRotParams["sY"] = 0;
+							tmpDict = _stretchRotParams["startPoints"] as Dictionary;
+							tmpDict[_interpolationKey] = new Point(theta, 0);
+
+							_stretchScaleParams["sX"] = sigma;
+							_stretchScaleParams["sY"] = 0;
+							tmpDict = _stretchScaleParams["startPoints"] as Dictionary;
+							tmpDict[_interpolationKey] = new Point(sigma, 0);
+							
+							afterInerpTime = true;
+						} else if (afterInerpTime) {
+							tmpKeyVec = _stretchTrans2Params["keys"] as Vector.<KSpatialKeyFrame>;
+							tmpKeyVec.push(tmpCurrent);
+							tmpKeyVec = _stretchRot2Params["keys"] as Vector.<KSpatialKeyFrame>;
+							tmpKeyVec.push(tmpCurrent);
+							tmpKeyVec = _stretchScale2Params["keys"] as Vector.<KSpatialKeyFrame>;
+							tmpKeyVec.push(tmpCurrent);
+							
+							tmpDict = _stretchTrans2Params["sourcePaths"] as Dictionary;
+							tmpDict[tmpCurrent] = tmpCurrent.translatePath.clone();
+							tmpDict = _stretchRot2Params["sourcePaths"] as Dictionary;
+							tmpDict[tmpCurrent] = tmpCurrent.rotatePath.clone();
+							tmpDict = _stretchScale2Params["sourcePaths"] as Dictionary;
+							tmpDict[tmpCurrent] = tmpCurrent.scalePath.clone();
+							
+							tmpDict = _stretchTrans2Params["targetPaths"] as Dictionary;
+							tmpDict[tmpCurrent] = tmpCurrent.translatePath;
+							tmpDict = _stretchRot2Params["targetPaths"] as Dictionary;
+							tmpDict[tmpCurrent] = tmpCurrent.rotatePath;
+							tmpDict = _stretchScale2Params["targetPaths"] as Dictionary;
+							tmpDict[tmpCurrent] = tmpCurrent.scalePath;
+							
+							tmpDict = _stretchTrans2Params["startPoints"] as Dictionary;
+							tmpDict[tmpCurrent] = new Point(x, y);
+							tmpDict = _stretchRot2Params["startPoints"] as Dictionary;
+							tmpDict[tmpCurrent] = new Point(theta, 0);
+							tmpDict = _stretchScale2Params["startPoints"] as Dictionary;
+							tmpDict[tmpCurrent] = new Point(sigma, 0);	
+							
+							_stretchTrans2Params["dirty"] = false;
+							_stretchRot2Params["dirty"] = false;
+							_stretchScale2Params["dirty"] = false;
+						}
+						
+						// Update the x, y, theta, and sigma accumulators.
+						point = tmpCurrent.translatePath.find_Point(1, tmpCurrent);
+						if(point) {
+							x += point.x;
+							y += point.y;
+						}
+						point = tmpCurrent.rotatePath.find_Point(1, tmpCurrent);
+						if(point) {
+							theta += point.x;
+						}
+						point = tmpCurrent.scalePath.find_Point(1, tmpCurrent);
+						if(point) {
+							sigma += point.x;
+						}
+
+						if (tmpCurrent === _interpolationKey) {
+							// If this is the _interpolationKey, set end times for the stretch before the current time.
+							_stretchTransParams["eX"] = x;
+							_stretchTransParams["eY"] = y;							
+							_stretchRotParams["eX"] = theta;
+							_stretchRotParams["eY"] = 0;
+							_stretchScaleParams["eX"] = sigma;
+							_stretchScaleParams["eY"] = 0;
+							
+							if (_nextInterpolationKey) {
+								_stretchTrans2Params["type"] = KSketch2.TRANSFORM_TRANSLATION;	
+								_stretchTrans2Params["keys"] = new Vector.<KSpatialKeyFrame>();
+								_stretchTrans2Params["sourcePaths"] = new Dictionary();
+								_stretchTrans2Params["targetPaths"] = new Dictionary();
+								_stretchTrans2Params["startPoints"] = new Dictionary();
+								_stretchTrans2Params["sX"] = x;
+								_stretchTrans2Params["sY"] = y;
+
+								_stretchRot2Params["type"] = KSketch2.TRANSFORM_ROTATION;
+								_stretchRot2Params["keys"] = new Vector.<KSpatialKeyFrame>();
+								_stretchRot2Params["sourcePaths"] = new Dictionary();
+								_stretchRot2Params["targetPaths"] = new Dictionary();
+								_stretchRot2Params["startPoints"] = new Dictionary();
+								_stretchRot2Params["sX"] = x;
+								_stretchRot2Params["sY"] = y;
+
+								_stretchScale2Params["type"] = KSketch2.TRANSFORM_SCALE;
+								_stretchScale2Params["keys"] = new Vector.<KSpatialKeyFrame>();
+								_stretchScale2Params["sourcePaths"] = new Dictionary();
+								_stretchScale2Params["targetPaths"] = new Dictionary();
+								_stretchScale2Params["startPoints"] = new Dictionary();
+								_stretchScale2Params["sX"] = x;
+								_stretchScale2Params["sY"] = y;
+							} else {
+								for (key in _stretchTrans2Params) delete _stretchTrans2Params[key];
+								for (key in _stretchRot2Params) delete _stretchRot2Params[key];
+								for (key in _stretchScale2Params) delete _stretchScale2Params[key];
+							}
+						} else if (afterInerpTime) {							
+							if (tmpCurrent === _nextInterpolationKey) {
+								// If this is the _nextInterpolationKey, set end times for the stretch after the current time.
+								_stretchTrans2Params["eX"] = x;
+								_stretchTrans2Params["eY"] = y;							
+								_stretchRot2Params["eX"] = theta;
+								_stretchRot2Params["eY"] = 0;
+								_stretchScale2Params["eX"] = sigma;
+								_stretchScale2Params["eY"] = 0;
+							}
+						}
+
+						tmpCurrent = tmpCurrent.next as KSpatialKeyFrame;
+					}
+				}
 			}
 		}
 
 		private function _endTransition_process_interpolation(time:Number, op:KCompositeOperation):void
 		{
+			var i:uint, keys:Vector.<KSpatialKeyFrame>, dict:Dictionary;
 			if(_transitionType == KSketch2.TRANSITION_INTERPOLATED)
 			{
 				//original implementation
-				op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.translatePath, _TStoredPath, KSketch2.TRANSFORM_TRANSLATION));
-				op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.rotatePath, _RStoredPath, KSketch2.TRANSFORM_ROTATION));
-				op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.scalePath, _SStoredPath, KSketch2.TRANSFORM_SCALE));
+				if (_stretchTransParams["dirty"] as Boolean === true) 
+					op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.translatePath, _TStoredPath, KSketch2.TRANSFORM_TRANSLATION));
+				if (_stretchRotParams["dirty"] as Boolean === true) 
+					op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.rotatePath, _RStoredPath, KSketch2.TRANSFORM_ROTATION));
+				if (_stretchScaleParams["dirty"] as Boolean === true) 
+					op.addOperation(new KReplacePathOperation(_interpolationKey, _interpolationKey.scalePath, _SStoredPath, KSketch2.TRANSFORM_SCALE));
 				
 				if(_nextInterpolationKey)
 				{
-					op.addOperation(new KReplacePathOperation(_nextInterpolationKey, _nextInterpolationKey.translatePath, _TStoredPath2, KSketch2.TRANSFORM_TRANSLATION));
-					op.addOperation(new KReplacePathOperation(_nextInterpolationKey, _nextInterpolationKey.rotatePath, _RStoredPath2, KSketch2.TRANSFORM_ROTATION));
-					op.addOperation(new KReplacePathOperation(_nextInterpolationKey, _nextInterpolationKey.scalePath, _SStoredPath2, KSketch2.TRANSFORM_SCALE));
+					if (_stretchTrans2Params["dirty"] as Boolean === true) {
+						keys = _stretchTrans2Params["keys"] as Vector.<KSpatialKeyFrame>;
+						for (i = 0; i < keys.length; i++) {
+							dict = _stretchTrans2Params["sourcePaths"] as Dictionary;
+							op.addOperation(new KReplacePathOperation(keys[i], keys[i].translatePath, 
+								dict[keys[i]] as KPath, KSketch2.TRANSFORM_TRANSLATION));
+						}
+					}
+					if (_stretchRot2Params["dirty"] as Boolean === true) {
+						keys = _stretchRot2Params["keys"] as Vector.<KSpatialKeyFrame>;
+						for (i = 0; i < keys.length; i++) {
+							dict = _stretchRot2Params["sourcePaths"] as Dictionary;
+							op.addOperation(new KReplacePathOperation(keys[i], keys[i].rotatePath, 
+								dict[keys[i]] as KPath, KSketch2.TRANSFORM_ROTATION));
+						}
+					}
+					if (_stretchScale2Params["dirty"] as Boolean === true) {
+						keys = _stretchScale2Params["keys"] as Vector.<KSpatialKeyFrame>;
+						for (i = 0; i < keys.length; i++) {
+							dict = _stretchScale2Params["sourcePaths"] as Dictionary;
+							op.addOperation(new KReplacePathOperation(keys[i], keys[i].scalePath, 
+								dict[keys[i]] as KPath, KSketch2.TRANSFORM_SCALE));
+						}
+					}
 				}
 			}
 		}
@@ -839,81 +1133,379 @@ package sg.edu.smu.ksketch2.operators
 			_clearEmptyKeys(op);
 		}
 		
+		//*********************************************************************************************************
+		//*********************************************************************************************************
+		//*********************************************************************************************************
+		//*********************************************************************************************************
+		//*********************************************************************************************************
+		//*********************************************************************************************************
+		//*********************************************************************************************************
+		//*********************************************************************************************************
+		//*********************************************************************************************************
+		//*********************************************************************************************************
+		
+		
+//		private function _updateStretchParameters(orig:KPath, dx:Number, dy:Number, transformType:int, params:Point, vec:Point):void
+//		{
+//			var vX1:Number, vY1:Number, vX2:Number, vY2:Number;
+//			var mag1:Number, mag2:Number, rot1:Number, rot2:Number;
+//			var m:Number, theta:Number, vX:Number, vY:Number;
+//			
+//			if (orig && 2 <= orig.length) {
+//				// 2 or more points. Return magnitude and rotation for stretching.
+//				switch(transformType)
+//				{
+//					case KSketch2.TRANSFORM_TRANSLATION:
+//						vX1 = orig.points[orig.length - 1].x;
+//						vY1 = orig.points[orig.length - 1].y;
+//						vX2 = vX1 + dx;
+//						vY2 = vY1 + dy;
+//						mag1 = Math.sqrt(vX1*vX1 + vY1*vY1);
+//						mag2 = Math.sqrt(vX2*vX2 + vY2*vY2);
+//						rot1 = Math.atan2(vY1, vX1);
+//						rot2 = Math.atan2(vY2, vX2);
+//
+//						m = mag2 / mag1;
+//
+//						theta = rot2 - rot1;
+//						if (Math.PI < theta)
+//							theta = -Math.PI + (theta - Math.PI);
+//						if (theta <= -Math.PI)
+//							theta = Math.PI + (theta + Math.PI);
+//						
+//						vX = vX2/mag2;
+//						vY = vY2/mag2;
+//
+//						break;
+//					case KSketch2.TRANSFORM_ROTATION:
+//					case KSketch2.TRANSFORM_SCALE:
+//						mag1 = orig.points[orig.length - 1].x;
+//						mag2 = mag1 + dx;
+//						
+//						m = mag2 / mag1;
+//						theta = 0;
+//						vX = 1;
+//						vY = 0;
+//						break;
+//					default:
+//						throw new Error("Unable to replace path because an unknown transform type is given");
+//				}
+//			} else {
+//				// Less than 2 points. Set params to empty values and set vec to (dx, dy).
+//				m = 1;
+//				theta = 0;
+//				vX = dx;
+//				vY = dy;
+//			}
+//			trace("stretch parameters: mag=" + params.x + ", rot=" + params.y); 	
+//			
+//			params.x = m;
+//			params.y = theta;
+//			vec.x = vX;
+//			vec.y = vY;
+//		}
+
+		
+		/**
+		 * scales and rotates a path Adds a dx, dy interpolation to targetKey
+		 * target key should be a key at or before time;
+		 */
+		private function _stretch(dx:Number, dy:Number, time:Number, params:Dictionary):void
+		{			
+			// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
+			//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
+			//         sX:Number, sY:Number, eX:Number, eY:Number
+
+			var vX1:Number, vY1:Number, vX2:Number, vY2:Number;
+			var mag1:Number, mag2:Number, rot1:Number, rot2:Number;
+			var mag:Number, theta:Number, vX:Number, vY:Number;
+			var i:uint, j:uint, ptX:Number, ptY:Number, projectionLen:Number, proportion:Number;
+			var targetKey:KSpatialKeyFrame, sourcePath:KPath, targetPath:KPath, startPoint:Point;
+			var type:int = params["type"] as int;
+			var targetKeys:Vector.<KSpatialKeyFrame> = params["keys"] as Vector.<KSpatialKeyFrame>;
+			var sourcePaths:Dictionary = params["sourcePaths"] as Dictionary;
+			var targetPaths:Dictionary = params["targetPaths"] as Dictionary; 
+			var startPoints:Dictionary = params["startPoints"] as Dictionary;
+			var sX:Number = params["sX"] as Number;
+			var sY:Number = params["sY"] as Number;
+			var eX:Number = params["eX"] as Number;
+			var eY:Number = params["eY"] as Number;
+			var nonEmptyPaths:Boolean = false;
+			var startTime:int = 0;
+			var totalDuration:Number = 0;
+			
+			// Check to make sure that some paths have points
+			for (j=0; j<targetKeys.length; j++) {
+				targetKey = targetKeys[j] as KSpatialKeyFrame;
+				sourcePath = sourcePaths[targetKey] as KPath;
+				if (sourcePath && 2 <= sourcePath.length) {
+					nonEmptyPaths = true;
+					break;
+				}
+			}
+			
+			if (targetKeys.length > 0) {
+				totalDuration = targetKeys[targetKeys.length-1].time - targetKeys[0].startTime;
+			}
+			
+			if (nonEmptyPaths) {
+				// 2 or more points. Return magnitude and rotation for stretching.
+				switch(type)
+				{
+					case KSketch2.TRANSFORM_TRANSLATION:
+						vX1 = eX - sX;
+						vY1 = eY - sY;
+						vX2 = vX1 + dx;
+						vY2 = vY1 + dy;
+						mag1 = Math.sqrt(vX1*vX1 + vY1*vY1);
+						mag2 = Math.sqrt(vX2*vX2 + vY2*vY2);
+						rot1 = Math.atan2(vY1, vX1);
+						rot2 = Math.atan2(vY2, vX2);
+						
+						mag = mag2 / mag1;
+						
+						theta = rot2 - rot1;
+						if (Math.PI < theta)
+							theta = -Math.PI + (theta - Math.PI);
+						if (theta <= -Math.PI)
+							theta = Math.PI + (theta + Math.PI);
+						
+						vX = vX2/mag2;
+						vY = vY2/mag2;
+						
+						break;
+					case KSketch2.TRANSFORM_ROTATION:
+					case KSketch2.TRANSFORM_SCALE:
+						mag1 = eX - sX;
+						mag2 = mag1 + dx;
+						
+						mag = mag2 / mag1;
+						theta = 0;
+						vX = 1;
+						vY = 0;
+						break;
+					default:
+						throw new Error("Unable to replace path because an unknown transform type is given");
+				}
+			} else {
+				// Less than 2 points. Set params to empty values and set vec to (dx, dy).
+				mag = 1;
+				theta = 0;
+				vX = dx;
+				vY = dy;
+			}
+			
+//			_traceParams(params);
+//			trace("     mag:" + mag + " rot:" + theta + " vX:" + vX + " vY:" + vY); 	
+
+			
+			for (j=0; j<targetKeys.length; j++) {
+				targetKey = targetKeys[j] as KSpatialKeyFrame;
+				sourcePath = sourcePaths[targetKey] as KPath;
+				targetPath = targetPaths[targetKey] as KPath;
+				startPoint = startPoints[targetKey] as Point;
+				proportion = (totalDuration === 0) ? 1 : (targetKey.time - targetKey.startTime)/totalDuration;
+				
+				if((time > targetKey.time) && (KSketch2.studyMode != KSketch2.STUDYMODE_P))
+					throw new Error("Unable to stretch a key if the stretch time is greater than targetKey's time");
+				
+				if(targetPath.length < 2) {
+					//Case 1: Key frames without transition paths of required type
+					if(targetPath.length != 0)
+						throw new Error("Someone created a path with 1 point somehow! Better check out the path functions");
+					
+					//Provide the empty path with the positive interpolation first
+					targetPath.push(0,0,0);
+					targetPath.push(vX * proportion, vY * proportion, targetKey.duration);
+				} else if (sourcePath.length < 2) {
+					//Case 2: Empty sourcePath. Case 1 becomes this after the first update.
+					targetPath.points[targetPath.length - 1].x = vX * proportion;
+					targetPath.points[targetPath.length - 1].y = vY * proportion;
+				} else {
+					//Case 3: Transform sourcePath as indicated by params.
+					if(targetPath.length != sourcePath.length)
+						throw new Error("Target Path and SourcePath are not the same length!");
+
+					for (i=1; i < sourcePath.length; i++) {
+						
+						// Set ptX and ptY, handling rotation, if any.
+						if (theta == 0) {
+							ptX = sourcePath.points[i].x;
+							ptY = sourcePath.points[i].y;
+						} else {
+							ptX = sourcePath.points[i].x*Math.cos(theta) - sourcePath.points[i].y*Math.sin(theta); 
+							ptY = sourcePath.points[i].x*Math.sin(theta) + sourcePath.points[i].y*Math.cos(theta); 
+						}
+						
+						// Compute the length of the projection on the vector. 
+						projectionLen = ptX * vX + ptY * vY;
+						ptX = ptX + (vX * projectionLen * (mag - 1));
+						ptY = ptY + (vY * projectionLen * (mag - 1));
+						
+						targetPath.points[i].x = ptX;
+						targetPath.points[i].y = ptY;
+					}
+				}
+				
+//				trace("Time=" + targetKey.time);
+//				trace("Source Path");
+//				sourcePath.debug();
+//				trace("Target Path");
+//				targetPath.debug();
+			}	
+			
+			params["dirty"] = true;
+		}
+		
+		// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
+		//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
+		//         sX:Number, sY:Number, eX:Number, eY:Number, dirty:Boolean
+		private function _traceParams(params:Dictionary):void
+		{
+			var type:int = params["type"] as int;
+			var keys:Vector.<KSpatialKeyFrame> = params["keys"] as Vector.<KSpatialKeyFrame>;
+			var sourcePaths:Dictionary = params["sourcePaths"] as Dictionary;
+			var targetPaths:Dictionary = params["targetPaths"] as Dictionary;
+			var startPoints:Dictionary = params["startPoints"] as Dictionary;
+			var sX:Number = params["sX"] as Number;
+			var sY:Number = params["sY"] as Number;
+			var eX:Number = params["eX"] as Number;
+			var eY:Number = params["eY"] as Number;
+			var dirty:Boolean = params["dirty"] as Boolean;
+			var keyStrings:Array = new Array();
+			var i:uint, sourcePath:KPath, targetPath:KPath, startPoint:Point;
+			
+			var typeString:String;
+			switch(type)
+			{
+				case KSketch2.TRANSFORM_TRANSLATION:
+					typeString = "Translation";
+					break;
+				case KSketch2.TRANSFORM_ROTATION:
+					typeString = "Rotation";
+					break;
+				case KSketch2.TRANSFORM_SCALE:
+					typeString = "Scale";
+					break;
+				default:
+					typeString = "Unknown";
+			}
+			
+			trace(typeString + " params   dirty:" + (dirty ? "true " : "false ") + "sX:" + sX + " sY:" + sY + " eX:" + eX + " eY:" + eY);
+			for (i=0; i < keys.length; i++) {
+				sourcePath = sourcePaths[keys[i]] as KPath; 
+				targetPath = targetPaths[keys[i]] as KPath; 
+				startPoint = startPoints[keys[i]] as Point; 
+				keyStrings.push("  [" + keys[i].time + "   source:" + (sourcePath ? sourcePath.length + "pts " : "null ") +
+					"target:" + (targetPath ? targetPath.length + "pts " : "null ") + 
+					"start:" + (startPoint ? startPoint.x + "," + startPoint.y: "null") + "]");
+			}
+			trace("  ", keyStrings);
+		}
+
 		/**
 		 * Adds a dx, dy interpolation to targetKey
 		 * target key should be a key at or before time;
 		 */
-		private function _interpolate(dx:Number, dy:Number, targetKey:KSpatialKeyFrame, 
-									  transformType:int, time:Number):void
+		private function _interpolate(dx:Number, dy:Number, time:Number, params:Dictionary):void
 		{
-			if(!targetKey)
+			// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
+			//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
+			//         sX:Number, sY:Number, eX:Number, eY:Number
+			_traceParams(params);
+
+			var type:int = params["type"] as int;
+			var keys:Vector.<KSpatialKeyFrame> = params["keys"] as Vector.<KSpatialKeyFrame>;
+			var sourcePaths:Dictionary = params["sourcePaths"] as Dictionary;
+			var targetPaths:Dictionary = params["targetPaths"] as Dictionary;
+			var startPoints:Dictionary = params["startPoints"] as Dictionary;
+			var sX:Number = params["sX"] as Number;
+			var sY:Number = params["sY"] as Number;
+			var eX:Number = params["eX"] as Number;
+			var eY:Number = params["eY"] as Number;
+			var i:uint, targetKey:KSpatialKeyFrame, targetPath:KPath;
+			var totalDuration:Number, durationProportion:Number, proportionElapsed:Number;
+
+			if(keys.length === 0)
 				throw new Error("No Key to interpolate!");
-			
-			if((time > targetKey.time) && (KSketch2.studyMode != KSketch2.STUDYMODE_P))
-				throw new Error("Unable to interpolate a key if the interpolation time is greater than targetKey's time");
-			
-			var targetPath:KPath;
-			
-			switch(transformType)
-			{
-				case KSketch2.TRANSFORM_TRANSLATION:
-					targetPath = targetKey.translatePath;
-					break;
-				case KSketch2.TRANSFORM_ROTATION:
-					targetPath = targetKey.rotatePath;
-					break;
-				case KSketch2.TRANSFORM_SCALE:
-					targetPath = targetKey.scalePath;
-					break;
-				default:
-					throw new Error("Unable to replace path because an unknown transform type is given");
-			}
-			
-			var proportionElapsed:Number;
-			
-			if(targetKey.duration == 0)
-				proportionElapsed = 1;
-			else
-			{
-				proportionElapsed = (time-targetKey.startTime)/targetKey.duration;
+			totalDuration = keys[keys.length-1].time - keys[0].startTime;
+
+			for (i=0; i<keys.length; i++) {
+				targetKey = keys[i];
+				targetPath = targetPaths[targetKey] as KPath;
+				durationProportion = totalDuration === 0 ? 1 : (targetKey.time - targetKey.startTime)/totalDuration;
 				
-				if(proportionElapsed > 1)
-					proportionElapsed = 1;
-			}
-			
-			var unInterpolate:Boolean = false;
-			//var oldPath:KPath = targetPath.clone();
-			
-			//Case 1
-			//Key frames without transition paths of required type
-			if(targetPath.length < 2)
-			{
-				if(targetPath.length != 0)
-					throw new Error("Someone created a path with 1 point somehow! Better check out the path functions");
+				if((time > targetKey.time) && (KSketch2.studyMode != KSketch2.STUDYMODE_P))
+					throw new Error("Unable to interpolate a key if the interpolation time is greater than targetKey's time");
 				
-				//Provide the empty path with the positive interpolation first
-				targetPath.push(0,0,0);
-				targetPath.push(dx,dy,targetKey.duration * proportionElapsed);
-				
-				//If the interpolation is performed in the middle of a key, "uninterpolate" it to 0 interpolation
-				if(time != targetKey.time)
+				switch(type)
 				{
-					targetPath.push(dx, dy, targetKey.duration);
+					case KSketch2.TRANSFORM_TRANSLATION:
+						targetPath = targetKey.translatePath;
+						break;
+					case KSketch2.TRANSFORM_ROTATION:
+						targetPath = targetKey.rotatePath;
+						break;
+					case KSketch2.TRANSFORM_SCALE:
+						targetPath = targetKey.scalePath;
+						break;
+					default:
+						throw new Error("Unable to replace path because an unknown transform type is given");
 				}
 				
-				//Should fill the paths with points here
-				//KPathProcessing.normalisePathDensity(targetPath);
-			}
-			else
-			{
-				if(targetKey.time == time) //Case 2:interpolate at key time
-					KPathProcessing.interpolateSpan(targetPath,0,proportionElapsed,dx, dy);
-				else	//case 3:interpolate between two keys
-					KPathProcessing.interpolateSpan(targetPath,0,proportionElapsed,dx, dy);
 				
-				if (targetPath == targetKey.rotatePath)
-					KPathProcessing.limitSegmentLength(targetPath, MAX_ROTATE_STEP);
-			}	
+//				if(targetKey.duration == 0) {
+//					proportionElapsed = 1;
+//				} else{
+//					proportionElapsed = (time-targetKey.startTime)/targetKey.duration;
+//					
+//					if(proportionElapsed > 1)
+//						proportionElapsed = 1;
+//				}	
+				// RCDavis replaced this, because it we now always insert key frames at movement points. 
+				proportionElapsed = 1;
+				
+				//var unInterpolate:Boolean = false;
+				//var oldPath:KPath = targetPath.clone();
+				
+				//Case 1
+				//Key frames without transition paths of required type
+				if(targetPath.length < 2)
+				{
+					if(targetPath.length != 0)
+						throw new Error("Someone created a path with 1 point somehow! Better check out the path functions");
+					
+					//Provide the empty path with the positive interpolation first
+					targetPath.push(0,0,0);
+					targetPath.push(dx * durationProportion, dy * durationProportion, targetKey.duration * proportionElapsed);
+					
+					//If the interpolation is performed in the middle of a key, "uninterpolate" it to 0 interpolation
+//					if(time != targetKey.time)
+//					{
+//						targetPath.push(dx, dy, targetKey.duration);
+//					}
+					
+					//Should fill the paths with points here
+					//KPathProcessing.normalisePathDensity(targetPath);
+				}
+				else
+				{
+					if(targetKey.time == time) //Case 2:interpolate at key time
+						KPathProcessing.interpolateSpan(targetPath, 0, proportionElapsed,
+							dx * durationProportion, dy * durationProportion);
+					else	//case 3:interpolate between two keys
+						KPathProcessing.interpolateSpan(targetPath, 0, proportionElapsed,
+							dx * durationProportion, dy * durationProportion);
+					
+					if (targetPath == targetKey.rotatePath)
+						KPathProcessing.limitSegmentLength(targetPath, MAX_ROTATE_STEP);
+				}	
+				
+				trace("Time=" + targetKey.time);
+				trace("Target Path");
+				targetPath.debug();
+			}
+			params["dirty"] = true;
 		}
 		
 		/**

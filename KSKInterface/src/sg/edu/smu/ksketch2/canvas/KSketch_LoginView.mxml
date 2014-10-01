@@ -186,7 +186,6 @@
 			public function ParseJSONObject(event:ResultEvent):void
 			{
 				var rawData:String = String(event.result);
-				trace("Retrieved data: " + rawData);
 				var obj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 				
 				//check if user data does not exist
@@ -196,7 +195,8 @@
 					// save it to data property
 					var kUser:KSketch_User = new KSketch_User(obj);
 					userData.kUser = kUser;
-							
+					userData.listSketches = "";	
+					userData.resolveConflict = 1;
 					_isLoggedIn = true;
 					
 					navigator.pushView(KSketch_HomeView, userData);

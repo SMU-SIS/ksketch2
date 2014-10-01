@@ -58,7 +58,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var tempArr:Array = (sketchObj.entities as Array);
 			if(tempArr.length > 0)
 			{
-				var newTempArr:ArrayCollection = _fileControl.convertArrayToArrayCollection(tempArr);
+				var newTempArr:ArrayCollection = new ArrayCollection(tempArr);
 				for each(var tempObj:Object in newTempArr)
 				{
 					tempObj = KWebData.convertWebObjForMobile(tempObj);

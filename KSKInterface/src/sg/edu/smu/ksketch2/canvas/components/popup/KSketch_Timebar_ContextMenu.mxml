@@ -258,7 +258,7 @@
 				var date:Date = new Date();
 				log.@category = "Time Bar Context Menu";
 				log.@type = "Insert Key" + objectNum;
-				trace("Action " + _KSketch.logCounter + ": Insert key for " + objectNum);
+				//trace("ACTION " + _KSketch.logCounter + ": Insert key for " + objectNum);
 				KSketch2.log.appendChild(log);
 			}
 			
@@ -280,7 +280,7 @@
 				var date:Date = new Date();
 				log.@category = "Time Bar Context Menu";
 				log.@type = "Remove Key";
-				trace("Action " + _KSketch.logCounter + ": Remove key from an animation");
+				//trace("ACTION " + _KSketch.logCounter + ": Remove key from an animation");
 				KSketch2.log.appendChild(log);
 			}
 			
@@ -322,7 +322,7 @@
 				var date:Date = new Date();
 				log.@category = "Time Bar Context Menu";
 				log.@type = "Clear Keys";
-				trace("Action " + _KSketch.logCounter + ": Clear keys of animation");
+				//trace("ACTION " + _KSketch.logCounter + ": Clear keys of animation");
 				KSketch2.log.appendChild(log);
 			}
 			

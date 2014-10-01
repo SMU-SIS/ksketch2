@@ -85,12 +85,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			if(!eraser)
 			{
 				log.@type = "Draw";
-				trace("Action " + _KSketch.logCounter + ": Draw an Object");
+				//trace("ACTION " + _KSketch.logCounter + ": Draw an Object");
 			}
 			else
 			{
 				log.@type = "Erase";
-				trace("Action " + _KSketch.logCounter + ": Erase Object(s)");
+				//trace("ACTION " + _KSketch.logCounter + ": Erase Object(s)");
 			}
 			KSketch2.log.appendChild(log);
 		}

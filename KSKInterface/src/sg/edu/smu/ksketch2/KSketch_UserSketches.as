@@ -12,7 +12,7 @@ package sg.edu.smu.ksketch2
 	public class KSketch_UserSketches
 	{
 		private var keys:Object = {};
-		
+		private var _autoSaveCounter:int = 0;
 		public var arrDG:ArrayCollection = new ArrayCollection();
 		
 		/*
@@ -63,9 +63,22 @@ package sg.edu.smu.ksketch2
 					if(!arr.getItemAt(i).deleteFlag)
 					{
 						arrDG.addItem(tempItem);
+					}	
+				}
+				
+				//initialize the auto save counter
+				if(arr.getItemAt(i).fileName.indexOf("My Sketch") >= 0)
+				{
+					var tempFilename:String = arr.getItemAt(i).fileName;
+					var trimFilename:String = tempFilename.replace("My Sketch", ""); 
+					var isANumber:Boolean = !isNaN(Number(trimFilename));
+					
+					if(isANumber)
+					{
+						var tempNo:int = int(trimFilename);
+						if(tempNo > _autoSaveCounter)
+							_autoSaveCounter = tempNo;	
 					}
-					
-					
 				}
 			}
 		}
@@ -127,30 +140,14 @@ package sg.edu.smu.ksketch2
 			return hasToSync;
 		}
 		
-		public function initializeAutoSaveSketchName(arrUserSketch:KSketch_UserSketches):int
+		public function get autoSaveCounter():int
 		{
-			var autoSaveCounter:int = 0;
-			var sortBy:String = "fileName";
-			var arrTemp:ArrayCollection = arrUserSketch.getUserSketchArray(sortBy); 
-			
-			for(var i:int = 0; i<arrTemp.length; i++)
-			{
-				if(arrTemp.getItemAt(i).name.indexOf("My Sketch") >= 0)
-				{
-					var tempFilename:String = arrTemp.getItemAt(i).name;
-					var trimFilename:String = tempFilename.replace("My Sketch", ""); 
-					var isANumber:Boolean = !isNaN(Number(trimFilename));
-					
-					if(isANumber)
-					{
-						var tempNo:int = int(trimFilename);
-						if(tempNo > autoSaveCounter)
-							autoSaveCounter = tempNo;	
-					}
-				}
-			}
-			
-			return autoSaveCounter;
+			return _autoSaveCounter;
+		}
+		
+		public function set autoSaveCounter(num:int):void
+		{
+			_autoSaveCounter = num;
 		}
 	}	
 }

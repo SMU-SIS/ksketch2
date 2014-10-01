@@ -236,7 +236,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			var date:Date = new Date();
 			log.@category = "Pop Up Menu";
 			log.@type = action;
-			trace("Action " + _KSketch.logCounter + ": " + action);
+			//trace("ACTION " + _KSketch.logCounter + ": " + action);
 			KSketch2.log.appendChild(log);
 		}
 		
@@ -267,12 +267,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			if(selected)
 			{
 				log.@type = "Tap to select object";
-				trace("Action " + _KSketch.logCounter + ": Tap to select Object");
+				//trace("ACTION " + _KSketch.logCounter + ": Tap to select Object");
 			}
 			else
 			{
 				log.@type = "Tap to deselect object";
-				trace("Action " + _KSketch.logCounter + ": Tap to deselect Object");
+				//trace("ACTION " + _KSketch.logCounter + ": Tap to deselect Object");
 			}
 			KSketch2.log.appendChild(log);
 			

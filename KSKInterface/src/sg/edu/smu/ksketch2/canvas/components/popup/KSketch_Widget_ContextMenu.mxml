@@ -143,7 +143,7 @@
 				var date:Date = new Date();
 				log.@category = "Widget";
 				log.@type = "Group a selection of objects";
-				trace("Action " + _KSketch.logCounter + ": Group a selection of objects");
+				//trace("ACTION " + _KSketch.logCounter + ": Group a selection of objects");
 				KSketch2.log.appendChild(log);
 			}
 			
@@ -179,7 +179,7 @@
 				var date:Date = new Date();
 				log.@category = "Widget";
 				log.@type = "Ungroup a group of objects";
-				trace("Action " + _KSketch.logCounter + ": Ungroup a group of objects");
+				//trace("ACTION " + _KSketch.logCounter + ": Ungroup a group of objects");
 				KSketch2.log.appendChild(log);
 			}
 			

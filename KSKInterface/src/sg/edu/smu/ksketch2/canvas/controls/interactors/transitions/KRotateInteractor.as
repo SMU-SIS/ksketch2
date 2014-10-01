@@ -123,12 +123,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				log.@type = "Perform Rotate";
-				trace("Action " + _KSketch.logCounter + ": Perform Rotate");
+				//trace("ACTION " + _KSketch.logCounter + ": Perform Rotate");
 			}
 			else
 			{
 				log.@type = "Interpolate Rotate";
-				trace("Action " + _KSketch.logCounter + ": Interpolate Rotate");
+				//trace("ACTION " + _KSketch.logCounter + ": Interpolate Rotate");
 			}
 			
 			log.@KSketchDuration = KSketch_TimeControl.toTimeCode(_KSketch.time - _startTime);

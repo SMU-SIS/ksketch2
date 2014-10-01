@@ -124,6 +124,7 @@
 				this.removeEventListener(FlexEvent.INITIALIZE, _initCanvas);
 				
 				userData = data;
+				
 				isWebViewer = isView;
 				
 				if(!tracker)
@@ -294,6 +295,8 @@
 			
 			public function saveSketch(confirmSave:Boolean):Object
 			{
+				userData.resolveConflict = 1;
+				
 				//if save is confirmed, set all interaction selection to null
 				//to generate an "unselected" thumbnail
 				if(confirmSave)

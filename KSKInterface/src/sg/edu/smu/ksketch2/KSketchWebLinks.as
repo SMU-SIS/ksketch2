@@ -21,12 +21,12 @@ package sg.edu.smu.ksketch2
 		public static const redirecturl_index:String = "http://ksketch.smu.edu.sg/app/index.html";					
 		public static const redirecturl_skip:String = "http://ksketch.smu.edu.sg/app/skip.html";					//Indicates user chooses to skip login process
 		
-		public static const jsonurlSketch:String = "http://ksketch.smu.edu.sg/list/sketch/user/"; 					//To retrieve list of sketches
+		public static const jsonurlSketch:String = "http://ksketch.smu.edu.sg/list/sketch/latest"; //user/"; 		//To retrieve list of sketches
 		public static const jsonurlSketchXML:String = "http://ksketch.smu.edu.sg/get/sketch/view"; 					//To retrieve XML of a specific sketch
 		
-		public static const jsonurlPostXML:String = "http://ksketch.smu.edu.sg/post/sketchxml";						//To save a sketch to Datastore
-		public static const jsonurlOverwritePostXML:String = "http://ksketch.smu.edu.sg/post/overwritesketchxml";	//To save a sketch from an older version to Datastore
+		public static const jsonurlGetXML:String = "http://ksketch.smu.edu.sg/get/sketchxml";						//To save a sketch to Datastore
+		public static const jsonurlOverwriteGetXML:String = "http://ksketch.smu.edu.sg/get/overwritesketchxml";	//To save a sketch from an older version to Datastore
 		
-		public static const jsonurlDeleteSketch:String = "http://ksketch.smu.edu.sg/post/deletesketch";				//To delete a sketch from Datastore
+		public static const jsonurlDeleteSketch:String = "http://ksketch.smu.edu.sg/get/deletesketch";				//To delete a sketch from Datastore
 	}
 }

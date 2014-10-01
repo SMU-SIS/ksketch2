@@ -130,7 +130,7 @@
 				var date:Date = new Date();
 				log.@category = "Time Bar Control";
 				log.@type = "Skip to " + frame;
-				trace("Action " + _KSketch.logCounter + ": Skip to " + frame);
+				//trace("ACTION " + _KSketch.logCounter + ": Skip to " + frame);
 				KSketch2.log.appendChild(log);
 			}
 			

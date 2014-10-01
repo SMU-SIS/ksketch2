@@ -116,12 +116,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
 			{
 				log.@type = "Perform Scale";
-				trace("Action " + _KSketch.logCounter + ": Perform Scale");
+				//trace("ACTION " + _KSketch.logCounter + ": Perform Scale");
 			}
 			else
 			{
 				log.@type = "Interpolate Scale";
-				trace("Action " + _KSketch.logCounter + ": Interpolate Scale");
+				//trace("ACTION " + _KSketch.logCounter + ": Interpolate Scale");
 			}
 			
 			log.@KSketchDuration = KSketch_TimeControl.toTimeCode(_KSketch.time - _startTime);

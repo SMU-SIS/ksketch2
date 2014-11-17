@@ -27,13 +27,17 @@
 			{
 				this.removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 				
+				
 				if(!initialOrientation)
 					initialOrientation = stage.orientation;
-					
-				if(stage.orientation == StageOrientation.DEFAULT || stage.orientation == StageOrientation.UPSIDE_DOWN)
-					stage.setOrientation(StageOrientation.ROTATED_RIGHT);
-				else 
-					stage.setOrientation(stage.orientation);
+				
+				if(Capabilities.version.indexOf('IOS') > -1)
+				{	
+					if(stage.orientation == StageOrientation.DEFAULT || stage.orientation == StageOrientation.UPSIDE_DOWN)
+						stage.setOrientation(StageOrientation.ROTATED_RIGHT);
+					else 
+						stage.setOrientation(stage.orientation);
+				}
 				
 				timer = new Timer(3000);
 				

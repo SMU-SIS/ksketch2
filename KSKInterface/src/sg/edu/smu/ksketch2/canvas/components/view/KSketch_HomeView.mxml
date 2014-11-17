@@ -125,7 +125,7 @@
 				loginButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
 				refreshButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
 				
-				if(stage.deviceOrientation == StageOrientation.UNKNOWN)
+				if(stage.deviceOrientation == StageOrientation.UNKNOWN && (Capabilities.version.indexOf('IOS') > -1))
 				{
 					if(KSketch_SplashView.initialOrientation == StageOrientation.DEFAULT || 
 						KSketch_SplashView.initialOrientation == StageOrientation.UPSIDE_DOWN)

@@ -150,7 +150,7 @@ package sg.edu.smu.ksketch2.operators
 			if(!breakToRoot)
 				newParent = commonParent;
 			
-			scene.registerObject(newGroup, newParent, op);
+			scene.registerObject(newGroup, newParent, false, op);
 			newGroup.init(groupTime, op);
 			newGroup.updateCenter();
 			newGroup.setMoveCenter();

@@ -68,7 +68,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 					
 					if(isErasedGroup)
 					{
-						parent.visibilityControl.setVisibility(true, time, op, false);
+						//parent.visibilityControl.setVisibility(true, time, op, false);
 						parent.visibilityControl.setVisibility(false, time, op, false);
 						parent.transformInterface.clearAllMotionsAfterTime(time, op);
 						parent = parent.parent;

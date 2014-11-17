@@ -42,6 +42,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 			
 			// initialize the ID of the scene graph's highest object to 1
 			_highestID = 1;
+			
 		}
 		
 		/**
@@ -102,10 +103,19 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * @param newObject The target object.
 		 * @param op The corresponding composite operation.
 		 */
-		public function registerObject(newObject:KObject, newParent:KGroup, op:KCompositeOperation = null):void
+		public function registerObject(newObject:KObject, newParent:KGroup, isDeserialize:Boolean, op:KCompositeOperation = null):void
 		{
-			_highestID++;
-		
+			if(isDeserialize)
+			{
+				if(_highestID <= newObject.id)
+				{
+					_highestID = newObject.id;
+					_highestID++;
+				}
+			}
+			else
+				_highestID++;
+			
 			var parent:KGroup = null;
 			
 			if(newParent)
@@ -168,7 +178,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 				deserializedObject.deserialize(currentSerial);
 				objectInfo.object = deserializedObject;
 				objectInfo.parentID = int(currentSerial.parent.@id);
-				registerObject(objectInfo.object, null);
+				registerObject(objectInfo.object, null, true);
 				objects.push(objectInfo);
 			}
 			

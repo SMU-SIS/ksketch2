@@ -45,13 +45,13 @@ package sg.edu.smu.ksketch2.operators.operations
 			if(!isValid())
 				throw new Error(errorMessage)
 		
-			var log:XML = <op/>;
+			/*var log:XML = <op/>;
 			log.@type = "Edit Key Time";
 			log.@newTime = _newTime;
 			log.@oldTime = _oldTime;
 			log.appendChild(_object.serialize());
 			log.appendChild(_key.serialize());
-			KSketch2.log.appendChild(log);
+			KSketch2.log.appendChild(log);*/
 		}
 		
 		/**

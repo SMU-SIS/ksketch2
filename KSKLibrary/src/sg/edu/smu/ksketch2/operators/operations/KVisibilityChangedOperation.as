@@ -34,12 +34,12 @@ package sg.edu.smu.ksketch2.operators.operations
 			_oldVisibility = oldVisibility;		// set the key frame's older visibility
 			_newVisibility = newVisibility;		// set the key frame's newer visibility
 			
-			var log:XML = <op/>;
+			/*var log:XML = <op/>;
 			log.@type = "Replace Path";
 			log.@oldVisibility = _oldVisibility.toString();
 			log.@newVisibility = _newVisibility.toString();
 			log.appendChild(_key.serialize());
-			KSketch2.log.appendChild(log);
+			KSketch2.log.appendChild(log);*/
 		}
 		
 		/**

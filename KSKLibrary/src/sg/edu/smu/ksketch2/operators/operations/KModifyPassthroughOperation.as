@@ -37,10 +37,10 @@ package sg.edu.smu.ksketch2.operators.operations
 			if(!isValid())
 				throw new Error(errorMessage);
 			
-			var log:XML = <op/>;
+			/*var log:XML = <op/>;
 			log.@type = "Modify Passthrough";
 			log.appendChild(_key.serialize());
-			KSketch2.log.appendChild(log);
+			KSketch2.log.appendChild(log);*/
 		}
 		
 		/**

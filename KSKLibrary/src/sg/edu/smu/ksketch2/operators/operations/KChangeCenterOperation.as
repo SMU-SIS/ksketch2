@@ -30,12 +30,12 @@ package sg.edu.smu.ksketch2.operators.operations
 			_oldCenter = oldCenter;		// set the older center
 			_newCenter = newCenter;		// set the newer center
 		
-			var log:XML = <op/>;
+			/*var log:XML = <op/>;
 			log.@type = "Change Center";
 			log.@oldCenter = _oldCenter.toString();
 			log.@newCenter = _newCenter.toString();
 			log.appendChild(_object.serialize());
-			KSketch2.log.appendChild(log);
+			KSketch2.log.appendChild(log);*/
 		}
 		
 		/**

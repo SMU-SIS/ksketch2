@@ -41,7 +41,7 @@ package sg.edu.smu.ksketch2.operators.operations
 			if(!isValid())
 				throw new Error(errorMessage);
 			
-			var log:XML = <op/>;
+			/*var log:XML = <op/>;
 			log.@type = "Parent Change";
 			
 			log.appendChild(_child.serialize());
@@ -60,7 +60,7 @@ package sg.edu.smu.ksketch2.operators.operations
 				log.appendChild(oldParentLog);
 			}
 			
-			KSketch2.log.appendChild(log);
+			KSketch2.log.appendChild(log);*/
 		}
 		
 		/**

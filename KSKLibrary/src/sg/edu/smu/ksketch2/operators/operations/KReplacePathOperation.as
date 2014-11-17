@@ -44,7 +44,7 @@ package sg.edu.smu.ksketch2.operators.operations
 			if(!isValid())
 				throw new Error(errorMessage);
 			
-			var log:XML = <op/>;
+			/*var log:XML = <op/>;
 			log.@type = "Replace Path";
 			
 			var temp:String = "";
@@ -65,7 +65,7 @@ package sg.edu.smu.ksketch2.operators.operations
 			
 			log.appendChild(newPathLog);
 			log.appendChild(oldPathLog);
-			KSketch2.log.appendChild(log);
+			KSketch2.log.appendChild(log);*/
 		}
 		
 		/**

@@ -809,11 +809,11 @@ package sg.edu.smu.ksketch2.operators
 				{
 					insertBlankKeyFrame(time, op, false);
 				}
-				trace("_beginTransition_process_interpolation");
-				trace(_refFrame);
+				//trace("_beginTransition_process_interpolation");
+				//trace(_refFrame);
 				//Then we grab that key
 				_interpolationKey = _refFrame.getKeyAtTime(time) as KSpatialKeyFrame;
-				trace("_interpolationKey.time = " + _interpolationKey.time);
+				//trace("_interpolationKey.time = " + _interpolationKey.time);
 				
 				_TStoredPath = _interpolationKey.translatePath.clone();
 				_RStoredPath = _interpolationKey.rotatePath.clone();
@@ -874,11 +874,11 @@ package sg.edu.smu.ksketch2.operators
 						tmpCurrent = _interpolationKey;
 						tmpNext = tmpCurrent.next as KSpatialKeyFrame;
 						
-						trace("interpolationKeylist times");
+						//trace("interpolationKeylist times");
 						while(tmpNext)
 						{
 							interpolationKeylist.addItem(tmpNext);
-							trace(tmpNext.time);
+							//trace(tmpNext.time);
 							if (!_nextInterpolationKey) {
 								if (!tmpNext.passthrough) {
 									_nextInterpolationKey = tmpNext;
@@ -1295,8 +1295,8 @@ package sg.edu.smu.ksketch2.operators
 				vY = dy;
 			}
 			
-//			_traceParams(params);
-//			trace("     mag:" + mag + " rot:" + theta + " vX:" + vX + " vY:" + vY); 	
+			//traceParams(params);
+			//trace("     mag:" + mag + " rot:" + theta + " vX:" + vX + " vY:" + vY); 	
 
 			
 			for (j=0; j<targetKeys.length; j++) {
@@ -1360,7 +1360,7 @@ package sg.edu.smu.ksketch2.operators
 		// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
 		//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
 		//         sX:Number, sY:Number, eX:Number, eY:Number, dirty:Boolean
-		private function _traceParams(params:Dictionary):void
+		private function traceParams(params:Dictionary):void
 		{
 			var type:int = params["type"] as int;
 			var keys:Vector.<KSpatialKeyFrame> = params["keys"] as Vector.<KSpatialKeyFrame>;
@@ -1391,7 +1391,7 @@ package sg.edu.smu.ksketch2.operators
 					typeString = "Unknown";
 			}
 			
-			trace(typeString + " params   dirty:" + (dirty ? "true " : "false ") + "sX:" + sX + " sY:" + sY + " eX:" + eX + " eY:" + eY);
+			//trace(typeString + " params   dirty:" + (dirty ? "true " : "false ") + "sX:" + sX + " sY:" + sY + " eX:" + eX + " eY:" + eY);
 			for (i=0; i < keys.length; i++) {
 				sourcePath = sourcePaths[keys[i]] as KPath; 
 				targetPath = targetPaths[keys[i]] as KPath; 
@@ -1400,7 +1400,7 @@ package sg.edu.smu.ksketch2.operators
 					"target:" + (targetPath ? targetPath.length + "pts " : "null ") + 
 					"start:" + (startPoint ? startPoint.x + "," + startPoint.y: "null") + "]");
 			}
-			trace("  ", keyStrings);
+			//trace("  ", keyStrings);
 		}
 
 		/**
@@ -1412,7 +1412,7 @@ package sg.edu.smu.ksketch2.operators
 			// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
 			//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
 			//         sX:Number, sY:Number, eX:Number, eY:Number
-			_traceParams(params);
+			//traceParams(params);
 
 			var type:int = params["type"] as int;
 			var keys:Vector.<KSpatialKeyFrame> = params["keys"] as Vector.<KSpatialKeyFrame>;
@@ -1501,8 +1501,8 @@ package sg.edu.smu.ksketch2.operators
 						KPathProcessing.limitSegmentLength(targetPath, MAX_ROTATE_STEP);
 				}	
 				
-				trace("Time=" + targetKey.time);
-				trace("Target Path");
+				//trace("Time=" + targetKey.time);
+				//trace("Target Path");
 				targetPath.debug();
 			}
 			params["dirty"] = true;
@@ -1631,7 +1631,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(validTranslate)	
 				{
-					trace("_normaliseForOverwriting translate");
+					//trace("_normaliseForOverwriting translate");
 					oldPath = currentKey.translatePath;
 					currentKey.translatePath = new KPath(KPath.TRANSLATE);
 					newPath = currentKey.translatePath;
@@ -1640,7 +1640,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(validRotate)
 				{
-					trace("_normaliseForOverwriting rotate");
+					//trace("_normaliseForOverwriting rotate");
 					oldPath = currentKey.rotatePath;
 					currentKey.rotatePath = new KPath(KPath.ROTATE);
 					newPath = currentKey.rotatePath;
@@ -1649,7 +1649,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				if(validScale)
 				{
-					trace("_normaliseForOverwriting scale");
+					//trace("_normaliseForOverwriting scale");
 					oldPath = currentKey.scalePath;
 					currentKey.scalePath = new KPath(KPath.SCALE);
 					newPath = currentKey.scalePath;

@@ -38,7 +38,7 @@ package sg.edu.smu.ksketch2.operators.operations
 			if(!isValid())
 				throw new Error(errorMessage);
 			
-			var log:XML = <op/>;
+			/*var log:XML = <op/>;
 			log.@type = "Remove Key";
 			log.appendChild(_oldKey.serialize());
 			
@@ -56,7 +56,7 @@ package sg.edu.smu.ksketch2.operators.operations
 				log.appendChild(afterLog);	
 			}
 			
-			KSketch2.log.appendChild(log);
+			KSketch2.log.appendChild(log);*/
 		}
 		
 		/**

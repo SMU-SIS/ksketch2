@@ -44,22 +44,37 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		
 		override public function deactivate():void
 		{
-			// disable the move center interactor
-			enabled = false;
-			
 			// deactivate the widget mode
 			super.deactivate();
 			
 			// deactivate the move center interactor
 			_centerInteractor.deactivate();
+			
+			// disable the move center interactor
+			enabled = false;
 		}
 		
 		override public function set enabled(value:Boolean):void
 		{
+			// set the widget's alpha value to the enabled color
+			_widget.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
+			
+			// case: the widget is enabled
+			// set the the trigger disabled alpha values
 			if(value)
-				_widget.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
+			{
+				_widget.baseTrigger.alpha = KSketchStyles.WIDGET_DISABLED_ALPHA;
+				_widget.middleTrigger.alpha = KSketchStyles.WIDGET_DISABLED_ALPHA;
+				_widget.topTrigger.alpha = KSketchStyles.WIDGET_DISABLED_ALPHA;
+			}
+			// case: the widget is disabled
+			// set the trigger enabled alpha values
 			else
-				_widget.alpha = KSketchStyles.WIDGET_DISABLED_ALPHA;
+			{
+				_widget.baseTrigger.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
+				_widget.middleTrigger.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
+				_widget.topTrigger.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
+			}
 		}
 	}
 }

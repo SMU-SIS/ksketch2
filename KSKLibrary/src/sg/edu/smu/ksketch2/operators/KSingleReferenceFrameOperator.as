@@ -48,14 +48,12 @@ package sg.edu.smu.ksketch2.operators
 		public static const ROTATE_THRESHOLD:Number = 0.3;				// rotation threshold
 		public static const SCALE_THRESHOLD:Number = 0.1;				// scaling threshold
 		public static const EPSILON:Number = 0.05;						// epsilon threshold
-		public static const STUDYMODE_K:int = 0;						// Version K value
-		public static const STUDYMODE_P:int = 1;						// Version P value
-		public static const STUDYMODE_KP:int = 2;						// Version KP value
-		public static const STUDYMODE_KP2:int = 3;						// Version KP2 value
+		public static const CONTROLPOINT:int = 2;	
+		public static const KEYFRAME:int = 1;	
 		
 		private static const MAX_ROTATE_STEP:Number = Math.PI - 0.1;
 		
-		public static var studyMode: int = STUDYMODE_KP2;				// default study mode set to 3
+		public static var mode: int = KEYFRAME;	
 		public static var always_allow_interpolate:Boolean = false;		// always interpolate state flag
 		
 		// miscellaneous state variables
@@ -433,8 +431,8 @@ package sg.edu.smu.ksketch2.operators
 		{
 			// case: always allow interpolation flag is enabled
 			// return true
-			if(always_allow_interpolate)
-				return true;
+			//if(always_allow_interpolate)
+			//	return true;
 			
 			// get the first active key frame after the time before the given time
 			var activeKey:ISpatialKeyFrame;
@@ -636,33 +634,14 @@ package sg.edu.smu.ksketch2.operators
 			{
 				var elapsedTime:Number;
 				
-				//if studyMode is set to K, store it in an array first. Do not push. only push when endTransition
-				if(studyMode == STUDYMODE_K) 
+				//Just dump the new values in for demonstrated transitions
+				elapsedTime = time - _startTime;
+				
+				if(elapsedTime != 0)
 				{
-					var tempObj: Object = new Object();
-					//Just dump the new values in for demonstrated transitions
-					elapsedTime = time - _startTime;
-					
-					tempObj.elapsedTime = elapsedTime;
-					tempObj.dx = dx;
-					tempObj.dy = dy;
-					tempObj.dTheta = dTheta;
-					tempObj.dScale = dScale;
-					
-					tempArr.addItem(tempObj);
-				}
-				//if studyMode is set to P, KP or KP2, make sure to do real time performance
-				else
-				{
-					//Just dump the new values in for demonstrated transitions
-					elapsedTime = time - _startTime;
-					
-					if(elapsedTime != 0)
-					{
-						_TStoredPath.push(dx, dy, elapsedTime);
-						_RStoredPath.push(dTheta, 0, elapsedTime);
-						_SStoredPath.push(dScale, 0, elapsedTime);
-					}
+					_TStoredPath.push(dx, dy, elapsedTime);
+					_RStoredPath.push(dTheta, 0, elapsedTime);
+					_SStoredPath.push(dScale, 0, elapsedTime);
 				}
 			}
 			
@@ -687,7 +666,7 @@ package sg.edu.smu.ksketch2.operators
 				}
 									
 				//if studymode kp2, then do Interpolation for next frame
-				if(studyMode == STUDYMODE_KP2)
+				if(mode == KEYFRAME)
 				{
 					// *****************************************************************
 					// *****************************************************************
@@ -740,7 +719,7 @@ package sg.edu.smu.ksketch2.operators
 //						}
 //					}
 				}	
-				else if(studyMode != STUDYMODE_P)
+				else
 				{
 					if(_nextInterpolationKey)
 					{
@@ -767,23 +746,6 @@ package sg.edu.smu.ksketch2.operators
 		 */
 		public function endTransition(time:Number, op:KCompositeOperation):void
 		{
-			if(studyMode == STUDYMODE_K)
-			{
-				if(tempArr != null && tempArr.length > 0)
-				{
-					var tempObj:Object = tempArr[tempArr.length - 1];
-					var dx:Number = tempObj.dx;
-					var dy:Number = tempObj.dy;
-					var dTheta:Number = tempObj.dTheta;
-					var dScale:Number = tempObj.dScale;
-					var elapsedTime:Number = tempObj.elapsedTime;
-					
-					_TStoredPath.push(dx, dy, elapsedTime);
-					_RStoredPath.push(dTheta, 0, elapsedTime);
-					_SStoredPath.push(dScale, 0, elapsedTime);
-				}
-			}
-
 			_dirty = true;
 			_endTransition_process_ModeDI(time, op);
 			_inTransit = false;
@@ -869,7 +831,7 @@ package sg.edu.smu.ksketch2.operators
 					//Then we deal with the interpolation
 					
 					//Only if study mode is KP2, we need to get all the keys after the selected time
-					if(studyMode == STUDYMODE_KP2)
+					if(mode == KEYFRAME)
 					{
 						tmpCurrent = _interpolationKey;
 						tmpNext = tmpCurrent.next as KSpatialKeyFrame;

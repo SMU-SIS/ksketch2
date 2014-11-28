@@ -26,7 +26,7 @@
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
-			public var studyMode:int;
+			public var mode:int;
 			
 			private function initStyle():void
 			{
@@ -224,14 +224,12 @@
 			{
 				if(value)
 				{
-					_setStudy(2);
-					KSingleReferenceFrameOperator.always_allow_interpolate = true;
+					_setStudy(0);
 					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.AUTO;
 				}
 				else
 				{
-					_setStudy(3);
-					KSingleReferenceFrameOperator.always_allow_interpolate = false;
+					_setStudy(1);
 					KSketch_CanvasView_Preferences.autoInsert = KSketch_CanvasView_Preferences.NOT_AUTO;
 				}
 			}
@@ -266,10 +264,10 @@
 			
 			private function _setStudy(value:int):void
 			{
-				KSingleReferenceFrameOperator.studyMode = value;
-				KSketch_Timebar_ContextMenu.studyMode = value;
-				KKeyFrame.studyMode = value;
-				studyMode = value;
+				KSingleReferenceFrameOperator.mode = value;
+				KSketch_Timebar_ContextMenu.mode = value;
+				KKeyFrame.mode = value;
+				mode = value;
 			}
 			
 			override public function close(commit:Boolean=false, data:*=null):void

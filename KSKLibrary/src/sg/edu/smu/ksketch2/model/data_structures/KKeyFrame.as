@@ -26,11 +26,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 		protected var _time:Number;				// the key frame's time
 		protected var _passthrough:Boolean; 	// Passthrough edit
 
-		public static const STUDYMODE_K:int = 0;						// Version K value
-		public static const STUDYMODE_P:int = 1;						// Version P value
-		public static const STUDYMODE_KP:int = 2;						// Version KP value
-		public static const STUDYMODE_KP2:int = 3;						// Version KP2 value
-		public static var studyMode: int = STUDYMODE_KP2;
+		public static const CONTROLPOINT:int = 0;
+		public static const KEYFRAME:int = 1;		
+		public static var mode: int = KEYFRAME;
 		/**
 		 * The main constructor for the KKeyFrame object. Do not instantiate this
 		 * class by itself.
@@ -42,7 +40,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 			time = newTime;
 			
 			//Passthrough edit;
-			if(studyMode == STUDYMODE_K || studyMode == STUDYMODE_KP)
+			if(mode == CONTROLPOINT)
 				passthrough = false;
 			else
 				passthrough = true;

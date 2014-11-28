@@ -34,14 +34,11 @@
 			import sg.edu.smu.ksketch2.model.data_structures.KSpatialKeyFrame;
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
 			import sg.edu.smu.ksketch2.model.objects.KObject;
-			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KSelection;	
 			
-			public static const STUDYMODE_K:int = 0;						// Version K value
-			public static const STUDYMODE_P:int = 1;						// Version P value
-			public static const STUDYMODE_KP:int = 2;						// Version KP value
-			public static const STUDYMODE_KP2:int = 3;						// Version KP2 value
-			public static var studyMode: int = STUDYMODE_KP2;
+			public static const CONTROLPOINT:int = 0;
+			public static const KEYFRAME:int = 1;			
+			public static var mode: int = KEYFRAME;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
@@ -67,12 +64,7 @@
 					//check if object can insert a key at that time
 					//if yes, then make sure it is not in P mode
 					if(_interactionControl.selection.objects.getObjectAt(0).transformInterface.canInsertKeyFrame(_KSketch.time))
-					{
-						//only enable button if the study mode is K,KP or KP2
-						if(studyMode != STUDYMODE_P)
-							insertButton.enabled = true;
-					}
-					
+						insertButton.enabled = true;	
 				}
 				//if no object is selected
 				else
@@ -80,11 +72,7 @@
 					//check if there are any objects on the canvas
 					//do not enable the button if there are no objects found
 					if(_KSketch.root.children.length() != 0)
-					{	
-						//only enable button if the study mode is K, KP or KP2
-						if(studyMode != STUDYMODE_P)
-							insertButton.enabled = true;
-					}
+						insertButton.enabled = true;
 				}
 			}
 			
@@ -209,7 +197,7 @@
 						_interactionControl.selection = new KSelection(newObjectList);
 					}
 					
-					if(studyMode == STUDYMODE_KP2)
+					if(mode == KEYFRAME)
 					{
 						if(activeKey != null && activeKey.time == _KSketch.time) //the key is a controlpoint, so change the passthrough property to be a keyframe
 							_interactionControl.selection.objects.getObjectAt(0).transformInterface.changeKeyPassthrough(_KSketch.time, _interactionControl.currentInteraction, false);
@@ -232,7 +220,7 @@
 						_interactionControl.selection = new KSelection(selectedList);
 						activeKey = _interactionControl.selection.objects.getObjectAt(0).transformInterface.getActiveKey(_KSketch.time) as KSpatialKeyFrame;
 						
-						if(studyMode == STUDYMODE_KP2)
+						if(mode == KEYFRAME)
 						{
 							if(activeKey != null && activeKey.time == _KSketch.time) //the key is a controlpoint, so change the passthrough property to be a keyframe
 								_interactionControl.selection.objects.getObjectAt(0).transformInterface.changeKeyPassthrough(_KSketch.time,_interactionControl.currentInteraction, false);

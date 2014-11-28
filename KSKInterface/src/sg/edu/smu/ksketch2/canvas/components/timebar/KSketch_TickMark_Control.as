@@ -251,10 +251,12 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 						if(firstFrame)
 						{
 							if(firstFrame.passthrough)
-									_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_A, KSketchStyles.TIME_TICK_CONTROLPOINT);
+								_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_A, KSketchStyles.TIME_TICK_CONTROLPOINT);
 							else
 								_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_B, KSketchStyles.TIME_TICK_KEYFRAME);
 						}
+						else
+							_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_A, KSketchStyles.TIME_TICK_CONTROLPOINT);
 						
 						if(drawTarget.x <= currentX)
 						{

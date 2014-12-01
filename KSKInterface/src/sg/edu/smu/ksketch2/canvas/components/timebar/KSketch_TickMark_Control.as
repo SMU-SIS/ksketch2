@@ -137,7 +137,10 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_drawTicks();
 			
 			//Set timings for time control's jumping function
-			_timeControl.timings.sort(SortingFunctions._sortInt);			
+			_timeControl.timings.sort(SortingFunctions._sortInt);	
+			
+			//calibrate time on timebar with ticks
+			_update_object_model();
 		}
 		
 		/**

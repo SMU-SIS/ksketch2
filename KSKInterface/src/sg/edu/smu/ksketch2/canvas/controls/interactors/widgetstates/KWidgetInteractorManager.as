@@ -12,6 +12,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.ui.Keyboard;
@@ -53,6 +54,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		private var _keyDown:Boolean;								// the key down state boolean flag
 		private var _longPressTimer:Timer;							// the long press timer
 		private var _isLongPress:Boolean = false;					// the long press state boolean flag
+		private var _doubleClickTimer:Timer;
 		
 		private var _activeMode:IWidgetMode;						// the active widget mode
 		public var defaultMode:IWidgetMode;							// the default widget mode
@@ -74,7 +76,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
 			_keyDown = false;
+			
 			_widget = widgetBase;
+			_widget.doubleClickEnabled = true;
+			_widget.mouseEnabled = true;
+			_widget.addEventListener(MouseEvent.CLICK, _singleTap);
+			_widget.addEventListener(MouseEvent.DOUBLE_CLICK, _doubleTap);
+			
 			_modelSpace = modelSpace;
 			_widgetSpace = _widget.parent;
 			
@@ -84,10 +92,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			defaultMode = new KBasicTransitionMode(_KSketch, _interactionControl, _widget, modelSpace);
 			centerMode = new KMoveCenterMode(_KSketch, _interactionControl, _widget, modelSpace);
 			activeMode = defaultMode;
-			
-			_longPressTimer = new Timer(500);
-			_modeGesture = new TapGesture(_widget);
-			_modeGesture.addEventListener(GestureEvent.GESTURE_POSSIBLE, _handleTapStart);
 
 			interactionControl.addEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, updateWidget);
 			interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_BEGIN, updateWidget);
@@ -129,7 +133,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			activeMode = defaultMode;
 		}
 		
-		
 		/**
  		 * Handles key triggers from the keyboard.
  		 * 
@@ -158,20 +161,79 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			}
 		}
 		
-		
 		/**
- 		 * Handles tap starts.
+ 		 * Handles first tap detection.
  		 * 
  		 * @param event The target event.
  		 */
-		private function _handleTapStart(event:Event):void
+		private function _singleTap(event:MouseEvent):void
 		{
-			_isLongPress = false;
-			_longPressTimer.start();
-			_longPressTimer.addEventListener(TimerEvent.TIMER, _activatedLongPress);
-
-			_modeGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
-			_modeGesture.addEventListener(GestureEvent.GESTURE_FAILED, _handleTapFail);
+			_doubleClickTimer = new Timer(250,1);
+			_doubleClickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _startSingleTap);
+			_doubleClickTimer.start();
+		}
+		
+		/**
+		 * Handles single tap action.
+		 * 
+		 * @param event The target event.
+		 */
+		private function _startSingleTap(event:TimerEvent):void
+		{
+			_doubleClickTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, _startSingleTap);
+			_doubleClickTimer.stop();
+			
+			var action:String;
+			var doubleClick:Boolean = false;
+			
+			if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl._isPlaying)
+			{
+				action = "Activate Demonstration Mode";
+				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
+			}	
+			else if(KSketch_TimeControl._isPlaying)
+			{
+				action = "Activate Demonstration Mode";
+				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
+			}
+			else
+			{
+				action = "Deactivate Demonstration Mode";
+				transitionMode = KSketch2.TRANSITION_INTERPOLATED;
+			}
+			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Widget";
+			log.@type = action;
+			//trace("ACTION " + _KSketch.logCounter + ": " + action);
+			KSketch2.log.appendChild(log);
+		}
+		
+		/**
+		 * Handles double tap action.
+		 * 
+		 * @param event The target event.
+		 */
+		private function _doubleTap(event:MouseEvent):void
+		{
+			var action:String = "Open widget context menu";
+			_doubleClickTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, _startSingleTap);
+			_doubleClickTimer.stop();
+			
+			if(_widget.visible)
+				_contextMenu.open(_widget, true);
+			
+			//LOG
+			_KSketch.logCounter ++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Widget";
+			log.@type = action;
+			//trace("ACTION " + _KSketch.logCounter + ": " + action);
+			KSketch2.log.appendChild(log);
 		}
 		
 		/**
@@ -185,76 +247,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_longPressTimer.stop();
 			_longPressTimer.removeEventListener(TimerEvent.TIMER, _activatedLongPress);
 		}
-		
-		/**
- 		 * Handles tap fails.
- 		 * 
- 		 * @param event The target event.
- 		 */
-		private function _handleTapFail(event:Event):void
-		{
-			_modeGesture.removeEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
-			_modeGesture.removeEventListener(GestureEvent.GESTURE_FAILED, _handleTapFail);
-			_modeGesture.addEventListener(GestureEvent.GESTURE_POSSIBLE, _handleTapStart);
-		}
-		
-		/**
- 		 * Handles mode switches.
- 		 * 
- 		 * @param event The target event.
- 		 */
-		private function _handleModeSwitch(event:Event):void
-		{
-			var action:String;
-			
-			if(_isLongPress)
-			{
-				action = "Open Widget Menu";
-				_handleOpenMenu();
-			}
-			else
-			{
-				if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl._isPlaying)
-				{
-					action = "Activate Demonstration Mode";
-					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
-				}	
-				else if(KSketch_TimeControl._isPlaying)
-				{
-					action = "Activate Demonstration Mode";
-					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
-				}
-				else
-				{
-					action = "Deactivate Demonstration Mode";
-					transitionMode = KSketch2.TRANSITION_INTERPOLATED;
-				}
-						
-			}
-			
-			_modeGesture.removeEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
-			_modeGesture.removeEventListener(GestureEvent.GESTURE_FAILED, _handleTapFail);
-			_modeGesture.addEventListener(GestureEvent.GESTURE_POSSIBLE, _handleTapStart);
-			
-			//LOG
-			_KSketch.logCounter ++;
-			var log:XML = <Action/>;
-			var date:Date = new Date();
-			log.@category = "Widget";
-			log.@type = action;
-			//trace("ACTION " + _KSketch.logCounter + ": " + action);
-			KSketch2.log.appendChild(log);
-		}
-		
-		/**
- 		 * Handles open menu.
- 		 */
-		private function _handleOpenMenu():void
-		{
-			if(_widget.visible)
-				_contextMenu.open(_widget, true);
-		}
-		
+
 		/**
 		 * Updates the widget.
 		 * 
@@ -372,11 +365,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_enabled = isEnabled;	
 			
 			if(isEnabled)
-			{
 				_activeMode.activate();
-				if(!_modeGesture.hasEventListener(GestureEvent.GESTURE_RECOGNIZED))
-					_modeGesture.addEventListener(GestureEvent.GESTURE_RECOGNIZED, _handleModeSwitch);
-			}
 			else
 				_activeMode.deactivate();
 			

@@ -63,11 +63,9 @@
 				
 				if(_buttonState == SHOW_PLAY)
 				{
-					/*_doubleClickTimer = new Timer(200,1);
+					_doubleClickTimer = new Timer(250,1);
 					_doubleClickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, triggerPlay);
 					_doubleClickTimer.start();
-					*/
-					_timeControl.play(_doubleClickTrigger);
 				}
 				else
 					_timeControl.stop();
@@ -92,7 +90,6 @@
 			{
 				var action:String;
 				var app:Application = FlexGlobals.topLevelApplication as Application;
-				//_interceptor.graphics.clear();
 				
 				if(event.type == KSketch_TimeControl.PLAY_START)
 				{

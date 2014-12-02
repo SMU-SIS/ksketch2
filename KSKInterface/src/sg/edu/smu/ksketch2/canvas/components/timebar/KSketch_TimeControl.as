@@ -483,12 +483,14 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_timer.addEventListener(TimerEvent.TIMER, playHandler);
 			_timer.start();
 			
-			/*if(playFromStart)
+			//comment out for player - play from start #50
+			if(playFromStart)
 				time = 0;
 			else
 				time = _KSketch.time;
-			*/
-			time = 0;
+			
+			//comment out for editor - play from start #50
+			//time = 0;
 			
 			_maxPlayTime = _KSketch.maxTime + PLAY_ALLOWANCE;
 			

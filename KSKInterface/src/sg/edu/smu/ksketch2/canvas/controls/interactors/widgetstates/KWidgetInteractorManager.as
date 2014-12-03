@@ -17,11 +17,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import flash.geom.Point;
 	import flash.ui.Keyboard;
 	import flash.utils.Timer;
+	import flash.utils.clearTimeout;
+	import flash.utils.setTimeout;
 	
 	import mx.core.FlexGlobals;
-	
-	import org.gestouch.events.GestureEvent;
-	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Widget_ContextMenu;
@@ -45,9 +44,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		protected var _modelSpace:DisplayObject;					// the model space
 		protected var _widgetSpace:DisplayObject;					// the widget space
 		protected var _contextMenu:KSketch_Widget_ContextMenu;		// the context menu
-		
-		private var _modeGesture:TapGesture;						// the mode gesture
-		private var _activateMenuGesture:TapGesture;				// the activate menu gesture
 
 		private var _enabled:Boolean;								// the enabled state boolean flag
 		private var _isInteracting:Boolean;							// the interacting state boolean flag
@@ -55,6 +51,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		private var _longPressTimer:Timer;							// the long press timer
 		private var _isLongPress:Boolean = false;					// the long press state boolean flag
 		private var _doubleClickTimer:Timer;
+		private var DOUBLE_CLICK_SPEED:int = 250;
+		private var mouseTimeout = "undefined";
 		
 		private var _activeMode:IWidgetMode;						// the active widget mode
 		public var defaultMode:IWidgetMode;							// the default widget mode
@@ -80,8 +78,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_widget = widgetBase;
 			_widget.doubleClickEnabled = true;
 			_widget.mouseEnabled = true;
-			_widget.addEventListener(MouseEvent.CLICK, _singleTap);
-			_widget.addEventListener(MouseEvent.DOUBLE_CLICK, _doubleTap);
+			_widget.addEventListener(MouseEvent.CLICK, _handleTap, false, 0, true);
+			_widget.addEventListener(MouseEvent.DOUBLE_CLICK, _handleTap, false, 0, true);
 			
 			_modelSpace = modelSpace;
 			_widgetSpace = _widget.parent;
@@ -161,30 +159,28 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			}
 		}
 		
+		private function _handleTap(event:MouseEvent):void {
+			if (mouseTimeout != "undefined") {
+				_doubleTap(event);
+				clearTimeout(mouseTimeout);
+				mouseTimeout = "undefined";
+			} else {
+				function _handleSingleTap():void {
+					_singleTap(event);
+					mouseTimeout = "undefined";
+				}
+				mouseTimeout = setTimeout(_handleSingleTap, DOUBLE_CLICK_SPEED);
+			}
+		}
+		
 		/**
- 		 * Handles first tap detection.
+ 		 * Handles single tap detection.
  		 * 
  		 * @param event The target event.
  		 */
 		private function _singleTap(event:MouseEvent):void
 		{
-			_doubleClickTimer = new Timer(250,1);
-			_doubleClickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _startSingleTap);
-			_doubleClickTimer.start();
-		}
-		
-		/**
-		 * Handles single tap action.
-		 * 
-		 * @param event The target event.
-		 */
-		private function _startSingleTap(event:TimerEvent):void
-		{
-			_doubleClickTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, _startSingleTap);
-			_doubleClickTimer.stop();
-			
 			var action:String;
-			var doubleClick:Boolean = false;
 			
 			if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl._isPlaying)
 			{
@@ -220,8 +216,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		private function _doubleTap(event:MouseEvent):void
 		{
 			var action:String = "Open widget context menu";
-			_doubleClickTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, _startSingleTap);
-			_doubleClickTimer.stop();
 			
 			if(_widget.visible)
 				_contextMenu.open(_widget, true);

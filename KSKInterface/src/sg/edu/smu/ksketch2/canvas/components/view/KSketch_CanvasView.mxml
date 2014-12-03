@@ -42,6 +42,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_ContextMenu;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Magnifier;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
@@ -92,6 +93,7 @@
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
 			private var _magnifier:KSketch_Timebar_Magnifier;
 			private var _keyMenu:KSketch_Timebar_ContextMenu;
+			private var _keyMagnifier:KSketch_Timebar_Context_Magnifier;
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
 			
@@ -171,6 +173,7 @@
 				_options = new KSketch_Options();
 				_help = new KSketch_Help();
 				_keyMenu = new KSketch_Timebar_ContextMenu();
+				_keyMagnifier = new KSketch_Timebar_Context_Magnifier();
 				_saveOptions = new KSketch_SaveOptions();
 				_overwriteSaveOptions = new KSketch_OverwriteSaveOptions();
 				_menuPopUp = new KSketch_PopUp_Menu();
@@ -211,13 +214,16 @@
 					_menuPopUp.alpha = 0;
 				
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl,_interactionControl);
-				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _keyMenu);
+				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _keyMenu, _keyMagnifier);
 				
 				leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
 				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
 				
 				_keyMenu.init(_KSketch, _interactionControl, timeControl);
 				_keyMenu.createDeferredContent();
+				
+				_keyMagnifier.init(_KSketch, _interactionControl, timeControl, _magnifier);
+				_keyMagnifier.createDeferredContent();
 				
 				modelDisplay.init(_KSketch, _interactionControl);
 				motionDisplay.init(_KSketch, _interactionControl);

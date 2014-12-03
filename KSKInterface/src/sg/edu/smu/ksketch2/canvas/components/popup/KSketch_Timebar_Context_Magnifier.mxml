@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:SkinnablePopUpContainer
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+	backgroundAlpha="0"
+	initialize="_initButtons()"
+	>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.events.FlexMouseEvent;
+			
+			import spark.components.Application;
+			import spark.components.Image;
+			
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
+			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+			
+			public static const CONTROLPOINT:int = 0;
+			public static const KEYFRAME:int = 1;			
+			public static var mode: int = KEYFRAME;
+			
+			private var _KSketch:KSketch2;
+			private var _interactionControl:KInteractionControl;
+			private var _timeControl:KSketch_TimeControl;
+			private var _timebarMagnifier:KSketch_Timebar_Magnifier;
+			
+			private var _magnifiedImage:Image;
+			private var _sourceRect:Rectangle;
+			private var _magnifiedData:BitmapData;
+			
+			[Bindable]
+			private var _onTop:Boolean = true;
+			
+			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
+								 timeControl:KSketch_TimeControl, timebarMagnifier:KSketch_Timebar_Magnifier):void
+			{
+				_KSketch = KSketchInstance;
+				_interactionControl = interactionControl;
+				_timeControl = timeControl;
+				_timebarMagnifier = timebarMagnifier;
+				
+				//Display for the magnified timeline
+				_magnifiedImage = new Image();
+				_magnifiedImage.scaleX = KSketchStyles.MAGNIFIER_SCALE;
+				_magnifiedImage.scaleY = KSketchStyles.MAGNIFIER_SCALE;
+				
+				_sourceRect = new Rectangle();
+				_sourceRect.width = KSketchStyles.MAGNIFIER_IMAGE_UNSCALED_WIDTH;
+				_sourceRect.height = _timeControl.contentGroup.height/2.5;
+				_sourceRect.y = 0;
+			}
+			
+			private function _initButtons():void
+			{
+				this.removeEventListener(FlexEvent.INITIALIZE, _initButtons);
+				leftFrame.init(_KSketch, _timeControl, this, _timebarMagnifier, KSketch_Time_Button.LEFT);
+				rightFrame.init(_KSketch, _timeControl, this, _timebarMagnifier, KSketch_Time_Button.RIGHT);
+			}
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				super.open(owner, modal);
+				setMagnifier();
+				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);					
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				removeEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
+				super.close(commit, data);
+			}
+			
+			public function setMagnifier():void
+			{
+				_magnifiedData = _timebarMagnifier.getMagnifiedData();
+				
+				//Display the source
+				if(!_magnifiedImage.parent)
+					magContent.addElementAt(_magnifiedImage,1);	
+				
+				_magnifiedImage.source = _magnifiedData;
+			}
+			
+			private function _handleMouseDownOutside(event:FlexMouseEvent):void
+			{
+				if(event.stageY > 680)
+					_timeControl.downTap(event);
+				close();
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group x="{-magContent.width*0.5}" width="100%">
+		<s:Group>
+			<s:Rect id="blacklabel" width="100%" height="100%" radiusX="5" radiusY="5">
+				<s:fill>
+					<s:SolidColor color="{KSketchStyles.MAGNIFIER_BACKGROUND_COLOR}"/>
+				</s:fill>
+			</s:Rect>
+			<s:Group>
+				<s:Group id="magContent">
+					<s:layout>
+						<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"
+										  paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
+										  paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
+					</s:layout>
+					<buttons:KSketch_Time_Button
+						id="leftFrame"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
+					<buttons:KSketch_Time_Button
+						id="rightFrame"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
+				</s:Group>
+			</s:Group>
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

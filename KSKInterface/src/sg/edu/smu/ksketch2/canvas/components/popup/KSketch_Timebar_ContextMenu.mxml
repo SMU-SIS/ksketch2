@@ -26,7 +26,6 @@
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.events.KSketchEvent;
@@ -47,7 +46,8 @@
 			[Bindable]
 			private var _onTop:Boolean = true;
 			
-			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, timeControl:KSketch_TimeControl):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
+								 timeControl:KSketch_TimeControl):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
@@ -129,8 +129,8 @@
 				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down);
 				clearButton.initSkin();
 				
-				leftFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.LEFT);
-				rightFrame.init(_KSketch, _timeControl, KSketch_TimeSkip_Button.RIGHT);
+				leftFrame.init(_KSketch, _timeControl, KSketch_Frame_Button.LEFT);
+				rightFrame.init(_KSketch, _timeControl, KSketch_Frame_Button.RIGHT);
 			}
 			
 			public function set position(value:int):void
@@ -170,7 +170,7 @@
 			private function _handleMouseDownOutside(event:FlexMouseEvent):void
 			{
 				if(event.stageY > 680)
-					_timeControl._touchDown(event);
+					_timeControl.downTap(event);
 				close();
 			}
 			

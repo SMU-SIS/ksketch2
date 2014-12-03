@@ -13,11 +13,14 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.utils.Timer;
+	import flash.utils.clearTimeout;
+	import flash.utils.setTimeout;
 	
 	import mx.events.FlexEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_ContextMenu;
+	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Magnifier;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
@@ -54,6 +57,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		protected var _transitionHelper:KWidgetInteractorManager;
 		protected var _magnifier:KSketch_Timebar_Magnifier;
 		protected var _keyMenu:KSketch_Timebar_ContextMenu;
+		protected var _keyMagnifier:KSketch_Timebar_Context_Magnifier;
 		
 		public static var _isPlaying:Boolean = false;
 		protected var _timer:Timer;
@@ -72,11 +76,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		private var grabbedTickTimer:Timer;
 		private var grabbedTickIndex:int;
 		private var nearTick: Number;
-		private var _longTouch:Boolean = false;
 		private var isNearTick: Boolean = false;
 		private var moveTick:Boolean = false;
 		
 		private var showMagnifier:Boolean = false;
+		private var _doubleClickTimer:Timer;
+		
+		private var DOUBLE_CLICK_SPEED:int = 250;
+		private var mouseTimeout = "undefined";
+		private var longTapTimer:Timer;
+		private var longTap:Boolean = false;
 		
 		public function KSketch_TimeControl()
 		{
@@ -85,7 +94,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control,
 							 transitionHelper:KWidgetInteractorManager,
-							 magnifier:KSketch_Timebar_Magnifier, keyMenu:KSketch_Timebar_ContextMenu):void
+							 magnifier:KSketch_Timebar_Magnifier, keyMenu:KSketch_Timebar_ContextMenu, 
+							 keyMagnifier:KSketch_Timebar_Context_Magnifier):void
 		{
 
 			_KSketch = KSketchInstance;
@@ -93,12 +103,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_transitionHelper = transitionHelper;
 			_magnifier = magnifier;
 			_keyMenu = keyMenu;
+			_keyMagnifier = keyMagnifier;
 			timeLabels.init(this);
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 			
-			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
-			_magnifier.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+			contentGroup.doubleClickEnabled = true;
+			contentGroup.mouseEnabled = true;
+			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, downTap);
+			contentGroup.addEventListener(MouseEvent.CLICK, _handleTap, false, 0, true);
+			contentGroup.addEventListener(MouseEvent.DOUBLE_CLICK, _handleTap, false, 0, true);
 			
 			maximum = KSketch_TimeControl.DEFAULT_MAX_TIME;
 			time = 0;
@@ -213,18 +227,25 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 * On touch function. Time slider interactions begins here
 		 * Determines whether to use the tick mark control or to just itneract with the slider
 		 */
-		public function _touchDown(event:MouseEvent):void
-		{	
-			action = "Tap on Time Bar";
+		public function downTap(event:MouseEvent):void
+		{
+			longTap = false;
+			
+			if(!longTapTimer)
+			{
+				longTapTimer = new Timer(500,1);
+				longTapTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _longTap);
+				longTapTimer.start();
+			}
 			
 			if(_isPlaying)
 				stop();
 			
-			//upon touchdown, start grabbedTickTimer to time how long the touchdown is
+			//start grabbedTickTimer to time how long the touchdown is
 			//if timer completes (means longPress), grab the tick at that particular time
 			grabbedTickTimer = new Timer(500,1);
 			grabbedTickTimer.start();
-			grabbedTickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _triggerLongTouch);
+			grabbedTickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _grabTickOnLongTouch);
 			
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
@@ -276,25 +297,37 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			else
 				_autoSnap(xPos);
 			
-			contentGroup.removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
-			_magnifier.removeEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
-			stage.addEventListener(MouseEvent.MOUSE_UP, _touchEnd);
+			if(_keyMenu.isOpen || _keyMagnifier.isOpen)
+				_endTap(event);
+		}
+		
+		private function _longTap(event:TimerEvent):void
+		{
+			longTap = true;
+			longTapTimer.stop();
+			longTapTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, _longTap);
+			
+			contentGroup.removeEventListener(MouseEvent.MOUSE_DOWN, downTap);
+			contentGroup.removeEventListener(MouseEvent.CLICK, _handleTap);
+			contentGroup.removeEventListener(MouseEvent.DOUBLE_CLICK, _handleTap);
+			
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, _moveTap);
+			stage.addEventListener(MouseEvent.MOUSE_UP, _endTap);
 		}
 		
 		/**
 		 * Update time control interaction
 		 */
-		protected function _touchMove(event:MouseEvent):void
+		private function _moveTap(event:MouseEvent):void
 		{
 			action = "Move time slider on Time Bar";
 			
 			KSketch_CanvasView.tracker.trackPageview( "/timebar/moveTime" );
+			
 			//remove grabbed tick timer if it hasn't completed countdown when user enters move
 			if(grabbedTickTimer.currentCount == 0)
 			{
-				_longTouch = false;
-				grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _triggerLongTouch);
+				grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _grabTickOnLongTouch);
 				grabbedTickTimer.stop();
 			}
 			
@@ -305,7 +338,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
 			_substantialMovement = true;
-
+			
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			var i:int;
 			
@@ -325,7 +358,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			}
 			
 			//Rout interaction into the tick mark control if there is a grabbed tick
-			if(!KSketch_CanvasView.isPlayer && (_tickmarkControl.grabbedTick && _longTouch))
+			if(!KSketch_CanvasView.isPlayer && (_tickmarkControl.grabbedTick))
 			{
 				var oldXPos:Number;
 				
@@ -383,12 +416,12 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		/**
 		 * End of time control interaction
 		 */
-		protected function _touchEnd(event:MouseEvent):void
+		private function _endTap(event:MouseEvent):void
 		{
 			//remove grabbedTick timer if it hasn't complete countdown when user ends touch
 			if(grabbedTickTimer.currentCount == 0)
 			{
-				grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _triggerLongTouch);
+				grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _grabTickOnLongTouch);
 				grabbedTickTimer.stop();
 			}
 			
@@ -401,31 +434,15 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				action = "Move Tick Mark on Time Bar";
 			}
 			
-			if(_longTouch && !moveTick && !KSketch_CanvasView.isWebViewer)
-			{
-				_keyMenu.open(contentGroup,true);
-				_keyMenu.x = _magnifier.x;
-				_keyMenu.position = position;
-
-				if(this.position == BAR_TOP)
-					_keyMenu.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y + 3;
-				else
-					_keyMenu.y = contentGroup.localToGlobal(new Point()).y
-				
-				action = "Open Time Bar Context Menu";
-			}
+			resetLongTapTimer();
+			resetTapSettings();
 			
-			//reset boolean properties
-			_magnifier.removeMagnification();
-			_longTouch = false;
-			moveTick = false;
-			grabbedTickIndex = null;
-			isNearTick = false;
+			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _moveTap);
+			stage.removeEventListener(MouseEvent.MOUSE_UP, _endTap);
 			
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _touchMove);
-			stage.removeEventListener(MouseEvent.MOUSE_UP, _touchEnd);
-			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
-			_magnifier.addEventListener(MouseEvent.MOUSE_DOWN, _touchDown);
+			contentGroup.addEventListener(MouseEvent.MOUSE_DOWN, downTap);
+			contentGroup.addEventListener(MouseEvent.CLICK, _handleTap, false, 0, true);
+			contentGroup.addEventListener(MouseEvent.DOUBLE_CLICK, _handleTap, false, 0, true);
 			
 			//LOG
 			_KSketch.logCounter ++;
@@ -437,18 +454,74 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			KSketch2.log.appendChild(log);
 		}
 		
-		private function _triggerLongTouch(event:TimerEvent):void
-		{
-			KSketch_CanvasView.tracker.trackPageview( "/timebar/grabTick" );
-			_longTouch = true;
-			
-			_showMagnifier(event);
-			grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _triggerLongTouch);
-			grabbedTickTimer.stop();
+		private function _handleTap(eventt:MouseEvent):void {
+			if (mouseTimeout != "undefined") {
+				_doubleTap(eventt);
+				clearTimeout(mouseTimeout);
+				mouseTimeout = "undefined";
+			} else {
+				function _handleSingleTap():void {
+					_singleTap(eventt);
+					mouseTimeout = "undefined";
+				}
+				mouseTimeout = setTimeout(_handleSingleTap, DOUBLE_CLICK_SPEED);
+			}
 		}
 		
-		public function _showMagnifier(event:TimerEvent):void
+		private function _singleTap(event:MouseEvent):void 
 		{
+			action = "Open time bar context magnifier (single tap)";
+			
+			if(!longTap)
+			{
+				_magnifier.magnify(timeToX(time));
+				_keyMagnifier.open(contentGroup,true);
+				_keyMagnifier.x = _magnifier.x;
+				_keyMagnifier.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - 106;
+			}
+			
+			_endTap(event);
+		}
+		
+		private function _doubleTap(event:MouseEvent):void 
+		{
+			action = "Open time bar context menu (double tap)";
+			
+			_keyMenu.open(contentGroup,true);
+			_keyMenu.x = _magnifier.x;
+			_keyMenu.position = position;
+			
+			if(this.position == BAR_TOP)
+				_keyMenu.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y + 3;
+			else
+				_keyMenu.y = contentGroup.localToGlobal(new Point()).y
+		
+			_endTap(event);
+		}
+		
+		private function resetLongTapTimer():void
+		{
+			if(longTapTimer)
+			{
+				longTapTimer.stop();
+				longTapTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, _longTap);
+				longTapTimer = null;
+			}
+		}
+		
+		private function resetTapSettings():void
+		{
+			//reset boolean properties
+			_magnifier.removeMagnification();
+			moveTick = false;
+			grabbedTickIndex = null;
+			isNearTick = false;
+		}
+		
+		private function _grabTickOnLongTouch(event:TimerEvent):void
+		{
+			KSketch_CanvasView.tracker.trackPageview( "/timebar/grabTick" );
+			
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick && !KSketch_CanvasView.isWebViewer)
 			{	
 				
@@ -463,6 +536,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				if(Math.abs(xPos - timeX) >KSketch_TickMark_Control.GRAB_THRESHOLD)
 					time = xToTime(xPos);
 			}
+			
+			grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _grabTickOnLongTouch);
+			grabbedTickTimer.stop();
 		}
 		
 		public function _autoSnap(xPos:Number):void

@@ -39,21 +39,37 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_forward_down:Class;
 		
-		[Embed("assets/Button_Texture_Prev.png")] 
+		[Embed("assets/Button_Texture_Frame_Prev.png")] 
 		[Bindable] 
-		public static var texture_previous:Class;
+		public static var texture_frame_previous:Class;
 		
-		[Embed("assets/Button_Texture_Prev_Down.png")] 
+		[Embed("assets/Button_Texture_Frame_Prev_Down.png")] 
 		[Bindable] 
-		public static var texture_previous_down:Class;
+		public static var texture_frame_previous_down:Class;
 		
-		[Embed("assets/Button_Texture_Next.png")] 
+		[Embed("assets/Button_Texture_Frame_Next.png")] 
 		[Bindable] 
-		public static var texture_next:Class;
+		public static var texture_frame_next:Class;
 		
-		[Embed("assets/Button_Texture_Next_Down.png")] 
+		[Embed("assets/Button_Texture_Frame_Next_Down.png")] 
 		[Bindable] 
-		public static var texture_next_down:Class;
+		public static var texture_frame_next_down:Class;
+		
+		[Embed("assets/Button_Texture_Time_Prev.png")] 
+		[Bindable] 
+		public static var texture_time_previous:Class;
+		
+		[Embed("assets/Button_Texture_Time_Prev_Down.png")] 
+		[Bindable] 
+		public static var texture_time_previous_down:Class;
+		
+		[Embed("assets/Button_Texture_Time_Next.png")] 
+		[Bindable] 
+		public static var texture_time_next:Class;
+		
+		[Embed("assets/Button_Texture_Time_Next_Down.png")] 
+		[Bindable] 
+		public static var texture_time_next_down:Class;
 		
 		[Embed("assets/Button_Texture_Menu.png")] 
 		[Bindable] 

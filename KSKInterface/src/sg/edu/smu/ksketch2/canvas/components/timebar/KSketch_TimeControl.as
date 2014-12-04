@@ -73,7 +73,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		private var _touchStage:Point = new Point(0,0);
 		private var _substantialMovement:Boolean = false;
 		
-		private var grabbedTickTimer:Timer;
 		private var grabbedTickIndex:int;
 		private var nearTick: Number;
 		private var isNearTick: Boolean = false;
@@ -231,21 +230,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		{
 			longTap = false;
 			
+			//if timer completes (means longPress), grab the tick at that particular time
 			if(!longTapTimer)
 			{
-				longTapTimer = new Timer(500,1);
+				longTapTimer = new Timer(600,1);
 				longTapTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _longTap);
 				longTapTimer.start();
 			}
 			
 			if(_isPlaying)
 				stop();
-			
-			//start grabbedTickTimer to time how long the touchdown is
-			//if timer completes (means longPress), grab the tick at that particular time
-			grabbedTickTimer = new Timer(500,1);
-			grabbedTickTimer.start();
-			grabbedTickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _grabTickOnLongTouch);
 			
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
@@ -307,6 +301,23 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			longTapTimer.stop();
 			longTapTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, _longTap);
 			
+			KSketch_CanvasView.tracker.trackPageview( "/timebar/grabTick" );
+			
+			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick && !KSketch_CanvasView.isWebViewer)
+			{	
+				
+				var toShowTime:Number = xToTime(_tickmarkControl.grabbedTick.x);
+				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(toShowTime));
+				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
+			}
+			else
+			{
+				var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
+				var timeX:Number = timeToX(time);
+				if(Math.abs(xPos - timeX) >KSketch_TickMark_Control.GRAB_THRESHOLD)
+					time = xToTime(xPos);
+			}
+			
 			contentGroup.removeEventListener(MouseEvent.MOUSE_DOWN, downTap);
 			contentGroup.removeEventListener(MouseEvent.CLICK, _handleTap);
 			contentGroup.removeEventListener(MouseEvent.DOUBLE_CLICK, _handleTap);
@@ -323,13 +334,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			action = "Move time slider on Time Bar";
 			
 			KSketch_CanvasView.tracker.trackPageview( "/timebar/moveTime" );
-			
-			//remove grabbed tick timer if it hasn't completed countdown when user enters move
-			if(grabbedTickTimer.currentCount == 0)
-			{
-				grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _grabTickOnLongTouch);
-				grabbedTickTimer.stop();
-			}
 			
 			//Only consider a move if a significant dx has been covered
 			if(Math.abs(event.stageX - _touchStage.x) < (pixelPerFrame*0.5))
@@ -418,13 +422,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		private function _endTap(event:MouseEvent):void
 		{
-			//remove grabbedTick timer if it hasn't complete countdown when user ends touch
-			if(grabbedTickTimer.currentCount == 0)
-			{
-				grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _grabTickOnLongTouch);
-				grabbedTickTimer.stop();
-			}
-			
 			//Same, route the interaction to the tick mark control if there is a grabbed tick
 			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick)
 			{
@@ -516,29 +513,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			moveTick = false;
 			grabbedTickIndex = null;
 			isNearTick = false;
-		}
-		
-		private function _grabTickOnLongTouch(event:TimerEvent):void
-		{
-			KSketch_CanvasView.tracker.trackPageview( "/timebar/grabTick" );
-			
-			if(!KSketch_CanvasView.isPlayer && _tickmarkControl.grabbedTick && !KSketch_CanvasView.isWebViewer)
-			{	
-				
-				var toShowTime:Number = xToTime(_tickmarkControl.grabbedTick.x);
-				_magnifier.showTime(toTimeCode(toShowTime), timeToFrame(toShowTime),timeToX(toShowTime));
-				_magnifier.magnify(_tickmarkControl.grabbedTick.x);
-			}
-			else
-			{
-				var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
-				var timeX:Number = timeToX(time);
-				if(Math.abs(xPos - timeX) >KSketch_TickMark_Control.GRAB_THRESHOLD)
-					time = xToTime(xPos);
-			}
-			
-			grabbedTickTimer.removeEventListener(TimerEvent.TIMER, _grabTickOnLongTouch);
-			grabbedTickTimer.stop();
 		}
 		
 		public function _autoSnap(xPos:Number):void

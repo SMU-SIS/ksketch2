@@ -29,18 +29,22 @@
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			
 			public static const LEFT:int = -1;
 			public static const RIGHT:int = 1;
 
 			private var _KSketch:KSketch2;
+			private var _interactionControl:KInteractionControl;
 			private var _type:int;
 			private var _timeControl:KSketch_TimeControl;
 			private var _tapGesture:TapGesture;
 
-			public function init(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, type:int):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
+								timeControl:KSketch_TimeControl, type:int):void
 			{
 				_KSketch = KSketchInstance;
+				_interactionControl = interactionControl;
 				_timeControl = timeControl;
 				_type = type;
 				
@@ -55,19 +59,20 @@
 			private function _handleTap(event:org.gestouch.events.GestureEvent):void
 			{
 				var frame:String;
+				var previous:Boolean = false;
 				if(_type == LEFT)
 				{
 					frame = "Move Previous Frame";
 					KSketch_CanvasView.tracker.trackPageview( "/timebar/previousFrame" );
-					_timeControl.time -= KSketch2.ANIMATION_INTERVAL;
+					previous = true;
 				}
 				else
 				{
 					frame = "Move Next Frame";
 					KSketch_CanvasView.tracker.trackPageview( "/timebar/nextFrame" );
-					_timeControl.time += KSketch2.ANIMATION_INTERVAL;
 				}
 				
+				_timeControl.moveTickMark(previous);
 				
 				//LOG
 				_KSketch.logCounter ++;

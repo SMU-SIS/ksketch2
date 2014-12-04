@@ -116,6 +116,18 @@
 				clearButton.enabled = true;
 			}
 			
+			private function _updateMoveFrameKeys():void
+			{
+				leftFrame.enabled = false;
+				rightFrame.enabled = false;
+				
+				if(_timeControl.isATick(_timeControl.timeToX(_timeControl.time)))
+				{
+					leftFrame.enabled = true;
+					rightFrame.enabled = true;
+				}
+			}
+			
 			private function _initButtons():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, _initButtons);
@@ -129,8 +141,8 @@
 				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down);
 				clearButton.initSkin();
 				
-				leftFrame.init(_KSketch, _timeControl, KSketch_Frame_Button.LEFT);
-				rightFrame.init(_KSketch, _timeControl, KSketch_Frame_Button.RIGHT);
+				leftFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Frame_Button.LEFT);
+				rightFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Frame_Button.RIGHT);
 			}
 			
 			public function set position(value:int):void
@@ -156,6 +168,7 @@
 				_updateInsertKey();
 				_updateRemoveKey();
 				_updateClearKeys();
+				_updateMoveFrameKeys();
 				
 				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);					
 			}

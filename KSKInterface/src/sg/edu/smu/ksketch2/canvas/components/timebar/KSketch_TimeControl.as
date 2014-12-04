@@ -515,6 +515,79 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			isNearTick = false;
 		}
 		
+		public function moveTickMark(previous:Boolean):void
+		{
+			var xPos:Number = timeToX(time);
+			
+			if(previous)
+				_tickmarkControl.moveLeft = true;
+			else
+				_tickmarkControl.moveLeft = false;
+			
+			isATick(xPos);
+			
+			//Rout interaction into the tick mark control if there is a grabbed tick
+			if(_tickmarkControl.grabbedTick)
+			{
+				var oldXPos:Number;
+				
+				if(previous)
+					time -= KSketch2.ANIMATION_INTERVAL;
+				else
+					time += KSketch2.ANIMATION_INTERVAL;
+				xPos = roundToNearestTenth(timeToX(time));
+				_tickmarkControl.move_markers(xPos);
+				
+				//If tickmark moves to the left and causes stacking of previous keyframes
+				if(previous)
+				{
+					var length:int = _tickmarkControl._ticks.length;
+					for(var i:int=0; i<length; i++)
+					{
+						//get hold of the grabbed tick mark index first
+						if(!grabbedTickIndex)
+						{
+							if(_tickmarkControl.grabbedTick.x == _tickmarkControl._ticks[i].x)
+								grabbedTickIndex = i;
+						}
+						
+						if(grabbedTickIndex)
+						{
+							//to prevent grabbing of near tick marks when stacking occurs, 
+							//reposition xPos to the initial grabbed tick mark's x pos 
+							if(i != grabbedTickIndex)
+							{
+								if(xPos == _tickmarkControl._ticks[i].x)
+									xPos = _tickmarkControl._ticks[grabbedTickIndex].x;
+							}
+							else
+								oldXPos = _tickmarkControl._ticks[i].x;
+						}
+					}
+				}
+			}
+		}
+		
+		public function isATick(xPos:Number):Boolean
+		{
+			var xPosIsTick:Boolean = false;
+			if(_tickmarkControl._ticks)
+			{
+				var i:int;
+				var roundXPos:Number = roundToNearestTenth(xPos);
+				for(i=0; i<_tickmarkControl._ticks.length; i++)
+				{
+					if(roundXPos == _tickmarkControl._ticks[i].x)
+					{
+						xPosIsTick = true;
+						_tickmarkControl.grabTick(roundXPos);
+						break;
+					}
+				}
+			}
+			return xPosIsTick;
+		}
+		
 		public function _autoSnap(xPos:Number):void
 		{
 			time = xToTime(xPos); //Else just change the time

@@ -182,12 +182,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		{
 			var action:String;
 			
-			if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl._isPlaying)
+			if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl.isPlaying)
 			{
 				action = "Activate Demonstration Mode";
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 			}	
-			else if(KSketch_TimeControl._isPlaying)
+			else if(KSketch_TimeControl.isPlaying)
 			{
 				action = "Activate Demonstration Mode";
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
@@ -272,7 +272,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			if(!_isInteracting)
 				transitionMode = KSketch2.TRANSITION_INTERPOLATED;
 			
-			if(KSketch_TimeControl._isPlaying && !_isInteracting)
+			if(KSketch_TimeControl.isPlaying && !_isInteracting)
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 				
 			var _isErasedObject:Boolean = _interactionControl.isSelectionErased(_interactionControl.selection);
@@ -288,7 +288,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				_widget.y = selectionCenter.y;
 				
 				if(_interactionControl.selection.selectionTransformable(_KSketch.time) ||
-					KSketch_TimeControl._isPlaying)
+					KSketch_TimeControl.isPlaying)
 					enabled = true;
 				else
 					enabled = false;	

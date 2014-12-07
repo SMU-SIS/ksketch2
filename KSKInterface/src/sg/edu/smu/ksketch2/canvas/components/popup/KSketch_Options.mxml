@@ -265,7 +265,7 @@
 			private function _setStudy(value:int):void
 			{
 				KSingleReferenceFrameOperator.mode = value;
-				KSketch_Timebar_ContextMenu.mode = value;
+				KSketch_Timebar_Context_Double.mode = value;
 				KKeyFrame.mode = value;
 				mode = value;
 			}

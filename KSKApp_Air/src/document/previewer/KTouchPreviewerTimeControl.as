@@ -34,7 +34,7 @@ package document.previewer
 		private var _maxPlayTime:int;
 		private var _rewindToTime:int;
 		
-		private var _isPlaying:Boolean;
+		private var isPlaying:Boolean;
 		
 		protected var _panVector:Point = new Point();
 		protected var _panSpeed:int = _PAN_SPEED_1;
@@ -48,7 +48,7 @@ package document.previewer
 		public function init(KSketchInstance:KSketch2, inputComponent:DisplayObject):void
 		{
 			_KSketch = KSketchInstance;
-			_isPlaying = false;
+			isPlaying = false;
 			
 			_timer = new Timer(KSketch2.ANIMATION_INTERVAL);
 			
@@ -77,7 +77,7 @@ package document.previewer
 		
 		public function handlePlayPause(event:org.gestouch.events.GestureEvent):void
 		{
-			if(_isPlaying)
+			if(isPlaying)
 				stop();
 			else
 				play();	
@@ -132,7 +132,7 @@ package document.previewer
 		public function play():void
 		{
 			_timer.delay = KSketch2.ANIMATION_INTERVAL;
-			_timer.addEventListener(TimerEvent.TIMER, playHandler);
+			_timer.addEventListener(TimerEvent.TIMER, _playHandler);
 			_timer.start();
 			
 			if(_KSketch.maxTime <= time)
@@ -141,7 +141,7 @@ package document.previewer
 			_maxPlayTime = _KSketch.maxTime;
 			
 			_rewindToTime = time;
-			_isPlaying = true;
+			isPlaying = true;
 		}
 		
 		/**
@@ -158,7 +158,7 @@ package document.previewer
 		 * Updates the play state machine
 		 * Different from record handler because it stops on max time
 		 */
-		private function playHandler(event:TimerEvent):void 
+		private function _playHandler(event:TimerEvent):void 
 		{
 			if(time >= _maxPlayTime)
 			{
@@ -174,9 +174,9 @@ package document.previewer
 		 */
 		public function stop():void
 		{
-			_timer.removeEventListener(TimerEvent.TIMER, playHandler);
+			_timer.removeEventListener(TimerEvent.TIMER, _playHandler);
 			_timer.stop();
-			_isPlaying = false;
+			isPlaying = false;
 		}
 	}
 }

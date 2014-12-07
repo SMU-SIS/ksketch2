@@ -22,13 +22,9 @@
 			
 			import spark.components.Image;
 			
-			import org.gestouch.events.GestureEvent;
-			import org.gestouch.gestures.TapGesture;
-			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			
 			public static const LEFT:int = -1;
@@ -38,7 +34,10 @@
 			private var _interactionControl:KInteractionControl;
 			private var _type:int;
 			private var _timeControl:KSketch_TimeControl;
-			private var _tapGesture:TapGesture;
+			
+			private var _firstDelay:Number = 300; // Initial delay (in msecs) for auto-changing minutes.
+			private var _timer:Timer = new Timer(_firstDelay,0); // Timer object for auto-changing minutes.
+			private var _isPrevious:Boolean = false;
 
 			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 								timeControl:KSketch_TimeControl, type:int):void
@@ -47,41 +46,6 @@
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
 				_type = type;
-				
-				_tapGesture = new TapGesture(this);
-				_tapGesture.maxTapDuration = 200;
-				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
-			}
-			
-			/**
-			 * Tap handler to handle tapping to advance/roll back to next/prev frame
-			 */
-			private function _handleTap(event:org.gestouch.events.GestureEvent):void
-			{
-				var frame:String;
-				var previous:Boolean = false;
-				if(_type == LEFT)
-				{
-					frame = "Move Previous Frame";
-					KSketch_CanvasView.tracker.trackPageview( "/timebar/previousFrame" );
-					previous = true;
-				}
-				else
-				{
-					frame = "Move Next Frame";
-					KSketch_CanvasView.tracker.trackPageview( "/timebar/nextFrame" );
-				}
-				
-				_timeControl.moveTickMark(previous);
-				
-				//LOG
-				_KSketch.logCounter ++;
-				var log:XML = <Action/>;
-				var date:Date = new Date();
-				log.@category = "Time Bar Context Menu";
-				log.@type = "Go to " + frame;
-				//trace("ACTION " + _KSketch.logCounter + ": Go to " + frame);
-				KSketch2.log.appendChild(log);
 			}
 			
 			private function _initSkin():void

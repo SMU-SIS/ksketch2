@@ -135,8 +135,8 @@
 				
 				//Refresh the time and make sure the xPosition is correct in the case of resizes
 				showTime(KSketch_TimeControl.toTimeCode(_timeControl.time),
-					_timeControl.timeToFrame(_timeControl.time),
-					_timeControl.timeToX(_timeControl.time));
+				_timeControl.timeToFrame(_timeControl.time),
+				_timeControl.timeToX(_timeControl.time));
 			}
 			
 			/**
@@ -157,6 +157,7 @@
 			 */
 			public function magnify(xPos:Number):void
 			{	
+				/* Disable magnifier
 				//create a black line for current time in magnifying glass
 				var bitmapdata:BitmapData = new BitmapData(KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_THICKNESS, _timeControl.height);
 				var currentTimeLabel:Label = new Label();
@@ -179,13 +180,9 @@
 				//Display the source
 				if(!_magnifiedImage.parent)
 					magContents.addElementAt(_magnifiedImage,0);	
+				*/
 				
 				_magnifiedImage.source = _magnifiedData;
-			}
-			
-			public function getMagnifiedData():BitmapData
-			{
-				return _magnifiedData;
 			}
 			
 			//Close the magnification
@@ -219,7 +216,7 @@
 									  paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
 									  paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
 				</s:layout>
-				<s:Group width="100%">
+				<s:Group width="105%">
 					<s:layout>
 						<s:HorizontalLayout/>
 					</s:layout>

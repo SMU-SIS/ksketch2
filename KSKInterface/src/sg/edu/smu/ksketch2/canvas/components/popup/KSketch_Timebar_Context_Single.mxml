@@ -21,60 +21,48 @@
 			import mx.events.FlexMouseEvent;
 			
 			import spark.components.Application;
-			import spark.components.Image;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
-			
-			public static const CONTROLPOINT:int = 0;
-			public static const KEYFRAME:int = 1;			
-			public static var mode: int = KEYFRAME;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
 			private var _timeControl:KSketch_TimeControl;
-			private var _timebarMagnifier:KSketch_Timebar_Magnifier;
 			
-			private var _magnifiedImage:Image;
-			private var _sourceRect:Rectangle;
-			private var _magnifiedData:BitmapData;
+			private var _firstDelay:Number = 300; // Initial delay (in msecs) for auto-changing minutes.
+			private var _timer:Timer = new Timer(_firstDelay,0); // Timer object for auto-changing minutes.
+			private var _isPrevious:Boolean = false;
 			
-			[Bindable]
-			private var _onTop:Boolean = true;
-			
-			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
-								 timeControl:KSketch_TimeControl, timebarMagnifier:KSketch_Timebar_Magnifier):void
+			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, timeControl:KSketch_TimeControl):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
-				_timebarMagnifier = timebarMagnifier;
-				
-				//Display for the magnified timeline
-				_magnifiedImage = new Image();
-				_magnifiedImage.scaleX = KSketchStyles.MAGNIFIER_SCALE;
-				_magnifiedImage.scaleY = KSketchStyles.MAGNIFIER_SCALE;
-				
-				_sourceRect = new Rectangle();
-				_sourceRect.width = KSketchStyles.MAGNIFIER_IMAGE_UNSCALED_WIDTH;
-				_sourceRect.height = _timeControl.contentGroup.height/2.5;
-				_sourceRect.y = 0;
 			}
 			
 			private function _initButtons():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, _initButtons);
-				leftFrame.init(_KSketch, _timeControl, this, _timebarMagnifier, KSketch_Time_Button.LEFT);
-				rightFrame.init(_KSketch, _timeControl, this, _timebarMagnifier, KSketch_Time_Button.RIGHT);
+				leftFrame.init(_KSketch, _timeControl, KSketch_Timebar_Button_Single.LEFT);
+				rightFrame.init(_KSketch, _timeControl, KSketch_Timebar_Button_Single.RIGHT);
+				
+				leftFrame.addEventListener(MouseEvent.MOUSE_DOWN, _mouseDownHandler_prev);
+				leftFrame.addEventListener(MouseEvent.ROLL_OUT, _mouseUpHandler);
+				leftFrame.addEventListener(MouseEvent.MOUSE_UP, _mouseUpHandler);
+				
+				rightFrame.addEventListener(MouseEvent.MOUSE_DOWN, _mouseDownHandler_next);
+				rightFrame.addEventListener(MouseEvent.ROLL_OUT, _mouseUpHandler);
+				rightFrame.addEventListener(MouseEvent.MOUSE_UP, _mouseUpHandler);
+				
+				_timer.addEventListener(TimerEvent.TIMER, _timeChange);
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
 				super.open(owner, modal);
-				setMagnifier();
 				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);					
 			}
 			
@@ -85,22 +73,59 @@
 				super.close(commit, data);
 			}
 			
-			public function setMagnifier():void
-			{
-				_magnifiedData = _timebarMagnifier.getMagnifiedData();
-				
-				//Display the source
-				if(!_magnifiedImage.parent)
-					magContent.addElementAt(_magnifiedImage,1);	
-				
-				_magnifiedImage.source = _magnifiedData;
-			}
-			
 			private function _handleMouseDownOutside(event:FlexMouseEvent):void
 			{
-				if(event.stageY > 680)
-					_timeControl.downTap(event);
 				close();
+			}
+			
+			private function _mouseDownHandler_prev(event:MouseEvent):void {
+				KSketch_CanvasView.tracker.trackPageview( "/timebar/previousTime" );
+				
+				_isPrevious = true;
+				_timeControl.time -= KSketch2.ANIMATION_INTERVAL;
+				
+				_timer.delay = _firstDelay;
+				_timer.reset();
+				_timer.start();
+			}
+			
+			private function _mouseDownHandler_next(event:MouseEvent):void {
+				KSketch_CanvasView.tracker.trackPageview( "/timebar/nextTime" );
+				
+				_isPrevious = false;
+				_timeControl.time += KSketch2.ANIMATION_INTERVAL;
+				
+				_timer.delay = _firstDelay;
+				_timer.reset();
+				_timer.start();
+			}
+			
+			private function _mouseUpHandler(mevt:MouseEvent):void {
+				_timer.stop();
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Time Bar Context (Single)";
+				//trace("ACTION " + _KSketch.logCounter + ": Go to " + frame);
+				KSketch2.log.appendChild(log);
+			}
+			
+			private function _timeChange(tevt:TimerEvent):void {
+				if(_isPrevious)
+					_timeControl.time -= KSketch2.ANIMATION_INTERVAL;
+				else
+					_timeControl.time += KSketch2.ANIMATION_INTERVAL;
+				
+				if (_timer.currentCount > 15) {
+					_timer.delay = _firstDelay/5;
+					return;
+				}
+				if (_timer.currentCount > 5) {
+					_timer.delay = _firstDelay/2;
+					return;
+				}
 			}
 			
 		]]>
@@ -119,12 +144,12 @@
 										  paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
 										  paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
 					</s:layout>
-					<buttons:KSketch_Time_Button
+					<buttons:KSketch_Timebar_Button_Single
 						id="leftFrame"
 						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 						/>
-					<buttons:KSketch_Time_Button
+					<buttons:KSketch_Timebar_Button_Single
 						id="rightFrame"
 						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"

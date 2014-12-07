@@ -43,6 +43,10 @@
 			private var _interactionControl:KInteractionControl;
 			private var _timeControl:KSketch_TimeControl;
 			
+			private var _firstDelay:Number = 300; // Initial delay (in msecs) for auto-changing minutes.
+			private var _timer:Timer = new Timer(_firstDelay,0); // Timer object for auto-changing minutes.
+			private var _isPrevious:Boolean = false;
+			
 			[Bindable]
 			private var _onTop:Boolean = true;
 			
@@ -141,8 +145,17 @@
 				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down);
 				clearButton.initSkin();
 				
-				leftFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Frame_Button.LEFT);
-				rightFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Frame_Button.RIGHT);
+				leftFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Timebar_Button_Double.LEFT);
+				leftFrame.addEventListener(MouseEvent.MOUSE_DOWN, _mouseDownHandler_prev);
+				leftFrame.addEventListener(MouseEvent.ROLL_OUT, _mouseUpHandler);
+				leftFrame.addEventListener(MouseEvent.MOUSE_UP, _mouseUpHandler);
+				
+				rightFrame.addEventListener(MouseEvent.MOUSE_DOWN, _mouseDownHandler_next);
+				rightFrame.addEventListener(MouseEvent.ROLL_OUT, _mouseUpHandler);
+				rightFrame.addEventListener(MouseEvent.MOUSE_UP, _mouseUpHandler);
+				rightFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Timebar_Button_Double.RIGHT);
+				
+				_timer.addEventListener(TimerEvent.TIMER, _timeChange);
 			}
 			
 			public function set position(value:int):void
@@ -182,8 +195,6 @@
 			
 			private function _handleMouseDownOutside(event:FlexMouseEvent):void
 			{
-				if(event.stageY > 680)
-					_timeControl.downTap(event);
 				close();
 			}
 			
@@ -341,6 +352,53 @@
 				}
 			}
 			
+			private function _mouseDownHandler_prev(event:MouseEvent):void {
+				KSketch_CanvasView.tracker.trackPageview("/timebar/previousFrame");
+				
+				_isPrevious = true;
+				_timeControl.moveTickMark(_isPrevious);
+				
+				_timer.delay = _firstDelay;
+				_timer.reset();
+				_timer.start();
+			}
+			
+			private function _mouseDownHandler_next(event:MouseEvent):void {
+				KSketch_CanvasView.tracker.trackPageview("/timebar/nextFrame");
+				
+				_isPrevious = false;
+				_timeControl.moveTickMark(_isPrevious);
+				
+				_timer.delay = _firstDelay;
+				_timer.reset();
+				_timer.start();
+			}
+			
+			private function _mouseUpHandler(mevt:MouseEvent):void {
+				_timer.stop();
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Time Bar Context Menu";
+				//trace("ACTION " + _KSketch.logCounter + ": Go to " + frame);
+				KSketch2.log.appendChild(log);
+			}
+			
+			private function _timeChange(tevt:TimerEvent):void {
+				_timeControl.moveTickMark(_isPrevious);
+				
+				if (_timer.currentCount > 15) {
+					_timer.delay = _firstDelay/5;
+					return;
+				}
+				if (_timer.currentCount > 5) {
+					_timer.delay = _firstDelay/2;
+					return;
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	<s:Group width="100%" height="100%" id="actualContentContainer" y="{_onTop?0: -arrowHead.height - arrowHeadBottom.height - calloutContents.height}">
@@ -383,7 +441,7 @@
 												paddingTop="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
 												paddingBottom="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"/>
 						</s:layout>
-						<buttons:KSketch_Frame_Button
+						<buttons:KSketch_Timebar_Button_Double
 							id="leftFrame"
 							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
@@ -406,7 +464,7 @@
 							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 							/>
-						<buttons:KSketch_Frame_Button
+						<buttons:KSketch_Timebar_Button_Double
 							id="rightFrame"
 							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"

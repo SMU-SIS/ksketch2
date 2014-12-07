@@ -55,7 +55,7 @@
 				if(!_timeControl.timings)
 					return;
 				
-				if(KSketch_TimeControl._isPlaying)
+				if(KSketch_TimeControl.isPlaying)
 					_timeControl.stop();
 				
 				var i:int;

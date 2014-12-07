@@ -22,15 +22,9 @@
 			
 			import spark.components.Image;
 			
-			import org.gestouch.events.GestureEvent;
-			import org.gestouch.gestures.TapGesture;
-			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Magnifier;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			
 			public static const LEFT:int = -1;
 			public static const RIGHT:int = 1;
@@ -38,56 +32,12 @@
 			private var _KSketch:KSketch2;
 			private var _type:int;
 			private var _timeControl:KSketch_TimeControl;
-			private var _contextMagnifier:KSketch_Timebar_Context_Magnifier;
-			private var _magnifier:KSketch_Timebar_Magnifier;
-			private var _tapGesture:TapGesture;
 
-			public function init(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, 
-								contextMagnifier:KSketch_Timebar_Context_Magnifier, 
-								magnifier:KSketch_Timebar_Magnifier, type:int):void
+			public function init(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, type:int):void
 			{
 				_KSketch = KSketchInstance;
 				_timeControl = timeControl;
-				_contextMagnifier = contextMagnifier;
-				_magnifier = magnifier;
 				_type = type;
-				
-				_tapGesture = new TapGesture(this);
-				_tapGesture.maxTapDuration = 200;
-				_tapGesture.addEventListener(org.gestouch.events.GestureEvent.GESTURE_RECOGNIZED, _handleTap);
-			}
-			
-			/**
-			 * Tap handler to handle tapping to advance/roll back to next/prev frame
-			 */
-			private function _handleTap(event:org.gestouch.events.GestureEvent):void
-			{
-				var frame:String;
-				if(_type == LEFT)
-				{
-					frame = "Previous Time";
-					KSketch_CanvasView.tracker.trackPageview( "/timebar/previousTime" );
-					_timeControl.time -= KSketch2.ANIMATION_INTERVAL;
-				}
-				else
-				{
-					frame = "Next Time";
-					KSketch_CanvasView.tracker.trackPageview( "/timebar/nextTime" );
-					_timeControl.time += KSketch2.ANIMATION_INTERVAL;
-				}
-				
-				_magnifier.magnify(_timeControl.timeToX(_timeControl.time));
-				_magnifier.removeMagnification();
-				_contextMagnifier.setMagnifier();
-				
-				//LOG
-				_KSketch.logCounter ++;
-				var log:XML = <Action/>;
-				var date:Date = new Date();
-				log.@category = "Time Bar Context Magnifier";
-				log.@type = "Go to " + frame;
-				//trace("ACTION " + _KSketch.logCounter + ": Go to " + frame);
-				KSketch2.log.appendChild(log);
 			}
 			
 			private function _initSkin():void

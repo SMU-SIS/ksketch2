@@ -125,7 +125,8 @@
 				leftFrame.enabled = false;
 				rightFrame.enabled = false;
 				
-				if(_timeControl.isATick(_timeControl.timeToX(_timeControl.time)))
+				var isTick:Boolean = _timeControl.isATick(_timeControl.timeToX(_timeControl.time), true);
+				if(isTick)
 				{
 					leftFrame.enabled = true;
 					rightFrame.enabled = true;
@@ -150,10 +151,10 @@
 				leftFrame.addEventListener(MouseEvent.ROLL_OUT, _mouseUpHandler);
 				leftFrame.addEventListener(MouseEvent.MOUSE_UP, _mouseUpHandler);
 				
+				rightFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Timebar_Button_Double.RIGHT);
 				rightFrame.addEventListener(MouseEvent.MOUSE_DOWN, _mouseDownHandler_next);
 				rightFrame.addEventListener(MouseEvent.ROLL_OUT, _mouseUpHandler);
 				rightFrame.addEventListener(MouseEvent.MOUSE_UP, _mouseUpHandler);
-				rightFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Timebar_Button_Double.RIGHT);
 				
 				_timer.addEventListener(TimerEvent.TIMER, _timeChange);
 			}
@@ -183,7 +184,7 @@
 				_updateClearKeys();
 				_updateMoveFrameKeys();
 				
-				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);					
+				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);	
 			}
 			
 			override public function close(commit:Boolean=false, data:*=null):void
@@ -352,10 +353,12 @@
 				}
 			}
 			
-			private function _mouseDownHandler_prev(event:MouseEvent):void {
+			private function _mouseDownHandler_prev(event:MouseEvent):void 
+			{
 				KSketch_CanvasView.tracker.trackPageview("/timebar/previousFrame");
 				
 				_isPrevious = true;
+				_timeControl.isATick(_timeControl.timeToX(_timeControl.time), true);
 				_timeControl.moveTickMark(_isPrevious);
 				
 				_timer.delay = _firstDelay;
@@ -363,10 +366,12 @@
 				_timer.start();
 			}
 			
-			private function _mouseDownHandler_next(event:MouseEvent):void {
+			private function _mouseDownHandler_next(event:MouseEvent):void 
+			{
 				KSketch_CanvasView.tracker.trackPageview("/timebar/nextFrame");
 				
 				_isPrevious = false;
+				_timeControl.isATick(_timeControl.timeToX(_timeControl.time), true);
 				_timeControl.moveTickMark(_isPrevious);
 				
 				_timer.delay = _firstDelay;
@@ -374,8 +379,10 @@
 				_timer.start();
 			}
 			
-			private function _mouseUpHandler(mevt:MouseEvent):void {
+			private function _mouseUpHandler(mevt:MouseEvent):void 
+			{
 				_timer.stop();
+				_timeControl.endMoveTickMark();
 				
 				//LOG
 				_KSketch.logCounter ++;
@@ -387,6 +394,7 @@
 			}
 			
 			private function _timeChange(tevt:TimerEvent):void {
+				
 				_timeControl.moveTickMark(_isPrevious);
 				
 				if (_timer.currentCount > 15) {
@@ -421,25 +429,19 @@
 			</s:Rect>
 			<s:Group>
 				<s:layout>
-					<s:VerticalLayout
-						paddingLeft="{KSketchStyles.CONTEXTMENU_PADDING}"
-						paddingRight="{KSketchStyles.CONTEXTMENU_PADDING}"
-						paddingTop="{KSketchStyles.CONTEXTMENU_PADDING}"
-						paddingBottom="{KSketchStyles.CONTEXTMENU_PADDING}"/>
+					<s:VerticalLayout/>
 				</s:layout>
 				<s:Group>
-					<s:Rect width="100%" height="100%">
+					<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
 						<s:fill>
-							<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
+							<s:SolidColor color="{KSketchStyles.MAGNIFIER_BACKGROUND_COLOR}"/>
 						</s:fill>
 					</s:Rect>
 					<s:Group>
 						<s:layout>
-							<s:HorizontalLayout gap="2"
-												paddingLeft="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
-												paddingRight="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
-												paddingTop="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
-												paddingBottom="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"/>
+							<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"
+												paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
+												paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
 						</s:layout>
 						<buttons:KSketch_Timebar_Button_Double
 							id="leftFrame"

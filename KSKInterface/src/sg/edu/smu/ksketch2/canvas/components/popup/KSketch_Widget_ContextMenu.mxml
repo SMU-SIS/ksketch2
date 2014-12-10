@@ -240,21 +240,6 @@
 						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 						/>
-<!--					<buttons:KSketch_Button
-						id="copyButton"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-						/>
-					<buttons:KSketch_Button
-						id="pasteButton"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-						/>
-					<buttons:KSketch_Button
-						id="cutButton"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-						/>-->
 				</s:Group>
 			</s:Group>
 		</s:Group>

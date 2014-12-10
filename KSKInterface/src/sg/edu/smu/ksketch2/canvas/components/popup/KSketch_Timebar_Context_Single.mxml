@@ -63,7 +63,7 @@
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
 				super.open(owner, modal);
-				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);					
+				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _handleMouseDownOutside);	
 			}
 			
 			override public function close(commit:Boolean=false, data:*=null):void
@@ -78,7 +78,8 @@
 				close();
 			}
 			
-			private function _mouseDownHandler_prev(event:MouseEvent):void {
+			private function _mouseDownHandler_prev(event:MouseEvent):void 
+			{
 				KSketch_CanvasView.tracker.trackPageview( "/timebar/previousTime" );
 				
 				_isPrevious = true;
@@ -89,7 +90,8 @@
 				_timer.start();
 			}
 			
-			private function _mouseDownHandler_next(event:MouseEvent):void {
+			private function _mouseDownHandler_next(event:MouseEvent):void 
+			{
 				KSketch_CanvasView.tracker.trackPageview( "/timebar/nextTime" );
 				
 				_isPrevious = false;
@@ -100,7 +102,8 @@
 				_timer.start();
 			}
 			
-			private function _mouseUpHandler(mevt:MouseEvent):void {
+			private function _mouseUpHandler(mevt:MouseEvent):void 
+			{
 				_timer.stop();
 				
 				//LOG

@@ -40,6 +40,12 @@ package sg.edu.smu.ksketch2
 		public static var TIMEBAR_LAYOUT_PADDING_HORIZONTAL:Number = 5;
 		public static var TIMEBAR_LAYOUT_PADDING_VERTICAL:Number = 5;
 		public static const TIMEBAR_BACKGROUND_COLOR:uint = 0xA6A8AB;
+		public static var TIMEBAR_GAP_CONTEXTMENU_DOUBLE:int = 15;
+		public static var TIMEBAR_GAP_CONTEXTMENU_SINGLE:int = 100;
+		public static var TIMEBAR_X_LIMIT_DOUBLE:int = 875;
+		public static var TIMEBAR_X_LIMIT_SINGLE:int = 960;
+		public static var TIMEBAR_X_LIMIT_DOUBLE_ANDROID:int = 1100;
+		public static var TIMEBAR_X_LIMIT_SINGLE_ANDROID:int = 1200;
 		
 		public static const TIMEBAR_SHADOW_COLOR:uint = 0x000000;
 		public static const TIMEBAR_SHADOW_ALPHA:Number = 0.35;
@@ -75,7 +81,7 @@ package sg.edu.smu.ksketch2
 		public static const MAGNIFIER_BACKGROUND_COLOR:uint = 0x000000;
 		public static var MAGNIFIER_IMAGE_UNSCALED_WIDTH:Number = 50;
 		public static var MAGNIFIER_SCALE:Number = 2;
-		public static var MAGNIFIER_PADDING:Number = 5;
+		public static var MAGNIFIER_PADDING:Number = 7.5;
 		public static var MAGNIFIER_FONT_SIZE:Number = 11;
 		public static const MAGNIFIER_FONT_COLOR:uint = 0xFFFFFF;
 		public static var MAGNIFIER_ARROW_PROPORTION:Number = 0.4;
@@ -183,6 +189,12 @@ package sg.edu.smu.ksketch2
 			TIMEBAR_LAYOUT_GAP = 4 * scaleFactor;
 			TIMEBAR_LAYOUT_PADDING_HORIZONTAL = 5 * scaleFactor;
 			TIMEBAR_LAYOUT_PADDING_VERTICAL = 5 * scaleFactor;
+			TIMEBAR_GAP_CONTEXTMENU_DOUBLE = 15 * (scaleFactor * 2);
+			TIMEBAR_GAP_CONTEXTMENU_SINGLE = 100 * scaleFactor;
+			TIMEBAR_X_LIMIT_DOUBLE = 875 * scaleFactor;
+			TIMEBAR_X_LIMIT_SINGLE = 960 * scaleFactor;
+			TIMEBAR_X_LIMIT_DOUBLE_ANDROID = 1100 * scaleFactor;
+			TIMEBAR_X_LIMIT_SINGLE_ANDROID = 1200 * scaleFactor;
 			TIMEBAR_PLAY_BUTTON_WIDTH = 60 * scaleFactor; 
 			TIMEBAR_PLAY_BUTTON_HEIGHT = 60 * scaleFactor;
 			TIMEBAR_BUTTON_WIDTH = 50 * scaleFactor;
@@ -195,7 +207,7 @@ package sg.edu.smu.ksketch2
 			TIME_TICK_THICKNESS_B = 7 * scaleFactor;
 			MAGNIFIER_IMAGE_UNSCALED_WIDTH = 50 * (scaleFactor);
 			MAGNIFIER_SCALE = 2 * (scaleFactor-0.8);
-			MAGNIFIER_PADDING = 5 * scaleFactor;
+			MAGNIFIER_PADDING = 7.5 * scaleFactor;
 			MAGNIFIER_FONT_SIZE = 11 * scaleFactor;
 			MAGNIFIER_ARROW_PROPORTION = 0.4 * (scaleFactor-0.5);
 			MAGNIFIER_INDICATOR_THICKNESS = 3 * scaleFactor;

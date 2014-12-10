@@ -12,6 +12,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
+	import flash.system.Capabilities;
 	import flash.utils.Timer;
 	import flash.utils.clearTimeout;
 	import flash.utils.getTimer;
@@ -20,6 +21,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import mx.events.FlexEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.KSketchStyles;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Double;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Single;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
@@ -38,6 +40,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		public static const BAR_TOP:int = 0;
 		public static const BAR_BOTTOM:int = 1;
+		public static const TIMEBAR_LIMIT:int = -10;
 		
 		public static const DEFAULT_MAX_TIME:Number = 5000;
 		public static const PLAY_ALLOWANCE:int = 2000;
@@ -65,7 +68,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		private var _maxFrame:int;
 		private var _currentFrame:int;
 		private var _touchStage:Point = new Point(0,0);
-		private var _substantialMovement:Boolean = false;
+		private var _currentTime:Number = 0;
+		private var _deltaFrame:int = 0;
+		private var _isMouseMove:Boolean = false;
 		
 		private var _grabbedTickIndex:int;
 		private var _nearTick: Number;
@@ -75,6 +80,10 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		private var mouseTimeout = "undefined";
 		private var clickTimer:int;
 		private var _action:String = "";
+		
+		private var _xPrev2:Number = -1;
+		private var _xPrev:Number = -1;
+		private var _xCurr:Number = -1;
 		
 		public function KSketch_TimeControl()
 		{
@@ -116,10 +125,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
-			_substantialMovement = false;
 			
+			_xPrev = timeToX(time);
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
-			var dx:Number = Math.abs(xPos - timeToX(time));
 			
 			//check if position x is a tick
 			var xPosIsTick:Boolean = false;
@@ -157,11 +165,15 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(xPosIsTick)
 			{
 				_autoSnap(_nearTick);
+				_xCurr = _nearTick;
 				_nearTick = 0;
 			}
 			else
+			{
 				_autoSnap(xPos);
-			
+				_xCurr = xPos;
+			}
+				
 			contentGroup.removeEventListener(MouseEvent.MOUSE_DOWN, _mouseDownListener);
 			_magnifier.removeEventListener(MouseEvent.MOUSE_DOWN, _mouseDownListener);
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, _mouseMoveListener);
@@ -183,7 +195,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			
 			_touchStage.x = event.stageX;
 			_touchStage.y = event.stageY;
-			_substantialMovement = true;
 			
 			var xPos:Number = contentGroup.globalToLocal(_touchStage).x;
 			var i:int;
@@ -206,11 +217,17 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(_isNearTick)
 			{
 				_autoSnap(_nearTick);
+				_xCurr = _nearTick;
 				_isNearTick = false;
 				_nearTick = 0;
 			}
 			else
+			{
 				_autoSnap(xPos);
+				_xCurr = xPos;
+			}
+				
+			_isMouseMove = true;
 		}
 		
 		/**
@@ -221,30 +238,70 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//Google analytics
 			if(_action == "Move time slider on Time Bar")
 				KSketch_CanvasView.tracker.trackPageview( "/timebar/moveTime" );
-			
+		
 			// if this is a single or double tap
 			if(getTimer() - clickTimer < CLICK_TIME)
 			{
 				if (mouseTimeout != "undefined") //if this is a double tap
 				{
-					_action = "Open time bar context menu (double tap)";
-					_contextDouble.open(contentGroup,true);
-					_contextDouble.x = _magnifier.x;
-					_contextDouble.position = position;
-					_contextDouble.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y + 3;
+					var dt:Number = Math.abs(xToTime(_xCurr) - xToTime(_xPrev2));
+					dt = dt/KSketch2.ANIMATION_INTERVAL;
+					if(dt >= 0 && dt <= 2)
+					{
+						_autoSnap(_xPrev2);
 						
-					clearTimeout(mouseTimeout);
-					mouseTimeout = "undefined";
+						_action = "Open time bar context menu (double tap)";
+						_contextDouble.open(contentGroup,true);
+						_contextDouble.x = _magnifier.x;
+						
+						if(Capabilities.version.indexOf('IOS') > -1)
+						{
+							if(_contextDouble.x >= KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE)
+								_contextDouble.x = KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE;
+						}
+						else
+						{
+							if(_contextDouble.x >= KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE_ANDROID)
+								_contextDouble.x = KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE_ANDROID;
+						}
+						
+						_contextDouble.position = position;
+						_contextDouble.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.TIMEBAR_GAP_CONTEXTMENU_DOUBLE;
+						
+						clearTimeout(mouseTimeout);
+						mouseTimeout = "undefined";	
+					}
 				} 
 				else	//if this is a single tap
 				{
+					_xPrev2 = _xPrev;
+					
 					function handleSingleClick():void 
 					{
-						_action = "Open time bar menu (single tap)";
-						_magnifier.magnify(timeToX(time));
-						_contextSingle.open(contentGroup,true);
-						_contextSingle.x = _magnifier.x;
-						_contextSingle.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - 80;
+						var dt:Number = Math.abs(xToTime(_xCurr) - xToTime(_xPrev));
+						dt = dt/KSketch2.ANIMATION_INTERVAL;
+						if(dt >= 0 && dt <= 2)
+						{
+							_autoSnap(_xPrev);
+							
+							_action = "Open time bar menu (single tap)";
+							_magnifier.magnify(timeToX(time));
+							_contextSingle.open(contentGroup,true);
+							_contextSingle.x = _magnifier.x;
+							
+							if(Capabilities.version.indexOf('IOS') > -1)
+							{
+								if(_contextSingle.x >= KSketchStyles.TIMEBAR_X_LIMIT_SINGLE)
+									_contextSingle.x = KSketchStyles.TIMEBAR_X_LIMIT_SINGLE;
+							}
+							else
+							{
+								if(_contextSingle.x >= KSketchStyles.TIMEBAR_X_LIMIT_SINGLE_ANDROID)
+									_contextSingle.x =  KSketchStyles.TIMEBAR_X_LIMIT_SINGLE_ANDROID;
+							}
+							
+							_contextSingle.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.TIMEBAR_GAP_CONTEXTMENU_SINGLE;//190;//95;
+						}
 						
 						mouseTimeout = "undefined";
 					}
@@ -254,16 +311,13 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			} 
 			else // if no other click occurs before timeout, execute single click function
 			{
-				_action = "Open time bar menu (single tap)";
-				_magnifier.magnify(timeToX(time));
-				_contextSingle.open(contentGroup,true);
-				_contextSingle.x = _magnifier.x;
-				_contextSingle.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - 80;
+				//action after mouse move event
 			}
 			
 			//reset boolean properties
 			_grabbedTickIndex = null;
 			_isNearTick = false;
+			_isMouseMove = false;
 			
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, _mouseMoveListener);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, _mouseUpListener);
@@ -371,60 +425,34 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			return _currentFrame;
 		}
 		
+		var leftSnap:Boolean = false;
 		public function moveTickMark(previous:Boolean):void
 		{
 			var xPos:Number = timeToX(time);
+			var i:int;
 			
-			if(previous)
-				_tickmarkControl.moveLeft = true;
-			else
-				_tickmarkControl.moveLeft = false;
-			
-			isATick(xPos);
-			
-			//Rout interaction into the tick mark control if there is a grabbed tick
+			//Route interaction into the tick mark control if there is a grabbed tick
 			if(_tickmarkControl.grabbedTick)
 			{
 				var oldXPos:Number;
+				var originalTime:Number = time;
 				
 				if(previous)
 					time -= KSketch2.ANIMATION_INTERVAL;
 				else
 					time += KSketch2.ANIMATION_INTERVAL;
+				
 				xPos = roundToNearestTenth(timeToX(time));
 				_tickmarkControl.move_markers(xPos);
-				
-				//If tickmark moves to the left and causes stacking of previous keyframes
-				if(previous)
-				{
-					var length:int = _tickmarkControl._ticks.length;
-					for(var i:int=0; i<length; i++)
-					{
-						//get hold of the grabbed tick mark index first
-						if(!_grabbedTickIndex)
-						{
-							if(_tickmarkControl.grabbedTick.x == _tickmarkControl._ticks[i].x)
-								_grabbedTickIndex = i;
-						}
-						
-						if(_grabbedTickIndex)
-						{
-							//to prevent grabbing of near tick marks when stacking occurs, 
-							//reposition xPos to the initial grabbed tick mark's x pos 
-							if(i != _grabbedTickIndex)
-							{
-								if(xPos == _tickmarkControl._ticks[i].x)
-									xPos = _tickmarkControl._ticks[_grabbedTickIndex].x;
-							}
-							else
-								oldXPos = _tickmarkControl._ticks[i].x;
-						}
-					}
-				}
 			}
 		}
 		
-		public function isATick(xPos:Number):Boolean
+		public function endMoveTickMark():void
+		{
+			_tickmarkControl.end_move_markers();
+		}
+		
+		public function isATick(xPos:Number, grab:Boolean):Boolean
 		{
 			var xPosIsTick:Boolean = false;
 			if(_tickmarkControl._ticks)
@@ -436,7 +464,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					if(roundXPos == _tickmarkControl._ticks[i].x)
 					{
 						xPosIsTick = true;
-						_tickmarkControl.grabTick(roundXPos);
+						if(grab)
+							_tickmarkControl.grabTick(roundXPos);
 						break;
 					}
 				}

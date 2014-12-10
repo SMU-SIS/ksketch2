@@ -53,12 +53,15 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		private var _doubleClickTimer:Timer;
 		private var DOUBLE_CLICK_SPEED:int = 250;
 		private var mouseTimeout = "undefined";
+		private var _isDoubleTap:Boolean = false;
+		private var _prevTransitionMode:int;
 		
 		private var _activeMode:IWidgetMode;						// the active widget mode
 		public var defaultMode:IWidgetMode;							// the default widget mode
 		public var steeringMode:IWidgetMode;						// the steering widget mode
 		public var centerMode:IWidgetMode;							// the center widget mode
 		public var freeTransformMode:IWidgetMode;					// the free transform widget mode
+				
 		
 		/**
  		 * The main constructor for the KWidgetInteractorManager class.
@@ -129,6 +132,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		private function _handleCenterChange(event:Event):void
 		{
 			activeMode = defaultMode;
+			transitionMode = KSketch2.TRANSITION_INTERPOLATED;
 		}
 		
 		/**
@@ -182,7 +186,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		{
 			var action:String;
 			
-			if(_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl.isPlaying)
+			if (_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl.isPlaying && !_isDoubleTap)
 			{
 				action = "Activate Demonstration Mode";
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
@@ -191,6 +195,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			{
 				action = "Activate Demonstration Mode";
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
+			}
+			else if(_isDoubleTap)
+			{
+				transitionMode = _prevTransitionMode;
+				_isDoubleTap = false;
 			}
 			else
 			{
@@ -215,6 +224,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		 */
 		private function _doubleTap(event:MouseEvent):void
 		{
+			_isDoubleTap = true;
+			_prevTransitionMode = _interactionControl.transitionMode;
+			
 			var action:String = "Open widget context menu";
 			
 			if(_widget.visible)

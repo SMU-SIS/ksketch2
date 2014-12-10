@@ -214,18 +214,22 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				}
 			}
 			
+			
 			if(_isNearTick)
 			{
-				_autoSnap(_nearTick);
-				_xCurr = _nearTick;
-				_isNearTick = false;
+				xPos = _nearTick;
 				_nearTick = 0;
+				_isNearTick = false;
 			}
-			else
-			{
-				_autoSnap(xPos);
-				_xCurr = xPos;
-			}
+			
+			//move frame by 2
+			_xCurr = xPos;
+			var tempValue:int = timeToFrame(xToTime(xPos));
+			if(tempValue%2!=0)
+				tempValue -= 1;
+			
+			xPos = timeToX(tempValue*KSketch2.ANIMATION_INTERVAL);
+			_autoSnap(roundToNearestTenth(xPos));
 				
 			_isMouseMove = true;
 		}

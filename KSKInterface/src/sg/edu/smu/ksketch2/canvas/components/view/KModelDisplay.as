@@ -122,12 +122,10 @@ package sg.edu.smu.ksketch2.canvas.components.view
 		 * Adds given view to the viewsTable. It will be rendered if it is part of the
 		 * scene graph
 		 */
-		private function view_addObject(object:KObject):IObjectView
+		public function view_addObject(object:KObject):IObjectView
 		{
-			if(_viewsTable[object])
-				throw new Error("Object already exists in view. I don't want you to see doubles man");
-			
 			var view:IObjectView;
+			var i:int;
 			
 			if(object is KGroup)
 			{
@@ -136,12 +134,37 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				//get the current selection of individual objects
 				if(_interactionControl.currentInteraction)
 				{
+					view = new KGroupView(object);
 					var selectionLength:int = _interactionControl.currentInteraction.oldSelection.objects.length();
 					
 					(view as KGroupView).resetDrawObject();
 					
-					for(var i:int=0; i<selectionLength; i++)
+					for(i=0; i<selectionLength; i++)
 						(view as KGroupView).drawObject(_interactionControl.currentInteraction.oldSelection.objects);
+				}
+				else
+				{
+					if((object as KGroup).children.length() > 0)
+					{
+						view = _viewsTable[object];
+						
+						(view as KGroupView).resetDrawObject();
+						
+						var parent:KGroup = object.parent;
+						var parentView:IObjectView = _viewsTable[parent];
+						var root:KGroup = _KSketch.root;
+						var rootView:IObjectView = _viewsTable[root];
+						
+						for(i=0; i<(object as KGroup).children.length(); i++)
+						{
+							(view as KGroupView).drawObject((object as KGroup).children);
+							var newChild:KObject = (object as KGroup).children.getObjectAt(i);
+							var newChildView:IObjectView = _viewsTable[newChild];
+							newChildView.updateParent(view as KGroupView, rootView as KGroupView);
+						}
+						
+						view.updateParent(parentView as KGroupView, rootView as KGroupView);
+					}
 				}
 				
 				//Need to listen to children changes so as to handle their addition/removal on the view side
@@ -154,8 +177,9 @@ package sg.edu.smu.ksketch2.canvas.components.view
 				view = new KImageView(object as KImage);
 			else
 				throw new Error("Object type "+object.toString()+" is not supported by the model display yet");
-			
+
 			_viewsTable[object] = view;
+			
 			return view;
 		}
 		

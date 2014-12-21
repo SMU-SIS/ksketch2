@@ -26,6 +26,9 @@
 			import com.google.analytics.AnalyticsTracker;
 			import com.google.analytics.GATracker;
 			
+			import mx.collections.ArrayCollection;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
 			import mx.events.FlexEvent;
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.utils.Base64Encoder;
@@ -51,6 +54,10 @@
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
+			import sg.edu.smu.ksketch2.events.KSketchEvent;
+			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
+			import sg.edu.smu.ksketch2.model.objects.KGroup;
+			import sg.edu.smu.ksketch2.model.objects.KObject;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
@@ -76,6 +83,7 @@
 			private var userData:Object = new Object();
 			private var _imageData:BitmapData;
 			private var _needToProcessData:Boolean;
+			private var _groupObjectsList:ArrayCollection;
 			public var _currentDocument:KSketchDocument;
 			public var enableLog:Boolean = false;
 			
@@ -295,9 +303,53 @@
 					
 					data = null;
 				}
+				
+				_groupObjectsList = new ArrayCollection();
+				_getGroupObjectsOnLoad(_KSketch.root.children);
+				
+				if(_groupObjectsList.length > 0)
+				{
+					//sort array by smallest id to largest
+					var dataSortField:SortField = new SortField();
+					dataSortField.name = "id";
+					var numericDataSort:Sort = new Sort();
+					numericDataSort.fields = [dataSortField];
+					_groupObjectsList.sort = numericDataSort;
+					_groupObjectsList.refresh();
+					
+					for(var x:int=0; x<_groupObjectsList.length; x++)
+						modelDisplay.view_addObject(_groupObjectsList.getItemAt(x) as KObject);
+					
+					// broadcast that the model has been updated 
+					_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _KSketch.root));
+				}
+				
+				_groupObjectsList.removeAll();
+				
 				_options.applyPreferences();
 				_magnifier.open(this);
 			}
+			
+			private function _getGroupObjectsOnLoad(list:KModelObjectList):void
+			{
+				if(list.length() > 0)
+				{
+					for(var i:int=0; i<list.length(); i++)
+					{
+						if(list.getObjectAt(i) is KGroup)
+						{
+							for(var x:int=0; x<list.length(); x++)
+							{
+								if(list.getObjectAt(x) is KGroup)
+									_getGroupObjectsOnLoad((list.getObjectAt(x) as KGroup).children);
+							}
+							_groupObjectsList.addItem(list.getObjectAt(i));
+						}
+					}
+				}
+			}
+			
+			
 			
 			public function saveSketch(confirmSave:Boolean):Object
 			{

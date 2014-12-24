@@ -50,6 +50,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		public function KMultiTouchSelectInteractor(KSketchInstance:KSketch2, interactionControl:IInteractionControl, modelDisplay:KModelDisplay)
 		{
 			super(KSketchInstance, interactionControl);
+			_interactionControl = interactionControl;
 			_modelDisplay = modelDisplay;
 
 			_selectionArea = new Sprite();
@@ -60,7 +61,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * 
 		 * @param location The target point location of the tap.
 		 */
-		public function tap(location:Point, time:Number):Boolean
+		public function tap(location:Point, time:Number, isLasso:Boolean):Boolean
 		{
 			var selected:Boolean = false;
 			
@@ -71,7 +72,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			_modelDisplay.addChild(_selectionArea);
 			
-			selected = detectObjects(time);
+			selected = detectObjects(time, isLasso);
 			
 			_modelDisplay.removeChild(_selectionArea);
 			
@@ -83,7 +84,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * versus model data to maintain consistency. View collision
 		 * detection cannot handle more than twenty objects.
 		 */
-		public function detectObjects(time:Number):Boolean
+		public function detectObjects(time:Number, isLasso:Boolean):Boolean
 		{
 			var collisionList:CollisionList = new CollisionList(_selectionArea);
 			collisionList.cannonicalSpace = _modelDisplay;
@@ -104,21 +105,71 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			if(result.length > 0)
 			{
-				for each(var resultPair:* in result)
+				/*for each(var resultPair:* in result)
 				{
 					if(bestResult)
 					{
 						var isErased:Boolean = false;
+						var isDynamic:Boolean = false;
 						
 						if(resultPair.collidedObject is KStrokeView)
-							isErased = (resultPair.collidedObject as KStrokeView).checkObjectErased(time);
+						{
+							isErased = (resultPair.collidedObject as KStrokeView).checkObjectErased(time);	
+							isDynamic = (resultPair.collidedObject as KStrokeView).checkObjectDynamic(time);
+						}
 						
-						if(!isErased)
-							bestResult = resultPair;	
+						if(!isErased && isDynamic)
+						{
+							bestResult = resultPair;
+						}
 					}
 					else
 						bestResult = resultPair;
+				}*/
+				
+				for each(var resultPair:* in result)
+				{
+					var isErased:Boolean = false;
+					var isDynamic:Boolean = false;
+					
+					if(resultPair.collidedObject is KStrokeView)
+					{
+						isErased = (resultPair.collidedObject as KStrokeView).checkObjectErased(time);	
+						isDynamic = (resultPair.collidedObject as KStrokeView).checkObjectDynamic(time);
+					}
+					
+					if(bestResult)
+					{
+						if(!isLasso)
+						{
+							if(!isErased && isDynamic)
+							{
+								bestResult = resultPair;
+								break;
+							}
+						}
+						else
+						{
+							if(!isErased)
+								bestResult = resultPair;
+						}
+					}
+					else
+					{
+						if(!isLasso)
+						{
+							if(!isErased && isDynamic)
+								bestResult = resultPair;
+						}
+						else
+						{
+							bestResult = resultPair;
+							
+						}
+					}
+						
 				}
+				
 			}
 			
 			var selected:Boolean = false;

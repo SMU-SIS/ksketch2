@@ -13,6 +13,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 	
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
+	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -135,6 +136,73 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			}
 			
 			return isErased;
+		}
+		
+		public function checkObjectDynamic(time:Number):Boolean
+		{
+			var isDynamic:Boolean = false;
+			
+			var parent:KGroup = _object.parent;
+			var isInGroup:Boolean = false;
+			
+			if(parent)
+				if(parent.id > 0)
+					isInGroup = true;
+			
+			if(!isInGroup)
+			{
+				var activeKey:IKeyFrame = object.transformInterface.getActiveKey(0);
+				if(activeKey.previous || activeKey.next)
+					isDynamic = true;
+			}
+			else
+				isDynamic = checkDynamicInGroup(parent, time);
+			
+			return isDynamic;
+		}
+		
+		private function checkDynamicInGroup(parent:KGroup, time:Number):Boolean
+		{
+			var isDynamic:Boolean = false;
+			
+			var children:KModelObjectList = parent.children;
+			
+			if(children.length() < 1)
+				return true;
+			
+			var activeKey:IKeyFrame = parent.transformInterface.getActiveKey(0);
+			if(activeKey.previous || activeKey.next)
+				return true;
+			
+			var dynamicArr:Array = new Array(children.length());
+			var i:int;
+			
+			for(i=0; i<dynamicArr.length; i++)
+			{
+				var child:KObject = children.getObjectAt(i);
+				
+				dynamicArr[i] = 0;
+				
+				var activeKey:IKeyFrame = object.transformInterface.getActiveKey(0);
+				if(activeKey.previous || activeKey.next)
+					dynamicArr[i] = 1;
+			}
+			
+			var checkNum:Number=0;
+			
+			for(i=0; i< dynamicArr.length; ++i)
+			{
+				if(dynamicArr[0] == dynamicArr[i])
+					++checkNum;
+			}
+			
+			if(checkNum==dynamicArr.length)
+			{
+				if(dynamicArr[0] == 1)
+					isDynamic = true;
+			}
+			
+			return isDynamic;
 		}
 		
 		/**

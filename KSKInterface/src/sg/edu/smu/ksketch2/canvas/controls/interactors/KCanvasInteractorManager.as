@@ -256,7 +256,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				prevSelection = true;
 			
 			_activeInteractor = _tapSelectInteractor;
-			selected = _tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location),_KSketch.time);
+			selected = _tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location),_KSketch.time, lasso);
 			
 			//LOG
 			_KSketch.logCounter ++;

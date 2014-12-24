@@ -32,7 +32,7 @@ package sg.edu.smu.ksketch2.utils
 				data.sketchId = userData.kSketchDocument.sketchId;
 				data.originalVersion = userData.kSketchDocument.originalVersion;
 				data.originalSketch = userData.kSketchDocument.originalSketch;
-				
+				data.lowerFileName = sketchName.toLowerCase();
 				data.originalName = userData.kSketchDocument.originalName;	
 			}
 			else
@@ -43,6 +43,7 @@ package sg.edu.smu.ksketch2.utils
 				data.originalSketch = -1;
 				
 				data.originalName = sketchName;
+				data.lowerFileName = sketchName.toLowerCase();
 			}
 			
 			data.appver = 1.0;
@@ -77,6 +78,7 @@ package sg.edu.smu.ksketch2.utils
 			data.like = obj.data.like;
 			data.comment = obj.data.comment;
 			data.fileData = obj.data.fileData;
+			data.lowerFileName = obj.data.lowerFileName;
 			
 			return data;
 		}

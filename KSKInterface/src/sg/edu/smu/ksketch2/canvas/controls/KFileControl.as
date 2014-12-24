@@ -325,7 +325,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var tempArr:Array = (sketchObj.sketches as Array);
 				
 				if(tempArr)
+				{
+					tempArr.sortOn("lowerFileName");
 					sketchArr = new ArrayCollection(tempArr);
+				}
 			}
 			
 			return sketchArr;

@@ -59,6 +59,7 @@ package sg.edu.smu.ksketch2
 					tempItem.originalName = arr.getItemAt(i).originalName;
 					tempItem.originalVersion = arr.getItemAt(i).originalVersion;
 					tempItem.image = arr.getItemAt(i).thumbnailData;
+					tempItem.lowerFileName = arr.getItemAt(i).lowerFileName;
 					
 					if(!arr.getItemAt(i).deleteFlag)
 					{
@@ -83,13 +84,8 @@ package sg.edu.smu.ksketch2
 			}
 		}
 		
-		public function getUserSketchArray(sortBy:String):ArrayCollection
+		public function getUserSketchArray():ArrayCollection
 		{
-			if(arrDG)
-			{
-				arrDG = SortingFunctions.sortArray(arrDG, sortBy);
-				arrDG.refresh();
-			}
 			return arrDG;
 		}
 		

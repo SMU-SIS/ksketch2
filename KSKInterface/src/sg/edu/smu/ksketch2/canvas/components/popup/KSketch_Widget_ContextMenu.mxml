@@ -101,6 +101,7 @@
 				
 				_updateGroup();
 				_updateUngroup();
+				_updateMoveCenter();
 				addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, _closeContextMenu);
 			}
 			
@@ -184,7 +185,15 @@
 				if(_interactionControl.selection.objects.length() != 1)
 					moveCenterButton.enabled = false;
 				else
+				{
 					moveCenterButton.enabled = true;
+					var canInterpolate:Boolean = _interactionControl.selection.objects.getObjectAt(0).transformInterface.canInterpolate(_KSketch.time);
+					if(!canInterpolate)
+					{
+						if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
+							moveCenterButton.enabled = false;
+					}
+				}
 			}
 			
 			private function _moveCenter(event:MouseEvent = null):void

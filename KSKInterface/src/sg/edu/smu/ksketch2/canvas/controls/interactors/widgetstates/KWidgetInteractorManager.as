@@ -133,6 +133,17 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		{
 			activeMode = defaultMode;
 			transitionMode = KSketch2.TRANSITION_INTERPOLATED;
+			
+			if(_interactionControl.selection.selectionTransformable(_KSketch.time))
+			{
+				_activeMode.activate();
+				_activeMode.enabled = true;
+			}
+			else
+			{
+				_activeMode.deactivate();
+				_activeMode.enabled = false;
+			}
 		}
 		
 		/**
@@ -272,7 +283,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				transitionMode = KSketch2.TRANSITION_INTERPOLATED;
 			}
 			
-			if(!_interactionControl.selection || _isInteracting||
+			if(!_interactionControl.selection || _isInteracting ||
 				!_interactionControl.selection.isVisible(_KSketch.time))
 			{
 				_widget.visible = false;
@@ -299,12 +310,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				_widget.x = selectionCenter.x;
 				_widget.y = selectionCenter.y;
 				
-				if(_interactionControl.selection.selectionTransformable(_KSketch.time) ||
-					KSketch_TimeControl.isPlaying)
+				if(_interactionControl.selection.selectionTransformable(_KSketch.time) || KSketch_TimeControl.isPlaying)
 					enabled = true;
-				else
-					enabled = false;	
-				
 			}
 		}
 		

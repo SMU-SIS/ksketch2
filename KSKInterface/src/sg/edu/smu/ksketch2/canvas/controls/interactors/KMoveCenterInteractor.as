@@ -12,7 +12,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KInteractor;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
-	import sg.edu.smu.ksketch2.model.objects.KGroup;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.operators.operations.KChangeCenterOperation;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
@@ -98,7 +97,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_oldCenter = object.center;
 			
 			_panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Move);
-			_panGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			
+			_panGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);		
 		}
 		
 		/**

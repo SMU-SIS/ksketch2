@@ -65,6 +65,11 @@
 			[Bindable]
 			private var arrDG:ArrayCollection = new ArrayCollection();
 			
+			[Bindable]
+			private var arrDDL:ArrayCollection = new ArrayCollection([{name:"File Name", value:0},
+																	 {name:"Date Modified", value:1},
+																	 {name:"Date Created", value:2}]);
+			
 			public static var autoSaveCounter:int = 0;
 			
 			//class variables
@@ -416,13 +421,15 @@
 					userSketch.autoSaveCounter = 0;
 					
 					//Set DataGrid array to user sketches collection
-					var sortBy:String = "sketchId";
 					if(!arrDG)
-						arrDG = userSketch.getUserSketchArray(sortBy); 
+						arrDG = userSketch.getUserSketchArray(); 
 					else
-						arrDG.addAll(userSketch.getUserSketchArray(sortBy));
+						arrDG.addAll(userSketch.getUserSketchArray());
 					
-					listSketches_unavailable.visible = false;		
+					listSketches_unavailable.visible = false;	
+					
+					dropDownList.visible = true;
+					sortLabel.visible = true;
 					
 					//record down list of sketches after display
 					for(var i:int; i<arrDG.length; i++)
@@ -499,6 +506,7 @@
 				
 				if(finalObj.fileData)
 				{
+					finalObj.lowerFileName = finalObj.fileName.toString().toLowerCase();
 					_mobileControl.addSketchToList(finalObj, KFileControl.ADD_SAVE_WEB);
 					
 					//create XML and date object from JSON to create a KSketchDocument object
@@ -525,6 +533,8 @@
 			private function startNewSketch():void
 			{
 				listSketches_unavailable.visible = true;
+				dropDownList.visible = false;
+				sortLabel.visible = false;
 			}
 			
 			private function createSketch():void
@@ -936,10 +946,33 @@
 					</s:Rect>
 					
 					<s:Group top="15" left="15" right="15" bottom="15">
-						<s:List id="listSketches" contentBackgroundAlpha="0" width="100%" height="100%"
-								itemRenderer="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"
-								dataProvider="{arrDG}" horizontalScrollPolicy="off" mouseDown="listSketches_mouseDownHandler(event)" change="listSketches_changeSelectedHandler(event)">
-						</s:List>
+						<s:Group width="100%" height="100%">
+							<s:layout>
+								<s:VerticalLayout></s:VerticalLayout>
+							</s:layout>
+							
+							<s:Group>
+								<s:layout>
+									<s:HorizontalLayout/>
+								</s:layout>
+								
+								<s:Label id="sortLabel" text="Sort Sketches By: " />
+								<s:VGroup left="10" right="10" top="10" bottom="10">
+									
+									<!-- Text components used to display current selection and price -->
+									<s:DropDownList id="dropDownList" prompt="Select One"
+													width="200" dataProvider="{arrDDL}" requireSelection="true"
+													labelField="name"
+													change="updateSelection_dropDown(event);"/>
+									
+								</s:VGroup>
+							</s:Group>
+							
+							<s:List id="listSketches" contentBackgroundAlpha="0" width="100%" height="100%"
+									itemRenderer="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"
+									dataProvider="{arrDG}" horizontalScrollPolicy="off" mouseDown="listSketches_mouseDownHandler(event)" change="listSketches_changeSelectedHandler(event)">
+							</s:List>
+						</s:Group>
 						<s:Image id="listSketches_unavailable" source="{KSketchAssets.image_new}" width="100%" height="100%" visible="false"/>
 						<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
 											   horizontalCenter="0" verticalCenter="0" visible="false"/>

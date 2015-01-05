@@ -84,7 +84,7 @@
 				(FlexGlobals.topLevelApplication as Application).setFocus();
 				
 				if(_homeView && _success)
-					_homeView.refresh();//updateFromWeb(); //
+					_homeView.refresh();
 				else if(_homeView)
 					_homeView.displaySketchData();
 					

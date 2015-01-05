@@ -227,7 +227,7 @@
 				leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
 				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
 				
-				_contextDouble.init(_KSketch, _interactionControl, timeControl);
+				_contextDouble.init(_KSketch, _interactionControl, timeTickControl, timeControl);
 				_contextDouble.createDeferredContent();
 				
 				_contextSingle.init(_KSketch, _interactionControl, timeControl);
@@ -349,8 +349,6 @@
 				}
 			}
 			
-			
-			
 			public function saveSketch(confirmSave:Boolean):Object
 			{
 				userData.resolveConflict = 1;
@@ -369,6 +367,7 @@
 				if(kSketchDocumentObj != null)
 				{
 					userData.name = kSketchDocumentObj.name.toString();
+					userData.lowerFileName = kSketchDocumentObj.name.toString().toLowerCase();
 					
 					var fileData:String = kSketchDocumentObj.xml.toXMLString();
 					

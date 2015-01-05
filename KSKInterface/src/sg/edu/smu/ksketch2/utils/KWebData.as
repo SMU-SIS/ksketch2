@@ -26,24 +26,22 @@ package sg.edu.smu.ksketch2.utils
 			data.changeDescription = "";
 			data.date = generateTimestamp(null);
 			
+			data.fileName = sketchName;
+			data.lowerFileName = sketchName.toLowerCase();
+			
 			if(userData.kSketchDocument.originalName != "" && (sketchName == userData.kSketchDocument.originalName))
 			{
-				data.fileName = sketchName;
 				data.sketchId = userData.kSketchDocument.sketchId;
 				data.originalVersion = userData.kSketchDocument.originalVersion;
 				data.originalSketch = userData.kSketchDocument.originalSketch;
-				data.lowerFileName = sketchName.toLowerCase();
 				data.originalName = userData.kSketchDocument.originalName;	
 			}
 			else
 			{
-				data.fileName = sketchName;
 				data.sketchId = "";
 				data.originalVersion = 1;
 				data.originalSketch = -1;
-				
 				data.originalName = sketchName;
-				data.lowerFileName = sketchName.toLowerCase();
 			}
 			
 			data.appver = 1.0;

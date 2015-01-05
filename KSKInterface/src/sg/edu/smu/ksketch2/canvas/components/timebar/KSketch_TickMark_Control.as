@@ -381,14 +381,20 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_pixelPerFrame = _timeControl.pixelPerFrame;
 		}
 		
+		public function start_move_markers():void
+		{
+			if(!_interactionControl.currentInteraction)
+				_interactionControl.begin_interaction_operation();
+		}
+		
 		/**
 		 * Update function. Moves the grabbed marker to a rounded value
 		 * near locationX. Rounded value is a frame boundary
 		 */
 		public function move_markers(locationX:Number):void
 		{
-			if(!_interactionControl.currentInteraction)
-				_interactionControl.begin_interaction_operation();
+			//if(!_interactionControl.currentInteraction)
+			//	_interactionControl.begin_interaction_operation();
 			
 			//On Pan compute how much finger moved (_changeX)
 			var currentX:Number = locationX;
@@ -417,7 +423,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					if(tickChangeX < 0)
 						tick.moveToX(tick.originalPosition + tickChangeX, _pixelPerFrame);
 					else
-						tick.x = tick.originalPosition;	
+						tick.x = tick.originalPosition;
 				}
 			}
 			

@@ -72,7 +72,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		private var _deltaFrame:int = 0;
 		private var _isMouseMove:Boolean = false;
 		
-		private var _grabbedTickIndex:int;
 		private var _nearTick: Number;
 		private var _isNearTick: Boolean = false;
 		private var _showMagnifier:Boolean = false;
@@ -134,7 +133,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(_tickmarkControl._ticks)
 			{
 				var i:int;
-				var roundXPos:Number = roundToNearestTenth(xPos);
+				var roundXPos:Number = xPos;
 				for(i=0; i<_tickmarkControl._ticks.length; i++)
 				{
 					if(roundXPos == _tickmarkControl._ticks[i].x)
@@ -164,13 +163,13 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//check if slider is on top if xPosIsTick is true
 			if(xPosIsTick)
 			{
-				_autoSnap(_nearTick);
+				time = xToTime(_nearTick);
 				_xCurr = _nearTick;
 				_nearTick = 0;
 			}
 			else
 			{
-				_autoSnap(xPos);
+				time = xToTime(xPos);
 				_xCurr = xPos;
 			}
 				
@@ -221,16 +220,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				_nearTick = 0;
 				_isNearTick = false;
 			}
-			
-			//move frame by 2
-			_xCurr = xPos;
-			var tempValue:int = timeToFrame(xToTime(xPos));
-			if(tempValue%2!=0)
-				tempValue -= 1;
-			
-			xPos = timeToX(tempValue*KSketch2.ANIMATION_INTERVAL);
-			_autoSnap(roundToNearestTenth(xPos));
 				
+			time = xToTime(xPos);
 			_isMouseMove = true;
 		}
 		
@@ -252,7 +243,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 					dt = dt/KSketch2.ANIMATION_INTERVAL;
 					if(dt >= 0 && dt <= 2)
 					{
-						_autoSnap(_xPrev2);
+						time = xToTime(_xPrev2);
 						
 						_action = "Open time bar context menu (double tap)";
 						_contextDouble.open(contentGroup,true);
@@ -286,7 +277,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 						dt = dt/KSketch2.ANIMATION_INTERVAL;
 						if(dt >= 0 && dt <= 2)
 						{
-							_autoSnap(_xPrev);
+							time = xToTime(_xPrev);
 							
 							_action = "Open time bar menu (single tap)";
 							_magnifier.magnify(timeToX(time));
@@ -319,7 +310,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			}
 			
 			//reset boolean properties
-			_grabbedTickIndex = null;
 			_isNearTick = false;
 			_isMouseMove = false;
 			
@@ -442,18 +432,41 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				var originalTime:Number = time;
 				
 				if(previous)
-					time -= KSketch2.ANIMATION_INTERVAL;
+					_movePreviousTick(timeToX(time));	
 				else
-					time += KSketch2.ANIMATION_INTERVAL;
+					time = time + KSketch2.ANIMATION_INTERVAL;
 				
-				xPos = roundToNearestTenth(timeToX(time));
-				_tickmarkControl.move_markers(xPos);
+				_tickmarkControl.move_markers(timeToX(time));
+				time = xToTime(_tickmarkControl.grabbedTick.x);
 			}
+		}
+		
+		public function startMoveTickMark():void
+		{
+			_tickmarkControl.start_move_markers();
 		}
 		
 		public function endMoveTickMark():void
 		{
 			_tickmarkControl.end_move_markers();
+		}
+		
+		private function _movePreviousTick(currentXPos:Number)
+		{
+			var tick:Number;
+			for(var i:int=0; i<_tickmarkControl._ticks.length; i++)
+			{
+				tick = _tickmarkControl._ticks[i].x;
+				if(currentXPos == tick)
+				{
+					if(time >= KSketch2.ANIMATION_INTERVAL)
+					{
+						time = time - KSketch2.ANIMATION_INTERVAL;
+						_movePreviousTick(timeToX(time));
+					}
+				}
+					
+			}
 		}
 		
 		public function isATick(xPos:Number, grab:Boolean):Boolean
@@ -462,7 +475,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(_tickmarkControl._ticks)
 			{
 				var i:int;
-				var roundXPos:Number = roundToNearestTenth(xPos);
+				var roundXPos:Number = xPos;//roundToNearestTenth(xPos);
 				for(i=0; i<_tickmarkControl._ticks.length; i++)
 				{
 					if(roundXPos == _tickmarkControl._ticks[i].x)
@@ -475,14 +488,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				}
 			}
 			return xPosIsTick;
-		}
-		
-		public function _autoSnap(xPos:Number):void
-		{
-			time = xToTime(xPos); //Else just change the time
-			
-			if(_showMagnifier)
-				_magnifier.magnify(timeToX(time));
 		}
 		
 		/**
@@ -592,7 +597,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public function timeToX(value:Number):Number
 		{
 			var xPos: Number = timeToFrame(value)/(_maxFrame*1.0) * backgroundFill.width;
-			xPos = roundToNearestTenth(xPos);
+			xPos = Math.floor(xPos/10) * 10;//roundToNearestTenth(xPos);
 			return xPos;
 		}
 		
@@ -634,7 +639,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			return timeCode;
 		}
 		
-		public static function roundToNearestTenth(value:Number):int
+		public function roundToNearestTenth(value:Number):int
 		{
 			var newValue:int = Math.floor(value/10) * 10;
 			return newValue;

@@ -25,6 +25,7 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
@@ -42,6 +43,8 @@
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
 			private var _timeControl:KSketch_TimeControl;
+			private var _tickMarkControl:KSketch_TickMark_Control;
+			private var _grabbedTickIndex:int;
 			
 			private var _firstDelay:Number = 300; // Initial delay (in msecs) for auto-changing minutes.
 			private var _timer:Timer = new Timer(_firstDelay,0); // Timer object for auto-changing minutes.
@@ -51,11 +54,12 @@
 			private var _onTop:Boolean = true;
 			
 			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
-								 timeControl:KSketch_TimeControl):void
+								 tickmarkControl:KSketch_TickMark_Control, timeControl:KSketch_TimeControl):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
 				_timeControl = timeControl;
+				_tickMarkControl = tickmarkControl;
 			}
 			
 			private function _updateInsertKey():void
@@ -358,6 +362,8 @@
 				KSketch_CanvasView.tracker.trackPageview("/timebar/previousFrame");
 				
 				_isPrevious = true;
+				
+				_timeControl.startMoveTickMark();
 				_timeControl.isATick(_timeControl.timeToX(_timeControl.time), true);
 				_timeControl.moveTickMark(_isPrevious);
 				
@@ -371,6 +377,8 @@
 				KSketch_CanvasView.tracker.trackPageview("/timebar/nextFrame");
 				
 				_isPrevious = false;
+				
+				_timeControl.startMoveTickMark();
 				_timeControl.isATick(_timeControl.timeToX(_timeControl.time), true);
 				_timeControl.moveTickMark(_isPrevious);
 				
@@ -383,6 +391,7 @@
 			{
 				_timer.stop();
 				_timeControl.endMoveTickMark();
+				_grabbedTickIndex = null;
 				
 				//LOG
 				_KSketch.logCounter ++;

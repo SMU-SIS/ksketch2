@@ -94,8 +94,8 @@
 				optionButton.initSkin();
 				helpButton.init(KSketchAssets.texture_help, KSketchAssets.texture_help_down);
 				helpButton.initSkin();
-				//imageButton.init(KSketchAssets.texture_images, KSketchAssets.texture_images_down);
-				//imageButton.initSkin();
+				imageButton.init(KSketchAssets.texture_images, KSketchAssets.texture_images_down);
+				imageButton.initSkin();
 				
 				if(_saveOptions)
 				{
@@ -502,13 +502,12 @@
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		<!--		
+				
 		<buttons:KSketch_Button
 			click="_viewLog()"
 			id="imageButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-		-->
 	</s:Group>
 </s:SkinnablePopUpContainer>

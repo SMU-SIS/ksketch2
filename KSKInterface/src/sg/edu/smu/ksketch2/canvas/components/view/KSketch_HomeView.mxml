@@ -428,9 +428,6 @@
 					
 					listSketches_unavailable.visible = false;	
 					
-					dropDownList.visible = true;
-					sortLabel.visible = true;
-					
 					//record down list of sketches after display
 					for(var i:int; i<arrDG.length; i++)
 					{
@@ -533,8 +530,6 @@
 			private function startNewSketch():void
 			{
 				listSketches_unavailable.visible = true;
-				dropDownList.visible = false;
-				sortLabel.visible = false;
 			}
 			
 			private function createSketch():void
@@ -950,23 +945,6 @@
 							<s:layout>
 								<s:VerticalLayout></s:VerticalLayout>
 							</s:layout>
-							
-							<s:Group>
-								<s:layout>
-									<s:HorizontalLayout/>
-								</s:layout>
-								
-								<s:Label id="sortLabel" text="Sort Sketches By: " />
-								<s:VGroup left="10" right="10" top="10" bottom="10">
-									
-									<!-- Text components used to display current selection and price -->
-									<s:DropDownList id="dropDownList" prompt="Select One"
-													width="200" dataProvider="{arrDDL}" requireSelection="true"
-													labelField="name"
-													change="updateSelection_dropDown(event);"/>
-									
-								</s:VGroup>
-							</s:Group>
 							
 							<s:List id="listSketches" contentBackgroundAlpha="0" width="100%" height="100%"
 									itemRenderer="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"

@@ -105,28 +105,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			if(result.length > 0)
 			{
-				/*for each(var resultPair:* in result)
-				{
-					if(bestResult)
-					{
-						var isErased:Boolean = false;
-						var isDynamic:Boolean = false;
-						
-						if(resultPair.collidedObject is KStrokeView)
-						{
-							isErased = (resultPair.collidedObject as KStrokeView).checkObjectErased(time);	
-							isDynamic = (resultPair.collidedObject as KStrokeView).checkObjectDynamic(time);
-						}
-						
-						if(!isErased && isDynamic)
-						{
-							bestResult = resultPair;
-						}
-					}
-					else
-						bestResult = resultPair;
-				}*/
-				
 				for each(var resultPair:* in result)
 				{
 					var isErased:Boolean = false;

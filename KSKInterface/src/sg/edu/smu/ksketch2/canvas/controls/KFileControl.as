@@ -23,8 +23,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function addNewSketchDocument(record:String, obj:Object, type:String):ArrayCollection
 		{
-			//get array of sketch documents from informationArr[1]
-			//sketchDocObj = {documents:[]}
 			var arr:ArrayCollection;
 			if(record)
 			{
@@ -115,9 +113,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function deleteSketchDocument(record:String, obj:Object, type:String):ArrayCollection
 		{
-			//get array of sketch documents from informationArr[1]
-			//sketchDocObj = {documents:[]}
-			
 			var tempObj:Object = com.adobe.serialization.json.JSON.decode(record, true);
 			var tempArr:Array = (tempObj.sketches as Array);
 			
@@ -182,8 +177,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 						overwrite = true;
 					else if(cacheObj.version > webObj.version)
 						overwrite = true;
-						//((dateCache.hours == dateWeb.hours) && ((dateCache.minutes == dateWeb.minutes) || ((dateCache.minutes - dateWeb.minutes) <= 1)))
-						//overwrite = true;
 				}	
 				
 				if(overwrite)
@@ -354,16 +347,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 					{
 						if(!delArr.contains(obj))
 							delArr.addItem(obj);
-						//if(!sketchExist(delArr, obj.fileName, obj.sketchId))
-						//	delArr.addItem(obj);
 					}
 					
 					if(obj.save == -1)
 					{
 						if(!syncArr.contains(obj))
 							syncArr.addItem(obj);
-						//if(!sketchExist(syncArr, obj.fileName, obj.sketchId))
-						//	syncArr.addItem(obj);
 					}
 				}
 			}

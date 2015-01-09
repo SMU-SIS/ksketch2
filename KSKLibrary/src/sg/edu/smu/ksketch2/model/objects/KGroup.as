@@ -137,6 +137,11 @@ package sg.edu.smu.ksketch2.model.objects
 		public function add(object:KObject, index:int = -1):void
 		{
 			_children.add(object, index);
+			
+			//TRACE GROUP CENTROID
+			trace("original center: x = " + center.x + ", y = " + center.y);
+			//END OF TRACE
+			
 			updateCenter();
 			dispatchEvent(new KGroupEvent(KGroupEvent.OBJECT_ADDED,this, object));
 		}
@@ -196,14 +201,6 @@ package sg.edu.smu.ksketch2.model.objects
 		{
 			return _children.iterator();
 		}
-		
-		public function setMoveCenter():void
-		{
-			if(_moveCenter)
-				_moveCenter = false;
-			else
-				_moveCenter = true;
-		}
 
 		/**
 		 * Updates the group's geometric center.
@@ -223,11 +220,8 @@ package sg.edu.smu.ksketch2.model.objects
 			for(var i:int = 0; i<length; i++)
 			{
 				point = _children.getObjectAt(i).center;
-				
 				if(!isNaN(_creationTime))
-				{
 					point = _children.getObjectAt(i).transformMatrix(_creationTime).transformPoint(point);
-				}	
 				
 				if(point.x < minX)
 					minX = point.x;
@@ -246,6 +240,16 @@ package sg.edu.smu.ksketch2.model.objects
 			
 			_center.x = (minX+maxX)/2;
 			_center.y = (minY+maxY)/2;
+			
+			//TRACE GROUP CENTROID
+			trace("new center: x = " + _center.x + ", y = " + _center.y);
+			//exponential values for center
+			if(_center.x < 0 || _center.y < 0 || _center.x > 2000 || _center.y > 2000)
+			{
+				trace("EXPONENTIAL VALUES FOR CENTER: x = " + _center.x + ", y = " + _center.y);
+			}
+			trace("==============================================================");
+			//END OF TRACE
 		}
 		
 		/**
@@ -254,14 +258,8 @@ package sg.edu.smu.ksketch2.model.objects
 		 * @return The group's geometric center.
 		 */
 		override public function get center():Point
-		{			
-			if(_moveCenter)
-			{
-				updateCenter();
-				setMoveCenter();
-			}
-
-			return _center;//.clone();
+		{	
+			return _center.clone();
 		}
 		
 		override public function set selected(value:Boolean):void

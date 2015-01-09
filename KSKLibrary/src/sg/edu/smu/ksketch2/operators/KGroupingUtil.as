@@ -141,7 +141,7 @@ package sg.edu.smu.ksketch2.operators
 			// case: there is at most one oject in the group
 			// throw an error
 			if(objects.length() <= 1)
-				throw new Error("one does not simply group one object, it'll feel lonely in a group you know.");
+				throw new Error("Grouping requires more than 1 object. Only 1 object is selecetd.");
 			
 			// create the new group
 			var newGroup:KGroup = new KGroup(scene.nextHighestID);
@@ -152,8 +152,17 @@ package sg.edu.smu.ksketch2.operators
 			
 			scene.registerObject(newGroup, newParent, false, op);
 			newGroup.init(groupTime, op);
+			
+			//TRACE GROUP CENTROID
+			trace("==============================================================");
+			if(newParent)
+				trace("KGroupingUtil > _groupObjects() > parent: " + newParent.id + ", kobject: " + newGroup.id);
+			else
+				trace("KGroupingUtil > _groupObjects() > parent: null, kobject: " + newGroup.id);
+			trace("original center: x = " + newGroup.center.x + ", y = " + newGroup.center.y);
+			//END OF TRACE
+			
 			newGroup.updateCenter();
-			newGroup.setMoveCenter();
 			
 			// add the objects in the given list to the new parent 
 			for(var i:int = 0; i< objects.length(); i++)

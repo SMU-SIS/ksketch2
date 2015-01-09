@@ -144,7 +144,14 @@ package sg.edu.smu.ksketch2.model.objects
 			
 			//Now dispatch another event to notify whoeever that this object will be added to newParent
 			if(_parent)
+			{
+				//TRACE GROUP CENTROID
+				trace("==============================================================");
+				trace("KObject > set parent() > parent: " + _parent.id + ", kobject: " + this.id);
+				//END OF TRACE
+				
 				_parent.add(this);
+			}
 		}
 		
 		/**

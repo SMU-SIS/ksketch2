@@ -82,9 +82,6 @@ package sg.edu.smu.ksketch2.operators.operations
 		{
 			// set the object's current center to the older center
 			_object.center = _oldCenter;
-			
-			if(_object is KGroup)
-				(_object as KGroup).setMoveCenter();
 		}
 		
 		/**
@@ -95,9 +92,6 @@ package sg.edu.smu.ksketch2.operators.operations
 		{
 			// set the object's current center to the newer center
 			_object.center = _newCenter;
-			
-			if(_object is KGroup)
-				(_object as KGroup).setMoveCenter();
 		}
 		
 		/**

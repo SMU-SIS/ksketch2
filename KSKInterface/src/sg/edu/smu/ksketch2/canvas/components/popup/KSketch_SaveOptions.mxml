@@ -85,7 +85,7 @@
 				
 				var confirmSave:Boolean = false;
 				userData = _canvasView.saveSketch(confirmSave);
-				mobileControl = _canvasView._mobileControl;
+				mobileControl = _canvasView.mobileControl;
 				
 				if(saveCounter == 0)
 				{

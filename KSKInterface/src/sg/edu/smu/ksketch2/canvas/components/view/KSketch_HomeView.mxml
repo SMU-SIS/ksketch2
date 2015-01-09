@@ -127,6 +127,7 @@
 				this.removeEventListener(FlexEvent.INITIALIZE, init);
 				
 				createButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
+				loadButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);	//DESKTOP ENABLE
 				loginButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
 				refreshButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
 				
@@ -250,7 +251,9 @@
 				}
 				
 				createButton.label = "Create a Sketch";
+				loadButton.label = "Load Sketch from File";						//DESKTOP ENABLE
 				createButton.setStyle("fontSize", KSketchStyles.BUTTON_SIZE);
+				loadButton.setStyle("fontSize", KSketchStyles.BUTTON_SIZE);		//DESKTOP ENABLE
 				loginButton.setStyle("fontSize", KSketchStyles.BUTTON_SIZE);
 				refreshButton.setStyle("fontSize", KSketchStyles.BUTTON_SIZE);
 				prepareDataList();
@@ -427,17 +430,6 @@
 						arrDG.addAll(userSketch.getUserSketchArray());
 					
 					listSketches_unavailable.visible = false;	
-					
-					//record down list of sketches after display
-					for(var i:int; i<arrDG.length; i++)
-					{
-						if(data.listSketches == "")
-							data.listSketches = arrDG.getItemAt(i).sketchId;
-						else
-							data.listSketches += "," + arrDG.getItemAt(i).sketchId;
-						
-						userData.listSketches = data.listSketches;
-					}
 				}
 				else
 				{
@@ -536,6 +528,53 @@
 			{
 				KSketch_CanvasView.createNewSketch = true;
 				navigateToScreen('CANVAS');
+			}
+			
+			private function loadSketch():void
+			{
+				try   
+				{ 
+					var file:File = File.documentsDirectory; 
+					file.browseForOpen("Open"); 
+					file.addEventListener(Event.SELECT, fileSelected); 
+				}  
+				catch (error:Error)  
+				{  
+					trace("Failed:", error.message);  
+				}
+			}
+			
+			private function fileSelected(event:Event):void 
+			{ 
+				var stream:FileStream = new FileStream();
+				stream.open(event.target as File, FileMode.READ);
+				var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
+				
+				//create XML and date object from JSON to create a KSketchDocument object
+				try
+				{
+					var fileObj:Object = com.adobe.serialization.json.JSON.decode(fileData);
+					
+					if (fileObj.hasOwnProperty("fileName") && fileObj.hasOwnProperty("fileData") &&
+						fileObj.hasOwnProperty("originalName") && fileObj.hasOwnProperty("version") && 
+						fileObj.hasOwnProperty("sketchId") && fileObj.hasOwnProperty("changeDescription"))
+					{
+						fileObj.lowerFileName = fileObj.fileName.toString().toLowerCase();
+						var xml:XML = new XML(fileObj.fileData);
+						var date:Date = new Date(fileObj.modified);
+						var docObj:KSketchDocument = new KSketchDocument(fileObj.fileName, xml, fileObj.id, date, fileObj.originalName, fileObj.version, fileObj.sketchId, fileObj.changeDescription);
+						userData.kSketchDocument = docObj;
+						
+						_mobileControl.addSketchToList(fileObj, KFileControl.ADD_SAVE_CACHE);
+						navigateToScreen("CANVAS");
+					}
+					else
+						trace("File does not contains required data");
+				}
+				catch(error:Error)
+				{
+					trace("Unknown file");	
+				}
 			}
 			
 			public function navigateToScreen(screenName:String):void
@@ -903,6 +942,13 @@
 						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.LOGO_PADDING_BUTTON}"/> </s:layout>
 						<s:Button id="createButton" width="100%" click="createSketch()"/>
 					</s:Group>
+					
+					<!-- DESKTOP ENABLE -->
+					<s:Group width="100%">
+						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.LOGO_PADDING_BUTTON}"/> </s:layout>
+						<s:Button id="loadButton" width="100%" click="loadSketch()"/>
+					</s:Group>
+					<!-- END OF DESKTOP ENABLE -->
 					
 					<s:Group width="100%">
 						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.LOGO_PADDING_BUTTON}"/> </s:layout>

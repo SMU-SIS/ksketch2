@@ -286,7 +286,23 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_Texture_Lasso_Down.png")] 
 		[Bindable] 
 		public static var texture_lasso_down:Class;
+		//==========
+		[Embed("assets/Button_Texture_Save.png")] 
+		[Bindable] 
+		public static var texture_save:Class;
 		
+		[Embed("assets/Button_Texture_Save_Down.png")] 
+		[Bindable] 
+		public static var texture_save_down:Class;
+		
+		[Embed("assets/Button_Texture_Debug.png")] 
+		[Bindable] 
+		public static var texture_debug:Class;
+		
+		[Embed("assets/Button_Texture_Debug_Down.png")] 
+		[Bindable] 
+		public static var texture_debug_down:Class;
+		//==========
 		[Embed("assets/Button_Texture_Center.png")] 
 		[Bindable] 
 		public static var texture_center:Class;

@@ -88,7 +88,7 @@
 			public var enableLog:Boolean = false;
 			
 			private var _KSketch:KSketch2;
-			public var _mobileControl:KMobileControl;
+			public var mobileControl:KMobileControl;
 			public var _interactionControl:KInteractionControl;
 			public var _isNewSketch:Boolean = true;
 			
@@ -170,7 +170,7 @@
 				}
 				
 				if(!isWeb)
-					_mobileControl = userData.mobileControl;
+					mobileControl = userData.mobileControl;
 				
 				//Actual setting up starts here
 				_KSketch = new KSketch2();

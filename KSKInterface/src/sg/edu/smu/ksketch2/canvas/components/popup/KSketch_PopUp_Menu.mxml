@@ -16,6 +16,8 @@
 						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
 	<fx:Script>
 		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
@@ -24,10 +26,12 @@
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
+			import sg.edu.smu.ksketch2.utils.KWebData;
 			
 			public static const ORIGIN:Point = new Point();
 			public static const LEFT:int = 0;
@@ -94,8 +98,9 @@
 				optionButton.initSkin();
 				helpButton.init(KSketchAssets.texture_help, KSketchAssets.texture_help_down);
 				helpButton.initSkin();
-				imageButton.init(KSketchAssets.texture_images, KSketchAssets.texture_images_down);
-				imageButton.initSkin();
+				//debugButton.init(KSketchAssets.texture_debug, KSketchAssets.texture_debug_down);		//DEBUG ENABLE
+				//debugButton.initSkin();																//DEBUG ENABLE
+				
 				
 				if(_saveOptions)
 				{
@@ -106,6 +111,12 @@
 					exitButton.visible = true;
 					exitButton.init(KSketchAssets.texture_prevScreen, KSketchAssets.texture_prevScreen_down);
 					exitButton.initSkin();
+					
+					//DESKTOP ENABLE
+					saveToFileButton.visible = true;
+					saveToFileButton.init(KSketchAssets.texture_save, KSketchAssets.texture_save_down);
+					saveToFileButton.initSkin();
+					//END OF DESKTOP ENABLE
 				}
 				
 				eraserToggle.init(KSketchAssets.texture_eraser, KSketchAssets.texture_eraser_down);
@@ -264,6 +275,53 @@
 				}
 			}
 			
+			/**
+			 * Saves the current document to a file.
+			 */
+			private function _saveToFile():void
+			{
+				var docsDir:File = File.documentsDirectory;
+				try
+				{
+					docsDir.browseForSave("Save As");
+					docsDir.addEventListener(Event.SELECT, saveData);
+				}
+				catch (error:Error)
+				{
+					trace("Failed:", error.message);
+				}
+			}
+			
+			private function saveData(event:Event):void 
+			{
+				var newFile:File = event.target as File;
+				
+				var confirmSave:Boolean = true;
+				var userData:Object = _canvasView.saveSketch(confirmSave);
+				
+				var finalFileName:String =  newFile.name;
+				
+				var objDoc:Object = KWebData.prepareSketchDocument(userData, finalFileName);
+				objDoc.save = -1;
+				objDoc.deleteFlag = 0;
+				objDoc.version = 1;
+				objDoc.originalVersion = 0;	
+				objDoc.originalSketch = -1;
+				objDoc.sketchId = "";
+				
+				var str:String = com.adobe.serialization.json.JSON.encode(objDoc);
+				
+				//save to file
+				var stream:FileStream = new FileStream();
+				stream.open(newFile, FileMode.WRITE);
+				stream.writeUTFBytes(str);
+				stream.close();
+				
+				//save to cache
+				_canvasView.mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
+				_canvasView.mobileControl.writeToCache(_canvasView.mobileControl.informationArr);
+				_exit();
+			}
 			
 			/**
 			 * Triggers undo/redo action
@@ -416,6 +474,16 @@
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			visible="false"
 			/>
+		
+		<!-- DESKTOP ENABLE -->
+		<buttons:KSketch_Button
+			click="_saveToFile()"
+			id="saveToFileButton"
+			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+			/>
+		<!-- END OF DESKTOP ENABLE -->
+		
 		<buttons:KSketch_Button
 			click="_undoRedoAction(true)"
 			id="undoButton"
@@ -503,11 +571,12 @@
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 				
+		<!-- 
 		<buttons:KSketch_Button
 			click="_viewLog()"
-			id="imageButton"
+			id="debugButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
+			/> -->
 	</s:Group>
 </s:SkinnablePopUpContainer>

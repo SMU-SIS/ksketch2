@@ -111,12 +111,6 @@
 					exitButton.visible = true;
 					exitButton.init(KSketchAssets.texture_prevScreen, KSketchAssets.texture_prevScreen_down);
 					exitButton.initSkin();
-					
-					//DESKTOP ENABLE
-					saveToFileButton.visible = true;
-					saveToFileButton.init(KSketchAssets.texture_save, KSketchAssets.texture_save_down);
-					saveToFileButton.initSkin();
-					//END OF DESKTOP ENABLE
 				}
 				
 				eraserToggle.init(KSketchAssets.texture_eraser, KSketchAssets.texture_eraser_down);
@@ -474,15 +468,6 @@
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			visible="false"
 			/>
-		
-		<!-- DESKTOP ENABLE -->
-		<buttons:KSketch_Button
-			click="_saveToFile()"
-			id="saveToFileButton"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
-		<!-- END OF DESKTOP ENABLE -->
 		
 		<buttons:KSketch_Button
 			click="_undoRedoAction(true)"

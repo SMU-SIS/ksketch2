@@ -338,5 +338,9 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_ActionList_Log.png")] 
 		[Bindable] 
 		public static var actionList_log:Class;
+		
+		[Embed("assets/Button_ActionList_Save.png")] 
+		[Bindable] 
+		public static var actionList_save:Class;
 	}
 }

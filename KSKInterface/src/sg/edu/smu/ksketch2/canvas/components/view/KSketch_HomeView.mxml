@@ -15,7 +15,7 @@
 		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
-		initialize="init()"
+		initialize="init(false)"
 		addedToStage="startMonitorConnection()"
 		destructionPolicy="auto"
 		>
@@ -46,6 +46,7 @@
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.KSketch_User;
 			import sg.edu.smu.ksketch2.KSketch_UserSketches;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_CanvasNotice;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_LogoutNotice;
@@ -67,8 +68,8 @@
 			
 			[Bindable]
 			private var arrDDL:ArrayCollection = new ArrayCollection([{name:"File Name", value:0},
-																	 {name:"Date Modified", value:1},
-																	 {name:"Date Created", value:2}]);
+				{name:"Date Modified", value:1},
+				{name:"Date Created", value:2}]);
 			
 			public static var autoSaveCounter:int = 0;
 			
@@ -108,6 +109,7 @@
 			private var _oldEvent:Event;
 			private var _isXML:Boolean = false;
 			private var _logSketchFlag:Boolean = false;
+			private var _saveSketchFlag:Boolean = false;
 			private var _deleteSketchFlag:Boolean = false;
 			private var _selectedSketchName:String;
 			private var _selectedSketchId:String;
@@ -122,7 +124,7 @@
 				canvasTimerDisabled = true;
 			}
 			
-			private function init():void
+			private function init(isMobile:Boolean):void
 			{	
 				this.removeEventListener(FlexEvent.INITIALIZE, init);
 				
@@ -130,6 +132,15 @@
 				loadButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);	//DESKTOP ENABLE
 				loginButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
 				refreshButton.setStyle("fontSize",KSketchStyles.DIALOG_BUTTON_SIZE);
+				
+				//disable load and save button if export is for mobile
+				if(isMobile)
+				{
+					mainButtons.removeElementAt(2);
+					KSketch_CanvasView_Preferences.mobileEnabled = KSketch_CanvasView_Preferences.MOBILE_ON;
+				}
+				else
+					KSketch_CanvasView_Preferences.mobileEnabled = KSketch_CanvasView_Preferences.MOBILE_OFF;
 				
 				if(stage.deviceOrientation == StageOrientation.UNKNOWN && (Capabilities.version.indexOf('IOS') > -1))
 				{
@@ -165,6 +176,7 @@
 				GetUserSketch.addEventListener(ResultEvent.RESULT, retrieveResultHandler);
 				stage.addEventListener(KSwipeEvent.DELETE_ACTION, listSketches_deleteSketchHandler);
 				stage.addEventListener(KSwipeEvent.LOG_ACTION, listSketches_logSketchHandler);
+				stage.addEventListener(KSwipeEvent.SAVE_ACTION, listSketches_saveSketchHandler);
 				listSketches.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
 			}
 			
@@ -174,8 +186,8 @@
 				
 				//initialize login button and KUser object
 				if(!data || data == KSketch_LoginView.LOGIN_CANCEL 
-				|| data == KSketch_LoginView.LOGIN_LOSTCONN 
-				|| data == KSketch_LoginView.LOGIN_JANRAINFAIL)
+					|| data == KSketch_LoginView.LOGIN_LOSTCONN 
+					|| data == KSketch_LoginView.LOGIN_JANRAINFAIL)
 				{
 					if(data)
 					{
@@ -245,8 +257,8 @@
 						loginButton.label = "Login";
 						refreshButton.visible = false;
 					}
-						
-				
+					
+					
 					_failedLogin = false;
 				}
 				
@@ -381,7 +393,7 @@
 					deletedSketchArr = tempObj.delArr;
 					tempObj = null;
 				}
-					
+				
 				//if there are sketches to sync, then prompt dialog
 				//else just display data
 				if(syncSketchArr.length > 0)
@@ -454,7 +466,7 @@
 					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_LOGIN;
 				else if(displayFailedMessage == DISPLAY_FAILED_SYNC)
 					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SYNC;
-					
+				
 				if(displayFailedMessage != DISPLAY_FAILED_DEFAULT)
 				{
 					_canvasNotice.open(this, true);
@@ -466,9 +478,11 @@
 				canvasTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, displayFailedNotification);
 			}
 			
+			var finalObj:Object;
+			
 			private function displaySketchDocument(obj:Object, checkConflict:Boolean):void
 			{
-				var finalObj:Object = obj;
+				finalObj = obj;
 				
 				var sketchDocArr:ArrayCollection;
 				sketchDocArr = _mobileControl.sketchList;
@@ -495,20 +509,45 @@
 				
 				if(finalObj.fileData)
 				{
-					finalObj.lowerFileName = finalObj.fileName.toString().toLowerCase();
-					_mobileControl.addSketchToList(finalObj, KFileControl.ADD_SAVE_WEB);
-					
-					//create XML and date object from JSON to create a KSketchDocument object
-					var xml:XML = new XML(finalObj.fileData);
-					var date:Date = new Date(finalObj.modified);
-					//(name:String, xml:XML, id:String,  date:Date, originalName:String, version:int, sketchId:int, description:String = "")
-					var docObj:KSketchDocument = new KSketchDocument(finalObj.fileName, xml, finalObj.id, date, finalObj.originalName, finalObj.version, finalObj.sketchId, finalObj.changeDescription);
-					userData.kSketchDocument = docObj;
-					
-					navigateToScreen("CANVAS");
+					if(_saveSketchFlag)
+					{
+						_saveSketchFlag = false;
+						trace("implement saving here");
+						trace(com.adobe.serialization.json.JSON.encode(finalObj));
+						
+						var docsDir:File = File.documentsDirectory;
+						try
+						{
+							docsDir.browseForSave("Save As");
+							docsDir.addEventListener(Event.SELECT, saveData);
+						}
+						catch (error:Error)
+						{
+							trace("Failed:", error.message);
+						}
+						
+						stage.dispatchEvent(new MouseEvent(MouseEvent.RIGHT_CLICK));
+					}
+					else
+					{
+						finalObj.lowerFileName = finalObj.fileName.toString().toLowerCase();
+						_mobileControl.addSketchToList(finalObj, KFileControl.ADD_SAVE_WEB);
+						
+						//create XML and date object from JSON to create a KSketchDocument object
+						var xml:XML = new XML(finalObj.fileData);
+						var date:Date = new Date(finalObj.modified);
+						//(name:String, xml:XML, id:String,  date:Date, originalName:String, version:int, sketchId:int, description:String = "")
+						var docObj:KSketchDocument = new KSketchDocument(finalObj.fileName, xml, finalObj.id, date, finalObj.originalName, finalObj.version, finalObj.sketchId, finalObj.changeDescription);
+						userData.kSketchDocument = docObj;
+						
+						navigateToScreen("CANVAS");	
+					}
 				}
 				else
 				{
+					if(_saveSketchFlag)
+						trace("print out a different statement");
+					
 					_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_FAILED_SKETCH;
 					_canvasNotice.open(this, true);
 					PopUpManager.centerPopUp(_canvasNotice);
@@ -526,6 +565,7 @@
 			
 			private function createSketch():void
 			{
+				userData.kSketchDocument = null;
 				KSketch_CanvasView.createNewSketch = true;
 				navigateToScreen('CANVAS');
 			}
@@ -559,17 +599,19 @@
 						fileObj.hasOwnProperty("originalName") && fileObj.hasOwnProperty("version") && 
 						fileObj.hasOwnProperty("sketchId") && fileObj.hasOwnProperty("changeDescription"))
 					{
-						fileObj.lowerFileName = fileObj.fileName.toString().toLowerCase();
-						var xml:XML = new XML(fileObj.fileData);
-						var date:Date = new Date(fileObj.modified);
-						var docObj:KSketchDocument = new KSketchDocument(fileObj.fileName, xml, fileObj.id, date, fileObj.originalName, fileObj.version, fileObj.sketchId, fileObj.changeDescription);
-						userData.kSketchDocument = docObj;
-						
-						_mobileControl.addSketchToList(fileObj, KFileControl.ADD_SAVE_CACHE);
-						navigateToScreen("CANVAS");
+						//enable this condition once Janrain login is fixed
+						//if(fileObj.owner_id == userData.kUser.id || (userData.kUser.id == "n.a" && fileObj.owner_id == "n.a")) 
+						//{
+							fileObj.lowerFileName = fileObj.fileName.toString().toLowerCase();
+							var xml:XML = new XML(fileObj.fileData);
+							var date:Date = new Date(fileObj.modified);
+							var docObj:KSketchDocument = new KSketchDocument(fileObj.fileName, xml, fileObj.id, date, fileObj.originalName, fileObj.version, fileObj.sketchId, fileObj.changeDescription);
+							userData.kSketchDocument = docObj;
+							
+							_mobileControl.addSketchToList(fileObj, KFileControl.ADD_SAVE_CACHE);
+							navigateToScreen("CANVAS");
+						//}
 					}
-					else
-						trace("File does not contains required data");
 				}
 				catch(error:Error)
 				{
@@ -579,8 +621,6 @@
 			
 			public function navigateToScreen(screenName:String):void
 			{
-				resetDatagridSelectItem();
-				
 				_mobileControl.writeToCache(_mobileControl.informationArr);
 				
 				if(screenName.indexOf("CANVAS") == -1) //if screen name is Login
@@ -610,12 +650,14 @@
 						_logSketchFlag = false;
 						KSketch_HomeView_IconItemRenderer.openActionBar = false;
 						navigator.pushView(KSketch_LogView, userData);	
+						resetDatagridSelectItem();
 					}
 					else
 						navigator.pushView(KSketch_CanvasView, userData);
+						
 				}
 				
-				System.pauseForGCIfCollectionImminent();
+				resetDatagridSelectItem();
 			}
 			
 			public function logout():void
@@ -740,7 +782,8 @@
 			
 			private function prepareDeleteSketch():void
 			{
-				data.resolveConflict = 1;
+				if(data)
+					data.resolveConflict = 1;
 				
 				if(_isConnected && KSketch_LoginView._isLoggedIn)
 				{
@@ -763,6 +806,8 @@
 					deleteSketchDocument(null, KFileControl.DELETE_WEB);
 				else
 					deleteSketchDocument(null, KFileControl.DELETE_CACHE);
+				
+				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.SAVE_CLOSE_ACTION));
 			}
 			
 			public function deleteSketchDocument(obj:Object, type:String):void
@@ -805,6 +850,30 @@
 				_deleteSketchFlag = false;
 				stopProgressBar();
 				displaySketchData();
+			}
+			
+			private function saveData(event:Event):void
+			{
+				var newFile:File = event.target as File;
+				var finalFileName:String =  newFile.name;
+				
+				//create XML and date object from JSON to create a KSketchDocument object
+				var xml:XML = new XML(finalObj.fileData);
+				var date:Date = new Date(finalObj.modified);
+				finalObj.version = 0;
+				finalObj.sketchId = "";
+				userData.kSketchDocument = new KSketchDocument(finalObj.fileName, xml, finalObj.id, date, finalObj.originalName, finalObj.version, finalObj.sketchId, finalObj.changeDescription);
+				userData.thumbnailData = finalObj.thumbnailData;
+				finalObj = KWebData.prepareSketchDocument(userData, finalFileName);
+				
+				//save to file
+				var str:String = com.adobe.serialization.json.JSON.encode(finalObj);
+				var stream:FileStream = new FileStream();
+				stream.open(newFile, FileMode.WRITE);
+				stream.writeUTFBytes(str);
+				stream.close();
+				
+				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.SAVE_CLOSE_ACTION));
 			}
 			
 			protected function listSketches_mouseDownHandler(event:MouseEvent):void
@@ -851,7 +920,7 @@
 			protected function resetSwipe(event:TimerEvent):void
 			{
 				_isSwipe = false;
-				_swipeTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, resetSwipe)
+				_swipeTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, resetSwipe);
 			}
 			
 			protected function listSketches_changeSelectedHandler(event:Event):void
@@ -871,14 +940,18 @@
 					listSketches.selectedIndex = -1;
 				
 				//if action bar is not displayed and there is no additional flag
-				if(!KSketch_HomeView_IconItemRenderer.openActionBar && !_deleteSketchFlag && !_isSwipe && !_logSketchFlag)
+				if(!KSketch_HomeView_IconItemRenderer.openActionBar && !_deleteSketchFlag && !_isSwipe && !_logSketchFlag && !_saveSketchFlag)
 					_isXML = true;
-					
+				
 				//if action bar is displayed and there is a log sketch flag
 				if(KSketch_HomeView_IconItemRenderer.openActionBar && _logSketchFlag)
 					_isXML = true;
 				
-				if(_isXML || _deleteSketchFlag || _logSketchFlag)
+				//if action bar is displayed and there is a save sketch flag
+				if(KSketch_HomeView_IconItemRenderer.openActionBar && _saveSketchFlag)
+					_isXML = true;
+				
+				if(_isXML || _deleteSketchFlag || _logSketchFlag || _saveSketchFlag)
 					startMonitorConnection();
 				
 				_isSwipe = false;
@@ -894,12 +967,19 @@
 				_logSketchFlag = true;
 			}
 			
+			protected function listSketches_saveSketchHandler(event:KSwipeEvent):void
+			{
+				_saveSketchFlag = true;
+				listSketches_changeSelectedHandler(event);
+			}
+			
 			private function resetDatagridSelectItem():void
 			{
 				GetUserSketch.removeEventListener(FaultEvent.FAULT, retrieveFaultHandler);
 				GetUserSketch.removeEventListener(ResultEvent.RESULT, retrieveResultHandler);
 				stage.removeEventListener(KSwipeEvent.DELETE_ACTION, listSketches_deleteSketchHandler);
 				stage.removeEventListener(KSwipeEvent.LOG_ACTION, listSketches_logSketchHandler);
+				stage.removeEventListener(KSwipeEvent.SAVE_ACTION, listSketches_saveSketchHandler);
 				listSketches.removeEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
 				
 				arrDG.removeAll();
@@ -926,7 +1006,7 @@
 					<s:fill> <s:SolidColor color="0xE7E7E7"/> </s:fill>
 				</s:Rect>
 				
-				<s:Group width="100%" height="100%">
+				<s:Group id="mainButtons" width="100%" height="100%">
 					<!-- defines the page to arrange 'group' elements from top to bottom -->
 					<s:layout> <s:VerticalLayout paddingLeft="15" paddingRight="15" paddingTop="15"/> </s:layout>
 					

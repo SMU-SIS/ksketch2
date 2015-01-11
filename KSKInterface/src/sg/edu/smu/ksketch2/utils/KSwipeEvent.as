@@ -7,6 +7,8 @@ package sg.edu.smu.ksketch2.utils
 		public static const TAP_ACTION:String ="TAP_ACTION";
 		public static const DELETE_ACTION:String ="DELETE_ACTION";
 		public static const LOG_ACTION:String = "LOG_ACTION";
+		public static const SAVE_ACTION:String = "SAVE_ACTION";
+		public static const SAVE_CLOSE_ACTION:String = "SAVE_CLOSE_ACTION";
 		
 		private var _userObj:Object;
 		private var _userId:int;
@@ -15,26 +17,5 @@ package sg.edu.smu.ksketch2.utils
 		{
 			super(type, bubbles, cancelable);
 		}
-		
-		/*public function get userId():int
-		{
-			return _userId;
-		}
-		
-		public function set userId(value:int):void
-		{
-			_userId = value;
-		}
-		
-		public function get userObj():Object
-		{
-			return _userObj;
-		}
-		
-		public function set userObj(value:Object):void
-		{
-			_userObj = value;
-		}*/
-		
 	}
 }

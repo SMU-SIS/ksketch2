@@ -115,13 +115,18 @@
 				
 				Multitouch.inputMode = MultitouchInputMode.GESTURE;
 				this.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
+				this.addEventListener(MouseEvent.RIGHT_CLICK, onSwipe);
 				stage.addEventListener(KSwipeEvent.TAP_ACTION, swipeTap);
+				stage.addEventListener(KSwipeEvent.SAVE_CLOSE_ACTION, closeActBar);
+				
+				if(KSketch_CanvasView_Preferences.mobileEnabled == KSketch_CanvasView_Preferences.MOBILE_ON)
+					actBar.listButtons.removeElementAt(1);
 				
 				if(KSketch_CanvasView_Preferences.autoLog == KSketch_CanvasView_Preferences.AUTOLOG_OFF)
-					actBar.logButton.visible = false;
+					actBar.listButtons.removeElementAt(0);
 			}
 			
-			public function onSwipe(event:TransformGestureEvent):void
+			public function closeActBar(event:Event):void
 			{
 				if(actBar.stage)
 				{
@@ -129,36 +134,53 @@
 					wipeEffectOut.play();
 					this.removeElement(actBar);
 				}
-				
-				if(event.offsetX == -1){
-					this.addElement(actBar);
+			}
+			
+			public function onSwipe(event:Event):void
+			{
+				if(actBar.stage)
+				{
+					openActionBar = false;
+					wipeEffectOut.play();
+					this.removeElement(actBar);
+				}
+				else
+				{
+					var openBar:Boolean = false;
 					
-					actBar.visible = true;
-					openActionBar = true;
-					wipeEffect.play();
+					if(event is MouseEvent)
+						openBar = true;
+					else if (event is TransformGestureEvent)
+					{
+						if((event as TransformGestureEvent).offsetX == -1)
+							openBar = true;
+					}
+					
+					if(openBar)
+					{
+						this.addElement(actBar);
+						
+						actBar.visible = true;
+						openActionBar = true;
+						wipeEffect.play();
+					}
 				}
 			}
 			
 			public function swipeTap(event:KSwipeEvent):void
 			{
 				autoDrawBackground = false;
-				
-			}
-			
-			public function deleteIconRenderer():void
-			{
-				
 			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<s:Parallel id="wipeEffect" target="{actBar}">
 			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
-			<s:Move duration="150" xFrom="{this.width}" xTo="500"/>
+			<s:Move duration="150" xFrom="0" xTo="300"/>
 		</s:Parallel>
 		<s:Parallel id="wipeEffectOut" target="{actBar}">
 			<s:Fade duration="800" alphaFrom="0.7" alphaTo="1" />
-			<s:Move duration="150" xTo="{this.width}" xFrom="500"/>
+			<s:Move duration="150" xTo="0" xFrom="300"/>
 		</s:Parallel>
 		<views:KSketch_HomeView_ListActions id="actBar" width="100%" height="100%"/>
 	</fx:Declarations>

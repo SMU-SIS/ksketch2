@@ -77,9 +77,19 @@ package sg.edu.smu.ksketch2.canvas
 		public static const AUTOLOG_ON:String = "AUTOLOG_ON";
 		
 		/**
-		 * Auto-log disabled status status.
+		 * Auto-log disabled status.
 		 */
 		public static const AUTOLOG_OFF:String = "AUTOLOG_OFF";
+		
+		/**
+		 * Mobile-device enabled status.
+		 */
+		public static const MOBILE_ON:String = "MOBILE_ON";
+		
+		/**
+		 * Mobile-device disabled status.
+		 */
+		public static const MOBILE_OFF:String = "MOBILE_OFF";
 		
 		/**
  		 * Gets the shared object.
@@ -246,6 +256,32 @@ package sg.edu.smu.ksketch2.canvas
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
 			prefs.data.autoLog = value;
+			prefs.flush();
+		}
+		
+		/**
+		 * Gets the mobile device enabled/disabled value.
+		 * 
+		 * @return The mobile device value.
+		 */
+		public static function get mobileEnabled():String
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.mobileEnabled)
+				return prefs.data.mobileEnabled;
+			else
+				return CLOSE;
+		}
+		
+		/**
+		 * Sets the auto log feature value.
+		 * 
+		 * @param value The target auto log value.
+		 */
+		public static function set mobileEnabled(value:String):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.mobileEnabled = value;
 			prefs.flush();
 		}
 	}

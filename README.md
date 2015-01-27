@@ -6,38 +6,38 @@ Software You Will Need
 
 1. Install the GitHub client for [Windows](http://windows.github.com/) or [Mac](http://mac.github.com/).
 1. Install [Adobe Flash Builder Premium 4.7](http://www.adobe.com/sea/products/flash-builder.html) (referred to below as "FB").
-1. Install the Adobe AIR SDK 13 (Instructions adapted from http://forum.starling-framework.org/topic/fb47-issues)
+1. Install the Adobe AIR SDK 4 (Instructions adapted from http://forum.starling-framework.org/topic/fb47-issues)
     1. How to get this SDK
         * Download it from http://helpx.adobe.com/air/kb/archived-air-sdk-version.html
             1. Get both versions of the SDK
-                1. Wtihout Compiler: "Adobe AIR 13 SDK downloads" (Shold be "AdobeAIRSDK")
-                1. With Compiler: "Adobe AIR 13 SDK and compiler downloads" (Should be "AIRSDK_Compiler")
+                1. Wtihout Compiler: "Adobe AIR 4 SDK downloads" (Shold be "AdobeAIRSDK")
+                1. With Compiler: "Adobe AIR 4 SDK and compiler downloads" (Should be "AIRSDK_Compiler")
         * Or get it from one of the ksketch2 team members
-    1. Overlay the SDK Without Compiler on FB's AIR 3.6 Directory
+    1. Overlay the SDK Without Compiler on FB's AIR 4.6 Directory
         * On Windows:
             1. Navigate to C:\Program Files (x86)\Adobe\Adobe Flash Builder 4.7\sdks
-            1. Unzip the contents of AdobeAIRSDK to a temporary folder "AIR13"
-            1. Make a copy of the directory 4.6.0 and name it 4.6.0_AIR13
-            1. Overlay AIR13 on Flex 4.6.0 by dragging the contents of the AIR13 directory into the 4.6.0 directory. 
+            1. Unzip the contents of AdobeAIRSDK to a temporary folder "AIR4"
+            1. Make a copy of the directory 4.6.0 and name it 4.6.0_AIR4
+            1. Overlay AIR4 on Flex 4.6.0 by dragging the contents of the AIR4 directory into the 4.6.0 directory. 
                 1. Make sure you select “Copy and Replace” when Windows asks and click the box at the bottom to apply all.
         * On Mac:                 
             1. Navigate to /Applications/Adobe Flash Builder 4.7/sdks
-            1. Unpack the contents of AdobeAIRSDK to a temporary folder AIR13
-                1. Create the "AIR13" directory and copy the SDK file (AdobeAIRSDK.tbz2) into that folder
-                1. Navigate to /Applications/Adobe Flash Builder 4.7/sdks/AIR13 in a terminal window
+            1. Unpack the contents of AdobeAIRSDK to a temporary folder AIR4
+                1. Create the "AIR4" directory and copy the SDK file (AdobeAIRSDK.tbz2) into that folder
+                1. Navigate to /Applications/Adobe Flash Builder 4.7/sdks/AIR4 in a terminal window
                 1. "tar jxvf AdobeAIRSDK.tbz2"
                     * If you have trouble overwriting files due to file permissions, try this command:
                         * "sudo tar jxvf AdobeAIRSDK.tbz2"
                 1. Delete the orinial archive file (AdobeAIRSDK.tbz2).
-            1. Make a copy of the directory 4.6.0 and name it 4.6.0_AIR13
-            1. Overlay AIR13 on Flex 4.6.0 by dragging the contents of the AIR13 directory into the 4.6.0 directory. 
+            1. Make a copy of the directory 4.6.0 and name it 4.6.0_AIR4
+            1. Overlay AIR4 on Flex 4.6.0. 
                 1. In the terminal, navigate to /Applications/Adobe Flash Builder 4.7/sdks
-                1. "ditto AIR13 4.6.0_AIR13"
-    1. Configure Flash Builder to use the AIR 13 SDK by default
+                1. "ditto AIR4 4.6.0_AIR4"
+    1. Configure Flash Builder to use the AIR 4 SDK by default
         1. Close Flash Builder (if it was open), and Open it again
-        1. Go to (menu) Flash Builder->Preferences->Flash Builder->Installd Flex SDKs->Add…
-        1. Navigate to the 4.6.0_AIR13 directory created earlier click OK. 
-        1. Name the SDK "Flex 4.6.0 (AIR 13)" and click OK.
+        1. Go to (menu) Flash Builder->Preferences->Flash Builder->Installed Flex SDKs->Add…
+        1. Navigate to the 4.6.0_AIR4 directory created earlier click OK. 
+        1. Name the SDK "Flex 4.6.0 (AIR 4)" and click OK.
         1. Click the check box in the Installed SDKs dialogue box to make it the default SDK in Flash Builder.
         1. Click OK
     1. Update the AIR SDK used by FlashBuilder while debugging
@@ -46,7 +46,7 @@ Software You Will Need
             * On Mac: /Applications/Adobe Flash Builder 4.7/eclipse/plugins/com.adobe.flash.compiler_4.7.0.349722
         1. Rename the "AIRSDK" folder to "AIRSDK-original"
         1. Unpack the contents of the SDK With Compiler (AIRSDK_Compiler) to a folder called "AIRSDK"
-            * Use unpacking instructions similar to those found above for "Overlay the SDK Without Compiler on the AIR 13 Directory"
+            * Use unpacking instructions similar to those found above for "Overlay the SDK Without Compiler on the AIR 4 Directory"
 
 
 Building and Running
@@ -55,7 +55,7 @@ Building and Running
 1. Launch FB and go to File->Switch Workspace->Other
     1. Choose the cloned ksketch2 folder
 1. Import projects into FlashBuilder
-    1. Right-click on Package Explorere->Import->General->Existing Projects into Workspace (Next)
+    1. Right-click on Package Explorer->Import->General->Existing Projects into Workspace (Next)
     1. Choose "Select root directory" and browse to cloned ksketch2 folder (Finish)
     1. In menu select Project->Clean (This makes a clean build of all projects)
     1. Window->Show View->Problems

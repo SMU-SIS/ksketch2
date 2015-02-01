@@ -15,11 +15,12 @@
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:transformWidget2="sg.edu.smu.ksketch2.canvas.components.transformWidget.*"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
+		addedToStage="initializeTrackerForWeb()"
 		initialize="_initCanvas(false)"
 		add="_checkForImageData()"
 		creationPolicy="all"
 		destructionPolicy="auto" 
-		viewActivate="_enterView_ProcessData()"
+		viewActivate="_enterView_ProcessData()" xmlns:ns="http://www.google.com/analytics/2009"
 		>
 	<fx:Script>
 		<![CDATA[
@@ -128,6 +129,12 @@
 					ExternalInterface.call("initLoad");
 			}
 			
+			public function initializeTrackerForWeb():void
+			{
+				if(isWeb && !tracker)
+					tracker = new GATracker(this, "UA-47832938-1", "AS3", false);
+			}
+			
 			//Starts up the canvas in the following order
 			public function _initCanvas(isView:Boolean):void
 			{	
@@ -137,8 +144,8 @@
 				
 				isWebViewer = isView;
 				
-				if(!tracker)
-					tracker = new GATracker(this, "UA-47832938-1", "AS3", false);
+				if(!tracker && !isWeb)
+					tracker = new GATracker(this, "UA-47832938-1", "AS3", true);
 				
 				//We shouldn't make a new ksketch if one already exists
 				if(_KSketch)
@@ -189,12 +196,6 @@
 				_magnifier.init(canvas_component, timeControl);
 				_help.init(this, _menuPopUp);
 				_options.init(this, _menuPopUp);
-				
-				/*motionDisplay.cacheAsBitmap = true;
-				motionDisplay.cacheAsBitmapMatrix = new Matrix();
-				
-				modelDisplay.cacheAsBitmap = true;
-				modelDisplay.cacheAsBitmapMatrix = new Matrix();*/
 				
 				//Initiate the controls
 				if(!isPlayer)
@@ -260,7 +261,7 @@
 			//This should be the last process of canvas start up.
 			private function _enterView_ProcessData():void
 			{	
-				if(!tracker)
+				if(!tracker && !isWeb)
 					tracker = new GATracker(this, "UA-47832938-1", "AS3", false);
 				
 				_KSketch.time = 0;

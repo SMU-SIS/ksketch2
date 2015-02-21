@@ -51,6 +51,7 @@
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _options:KSketch_Options;
+			private var _sharingOptions:KSketch_SharingOptions;
 			private var _help:KSketch_Help;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _feedback:KSketch_Feedback_Message;
@@ -65,10 +66,9 @@
 			 * @optionsPanel: an initialised KSketch_Options (this has to be done in the canvas first because of the timebar)
 			 * @ksketchInstance: The canvas's ksketch instance
 			 */
-			public function init(referenceComponent:UIComponent,
-								 canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options, helpPanel:KSketch_Help,
-								 savePanel:KSketch_SaveOptions, KSketchInstance:KSketch2, 
-								 interactionControl:KInteractionControl, canvasControl:KCanvasInteractorManager,
+			public function init(referenceComponent:UIComponent, canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options, 
+								 sharingOptionsPanel:KSketch_SharingOptions, helpPanel:KSketch_Help,savePanel:KSketch_SaveOptions, 
+								 KSketchInstance:KSketch2, interactionControl:KInteractionControl, canvasControl:KCanvasInteractorManager,
 							     feedback:KSketch_Feedback_Message):void
 			{
 				_referenceComponent = referenceComponent;
@@ -80,6 +80,7 @@
 				_interactionControl = interactionControl;
 				_canvasControl = canvasControl;
 				_options = optionsPanel;
+				_sharingOptions = sharingOptionsPanel;
 				_help = helpPanel;
 				_feedback = feedback;
 				
@@ -90,14 +91,21 @@
 			public function _initButtons():void
 			{
 				this.removeEventListener(FlexEvent.CREATION_COMPLETE, _initButtons);
-				undoButton.init(KSketchAssets.texture_undo, KSketchAssets.texture_undo_down);
+				undoButton.init(KSketchAssets.texture_undo, KSketchAssets.texture_undo_down, false);
 				undoButton.initSkin();
-				redoButton.init(KSketchAssets.texture_redo, KSketchAssets.texture_redo_down);
+				redoButton.init(KSketchAssets.texture_redo, KSketchAssets.texture_redo_down, false);
 				redoButton.initSkin();
-				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down);
+				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down, false);
 				optionButton.initSkin();
-				helpButton.init(KSketchAssets.texture_help, KSketchAssets.texture_help_down);
+				helpButton.init(KSketchAssets.texture_help, KSketchAssets.texture_help_down, false);
 				helpButton.initSkin();
+				
+				if((Capabilities.version.indexOf('IOS') > -1) || (Capabilities.os.toLowerCase().indexOf("mac") == -1))
+					shareButton.init(KSketchAssets.texture_share_ios, KSketchAssets.texture_share_ios_down, false);
+				else
+					shareButton.init(KSketchAssets.texture_share_android, KSketchAssets.texture_share_android_down, false);
+				shareButton.initSkin();
+				
 				//debugButton.init(KSketchAssets.texture_debug, KSketchAssets.texture_debug_down);		//DEBUG ENABLE
 				//debugButton.initSkin();																//DEBUG ENABLE
 				
@@ -105,25 +113,25 @@
 				if(_saveOptions)
 				{
 					newButton.visible = true;
-					newButton.init(KSketchAssets.texture_new, KSketchAssets.texture_new_down);
+					newButton.init(KSketchAssets.texture_new, KSketchAssets.texture_new_down, false);
 					newButton.initSkin();
 					
 					exitButton.visible = true;
-					exitButton.init(KSketchAssets.texture_prevScreen, KSketchAssets.texture_prevScreen_down);
+					exitButton.init(KSketchAssets.texture_prevScreen, KSketchAssets.texture_prevScreen_down, false);
 					exitButton.initSkin();
 				}
 				
-				eraserToggle.init(KSketchAssets.texture_eraser, KSketchAssets.texture_eraser_down);
+				eraserToggle.init(KSketchAssets.texture_eraser, KSketchAssets.texture_eraser_down, false);
 				eraserToggle.initSkin();
-				blackToggle.init(KSketchAssets.texture_blackPen, KSketchAssets.texture_blackPen_down);
+				blackToggle.init(KSketchAssets.texture_blackPen, KSketchAssets.texture_blackPen_down, false);
 				blackToggle.initSkin();
-				redToggle.init(KSketchAssets.texture_redPen, KSketchAssets.texture_redPen_down);
+				redToggle.init(KSketchAssets.texture_redPen, KSketchAssets.texture_redPen_down, false);
 				redToggle.initSkin();
-				blueToggle.init(KSketchAssets.texture_bluePen, KSketchAssets.texture_bluePen_down);
+				blueToggle.init(KSketchAssets.texture_bluePen, KSketchAssets.texture_bluePen_down, false);
 				blueToggle.initSkin();
-				greenToggle.init(KSketchAssets.texture_greenPen, KSketchAssets.texture_greenPen_down);
+				greenToggle.init(KSketchAssets.texture_greenPen, KSketchAssets.texture_greenPen_down, false);
 				greenToggle.initSkin();
-				lassoToggle.init(KSketchAssets.texture_lasso, KSketchAssets.texture_lasso_down);
+				lassoToggle.init(KSketchAssets.texture_lasso, KSketchAssets.texture_lasso_down, false);
 				lassoToggle.initSkin();
 				
 				_setPen(blackToggle, true);
@@ -383,6 +391,25 @@
 			}
 			
 			/**
+			 * Opens the sharing options dialog box
+			 */
+			private function _openSharingOptions():void
+			{
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Pop Up Menu";
+				log.@type = "Open Sharing Option Box";
+				//trace("ACTION " + _KSketch.logCounter + ": Open option box");
+				KSketch2.log.appendChild(log);
+				
+				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
+				_sharingOptions.open(_canvasView,true);
+				PopUpManager.centerPopUp(_sharingOptions);
+			}
+			
+			/**
 			 * Opens the help dialog box
 			 */
 			private function _openHelp():void
@@ -555,13 +582,19 @@
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
-				
-		<!-- 
+		
 		<buttons:KSketch_Button
+		click="_openSharingOptions()"
+		id="shareButton"
+		width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+		height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+		/>
+		
+		<!--<buttons:KSketch_Button
 			click="_viewLog()"
 			id="debugButton"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/> -->
+			/>-->
 	</s:Group>
 </s:SkinnablePopUpContainer>

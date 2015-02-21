@@ -302,6 +302,47 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_Texture_Debug_Down.png")] 
 		[Bindable] 
 		public static var texture_debug_down:Class;
+		
+		[Embed("assets/Button_Texture_Share_Android.png")] 
+		[Bindable] 
+		public static var texture_share_android:Class;
+		
+		[Embed("assets/Button_Texture_Share_Android_Down.png")] 
+		[Bindable] 
+		public static var texture_share_android_down:Class;
+		
+		[Embed("assets/Button_Texture_Share_IOS.png")] 
+		[Bindable] 
+		public static var texture_share_ios:Class;
+		
+		[Embed("assets/Button_Texture_Share_IOS_Down.png")] 
+		[Bindable] 
+		public static var texture_share_ios_down:Class;
+		
+		[Embed("assets/Button_Texture_Share_Mail.png")] 
+		[Bindable] 
+		public static var texture_share_mail:Class;
+		
+		[Embed("assets/Button_Texture_Share_Mail_Down.png")] 
+		[Bindable] 
+		public static var texture_share_mail_down:Class;
+		
+		[Embed("assets/Button_Texture_Share_Facebook.png")] 
+		[Bindable] 
+		public static var texture_share_facebook:Class;
+		
+		[Embed("assets/Button_Texture_Share_Facebook_Down.png")] 
+		[Bindable] 
+		public static var texture_share_facebook_down:Class;
+		
+		[Embed("assets/Button_Texture_Share_Twitter.png")] 
+		[Bindable] 
+		public static var texture_share_twitter:Class;
+		
+		[Embed("assets/Button_Texture_Share_Twitter_Down.png")] 
+		[Bindable] 
+		public static var texture_share_twitter_down:Class;
+		
 		//==========
 		[Embed("assets/Button_Texture_Center.png")] 
 		[Bindable] 

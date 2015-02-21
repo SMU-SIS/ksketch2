@@ -45,6 +45,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_OverwriteSaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SharingOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Double;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Single;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
@@ -97,6 +98,7 @@
 			private var _feedbackPopUp:KSketch_Feedback_Message;
 			private var _menuPopUp:KSketch_PopUp_Menu;
 			private var _options:KSketch_Options;
+			private var _shareOptions:KSketch_SharingOptions;
 			private var _help:KSketch_Help;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
@@ -186,6 +188,7 @@
 				_feedbackPopUp = new KSketch_Feedback_Message();
 				_feedbackPopUp.init(this);
 				_options = new KSketch_Options();
+				_shareOptions = new KSketch_SharingOptions;
 				_help = new KSketch_Help();
 				_contextDouble = new KSketch_Timebar_Context_Double();
 				_contextSingle = new KSketch_Timebar_Context_Single();
@@ -196,6 +199,7 @@
 				_magnifier.init(canvas_component, timeControl);
 				_help.init(this, _menuPopUp);
 				_options.init(this, _menuPopUp);
+				_shareOptions.init(this, _menuPopUp);
 				
 				//Initiate the controls
 				if(!isPlayer)
@@ -209,13 +213,14 @@
 					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions);
 					_overwriteSaveOptions.init(this, _saveOptions);
 					
-					_menuPopUp.init(canvas_component, this, _options, _help, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
+					_menuPopUp.init(canvas_component, this, _options, _shareOptions, _help, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 					_saveOptions.createDeferredContent();
 				}
 				else
-					_menuPopUp.init(canvas_component, this, _options, _help, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
+					_menuPopUp.init(canvas_component, this, _options, _shareOptions, _help, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 				
 				_options.createDeferredContent();
+				_shareOptions.createDeferredContent();
 				_help.createDeferredContent();
 				_menuPopUp.createDeferredContent();
 				

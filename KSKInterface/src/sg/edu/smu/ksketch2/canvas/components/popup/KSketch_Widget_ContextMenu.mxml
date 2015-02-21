@@ -51,13 +51,13 @@
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, _initButtons);
 				
-				groupButton.init(KSketchAssets.texture_group, KSketchAssets.texture_group_down);
+				groupButton.init(KSketchAssets.texture_group, KSketchAssets.texture_group_down, false);
 				groupButton.initSkin();
 				
-				ungroupButton.init(KSketchAssets.texture_ungroup , KSketchAssets.texture_ungroup_down);
+				ungroupButton.init(KSketchAssets.texture_ungroup , KSketchAssets.texture_ungroup_down, false);
 				ungroupButton.initSkin();
 				
-				moveCenterButton.init(KSketchAssets.texture_center , KSketchAssets.texture_center_down);
+				moveCenterButton.init(KSketchAssets.texture_center , KSketchAssets.texture_center_down, false);
 				moveCenterButton.initSkin();
 			}
 			

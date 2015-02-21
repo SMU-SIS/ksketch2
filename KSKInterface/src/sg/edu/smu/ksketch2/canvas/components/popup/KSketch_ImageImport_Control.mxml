@@ -85,17 +85,17 @@
 				width = (FlexGlobals.topLevelApplication as Application).width;
 				height = (FlexGlobals.topLevelApplication as Application).height;	
 
-				activateCameraButton.init(KSketchAssets.texture_camera, KSketchAssets.texture_camera_down);
+				activateCameraButton.init(KSketchAssets.texture_camera, KSketchAssets.texture_camera_down, false);
 				activateCameraButton.initSkin();
 				(activateCameraButton.skin as KSketch_Dialog_Button_Skin).buttonLabel.text =
 					KSketch_CanvasView.isMobile?"Camera":"Web Cam";
 				
-				activateGalleryButton.init(KSketchAssets.texture_photo, KSketchAssets.texture_photo_down);
+				activateGalleryButton.init(KSketchAssets.texture_photo, KSketchAssets.texture_photo_down, false);
 				activateGalleryButton.initSkin();
 				(activateGalleryButton.skin as KSketch_Dialog_Button_Skin).buttonLabel.text =
 					KSketch_CanvasView.isMobile?"Gallery":"File System";
 				
-				cancelButton.init(KSketchAssets.texture_cancel, KSketchAssets.texture_cancel_down);
+				cancelButton.init(KSketchAssets.texture_cancel, KSketchAssets.texture_cancel_down, false);
 				cancelButton.initSkin();
 				(cancelButton.skin as KSketch_Dialog_Button_Skin).buttonLabel.text = "Cancel";
 				

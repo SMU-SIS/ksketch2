@@ -141,13 +141,13 @@
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, _initButtons);
 				
-				insertButton.init(KSketchAssets.texture_insert, KSketchAssets.texture_insert_down);
+				insertButton.init(KSketchAssets.texture_insert, KSketchAssets.texture_insert_down, false);
 				insertButton.initSkin();
 				
-				removeButton.init(KSketchAssets.texture_remove , KSketchAssets.texture_remove_down);
+				removeButton.init(KSketchAssets.texture_remove , KSketchAssets.texture_remove_down, false);
 				removeButton.initSkin();
 				
-				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down);
+				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down, false);
 				clearButton.initSkin();
 				
 				leftFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Timebar_Button_Double.LEFT);

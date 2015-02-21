@@ -19,11 +19,13 @@
 			
 			protected var _up:Class;
 			protected var _down:Class;
+			protected var _fullScale:Boolean;
 			
-			public function init(textureClassUp:Class, textureClassDown:Class):void
+			public function init(textureClassUp:Class, textureClassDown:Class, fullScale:Boolean):void
 			{
 				_up = textureClassUp;
 				_down = textureClassDown;
+				_fullScale = fullScale;
 			}
 			
 			public function initSkin():void
@@ -32,6 +34,13 @@
 					return;
 
 				var textureControl:Image = (skin as Object).texture;
+				
+				if(_fullScale)
+				{
+					textureControl.percentWidth = 100;
+					textureControl.percentHeight = 100;	
+				}
+				
 				textureControl.source = _up;	
 				skin.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, _onStateChange);
 			}

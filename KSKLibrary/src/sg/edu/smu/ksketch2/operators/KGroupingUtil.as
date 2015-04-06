@@ -162,12 +162,12 @@ package sg.edu.smu.ksketch2.operators
 			trace("original center: x = " + newGroup.center.x + ", y = " + newGroup.center.y);
 			//END OF TRACE
 			
-			newGroup.updateCenter();
 			
 			// add the objects in the given list to the new parent 
 			for(var i:int = 0; i< objects.length(); i++)
 				op.addOperation(addObjectToParent(objects.getObjectAt(i), newGroup));
-			
+			//Fix for exponential centroids. Update center after children are added to the group
+			newGroup.updateCenter();
 			// return the newly-created grouped list of objects
 			return newGroup;
 		}

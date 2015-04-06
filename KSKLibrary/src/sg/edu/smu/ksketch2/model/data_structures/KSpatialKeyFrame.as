@@ -52,6 +52,10 @@ package sg.edu.smu.ksketch2.model.data_structures
 			// set the spatial key frame's time
 			super(newTime);
 			
+			if(center.x > 2000 || center.y > 2000)
+			{
+				trace("Center is large");
+			}
 			// initialize the main variables
 			_isDirty = true;
 			_center = center.clone();

@@ -15,7 +15,7 @@
 		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
-		initialize="init(false)"
+		initialize="init(true)"
 		addedToStage="startMonitorConnection()"
 		destructionPolicy="auto"
 		>

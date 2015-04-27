@@ -276,8 +276,11 @@
         	<![CDATA[
         	<key>get-task-allow</key>
         	<false/>
+        	<!-- beta-reports-active flag is true only for test flight deployment -->
+        	<!--
         	<key>beta-reports-active</key>
         	<true/>
+        	-->
         	]]>
         </Entitlements>
     </iPhone>

@@ -12,6 +12,7 @@
 						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" initialize="initStyle()">
 	<fx:Script>
 		<![CDATA[
+			import mx.events.ItemClickEvent;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			
@@ -32,9 +33,6 @@
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
 				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				autoInsertKey.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				doubleTap.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				autoLog.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
 				closeButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 			}
 			
@@ -50,118 +48,75 @@
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
 				super.open(owner, modal);
-				
-				/*switch(KSketch_CanvasView_Preferences.menuOpen)
-				{
-					case KSketch_CanvasView_Preferences.OPEN:
-						menuOpen.selected = false;
-						break;
-					default:
-						menuOpen.selected = true;
-				}*/
-				
-				switch(KSketch_CanvasView_Preferences.autoInsert)
-				{
-					case KSketch_CanvasView_Preferences.AUTO:
-						autoInsertKey.selected = true;
-						break;
-					default:
-						autoInsertKey.selected = false;
-				}
-				
-				switch(KSketch_CanvasView_Preferences.doubleTap)
-				{
-					case KSketch_CanvasView_Preferences.DOUBLETAP_ON:
-						doubleTap.selected = true;
-						break;
-					default:
-						doubleTap.selected = false;
-				}
 			}
 			
 			public function applyPreferences():void
 			{
-				switch(KSketch_CanvasView_Preferences.timebarPosition)
-				{
-					case KSketch_CanvasView_Preferences.POS_TOP:
-						_timebarTop();
-						break;
-					default:
-						_timebarBottom();
-				}
-				
-				/*switch(KSketch_CanvasView_Preferences.menuOpen)
-				{
-					case KSketch_CanvasView_Preferences.OPEN:
-						menuOpen.selected = false;
-						_menuOpen(false);
-						break;
-					default:
-						menuOpen.selected = true;
-						_menuOpen(true);
-				}*/
-
-				switch(KSketch_CanvasView_Preferences.menuPosition)
-				{
-					case KSketch_CanvasView_Preferences.POS_LEFT:
-						_menuLeft();
-						break;
-					case KSketch_CanvasView_Preferences.POS_RIGHT:
-						_menuRight();
-						break;
-					case KSketch_CanvasView_Preferences.POS_BOTTOM:
-						_menuBottom();
-						break;
-					case KSketch_CanvasView_Preferences.POS_TOP:
-					default:
-						_menuTop();
-				}
-				
-				switch(KSketch_CanvasView_Preferences.autoInsert)
-				{
-					case KSketch_CanvasView_Preferences.AUTO:
-						autoInsertKey.selected = true;
-						_autoInsertKey(true);
-						break;
-					default:
-						autoInsertKey.selected = false;
-						_autoInsertKey(false);
-				}
-				
-				switch(KSketch_CanvasView_Preferences.doubleTap)
-				{
-					case KSketch_CanvasView_Preferences.DOUBLETAP_ON:
-						doubleTap.selected = true;
-						_doubleTap(true);
-						break;
-					default:
-						doubleTap.selected = false;
-						_doubleTap(false);
-				}
-				
-				switch(KSketch_CanvasView_Preferences.autoLog)
-				{
-					case KSketch_CanvasView_Preferences.AUTOLOG_ON:
-						autoLog.selected = true;
-						_autoLog(true);
-						break;
-					default:
-						autoLog.selected = false;
-						_autoLog(false);
-				}
-			}
-			
-			private function _timebarPos1():void
-			{
 				_timebarBottom();
+				_autoInsertKey(false);
+				_doubleTap(false);
+				_menuOpen(true);
 				_menuTop();
+				
+				//KSKETCH-SYNPHNE
+				_tapAnywhere();
+				_activityRecall();
+				_difficultyEasy();
 			}
 			
-			private function _timebarPos2():void
+			//KSKETCH-SYNPHNE
+			//================================================================================================================
+			private function _tapAnywhere():void
 			{
-				_timebarTop();
-				_menuBottom();
+				tapAnywhere.selected = true;
+				KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_ON;
 			}
+			
+			private function _activityRecall():void
+			{
+				actRecall.selected = true;
+				KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_RECALL;
+			}
+			
+			private function _difficultyEasy():void
+			{
+				diffEasy.selected = true;
+				KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_EASY;
+			}
+			
+			private function _initiation(event:ItemClickEvent):void
+			{
+				if (event.currentTarget.selectedValue == "anywhere") {
+					KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_ON;
+				} else {
+					KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_OFF;
+				}
+			}
+			
+			private function _activity(event:ItemClickEvent):void
+			{
+				if (event.currentTarget.selectedValue == "Recall") {
+					KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_RECALL;
+				} else if (event.currentTarget.selectedValue == "Trace") {
+					KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_TRACE;
+				} else if (event.currentTarget.selectedValue == "Track") {
+					KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_TRACK;
+				} else {
+					KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_RECREATE;
+				}
+			}
+			
+			private function _difficulty(event:ItemClickEvent):void
+			{
+				if (event.currentTarget.selectedValue == "Easy") {
+					KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_EASY;
+				} else if (event.currentTarget.selectedValue == "Medium") {
+					KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_MEDIUM;
+				} else {
+					KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_HARD;
+				}
+			}
+			//================================================================================================================
 			
 			private function _timebarTop():void
 			{
@@ -238,12 +193,10 @@
 			{
 				if(value)
 				{
-					_menu.turnOnDoubleTapAction(true);
 					KSketch_CanvasView_Preferences.doubleTap = KSketch_CanvasView_Preferences.DOUBLETAP_ON;
 				}
 				else
 				{
-					_menu.turnOnDoubleTapAction(false);
 					KSketch_CanvasView_Preferences.doubleTap = KSketch_CanvasView_Preferences.DOUBLETAP_OFF;
 				}
 			}
@@ -277,6 +230,11 @@
 			}
 		]]>
 	</fx:Script>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="difficultyGroup" itemClick="_difficulty(event);"/>
+		<s:RadioButtonGroup id="activityGroup" itemClick="_activity(event);"/>
+		<s:RadioButtonGroup id="initiationGroup" itemClick="_initiation(event);"/>
+	</fx:Declarations>
 	<s:filters>
 		<s:DropShadowFilter 
 			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
@@ -296,18 +254,25 @@
 		</s:layout>
 		<s:Label id="header" text="Options"/>
 		
-		<!-- disable option for release
 		<s:Group>
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
 			</s:layout>
-			<s:Label text="Timebar position" fontSize="18"/>
+			<s:Label text="Activity" fontSize="18"/>
 			<s:Group>
 				<s:layout>
 					<s:VerticalLayout/>
 				</s:layout>
-				<s:RadioButton label="Toolbar top and Timebar bottom" click="_timebarPos1()" fontSize="14"/>
-				<s:RadioButton label="Toolbar bottom and Timebar top" click="_timebarPos2()" fontSize="14"/>
+				
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+					<s:RadioButton groupName="activityGroup" id="actRecall" value="Recall" label="Recall" fontSize="14"/>
+					<s:RadioButton groupName="activityGroup" id="actTrace" value="Trace" label="Trace" fontSize="14"/>
+					<s:RadioButton groupName="activityGroup" id="actTrack" value="Track" label="Track" fontSize="14"/>
+					<s:RadioButton groupName="activityGroup" id="actRecreate" value="Recreate" label="Recreate" fontSize="14"/>
+				</s:Group>
 			</s:Group>
 		</s:Group>
 		
@@ -315,13 +280,36 @@
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
 			</s:layout>
-			<s:Label text="Timebar position" fontSize="18"/>
+			<s:Label text="Difficulty" fontSize="18"/>
 			<s:Group>
 				<s:layout>
-					<s:HorizontalLayout/>
+					<s:VerticalLayout/>
 				</s:layout>
-				<s:Button label="Top" click="_timebarTop()" fontSize="14"/>
-				<s:Button label="Bottom" click="_timebarBottom()" fontSize="14"/>
+				
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+					<s:RadioButton groupName="difficultyGroup" id="diffEasy" value="Easy" label="Easy" fontSize="14"/>
+					<s:RadioButton groupName="difficultyGroup" id="diffMed" value="Medium" label="Medium" fontSize="14"/>
+					<s:RadioButton groupName="difficultyGroup" id="diffHard" value="Hard" label="Hard" fontSize="14"/>
+				</s:Group>
+				
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+					<s:Label id="titleTime" text="Time{'\n'}Thres."/>
+					<s:TextArea id="activityDuration" text="MM:SS" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="150"/>
+				</s:Group>
+				
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+					<s:Label id="titleAccuracy" text="Accu{'\n'}Thres."/>
+					<s:TextArea id="accuracyThreshold" text="10%" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="150"/>
+				</s:Group>
 			</s:Group>
 		</s:Group>
 		
@@ -329,60 +317,20 @@
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
 			</s:layout>
-			<s:Label text="Menu position" fontSize="18"/>
+			<s:Label text="Initiation" fontSize="18"/>
 			<s:Group>
 				<s:layout>
-					<s:HorizontalLayout/>
+					<s:VerticalLayout/>
 				</s:layout>
-				<s:Button label="Top" click="_menuTop()" fontSize="14"/>
-				<s:Button label="Bottom" click="_menuBottom()" fontSize="14"/>
-				<s:Button label="Left" click="_menuLeft()" fontSize="14"/>
-				<s:Button label="Right" click="_menuRight()" fontSize="14"/>
+				
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+					<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere" fontSize="14"/>
+					<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"  fontSize="14"/>
+				</s:Group>
 			</s:Group>
-		</s:Group>
-		
-		<s:Group>
-			<s:layout>
-				<s:VerticalLayout paddingLeft="10"/>
-			</s:layout>
-			<s:Label text="Study Mode" fontSize="18"/>
-			<s:Group>
-				<s:layout>
-					<s:HorizontalLayout/>
-				</s:layout>
-				<s:RadioButton label="K" click="_setStudy(0)" fontSize="14"/>
-				<s:RadioButton label="P" click="_setStudy(1)" fontSize="14"/>
-				<s:RadioButton label="KP" click="_setStudy(2)" fontSize="14"/>
-				<s:RadioButton label="KP2" click="_setStudy(3)" fontSize="14"/>
-			</s:Group>
-		</s:Group>
-		
-		<s:Group>
-			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" verticalAlign="middle"/>
-			</s:layout>
-			<s:CheckBox label="Menu Auto Open" id="menuOpen" click="_menuOpen(menuOpen.selected)" fontSize="14"/>
-		</s:Group>
-		-->
-		<s:Group>
-			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
-			</s:layout>
-			<s:CheckBox id="autoInsertKey" label="Insert key frames automatically" click="_autoInsertKey(autoInsertKey.selected)"/>
-		</s:Group>
-		
-		<s:Group>
-			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
-			</s:layout>
-			<s:CheckBox id="doubleTap" label="Double-tap left/right for undo/redo" click="_doubleTap(doubleTap.selected)"/>
-		</s:Group>
-		
-		<s:Group>
-			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
-			</s:layout>
-			<s:CheckBox id="autoLog" label="Enable Log" click="_autoLog(autoLog.selected)"/>
 		</s:Group>
 		
 		<s:Group width="100%">

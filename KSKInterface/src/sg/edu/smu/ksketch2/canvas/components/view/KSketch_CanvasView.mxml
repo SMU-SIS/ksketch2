@@ -40,12 +40,11 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Help;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_OverwriteSaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SharingOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Double;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Single;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
@@ -98,8 +97,7 @@
 			private var _feedbackPopUp:KSketch_Feedback_Message;
 			private var _menuPopUp:KSketch_PopUp_Menu;
 			private var _options:KSketch_Options;
-			private var _shareOptions:KSketch_SharingOptions;
-			private var _help:KSketch_Help;
+			private var _instructionsBox:KSketch_InstructionsBox;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
 			private var _magnifier:KSketch_Timebar_Magnifier;
@@ -107,6 +105,9 @@
 			private var _contextSingle:KSketch_Timebar_Context_Single;
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
+			
+			//KSketch-Synphne
+			public var isAnimationPlaying:Boolean;
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
@@ -188,8 +189,7 @@
 				_feedbackPopUp = new KSketch_Feedback_Message();
 				_feedbackPopUp.init(this);
 				_options = new KSketch_Options();
-				_shareOptions = new KSketch_SharingOptions;
-				_help = new KSketch_Help();
+				_instructionsBox = new KSketch_InstructionsBox();
 				_contextDouble = new KSketch_Timebar_Context_Double();
 				_contextSingle = new KSketch_Timebar_Context_Single();
 				_saveOptions = new KSketch_SaveOptions();
@@ -197,31 +197,28 @@
 				_menuPopUp = new KSketch_PopUp_Menu();
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
-				_help.init(this, _menuPopUp);
 				_options.init(this, _menuPopUp);
-				_shareOptions.init(this, _menuPopUp);
+				_instructionsBox.init(this, _menuPopUp);
 				
 				//Initiate the controls
 				if(!isPlayer)
 				{
 					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, motionDisplay, _feedbackPopUp);
+					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, this, canvas_region, modelDisplay, motionDisplay, _feedbackPopUp);
 				}
+				
 				
 				if(!isWeb)
 				{
 					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions);
 					_overwriteSaveOptions.init(this, _saveOptions);
-					
-					_menuPopUp.init(canvas_component, this, _options, _shareOptions, _help, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
+				
+					_menuPopUp.init(canvas_component, this, _options, _instructionsBox, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 					_saveOptions.createDeferredContent();
 				}
-				else
-					_menuPopUp.init(canvas_component, this, _options, _shareOptions, _help, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 				
 				_options.createDeferredContent();
-				_shareOptions.createDeferredContent();
-				_help.createDeferredContent();
+				_instructionsBox.createDeferredContent();
 				_menuPopUp.createDeferredContent();
 				
 				if(isWebViewer)
@@ -230,8 +227,8 @@
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl,_interactionControl);
 				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _contextDouble, _contextSingle);
 				
-				leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
-				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
+				leftTimeJumper.init(_KSketch, timeControl, this, KSketch_TimeSkip_Button.LEFT);
+				rightTimeJumper.init(_KSketch, timeControl, this, KSketch_TimeSkip_Button.RIGHT);
 				
 				_contextDouble.init(_KSketch, _interactionControl, timeTickControl, timeControl);
 				_contextDouble.createDeferredContent();
@@ -243,7 +240,7 @@
 				motionDisplay.init(_KSketch, _interactionControl);
 				
 				//This is the layer that blocks interaction whenever the app is playing
-				playButton.init(timeControl, _interactionControl,_KSketch, _menuPopUp);
+				playButton.init(timeControl, _interactionControl, this, _KSketch, _menuPopUp);
 				
 				_interactionControl.reset();
 				
@@ -415,7 +412,7 @@
 			{
 				//comment out these two lines to get toolbar stay when it is reactivated.
 				_options.close();
-				_help.close();
+				_instructionsBox.close();
 				_menuPopUp.close();
 				_feedbackPopUp.close();
 				_magnifier.close();

@@ -196,7 +196,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		private function _singleTap(event:MouseEvent):void
 		{
 			var action:String;
-			
 			if (_interactionControl.transitionMode == KSketch2.TRANSITION_INTERPOLATED && !KSketch_TimeControl.isPlaying && !_isDoubleTap)
 			{
 				action = "Activate Demonstration Mode";

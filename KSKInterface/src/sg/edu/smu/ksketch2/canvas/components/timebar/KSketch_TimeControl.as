@@ -43,7 +43,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public static const TIMEBAR_LIMIT:int = -10;
 		
 		public static const DEFAULT_MAX_TIME:Number = 5000;
-		public static const PLAY_ALLOWANCE:int = 2000;
+		public static const PLAY_ALLOWANCE:int = 0;//2000;
 		public static const MAX_ALLOWED_TIME:Number = 600000; //Max allowed time of 10 mins
 		
 		private const CLICK_TIME:int = 300;
@@ -57,6 +57,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		protected var _contextSingle:KSketch_Timebar_Context_Single;
 		
 		public static var isPlaying:Boolean = false;
+		public var playRepeat:Boolean = false;
 		public var timings:Vector.<Number>;
 		
 		protected var _timer:Timer;
@@ -521,6 +522,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		public function play(playFromStart:Boolean):void
 		{
 			isPlaying = true;
+			
 			_timer.delay = KSketch2.ANIMATION_INTERVAL;
 			_timer.addEventListener(TimerEvent.TIMER, playHandler);
 			_timer.start();
@@ -530,9 +532,6 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 				time = 0;
 			else
 				time = _KSketch.time;
-			
-			//comment out for editor - play from start #50
-			//time = 0;
 			
 			_maxPlayTime = _KSketch.maxTime + PLAY_ALLOWANCE;
 			
@@ -554,6 +553,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_STOP));
 			_KSketch.removeEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateMovingWidget);
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateWidget);
+			
+			if(playRepeat)
+				play(true);
 		}
 				
 		/**

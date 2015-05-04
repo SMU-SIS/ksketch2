@@ -91,6 +91,17 @@ package sg.edu.smu.ksketch2.canvas
 		 */
 		public static const MOBILE_OFF:String = "MOBILE_OFF";
 		
+		//KSKETCH-SYNPHNE
+		public static const TAPANYWHERE_ON:String = "TAPANYWHERE_ON";
+		public static const TAPANYWHERE_OFF:String = "TAPANYWHERE_OFF";
+		public static const ACTIVITY_RECALL:String = "ACTIVITY_RECALL";
+		public static const ACTIVITY_TRACE:String = "ACTIVITY_TRACE";
+		public static const ACTIVITY_TRACK:String = "ACTIVITY_TRACK";
+		public static const ACTIVITY_RECREATE:String = "ACTIVITY_RECREATE";
+		public static const DIFFICULTY_EASY:String = "DIFFICULTY_EASY";
+		public static const DIFFICULTY_MEDIUM:String = "DIFFICULTY_MEDIUM";
+		public static const DIFFICULTY_HARD:String = "DIFFICULTY_HARD";
+		
 		/**
  		 * Gets the shared object.
  		 * 
@@ -284,5 +295,55 @@ package sg.edu.smu.ksketch2.canvas
 			prefs.data.mobileEnabled = value;
 			prefs.flush();
 		}
+		
+		//KSKETCH-SYNPHNE
+		public static function get tapAnywhere():String
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.autoInsert)
+				return prefs.data.tapAnywhere;
+			else
+				return CLOSE;
+		}
+		
+		public static function set tapAnywhere(value:String):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.tapAnywhere = value;
+			prefs.flush();
+		}
+		
+		public static function get activity():String
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.activity)
+				return prefs.data.activity;
+			else
+				return CLOSE;
+		}
+		
+		public static function set activity(value:String):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.activity = value;
+			prefs.flush();
+		}
+		
+		public static function get difficulty():String
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.difficulty)
+				return prefs.data.difficulty;
+			else
+				return CLOSE;
+		}
+		
+		public static function set difficulty(value:String):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.difficulty = value;
+			prefs.flush();
+		}
+
 	}
 }

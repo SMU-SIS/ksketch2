@@ -32,6 +32,7 @@
 			private var _KSketch:KSketch2;
 			private var _interceptor:UIComponent;
 			private var _interactionControl:KInteractionControl;
+			private var _canvasView:KSketch_CanvasView;
 			private var _timeControl:KSketch_TimeControl;
 			private var _buttonState:int;
 			private var _oldSelection:KSelection;
@@ -46,10 +47,11 @@
 			private var _doubleClickTrigger:Boolean;
 			
 			public function init(timeControl:KSketch_TimeControl, interactionControl:KInteractionControl,
-								KSketchInstance:KSketch2, menu:SkinnablePopUpContainer):void
+								canvas:KSketch_CanvasView, KSketchInstance:KSketch2, menu:SkinnablePopUpContainer):void
 			{
 				_KSketch = KSketchInstance;
 				_interactionControl = interactionControl;
+				_canvasView = canvas;
 				_timeControl = timeControl;
 				_menu = menu;
 				
@@ -68,7 +70,12 @@
 					_doubleClickTimer.start();
 				}
 				else
+				{
+					_timeControl.playRepeat = false;
+					_canvasView.isAnimationPlaying = false;
 					_timeControl.stop();
+				}
+					
 				
 			}
 			
@@ -84,6 +91,9 @@
 			{
 				//play from start
 				_doubleClickTrigger = true;
+				_timeControl.playRepeat = true;
+				_canvasView.isAnimationPlaying = true;
+				
 			}
 			
 			private function _handlePlayPause(event:Event):void

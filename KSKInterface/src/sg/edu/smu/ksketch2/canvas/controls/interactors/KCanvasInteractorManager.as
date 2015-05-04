@@ -22,6 +22,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import org.gestouch.gestures.TapGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
@@ -52,6 +53,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		
 		private var _KSketch:KSketch2;									// the ksketch instance
 		private var _interactionControl:KInteractionControl;			// the interaction control
+		private var _canvasView:KSketch_CanvasView;						// the canvas view
 		private var _inputComponent:UIComponent;						// the input component
 		private var _modelDisplay:KModelDisplay;						// the model display
 		private var _motionDisplay:KMotionDisplay;
@@ -68,9 +70,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _activeInteractor:IInteractor;						// the active interactor
 		private var _startPoint:Point;									// the start point
 		private var _keyDown:Boolean;									// the key down boolean flag
-		
 		public var lasso:Boolean;										// the lasso boolean flag
-		public var doubleTapOn:Boolean = false;							// the double tap feature flag
 		
 		/**
 		 * The main constructor for the KCanvasInteractorManager class.
@@ -81,7 +81,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * @param modelDisplay The model display linked to the given ksketch object.
 		 * @param feedbackMessage The feedback message.
 		 */
-		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
+		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, canvas:KSketch_CanvasView,
 												 inputComponent:UIComponent, modelDisplay:KModelDisplay, motionDisplay:KMotionDisplay,
 												 feedbackMessage:KSketch_Feedback_Message)
 		{
@@ -89,6 +89,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			super(this);								// set up the event dispatcher
 			_KSketch = KSketchInstance;					// initialize the ksketch instance
 			_interactionControl = interactionControl;	// initialize the interaction control
+			_canvasView = canvas;						// initialize the canvas view
 			_inputComponent = inputComponent;			// initialize the input component
 			_modelDisplay = modelDisplay;				// initialize the model display
 			_motionDisplay = motionDisplay;
@@ -171,19 +172,15 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _recogniseDoubleTap(event:GestureEvent):void
 		{
-			if(doubleTapOn)
-			{
-				var left:Boolean = (_doubleTap.location.x/_inputComponent.width <= 0.5)? true:false;
-				
-				doubleTapAction(left, null);	
-			}
+			var left:Boolean = (_doubleTap.location.x/_inputComponent.width <= 0.5)? true:false;
+			
+			doubleTapAction(left, null);
 		}
 		
 		public function doubleTapAction(actionUndo:Boolean, feedback:KSketch_Feedback_Message):void
 		{
 			var feedbackMessage:String;
 			var location:Point;
-			var action:String;
 			
 			if(feedback)
 			{
@@ -199,7 +196,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			//_motionDisplay
 			if(actionUndo)
 			{
-				action = "Undo";
 				KSketch_CanvasView.tracker.trackPageview("/canvas/undo");
 				if(_interactionControl.hasUndo)
 				{
@@ -211,7 +207,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 			else
 			{
-				action = "Redo";
 				KSketch_CanvasView.tracker.trackPageview("/canvas/redo");
 				if(_interactionControl.hasRedo)
 				{
@@ -229,15 +224,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			if(_interactionControl.selection)
 				_motionDisplay.undoObjectMotions(_interactionControl.selection.objects.getObjectAt(0));
-			
-			//LOG
-			_KSketch.logCounter ++;
-			var log:XML = <Action/>;
-			var date:Date = new Date();
-			log.@category = "Pop Up Menu";
-			log.@type = action;
-			//trace("ACTION " + _KSketch.logCounter + ": " + action);
-			KSketch2.log.appendChild(log);
 		}
 		
 		/**
@@ -247,37 +233,26 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _recogniseTap(event:GestureEvent):void
 		{
-			var selected:Boolean = false;
 			if(_interactionControl.currentInteraction)
 				return;
 			
-			var prevSelection:Boolean = false;
-			if(_interactionControl.selection)
-				prevSelection = true;
-			
 			_activeInteractor = _tapSelectInteractor;
-			selected = _tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location),_KSketch.time, lasso);
+			_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
 			
-			//LOG
-			_KSketch.logCounter ++;
-			var log:XML = <Action/>;
-			var date:Date = new Date();
-			log.@category = "Multi Touch Tap";
-			
-			if(selected)
+			//KSKETCH-SYNPHNE
+			if(_canvasView.isAnimationPlaying)
 			{
-				log.@type = "Tap to select object";
-				//trace("ACTION " + _KSketch.logCounter + ": Tap to select Object");
+				if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_ON")
+				{
+					_canvasView.timeControl.playRepeat = false;
+					_canvasView.timeControl.stop();
+				}
+				else if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_OFF" && _interactionControl.selection)
+				{
+					_canvasView.timeControl.playRepeat = false;
+					_canvasView.timeControl.stop();
+				}
 			}
-			else
-			{
-				log.@type = "Tap to deselect object";
-				//trace("ACTION " + _KSketch.logCounter + ": Tap to deselect Object");
-			}
-			KSketch2.log.appendChild(log);
-			
-			if(!selected && !prevSelection)
-				_recogniseDraw(event);
 		}
 		
 		/**
@@ -294,7 +269,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			// switch interactor based on draw gesture's nTouches
 			if(lasso)// || _drawGesture.touchesCount == 2)
 				_activeInteractor = _loopSelectInteractor;
-			else if(_drawGesture.touchesCount <= 1)
+			else if(_drawGesture.touchesCount == 1)
 				_activeInteractor = _drawInteractor;
 			
 			_interactionControl.selection = null;
@@ -307,9 +282,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_drawGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _updateDraw);
 			_drawGesture.addEventListener(GestureEvent.GESTURE_ENDED, _endDraw);
 			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_BEGIN));
-			
-			if(_drawGesture.touchesCount == 0)
-				_updateDraw(event);
 		}
 		
 		/**
@@ -328,9 +300,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			// make sure the input coordinates are in the correct coordinate space
 			_activeInteractor.interaction_Update(_modelDisplay.globalToLocal(_drawGesture.lastTouchLocation));
-			
-			if(_drawGesture.touchesCount == 0)
-				_endDraw(event);
 		}
 		
 		/**

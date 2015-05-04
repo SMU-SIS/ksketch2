@@ -38,6 +38,8 @@
 			public static const RIGHT:int = 1;
 			public static const UP:int = 2;
 			public static const DOWN:int = 3;
+			public static const TAPANYWHERE:int = 0;
+			public static const TAPOBJECT:int = 1;
 			
 			//Positioning variables
 			private var _referenceComponent:UIComponent;
@@ -51,7 +53,7 @@
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _options:KSketch_Options;
-			private var _sharingOptions:KSketch_SharingOptions;
+			private var _instructionsBox:KSketch_InstructionsBox;
 			private var _help:KSketch_Help;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _feedback:KSketch_Feedback_Message;
@@ -67,7 +69,7 @@
 			 * @ksketchInstance: The canvas's ksketch instance
 			 */
 			public function init(referenceComponent:UIComponent, canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options, 
-								 sharingOptionsPanel:KSketch_SharingOptions, helpPanel:KSketch_Help,savePanel:KSketch_SaveOptions, 
+								 instructionsPanel:KSketch_InstructionsBox, savePanel:KSketch_SaveOptions, 
 								 KSketchInstance:KSketch2, interactionControl:KInteractionControl, canvasControl:KCanvasInteractorManager,
 							     feedback:KSketch_Feedback_Message):void
 			{
@@ -80,12 +82,9 @@
 				_interactionControl = interactionControl;
 				_canvasControl = canvasControl;
 				_options = optionsPanel;
-				_sharingOptions = sharingOptionsPanel;
-				_help = helpPanel;
+				_instructionsBox = instructionsPanel;
 				_feedback = feedback;
-				
-				if(savePanel)
-					_saveOptions = savePanel;
+				_saveOptions = savePanel;
 			}
 			
 			public function _initButtons():void
@@ -97,25 +96,13 @@
 				redoButton.initSkin();
 				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down, false);
 				optionButton.initSkin();
-				helpButton.init(KSketchAssets.texture_help, KSketchAssets.texture_help_down, false);
-				helpButton.initSkin();
-				
-				if((Capabilities.version.indexOf('IOS') > -1) || (Capabilities.os.toLowerCase().indexOf("mac") == -1))
-					shareButton.init(KSketchAssets.texture_share_ios, KSketchAssets.texture_share_ios_down, false);
-				else
-					shareButton.init(KSketchAssets.texture_share_android, KSketchAssets.texture_share_android_down, false);
-				shareButton.initSkin();
-				
-				//debugButton.init(KSketchAssets.texture_debug, KSketchAssets.texture_debug_down);		//DEBUG ENABLE
-				//debugButton.initSkin();																//DEBUG ENABLE
-				
+				connectButton.init(KSketchAssets.texture_connect, KSketchAssets.texture_connect_down, false);
+				connectButton.initSkin();
+				instructionsButton.init(KSketchAssets.texture_instructions, KSketchAssets.texture_instructions_down, false);
+				instructionsButton.initSkin();
 				
 				if(_saveOptions)
 				{
-					newButton.visible = true;
-					newButton.init(KSketchAssets.texture_new, KSketchAssets.texture_new_down, false);
-					newButton.initSkin();
-					
 					exitButton.visible = true;
 					exitButton.init(KSketchAssets.texture_prevScreen, KSketchAssets.texture_prevScreen_down, false);
 					exitButton.initSkin();
@@ -131,8 +118,6 @@
 				blueToggle.initSkin();
 				greenToggle.init(KSketchAssets.texture_greenPen, KSketchAssets.texture_greenPen_down, false);
 				greenToggle.initSkin();
-				lassoToggle.init(KSketchAssets.texture_lasso, KSketchAssets.texture_lasso_down, false);
-				lassoToggle.initSkin();
 				
 				_setPen(blackToggle, true);
 			}
@@ -228,11 +213,6 @@
 						_canvasControl.lasso = false;
 						KDrawInteractor.penColor = KSketchStyles.GREEN_PEN;
 						selectedTool = "Green Pen";
-						break;
-					case lassoToggle:
-						KMultiTouchDrawInteractor.eraser = false;
-						_canvasControl.lasso = true;
-						selectedTool = "Lasso";
 						break;
 				}
 				//LOG
@@ -333,11 +313,6 @@
 				_canvasControl.doubleTapAction(action, _feedback);
 			}
 			
-			public function turnOnDoubleTapAction(value:Boolean):void
-			{
-				_canvasControl.doubleTapOn = value;
-			}
-			
 			/**
 			 * Triggers exit
 			 */
@@ -391,41 +366,30 @@
 			}
 			
 			/**
-			 * Opens the sharing options dialog box
+			 * Opens instructions message box
 			 */
-			private function _openSharingOptions():void
+			private function _openInstructions():void
 			{
-				//LOG
-				_KSketch.logCounter ++;
-				var log:XML = <Action/>;
-				var date:Date = new Date();
-				log.@category = "Pop Up Menu";
-				log.@type = "Open Sharing Option Box";
-				//trace("ACTION " + _KSketch.logCounter + ": Open option box");
-				KSketch2.log.appendChild(log);
-				
 				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
-				_sharingOptions.open(_canvasView,true);
-				PopUpManager.centerPopUp(_sharingOptions);
+				_instructionsBox.open(_canvasView,true);
+				PopUpManager.centerPopUp(_instructionsBox);
+				_instructionsBox.x = 20; // or any other number
+				_instructionsBox.y = 20; //whatever number. try tweaking it
 			}
 			
 			/**
-			 * Opens the help dialog box
+			 * Connects to the web service to send results to Synphne platform
 			 */
-			private function _openHelp():void
+			private function _openConnect():void
 			{
 				//LOG
 				_KSketch.logCounter ++;
 				var log:XML = <Action/>;
 				var date:Date = new Date();
 				log.@category = "Pop Up Menu";
-				log.@type = "Open Help";
-				//trace("ACTION " + _KSketch.logCounter + ": Open help");
+				log.@type = "Connect to Synphne";
+				//trace("ACTION " + _KSketch.logCounter + ": Connect to Synphne");
 				KSketch2.log.appendChild(log);
-				
-				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
-				_help.open(_canvasView,true);
-				PopUpManager.centerPopUp(_help);
 			}
 			
 			/**
@@ -437,164 +401,135 @@
 				PopUpManager.centerPopUp(_saveOptions);
 			}
 			
-			/**
-			 * Import image
-			 */
-			private function _importImage():void				
-			{
-				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/importImage" );
-				var newImageWindow:KSketch_ImageImport_Control = new KSketch_ImageImport_Control();
-				newImageWindow.init(_KSketch, _interactionControl, _canvasView);
-				newImageWindow.createDeferredContent();
-				newImageWindow.open(_canvasView, true);
-				PopUpManager.centerPopUp(newImageWindow);
-			}
-			
-			private function _viewLog():void
-			{
-				
-				trace(_KSketch.sceneXML.toString());
-			}
 		]]>
 	</fx:Script>
 	
-	<s:filters>
-		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
-	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
-		<s:fill>
-			<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
-		</s:fill>
-	</s:Rect>
-	<s:Group id="buttonContainer">
+	<s:Group id="topContainer">
 		<s:layout>
-			<s:TileLayout id="buttonLayout" requestedColumnCount="1" requestedRowCount="-1"
-						  horizontalGap="{KSketchStyles.MENU_BUTTON_GAP}" verticalGap="{KSketchStyles.MENU_BUTTON_GAP}"
-						  paddingLeft="{KSketchStyles.MENU_PADDING}" paddingRight="{KSketchStyles.MENU_PADDING}"
-						  paddingBottom="{KSketchStyles.MENU_PADDING}" paddingTop="{KSketchStyles.MENU_PADDING}"/>
+			<s:HorizontalLayout gap="80"/>
 		</s:layout>
 		
 		<buttons:KSketch_Button
-			includeInLayout="{!KSketch_CanvasView.isWeb}"
-			click="_saveExit()"
-			id="exitButton"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			visible="false"
-			/>
-		<buttons:KSketch_Button
-			includeInLayout="{!KSketch_CanvasView.isWeb}"
-			click="_clear()"
-			id="newButton"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			visible="false"
-			/>
-		
-		<buttons:KSketch_Button
-			click="_undoRedoAction(true)"
-			id="undoButton"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
-		<buttons:KSketch_Button
-			click="_undoRedoAction(false)"
-			id="redoButton"
+			id="instructionsButton"
+			click="_openInstructions()"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>
 		
-		<!-- add in separator to the next button-->
 		<s:Group>
-			<s:layout> <s:HorizontalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
-			<s:Group width="100%">
-				<s:Line xFrom="0" xTo="0" yFrom="0" yTo="{KSketchStyles.POPUP_SEPARATOR_LINE}">
-					<s:stroke>
-						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
-					</s:stroke>
-				</s:Line>
+			<s:filters>
+				<s:DropShadowFilter 
+					color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
+					alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
+					strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
+					blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+					blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+			</s:filters>
+			<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+				<s:fill>
+					<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+				</s:fill>
+			</s:Rect>
+			<s:Group id="buttonContainer">
+				<s:layout>
+					<s:TileLayout id="buttonLayout" requestedColumnCount="1" requestedRowCount="-1"
+								  horizontalGap="{KSketchStyles.MENU_BUTTON_GAP}" verticalGap="{KSketchStyles.MENU_BUTTON_GAP}"
+								  paddingLeft="{KSketchStyles.MENU_PADDING}" paddingRight="{KSketchStyles.MENU_PADDING}"
+								  paddingBottom="{KSketchStyles.MENU_PADDING}" paddingTop="{KSketchStyles.MENU_PADDING}"/>
+				</s:layout>
+				
+				<buttons:KSketch_Button
+					includeInLayout="{!KSketch_CanvasView.isWeb}"
+					click="_saveExit()"
+					id="exitButton"
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					visible="false"
+					/>
+				<buttons:KSketch_Button
+					click="_undoRedoAction(true)"
+					id="undoButton"
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+				<buttons:KSketch_Button
+					click="_undoRedoAction(false)"
+					id="redoButton"
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+				
+				<!-- add in separator to the next button-->
+				<s:Group>
+					<s:layout> <s:HorizontalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
+					<s:Group width="100%">
+						<s:Line xFrom="0" xTo="0" yFrom="0" yTo="{KSketchStyles.POPUP_SEPARATOR_LINE}">
+							<s:stroke>
+								<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
+							</s:stroke>
+						</s:Line>
+					</s:Group>
+					<buttons:KSketch_Toggle_Button
+						click="{_setPen(blackToggle, false)}"
+						id="blackToggle"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
+				</s:Group>
+				
+				<buttons:KSketch_Toggle_Button
+					click="{_setPen(redToggle, false)}"
+					id="redToggle"
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+				<buttons:KSketch_Toggle_Button
+					click="{_setPen(blueToggle, false)}"
+					id="blueToggle"
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+				<buttons:KSketch_Toggle_Button
+					click="{_setPen(greenToggle, false)}"
+					id="greenToggle"
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+				<buttons:KSketch_Toggle_Button
+					click="{_setPen(eraserToggle, false)}"
+					id="eraserToggle"
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
+				
+				<!-- add in separator to the next button-->
+				<s:Group>
+					<s:layout> <s:HorizontalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
+					<s:Group width="100%">
+						<s:Line xFrom="0" xTo="0" yFrom="0" yTo="{KSketchStyles.POPUP_SEPARATOR_LINE}">
+							<s:stroke>
+								<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
+							</s:stroke>
+						</s:Line>
+					</s:Group>
+					<buttons:KSketch_Button
+						click="_openOptions()"
+						id="optionButton"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						/>
+				</s:Group>
+				
+				<buttons:KSketch_Button
+					click="_openConnect()"
+					id="connectButton"
+					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					/>
 			</s:Group>
-			<buttons:KSketch_Toggle_Button
-				click="{_setPen(lassoToggle, false)}"
-				id="lassoToggle"
-				width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-				height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-				/>
 		</s:Group>
 		
-		<buttons:KSketch_Toggle_Button
-			click="{_setPen(blackToggle, false)}"
-			id="blackToggle"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
-		<buttons:KSketch_Toggle_Button
-			click="{_setPen(redToggle, false)}"
-			id="redToggle"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
-		<buttons:KSketch_Toggle_Button
-			click="{_setPen(blueToggle, false)}"
-			id="blueToggle"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
-		<buttons:KSketch_Toggle_Button
-			click="{_setPen(greenToggle, false)}"
-			id="greenToggle"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
-		<buttons:KSketch_Toggle_Button
-			click="{_setPen(eraserToggle, false)}"
-			id="eraserToggle"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
+		<s:Label id="timerLabel" width="100" height="50" text="Time:" /> 
 		
-		<!-- add in separator to the next button-->
-		<s:Group>
-			<s:layout> <s:HorizontalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
-			<s:Group width="100%">
-				<s:Line xFrom="0" xTo="0" yFrom="0" yTo="{KSketchStyles.POPUP_SEPARATOR_LINE}">
-					<s:stroke>
-						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
-					</s:stroke>
-				</s:Line>
-			</s:Group>
-			<buttons:KSketch_Button
-				click="_openOptions()"
-				id="optionButton"
-				width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-				height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-				/>
-		</s:Group>
-		
-		<buttons:KSketch_Button
-			click="_openHelp()"
-			id="helpButton"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>
-		
-		<buttons:KSketch_Button
-		click="_openSharingOptions()"
-		id="shareButton"
-		width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-		height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-		/>
-		
-		<!--<buttons:KSketch_Button
-			click="_viewLog()"
-			id="debugButton"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
-			/>-->
 	</s:Group>
 </s:SkinnablePopUpContainer>

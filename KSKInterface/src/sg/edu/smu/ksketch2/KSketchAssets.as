@@ -143,6 +143,22 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_help_down:Class;
 		
+		[Embed("assets/Button_Texture_Connect.png")] 
+		[Bindable] 
+		public static var texture_connect:Class;
+		
+		[Embed("assets/Button_Texture_Connect_Down.png")] 
+		[Bindable] 
+		public static var texture_connect_down:Class;
+		
+		[Embed("assets/Button_Texture_Instructions.png")] 
+		[Bindable] 
+		public static var texture_instructions:Class;
+		
+		[Embed("assets/Button_Texture_Instructions_Down.png")] 
+		[Bindable] 
+		public static var texture_instructions_down:Class;
+		
 		[Embed("assets/Button_Texture_Undo.png")] 
 		[Bindable] 
 		public static var texture_undo:Class;

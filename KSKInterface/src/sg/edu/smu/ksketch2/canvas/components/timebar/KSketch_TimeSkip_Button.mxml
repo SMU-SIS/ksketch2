@@ -33,13 +33,15 @@
 			private var _KSketch:KSketch2;
 			private var _type:int;
 			private var _timeControl:KSketch_TimeControl;
+			private var _canvasView:KSketch_CanvasView;
 		
 			private var _tapGesture:TapGesture;
 
-			public function init(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, type:int):void
+			public function init(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, canvas:KSketch_CanvasView, type:int):void
 			{
 				_KSketch = KSketchInstance;
 				_timeControl = timeControl;
+				_canvasView = canvas;
 				_type = type;
 				
 				_tapGesture = new TapGesture(this);
@@ -56,7 +58,12 @@
 					return;
 				
 				if(KSketch_TimeControl.isPlaying)
+				{
+					_timeControl.playRepeat = false;
+					_canvasView.isAnimationPlaying = false;
 					_timeControl.stop();
+				}
+					
 				
 				var i:int;
 				var length:int = _timeControl.timings.length;

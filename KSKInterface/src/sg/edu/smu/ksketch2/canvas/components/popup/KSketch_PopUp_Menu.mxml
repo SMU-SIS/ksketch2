@@ -18,9 +18,9 @@
 		<![CDATA[
 			import com.adobe.serialization.json.JSON;
 			
-			import mx.formatters.DateFormatter;
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
 			import mx.managers.PopUpManager;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
@@ -64,6 +64,7 @@
 			private var _canvasControl:KCanvasInteractorManager;
 			
 			//KSKETCH-SYNPHNE
+			public var isTiming:Boolean = false;
 			private const TIMER_INTERVAL:int = 10;
 			private var baseTimer:int;
 			private var t:Timer;
@@ -105,8 +106,9 @@
 				optionButton.initSkin();
 				connectButton.init(KSketchAssets.texture_connect, KSketchAssets.texture_connect_down, false);
 				connectButton.initSkin();
-				instructionsButton.init(KSketchAssets.texture_instructions, KSketchAssets.texture_instructions_down, false);
+				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);
 				instructionsButton.initSkin();
+				
 				
 				if(_saveOptions)
 				{
@@ -380,16 +382,39 @@
 				PopUpManager.centerPopUp(_options);
 			}
 			
+			public function actionInstructions():void
+			{
+				if(_instructionsBox.isOpen)
+					_closeInstructions();
+				else
+					_openInstructions();
+			}
+			
 			/**
 			 * Opens instructions message box
 			 */
 			private function _openInstructions():void
 			{
-				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
-				_instructionsBox.open(_canvasView,true);
+				_instructionsBox.open(_canvasView,false);
 				PopUpManager.centerPopUp(_instructionsBox);
-				_instructionsBox.x = 20; // or any other number
-				_instructionsBox.y = 20; //whatever number. try tweaking it
+				_instructionsBox.x = 30;
+				_instructionsBox.y = 60; 
+				
+				//change skin to down_arrow
+				instructionsButton.init(KSketchAssets.texture_instructions_2, KSketchAssets.texture_instructions_2);
+				instructionsButton.initSkin();
+			}
+			
+			/**
+			 * Closes instructions message box
+			 */
+			private function _closeInstructions():void
+			{
+				_instructionsBox.close();
+				
+				//change skin to side_arrow
+				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);
+				instructionsButton.initSkin();
 			}
 			
 			/**
@@ -418,6 +443,7 @@
 			
 			public function startTimer():void
 			{
+				isTiming = true;
 				t = new Timer(TIMER_INTERVAL);
 				t.addEventListener(TimerEvent.TIMER, updateTimer);
 				
@@ -435,12 +461,14 @@
 			
 			public function stopTimer():void
 			{
+				isTiming = false;
 				t.stop();
 				t.removeEventListener(TimerEvent.TIMER, updateTimer);
 			}
 			
 			public function resetTimer():void
 			{
+				isTiming = false;
 				timerLabel.text = "Time: 00:00";
 			}
 			
@@ -452,9 +480,9 @@
 			<s:HorizontalLayout gap="80"/>
 		</s:layout>
 		
-		<buttons:KSketch_Button
+		<buttons:KSketch_ListButton
 			id="instructionsButton"
-			click="_openInstructions()"
+			click="actionInstructions()"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 			/>

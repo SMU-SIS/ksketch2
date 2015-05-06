@@ -535,6 +535,7 @@
 				if(activity == "RECALL")
 				{ 
 					trace("*********Implement RECALL function*********"); 
+					startRecall();
 				}
 				else if(activity == "TRACE")
 				{ 
@@ -545,6 +546,11 @@
 				{ 
 					trace("*********Implement TRACK function*********"); 
 				}
+			}
+			
+			public function startRecall():void
+			{
+				
 			}
 			
 			public function startTrace():void
@@ -560,9 +566,14 @@
 						var view:IObjectView = modelDisplay.viewsTable[currObj];
 						(view as KStrokeView).changeActivityHighlight(_KSketch.time);
 					}
-					
 				}
 			}
+			
+			public function endTrace():void
+			{
+				//reset
+			}
+			
 			//================================================================================================================
 		]]>
 	</fx:Script>

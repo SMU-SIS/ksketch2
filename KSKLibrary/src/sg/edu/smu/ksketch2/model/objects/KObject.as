@@ -33,7 +33,11 @@ package sg.edu.smu.ksketch2.model.objects
 		
 		private var _id:int;								// the object's ID
 		private var _parent:KGroup;							// the object's parent
-		private var _template:Boolean;
+		
+		//KSKETCH-SYNPHNE
+		private var _template:Boolean;			
+		private var _startRegion:int;
+		private var _endRegion:int;
 		
 		protected var _selected:Boolean;					// the object's selection state flag
 		protected var _center:Point;						// the object's centroid
@@ -80,6 +84,9 @@ package sg.edu.smu.ksketch2.model.objects
 				// insert a blank key at the given time in the transform
 				transformInterface.insertBlankKeyFrame(time, op, false);
 			}
+			
+			//KSKETCH-SYNPHNE
+			//set the 
 		}
 
 		

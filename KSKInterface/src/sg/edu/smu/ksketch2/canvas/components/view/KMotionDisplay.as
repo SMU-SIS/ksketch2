@@ -56,17 +56,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			_KSketch.addEventListener(KSketchEvent.EVENT_KSKETCH_INIT, reset);
 		}
 		
-		public function removeInit():void
-		{
-			_interactionControl.removeEventListener(KSketchEvent.EVENT_SELECTION_SET_CHANGED, _turnOnMotionDisplays);
-			_KSketch.removeEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _handler_UpdateAllViews);
-			_KSketch.removeEventListener(KSketchEvent.EVENT_MODEL_UPDATED, _handler_UpdateAllViews);
-			_KSketch.removeEventListener(KSketchEvent.EVENT_KSKETCH_INIT, reset);
-			
-			_KSketch = null;	
-			_interactionControl = null;
-		}
-		
 		/**
 		 * Registers a KObject for motion display
 		 * Once registered, object's motions will show up when it is selected

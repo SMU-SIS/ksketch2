@@ -151,13 +151,21 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_connect_down:Class;
 		
-		[Embed("assets/Button_Texture_Instructions.png")] 
+		[Embed("assets/Button_Texture_Instructions_1.png")] 
 		[Bindable] 
-		public static var texture_instructions:Class;
+		public static var texture_instructions_1:Class;
 		
-		[Embed("assets/Button_Texture_Instructions_Down.png")] 
+		[Embed("assets/Button_Texture_Instructions_2.png")] 
 		[Bindable] 
-		public static var texture_instructions_down:Class;
+		public static var texture_instructions_2:Class;
+		
+		[Embed("assets/Button_Texture_Instructions_Next.png")] 
+		[Bindable] 
+		public static var texture_instructions_next:Class;
+		
+		[Embed("assets/Button_Texture_Instructions_Prev.png")] 
+		[Bindable] 
+		public static var texture_instructions_prev:Class;
 		
 		[Embed("assets/Button_Texture_Undo.png")] 
 		[Bindable] 

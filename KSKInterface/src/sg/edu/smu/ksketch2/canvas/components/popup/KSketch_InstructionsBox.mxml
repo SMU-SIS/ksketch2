@@ -9,7 +9,10 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" initialize="initStyle()" >
+						   xmlns:s="library://ns.adobe.com/flex/spark"
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+						   backgroundAlpha="0" initialize="initStyle()"
+						   creationComplete="_initButtons()">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<s:HTTPService id="httpService"
@@ -23,9 +26,11 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
+			
+			import sg.edu.smu.ksketch2.KSketchAssets;
+			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
-			import sg.edu.smu.ksketch2.KSketchStyles;
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
@@ -38,18 +43,40 @@
 				_hasBegin = false; 
 			}
 			
+			private function _initButtons():void
+			{
+				activityButton_Prev.init(KSketchAssets.texture_instructions_prev, KSketchAssets.texture_instructions_prev);
+				activityButton_Prev.initSkin();
+				activityButton_Next.init(KSketchAssets.texture_instructions_next, KSketchAssets.texture_instructions_next);
+				activityButton_Next.initSkin();
+				
+				instructionButton_Prev.init(KSketchAssets.texture_instructions_prev, KSketchAssets.texture_instructions_prev);
+				instructionButton_Prev.initSkin();
+				instructionButton_Next.init(KSketchAssets.texture_instructions_next, KSketchAssets.texture_instructions_next);
+				instructionButton_Next.initSkin();
+			}
+			
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				activityMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				
 				activityHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				message.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				closeButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				actionButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				startButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				activityButton_Prev.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				activityButton_Next.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				
+				instructionHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				instructionButton_Prev.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				instructionButton_Next.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				instructionButton_Start.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				instructionMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 				
 				activityHeader.text = KSketch_CanvasView_Preferences.activity;
-				activityMessage.text = "You are about to start the " + activityHeader.text + " activity.";
+				instructionHeader.text = "Instr. 1";
+				
+				if(_menu.isTiming)
+					instructionButton_Start.label = "Stop";
+				else
+					instructionButton_Start.label = "Start";
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
@@ -68,10 +95,6 @@
 				if(!_hasBegin)
 				{
 					_hasBegin = true;
-					actionButton.label = "Finish";
-					activityMessage.text = "Click on Finish to end this activity";
-					instructionsGroup.visible = true;
-					startButton.label = "Start";
 					
 					_canvasView.startActivity(KSketch_CanvasView_Preferences.activity);
 					_menu.resetTimer();
@@ -79,29 +102,24 @@
 				else 
 				{
 					_hasBegin = false;
-					actionButton.label = "Begin";
-					activityMessage.text = "You are about to start the " + activityHeader.text + " activity.";
-					instructionsGroup.visible = false;
-					
 					_menu.resetTimer();
 				}
 			}
 			
 			private function startStopActivity():void
 			{
-				if(startButton.label == "Start")
+				if(instructionButton_Start.label == "Start")
 				{
-					startButton.label = "Stop";
+					instructionButton_Start.label = "Stop";
 					
 					_menu.startTimer();
-					close();
+					_menu.actionInstructions();
 				}
-				else if(startButton.label == "Stop") 
+				else if(instructionButton_Start.label == "Stop") 
 				{
-					startButton.label = "Start";
+					instructionButton_Start.label = "Start";
 					
 					_menu.stopTimer();
-					close();
 				}
 			}
 			
@@ -115,47 +133,44 @@
 			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
 			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
 	</s:filters>
-	<s:Group id="saveNewSketch" visible="true">
-		<s:Rect id="saveBox" width="500%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+	<s:Group id="instructions" visible="true">
+		<s:Rect id="instructionBox" width="230" height="150%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
 			<s:fill>
 				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout/>
+				<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
 			</s:layout>
-			<s:Group>
+			<s:Group width="100%">
 				<s:layout>
-					<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}"/>
+					<s:HorizontalLayout  gap="{KSketchStyles.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
-				<s:Label id="activityHeader"/>
-				<s:Label id="activityMessage"/>
-				<s:Group width="100%">
-					<s:layout>
-						<s:HorizontalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
-					</s:layout>
-					<s:Button id="closeButton" click="close()" label="Close" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-					<s:Button id="actionButton" click="actionActivity()" label="Begin" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-				</s:Group>
-				<s:Line xFrom="0" xTo="250" yFrom="0" yTo="0">
-					<s:stroke>
-						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
-					</s:stroke>
-				</s:Line>
-				<s:Group>
-					<s:layout>
-						<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}"/>
-					</s:layout>
-					<s:Label id="message" text="This is the default text. {'\n'}Set message according to activity."/>
-				</s:Group>
-				<s:Group id="instructionsGroup" visible="false" width="100%">
-					<s:layout>
-						<s:HorizontalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
-					</s:layout>
-					<s:Button id="startButton" click="startStopActivity()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-				</s:Group>
+				<buttons:KSketch_ListButton id="activityButton_Prev" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				<s:Label width="80" id="activityHeader"/>
+				<buttons:KSketch_ListButton id="activityButton_Next" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
 			</s:Group>
+			
+			
+			<s:Line xFrom="0" xTo="225" yFrom="0" yTo="0">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
+				</s:stroke>
+			</s:Line>
+			
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout  gap="{KSketchStyles.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
+				</s:layout>
+				<buttons:KSketch_ListButton id="instructionButton_Prev" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				<s:Label width="80" id="instructionHeader"/>
+				<buttons:KSketch_ListButton id="instructionButton_Next" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			</s:Group>
+			
+			<s:Label id="instructionMessage" text="This is the default text. {'\n'}Set message according to activity."/>
+			<s:Button id="instructionButton_Start" click="startStopActivity()" width="100%" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

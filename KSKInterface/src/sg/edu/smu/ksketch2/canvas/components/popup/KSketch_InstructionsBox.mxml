@@ -23,35 +23,86 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
+			private var _hasBegin:Boolean;
 			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu):void
 			{
 				_canvasView = canvasView;
 				_menu = menu;
+				_hasBegin = false; 
 			}
 			
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				message.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				activityMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				activityHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				message.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				closeButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				actionButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 				startButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				stopButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				
+				activityHeader.text = KSketch_CanvasView_Preferences.activity;
+				activityMessage.text = "You are about to start the " + activityHeader.text + " activity.";
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
 			{
+				initStyle();
 				super.open(owner, modal);
 			}
 			
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
 				super.close(commit,data);
+			}
+			
+			public function actionActivity():void
+			{
+				if(!_hasBegin)
+				{
+					_hasBegin = true;
+					actionButton.label = "Finish";
+					activityMessage.text = "Click on Finish to end this activity";
+					instructionsGroup.visible = true;
+					startButton.label = "Start";
+					
+					_canvasView.startActivity(KSketch_CanvasView_Preferences.activity);
+					_menu.resetTimer();
+				}
+				else 
+				{
+					_hasBegin = false;
+					actionButton.label = "Begin";
+					activityMessage.text = "You are about to start the " + activityHeader.text + " activity.";
+					instructionsGroup.visible = false;
+					
+					_menu.resetTimer();
+				}
+			}
+			
+			private function startStopActivity():void
+			{
+				if(startButton.label == "Start")
+				{
+					startButton.label = "Stop";
+					
+					_menu.startTimer();
+					close();
+				}
+				else if(startButton.label == "Stop") 
+				{
+					startButton.label = "Start";
+					
+					_menu.stopTimer();
+					close();
+				}
 			}
 			
 		]]>
@@ -72,23 +123,38 @@
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}"/>
+				<s:VerticalLayout/>
 			</s:layout>
-			<s:Label id="header" text="What to do?"/>
-			
 			<s:Group>
 				<s:layout>
-					<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}"/>
+					<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}"/>
 				</s:layout>
-				<s:Label id="message" text="This is the default text. {'\n'}Set message according to activity."/>
-			</s:Group>
-			<s:Group width="100%">
-				<s:layout>
-					<s:HorizontalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
-				</s:layout>
-				<s:Button id="closeButton" click="close()" label="Close" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-				<s:Button id="startButton" label="Start" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-				<s:Button id="stopButton" label="Stop" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				<s:Label id="activityHeader"/>
+				<s:Label id="activityMessage"/>
+				<s:Group width="100%">
+					<s:layout>
+						<s:HorizontalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
+					</s:layout>
+					<s:Button id="closeButton" click="close()" label="Close" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+					<s:Button id="actionButton" click="actionActivity()" label="Begin" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				</s:Group>
+				<s:Line xFrom="0" xTo="250" yFrom="0" yTo="0">
+					<s:stroke>
+						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
+					</s:stroke>
+				</s:Line>
+				<s:Group>
+					<s:layout>
+						<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}"/>
+					</s:layout>
+					<s:Label id="message" text="This is the default text. {'\n'}Set message according to activity."/>
+				</s:Group>
+				<s:Group id="instructionsGroup" visible="false" width="100%">
+					<s:layout>
+						<s:HorizontalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
+					</s:layout>
+					<s:Button id="startButton" click="startStopActivity()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				</s:Group>
 			</s:Group>
 		</s:Group>
 	</s:Group>

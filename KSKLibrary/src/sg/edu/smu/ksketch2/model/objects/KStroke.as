@@ -9,7 +9,9 @@
 package sg.edu.smu.ksketch2.model.objects
 {
 	import flash.geom.Point;
+	
 	import mx.utils.StringUtil;
+	
 	import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 
 	/**

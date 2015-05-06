@@ -21,6 +21,7 @@ package sg.edu.smu.ksketch2
 		public static const BLUE_PEN:uint = 0x0000FF;
 		public static const GREEN_PEN:uint = 0x00FF00;
 		public static const RED_PEN:uint = 0xFF0000;
+		public static const GREY_HIGHLIGHT:uint = 0xd3d3d3;
 		
 		//Login
 		public static var LOGIN_CONNECTION_FONT_SIZE:Number = 23;
@@ -107,6 +108,7 @@ package sg.edu.smu.ksketch2
 		//Canvas
 		public static const CANVAS_BACKGROUND_COLOR:uint = 0xA6A8AB;
 		public static const CANVAS_PAPER_COLOR:uint = 0xFFFFFF;
+		public static const CANVAS_PAPER_REGION:uint = 0xFFF222;
 		public static const CANVAS_BORDER_COLOR:uint = 0x000000;
 		public static var CANVAS_BORDER_WEIGHT:Number = 1;
 		public static const CANVAS_SHADOW_COLOR:uint = 0x000000;

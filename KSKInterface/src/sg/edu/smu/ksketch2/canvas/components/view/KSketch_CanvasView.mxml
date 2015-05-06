@@ -51,6 +51,8 @@
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
+			import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
+			import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
@@ -59,6 +61,7 @@
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
 			import sg.edu.smu.ksketch2.model.objects.KObject;
+			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
@@ -108,6 +111,7 @@
 			
 			//KSketch-Synphne
 			public var isAnimationPlaying:Boolean;
+			public var isNewSketch:Boolean;
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
@@ -236,7 +240,7 @@
 				_contextSingle.init(_KSketch, _interactionControl, timeControl);
 				_contextSingle.createDeferredContent();
 				
-				modelDisplay.init(_KSketch, _interactionControl);
+				modelDisplay.init(_KSketch, _interactionControl, true);
 				motionDisplay.init(_KSketch, _interactionControl);
 				
 				//This is the layer that blocks interaction whenever the app is playing
@@ -301,7 +305,14 @@
 							
 							if(_currentDocument.xml.scene.children().length() > 0)
 								_KSketch.generateSceneFromXML(new XML(_currentDocument.xml.scene));
+							
+							isNewSketch = false;
 						}	
+						else
+						{
+							isNewSketch = true;
+							_menuPopUp.initInstructions();
+						}
 					}
 					
 					data = null;
@@ -517,6 +528,42 @@
 					return null;
 			}
 			
+			//KSKETCH-SYNPHNE
+			//================================================================================================================
+			public function startActivity(activity:String):void
+			{
+				if(activity == "RECALL")
+				{ 
+					trace("*********Implement RECALL function*********"); 
+				}
+				else if(activity == "TRACE")
+				{ 
+					trace("*********Implement TRACE function*********"); 
+					startTrace();
+				}
+				else if(activity == "TRACK")
+				{ 
+					trace("*********Implement TRACK function*********"); 
+				}
+			}
+			
+			public function startTrace():void
+			{
+				//get all KObjects in the canvas and update their _template and color properties
+				for(var i:int=0; i<_KSketch.root.children.length(); i++)
+				{
+					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
+					if(currObj is KStroke)
+					{
+						currObj.template = true;
+						
+						var view:IObjectView = modelDisplay.viewsTable[currObj];
+						(view as KStrokeView).changeActivityHighlight(_KSketch.time);
+					}
+					
+				}
+			}
+			//================================================================================================================
 		]]>
 	</fx:Script>
 	
@@ -623,11 +670,61 @@
 								blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE}"/>
 						</s:filters>
 					</s:Rect>
+					
 					<!-- The model display displays the objects in the model -->
 					<view:KMotionDisplay id="motionDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 										 scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
 					<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
-										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>					
+										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>		
+					
+					<!-- start of region -->
+					<s:Group visible="false" height="100%" maxHeight="{(Capabilities.screenResolutionX*0.7)}"
+							 width="{drawing_stage.height/10*16}">
+						<s:layout>
+							<s:VerticalLayout/>
+						</s:layout>
+						<s:Group height="100%" width="{drawing_stage.height/10*16}">
+							<s:layout>
+								<s:HorizontalLayout/>
+							</s:layout>
+							<s:Rect id="region_1" width="33%" height="100%">
+								<s:fill>
+									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+								</s:fill>
+							</s:Rect>
+							<s:Rect id="region_2" width="33%" height="100%">
+								<s:fill>
+									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+								</s:fill>
+							</s:Rect>
+							<s:Rect id="region_3" width="33%" height="100%">
+								<s:fill>
+									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+								</s:fill>
+							</s:Rect>
+						</s:Group>
+						<s:Group height="100%" width="{drawing_stage.height/10*16}">
+							<s:layout>
+								<s:HorizontalLayout/>
+							</s:layout>
+							<s:Rect id="region_4" width="33%" height="100%">
+								<s:fill>
+									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+								</s:fill>
+							</s:Rect>
+							<s:Rect id="region_5" width="33%" height="100%">
+								<s:fill>
+									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+								</s:fill>
+							</s:Rect>
+							<s:Rect id="region_6" width="33%" height="100%">
+								<s:fill>
+									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+								</s:fill>
+							</s:Rect>
+						</s:Group>
+					</s:Group>
+					<!-- end of region -->
 				</s:Group> 
 			</s:Group>
 			

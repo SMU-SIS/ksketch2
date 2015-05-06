@@ -94,10 +94,10 @@ package sg.edu.smu.ksketch2.canvas
 		//KSKETCH-SYNPHNE
 		public static const TAPANYWHERE_ON:String = "TAPANYWHERE_ON";
 		public static const TAPANYWHERE_OFF:String = "TAPANYWHERE_OFF";
-		public static const ACTIVITY_RECALL:String = "ACTIVITY_RECALL";
-		public static const ACTIVITY_TRACE:String = "ACTIVITY_TRACE";
-		public static const ACTIVITY_TRACK:String = "ACTIVITY_TRACK";
-		public static const ACTIVITY_RECREATE:String = "ACTIVITY_RECREATE";
+		public static const ACTIVITY_RECALL:String = "RECALL";
+		public static const ACTIVITY_TRACE:String = "TRACE";
+		public static const ACTIVITY_TRACK:String = "TRACK";
+		public static const ACTIVITY_RECREATE:String = "RECREATE";
 		public static const DIFFICULTY_EASY:String = "DIFFICULTY_EASY";
 		public static const DIFFICULTY_MEDIUM:String = "DIFFICULTY_MEDIUM";
 		public static const DIFFICULTY_HARD:String = "DIFFICULTY_HARD";

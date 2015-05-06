@@ -33,6 +33,7 @@ package sg.edu.smu.ksketch2.model.objects
 		
 		private var _id:int;								// the object's ID
 		private var _parent:KGroup;							// the object's parent
+		private var _template:Boolean;
 		
 		protected var _selected:Boolean;					// the object's selection state flag
 		protected var _center:Point;						// the object's centroid
@@ -50,6 +51,7 @@ package sg.edu.smu.ksketch2.model.objects
 				throw new new Error("KObject is an Abstract class. You can't instantiate it!");
 			_id = id;
 			_selected = false;
+			_template = false;
 			visibilityControl = new KVisibilityControl(this);
 		}
 		
@@ -78,9 +80,6 @@ package sg.edu.smu.ksketch2.model.objects
 				// insert a blank key at the given time in the transform
 				transformInterface.insertBlankKeyFrame(time, op, false);
 			}
-				
-			
-			
 		}
 
 		
@@ -145,11 +144,6 @@ package sg.edu.smu.ksketch2.model.objects
 			//Now dispatch another event to notify whoeever that this object will be added to newParent
 			if(_parent)
 			{
-				//TRACE GROUP CENTROID
-				trace("==============================================================");
-				trace("KObject > set parent() > parent: " + _parent.id + ", kobject: " + this.id);
-				//END OF TRACE
-				
 				_parent.add(this);
 			}
 		}
@@ -315,6 +309,18 @@ package sg.edu.smu.ksketch2.model.objects
 			}
 		}
 		
+		//KSKETCH-SYNPHNE
+		//================================================================================================================
+		public function get template():Boolean
+		{
+			return _template;
+		}
+		
+		public function set template(value:Boolean):void
+		{
+			_template = value;
+		}
+		//================================================================================================================
 		
 		/**
 		 * Serializes the object to an XML object.

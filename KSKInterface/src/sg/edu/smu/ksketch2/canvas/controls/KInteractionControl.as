@@ -103,6 +103,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{
 				if(newSelection.objects.length() == 0)
 					newSelection = null;
+				else if(newSelection.objects.getObjectAt(0).template)
+				{
+					return;
+				}
 				else
 				{
 					if(!newSelection.isDifferentFrom(_selection))

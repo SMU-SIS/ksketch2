@@ -53,7 +53,7 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			super();
 		}
 		
-		public function init(kSketchInstance:KSketch2, interactionControl:KInteractionControl):void
+		public function init(kSketchInstance:KSketch2, interactionControl:KInteractionControl, test:Boolean):void
 		{
 			_KSketch = kSketchInstance;
 			
@@ -67,7 +67,8 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			_interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_BEGIN, _startInteraction);
 			_interactionControl.addEventListener(KInteractionControl.EVENT_INTERACTION_END , _endInteraction);
 			
-			reset();
+			if(test)
+				reset();
 			
 			scaleX = scaleX;
 			scaleY = scaleY;

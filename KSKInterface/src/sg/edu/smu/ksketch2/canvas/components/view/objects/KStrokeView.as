@@ -11,6 +11,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 	import flash.filters.GlowFilter;
 	import flash.geom.Point;
 	
+	import sg.edu.smu.ksketch2.KSketchStyles;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
@@ -26,6 +27,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		private var _points:Vector.<Point>;
 		private var _thickness:Number = KDrawInteractor.penThickness;
 		private var _color:uint = KDrawInteractor.penColor;
+		private var _originalColor:uint = KDrawInteractor.penColor;;
 		private var _glowFilter:Array;
 		
 		/**
@@ -54,7 +56,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		
 		override public function eraseIfHit(xPoint:Number, yPoint:Number, time:Number, op:KCompositeOperation):void
 		{
-			if(hitTestPoint(xPoint, yPoint, true))
+			if(hitTestPoint(xPoint, yPoint, true) && !_object.template)
 			{
 				//do a check if object belongs to a group and if all the objects in the group are erased at that time
 				var parent:KGroup = _object.parent;
@@ -203,6 +205,21 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			}
 			
 			return isDynamic;
+		}
+		
+		public function changeActivityHighlight(time:int):void
+		{
+			_originalColor = _color;
+			_color = KSketchStyles.GREY_HIGHLIGHT;
+			_render_DrawStroke(_color);
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
+		}
+		
+		public function resetActivityHighlight(time:int):void
+		{
+			_color = _originalColor;	
+			_render_DrawStroke(_color);
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
 		}
 		
 		/**

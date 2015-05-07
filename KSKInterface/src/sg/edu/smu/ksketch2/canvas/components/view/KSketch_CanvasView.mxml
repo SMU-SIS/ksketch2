@@ -33,7 +33,9 @@
 			import mx.events.FlexEvent;
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.utils.Base64Encoder;
-			
+
+			import sg.edu.smu.ksketch2.model.objects.KInstructions;
+
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
@@ -108,7 +110,7 @@
 			private var _contextSingle:KSketch_Timebar_Context_Single;
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
-			
+			private var _kInstructions:KInstructions;
 			//KSketch-Synphne
 			public var isAnimationPlaying:Boolean;
 			public var isNewSketch:Boolean;
@@ -202,7 +204,6 @@
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
 				_options.init(this, _menuPopUp);
-				_instructionsBox.init(this, _menuPopUp);
 				
 				//Initiate the controls
 				if(!isPlayer)
@@ -307,6 +308,9 @@
 								_KSketch.generateSceneFromXML(new XML(_currentDocument.xml.scene));
 							
 							isNewSketch = false;
+							if(_currentDocument.xml.activities != undefined) {
+								_kInstructions = new KInstructions(new XML(_currentDocument.xml.activities));
+							}
 						}	
 						else
 						{
@@ -342,6 +346,7 @@
 				
 				_options.applyPreferences();
 				_magnifier.open(this);
+				_instructionsBox.init(this, _menuPopUp, _kInstructions);
 			}
 			
 			private function _getGroupObjectsOnLoad(list:KModelObjectList):void

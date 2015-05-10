@@ -14,6 +14,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KObjectView;
 	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
@@ -37,9 +38,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * @param interactorDisplay The target interactor display.
 		 * @param interactionControl The target interaction control.
 		 */
-		public function KMultiTouchDrawInteractor(KSketchInstance:KSketch2, interactorDisplay:SpriteVisualElement, interactionControl:IInteractionControl)
+		public function KMultiTouchDrawInteractor(KSketchInstance:KSketch2, canvas:KSketch_CanvasView, interactorDisplay:SpriteVisualElement, interactionControl:IInteractionControl)
 		{
-			super(KSketchInstance, interactorDisplay, interactionControl);
+			super(KSketchInstance, canvas, interactorDisplay, interactionControl);
 		}
 		
 		override public function interaction_Begin(point:Point):void

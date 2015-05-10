@@ -299,6 +299,7 @@ package sg.edu.smu.ksketch2
 			var newStroke:KStroke = new KStroke(_sceneGraph.nextHighestID, points, color, thickness);
 			_sceneGraph.registerObject(newStroke, null, false, op);
 			newStroke.init(time, op);
+			
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 			return newStroke;
 		}
@@ -490,5 +491,6 @@ package sg.edu.smu.ksketch2
 				object.transformInterface.dirty = true;
 			}
 		}
+	
 	}
 }

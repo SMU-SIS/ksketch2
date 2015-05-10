@@ -33,9 +33,7 @@
 			import mx.events.FlexEvent;
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.utils.Base64Encoder;
-
-			import sg.edu.smu.ksketch2.model.objects.KInstructions;
-
+			
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
@@ -62,6 +60,7 @@
 			import sg.edu.smu.ksketch2.events.KSketchEvent;
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
+			import sg.edu.smu.ksketch2.model.objects.KInstructions;
 			import sg.edu.smu.ksketch2.model.objects.KObject;
 			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
@@ -308,8 +307,10 @@
 								_KSketch.generateSceneFromXML(new XML(_currentDocument.xml.scene));
 							
 							isNewSketch = false;
-							if(_currentDocument.xml.activities != undefined) {
+							if(_currentDocument.xml.activities != undefined) 
+							{
 								_kInstructions = new KInstructions(new XML(_currentDocument.xml.activities));
+								_instructionsBox.init(this, _menuPopUp, _kInstructions);
 							}
 						}	
 						else
@@ -346,7 +347,6 @@
 				
 				_options.applyPreferences();
 				_magnifier.open(this);
-				_instructionsBox.init(this, _menuPopUp, _kInstructions);
 			}
 			
 			private function _getGroupObjectsOnLoad(list:KModelObjectList):void
@@ -579,6 +579,19 @@
 				//reset
 			}
 			
+			public function get regions():Array
+			{
+				var regionsArr:Array = new Array(6);
+				regionsArr[0] = region_1;
+				regionsArr[1] = region_2;
+				regionsArr[2] = region_3;
+				regionsArr[3] = region_4;
+				regionsArr[4] = region_5;
+				regionsArr[5] = region_6;
+				
+				return regionsArr;
+			}
+			
 			//================================================================================================================
 		]]>
 	</fx:Script>
@@ -663,7 +676,7 @@
 				</s:fill>
 			</s:Rect>
 			<!-- For show, all the visual elements that the user wont be able to "touch"-->
-			<s:Group width="100%" height="100%">
+			<s:Group width="100%" height="100%" id="drawingStageGroup">
 				<s:layout>
 					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
@@ -686,61 +699,70 @@
 								blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE}"/>
 						</s:filters>
 					</s:Rect>
-					
+					<!-- start of region -->
+					<s:Group visible="true" height="100%" width="100%">
+						<s:layout>
+							<s:VerticalLayout/>
+						</s:layout>
+						<s:Group height="100%" width="100%">
+							<s:layout>
+								<s:HorizontalLayout/>
+							</s:layout>
+							<s:Group id="region_1" width="100%" height="100%">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+							<s:Group id="region_2" width="100%" height="100%">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+							<s:Group id="region_3" width="100%" height="100%">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+						</s:Group>
+						<s:Group height="100%" width="100%">
+							<s:layout>
+								<s:HorizontalLayout/>
+							</s:layout>
+							<s:Group id="region_4" width="100%" height="100%">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+							<s:Group id="region_5" width="100%" height="100%">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+							<s:Group id="region_6" width="100%" height="100%">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+						</s:Group>
+					</s:Group>
+					<!-- end of region -->
 					<!-- The model display displays the objects in the model -->
 					<view:KMotionDisplay id="motionDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 										 scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
 					<view:KModelDisplay id="modelDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
-										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>		
-					
-					<!-- start of region -->
-					<s:Group visible="false" height="100%" maxHeight="{(Capabilities.screenResolutionX*0.7)}"
-							 width="{drawing_stage.height/10*16}">
-						<s:layout>
-							<s:VerticalLayout/>
-						</s:layout>
-						<s:Group height="100%" width="{drawing_stage.height/10*16}">
-							<s:layout>
-								<s:HorizontalLayout/>
-							</s:layout>
-							<s:Rect id="region_1" width="33%" height="100%">
-								<s:fill>
-									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
-								</s:fill>
-							</s:Rect>
-							<s:Rect id="region_2" width="33%" height="100%">
-								<s:fill>
-									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
-								</s:fill>
-							</s:Rect>
-							<s:Rect id="region_3" width="33%" height="100%">
-								<s:fill>
-									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
-								</s:fill>
-							</s:Rect>
-						</s:Group>
-						<s:Group height="100%" width="{drawing_stage.height/10*16}">
-							<s:layout>
-								<s:HorizontalLayout/>
-							</s:layout>
-							<s:Rect id="region_4" width="33%" height="100%">
-								<s:fill>
-									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
-								</s:fill>
-							</s:Rect>
-							<s:Rect id="region_5" width="33%" height="100%">
-								<s:fill>
-									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
-								</s:fill>
-							</s:Rect>
-							<s:Rect id="region_6" width="33%" height="100%">
-								<s:fill>
-									<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
-								</s:fill>
-							</s:Rect>
-						</s:Group>
-					</s:Group>
-					<!-- end of region -->
+										scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
 				</s:Group> 
 			</s:Group>
 			

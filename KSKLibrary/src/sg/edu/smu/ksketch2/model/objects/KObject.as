@@ -84,11 +84,14 @@ package sg.edu.smu.ksketch2.model.objects
 				// insert a blank key at the given time in the transform
 				transformInterface.insertBlankKeyFrame(time, op, false);
 			}
-			
-			//KSKETCH-SYNPHNE
-			//set the 
 		}
-
+		
+		//KSKETCH-SYNPHNE
+		public function initRegion(start:int, end:int):void
+		{
+			_startRegion = start;
+			_endRegion = end;
+		}
 		
 		/**
 		 * Gets the object's ID.

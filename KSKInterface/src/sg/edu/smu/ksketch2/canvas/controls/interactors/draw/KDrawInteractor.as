@@ -8,17 +8,20 @@
  */
 package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 {
+	import flash.display.DisplayObject;
 	import flash.geom.Point;
 	
+	import spark.core.SpriteVisualElement;
+	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
 	import sg.edu.smu.ksketch2.canvas.controls.IInteractionControl;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
-	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
-	
-	import spark.core.SpriteVisualElement;
 
 	/**
 	 * The KDrawInteractor class serves as the concrete class for draw
@@ -40,6 +43,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		private var _points:Vector.<Point>;						// the stroke points
 		
 		protected var _interactorDisplay:SpriteVisualElement;	// the interactor display
+		protected var _canvasView:KSketch_CanvasView;
 		
 		/**
 		 * The main constructor for the KDrawInteractor class.
@@ -48,9 +52,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 		 * @param interactorDisplay The target interactor display.
 		 * @param interactionControl The target interaction control.
 		 */
-		public function KDrawInteractor(KSKetchInstance:KSketch2, interactorDisplay:SpriteVisualElement, interactionControl:IInteractionControl)
+		public function KDrawInteractor(KSKetchInstance:KSketch2, canvas:KSketch_CanvasView, interactorDisplay:SpriteVisualElement, interactionControl:IInteractionControl)
 		{
 			_interactorDisplay = interactorDisplay;
+			_canvasView = canvas;
 			super(KSKetchInstance, interactionControl);
 			_temporaryStroke = new KStrokeView(null);
 		}
@@ -116,6 +121,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 			// create the new stroke and add it to the ksketch instance
 			var newStroke:KStroke = _KSketch.object_Add_Stroke(_points, _KSketch.time, penColor, penThickness, drawOp);
 			
+			//do a hit test objects between regions and this view
+			var view:KStrokeView = (_canvasView.modelDisplay as KModelDisplay).viewsTable[newStroke];
+			var region:int = initRegion(view, _canvasView.regions);
+			newStroke.initRegion(region, region);
+			
 			// create a new list of model objects
 			var newObjects:KModelObjectList = new KModelObjectList();
 			
@@ -127,6 +137,26 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.draw
 			
 			// reset the interactor
 			reset();
+		}
+		
+		private function initRegion(object:DisplayObject, regionsArr:Array):int
+		{
+			var region:int = 0;
+			
+			if((regionsArr[0] as DisplayObject).hitTestObject(object))
+				region = 1;
+			else if((regionsArr[1] as DisplayObject).hitTestObject(object))
+				region = 2;
+			else if((regionsArr[2] as DisplayObject).hitTestObject(object))
+				region = 3;
+			else if((regionsArr[3] as DisplayObject).hitTestObject(object))
+				region = 4;
+			else if((regionsArr[4] as DisplayObject).hitTestObject(object))
+				region = 5;
+			else if((regionsArr[5] as DisplayObject).hitTestObject(object))
+				region = 6;
+			
+			return region;
 		}
 		
 		/**

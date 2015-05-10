@@ -102,7 +102,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			 * it's reusing the draw and loop select interactors, so implementation will feel a bit weird
 			 * these interactors are sharing gesture inputs
 			 */
-			_drawInteractor = new KMultiTouchDrawInteractor(_KSketch, _modelDisplay, _interactionControl);
+			_drawInteractor = new KMultiTouchDrawInteractor(_KSketch, _canvasView, _modelDisplay, _interactionControl);
 			_tapSelectInteractor = new KMultiTouchSelectInteractor(_KSketch, _interactionControl, _modelDisplay);
 			_loopSelectInteractor = new KLoopSelectInteractor(_KSketch, _modelDisplay, _interactionControl);
 			

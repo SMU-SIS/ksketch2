@@ -106,7 +106,6 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		protected function _handle_object_Updated(event:KObjectEvent):void
 		{
 			updateView(event.time);
-			trace("handle object updated");
 		}
 		
 		/**

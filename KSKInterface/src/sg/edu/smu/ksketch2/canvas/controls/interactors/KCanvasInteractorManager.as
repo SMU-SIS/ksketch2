@@ -8,6 +8,8 @@
  */
 package sg.edu.smu.ksketch2.canvas.controls.interactors
 {
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
@@ -16,6 +18,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	
 	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
+	
+	import spark.primitives.Rect;
 	
 	import org.gestouch.events.GestureEvent;
 	import org.gestouch.gestures.PanGesture;
@@ -27,10 +31,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KLoopSelectInteractor;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
 
 	/**
 	 * The KCanvasInteractorManager class serves as the concrete class for
@@ -236,11 +242,48 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			if(_interactionControl.currentInteraction)
 				return;
 			
-			_activeInteractor = _tapSelectInteractor;
-			_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
+			//original
+			//_activeInteractor = _tapSelectInteractor;
+			//_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location));
 			
 			//KSKETCH-SYNPHNE
-			if(_canvasView.isAnimationPlaying)
+			var tapLocation:Point = _modelDisplay.globalToLocal(_tapGesture.location);
+			var tapLocation2:Point = _modelDisplay.localToGlobal(_tapGesture.location); 
+			
+			if(_canvasView.activityType == "RECALL")
+			{
+				for(var i:int=0; i<_KSketch.root.children.length(); i++)
+				{
+					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
+					if(currObj.id == _canvasView.currentObjectID)
+					{
+						var region:int = currObj.startRegion;
+						var regionDisplay:DisplayObject = _canvasView.getRegion(region);
+						
+						var selectionArea:Sprite = new Sprite();
+						selectionArea.graphics.clear();
+						selectionArea.graphics.beginFill(0xFFFF22, 1);
+						selectionArea.graphics.drawCircle(tapLocation.x, tapLocation.y, 5);
+						selectionArea.graphics.endFill();
+						
+						_modelDisplay.addChild(selectionArea);
+						if(selectionArea.hitTestObject(regionDisplay))
+						{
+							_canvasView.interactionRecall(true);
+						}
+						
+						_modelDisplay.removeChild(selectionArea);
+						
+					}
+				}
+			}
+			else
+			{
+				_activeInteractor = _tapSelectInteractor;
+				_tapSelectInteractor.tap(tapLocation);
+			}
+			
+			if(_canvasView.isAnimationPlaying && _canvasView.activityType == "SKETCH")
 			{
 				if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_ON")
 				{

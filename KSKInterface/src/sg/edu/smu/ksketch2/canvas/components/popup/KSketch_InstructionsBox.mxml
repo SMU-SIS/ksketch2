@@ -89,7 +89,7 @@
 				instructionMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 				
 				activityHeader.text = KSketch_CanvasView_Preferences.activity;
-				instructionHeader.text = "Instr. 1";
+				instructionHeader.text = "Step 1";
 				
 				if(_menu.isTiming)
 					instructionButton_Start.label = "Stop";
@@ -124,18 +124,29 @@
 				}
 			}
 			
-			private function startStopActivity():void
+			public function startStopActivity():void
 			{
 				if(instructionButton_Start.label == "Start")
 				{
 					instructionButton_Start.label = "Stop";
+					activityButton_Prev.enabled = false;
+					activityButton_Next.enabled = false;
+					instructionButton_Prev.enabled = false;
+					instructionButton_Next.enabled = false;
 					
 					_menu.startTimer();
 					_menu.actionInstructions();
+					_canvasView.startActivity(activityHeader.text);
 				}
 				else if(instructionButton_Start.label == "Stop") 
 				{
 					instructionButton_Start.label = "Start";
+					enableDisableActivity();
+					enableDisableButtons();
+					nextInstruction();
+					
+					if(instructionMessage.text == "")
+						nextActvity();
 					
 					_menu.stopTimer();
 				}
@@ -144,14 +155,14 @@
 			private function previousInstruction():void {
 				_currentInstruction -= 1;
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Instr. "+ (_currentInstruction+1);
+				instructionHeader.text = "Step "+ (_currentInstruction+1);
 				enableDisableButtons();
 			}
 
 			private function nextInstruction():void {
 				_currentInstruction += 1;
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Instr. "+ (_currentInstruction+1);
+				instructionHeader.text = "Step "+ (_currentInstruction+1);
 				enableDisableButtons();
 
 			}
@@ -171,7 +182,7 @@
 				_currentInstruction = 0;
 				activityHeader.text = _activityTypes[_currentActivity];
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Instr. "+ (_currentInstruction+1);
+				instructionHeader.text = "Step "+ (_currentInstruction+1);
 				enableDisableActivity();
 				enableDisableButtons();
 			}
@@ -181,10 +192,11 @@
 				_currentActivity += 1;
 				activityHeader.text = _activityTypes[_currentActivity];
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Instr. "+ (_currentInstruction+1);
+				instructionHeader.text = "Step "+ (_currentInstruction+1);
 				enableDisableActivity();
 
 			}
+			
 			private function enableDisableActivity():void {
 				if(_currentActivity !=0)
 					activityButton_Prev.enabled = true;
@@ -194,6 +206,11 @@
 					activityButton_Next.enabled = false;
 				else
 					activityButton_Next.enabled = true;
+			}
+		
+			public function currentObjectID():int
+			{
+				return instructionObjectIDs[_currentActivity][_currentInstruction];
 			}
 		]]>
 	</fx:Script>
@@ -236,7 +253,7 @@
 					<s:HorizontalLayout  gap="{KSketchStyles.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
 				<buttons:KSketch_ListButton id="instructionButton_Prev" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="previousInstruction()"/>
-				<s:Label width="95" id="instructionHeader"/>
+				<s:Label width="95" id="instructionHeader" text="Default"/>
 				<buttons:KSketch_ListButton id="instructionButton_Next" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="nextInstruction()"/>
 			</s:Group>
 			

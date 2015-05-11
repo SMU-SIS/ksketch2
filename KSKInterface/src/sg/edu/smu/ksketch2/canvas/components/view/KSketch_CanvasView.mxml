@@ -110,9 +110,12 @@
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
 			private var _kInstructions:KInstructions;
-			//KSketch-Synphne
-			public var isAnimationPlaying:Boolean;
-			public var isNewSketch:Boolean;
+			
+			//KSKETCH-SYNPHNE
+			public var isNewSketch:Boolean;				//INITIALIZATION
+			public var isAnimationPlaying:Boolean;		//INITIATION PHASE
+			public var activityType:String = "SKETCH";	//RECALL ACTIVITY
+			public var currentObjectID:int;				//RECALL ACTIVITY
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
@@ -146,6 +149,8 @@
 			//Starts up the canvas in the following order
 			public function _initCanvas(isView:Boolean):void
 			{	
+				setRegionVisibility(false);
+				
 				this.removeEventListener(FlexEvent.INITIALIZE, _initCanvas);
 				
 				userData = data;
@@ -539,27 +544,71 @@
 			{
 				if(activity == "RECALL")
 				{ 
-					trace("*********Implement RECALL function*********"); 
 					startRecall();
 				}
 				else if(activity == "TRACE")
 				{ 
-					trace("*********Implement TRACE function*********"); 
 					startTrace();
 				}
 				else if(activity == "TRACK")
 				{ 
 					trace("*********Implement TRACK function*********"); 
 				}
+				else if(activity == "RECREATE")
+				{ 
+					trace("*********Implement RECREATE function*********"); 
+				}
 			}
 			
 			public function startRecall():void
+			{
+				activityType = "RECALL";
+				currentObjectID = _instructionsBox.currentObjectID();
+				
+				//ADD A CHECK ONLY FOR THE FIRST RECALL: hide all KObjectViews on stage
+				for(var i:int=0; i<_KSketch.root.children.length(); i++)
+				{
+					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
+					if(currObj is KStroke)
+					{
+						currObj.template = true;
+						
+						var view:IObjectView = modelDisplay.viewsTable[currObj];
+						(view as DisplayObject).visible = false;
+					}
+				}
+				
+				setRegionVisibility(true);
+			}
+			
+			public function interactionRecall(correctRecall:Boolean):void
+			{
+				if(correctRecall)
+				{
+					//unhide the object view
+					for(var i:int=0; i<_KSketch.root.children.length(); i++)
+					{
+						var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
+						if(currObj.id == currentObjectID)
+						{
+							var view:IObjectView = modelDisplay.viewsTable[currObj];
+							(view as DisplayObject).visible = true;
+						}
+					}
+					
+					_instructionsBox.startStopActivity();
+				}
+			}
+			
+			public function endRecall():void
 			{
 				
 			}
 			
 			public function startTrace():void
 			{
+				activityType = "TRACE";
+				
 				//get all KObjects in the canvas and update their _template and color properties
 				for(var i:int=0; i<_KSketch.root.children.length(); i++)
 				{
@@ -590,6 +639,23 @@
 				regionsArr[5] = region_6;
 				
 				return regionsArr;
+			}
+			
+			public function getRegion(index:int):DisplayObject
+			{
+				var regionsArr:Array = regions;
+				return regionsArr[index-1];
+			}
+			
+			private function setRegionVisibility(visible:Boolean):void
+			{
+				trace("Set region visibility to " + visible);
+				region_1.visible = visible;
+				region_2.visible = visible;
+				region_3.visible = visible;
+				region_4.visible = visible;
+				region_5.visible = visible;
+				region_6.visible = visible;
 			}
 			
 			//================================================================================================================
@@ -700,7 +766,7 @@
 						</s:filters>
 					</s:Rect>
 					<!-- start of region -->
-					<s:Group visible="true" height="100%" width="100%">
+					<s:Group height="100%" width="100%" alpha="0.5">
 						<s:layout>
 							<s:VerticalLayout/>
 						</s:layout>

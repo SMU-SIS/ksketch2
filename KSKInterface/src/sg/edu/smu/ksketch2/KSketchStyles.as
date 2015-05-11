@@ -108,7 +108,7 @@ package sg.edu.smu.ksketch2
 		//Canvas
 		public static const CANVAS_BACKGROUND_COLOR:uint = 0xA6A8AB;
 		public static const CANVAS_PAPER_COLOR:uint = 0xFFFFFF;
-		public static const CANVAS_PAPER_REGION:uint = 0xFFF222;
+		public static const CANVAS_PAPER_REGION:uint = 0xC43F2D;
 		public static const CANVAS_BORDER_COLOR:uint = 0x000000;
 		public static var CANVAS_BORDER_WEIGHT:Number = 1;
 		public static const CANVAS_SHADOW_COLOR:uint = 0x000000;

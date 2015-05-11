@@ -60,7 +60,6 @@
 				
 				//KSKETCH-SYNPHNE
 				_tapAnywhere();
-				_activityRecall();
 				_difficultyEasy();
 			}
 			
@@ -70,12 +69,6 @@
 			{
 				tapAnywhere.selected = true;
 				KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_ON;
-			}
-			
-			private function _activityRecall():void
-			{
-				actRecall.selected = true;
-				KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_RECALL;
 			}
 			
 			private function _difficultyEasy():void
@@ -90,19 +83,6 @@
 					KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_ON;
 				} else {
 					KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_OFF;
-				}
-			}
-			
-			private function _activity(event:ItemClickEvent):void
-			{
-				if (event.currentTarget.selectedValue == "Recall") {
-					KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_RECALL;
-				} else if (event.currentTarget.selectedValue == "Trace") {
-					KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_TRACE;
-				} else if (event.currentTarget.selectedValue == "Track") {
-					KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_TRACK;
-				} else {
-					KSketch_CanvasView_Preferences.activity = KSketch_CanvasView_Preferences.ACTIVITY_RECREATE;
 				}
 			}
 			
@@ -232,7 +212,6 @@
 	</fx:Script>
 	<fx:Declarations>
 		<s:RadioButtonGroup id="difficultyGroup" itemClick="_difficulty(event);"/>
-		<s:RadioButtonGroup id="activityGroup" itemClick="_activity(event);"/>
 		<s:RadioButtonGroup id="initiationGroup" itemClick="_initiation(event);"/>
 	</fx:Declarations>
 	<s:filters>
@@ -253,28 +232,6 @@
 			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_20}" paddingLeft="{KSketchStyles.DIALOG_PADDING_15}" paddingRight="{KSketchStyles.DIALOG_PADDING_10}" paddingTop="{KSketchStyles.DIALOG_PADDING_20}" paddingBottom="{KSketchStyles.DIALOG_PADDING_10}"/>
 		</s:layout>
 		<s:Label id="header" text="Options"/>
-		
-		<s:Group>
-			<s:layout>
-				<s:VerticalLayout paddingLeft="10"/>
-			</s:layout>
-			<s:Label text="Activity" fontSize="18"/>
-			<s:Group>
-				<s:layout>
-					<s:VerticalLayout/>
-				</s:layout>
-				
-				<s:Group>
-					<s:layout>
-						<s:HorizontalLayout/>
-					</s:layout>
-					<s:RadioButton groupName="activityGroup" id="actRecall" value="Recall" label="Recall" fontSize="14"/>
-					<s:RadioButton groupName="activityGroup" id="actTrace" value="Trace" label="Trace" fontSize="14"/>
-					<s:RadioButton groupName="activityGroup" id="actTrack" value="Track" label="Track" fontSize="14"/>
-					<s:RadioButton groupName="activityGroup" id="actRecreate" value="Recreate" label="Recreate" fontSize="14"/>
-				</s:Group>
-			</s:Group>
-		</s:Group>
 		
 		<s:Group>
 			<s:layout>

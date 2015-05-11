@@ -93,6 +93,16 @@ package sg.edu.smu.ksketch2.model.objects
 			_endRegion = end;
 		}
 		
+		public function get startRegion():int
+		{
+			return _startRegion;
+		}
+		
+		public function get endRegion():int
+		{
+			return _endRegion;
+		}
+		
 		/**
 		 * Gets the object's ID.
 		 * 
@@ -342,6 +352,9 @@ package sg.edu.smu.ksketch2.model.objects
 			var objectXML:XML = <KObject/>;
 			objectXML.@id = id.toString();
 			objectXML.@creationTime = _creationTime.toString();
+			objectXML.@startRegion = _startRegion.toString();
+			objectXML.@endRegion = _endRegion.toString();
+			
 			if(_center)
 				objectXML.@centroid = _center.x.toString()+","+_center.y.toString();
 			
@@ -375,6 +388,16 @@ package sg.edu.smu.ksketch2.model.objects
 			if(xml.@creationTime)
 			{
 				_creationTime = Number((xml.@creationTime).toString());
+			}
+			
+			if(xml.@startRegion)
+			{
+				_startRegion = Number((xml.@startRegion).toString());
+			}
+			
+			if(xml.@endRegion)
+			{
+				_endRegion = Number((xml.@endRegion).toString());
 			}
 				
 			visibilityControl.deserializeVisibility(new XML(xml.Activity));

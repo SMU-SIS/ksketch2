@@ -2,7 +2,6 @@
  * Created by ramvs on 6/5/2015.
  */
 package sg.edu.smu.ksketch2.model.objects {
-import flash.utils.Dictionary;
 
 public class KInstructions {
     private var instructions:Array;

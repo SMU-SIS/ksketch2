@@ -52,8 +52,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
-			import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
-			import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
+			import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
@@ -63,7 +62,6 @@
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
 			import sg.edu.smu.ksketch2.model.objects.KInstructions;
 			import sg.edu.smu.ksketch2.model.objects.KObject;
-			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
@@ -114,10 +112,9 @@
 			private var _kInstructions:KInstructions;
 			
 			//KSKETCH-SYNPHNE
+			private var _activityControl:KActivityControl;
 			public var isNewSketch:Boolean;				//INITIALIZATION
 			public var isAnimationPlaying:Boolean;		//INITIATION PHASE
-			public var activityType:String = "SKETCH";	//RECALL ACTIVITY
-			public var currentObjectID:int;				//RECALL ACTIVITY
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
@@ -210,11 +207,14 @@
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
 				_options.init(this, _menuPopUp);
+				
 				//Initiate the controls
+				_activityControl = new KActivityControl(_instructionsBox, this, _KSketch, _interactionControl);
+				
 				if(!isPlayer)
 				{
 					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, this, canvas_region, modelDisplay, motionDisplay, _feedbackPopUp);
+					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, _activityControl, this, modelDisplay, motionDisplay, _feedbackPopUp);
 				}
 				
 				
@@ -317,7 +317,7 @@
 							if(_currentDocument.xml.activities != undefined) 
 							{
 								_kInstructions = new KInstructions(new XML(_currentDocument.xml.activities));
-								_instructionsBox.init(this, _menuPopUp, _kInstructions, _kAlertBox);
+								_instructionsBox.init(this, _menuPopUp, _kInstructions, _kAlertBox, _activityControl);
 							}
 						}	
 						else
@@ -540,89 +540,6 @@
 					return null;
 			}
 			
-			//KSKETCH-SYNPHNE
-			//================================================================================================================
-			public function startActivity(activity:String):void
-			{
-				var currentInstruction:int = _instructionsBox.currentInstruction();
-				currentObjectID = _instructionsBox.currentObjectID();
-				
-				if(currentInstruction == 0)
-					resetAllActivities();
-				
-				if(activity == "RECALL")
-				{
-					activityType = "RECALL";
-					
-					if(currentInstruction == 0)
-						setObjectProperties(true, false, false);	
-					
-					setRegionVisibility(true);
-				}
-				else if(activity == "TRACE")
-				{ 
-					activityType = "TRACE";
-					
-					if(currentInstruction == 0)
-						setObjectProperties(true, false, true);
-				}
-				else if(activity == "TRACK")
-				{ 
-					trace("*********Implement TRACK function*********"); 
-				}
-				else if(activity == "RECREATE")
-				{ 
-					trace("*********Implement RECREATE function*********"); 
-				}
-			}
-			
-			public function setObjectProperties(template:Boolean, visible:Boolean, isTraceTrack:Boolean):void
-			{
-				for(var i:int=0; i<_KSketch.root.children.length(); i++)
-				{
-					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
-					if(currObj is KStroke)
-					{
-						currObj.template = template;
-						
-						var view:IObjectView = modelDisplay.viewsTable[currObj];
-						
-						if(isTraceTrack && template)
-							(view as KStrokeView).changeActivityHighlight(_KSketch.time);	
-						else
-						{
-							(view as KStrokeView).resetActivityHighlight(_KSketch.time);
-							(view as DisplayObject).visible = visible;
-						}
-					}	
-				}
-			}
-			
-			public function processRecall(correctRecall:Boolean):void
-			{
-				if(correctRecall)
-				{
-					//unhide the object view
-					for(var i:int=0; i<_KSketch.root.children.length(); i++)
-					{
-						var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
-						if(currObj.id == currentObjectID)
-						{
-							var view:IObjectView = modelDisplay.viewsTable[currObj];
-							(view as DisplayObject).visible = true;
-						}
-					}
-					
-					_instructionsBox.startStopActivity();
-				}
-			}
-			
-			public function resetAllActivities():void
-			{
-				setRegionVisibility(false);
-				setObjectProperties(false, true, false);
-			}
-			
 			public function get regions():Array
 			{
 				var regionsArr:Array = new Array(6);
@@ -636,13 +553,13 @@
 				return regionsArr;
 			}
 			
-			public function getRegion(index:int):DisplayObject
+			public function getRegionByIndex(index:int):DisplayObject
 			{
 				var regionsArr:Array = regions;
 				return regionsArr[index-1];
 			}
 			
-			private function setRegionVisibility(visible:Boolean):void
+			public function setRegionVisibility(visible:Boolean):void
 			{
 				region_1.visible = visible;
 				region_2.visible = visible;
@@ -651,8 +568,6 @@
 				region_5.visible = visible;
 				region_6.visible = visible;
 			}
-			
-			//================================================================================================================
 		]]>
 	</fx:Script>
 	

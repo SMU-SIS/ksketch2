@@ -19,8 +19,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
 	
-	import spark.primitives.Rect;
-	
 	import org.gestouch.events.GestureEvent;
 	import org.gestouch.gestures.PanGesture;
 	import org.gestouch.gestures.TapGesture;
@@ -31,7 +29,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
-	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
+	import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
@@ -59,7 +57,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		
 		private var _KSketch:KSketch2;									// the ksketch instance
 		private var _interactionControl:KInteractionControl;			// the interaction control
-		private var _canvasView:KSketch_CanvasView;						// the canvas view
+		private var _activityControl:KActivityControl;
 		private var _inputComponent:UIComponent;						// the input component
 		private var _modelDisplay:KModelDisplay;						// the model display
 		private var _motionDisplay:KMotionDisplay;
@@ -87,15 +85,16 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * @param modelDisplay The model display linked to the given ksketch object.
 		 * @param feedbackMessage The feedback message.
 		 */
-		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, canvas:KSketch_CanvasView,
-												 inputComponent:UIComponent, modelDisplay:KModelDisplay, motionDisplay:KMotionDisplay,
+		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
+												 activityControl:KActivityControl, inputComponent:UIComponent, 
+												 modelDisplay:KModelDisplay, motionDisplay:KMotionDisplay, 
 												 feedbackMessage:KSketch_Feedback_Message)
 		{
 			// set up the canvas interactor manager
 			super(this);								// set up the event dispatcher
 			_KSketch = KSketchInstance;					// initialize the ksketch instance
 			_interactionControl = interactionControl;	// initialize the interaction control
-			_canvasView = canvas;						// initialize the canvas view
+			_activityControl = activityControl;
 			_inputComponent = inputComponent;			// initialize the input component
 			_modelDisplay = modelDisplay;				// initialize the model display
 			_motionDisplay = motionDisplay;
@@ -108,7 +107,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			 * it's reusing the draw and loop select interactors, so implementation will feel a bit weird
 			 * these interactors are sharing gesture inputs
 			 */
-			_drawInteractor = new KMultiTouchDrawInteractor(_KSketch, _canvasView, _modelDisplay, _interactionControl);
+			_drawInteractor = new KMultiTouchDrawInteractor(_KSketch, _modelDisplay, _interactionControl, _activityControl);
 			_tapSelectInteractor = new KMultiTouchSelectInteractor(_KSketch, _interactionControl, _modelDisplay);
 			_loopSelectInteractor = new KLoopSelectInteractor(_KSketch, _modelDisplay, _interactionControl);
 			
@@ -250,15 +249,15 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			var tapLocation:Point = _modelDisplay.globalToLocal(_tapGesture.location);
 			var tapLocation2:Point = _modelDisplay.localToGlobal(_tapGesture.location); 
 			
-			if(_canvasView.activityType == "RECALL")
+			if(_activityControl.activityType == "RECALL")
 			{
 				for(var i:int=0; i<_KSketch.root.children.length(); i++)
 				{
 					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
-					if(currObj.id == _canvasView.currentObjectID)
+					if(currObj.id == _activityControl.currentObjectID)
 					{
 						var region:int = currObj.startRegion;
-						var regionDisplay:DisplayObject = _canvasView.getRegion(region);
+						var regionDisplay:DisplayObject = _activityControl.getRegionByIndex(region);
 						
 						var selectionArea:Sprite = new Sprite();
 						selectionArea.graphics.clear();
@@ -269,7 +268,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 						_modelDisplay.addChild(selectionArea);
 						if(selectionArea.hitTestObject(regionDisplay))
 						{
-							_canvasView.processRecall(true);
+							_activityControl.processRecall(true);
 						}
 						
 						_modelDisplay.removeChild(selectionArea);
@@ -283,12 +282,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				_tapSelectInteractor.tap(tapLocation);
 			}
 			
-			if(_canvasView.isAnimationPlaying && _canvasView.activityType == "SKETCH")
+			if(_activityControl.isAnimationPlaying && _activityControl.activityType == "SKETCH")
 			{
 				if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_ON")
 				{
-					_canvasView.timeControl.playRepeat = false;
-					_canvasView.timeControl.stop();
+					_activityControl.stopIntroductionAnimation();
 				}
 				else if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_OFF" && _interactionControl.selection)
 				{
@@ -304,8 +302,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 					//RAM: this is where you should change - regiondisplay to the object that matches the instruction
 					if(selectionArea.hitTestObject(regionDisplay))
 					{
-						_canvasView.timeControl.playRepeat = false;
-						_canvasView.timeControl.stop();
+						_activityControl.stopIntroductionAnimation();
 					}
 					
 					_modelDisplay.removeChild(selectionArea);

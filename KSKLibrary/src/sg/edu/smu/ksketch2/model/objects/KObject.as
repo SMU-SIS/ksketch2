@@ -35,7 +35,9 @@ package sg.edu.smu.ksketch2.model.objects
 		private var _parent:KGroup;							// the object's parent
 		
 		//KSKETCH-SYNPHNE
-		private var _template:Boolean;			
+		private var _template:Boolean;	
+		private var _hide:Boolean;
+		private var _originalId:int;
 		private var _startRegion:int;
 		private var _endRegion:int;
 		
@@ -56,6 +58,8 @@ package sg.edu.smu.ksketch2.model.objects
 			_id = id;
 			_selected = false;
 			_template = false;
+			_hide = false;
+			_originalId = id;
 			visibilityControl = new KVisibilityControl(this);
 		}
 		
@@ -101,6 +105,36 @@ package sg.edu.smu.ksketch2.model.objects
 		public function get endRegion():int
 		{
 			return _endRegion;
+		}
+		
+		public function get hide():Boolean
+		{
+			return _hide;
+		}
+		
+		public function set hide(value:Boolean):void
+		{
+			_hide = value;
+		}
+		
+		public function get originalId():int
+		{
+			return _originalId;
+		}
+		
+		public function set originalId(id:int):void
+		{
+			_originalId = id;
+		}
+		
+		public function get template():Boolean
+		{
+			return _template;
+		}
+		
+		public function set template(value:Boolean):void
+		{
+			_template = value;
 		}
 		
 		/**
@@ -329,19 +363,6 @@ package sg.edu.smu.ksketch2.model.objects
 			}
 		}
 		
-		//KSKETCH-SYNPHNE
-		//================================================================================================================
-		public function get template():Boolean
-		{
-			return _template;
-		}
-		
-		public function set template(value:Boolean):void
-		{
-			_template = value;
-		}
-		//================================================================================================================
-		
 		/**
 		 * Serializes the object to an XML object.
 		 * 
@@ -352,6 +373,9 @@ package sg.edu.smu.ksketch2.model.objects
 			var objectXML:XML = <KObject/>;
 			objectXML.@id = id.toString();
 			objectXML.@creationTime = _creationTime.toString();
+			objectXML.@hide = _hide.toString();
+			objectXML.@template = _template.toString();
+			objectXML.@originalId = _originalId.toString();
 			objectXML.@startRegion = _startRegion.toString();
 			objectXML.@endRegion = _endRegion.toString();
 			
@@ -398,6 +422,33 @@ package sg.edu.smu.ksketch2.model.objects
 			if(xml.@endRegion)
 			{
 				_endRegion = Number((xml.@endRegion).toString());
+			}
+			
+			if(xml.@originalId)
+			{
+				_originalId = Number((xml.@originalId).toString());
+			}
+			
+			if(xml.@hide)
+			{
+				var temp:String = (xml.@hide.toString());
+				if(temp == null)
+					_hide = false;
+				else if (temp.indexOf("true") >= 0)
+					_hide = true;
+				else
+					_hide = false;
+			}
+			
+			if(xml.@template)
+			{
+				var temp:String = (xml.@template.toString());
+				if(temp == null)
+					_template = false;
+				else if (temp.indexOf("true") >= 0)
+					_template = true;
+				else
+					_template = false;
 			}
 				
 			visibilityControl.deserializeVisibility(new XML(xml.Activity));

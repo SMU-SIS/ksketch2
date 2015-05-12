@@ -303,7 +303,7 @@ package sg.edu.smu.ksketch2
 			dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED, _sceneGraph.root));
 			return newStroke;
 		}
-	
+		
 		/**
 		 * Adds the image to the model's root node and corresponding
 		 * composite operation to the operation stack.
@@ -327,8 +327,6 @@ package sg.edu.smu.ksketch2
 			
 			return newImage;
 		}
-		
-		
 		
 		// #############################
 		// # Model Hierarchy Modifiers # 

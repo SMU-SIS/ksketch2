@@ -24,7 +24,7 @@
 	</fx:Declarations>
 	
 	<fx:Script>
-		<![CDATA[
+	<![CDATA[
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
 		
@@ -32,6 +32,7 @@
 		import sg.edu.smu.ksketch2.KSketchStyles;
 		import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+		import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 		import sg.edu.smu.ksketch2.model.objects.KInstructions;
 
 		private var _canvasView:KSketch_CanvasView;
@@ -44,8 +45,10 @@
 		private var instructionObjectIDs:Array;
 		private var instructionMessages:Array;
 		private var _kAlertBox:KSketch_Alert;
+		private var _activityControl:KActivityControl;
 
-		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, kInstructions:KInstructions, kAlertBox:KSketch_Alert):void {
+		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, kInstructions:KInstructions, 
+							kAlertBox:KSketch_Alert, activityControl:KActivityControl):void {
 			_canvasView = canvasView;
 			_menu = menu;
 			_hasBegin = false;
@@ -62,6 +65,7 @@
 			instructionHeader.text = "Step " + (_currentInstruction + 1);
 			activityHeader.text = _activityTypes[_currentActivity];
 			_kAlertBox = kAlertBox;
+			_activityControl = activityControl;
 		}
 
 		private function _initButtons():void {
@@ -108,7 +112,7 @@
 			if (!_hasBegin) {
 				_hasBegin = true;
 
-				_canvasView.startActivity(KSketch_CanvasView_Preferences.activity);
+				_activityControl.startActivity(KSketch_CanvasView_Preferences.activity);
 				_menu.resetTimer();
 			}
 			else {
@@ -117,33 +121,46 @@
 			}
 		}
 
-		public function startStopActivity():void {
-			if (instructionButton_Start.label == "Start") {
+		public function startStopActivity():void 
+		{
+			if (instructionButton_Start.label == "Start") 
+			{
 				instructionButton_Start.label = "Stop";
 				activityButton_Prev.enabled = false;
 				activityButton_Next.enabled = false;
 				instructionButton_Prev.enabled = false;
 				instructionButton_Next.enabled = false;
+				
 				_menu.actionInstructions();
-				_canvasView.startActivity(activityHeader.text);
-				if (_currentInstruction == 0) {
+				_activityControl.startActivity(activityHeader.text);
+				
+				if (_currentInstruction == 0) 
+				{
 					_kAlertBox.open(_canvasView, true);
 					PopUpManager.centerPopUp(_kAlertBox);
 
 					var t:Timer = new Timer(2000, 1);
 					t.start();
 					t.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
-				} else {
+				} 
+				else 
+				{
 					_menu.startTimer();
 				}
 			}
-			else if (instructionButton_Start.label == "Stop") {
+			else if (instructionButton_Start.label == "Stop") 
+			{
+				if(activityHeader.text == "TRACE")
+					_activityControl.processTrace();
+				
 				instructionButton_Start.label = "Start";
 				enableDisableActivity();
 				enableDisableButtons();
+				
 				nextInstruction();
 				if (instructionMessage.text == "")
 					nextActvity();
+				
 				_menu.stopTimer();
 			}
 		}

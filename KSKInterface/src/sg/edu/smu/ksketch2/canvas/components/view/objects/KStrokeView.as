@@ -80,6 +80,13 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			}
 		}
 		
+		public function hardErase(time:Number, op:KCompositeOperation):void
+		{
+			_object.visibilityControl.setVisibility(false, time, op, false);
+			_object.transformInterface.clearAllMotionsAfterTime(time, op);	
+			trace("hard erase");
+		}
+		
 		public function checkObjectErased(time:Number):Boolean
 		{
 			var isErased:Boolean = false;

@@ -72,7 +72,7 @@
 				else
 				{
 					_timeControl.playRepeat = false;
-					_canvasView.isAnimationPlaying = false;
+					_canvasView.setAnimationPlaying(false);
 					_timeControl.stop();
 				}
 					
@@ -92,8 +92,7 @@
 				//play from start
 				_doubleClickTrigger = true;
 				_timeControl.playRepeat = true;
-				_canvasView.isAnimationPlaying = true;
-				
+				_canvasView.setAnimationPlaying(true);
 			}
 			
 			private function _handlePlayPause(event:Event):void

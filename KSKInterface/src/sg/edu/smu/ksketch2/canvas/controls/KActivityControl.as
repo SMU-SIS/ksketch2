@@ -22,8 +22,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _interactionControl:KInteractionControl;
 		
 		private var _currentObjectID:int;
-		private var _activityType:String;
+		private var _activityType:String = "SKETCH";
 		private var _isAnimationPlaying:Boolean;
+		private var _isNewSketch:Boolean;
 		
 		public function KActivityControl(instructionsBox:KSketch_InstructionsBox, canvas:KSketch_CanvasView, ksketch:KSketch2, interaction:KInteractionControl)
 		{
@@ -218,6 +219,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function stopIntroductionAnimation():void
 		{
+			trace("stop animation");
 			_canvasView.timeControl.playRepeat = false;
 			_canvasView.timeControl.stop();
 		}
@@ -263,6 +265,16 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function get currentObjectID():int
 		{
 			return _currentObjectID;		
+		}
+		
+		public function get isNewSketch():Boolean
+		{
+			return _isNewSketch;
+		}
+		
+		public function set isNewSketch(value:Boolean):void
+		{
+			_isNewSketch = value;
 		}
 	}
 }

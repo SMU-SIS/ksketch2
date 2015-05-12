@@ -113,8 +113,6 @@
 			
 			//KSKETCH-SYNPHNE
 			private var _activityControl:KActivityControl;
-			public var isNewSketch:Boolean;				//INITIALIZATION
-			public var isAnimationPlaying:Boolean;		//INITIATION PHASE
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
@@ -313,7 +311,7 @@
 							if(_currentDocument.xml.scene.children().length() > 0)
 								_KSketch.generateSceneFromXML(new XML(_currentDocument.xml.scene));
 							
-							isNewSketch = false;
+							_activityControl.isNewSketch = false;
 							if(_currentDocument.xml.activities != undefined) 
 							{
 								_kInstructions = new KInstructions(new XML(_currentDocument.xml.activities));
@@ -322,7 +320,7 @@
 						}	
 						else
 						{
-							isNewSketch = true;
+							_activityControl.isNewSketch = true;
 							_menuPopUp.initInstructions();
 						}
 					}
@@ -567,6 +565,16 @@
 				region_4.visible = visible;
 				region_5.visible = visible;
 				region_6.visible = visible;
+			}
+			
+			public function setAnimationPlaying(value:Boolean):void
+			{
+				_activityControl.isAnimationPlaying = value;
+			}
+			
+			public function get isNewSketch():Boolean
+			{
+				return _activityControl.isNewSketch;
 			}
 		]]>
 	</fx:Script>

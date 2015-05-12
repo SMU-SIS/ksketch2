@@ -60,7 +60,7 @@
 				if(KSketch_TimeControl.isPlaying)
 				{
 					_timeControl.playRepeat = false;
-					_canvasView.isAnimationPlaying = false;
+					_canvasView.setAnimationPlaying(false);
 					_timeControl.stop();
 				}
 					

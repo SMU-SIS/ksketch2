@@ -25,193 +25,203 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import mx.events.FlexEvent;
-			
-			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
-			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
-			import sg.edu.smu.ksketch2.model.objects.KInstructions;
+		import mx.events.FlexEvent;
+		import mx.managers.PopUpManager;
 
-			private var _canvasView:KSketch_CanvasView;
-			private var _menu:KSketch_PopUp_Menu;
-			private var _hasBegin:Boolean;
-			private var _kInstructions:KInstructions;
-			private var _currentInstruction:int;
-			private var _currentActivity:int;
-			private var _activityTypes: Array = ['RECALL','TRACE','TRACK','RECREATE'];
-			private var instructionObjectIDs:Array;
-			private var instructionMessages:Array;
-			
-			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, kInstructions:KInstructions):void
-			{
-				_canvasView = canvasView;
-				_menu = menu;
+		import sg.edu.smu.ksketch2.KSketchAssets;
+		import sg.edu.smu.ksketch2.KSketchStyles;
+		import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
+		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+		import sg.edu.smu.ksketch2.model.objects.KInstructions;
+
+		private var _canvasView:KSketch_CanvasView;
+		private var _menu:KSketch_PopUp_Menu;
+		private var _hasBegin:Boolean;
+		private var _kInstructions:KInstructions;
+		private var _currentInstruction:int;
+		private var _currentActivity:int;
+		private var _activityTypes:Array = ['RECALL', 'TRACE', 'TRACK', 'RECREATE'];
+		private var instructionObjectIDs:Array;
+		private var instructionMessages:Array;
+		private var _kAlertBox:KSketch_Alert;
+
+		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, kInstructions:KInstructions, kAlertBox:KSketch_Alert):void {
+			_canvasView = canvasView;
+			_menu = menu;
+			_hasBegin = false;
+			_kInstructions = kInstructions;
+			_currentInstruction = 0;
+			_currentActivity = 0;
+			activityButton_Prev.enabled = false;
+			instructionButton_Prev.enabled = false;
+			instructionObjectIDs = new Array();
+			instructionMessages = new Array();
+			instructionObjectIDs = _kInstructions.getObjectIDs();
+			instructionMessages = _kInstructions.getInstructions();
+			instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+			instructionHeader.text = "Instr. " + (_currentInstruction + 1);
+			_kAlertBox = kAlertBox;
+		}
+
+		private function _initButtons():void {
+			activityButton_Prev.init(KSketchAssets.texture_instructions_prev, KSketchAssets.texture_instructions_prev);
+			activityButton_Prev.initSkin();
+			activityButton_Next.init(KSketchAssets.texture_instructions_next, KSketchAssets.texture_instructions_next);
+			activityButton_Next.initSkin();
+
+			instructionButton_Prev.init(KSketchAssets.texture_instructions_prev, KSketchAssets.texture_instructions_prev);
+			instructionButton_Prev.initSkin();
+			instructionButton_Next.init(KSketchAssets.texture_instructions_next, KSketchAssets.texture_instructions_next);
+			instructionButton_Next.initSkin();
+		}
+
+		private function initStyle():void {
+			this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
+
+			activityHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+			activityButton_Prev.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			activityButton_Next.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+
+			instructionHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+			instructionButton_Prev.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			instructionButton_Next.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			instructionButton_Start.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			instructionMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+
+			activityHeader.text = KSketch_CanvasView_Preferences.activity;
+			//instructionHeader.text = "Step 1";
+
+			if (_menu.isTiming)
+				instructionButton_Start.label = "Stop";
+			else
+				instructionButton_Start.label = "Start";
+		}
+
+		override public function open(owner:DisplayObjectContainer, modal:Boolean = false):void {
+			initStyle();
+			super.open(owner, modal);
+		}
+
+		override public function close(commit:Boolean = false, data:* = null):void {
+			super.close(commit, data);
+		}
+
+		public function actionActivity():void {
+			if (!_hasBegin) {
+				_hasBegin = true;
+
+				_canvasView.startActivity(KSketch_CanvasView_Preferences.activity);
+				_menu.resetTimer();
+			}
+			else {
 				_hasBegin = false;
-				_kInstructions = kInstructions;
-				_currentInstruction = 0;
-				_currentActivity = 0;
+				_menu.resetTimer();
+			}
+		}
+
+		public function startStopActivity():void {
+			if (instructionButton_Start.label == "Start") {
+				instructionButton_Start.label = "Stop";
 				activityButton_Prev.enabled = false;
+				activityButton_Next.enabled = false;
 				instructionButton_Prev.enabled = false;
-				instructionObjectIDs = new Array();
-				instructionMessages = new Array();
-				instructionObjectIDs = _kInstructions.getObjectIDs();
-				instructionMessages = _kInstructions.getInstructions();
-				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Instr. "+ (_currentInstruction+1);
-			}
-			
-			private function _initButtons():void
-			{
-				activityButton_Prev.init(KSketchAssets.texture_instructions_prev, KSketchAssets.texture_instructions_prev);
-				activityButton_Prev.initSkin();
-				activityButton_Next.init(KSketchAssets.texture_instructions_next, KSketchAssets.texture_instructions_next);
-				activityButton_Next.initSkin();
-				
-				instructionButton_Prev.init(KSketchAssets.texture_instructions_prev, KSketchAssets.texture_instructions_prev);
-				instructionButton_Prev.initSkin();
-				instructionButton_Next.init(KSketchAssets.texture_instructions_next, KSketchAssets.texture_instructions_next);
-				instructionButton_Next.initSkin();
-			}
-			
-			private function initStyle():void
-			{
-				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				
-				activityHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				activityButton_Prev.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				activityButton_Next.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				
-				instructionHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				instructionButton_Prev.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				instructionButton_Next.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				instructionButton_Start.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				instructionMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				
-				activityHeader.text = KSketch_CanvasView_Preferences.activity;
-				instructionHeader.text = "Step 1";
-				
-				if(_menu.isTiming)
-					instructionButton_Start.label = "Stop";
-				else
-					instructionButton_Start.label = "Start";
-			}
-			
-			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
-			{
-				initStyle();
-				super.open(owner, modal);
-			}
-			
-			override public function close(commit:Boolean=false, data:*=null):void
-			{
-				super.close(commit,data);
-			}
-			
-			public function actionActivity():void
-			{
-				if(!_hasBegin)
-				{
-					_hasBegin = true;
-					
-					_canvasView.startActivity(KSketch_CanvasView_Preferences.activity);
-					_menu.resetTimer();
-				}
-				else 
-				{
-					_hasBegin = false;
-					_menu.resetTimer();
-				}
-			}
-			
-			public function startStopActivity():void
-			{
-				if(instructionButton_Start.label == "Start")
-				{
-					instructionButton_Start.label = "Stop";
-					activityButton_Prev.enabled = false;
-					activityButton_Next.enabled = false;
-					instructionButton_Prev.enabled = false;
-					instructionButton_Next.enabled = false;
-					
+				instructionButton_Next.enabled = false;
+				_menu.actionInstructions();
+				_canvasView.startActivity(activityHeader.text);
+				if (_currentInstruction == 0) {
+					_kAlertBox.open(_canvasView);
+					PopUpManager.centerPopUp(_kAlertBox);
+
+					var t:Timer = new Timer(2000, 1);
+					t.start();
+					t.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
+				} else {
 					_menu.startTimer();
-					_menu.actionInstructions();
-					_canvasView.startActivity(activityHeader.text);
-				}
-				else if(instructionButton_Start.label == "Stop") 
-				{
-					instructionButton_Start.label = "Start";
-					enableDisableActivity();
-					enableDisableButtons();
-					nextInstruction();
-					
-					if(instructionMessage.text == "")
-						nextActvity();
-					
-					_menu.stopTimer();
 				}
 			}
-
-			private function previousInstruction():void {
-				_currentInstruction -= 1;
-				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Step "+ (_currentInstruction+1);
+			else if (instructionButton_Start.label == "Stop") {
+				instructionButton_Start.label = "Start";
+				enableDisableActivity();
 				enableDisableButtons();
+				nextInstruction();
+				if (instructionMessage.text == "")
+					nextActvity();
+				_menu.stopTimer();
 			}
+		}
 
-			private function nextInstruction():void {
+		private function startTiming(event:TimerEvent) {
+			if (_currentInstruction == 0) {
+				_kAlertBox.close();
+			}
+			_menu.startTimer();
+
+		}
+
+		private function previousInstruction():void {
+			_currentInstruction -= 1;
+			instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+			instructionHeader.text = "Step " + (_currentInstruction + 1);
+			enableDisableButtons();
+		}
+
+		private function nextInstruction():void {
+			if (_currentInstruction < instructionMessages[_currentActivity].length-1) {
 				_currentInstruction += 1;
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Step "+ (_currentInstruction+1);
+				instructionHeader.text = "Step " + (_currentInstruction + 1);
 				enableDisableButtons();
-
-			}
-			private function enableDisableButtons():void {
-				if(_currentInstruction !=0)
-					instructionButton_Prev.enabled = true;
-				else
-					instructionButton_Prev.enabled = false;
-				if(_currentInstruction == instructionMessages[_currentActivity].length -1)
-					instructionButton_Next.enabled = false;
-				else
-					instructionButton_Next.enabled = true;
-			}
-
-			private function previousActivity():void {
-				_currentActivity -= 1;
-				_currentInstruction = 0;
-				activityHeader.text = _activityTypes[_currentActivity];
-				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Step "+ (_currentInstruction+1);
-				enableDisableActivity();
+			} else {
+				nextActvity();
 				enableDisableButtons();
 			}
+		}
 
-			private function nextActvity():void {
-				_currentInstruction = 0;
-				_currentActivity += 1;
-				activityHeader.text = _activityTypes[_currentActivity];
-				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Step "+ (_currentInstruction+1);
-				enableDisableActivity();
+		private function enableDisableButtons():void {
+			if (_currentInstruction != 0)
+				instructionButton_Prev.enabled = true;
+			else
+				instructionButton_Prev.enabled = false;
+			if (_currentInstruction == instructionMessages[_currentActivity].length - 1)
+				instructionButton_Next.enabled = false;
+			else
+				instructionButton_Next.enabled = true;
+		}
 
-			}
-			
-			private function enableDisableActivity():void {
-				if(_currentActivity !=0)
-					activityButton_Prev.enabled = true;
-				else
-					activityButton_Prev.enabled = false;
-				if(_currentActivity == instructionMessages.length -1)
-					activityButton_Next.enabled = false;
-				else
-					activityButton_Next.enabled = true;
-			}
-		
-			public function currentObjectID():int
-			{
-				return instructionObjectIDs[_currentActivity][_currentInstruction];
-			}
+		private function previousActivity():void {
+			_currentActivity -= 1;
+			_currentInstruction = 0;
+			activityHeader.text = _activityTypes[_currentActivity];
+			instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+			instructionHeader.text = "Step " + (_currentInstruction + 1);
+			enableDisableActivity();
+			enableDisableButtons();
+		}
+
+		private function nextActvity():void {
+			_currentInstruction = 0;
+			_currentActivity += 1;
+			activityHeader.text = _activityTypes[_currentActivity];
+			instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+			instructionHeader.text = "Step " + (_currentInstruction + 1);
+			enableDisableActivity();
+
+		}
+
+		private function enableDisableActivity():void {
+			if (_currentActivity != 0)
+				activityButton_Prev.enabled = true;
+			else
+				activityButton_Prev.enabled = false;
+			if (_currentActivity == instructionMessages.length - 1)
+				activityButton_Next.enabled = false;
+			else
+				activityButton_Next.enabled = true;
+		}
+
+		public function currentObjectID():int {
+			return instructionObjectIDs[_currentActivity][_currentInstruction];
+		}
 		]]>
 	</fx:Script>
 	<s:filters>

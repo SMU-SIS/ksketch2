@@ -62,13 +62,14 @@
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
 			private var _canvasControl:KCanvasInteractorManager;
-			
+
 			//KSKETCH-SYNPHNE
 			public var isTiming:Boolean = false;
 			private const TIMER_INTERVAL:int = 10;
 			private var baseTimer:int;
 			private var t:Timer;
 			private var dateFormatter:DateFormatter;
+			private var _kAlertBox:KSketch_Alert;
 			
 			/**
 			 * @referenceComponent: the component that this menu will refer to for positioning itself
@@ -79,7 +80,7 @@
 			public function init(referenceComponent:UIComponent, canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options, 
 								 instructionsPanel:KSketch_InstructionsBox, savePanel:KSketch_SaveOptions, 
 								 KSketchInstance:KSketch2, interactionControl:KInteractionControl, canvasControl:KCanvasInteractorManager,
-							     feedback:KSketch_Feedback_Message):void
+							     feedback:KSketch_Feedback_Message, kAlertBox:KSketch_Alert):void
 			{
 				_referenceComponent = referenceComponent;
 				_canvasOrigin = referenceComponent.localToGlobal(_canvasOrigin);
@@ -93,6 +94,7 @@
 				_instructionsBox = instructionsPanel;
 				_feedback = feedback;
 				_saveOptions = savePanel;
+				_kAlertBox = kAlertBox;
 			}
 			
 			public function _initButtons():void

@@ -33,7 +33,9 @@
 			import mx.events.FlexEvent;
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.utils.Base64Encoder;
-			
+
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
+
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
@@ -102,6 +104,7 @@
 			private var _menuPopUp:KSketch_PopUp_Menu;
 			private var _options:KSketch_Options;
 			private var _instructionsBox:KSketch_InstructionsBox;
+			private var _kAlertBox:KSketch_Alert;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
 			private var _magnifier:KSketch_Timebar_Magnifier;
@@ -208,7 +211,6 @@
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
 				_options.init(this, _menuPopUp);
-				
 				//Initiate the controls
 				if(!isPlayer)
 				{
@@ -221,8 +223,9 @@
 				{
 					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions);
 					_overwriteSaveOptions.init(this, _saveOptions);
-				
-					_menuPopUp.init(canvas_component, this, _options, _instructionsBox, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
+					_kAlertBox = new KSketch_Alert();
+					_kAlertBox.createDeferredContent();
+					_menuPopUp.init(canvas_component, this, _options, _instructionsBox, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp, _kAlertBox);
 					_saveOptions.createDeferredContent();
 				}
 				
@@ -315,7 +318,7 @@
 							if(_currentDocument.xml.activities != undefined) 
 							{
 								_kInstructions = new KInstructions(new XML(_currentDocument.xml.activities));
-								_instructionsBox.init(this, _menuPopUp, _kInstructions);
+								_instructionsBox.init(this, _menuPopUp, _kInstructions, _kAlertBox);
 							}
 						}	
 						else

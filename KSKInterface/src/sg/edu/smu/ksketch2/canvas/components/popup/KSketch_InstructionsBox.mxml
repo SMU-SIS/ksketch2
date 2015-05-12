@@ -27,7 +27,7 @@
 		<![CDATA[
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
-
+		
 		import sg.edu.smu.ksketch2.KSketchAssets;
 		import sg.edu.smu.ksketch2.KSketchStyles;
 		import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
@@ -59,7 +59,8 @@
 			instructionObjectIDs = _kInstructions.getObjectIDs();
 			instructionMessages = _kInstructions.getInstructions();
 			instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-			instructionHeader.text = "Instr. " + (_currentInstruction + 1);
+			instructionHeader.text = "Step " + (_currentInstruction + 1);
+			activityHeader.text = _activityTypes[_currentActivity];
 			_kAlertBox = kAlertBox;
 		}
 
@@ -87,9 +88,6 @@
 			instructionButton_Next.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 			instructionButton_Start.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 			instructionMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-
-			activityHeader.text = KSketch_CanvasView_Preferences.activity;
-			//instructionHeader.text = "Step 1";
 
 			if (_menu.isTiming)
 				instructionButton_Start.label = "Stop";
@@ -129,7 +127,7 @@
 				_menu.actionInstructions();
 				_canvasView.startActivity(activityHeader.text);
 				if (_currentInstruction == 0) {
-					_kAlertBox.open(_canvasView);
+					_kAlertBox.open(_canvasView, true);
 					PopUpManager.centerPopUp(_kAlertBox);
 
 					var t:Timer = new Timer(2000, 1);
@@ -150,7 +148,7 @@
 			}
 		}
 
-		private function startTiming(event:TimerEvent) {
+		private function startTiming(event:TimerEvent):void {
 			if (_currentInstruction == 0) {
 				_kAlertBox.close();
 			}
@@ -221,6 +219,11 @@
 
 		public function currentObjectID():int {
 			return instructionObjectIDs[_currentActivity][_currentInstruction];
+		}
+			
+		public function currentInstruction():int 
+		{
+			return _currentInstruction;
 		}
 		]]>
 	</fx:Script>

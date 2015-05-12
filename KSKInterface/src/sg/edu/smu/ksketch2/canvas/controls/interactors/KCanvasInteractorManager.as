@@ -269,7 +269,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 						_modelDisplay.addChild(selectionArea);
 						if(selectionArea.hitTestObject(regionDisplay))
 						{
-							_canvasView.interactionRecall(true);
+							_canvasView.processRecall(true);
 						}
 						
 						_modelDisplay.removeChild(selectionArea);
@@ -292,8 +292,23 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				}
 				else if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_OFF" && _interactionControl.selection)
 				{
-					_canvasView.timeControl.playRepeat = false;
-					_canvasView.timeControl.stop();
+					//RAM: clean up - put this in a method since it is called many times. 
+					var selectionArea:Sprite = new Sprite();
+					selectionArea.graphics.clear();
+					selectionArea.graphics.beginFill(0xFFFF22, 1);
+					selectionArea.graphics.drawCircle(tapLocation.x, tapLocation.y, 5);
+					selectionArea.graphics.endFill();
+					
+					_modelDisplay.addChild(selectionArea);
+					
+					//RAM: this is where you should change - regiondisplay to the object that matches the instruction
+					if(selectionArea.hitTestObject(regionDisplay))
+					{
+						_canvasView.timeControl.playRepeat = false;
+						_canvasView.timeControl.stop();
+					}
+					
+					_modelDisplay.removeChild(selectionArea);
 				}
 			}
 		}

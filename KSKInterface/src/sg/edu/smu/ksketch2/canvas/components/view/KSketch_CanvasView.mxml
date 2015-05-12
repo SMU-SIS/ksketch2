@@ -33,14 +33,13 @@
 			import mx.events.FlexEvent;
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.utils.Base64Encoder;
-
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
-
+			
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
@@ -545,13 +544,27 @@
 			//================================================================================================================
 			public function startActivity(activity:String):void
 			{
+				var currentInstruction:int = _instructionsBox.currentInstruction();
+				currentObjectID = _instructionsBox.currentObjectID();
+				
+				if(currentInstruction == 0)
+					resetAllActivities();
+				
 				if(activity == "RECALL")
-				{ 
-					startRecall();
+				{
+					activityType = "RECALL";
+					
+					if(currentInstruction == 0)
+						setObjectProperties(true, false, false);	
+					
+					setRegionVisibility(true);
 				}
 				else if(activity == "TRACE")
 				{ 
-					startTrace();
+					activityType = "TRACE";
+					
+					if(currentInstruction == 0)
+						setObjectProperties(true, false, true);
 				}
 				else if(activity == "TRACK")
 				{ 
@@ -563,28 +576,29 @@
 				}
 			}
 			
-			public function startRecall():void
+			public function setObjectProperties(template:Boolean, visible:Boolean, isTraceTrack:Boolean):void
 			{
-				activityType = "RECALL";
-				currentObjectID = _instructionsBox.currentObjectID();
-				
-				//ADD A CHECK ONLY FOR THE FIRST RECALL: hide all KObjectViews on stage
 				for(var i:int=0; i<_KSketch.root.children.length(); i++)
 				{
 					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
 					if(currObj is KStroke)
 					{
-						currObj.template = true;
+						currObj.template = template;
 						
 						var view:IObjectView = modelDisplay.viewsTable[currObj];
-						(view as DisplayObject).visible = false;
-					}
+						
+						if(isTraceTrack && template)
+							(view as KStrokeView).changeActivityHighlight(_KSketch.time);	
+						else
+						{
+							(view as KStrokeView).resetActivityHighlight(_KSketch.time);
+							(view as DisplayObject).visible = visible;
+						}
+					}	
 				}
-				
-				setRegionVisibility(true);
 			}
 			
-			public function interactionRecall(correctRecall:Boolean):void
+			public function processRecall(correctRecall:Boolean):void
 			{
 				if(correctRecall)
 				{
@@ -603,32 +617,10 @@
 				}
 			}
 			
-			public function endRecall():void
+			public function resetAllActivities():void
 			{
-				
-			}
-			
-			public function startTrace():void
-			{
-				activityType = "TRACE";
-				
-				//get all KObjects in the canvas and update their _template and color properties
-				for(var i:int=0; i<_KSketch.root.children.length(); i++)
-				{
-					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
-					if(currObj is KStroke)
-					{
-						currObj.template = true;
-						
-						var view:IObjectView = modelDisplay.viewsTable[currObj];
-						(view as KStrokeView).changeActivityHighlight(_KSketch.time);
-					}
-				}
-			}
-			
-			public function endTrace():void
-			{
-				//reset
+				setRegionVisibility(false);
+				setObjectProperties(false, true, false);
 			}
 			
 			public function get regions():Array
@@ -652,7 +644,6 @@
 			
 			private function setRegionVisibility(visible:Boolean):void
 			{
-				trace("Set region visibility to " + visible);
 				region_1.visible = visible;
 				region_2.visible = visible;
 				region_3.visible = visible;

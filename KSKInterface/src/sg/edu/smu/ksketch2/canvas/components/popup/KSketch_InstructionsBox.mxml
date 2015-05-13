@@ -27,7 +27,7 @@
 	<![CDATA[
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
-		
+
 		import sg.edu.smu.ksketch2.KSketchAssets;
 		import sg.edu.smu.ksketch2.KSketchStyles;
 		import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
@@ -41,14 +41,15 @@
 		private var _kInstructions:KInstructions;
 		private var _currentInstruction:int;
 		private var _currentActivity:int;
-		private var _activityTypes:Array = ['INTRO','RECALL', 'TRACE', 'TRACK', 'RECREATE'];
+		private var _activityTypes:Array = ['INTRO', 'RECALL', 'TRACE', 'TRACK', 'RECREATE'];
 		private var instructionObjectIDs:Array;
 		private var instructionMessages:Array;
 		private var _kAlertBox:KSketch_Alert;
 		private var _activityControl:KActivityControl;
+		private var _alertTimer:Timer;
 
-		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, kInstructions:KInstructions, 
-							kAlertBox:KSketch_Alert, activityControl:KActivityControl):void {
+		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, kInstructions:KInstructions,
+							 kAlertBox:KSketch_Alert, activityControl:KActivityControl):void {
 			_canvasView = canvasView;
 			_menu = menu;
 			_hasBegin = false;
@@ -121,46 +122,46 @@
 			}
 		}
 
-		public function startStopActivity():void 
-		{
-			if (instructionButton_Start.label == "Start") 
-			{
+		public function startStopActivity():void {
+			if (instructionButton_Start.label == "Start") {
 				instructionButton_Start.label = "Stop";
 				activityButton_Prev.enabled = false;
 				activityButton_Next.enabled = false;
 				instructionButton_Prev.enabled = false;
 				instructionButton_Next.enabled = false;
-				
+
 				_menu.actionInstructions();
 				_activityControl.startActivity(activityHeader.text);
-				
-				if (_currentInstruction == 0) 
-				{
-					_kAlertBox.open(_canvasView, true);
-					PopUpManager.centerPopUp(_kAlertBox);
 
-					var t:Timer = new Timer(2000, 1);
-					t.start();
-					t.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
-				} 
-				else 
-				{
+				if (_currentInstruction == 0 && _activityTypes[_currentActivity] == "TRACE") {
+					_alertTimer = new Timer(1000, 3);
+					_alertTimer.addEventListener(TimerEvent.TIMER, updateCount);
+					_alertTimer.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
+					if (!_kAlertBox.isOpen) {
+						_kAlertBox.open(_canvasView, true);
+						_kAlertBox.updateText("3");
+						PopUpManager.centerPopUp(_kAlertBox);
+					}
+					_alertTimer.start();
+
+
+				}
+				else {
 					_menu.startTimer();
 				}
 			}
-			else if (instructionButton_Start.label == "Stop") 
-			{
-				if(activityHeader.text == "TRACE")
+			else if (instructionButton_Start.label == "Stop") {
+				if (activityHeader.text == "TRACE")
 					_activityControl.processTrace();
-				
+
 				instructionButton_Start.label = "Start";
 				enableDisableActivity();
 				enableDisableButtons();
-				
+
 				nextInstruction();
 				if (instructionMessage.text == "")
 					nextActvity();
-				
+
 				_menu.stopTimer();
 			}
 		}
@@ -173,6 +174,11 @@
 
 		}
 
+		private function updateCount(event:TimerEvent):void {
+
+			_kAlertBox.updateText(String(3 - _alertTimer.currentCount));
+		}
+
 		private function previousInstruction():void {
 			_currentInstruction -= 1;
 			instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
@@ -181,7 +187,7 @@
 		}
 
 		private function nextInstruction():void {
-			if (_currentInstruction < instructionMessages[_currentActivity].length-1) {
+			if (_currentInstruction < instructionMessages[_currentActivity].length - 1) {
 				_currentInstruction += 1;
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 				instructionHeader.text = "Step " + (_currentInstruction + 1);
@@ -237,9 +243,8 @@
 		public function currentObjectID():int {
 			return int(instructionObjectIDs[_currentActivity][_currentInstruction]);
 		}
-			
-		public function currentInstruction():int 
-		{
+
+		public function currentInstruction():int {
 			return _currentInstruction;
 		}
 		]]>

@@ -9,7 +9,7 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0.5"
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="1"
 						   initialize="init()">
 	<fx:Script>
 		<![CDATA[
@@ -42,30 +42,18 @@
 		
 			private function init():void
 			{
-				notificationLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				notificationLabel.setStyle("fontSize", KSketchStyles.DIALOG_MEASUREMENT_300);
 				this.removeEventListener(FlexEvent.INITIALIZE, init);
-				notificationLabel.text = "Tap on the region where the object is placed";
+				notificationLabel.text = " ";
 				notificationLabel.setStyle('textAlign', 'center');
+			}
+			public function updateText(count:String):void {
+				notificationLabel.text = count;
 			}
 		]]>
 	</fx:Script>
-	<s:filters>
-		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
-	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
-		<s:fill>
-			<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
-		</s:fill>
-	</s:Rect>
+
 	<s:Group width="50%">
-		<s:layout>
-			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_20}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_20}" paddingBottom="{KSketchStyles.DIALOG_PADDING_20}" verticalAlign="middle" horizontalAlign="center"/>
-		</s:layout>
 		<s:Label id="notificationLabel"/>
 	</s:Group>
 </s:SkinnablePopUpContainer>

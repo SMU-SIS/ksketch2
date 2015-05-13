@@ -39,10 +39,19 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var currentInstruction:int = _instructionsBox.currentInstruction();
 			_currentObjectID = _instructionsBox.currentObjectID();
 			
-			if(currentInstruction == 0)
+			if(currentInstruction == 0 && activity != "INTRO")
 				resetAllActivities();
-			
-			if(activity == "RECALL")
+			if(activity == "INTRO")
+			{
+				_activityType = "INTRO";
+				this.startIntroductionAnimation();
+				_isAnimationPlaying = true;
+				/*if(currentInstruction == 0)
+					setObjectProperties(true, false, false);
+
+				_canvasView.setRegionVisibility(true);*/
+			}
+			else if(activity == "RECALL")
 			{
 				_activityType = "RECALL";
 				
@@ -140,6 +149,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 				}	
 			}
 		}
+
+		public function processIntro(correctRecall:Boolean):void
+		{
+			if(correctRecall)
+			{
+				_instructionsBox.startStopActivity();
+			}
+		}
 		
 		public function processTrack(currObj:KStroke):void
 		{
@@ -216,6 +233,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_interactionControl.end_interaction_operation();
 			tempArr = null;
 		}
+
+		public function startIntroductionAnimation():void
+		{
+			trace("play animation");
+			_canvasView.timeControl.playRepeat = true;
+			_canvasView.timeControl.play(true);
+		}
 		
 		public function stopIntroductionAnimation():void
 		{
@@ -275,6 +299,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function set isNewSketch(value:Boolean):void
 		{
 			_isNewSketch = value;
+		}
+		public function getCurrentObject():IObjectView{
+			return _canvasView.getCurrentObject();
 		}
 	}
 }

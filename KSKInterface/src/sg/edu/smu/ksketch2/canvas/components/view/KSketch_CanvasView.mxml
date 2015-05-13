@@ -33,7 +33,10 @@
 			import mx.events.FlexEvent;
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.utils.Base64Encoder;
-			
+
+			import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
+			import sg.edu.smu.ksketch2.model.objects.KStroke;
+
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
@@ -576,6 +579,21 @@
 			{
 				return _activityControl.isNewSketch;
 			}
+
+			public function getCurrentObject():IObjectView
+			{
+				var currentId:int = _instructionsBox.currentObjectID();
+				for(var i:int=0; i<_KSketch.root.children.length(); i++)
+				{
+					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
+					if(currObj is KStroke && currObj.id == currentId)
+					{
+						return modelDisplay.viewsTable[currObj];
+					}
+				}
+				return null;
+			}
+
 		]]>
 	</fx:Script>
 	

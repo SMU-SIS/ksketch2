@@ -29,7 +29,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
-	import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
+import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
+import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
@@ -282,30 +283,29 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				_tapSelectInteractor.tap(tapLocation);
 			}
 			
-			if(_activityControl.isAnimationPlaying && _activityControl.activityType == "SKETCH")
+			if(_activityControl.isAnimationPlaying && _activityControl.activityType == "INTRO")
 			{
 				if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_ON")
 				{
 					_activityControl.stopIntroductionAnimation();
+					_activityControl.processIntro(true);
 				}
 				else if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_OFF" && _interactionControl.selection)
 				{
-					//RAM: clean up - put this in a method since it is called many times. 
-					var selectionArea:Sprite = new Sprite();
-					selectionArea.graphics.clear();
-					selectionArea.graphics.beginFill(0xFFFF22, 1);
-					selectionArea.graphics.drawCircle(tapLocation.x, tapLocation.y, 5);
-					selectionArea.graphics.endFill();
-					
-					_modelDisplay.addChild(selectionArea);
-					
-					//RAM: this is where you should change - regiondisplay to the object that matches the instruction
-					if(selectionArea.hitTestObject(regionDisplay))
-					{
-						_activityControl.stopIntroductionAnimation();
+					var view:IObjectView = _activityControl.getCurrentObject();
+					if(view) {
+						var selectionArea:Sprite = new Sprite();
+						selectionArea.graphics.clear();
+						selectionArea.graphics.beginFill(0xFFFF22, 1);
+						selectionArea.graphics.drawCircle(tapLocation.x, tapLocation.y, 5);
+						selectionArea.graphics.endFill();
+						_modelDisplay.addChild(selectionArea);
+						if (selectionArea.hitTestObject(view as DisplayObject)) {
+							_activityControl.processIntro(true);
+							_activityControl.stopIntroductionAnimation();
+						}
+						_modelDisplay.removeChild(selectionArea);
 					}
-					
-					_modelDisplay.removeChild(selectionArea);
 				}
 			}
 		}

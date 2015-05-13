@@ -9,6 +9,18 @@ public class KInstructions {
     public function KInstructions(xml:XML) {
         instructions = new Array();
         objectIDs = new Array();
+
+        var introduction:Array = new Array();
+        var introductionIDs:Array = new Array();
+        var introductionList:XMLList = xml.introduction.instructions;
+        var i:int;
+        for(i=0; i < introductionList.length();i++) {
+            introduction.push(introductionList[i].*.toString());
+            introductionIDs.push(introductionList[i].@id)
+        }
+        instructions.push(introduction);
+        objectIDs.push(introductionIDs);
+
         var recall:Array = new Array();
         var recallIDs:Array = new Array();
         var recallList:XMLList = xml.recall.instructions;

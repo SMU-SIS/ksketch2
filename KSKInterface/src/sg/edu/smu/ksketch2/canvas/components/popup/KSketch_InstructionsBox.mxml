@@ -41,7 +41,7 @@
 		private var _kInstructions:KInstructions;
 		private var _currentInstruction:int;
 		private var _currentActivity:int;
-		private var _activityTypes:Array = ['RECALL', 'TRACE', 'TRACK', 'RECREATE'];
+		private var _activityTypes:Array = ['INTRO','RECALL', 'TRACE', 'TRACK', 'RECREATE'];
 		private var instructionObjectIDs:Array;
 		private var instructionMessages:Array;
 		private var _kAlertBox:KSketch_Alert;
@@ -235,7 +235,7 @@
 		}
 
 		public function currentObjectID():int {
-			return instructionObjectIDs[_currentActivity][_currentInstruction];
+			return int(instructionObjectIDs[_currentActivity][_currentInstruction]);
 		}
 			
 		public function currentInstruction():int 

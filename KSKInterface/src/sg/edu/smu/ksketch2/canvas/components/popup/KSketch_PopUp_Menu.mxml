@@ -389,13 +389,13 @@
 				if(_instructionsBox.isOpen)
 					_closeInstructions();
 				else
-					_openInstructions();
+					openInstructions();
 			}
 			
 			/**
 			 * Opens instructions message box
 			 */
-			private function _openInstructions():void
+			public function openInstructions():void
 			{
 				_instructionsBox.open(_canvasView,false);
 				PopUpManager.centerPopUp(_instructionsBox);

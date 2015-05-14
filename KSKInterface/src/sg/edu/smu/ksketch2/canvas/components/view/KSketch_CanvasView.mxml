@@ -33,10 +33,7 @@
 			import mx.events.FlexEvent;
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.utils.Base64Encoder;
-
-			import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
-			import sg.edu.smu.ksketch2.model.objects.KStroke;
-
+			
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
@@ -55,6 +52,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
+			import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 			import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
@@ -65,6 +63,7 @@
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
 			import sg.edu.smu.ksketch2.model.objects.KInstructions;
 			import sg.edu.smu.ksketch2.model.objects.KObject;
+			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
@@ -568,6 +567,26 @@
 				region_4.visible = visible;
 				region_5.visible = visible;
 				region_6.visible = visible;
+			}
+			
+			public function resetTimeControl():void
+			{
+				_KSketch.time = 0;
+				_magnifier.setToTime(_KSketch.time);
+			}
+			
+			public function autoPlayAnimation():void
+			{
+				playButton.playToggle();
+				//_activityControl.autoSelectObjectToAnimate();
+			}
+			
+			public function get activityType():String
+			{
+				var activityType:String = "SKETCH";
+				if(_activityControl)
+					activityType = _activityControl.activityType;
+				return activityType;
 			}
 			
 			public function setAnimationPlaying(value:Boolean):void

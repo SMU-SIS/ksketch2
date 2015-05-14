@@ -11,7 +11,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
-	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 
 	public class KActivityControl
@@ -22,6 +21,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _interactionControl:KInteractionControl;
 		
 		private var _currentObjectID:int;
+		private var _currentObject:KObject;
 		private var _activityType:String = "SKETCH";
 		private var _isAnimationPlaying:Boolean;
 		private var _isNewSketch:Boolean;
@@ -41,15 +41,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			if(currentInstruction == 0 && activity != "INTRO")
 				resetAllActivities();
+			
+			_canvasView.resetTimeControl();
+			
 			if(activity == "INTRO")
 			{
 				_activityType = "INTRO";
 				this.startIntroductionAnimation();
 				_isAnimationPlaying = true;
-				/*if(currentInstruction == 0)
-					setObjectProperties(true, false, false);
-
-				_canvasView.setRegionVisibility(true);*/
 			}
 			else if(activity == "RECALL")
 			{
@@ -74,21 +73,15 @@ package sg.edu.smu.ksketch2.canvas.controls
 				for(var i:int=0; i<_KSketch.root.children.length(); i++)
 				{
 					currObj = _KSketch.root.children.getObjectAt(i) as KObject;
-					if(currObj is KStroke && currObj.id == _currentObjectID)
+					if(currObj is KStroke && currObj.id != currObj.originalId && currObj.originalId == _currentObjectID)
 						break;
 				}
 				
 				if(currObj)
 				{
-					//set object properties - template and isTraceTrack to true
+					_currentObject = currObj;
 					setObjectProperties(true, false, true);
-					
-					//create a duplicate for the object that matches the instruction
-					processTrack(currObj as KStroke);
-					
-					//set _interactionControl.selection to the duplicated object
-					//set widget to demonstration mode
-					//play animation	
+					processTrack(_currentObject as KStroke);
 				}
 			}
 			else if(activity == "RECREATE")
@@ -134,6 +127,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 					}
 				}
 				
+				_instructionsBox.open(_canvasView, false);
 				_instructionsBox.startStopActivity();
 			}
 		}
@@ -155,11 +149,47 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if(correctRecall)
 			{
 				_instructionsBox.startStopActivity();
+				
+				setObjectProperties(true, false, false);	
+				_canvasView.setRegionVisibility(true);	
 			}
 		}
 		
 		public function processTrack(currObj:KStroke):void
 		{
+			//unhide current object and disable it as a template
+			var tempArr:Array = new Array(_KSketch.root.children.length());
+			var view:IObjectView;
+			
+			var currOriginalID:int = currObj.originalId;
+			currObj.template = false;
+			view = _canvasView.modelDisplay.viewsTable[currObj];
+			(view as KStrokeView).resetActivityHighlight(_KSketch.time);
+			
+			for(var i:int=0; i<_KSketch.root.children.length(); i++)
+			{
+				var testObj:KObject;
+				testObj = _KSketch.root.children.getObjectAt(i) as KObject;
+				if(testObj is KStroke && testObj.originalId != currOriginalID)
+				{
+					if(testObj.id == testObj.originalId)
+						tempArr[i] = currObj;
+				}
+			}
+			
+			_interactionControl.begin_interaction_operation();
+			for(i=0; i<tempArr.length; i++)
+			{
+				if(tempArr[i] is KStroke)
+				{
+					currObj = tempArr[i];
+					view = _canvasView.modelDisplay.viewsTable[testObj];
+					(view as KStrokeView).hardErase(_KSketch.time, _interactionControl.currentInteraction);
+				}
+			}
+			_interactionControl.end_interaction_operation();
+			
+			/*This portion creates a duplicate object
 			_interactionControl.begin_interaction_operation();
 			
 			var op:KCompositeOperation = new KCompositeOperation();
@@ -177,7 +207,18 @@ package sg.edu.smu.ksketch2.canvas.controls
 			newObjects.add(newStroke);
 			
 			// end the interaction
-			_interactionControl.end_interaction_operation(op, new KSelection(newObjects));
+			_interactionControl.end_interaction_operation(op, new KSelection(newObjects));*/
+		}
+		
+		public function autoSelectObjectToAnimate():void
+		{
+			//select the currObj - turn on the manipulator
+			if(_currentObject)
+			{
+				var selectedList:KModelObjectList = new KModelObjectList();
+				selectedList.add(_currentObject);
+				_interactionControl.selection = new KSelection(selectedList);
+			}
 		}
 		
 		public function initRegion(object:DisplayObject, regionsArr:Array):int
@@ -200,7 +241,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return region;
 		}
 		
-		public function discardNewlyCreatedObjects():void
+		public function hideAllNewlyCreatedObjects():void
 		{
 			//CAM: for now discard object that has originalId != id
 			//later implement accuracy measure to detect either use template or use new objects
@@ -224,9 +265,18 @@ package sg.edu.smu.ksketch2.canvas.controls
 				if(tempArr[i] is KStroke)
 				{
 					currObj = tempArr[i];
+					
+					//This portion will hide the stroke/view
+					currObj.template = true;
+					currObj.hide = true;
+					var view:IObjectView = _canvasView.modelDisplay.viewsTable[currObj];
+					(view as DisplayObject).visible = false;
+					
+					trace("hide this view and obj " + currObj.id);
+					/*This portion will delete the stroke/view
 					var view:IObjectView = _canvasView.modelDisplay.viewsTable[currObj];
 					var op:KCompositeOperation = new KCompositeOperation();
-					(view as KStrokeView).hardErase(_KSketch.time, _interactionControl.currentInteraction);
+					(view as KStrokeView).hardErase(_KSketch.time, _interactionControl.currentInteraction);*/
 				}
 			}
 			
@@ -236,21 +286,19 @@ package sg.edu.smu.ksketch2.canvas.controls
 
 		public function startIntroductionAnimation():void
 		{
-			trace("play animation");
 			_canvasView.timeControl.playRepeat = true;
 			_canvasView.timeControl.play(true);
 		}
 		
 		public function stopIntroductionAnimation():void
 		{
-			trace("stop animation");
 			_canvasView.timeControl.playRepeat = false;
 			_canvasView.timeControl.stop();
 		}
 		
 		public function resetAllActivities():void
 		{
-			discardNewlyCreatedObjects();
+			hideAllNewlyCreatedObjects();
 			_canvasView.setRegionVisibility(false);
 			setObjectProperties(false, true, false);
 		}
@@ -300,6 +348,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			_isNewSketch = value;
 		}
+		
 		public function getCurrentObject():IObjectView{
 			return _canvasView.getCurrentObject();
 		}

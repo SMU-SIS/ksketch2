@@ -557,7 +557,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			if(playRepeat)
 				play(true);
 		}
-				
+		
 		/**
 		 * Starts the recording state machine
 		 * Also sets a timer delay according the the recordingSpeed variable

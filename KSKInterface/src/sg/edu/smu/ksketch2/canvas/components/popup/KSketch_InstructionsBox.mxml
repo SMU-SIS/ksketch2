@@ -95,9 +95,9 @@
 			instructionMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 
 			if (_menu.isTiming)
-				instructionButton_Start.label = "Stop";
+				instructionButton_Start.label = "DONE";
 			else
-				instructionButton_Start.label = "Start";
+				instructionButton_Start.label = "START";
 		}
 
 		override public function open(owner:DisplayObjectContainer, modal:Boolean = false):void {
@@ -123,8 +123,8 @@
 		}
 
 		public function startStopActivity():void {
-			if (instructionButton_Start.label == "Start") {
-				instructionButton_Start.label = "Stop";
+			if (instructionButton_Start.label == "START") {
+				instructionButton_Start.label = "DONE";
 				activityButton_Prev.enabled = false;
 				activityButton_Next.enabled = false;
 				instructionButton_Prev.enabled = false;
@@ -133,7 +133,7 @@
 				_menu.actionInstructions();
 				_activityControl.startActivity(activityHeader.text);
 
-				if (_currentInstruction == 0 && _activityTypes[_currentActivity] == "TRACE") {
+				if (_currentInstruction == 0 && _activityTypes[_currentActivity] == "TRACK") {
 					_alertTimer = new Timer(1000, 3);
 					_alertTimer.addEventListener(TimerEvent.TIMER, updateCount);
 					_alertTimer.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
@@ -150,11 +150,11 @@
 					_menu.startTimer();
 				}
 			}
-			else if (instructionButton_Start.label == "Stop") {
+			else if (instructionButton_Start.label == "DONE") {
 				if (activityHeader.text == "TRACE")
 					_activityControl.processTrace();
 
-				instructionButton_Start.label = "Start";
+				instructionButton_Start.label = "START";
 				enableDisableActivity();
 				enableDisableButtons();
 
@@ -169,6 +169,7 @@
 		private function startTiming(event:TimerEvent):void {
 			if (_currentInstruction == 0) {
 				_kAlertBox.close();
+				_canvasView.autoPlayAnimation();
 			}
 			_menu.startTimer();
 
@@ -195,6 +196,8 @@
 			} else {
 				nextActvity();
 				enableDisableButtons();
+				_menu.openInstructions();
+				instructionButton_Start.label = "START";
 			}
 		}
 

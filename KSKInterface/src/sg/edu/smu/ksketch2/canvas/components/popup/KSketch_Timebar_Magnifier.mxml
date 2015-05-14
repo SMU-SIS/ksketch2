@@ -157,31 +157,6 @@
 			 */
 			public function magnify(xPos:Number):void
 			{	
-				/* Disable magnifier
-				//create a black line for current time in magnifying glass
-				var bitmapdata:BitmapData = new BitmapData(KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_THICKNESS, _timeControl.height);
-				var currentTimeLabel:Label = new Label();
-				bitmapdata.draw(currentTimeLabel);
-				bitmapdata.colorTransform(bitmapdata.rect, new ColorTransform(1,0,0,0,0,0,0,0));
-				
-				var bd:BitmapData = new BitmapData(_timeControl.width, _timeControl.height);
-				bd.draw(_timeControl.contentGroup);
-				
-				//Copy out the pixels from the source
-				_sourceRect.x = xPos-(_sourceRect.width*0.5);
-				_magnifiedData = new BitmapData(_magnifiedData.width, _magnifiedData.height ,true, KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
-				_magnifiedData.copyPixels(bd, _sourceRect, ORIGIN);
-				_magnifiedData.merge(bitmapdata, bd.rect, new Point(KSketchStyles.MAGNIFIER_IMAGE_UNSCALED_WIDTH/2,0),
-					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
-					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
-					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
-					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER);
-				
-				//Display the source
-				if(!_magnifiedImage.parent)
-					magContents.addElementAt(_magnifiedImage,0);	
-				*/
-				
 				_magnifiedImage.source = _magnifiedData;
 			}
 			
@@ -196,6 +171,11 @@
 			{
 				super.open(owner, modal);
 				_updateYPosition(null);
+			}
+			
+			public function setToTime(time:Number):void
+			{
+				showTime(KSketch_TimeControl.toTimeCode(time), _timeControl.timeToFrame(time), _timeControl.timeToX(time));
 			}
 		]]>
 	</fx:Script>

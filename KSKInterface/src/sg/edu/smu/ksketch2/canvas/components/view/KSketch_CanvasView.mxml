@@ -45,6 +45,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_OverwriteSaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_ResultBox;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Double;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Single;
@@ -103,8 +104,6 @@
 			private var _feedbackPopUp:KSketch_Feedback_Message;
 			private var _menuPopUp:KSketch_PopUp_Menu;
 			private var _options:KSketch_Options;
-			private var _instructionsBox:KSketch_InstructionsBox;
-			private var _kAlertBox:KSketch_Alert;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
 			private var _magnifier:KSketch_Timebar_Magnifier;
@@ -112,11 +111,14 @@
 			private var _contextSingle:KSketch_Timebar_Context_Single;
 			private var _transitionHelper:KWidgetInteractorManager;
 			private var _selectionHelper:KCanvasInteractorManager;
-			private var _kInstructions:KInstructions;
 			
 			//KSKETCH-SYNPHNE
 			private var _resultControl:KActivityResultControl;
 			private var _activityControl:KActivityControl;
+			private var _kInstructions:KInstructions;
+			private var _instructionsBox:KSketch_InstructionsBox;
+			private var _kAlertBox:KSketch_Alert;
+			private var _resultBox:KSketch_ResultBox;
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
@@ -200,7 +202,6 @@
 				_feedbackPopUp = new KSketch_Feedback_Message();
 				_feedbackPopUp.init(this);
 				_options = new KSketch_Options();
-				_instructionsBox = new KSketch_InstructionsBox();
 				_contextDouble = new KSketch_Timebar_Context_Double();
 				_contextSingle = new KSketch_Timebar_Context_Single();
 				_saveOptions = new KSketch_SaveOptions();
@@ -210,10 +211,11 @@
 				_magnifier.init(canvas_component, timeControl);
 				_options.init(this, _menuPopUp);
 				
-				//Initiate the controls
+				//KSKETCH-SYNPHNE
+				_instructionsBox = new KSketch_InstructionsBox();
+				_resultBox = new KSketch_ResultBox();
 				_activityControl = new KActivityControl(_instructionsBox, this, _KSketch, _interactionControl);
 				_resultControl = new KActivityResultControl(_instructionsBox, this, _KSketch, _interactionControl, _activityControl);
-				
 				
 				if(!isPlayer)
 				{
@@ -234,6 +236,7 @@
 				
 				_options.createDeferredContent();
 				_instructionsBox.createDeferredContent();
+				_resultBox.createDeferredContent();
 				_menuPopUp.createDeferredContent();
 				
 				if(isWebViewer)
@@ -321,7 +324,8 @@
 							if(_currentDocument.xml.activities != undefined) 
 							{
 								_kInstructions = new KInstructions(new XML(_currentDocument.xml.activities));
-								_instructionsBox.init(this, _menuPopUp, _kInstructions, _kAlertBox, _activityControl, _resultControl);
+								_resultBox.init(this, _resultControl, _activityControl);
+								_instructionsBox.init(this, _menuPopUp, _resultBox, _kInstructions, _kAlertBox, _activityControl, _resultControl);
 							}
 						}	
 						else

@@ -37,6 +37,7 @@
 
 		private var _canvasView:KSketch_CanvasView;
 		private var _menu:KSketch_PopUp_Menu;
+		private var _resultBox:KSketch_ResultBox;
 		private var _hasBegin:Boolean;
 		private var _kInstructions:KInstructions;
 		private var _currentInstruction:int;
@@ -50,26 +51,31 @@
 		private var _alertTimer:Timer;
 		private var _timeTaken:int;
 
-		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, kInstructions:KInstructions,
+		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, resultBox:KSketch_ResultBox, kInstructions:KInstructions,
 							 kAlertBox:KSketch_Alert, activityControl:KActivityControl, resultControl:KActivityResultControl):void {
 			_canvasView = canvasView;
 			_menu = menu;
-			_hasBegin = false;
+			_resultBox = resultBox;
+			_kAlertBox = kAlertBox;
+			_activityControl = activityControl;
+			_resultControl = resultControl;
+			
 			_kInstructions = kInstructions;
 			_currentInstruction = 0;
 			_currentActivity = 0;
+			_hasBegin = false;
+			
 			activityButton_Prev.enabled = false;
 			instructionButton_Prev.enabled = false;
+			
 			instructionObjectIDs = new Array();
 			instructionMessages = new Array();
 			instructionObjectIDs = _kInstructions.getObjectIDs();
 			instructionMessages = _kInstructions.getInstructions();
+			
 			instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 			instructionHeader.text = "Step " + (_currentInstruction + 1);
 			activityHeader.text = _activityTypes[_currentActivity];
-			_kAlertBox = kAlertBox;
-			_activityControl = activityControl;
-			_resultControl = resultControl;
 		}
 
 		private function _initButtons():void {
@@ -150,15 +156,22 @@
 
 				_menu.stopTimer();
 			
+				if(this.isOpen)
+					close();
+				
 				//compute result at the end of every activity
 				_timeTaken = _menu.timeTaken;
-				trace("STOP TIMER TIME TAKEN: " + _timeTaken);
 				_resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
-				
-				nextInstruction();
-				if (instructionMessage.text == "")
-					nextActvity();
+				_resultBox.open(_canvasView);
+				PopUpManager.centerPopUp(_resultBox);
 			}
+		}
+		
+		public function initNextInstruction():void
+		{
+			nextInstruction();
+			if (instructionMessage.text == "")
+				nextActvity();
 		}
 
 		private function startTiming(event:TimerEvent):void {

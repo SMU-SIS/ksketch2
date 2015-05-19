@@ -379,6 +379,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_canvasView.timeControl.stop();
 		}
 		
+		public function continueActivity():void
+		{
+			_instructionsBox.initNextInstruction();
+			_instructionsBox.open(_canvasView, false);
+		}
+		
 		public function getRegionByIndex(index:int):DisplayObject
 		{
 			var regionsArr:Array = regions;

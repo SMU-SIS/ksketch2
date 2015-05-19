@@ -40,10 +40,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 			else if(activity == "TRACE")
 			{
 				result = measureTime(result);
+				//TO DO: implement shape accuracy
 			}
 			else if(activity == "TRACK")
 			{
 				result = measureTime(result);
+				//TO DO: implement shape accuracy
+				//TO DO: implement motion accuracy (shape of motion path)
 			}
 			
 			_resultArr.addItem(result);

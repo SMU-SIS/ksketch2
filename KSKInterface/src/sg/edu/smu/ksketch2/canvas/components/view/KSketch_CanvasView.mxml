@@ -577,8 +577,8 @@
 			
 			public function autoPlayAnimation():void
 			{
-				playButton.playToggle();
-				//_activityControl.autoSelectObjectToAnimate();
+				playButton.playToggle(true);
+				_activityControl.autoSelectObjectToAnimate();
 			}
 			
 			public function get activityType():String
@@ -661,7 +661,7 @@
 							
 							<buttons:KSketch_Play_Button
 								doubleClickEnabled="true"
-								click="playButton.playToggle()"
+								click="playButton.playToggle(false)"
 								doubleClick="playButton.doubleClick()"
 								id="playButton"
 								width="{KSketchStyles.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>

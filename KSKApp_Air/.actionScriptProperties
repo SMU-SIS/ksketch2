@@ -42,8 +42,8 @@
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
   <buildTargets>
-    <buildTarget buildTargetName="device" iosSettingsVersion="2" isCurrent="true" platformId="com.adobe.flexide.multiplatform.ios.platform" provisioningFile="/Users/nurcamelliaz/Certificates/RCD-Profile-iOSAppDev-2015-07-07.mobileprovision" releasePackageType="ipa-app-store">
-      <airSettings airCertificatePath="/Users/nurcamelliaz/Certificates/RCD-Cert-iOSAppDev-2015-07-01.p12" airTimestamp="true" anePathSet="true" version="1">
+    <buildTarget buildTargetName="device" iosSettingsVersion="2" isCurrent="true" platformId="com.adobe.flexide.multiplatform.ios.platform" provisioningFile="/Users/nurcamelliaz/Certificates/latest/SIS_KSketch_AdHoc_Profile.mobileprovision" releasePackageType="ipa-app-store">
+      <airSettings airCertificatePath="/Users/nurcamelliaz/Certificates/latest/SMU - iOS Distribution Certificate (20160225).p12" airTimestamp="true" anePathSet="true" version="1">
         <airExcludes/>
         <anePaths/>
         <newLaunchParams/>

@@ -22,6 +22,7 @@ package sg.edu.smu.ksketch2
 		public static const GREEN_PEN:uint = 0x00FF00;
 		public static const RED_PEN:uint = 0xFF0000;
 		public static const GREY_HIGHLIGHT:uint = 0xd3d3d3;
+		public static const WHITE_HIDE:uint = 0xFFFFFF;
 		
 		//Login
 		public static var LOGIN_CONNECTION_FONT_SIZE:Number = 23;

@@ -19,7 +19,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
-	import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
 	public class KTransitionInteractor

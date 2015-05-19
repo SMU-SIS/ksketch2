@@ -15,6 +15,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import flash.events.KeyboardEvent;
 	import flash.geom.Point;
 	import flash.ui.Keyboard;
+	import flash.ui.Multitouch;
+	import flash.ui.MultitouchInputMode;
 	
 	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
@@ -67,6 +69,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		private var _tapGesture:TapGesture;								// the tap gesture
 		private var _doubleTap:TapGesture;								// the double-tap gesture
 		private var _drawGesture:PanGesture;							// the draw gesture
+		private var _pinchGesture:Multitouch;							// the pinch gesture
 		
 		private var _drawInteractor:KMultiTouchDrawInteractor;			// the draw interactor
 		private var _loopSelectInteractor:KLoopSelectInteractor;		// the loop select interactor
@@ -180,7 +183,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		{
 			var left:Boolean = (_doubleTap.location.x/_inputComponent.width <= 0.5)? true:false;
 			
-			doubleTapAction(left, null);
+			//doubleTapAction(left, null);
 		}
 		
 		public function doubleTapAction(actionUndo:Boolean, feedback:KSketch_Feedback_Message):void
@@ -248,7 +251,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			//KSKETCH-SYNPHNE
 			var tapLocation:Point = _modelDisplay.globalToLocal(_tapGesture.location);
-			var tapLocation2:Point = _modelDisplay.localToGlobal(_tapGesture.location); 
 			
 			if(_activityControl.activityType == "RECALL")
 			{

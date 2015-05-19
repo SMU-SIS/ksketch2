@@ -170,6 +170,7 @@
 			if (_currentInstruction == 0) {
 				_kAlertBox.close();
 				_canvasView.autoPlayAnimation();
+				_activityControl.autoSelectObjectToAnimate();
 			}
 			_menu.startTimer();
 

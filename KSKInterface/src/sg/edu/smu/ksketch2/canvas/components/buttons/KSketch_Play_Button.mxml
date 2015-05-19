@@ -59,24 +59,29 @@
 				timeControl.addEventListener(KSketch_TimeControl.PLAY_STOP, _handlePlayPause);
 			}
 			
-			public function playToggle():void
+			public function playToggle(activity:Boolean):void
 			{
 				_doubleClickTrigger = false;
 				
-				if(_buttonState == SHOW_PLAY)
+				if(activity)
 				{
-					_doubleClickTimer = new Timer(250,1);
-					_doubleClickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, triggerPlay);
-					_doubleClickTimer.start();
+					_timeControl.play(_doubleClickTrigger);
 				}
 				else
 				{
-					_timeControl.playRepeat = false;
-					_canvasView.setAnimationPlaying(false);
-					_timeControl.stop();
+					if(_buttonState == SHOW_PLAY)
+					{
+						_doubleClickTimer = new Timer(250,1);
+						_doubleClickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, triggerPlay);
+						_doubleClickTimer.start();
+					}
+					else
+					{
+						_timeControl.playRepeat = false;
+						_canvasView.setAnimationPlaying(false);
+						_timeControl.stop();
+					}
 				}
-					
-				
 			}
 			
 			private function triggerPlay(event:TimerEvent):void

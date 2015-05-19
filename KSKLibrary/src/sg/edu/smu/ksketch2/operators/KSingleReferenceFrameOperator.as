@@ -1465,7 +1465,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				//trace("Time=" + targetKey.time);
 				//trace("Target Path");
-				targetPath.debug();
+				//targetPath.debug();
 			}
 			params["dirty"] = true;
 		}

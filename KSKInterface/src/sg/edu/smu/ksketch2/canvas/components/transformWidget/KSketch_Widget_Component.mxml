@@ -30,6 +30,7 @@
 		]]>
 	</fx:Script>
 	<s:Group id="boundary" mouseEnabled="false" mouseChildren="false"/>
+	<s:Label id="zoomLabel" x="200" y="200" text="loc: lastLoc: scaleX: scaleY: "/>
 	<s:Group id="baseTrigger" scaleX="{KSketchStyles.SCALE}" scaleY="{KSketchStyles.SCALE}">
 		<s:Graphic>
 			<s:Path winding="nonZero" data="M87.319-56.954
@@ -96,5 +97,4 @@
 	</s:Group>
 	
 	<s:Group id="centroidMove" scaleX="{KSketchStyles.SCALE}" scaleY="{KSketchStyles.SCALE}"/>
-	
 </s:Group>

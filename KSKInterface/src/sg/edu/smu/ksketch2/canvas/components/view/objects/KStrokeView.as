@@ -84,7 +84,6 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		{
 			_object.visibilityControl.setVisibility(false, time, op, false);
 			_object.transformInterface.clearAllMotionsAfterTime(time, op);	
-			trace("hard erase");
 		}
 		
 		public function checkObjectErased(time:Number):Boolean
@@ -214,17 +213,20 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 			return isDynamic;
 		}
 		
-		public function changeActivityHighlight(time:int):void
+		public function changeActivityHighlight(time:int, hide:Boolean):void
 		{
-			_originalColor = _color;
-			_color = KSketchStyles.GREY_HIGHLIGHT;
-			_render_DrawStroke(_color);
+			if(!hide)
+				_render_DrawStroke(KSketchStyles.GREY_HIGHLIGHT);
+			else
+				_render_DrawStroke(KSketchStyles.WHITE_HIDE);
+			
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
 		}
 		
 		public function resetActivityHighlight(time:int):void
 		{
-			_color = _originalColor;	
+			//_color = _originalColor;	
+			trace("color reset to : " + _color);
 			_render_DrawStroke(_color);
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
 		}

@@ -11,6 +11,7 @@
     <classEntry path="sg.edu.smu.ksketch2.utils.iterators.KNumberIteratorISpatialKeyFrame"/>
     <classEntry path="sg.edu.smu.ksketch2.utils.iterators.IKObjectIterator"/>
     <classEntry path="sg.edu.smu.ksketch2.utils.iterators.KKObjectIteratorVector"/>
+    <classEntry path="sg.edu.smu.ksketch2.model.objects.KResult"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

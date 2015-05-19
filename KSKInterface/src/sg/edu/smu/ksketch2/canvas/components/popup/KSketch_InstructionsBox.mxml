@@ -27,12 +27,12 @@
 	<![CDATA[
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
-
+		
 		import sg.edu.smu.ksketch2.KSketchAssets;
 		import sg.edu.smu.ksketch2.KSketchStyles;
-		import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 		import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
+		import sg.edu.smu.ksketch2.canvas.controls.KActivityResultControl;
 		import sg.edu.smu.ksketch2.model.objects.KInstructions;
 
 		private var _canvasView:KSketch_CanvasView;
@@ -46,10 +46,12 @@
 		private var instructionMessages:Array;
 		private var _kAlertBox:KSketch_Alert;
 		private var _activityControl:KActivityControl;
+		private var _resultControl:KActivityResultControl;
 		private var _alertTimer:Timer;
+		private var _timeTaken:int;
 
 		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, kInstructions:KInstructions,
-							 kAlertBox:KSketch_Alert, activityControl:KActivityControl):void {
+							 kAlertBox:KSketch_Alert, activityControl:KActivityControl, resultControl:KActivityResultControl):void {
 			_canvasView = canvasView;
 			_menu = menu;
 			_hasBegin = false;
@@ -67,6 +69,7 @@
 			activityHeader.text = _activityTypes[_currentActivity];
 			_kAlertBox = kAlertBox;
 			_activityControl = activityControl;
+			_resultControl = resultControl;
 		}
 
 		private function _initButtons():void {
@@ -109,19 +112,6 @@
 			super.close(commit, data);
 		}
 
-		public function actionActivity():void {
-			if (!_hasBegin) {
-				_hasBegin = true;
-
-				_activityControl.startActivity(KSketch_CanvasView_Preferences.activity);
-				_menu.resetTimer();
-			}
-			else {
-				_hasBegin = false;
-				_menu.resetTimer();
-			}
-		}
-
 		public function startStopActivity():void {
 			if (instructionButton_Start.label == "START") {
 				instructionButton_Start.label = "DONE";
@@ -158,11 +148,16 @@
 				enableDisableActivity();
 				enableDisableButtons();
 
+				_menu.stopTimer();
+			
+				//compute result at the end of every activity
+				_timeTaken = _menu.timeTaken;
+				trace("STOP TIMER TIME TAKEN: " + _timeTaken);
+				_resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
+				
 				nextInstruction();
 				if (instructionMessage.text == "")
 					nextActvity();
-
-				_menu.stopTimer();
 			}
 		}
 
@@ -250,6 +245,11 @@
 
 		public function currentInstruction():int {
 			return _currentInstruction;
+		}
+		
+		public function get timeTaken():int
+		{
+			return _timeTaken;
 		}
 		]]>
 	</fx:Script>

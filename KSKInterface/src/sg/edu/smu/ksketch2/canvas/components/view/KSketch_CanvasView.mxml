@@ -54,6 +54,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 			import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 			import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KActivityResultControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
@@ -114,6 +115,7 @@
 			private var _kInstructions:KInstructions;
 			
 			//KSKETCH-SYNPHNE
+			private var _resultControl:KActivityResultControl;
 			private var _activityControl:KActivityControl;
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
@@ -210,6 +212,8 @@
 				
 				//Initiate the controls
 				_activityControl = new KActivityControl(_instructionsBox, this, _KSketch, _interactionControl);
+				_resultControl = new KActivityResultControl(_instructionsBox, this, _KSketch, _interactionControl, _activityControl);
+				
 				
 				if(!isPlayer)
 				{
@@ -317,7 +321,7 @@
 							if(_currentDocument.xml.activities != undefined) 
 							{
 								_kInstructions = new KInstructions(new XML(_currentDocument.xml.activities));
-								_instructionsBox.init(this, _menuPopUp, _kInstructions, _kAlertBox, _activityControl);
+								_instructionsBox.init(this, _menuPopUp, _kInstructions, _kAlertBox, _activityControl, _resultControl);
 							}
 						}	
 						else

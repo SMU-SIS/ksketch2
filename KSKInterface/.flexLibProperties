@@ -23,6 +23,7 @@
     <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KWebControl"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KActivityControl"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KActivityResultControl"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

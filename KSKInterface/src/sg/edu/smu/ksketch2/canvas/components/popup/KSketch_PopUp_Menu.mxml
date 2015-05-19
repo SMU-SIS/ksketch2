@@ -68,6 +68,7 @@
 			private const TIMER_INTERVAL:int = 10;
 			private var baseTimer:int;
 			private var t:Timer;
+			private var _timeTaken:int;
 			private var dateFormatter:DateFormatter;
 			private var _kAlertBox:KSketch_Alert;
 			
@@ -132,7 +133,8 @@
 				
 				_setPen(blackToggle, true);
 				
-				resetTimer();
+				isTiming = false;
+				timerLabel.text = "Time: 00:00";
 			}
 			
 			public function initInstructions():void
@@ -445,6 +447,7 @@
 			
 			public function startTimer():void
 			{
+				_timeTaken = 0;
 				isTiming = true;
 				t = new Timer(TIMER_INTERVAL);
 				t.addEventListener(TimerEvent.TIMER, updateTimer);
@@ -459,6 +462,8 @@
 				dateFormatter = new DateFormatter();
 				dateFormatter.formatString = 'NN:SS'
 				timerLabel.text = "Time: " + dateFormatter.format(d);
+				
+				_timeTaken = getTimer() - baseTimer;
 			}
 			
 			public function stopTimer():void
@@ -468,10 +473,10 @@
 				t.removeEventListener(TimerEvent.TIMER, updateTimer);
 			}
 			
-			public function resetTimer():void
+			public function get timeTaken():int
 			{
-				isTiming = false;
-				timerLabel.text = "Time: 00:00";
+				//_timeTaken = Math.floor(_timeTaken/1000);
+				return _timeTaken; //in milliseconds
 			}
 			
 		]]>

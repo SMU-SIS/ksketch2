@@ -254,6 +254,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			
 			if(_activityControl.activityType == "RECALL")
 			{
+				_activityControl.incrementRecallCounter();
+				
 				for(var i:int=0; i<_KSketch.root.children.length(); i++)
 				{
 					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;

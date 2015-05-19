@@ -26,6 +26,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _activityType:String = "SKETCH";
 		private var _isAnimationPlaying:Boolean;
 		private var _isNewSketch:Boolean;
+		private var _recallCounter:int;
 		
 		public function KActivityControl(instructionsBox:KSketch_InstructionsBox, canvas:KSketch_CanvasView, ksketch:KSketch2, interaction:KInteractionControl)
 		{
@@ -70,6 +71,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			else if(activity == "RECALL")
 			{
 				_activityType = "RECALL";
+				_recallCounter = 0;
 				_setObjectProperties(true, false, false);
 				_hideObjects(true);
 				_canvasView.setRegionVisibility(true);
@@ -155,6 +157,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 				_instructionsBox.open(_canvasView, false);
 				_instructionsBox.startStopActivity();
 			}
+		}
+		
+		public function incrementRecallCounter():void
+		{
+			_recallCounter++;
 		}
 		
 		public function processTrace():void
@@ -366,21 +373,16 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_canvasView.timeControl.play(true);
 		}
 		
-		public function getRegionByIndex(index:int):DisplayObject
-		{
-			var regionsArr:Array = regions;
-			return regionsArr[index-1];
-		}
-		
 		public function stopIntroductionAnimation():void
 		{
 			_canvasView.timeControl.playRepeat = false;
 			_canvasView.timeControl.stop();
 		}
 		
-		public function get modelDisplay():KModelDisplay
+		public function getRegionByIndex(index:int):DisplayObject
 		{
-			return _canvasView.modelDisplay;
+			var regionsArr:Array = regions;
+			return regionsArr[index-1];
 		}
 		
 		public function get regions():Array
@@ -388,9 +390,19 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return _canvasView.regions;
 		}
 		
+		public function get modelDisplay():KModelDisplay
+		{
+			return _canvasView.modelDisplay;
+		}
+		
 		public function get activityType():String
 		{
 			return _activityType;
+		}
+		
+		public function get recallCounter():int
+		{
+			return _recallCounter;
 		}
 		
 		public function get isAnimationPlaying():Boolean

@@ -91,6 +91,8 @@ package sg.edu.smu.ksketch2.canvas
 		 */
 		public static const MOBILE_OFF:String = "MOBILE_OFF";
 		
+		public static const DEFAULT_DURATION:int = 120;
+		
 		//KSKETCH-SYNPHNE
 		public static const TAPANYWHERE_ON:String = "TAPANYWHERE_ON";
 		public static const TAPANYWHERE_OFF:String = "TAPANYWHERE_OFF";
@@ -338,6 +340,23 @@ package sg.edu.smu.ksketch2.canvas
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
 			prefs.data.difficulty = value;
+			prefs.flush();
+		}
+		
+		public static function get duration():int
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.duration_time)
+				return prefs.data.duration_time;
+			else
+				return DEFAULT_DURATION;
+		}
+		
+		
+		public static function set duration(value:int):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.duration_time = value;
 			prefs.flush();
 		}
 

@@ -44,6 +44,7 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
@@ -130,7 +131,7 @@
 			private var t:Timer;
 			private var _timeTaken:int;
 			private var dateFormatter:DateFormatter;
-			
+			private var _timeDuration:int;
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
 			//Starting up is hopefully done in the following stages
@@ -685,19 +686,22 @@
 				isTiming = true;
 				t = new Timer(TIMER_INTERVAL);
 				t.addEventListener(TimerEvent.TIMER, updateTimer);
-				
+				_timeDuration = KSketch_CanvasView_Preferences.duration;
 				baseTimer = getTimer();
 				t.start();
 			}
 			
 			private function updateTimer(evt:TimerEvent):void {
-				var d:Date = new Date(getTimer() - baseTimer);
+
+				var timeInMilli:int = _timeDuration*1000 - (getTimer() - baseTimer)
+				var timeInSec:int = int(timeInMilli/1000)
+				if(timeInSec >= 0) {
+					timerLabel.text = "Time: " + int(timeInSec/60) + ":" +int(timeInSec%60);
+				}else {
+					timerLabel.text = "Time: -" + int(-1*timeInSec/60) + ":" +int(-1*timeInSec %60);
+				}
 				
-				dateFormatter = new DateFormatter();
-				dateFormatter.formatString = 'NN:SS'
-				timerLabel.text = "Time: " + dateFormatter.format(d);
-				
-				_timeTaken = getTimer() - baseTimer;
+				_timeTaken = _timeDuration*1000 - getTimer() - baseTimer;
 			}
 			
 			public function stopTimer():void

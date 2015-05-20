@@ -104,6 +104,17 @@
 					KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_HARD;
 				}
 			}
+			
+			private function _duration(event:Event):void{
+				trace("Here");
+				var tempArray:Array=activityDuration.text.split(":");
+				var durationInSec:int = 120;
+				if(tempArray.length == 1)
+					durationInSec = int(tempArray[0])*60;
+				else if(tempArray.length == 2)
+					durationInSec = int(tempArray[0])*60 + int(tempArray[1]);
+				KSketch_CanvasView_Preferences.duration = durationInSec;
+			}
 			//================================================================================================================
 			
 			private function _timebarTop():void
@@ -287,8 +298,8 @@
 					<s:layout>
 						<s:HorizontalLayout/>
 					</s:layout>
-					<s:Label id="titleTime" text="Time{'\n'}Thres."/>
-					<s:TextArea id="activityDuration" text="MM:SS" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_100}"/>
+					<s:Label id="titleTime" text="Time Thres.{'\n'}MM:SS"/>
+					<s:TextInput id="activityDuration" text="02:00" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_100}" change="_duration(event)" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}" />
 				</s:Group>
 				
 				<s:Group>

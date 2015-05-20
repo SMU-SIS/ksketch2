@@ -389,7 +389,7 @@
 			public function actionInstructions():void
 			{
 				if(_instructionsBox.isOpen)
-					_closeInstructions();
+					closeInstructions();
 				else
 					openInstructions();
 			}
@@ -401,8 +401,8 @@
 			{
 				_instructionsBox.open(_canvasView,false);
 				PopUpManager.centerPopUp(_instructionsBox);
-				_instructionsBox.x = 30;
-				_instructionsBox.y = 200 ; 
+				_instructionsBox.x = instructionsButton.x + 20;
+				_instructionsBox.y = instructionsButton.y + (instructionsButton.height + 20);
 				
 				//change skin to down_arrow
 				instructionsButton.init(KSketchAssets.texture_instructions_2, KSketchAssets.texture_instructions_2);
@@ -412,7 +412,7 @@
 			/**
 			 * Closes instructions message box
 			 */
-			private function _closeInstructions():void
+			public function closeInstructions():void
 			{
 				_instructionsBox.close();
 				
@@ -478,17 +478,13 @@
 				//_timeTaken = Math.floor(_timeTaken/1000);
 				return _timeTaken; //in milliseconds
 			}
-			
 		]]>
 	</fx:Script>
 	
 	<s:Group id="topContainer">
 		<s:layout>
-			<s:HorizontalLayout gap="80"/>
+			<s:HorizontalLayout/>
 		</s:layout>
-		
-		
-		
 		<s:Group>
 			<s:filters>
 				<s:DropShadowFilter 
@@ -534,9 +530,9 @@
 				
 				<!-- add in separator to the next button-->
 				<s:Group>
-					<s:layout> <s:HorizontalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
+					<s:layout> <s:VerticalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
 					<s:Group width="100%">
-						<s:Line xFrom="0" xTo="0" yFrom="0" yTo="{KSketchStyles.POPUP_SEPARATOR_LINE}">
+						<s:Line xFrom="0" xTo="{KSketchStyles.POPUP_SEPARATOR_LINE}" yFrom="0" yTo="0">
 							<s:stroke>
 								<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
 							</s:stroke>
@@ -577,9 +573,9 @@
 				
 				<!-- add in separator to the next button-->
 				<s:Group>
-					<s:layout> <s:HorizontalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
+					<s:layout> <s:VerticalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
 					<s:Group width="100%">
-						<s:Line xFrom="0" xTo="0" yFrom="0" yTo="{KSketchStyles.POPUP_SEPARATOR_LINE}">
+						<s:Line xFrom="0" xTo="{KSketchStyles.POPUP_SEPARATOR_LINE}" yFrom="0" yTo="0">
 							<s:stroke>
 								<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
 							</s:stroke>
@@ -606,7 +602,11 @@
 			click="actionInstructions()"
 			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
 			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
-		<s:Label id="timerLabel" width="100" height="50" text="Time:" right="10" /> 
-		
+		<s:Group>
+			<s:layout>
+				<s:HorizontalLayout horizontalAlign="right"/>
+			</s:layout>
+			<s:Label id="timerLabel" width="100" height="50" text="Time:" right="10" /> 
+		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

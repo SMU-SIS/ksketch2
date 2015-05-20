@@ -382,7 +382,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function continueActivity():void
 		{
 			_instructionsBox.initNextInstruction();
-			_instructionsBox.open(_canvasView, false);
+		}
+		
+		public function retryActivity():void
+		{
+			startActivity(_activityType);
+			_instructionsBox.openInstructions();
 		}
 		
 		public function getRegionByIndex(index:int):DisplayObject

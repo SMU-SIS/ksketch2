@@ -407,5 +407,13 @@ package sg.edu.smu.ksketch2
 		[Embed("assets/Button_ActionList_Save.png")] 
 		[Bindable] 
 		public static var actionList_save:Class;
+		
+		[Embed("assets/Star_Empty_KSketch.png")] 
+		[Bindable] 
+		public static var star_empty:Class;
+		
+		[Embed("assets/Star_Fill_KSketch.png")] 
+		[Bindable] 
+		public static var star_fill:Class;
 	}
 }

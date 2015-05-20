@@ -33,6 +33,12 @@
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
 				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
+				diffGroup.setStyle("fontSize", KSketchStyles.DIALOGBUTTON_FONT_SIZE);
+				diffLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				toolbarGroup.setStyle("fontSize", KSketchStyles.DIALOGBUTTON_FONT_SIZE);
+				toolLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+				initGroup.setStyle("fontSize", KSketchStyles.DIALOGBUTTON_FONT_SIZE);
+				initLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
 				closeButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 			}
 			
@@ -60,7 +66,7 @@
 				
 				//KSKETCH-SYNPHNE
 				_tapAnywhere();
-				_difficultyEasy();
+				//_difficultyEasy();
 			}
 			
 			//KSKETCH-SYNPHNE
@@ -71,11 +77,13 @@
 				KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_ON;
 			}
 			
+			/*
 			private function _difficultyEasy():void
 			{
 				diffEasy.selected = true;
 				KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_EASY;
 			}
+			*/
 			
 			private function _initiation(event:ItemClickEvent):void
 			{
@@ -235,11 +243,11 @@
 		</s:layout>
 		<s:Label id="header" text="Options"/>
 		
-		<s:Group>
+		<s:Group id="toolbarGroup">
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
 			</s:layout>
-			<s:Label text="Difficulty" fontSize="18"/>
+			<s:Label id="toolLabel" text="Toolbar alignment"/>
 			<s:Group>
 				<s:layout>
 					<s:VerticalLayout/>
@@ -249,11 +257,32 @@
 					<s:layout>
 						<s:HorizontalLayout/>
 					</s:layout>
+					<s:RadioButton groupName="toolGroup" id="rightAlign" value="right" label="Right" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+					<s:RadioButton groupName="toolGroup" id="leftAlign" value="left" label="Left"  fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+				</s:Group>
+			</s:Group>
+		</s:Group>
+		
+		<s:Group id="diffGroup">
+			<s:layout>
+				<s:VerticalLayout paddingLeft="10"/>
+			</s:layout>
+			<s:Label id="diffLabel" text="Difficulty"/>
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout/>
+				</s:layout>
+				
+				<!--
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
 					<s:RadioButton groupName="difficultyGroup" id="diffEasy" value="Easy" label="Easy" fontSize="14"/>
 					<s:RadioButton groupName="difficultyGroup" id="diffMed" value="Medium" label="Medium" fontSize="14"/>
 					<s:RadioButton groupName="difficultyGroup" id="diffHard" value="Hard" label="Hard" fontSize="14"/>
 				</s:Group>
-				
+				-->
 				<s:Group>
 					<s:layout>
 						<s:HorizontalLayout/>
@@ -272,30 +301,12 @@
 				
 			</s:Group>
 		</s:Group>
-		<s:Group>
+		
+		<s:Group id="initGroup">
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
 			</s:layout>
-			<s:Label text="Toolbar alignment" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
-			<s:Group>
-				<s:layout>
-					<s:VerticalLayout/>
-				</s:layout>
-				
-				<s:Group>
-					<s:layout>
-						<s:HorizontalLayout/>
-					</s:layout>
-					<s:RadioButton groupName="toolGroup" id="rightAlign" value="right" label="Right" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
-					<s:RadioButton groupName="toolGroup" id="leftAlign" value="left" label="Left"  fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
-				</s:Group>
-			</s:Group>
-		</s:Group>
-		<s:Group>
-			<s:layout>
-				<s:VerticalLayout paddingLeft="10"/>
-			</s:layout>
-			<s:Label text="Initiation" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+			<s:Label id="initLabel" text="Initiation"/>
 			<s:Group>
 				<s:layout>
 					<s:VerticalLayout/>

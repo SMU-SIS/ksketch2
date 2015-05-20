@@ -24,6 +24,7 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			
+			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
@@ -43,10 +44,36 @@
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				scoreHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				scoreLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SMALL_FONT);
+				scoreHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
+				scoreLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
 				continueButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				retryButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			}
+			
+			public function initStars(stars:int):void
+			{
+				if(stars == 1)
+				{
+					star1.source = KSketchAssets.star_fill;
+				}
+				else if(stars == 2)
+				{
+					star1.source = KSketchAssets.star_fill;
+					star2.source = KSketchAssets.star_fill;
+				}
+				else if(stars == 3)
+				{
+					star1.source = KSketchAssets.star_fill;
+					star2.source = KSketchAssets.star_fill;
+					star3.source = KSketchAssets.star_fill;
+				}
+			}
+			
+			private function _resetStars():void
+			{
+				star1.source = KSketchAssets.star_empty;
+				star2.source = KSketchAssets.star_empty;
+				star3.source = KSketchAssets.star_empty;
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
@@ -57,11 +84,18 @@
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
 				super.close(commit,data);
+				_resetStars();
 			}
 			
 			private function _continueActivity():void
 			{
 				_activityControl.continueActivity();
+				close();
+			}
+			
+			private function _retryActivity():void
+			{
+				_activityControl.retryActivity();
 				close();
 			}
 		]]>
@@ -84,15 +118,27 @@
 			<s:layout>
 				<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}"/>
 			</s:layout>
-			<s:Label id="header" text="Level Completed!!!"/>
-			
 			<s:Group width="100%">
 				<s:layout>
-					<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}"/>
+					<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}"/>
+				</s:layout>
+				<s:Image id="star1" source="{KSketchAssets.star_empty}"/>
+				<s:Image id="star2" source="{KSketchAssets.star_empty}"/>
+				<s:Image id="star3" source="{KSketchAssets.star_empty}"/>
+			</s:Group>
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout horizontalAlign="center" paddingLeft="{KSketchStyles.DIALOG_PADDING_20}"/>
 				</s:layout>
 				<s:Label id="scoreHeader" text="Score:"/>
 				<s:Label id="scoreLabel" text="100000"/>
-				<s:Button id="continueButton" label="Continue" click="_continueActivity()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			</s:Group>
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_20}" paddingRight="{KSketchStyles.DIALOG_PADDING_20}"/>
+				</s:layout>
+				<s:Button id="retryButton" label="Retry" click="_retryActivity()" width="50%"/>
+				<s:Button id="continueButton" label="Continue" click="_continueActivity()" width="50%"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

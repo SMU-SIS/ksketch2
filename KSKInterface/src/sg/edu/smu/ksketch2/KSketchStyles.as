@@ -161,7 +161,7 @@ package sg.edu.smu.ksketch2
 		public static var LIST_SKETCH_IMAGE_HEIGHT:Number = 90;
 		
 		//Pop up menu separator
-		public static var POPUP_SEPARATOR_LINE:int = 50;
+		public static var POPUP_SEPARATOR_LINE:int = 60;
 		public static var POPUP_SEPARATOR_GAP:int = 5;
 		
 		//General Button

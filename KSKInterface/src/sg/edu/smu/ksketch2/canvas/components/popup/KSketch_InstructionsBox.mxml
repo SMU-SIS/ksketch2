@@ -119,7 +119,8 @@
 		}
 
 		public function startStopActivity():void {
-			if (instructionButton_Start.label == "START") {
+			if (instructionButton_Start.label == "START") 
+			{
 				instructionButton_Start.label = "DONE";
 				activityButton_Prev.enabled = false;
 				activityButton_Next.enabled = false;
@@ -129,18 +130,18 @@
 				_menu.actionInstructions();
 				_activityControl.startActivity(activityHeader.text);
 
-				if (_currentInstruction == 0 && _activityTypes[_currentActivity] == "TRACK") {
+				if (_currentInstruction == 0 && _activityTypes[_currentActivity] == "TRACK") 
+				{
 					_alertTimer = new Timer(1000, 3);
 					_alertTimer.addEventListener(TimerEvent.TIMER, updateCount);
 					_alertTimer.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
-					if (!_kAlertBox.isOpen) {
+					if (!_kAlertBox.isOpen) 
+					{
 						_kAlertBox.open(_canvasView, true);
 						_kAlertBox.updateText("3");
 						PopUpManager.centerPopUp(_kAlertBox);
 					}
 					_alertTimer.start();
-
-
 				}
 				else {
 					_menu.startTimer();
@@ -157,13 +158,21 @@
 				_menu.stopTimer();
 			
 				if(this.isOpen)
-					close();
+					_menu.closeInstructions();
 				
-				//compute result at the end of every activity
-				_timeTaken = _menu.timeTaken;
-				_resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
-				_resultBox.open(_canvasView);
-				PopUpManager.centerPopUp(_resultBox);
+				if(activityHeader.text != "INTRO")
+				{
+					//compute result at the end of every activity
+					_timeTaken = _menu.timeTaken;
+					var stars:int = _resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
+					_resultBox.initStars(stars);
+					_resultBox.open(_canvasView);
+					PopUpManager.centerPopUp(_resultBox);
+				}
+				else
+				{
+					initNextInstruction();
+				}
 			}
 		}
 		
@@ -172,16 +181,21 @@
 			nextInstruction();
 			if (instructionMessage.text == "")
 				nextActvity();
+			
+			openInstructions();
+		}
+		
+		public function openInstructions():void
+		{
+			_activityControl.startActivity(activityHeader.text);
+			_menu.openInstructions();
 		}
 
 		private function startTiming(event:TimerEvent):void {
-			if (_currentInstruction == 0) {
-				_kAlertBox.close();
-				_canvasView.autoPlayAnimation();
-				_activityControl.autoSelectObjectToAnimate();
-			}
+			_kAlertBox.close();
+			_canvasView.autoPlayAnimation();
+			_activityControl.autoSelectObjectToAnimate();
 			_menu.startTimer();
-
 		}
 
 		private function updateCount(event:TimerEvent):void {

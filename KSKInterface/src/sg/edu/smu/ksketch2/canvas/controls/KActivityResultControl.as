@@ -28,28 +28,53 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_activityControl = activity;
 		}
 		
-		public function computeResult(activity:String, instruction:int, id:int):void
+		public function computeResult(activity:String, instruction:int, id:int):int
 		{
+			var stars:int = 0;
+			var measures:int = 0;
 			var result:KResult = new KResult(activity, instruction, id);
 			
 			if(activity == "RECALL")
 			{
-				result = measureTime(result);
 				result = measureQuadrant(result);
+				//result = measureTime(result);
+				
+				measures = 1; 
+				stars += starQuadrant(result);
+				//stars += starTime(result);
 			}
 			else if(activity == "TRACE")
 			{
-				result = measureTime(result);
+				//result = measureTime(result);
 				//TO DO: implement shape accuracy
+				
+				//measures = 3;
+				//stars += starTime(result);
+				//stars += starStartRegion(result);
+				//stars += starShapeAccuracy(result);
 			}
 			else if(activity == "TRACK")
 			{
-				result = measureTime(result);
+				//result = measureTime(result);
 				//TO DO: implement shape accuracy
 				//TO DO: implement motion accuracy (shape of motion path)
+				
+				//measures = 4;
+				//stars += starTime(result);
+				//stars += starStartRegion(result);
+				//stars += starEndRegion(result);
+				//stars += starShapeAccuracy(result);
 			}
 			
-			_resultArr.addItem(result);
+			if(stars != 0 && measures != 0)
+				stars = Math.floor(stars/measures);
+			
+			result.stars = stars;
+			
+			if(_resultArr)
+				_resultArr.addItem(result);
+			
+			return stars;
 		}
 		
 		public function measureTime(result:KResult):KResult
@@ -73,6 +98,20 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function measurePercentageScore(result:KResult):KResult
 		{
 			return result;
+		}
+		
+		public function starQuadrant(result:KResult):int
+		{
+			var stars:int = 0;
+			
+			if(result.percentageQuadrant >= 83)
+				stars = 3;
+			else if(result.percentageQuadrant >=50 && result.percentageQuadrant < 83)
+				stars = 2;
+			else if(result.percentageQuadrant >= 16 && result.percentageQuadrant < 50)
+				stars = 1;
+			
+			return stars;
 		}
 		
 		public function get resultArr():ArrayList

@@ -7,8 +7,9 @@ package sg.edu.smu.ksketch2.model.objects
 		private var _objectID:int;
 		private var _time:int;
 		private var _percentageQuadrant:int;
-		private var _accuracyShape:Number;
-		private var _accuracyMotion:Number;
+		private var _accuracyShape:int;
+		private var _accuracyMotion:int;
+		private var _stars:int;
 		
 		public function KResult(activityType:String, instruction:int, id:int)
 		{
@@ -19,6 +20,7 @@ package sg.edu.smu.ksketch2.model.objects
 			_percentageQuadrant = 0;
 			_accuracyShape = 0;
 			_accuracyMotion = 0;
+			_stars = 0;
 		}
 		
 		/**
@@ -44,24 +46,34 @@ package sg.edu.smu.ksketch2.model.objects
 			_percentageQuadrant = percentage;
 		}
 		
-		public function get accuracyShape():Number
+		public function get accuracyShape():int
 		{
 			return _accuracyShape;
 		}
 		
-		public function set accuracyShape(accuracy:Number):void
+		public function set accuracyShape(accuracy:int):void
 		{
 			_accuracyShape = accuracy;
 		}
 		
-		public function get accuracyMotion():Number
+		public function get accuracyMotion():int
 		{
 			return _accuracyMotion;
 		}
 		
-		public function set accuracyMotion(accuracy:Number):void
+		public function set accuracyMotion(accuracy:int):void
 		{
 			_accuracyMotion = accuracy;
+		}
+		
+		public function get stars():int
+		{
+			return _stars;
+		}
+		
+		public function set stars(stars:int):void
+		{
+			_stars = stars;
 		}
 	}
 }

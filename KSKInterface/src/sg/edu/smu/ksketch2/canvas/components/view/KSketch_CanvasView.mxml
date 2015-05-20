@@ -27,17 +27,22 @@
 			import com.google.analytics.AnalyticsTracker;
 			import com.google.analytics.GATracker;
 			
+			import flash.utils.getTimer;
+			
 			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
 			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
 			import mx.graphics.codec.JPEGEncoder;
+			import mx.managers.PopUpManager;
 			import mx.utils.Base64Encoder;
 			
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
@@ -119,6 +124,12 @@
 			private var _instructionsBox:KSketch_InstructionsBox;
 			private var _kAlertBox:KSketch_Alert;
 			private var _resultBox:KSketch_ResultBox;
+			public var isTiming:Boolean = false;
+			private const TIMER_INTERVAL:int = 10;
+			private var baseTimer:int;
+			private var t:Timer;
+			private var _timeTaken:int;
+			private var dateFormatter:DateFormatter;
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
 			
@@ -230,7 +241,7 @@
 					_overwriteSaveOptions.init(this, _saveOptions);
 					_kAlertBox = new KSketch_Alert();
 					_kAlertBox.createDeferredContent();
-					_menuPopUp.init(canvas_component, this, _options, _instructionsBox, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp, _kAlertBox);
+					_menuPopUp.init(canvas_component, this, _options, _instructionsBox, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 					_saveOptions.createDeferredContent();
 				}
 				
@@ -268,6 +279,17 @@
 				//Fail safe measure
 				if(_needToProcessData)
 					_enterView_ProcessData();
+				
+				
+				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);
+				instructionsButton.initSkin();
+				isTiming = false;
+				timerLabel.text = "Time: 00:00";
+				
+				instructionsGroup.x = drawing_stage.x + 150;
+				instructionsGroup.y = drawing_stage.y + 30;
+				timeGroup.x = (Capabilities.screenResolutionX*0.7) + 200;
+				timeGroup.y = drawing_stage.y + 30;
 			}
 			
 			private function _checkForImageData():void
@@ -325,13 +347,13 @@
 							{
 								_kInstructions = new KInstructions(new XML(_currentDocument.xml.activities));
 								_resultBox.init(this, _resultControl, _activityControl);
-								_instructionsBox.init(this, _menuPopUp, _resultBox, _kInstructions, _kAlertBox, _activityControl, _resultControl);
+								_instructionsBox.init(this, _resultBox, _kInstructions, _kAlertBox, _activityControl, _resultControl);
 							}
 						}	
 						else
 						{
 							_activityControl.isNewSketch = true;
-							_menuPopUp.initInstructions();
+							instructionsButton.visible = false;
 						}
 					}
 					
@@ -620,6 +642,76 @@
 				}
 				return null;
 			}
+			
+			/**
+			 * Opens instructions message box
+			 */
+			public function openInstructions():void
+			{
+				trace("Open instructions");
+				_instructionsBox.open(this,false);
+				PopUpManager.centerPopUp(_instructionsBox);
+				_instructionsBox.x = instructionsButton.x + 20;
+				_instructionsBox.y = instructionsButton.y + (instructionsButton.height + 20);
+				
+				//change skin to down_arrow
+				instructionsButton.init(KSketchAssets.texture_instructions_2, KSketchAssets.texture_instructions_2);
+				instructionsButton.initSkin();
+			}
+			
+			/**
+			 * Closes instructions message box
+			 */
+			public function closeInstructions():void
+			{
+				_instructionsBox.close();
+				
+				//change skin to side_arrow
+				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);
+				instructionsButton.initSkin();
+			}
+			
+			public function actionInstructions():void
+			{
+				if(_instructionsBox.isOpen)
+					closeInstructions();
+				else
+					openInstructions();
+			}
+			
+			public function startTimer():void
+			{
+				_timeTaken = 0;
+				isTiming = true;
+				t = new Timer(TIMER_INTERVAL);
+				t.addEventListener(TimerEvent.TIMER, updateTimer);
+				
+				baseTimer = getTimer();
+				t.start();
+			}
+			
+			private function updateTimer(evt:TimerEvent):void {
+				var d:Date = new Date(getTimer() - baseTimer);
+				
+				dateFormatter = new DateFormatter();
+				dateFormatter.formatString = 'NN:SS'
+				timerLabel.text = "Time: " + dateFormatter.format(d);
+				
+				_timeTaken = getTimer() - baseTimer;
+			}
+			
+			public function stopTimer():void
+			{
+				isTiming = false;
+				t.stop();
+				t.removeEventListener(TimerEvent.TIMER, updateTimer);
+			}
+			
+			public function get timeTaken():int
+			{
+				//_timeTaken = Math.floor(_timeTaken/1000);
+				return _timeTaken; //in milliseconds
+			}
 
 		]]>
 	</fx:Script>
@@ -727,6 +819,7 @@
 								blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE}"/>
 						</s:filters>
 					</s:Rect>
+					
 					<!-- start of region -->
 					<s:Group height="100%" width="100%" alpha="0.5">
 						<s:layout>
@@ -804,6 +897,20 @@
 					</s:Rect>
 				</s:Group>
 				<transformWidget2:KSketch_Widget_Component id="widget" visible="false"/>
+				
+				<!-- KSKETCH-SYNPHNE -->
+				<s:Group id="instructionsGroup">
+					<buttons:KSketch_ListButton
+						id="instructionsButton"
+						click="actionInstructions()"
+						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
+				</s:Group>
+				
+				<s:Group id="timeGroup">
+					<s:Label id="timerLabel" width="100" height="50" text="Time:" paddingRight="5" fontSize="20"/> 
+				</s:Group>
+				<!-- end of KSKETCH-SYNPHNE -->
 			</s:Group>
 		</s:Group>
 	</s:Group>

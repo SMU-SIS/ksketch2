@@ -36,7 +36,6 @@
 		import sg.edu.smu.ksketch2.model.objects.KInstructions;
 
 		private var _canvasView:KSketch_CanvasView;
-		private var _menu:KSketch_PopUp_Menu;
 		private var _resultBox:KSketch_ResultBox;
 		private var _hasBegin:Boolean;
 		private var _kInstructions:KInstructions;
@@ -51,10 +50,9 @@
 		private var _alertTimer:Timer;
 		private var _timeTaken:int;
 
-		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, resultBox:KSketch_ResultBox, kInstructions:KInstructions,
+		public function init(canvasView:KSketch_CanvasView, resultBox:KSketch_ResultBox, kInstructions:KInstructions,
 							 kAlertBox:KSketch_Alert, activityControl:KActivityControl, resultControl:KActivityResultControl):void {
 			_canvasView = canvasView;
-			_menu = menu;
 			_resultBox = resultBox;
 			_kAlertBox = kAlertBox;
 			_activityControl = activityControl;
@@ -103,7 +101,7 @@
 			instructionButton_Start.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 			instructionMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
 
-			if (_menu.isTiming)
+			if (_canvasView.isTiming)
 				instructionButton_Start.label = "DONE";
 			else
 				instructionButton_Start.label = "START";
@@ -127,7 +125,7 @@
 				instructionButton_Prev.enabled = false;
 				instructionButton_Next.enabled = false;
 
-				_menu.actionInstructions();
+				_canvasView.actionInstructions();
 				_activityControl.startActivity(activityHeader.text);
 
 				if (_currentInstruction == 0 && _activityTypes[_currentActivity] == "TRACK") 
@@ -144,7 +142,7 @@
 					_alertTimer.start();
 				}
 				else {
-					_menu.startTimer();
+					_canvasView.startTimer();
 				}
 			}
 			else if (instructionButton_Start.label == "DONE") {
@@ -155,15 +153,15 @@
 				enableDisableActivity();
 				enableDisableButtons();
 
-				_menu.stopTimer();
+				_canvasView.stopTimer();
 			
 				if(this.isOpen)
-					_menu.closeInstructions();
+					_canvasView.closeInstructions();
 				
 				if(activityHeader.text != "INTRO")
 				{
 					//compute result at the end of every activity
-					_timeTaken = _menu.timeTaken;
+					_timeTaken = _canvasView.timeTaken;
 					var stars:int = _resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
 					_resultBox.initStars(stars);
 					_resultBox.open(_canvasView);
@@ -188,14 +186,14 @@
 		public function openInstructions():void
 		{
 			_activityControl.startActivity(activityHeader.text);
-			_menu.openInstructions();
+			_canvasView.openInstructions();
 		}
 
 		private function startTiming(event:TimerEvent):void {
 			_kAlertBox.close();
 			_canvasView.autoPlayAnimation();
 			_activityControl.autoSelectObjectToAnimate();
-			_menu.startTimer();
+			_canvasView.startTimer();
 		}
 
 		private function updateCount(event:TimerEvent):void {
@@ -219,7 +217,7 @@
 			} else {
 				nextActvity();
 				enableDisableButtons();
-				_menu.openInstructions();
+				_canvasView.openInstructions();
 				instructionButton_Start.label = "START";
 			}
 		}

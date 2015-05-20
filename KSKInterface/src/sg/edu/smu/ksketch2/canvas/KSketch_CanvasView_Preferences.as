@@ -147,7 +147,7 @@ package sg.edu.smu.ksketch2.canvas
 			if(prefs.data.menuPos)
 				return prefs.data.menuPos;
 			else
-				return POS_TOP;
+				return POS_LEFT;
 		}
 		
 		/**

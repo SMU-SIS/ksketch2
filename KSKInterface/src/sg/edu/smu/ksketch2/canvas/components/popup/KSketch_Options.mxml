@@ -56,7 +56,7 @@
 				_autoInsertKey(false);
 				_doubleTap(false);
 				_menuOpen(true);
-				_menuTop();
+				_menuLeft();
 				
 				//KSKETCH-SYNPHNE
 				_tapAnywhere();
@@ -130,12 +130,14 @@
 			{
 				_menu.position = KSketch_PopUp_Menu.LEFT;
 				KSketch_CanvasView_Preferences.menuPosition = KSketch_CanvasView_Preferences.POS_LEFT;
+				leftAlign.selected = true;
 			}
 			
 			private function _menuRight():void
 			{
 				_menu.position = KSketch_PopUp_Menu.RIGHT;
 				KSketch_CanvasView_Preferences.menuPosition = KSketch_CanvasView_Preferences.POS_RIGHT;
+				rightAlign.selected = true;
 			}
 			
 			private function _menuBottom():void
@@ -257,7 +259,7 @@
 						<s:HorizontalLayout/>
 					</s:layout>
 					<s:Label id="titleTime" text="Time{'\n'}Thres."/>
-					<s:TextArea id="activityDuration" text="MM:SS" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="150"/>
+					<s:TextArea id="activityDuration" text="MM:SS" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_100}"/>
 				</s:Group>
 				
 				<s:Group>
@@ -265,16 +267,16 @@
 						<s:HorizontalLayout/>
 					</s:layout>
 					<s:Label id="titleAccuracy" text="Accu{'\n'}Thres."/>
-					<s:TextArea id="accuracyThreshold" text="10%" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="150"/>
+					<s:TextArea id="accuracyThreshold" text="10%" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_100}"/>
 				</s:Group>
+				
 			</s:Group>
 		</s:Group>
-		
 		<s:Group>
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
 			</s:layout>
-			<s:Label text="Initiation" fontSize="18"/>
+			<s:Label text="Toolbar alignment" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
 			<s:Group>
 				<s:layout>
 					<s:VerticalLayout/>
@@ -284,8 +286,27 @@
 					<s:layout>
 						<s:HorizontalLayout/>
 					</s:layout>
-					<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere" fontSize="14"/>
-					<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"  fontSize="14"/>
+					<s:RadioButton groupName="toolGroup" id="rightAlign" value="right" label="Right" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+					<s:RadioButton groupName="toolGroup" id="leftAlign" value="left" label="Left"  fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+				</s:Group>
+			</s:Group>
+		</s:Group>
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout paddingLeft="10"/>
+			</s:layout>
+			<s:Label text="Initiation" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout/>
+				</s:layout>
+				
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+					<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+					<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"  fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
 				</s:Group>
 			</s:Group>
 		</s:Group>

@@ -176,6 +176,7 @@ package sg.edu.smu.ksketch2
 		public static var DIALOG_PADDING_5:int = 5;
 		public static var DIALOG_MEASUREMENT_25:int = 50;
 		public static var DIALOG_MEASUREMENT_50:int = 50;
+		public static var DIALOG_MEASUREMENT_100:int = 100;
 		public static var DIALOG_MEASUREMENT_300:int = 300;
 		
 		//Help screen
@@ -262,6 +263,7 @@ package sg.edu.smu.ksketch2
 			DIALOG_MEASUREMENT_25 = 25 * (scaleFactor * 2);
 			DIALOG_MEASUREMENT_50 = 50 * scaleFactor;
 			DIALOG_MEASUREMENT_300 = 300 * scaleFactor;
+			DIALOG_MEASUREMENT_100 = 100 * scaleFactor;
 			X_POS_BUTTON = 600 * scaleFactor;
 			Y_POS_BUTTON = 450 * scaleFactor;
 			IMAGE_HELP_WIDTH = 750 * scaleFactor;

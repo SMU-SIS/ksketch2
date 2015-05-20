@@ -275,7 +275,7 @@
 			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
 	</s:filters>
 	<s:Group id="instructions" visible="true">
-		<s:Rect id="instructionBox" width="240" height="150%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+		<s:Rect id="instructionBox" width="100%" height="150%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
 			<s:fill>
 				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
 			</s:fill>
@@ -289,7 +289,7 @@
 					<s:HorizontalLayout  gap="{KSketchStyles.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
 				<buttons:KSketch_ListButton id="activityButton_Prev" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="previousActivity()"/>
-				<s:Label width="100" id="activityHeader"/>
+				<s:Label width="{KSketchStyles.DIALOG_MEASUREMENT_100}" id="activityHeader" textAlign="center"/>
 				<buttons:KSketch_ListButton id="activityButton_Next" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="nextActvity()"/>
 			</s:Group>
 			
@@ -305,7 +305,7 @@
 					<s:HorizontalLayout  gap="{KSketchStyles.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
 				<buttons:KSketch_ListButton id="instructionButton_Prev" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="previousInstruction()"/>
-				<s:Label width="95" id="instructionHeader" text="Default"/>
+				<s:Label width="{KSketchStyles.DIALOG_MEASUREMENT_100}" id="instructionHeader" text="Default" textAlign="center"/>
 				<buttons:KSketch_ListButton id="instructionButton_Next" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="nextInstruction()"/>
 			</s:Group>
 			

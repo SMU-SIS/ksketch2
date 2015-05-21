@@ -1,12 +1,16 @@
 package sg.edu.smu.ksketch2.canvas.controls
 {
+	import flash.geom.Point;
+	
 	import mx.collections.ArrayList;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.model.data_structures.KPath;
+	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 	import sg.edu.smu.ksketch2.model.objects.KResult;
-
+	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	public class KActivityResultControl
 	{
 		private var _resultArr:ArrayList;
@@ -118,6 +122,40 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			return _resultArr;
 		}
+		public function measureDistance(object1:KStroke, object2:KStroke):Number {
+			var points1:Vector.<Point> = object1.points;
+			var points2:Vector.<Point> = object2.points;
+			var minDistanceTot:Number = 0;
+			for(var i:int = 0; i<points1.length; i++)
+			{
+				var minDistance:Number = Point.distance(points1[i],points2[0]) ;
+				for(var j:int = 1; j<points2.length; j++) {
+					var dist:Number = Point.distance(points1[i],points2[j]);
+					if(dist<minDistance) {
+						minDistance = dist;
+					}
+					minDistanceTot += minDistance;
+				}
+			}
+			return minDistanceTot;
+		}
 		
+		public function measureTransformation(object1:KPath, object2:KPath)  : Number{
+			var points1:Vector.<KTimedPoint> = object1.points;
+			var points2:Vector.<KTimedPoint> = object2.points;
+			var minDistanceTot:Number = 0;
+			for(var i:int = 0; i<points1.length; i++)
+			{
+				var minDistance:Number = KTimedPoint.distance(points1[i],points2[0]) ;
+				for(var j:int = 1; j<points2.length; j++) {
+					var dist:Number = KTimedPoint.distance(points1[i],points2[j]);
+					if(dist<minDistance) {
+						minDistance = dist;
+					}
+					minDistanceTot += minDistance;
+				}
+			}
+			return minDistanceTot;
+		}
 	}
 }

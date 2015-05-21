@@ -111,5 +111,11 @@ package sg.edu.smu.ksketch2.model.data_structures
 		{
 			trace("(",x,",",y,",",time,")");
 		}
+		/**
+		 * Returns the distance
+		 */
+		public static function distance(pt1:KTimedPoint, pt2:KTimedPoint): Number {
+			return Point.distance(new Point(pt1.x,pt1.y),new Point(pt2.x,pt2.y))
+		}
 	}
 }

@@ -287,9 +287,9 @@
 				isTiming = false;
 				timerLabel.text = "Time: 00:00";
 				
-				instructionsGroup.x = drawing_stage.x + 150;
+				instructionsGroup.x = drawing_stage.x + ((Capabilities.screenResolutionX*0.7)/8);
 				instructionsGroup.y = drawing_stage.y + 30;
-				timeGroup.x = (Capabilities.screenResolutionX*0.7) + 200;
+				timeGroup.x = drawing_stage.x + (((Capabilities.screenResolutionX*0.7)/8)*10);
 				timeGroup.y = drawing_stage.y + 30;
 			}
 			
@@ -652,8 +652,8 @@
 				trace("Open instructions");
 				_instructionsBox.open(this,false);
 				PopUpManager.centerPopUp(_instructionsBox);
-				_instructionsBox.x = instructionsButton.x + 20;
-				_instructionsBox.y = instructionsButton.y + (instructionsButton.height + 20);
+				_instructionsBox.x = instructionsGroup.x + KSketchStyles.BUTTON_SIZE;
+				_instructionsBox.y = instructionsGroup.y + (instructionsGroup.height + KSketchStyles.BUTTON_SIZE);
 				
 				//change skin to down_arrow
 				instructionsButton.init(KSketchAssets.texture_instructions_2, KSketchAssets.texture_instructions_2);

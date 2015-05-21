@@ -37,7 +37,6 @@
 
 		private var _canvasView:KSketch_CanvasView;
 		private var _resultBox:KSketch_ResultBox;
-		private var _hasBegin:Boolean;
 		private var _kInstructions:KInstructions;
 		private var _currentInstruction:int;
 		private var _currentActivity:int;
@@ -48,7 +47,6 @@
 		private var _activityControl:KActivityControl;
 		private var _resultControl:KActivityResultControl;
 		private var _alertTimer:Timer;
-		private var _timeTaken:int;
 
 		public function init(canvasView:KSketch_CanvasView, resultBox:KSketch_ResultBox, kInstructions:KInstructions,
 							 kAlertBox:KSketch_Alert, activityControl:KActivityControl, resultControl:KActivityResultControl):void {
@@ -61,7 +59,6 @@
 			_kInstructions = kInstructions;
 			_currentInstruction = 0;
 			_currentActivity = 0;
-			_hasBegin = false;
 			
 			activityButton_Prev.enabled = false;
 			instructionButton_Prev.enabled = false;
@@ -161,7 +158,6 @@
 				if(activityHeader.text != "INTRO")
 				{
 					//compute result at the end of every activity
-					_timeTaken = _canvasView.timeTaken;
 					var stars:int = _resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
 					_resultBox.initStars(stars);
 					_resultBox.open(_canvasView);
@@ -270,11 +266,6 @@
 
 		public function currentInstruction():int {
 			return _currentInstruction;
-		}
-		
-		public function get timeTaken():int
-		{
-			return _timeTaken;
 		}
 		]]>
 	</fx:Script>

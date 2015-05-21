@@ -79,7 +79,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function measureTime(result:KResult):KResult
 		{
-			result.time = _instructionsBox.timeTaken;
+			result.time = _canvasView.timeTaken;
 			return result;
 		}
 		

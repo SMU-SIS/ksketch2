@@ -57,13 +57,10 @@
 			private var _help:KSketch_Help;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _feedback:KSketch_Feedback_Message;
-			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
 			private var _canvasControl:KCanvasInteractorManager;
 
-			
-			
 			/**
 			 * @referenceComponent: the component that this menu will refer to for positioning itself
 			 * @canvasView: the host view

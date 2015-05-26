@@ -44,7 +44,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_currentObjectID = _instructionsBox.currentObjectID();
 			_currentManipulateObject = getCurrentObject(false);
 			_currentTemplateObject = getCurrentObject(true);
-			
 			//Reset settings
 			if(currentInstruction == 0)
 			{
@@ -71,6 +70,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 			else if(activity == "TRACE")
 			{ 
+				//TODO: Implement logic to fix stars based on the maxDistance
+				trace("___________Distance_____________ " +  (_currentTemplateObject as KStroke).maxDistance());
 				_activityType = "TRACE";
 				_discardSketchedObjects();
 				_setObjectProperties(false, true, false);

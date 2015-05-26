@@ -29,6 +29,9 @@
 			private var _menu:KSketch_PopUp_Menu;
 			public var mode:int;
 			
+			[Bindable]
+			private var timeValue:String = "02:00";
+			
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
@@ -40,6 +43,8 @@
 				initGroup.setStyle("fontSize", KSketchStyles.DIALOGBUTTON_FONT_SIZE);
 				initLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
 				closeButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				var duration:int = KSketch_CanvasView_Preferences.duration;
+				timeValue = Math.ceil(duration/60)+":"+duration%60;	
 			}
 			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu):void
@@ -49,6 +54,7 @@
 				
 				_menu.open(_canvasView);
 				KSketch_CanvasView_Preferences.menuOpen = KSketch_CanvasView_Preferences.OPEN;
+				
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
@@ -276,7 +282,7 @@
 						<s:HorizontalLayout/>
 					</s:layout>
 					<s:Label id="titleTime" text="Time Thres.{'\n'}MM:SS"/>
-					<s:TextInput id="activityDuration" text="02:00" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_100}" change="_duration(event)" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}" />
+					<s:TextInput id="activityDuration" text="{timeValue}" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_100}" change="_duration(event)" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}" />
 				</s:Group>
 				
 				<s:Group>

@@ -43,7 +43,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		
 			_translateInteractor = new KTranslateInteractor(KSketchInstance, interactionControl, widgetBase.middleTrigger, modelSpace);
 			_rotateInteractor = new KRotateInteractor(KSketchInstance, interactionControl, widgetBase.topTrigger, modelSpace);
-			_scaleInteractor = new KScaleInteractor(KSketchInstance, interactionControl, widgetBase, modelSpace);
+			_scaleInteractor = new KScaleInteractor(KSketchInstance, interactionControl, widgetBase.baseTrigger, modelSpace);
 			
 		}
 			

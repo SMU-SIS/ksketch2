@@ -5,9 +5,11 @@ package sg.edu.smu.ksketch2.model.objects
 		private var _activityType:String;
 		private var _instructionNo:int;
 		private var _objectID:int;
-		private var _time:int;
+		private var _time_taken:int;
+		private var _time_given:int;
 		private var _percentageQuadrant:int;
-		private var _accuracyShape:int;
+		private var _shape_averageDistance:int;
+		private var _shape_maximumDistance:int;
 		private var _accuracyMotion:int;
 		private var _stars:int;
 		
@@ -16,9 +18,11 @@ package sg.edu.smu.ksketch2.model.objects
 			_activityType = activityType;
 			_instructionNo = instruction;
 			_objectID = id;
-			_time = 0;
+			_time_taken = 0;
+			_time_given = 0;
 			_percentageQuadrant = 0;
-			_accuracyShape = 0;
+			_shape_averageDistance = 0;
+			_shape_maximumDistance = 0;
 			_accuracyMotion = 0;
 			_stars = 0;
 		}
@@ -26,15 +30,26 @@ package sg.edu.smu.ksketch2.model.objects
 		/**
 		 * Get/Set methods for all attributes
 		 */
-		public function get time():int
+		public function get timeTaken():int
 		{
-			return _time;
+			return _time_taken;
 		}
 		
-		public function set time(t:int):void
+		public function set timeTaken(t:int):void
 		{
-			_time = t;
+			_time_taken = t;
 		}
+		
+		public function get timeGiven():int
+		{
+			return _time_given;
+		}
+		
+		public function set timeGiven(t:int):void
+		{
+			_time_given = t;
+		}
+		
 		
 		public function get percentageQuadrant():int
 		{
@@ -46,14 +61,24 @@ package sg.edu.smu.ksketch2.model.objects
 			_percentageQuadrant = percentage;
 		}
 		
-		public function get accuracyShape():int
+		public function get averageDistance():int
 		{
-			return _accuracyShape;
+			return _shape_averageDistance;
 		}
 		
-		public function set accuracyShape(accuracy:int):void
+		public function set averageDistance(distance:int):void
 		{
-			_accuracyShape = accuracy;
+			_shape_averageDistance = distance;
+		}
+		
+		public function get maximumDistance():int
+		{
+			return _shape_maximumDistance;
+		}
+		
+		public function set maximumDistance(distance:int):void
+		{
+			_shape_maximumDistance = distance;
 		}
 		
 		public function get accuracyMotion():int

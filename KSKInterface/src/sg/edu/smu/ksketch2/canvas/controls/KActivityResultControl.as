@@ -5,12 +5,15 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import mx.collections.ArrayList;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.model.data_structures.KPath;
 	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KResult;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
+
 	public class KActivityResultControl
 	{
 		private var _resultArr:ArrayList;
@@ -49,13 +52,19 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 			else if(activity == "TRACE")
 			{
-				//result = measureTime(result);
-				//TO DO: implement shape accuracy
+				var objTemplate:KObject = _activityControl.getCurrentObject(true);
+				var objDrawn:KObject = _activityControl.getCurrentObject(false);
 				
-				//measures = 3;
-				//stars += starTime(result);
-				//stars += starStartRegion(result);
-				//stars += starShapeAccuracy(result);
+				if(objDrawn)
+				{
+					//result = measureShapeAccuracy(result, objDrawn as KStroke, objTemplate as KStroke);
+					//result = measureTime(result);
+					
+					//measures = 1;
+					//stars += starTime(result);
+					//stars += starShapeAccuracy(result);
+					//stars += starRegion(objDrawn, objTemplate);
+				}
 			}
 			else if(activity == "TRACK")
 			{
@@ -83,8 +92,28 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function measureTime(result:KResult):KResult
 		{
-			result.time = _canvasView.timeTaken;
+			var timeGiven:int = KSketch_CanvasView_Preferences.duration *1000;
+			var timeTaken:int = timeGiven - _canvasView.timeTaken;
+			
+			result.timeGiven = timeGiven;
+			result.timeTaken = timeTaken;
+			
 			return result;
+		}
+		
+		public function starTime(result:KResult):int
+		{
+			var stars:int = 0;
+			var ratio:Number = (result.timeTaken/result.timeGiven) * 100;
+			
+			if(ratio >= 0 && ratio <= 50)
+				stars = 3;
+			else if(ratio > 50 && ratio <=75)
+				stars = 2;
+			else if(ratio > 75 && ratio <= 100)
+				stars = 1;
+			
+			return stars;
 		}
 		
 		public function measureQuadrant(result:KResult):KResult
@@ -96,11 +125,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 				percentage = Math.floor(100 - ((trials/6)*100));
 			
 			result.percentageQuadrant = percentage;
-			return result;
-		}
-		
-		public function measurePercentageScore(result:KResult):KResult
-		{
 			return result;
 		}
 		
@@ -118,29 +142,125 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return stars;
 		}
 		
-		public function get resultArr():ArrayList
+		public function measureShapeAccuracy(result:KResult, objDrawn:KStroke, objTemplate:KStroke):KResult
 		{
-			return _resultArr;
+			return result;
 		}
-		public function measureDistance(object1:KStroke, object2:KStroke):Number {
+		
+		public function starShapeAccuracy(result:KResult):int
+		{
+			var stars:int = 0;
+			
+			return stars;
+		}
+		
+		public function starRegion(objDrawn:KObject, objTemplate:KObject):int
+		{
+			var stars:int = 0;
+			
+			if(objDrawn.startRegion == objTemplate.startRegion)
+				stars = 3;
+			else
+			{
+				if(objTemplate.startRegion == 1)
+				{
+					if(objDrawn.startRegion == 2 || objDrawn.startRegion == 4 || objDrawn.startRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(objTemplate.startRegion == 2)
+				{
+					if(objDrawn.startRegion == 1 || objDrawn.startRegion == 3 || objDrawn.startRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(objTemplate.startRegion == 3)
+				{
+					if(objDrawn.startRegion == 2 || objDrawn.startRegion == 5 || objDrawn.startRegion == 6)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(objTemplate.startRegion == 4)
+				{
+					if(objDrawn.startRegion == 1 || objDrawn.startRegion == 2 || objDrawn.startRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(objTemplate.startRegion == 5)
+				{
+					if(objDrawn.startRegion == 2 || objDrawn.startRegion == 4 || objDrawn.startRegion == 6)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(objTemplate.startRegion == 6)
+				{
+					if(objDrawn.startRegion == 2 || objDrawn.startRegion == 3 || objDrawn.startRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+			}
+			
+			trace("star region: " + stars + ", objDrawn: " + objDrawn.startRegion + ", objTemplate: " + objTemplate.startRegion);
+			return stars;
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		public function calculateShapeDistance(object1:KStroke, object2:KStroke):int 
+		{
 			var points1:Vector.<Point> = object1.points;
 			var points2:Vector.<Point> = object2.points;
+			
 			var minDistanceTot:Number = 0;
+			var maxMinDistance:Number = 0;
+			var dist:Number = 0;
+			
 			for(var i:int = 0; i<points1.length; i++)
 			{
 				var minDistance:Number = Point.distance(points1[i],points2[0]) ;
-				for(var j:int = 1; j<points2.length; j++) {
-					var dist:Number = Point.distance(points1[i],points2[j]);
-					if(dist<minDistance) {
-						minDistance = dist;
+				if(minDistance > 0)
+				{
+					for(var j:int = 1; j<points2.length; j++) 
+					{
+						dist = Point.distance(points1[i],points2[j]);
+						if(dist<minDistance)
+						{
+							minDistance = dist;
+							
+							if(maxMinDistance == 0)
+								maxMinDistance = dist;
+							else if(maxMinDistance < dist)
+								maxMinDistance = dist;
+						}
 					}
-					minDistanceTot += minDistance;
 				}
+				minDistanceTot += minDistance;
 			}
+			
+			if(minDistanceTot > 0)
+				minDistanceTot = Math.floor((minDistanceTot/points1.length) + maxMinDistance);
+
 			return minDistanceTot;
 		}
 		
-		public function measureTransformation(object1:KPath, object2:KPath)  : Number{
+		public function measureTransformation(object1:KPath, object2:KPath):Number
+		{
 			var points1:Vector.<KTimedPoint> = object1.points;
 			var points2:Vector.<KTimedPoint> = object2.points;
 			var minDistanceTot:Number = 0;
@@ -156,6 +276,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 				}
 			}
 			return minDistanceTot;
+		}
+	
+		public function get resultArr():ArrayList
+		{
+			return _resultArr;
 		}
 	}
 }

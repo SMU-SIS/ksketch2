@@ -93,6 +93,8 @@ package sg.edu.smu.ksketch2.canvas
 		
 		public static const DEFAULT_DURATION:int = 120;
 		
+		public static const DEFAULT_ACCURACY:int = 100;
+		
 		//KSKETCH-SYNPHNE
 		public static const TAPANYWHERE_ON:String = "TAPANYWHERE_ON";
 		public static const TAPANYWHERE_OFF:String = "TAPANYWHERE_OFF";
@@ -311,35 +313,19 @@ package sg.edu.smu.ksketch2.canvas
 			prefs.flush();
 		}
 		
-		public static function get activity():String
+		public static function get accuracy():int
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
-			if(prefs.data.activity)
-				return prefs.data.activity;
+			if(prefs.data.accuracy_threshold)
+				return prefs.data.accuracy_threshold;
 			else
-				return CLOSE;
+				return DEFAULT_ACCURACY;
 		}
 		
-		public static function set activity(value:String):void
+		public static function set accuracy(value:int):void
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
-			prefs.data.activity = value;
-			prefs.flush();
-		}
-		
-		public static function get difficulty():String
-		{
-			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
-			if(prefs.data.difficulty)
-				return prefs.data.difficulty;
-			else
-				return CLOSE;
-		}
-		
-		public static function set difficulty(value:String):void
-		{
-			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
-			prefs.data.difficulty = value;
+			prefs.data.accuracy_threshold = value;
 			prefs.flush();
 		}
 		
@@ -351,7 +337,6 @@ package sg.edu.smu.ksketch2.canvas
 			else
 				return DEFAULT_DURATION;
 		}
-		
 		
 		public static function set duration(value:int):void
 		{

@@ -16,7 +16,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import flash.geom.Point;
 	import flash.ui.Keyboard;
 	import flash.ui.Multitouch;
-	import flash.ui.MultitouchInputMode;
 	
 	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
@@ -296,7 +295,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				}
 				else if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_OFF" && _interactionControl.selection)
 				{
-					var view:IObjectView = _activityControl.getCurrentObject();
+					var view:IObjectView = _activityControl.getCurrentTemplateObjectView();
 					if(view) {
 						var selectionArea:Sprite = new Sprite();
 						selectionArea.graphics.clear();

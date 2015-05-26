@@ -11,17 +11,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	import flash.display.DisplayObject;
 	import flash.geom.Point;
 	
-	import spark.components.Group;
-	
 	import org.gestouch.events.GestureEvent;
-	import org.gestouch.gestures.ZoomGesture;
+	import org.gestouch.gestures.PanGesture;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
-	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
-	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	
 	/**
@@ -32,12 +27,13 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 	{
 		public static var scaleFlag:Boolean = false	// the scale flag
 		
-		private var _scaleGesture:ZoomGesture;//PanGesture;		// the scale gesture
+		private var _scaleGesture:PanGesture;		// the scale gesture
 		private var _previousPoint:Point;			// the previous point
 		private var _center:Point;					// the center point
 		private var _startScaleDistance:Number;		// the start scale distance
 		private var _scale:Number;					// the scaling value
-		private var _inputComponent:DisplayObject;
+		//web:private var _googleAnalytics:GoogleAnalytics;
+		
 		/**
  		 * The main constructor for the KScaleInteractor class.
  		 * 
@@ -48,12 +44,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
  		 */
 		public function KScaleInteractor(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
 										inputComponent:DisplayObject, modelSpace:DisplayObject)
+										//web:googleAnalytics:GoogleAnalytics)
 		{
 			super(KSketchInstance, interactionControl, modelSpace);
-			_scaleGesture = new ZoomGesture(inputComponent);//PanGesture(inputComponent);
-			_inputComponent = inputComponent;
-			//(inputComponent as KSketch_Widget_Component).baseTrigger
-			//_scaleGesture.maxNumTouchesRequired = 1;
+			_scaleGesture = new PanGesture(inputComponent);
+			_scaleGesture.maxNumTouchesRequired = 1;
+			//web:_googleAnalytics = googleAnalytics;
 		}
 		
 		override public function reset():void
@@ -81,13 +77,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 		
 		override protected function _interaction_begin(event:GestureEvent):void
 		{
-			//FOR TESTING
-			var newText:String = "loc:"+_scaleGesture.location+", lastLoc:"+ _scaleGesture.lastTouchLocation+
-								", '\n'scaleX:"+_scaleGesture.scaleX+", scaleY:"+_scaleGesture.scaleY;
-			(_inputComponent as KSketch_Widget_Component).zoomLabel.text = newText;
-			//END FOR TESTING
-			
-			/*scaleFlag = true;
+			scaleFlag = true;
 			
 			KSketch_CanvasView.tracker.trackPageview("/canvas/scale");
 			super._interaction_begin(event);
@@ -103,20 +93,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			for(i; i < length; i++)
 				_KSketch.beginTransform(_transitionObjects.getObjectAt(i),_interactionControl.transitionMode, _interactionControl.currentInteraction);
-			*/
+			
 			_scaleGesture.addEventListener(GestureEvent.GESTURE_CHANGED, _update_Scale);
 			_scaleGesture.addEventListener(GestureEvent.GESTURE_ENDED, _interaction_end);			
 		}
 		
 		override protected function _interaction_end(event:GestureEvent):void
 		{
-			//FOR TESTING
-			var newText:String = "loc:"+_scaleGesture.location+", lastLoc:"+ _scaleGesture.lastTouchLocation+
-								", '\n'scaleX:"+_scaleGesture.scaleX+", scaleY:"+_scaleGesture.scaleY;
-			(_inputComponent as KSketch_Widget_Component).zoomLabel.text = newText;
-			//END FOR TESTING
-			
-			/*var i:int = 0;
+			var i:int = 0;
 			var length:int = _transitionObjects.length();
 			
 			for(i; i < length; i++)
@@ -124,38 +108,10 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 
 			super._interaction_end(event);
 			reset();
-			
-			//LOG
-			_KSketch.logCounter ++;
-			var log:XML = <Action/>;
-			var date:Date = new Date();
-			log.@category = "Transition";
-			
-			if(_interactionControl.transitionMode == KSketch2.TRANSITION_DEMONSTRATED)
-			{
-				log.@type = "Perform Scale";
-				//trace("ACTION " + _KSketch.logCounter + ": Perform Scale");
-			}
-			else
-			{
-				log.@type = "Interpolate Scale";
-				//trace("ACTION " + _KSketch.logCounter + ": Interpolate Scale");
-			}
-			
-			log.@KSketchDuration = KSketch_TimeControl.toTimeCode(_KSketch.time - _startTime);
-			log.@elapsedTime = KSketch_TimeControl.toTimeCode(date.time - _KSketch.logStartTime);
-			KSketch2.log.appendChild(log);*/
 		}
 		
 		private function _update_Scale(event:GestureEvent):void
 		{
-			//FOR TESTING
-			var newText:String = "loc:"+_scaleGesture.location+", lastLoc:"+ _scaleGesture.lastTouchLocation+
-								", '\n'scaleX:"+_scaleGesture.scaleX+", scaleY:"+_scaleGesture.scaleY;
-			(_inputComponent as KSketch_Widget_Component).zoomLabel.text = newText;
-			//END FOR TESTING
-			
-			/*
 			_scale = _scaleGesture.location.subtract(_center).length/_startScaleDistance;
 			
 			var i:int = 0;
@@ -163,7 +119,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			for(i; i < length; i++)
 				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), 0, 0, 0, _scale-1);
-			*/
 
 		}
 	}

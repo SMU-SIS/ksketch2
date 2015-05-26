@@ -2,7 +2,6 @@
 <!--
 *Copyright 2010-2012 Singapore Management University
 *Developed under a grant from the Singapore-MIT GAMBIT Game Lab
-
 *This Source Code Form is subject to the terms of the
 *Mozilla Public License, v. 2.0. If a copy of the MPL was
 *not distributed with this file, You can obtain one at
@@ -30,7 +29,6 @@
 		]]>
 	</fx:Script>
 	<s:Group id="boundary" mouseEnabled="false" mouseChildren="false"/>
-	<s:Label id="zoomLabel" x="200" y="200" text="loc: lastLoc: scaleX: scaleY: "/>
 	<s:Group id="baseTrigger" scaleX="{KSketchStyles.SCALE}" scaleY="{KSketchStyles.SCALE}">
 		<s:Graphic>
 			<s:Path winding="nonZero" data="M87.319-56.954
@@ -97,4 +95,5 @@
 	</s:Group>
 	
 	<s:Group id="centroidMove" scaleX="{KSketchStyles.SCALE}" scaleY="{KSketchStyles.SCALE}"/>
+	
 </s:Group>

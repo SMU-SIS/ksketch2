@@ -12,6 +12,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
+	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 
 	public class KActivityControl
@@ -22,7 +23,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _interactionControl:KInteractionControl;
 		
 		private var _currentObjectID:int;
-		private var _currentObject:KObject;
+		private var _currentManipulateObject:KObject;
+		private var _currentTemplateObject:KObject;
 		private var _activityType:String = "SKETCH";
 		private var _isAnimationPlaying:Boolean;
 		private var _isNewSketch:Boolean;
@@ -40,17 +42,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			var currentInstruction:int = _instructionsBox.currentInstruction();
 			_currentObjectID = _instructionsBox.currentObjectID();
-			
-			var currObj:KObject = null;
-			for(var i:int=0; i<_KSketch.root.children.length(); i++)
-			{
-				currObj = _KSketch.root.children.getObjectAt(i) as KObject;
-				if(currObj is KStroke && currObj.originalId == _currentObjectID)
-					break;
-			}
-			
-			if(currObj)
-				_currentObject = currObj;
+			_currentManipulateObject = getCurrentObject(false);
+			_currentTemplateObject = getCurrentObject(true);
 			
 			//Reset settings
 			if(currentInstruction == 0)
@@ -85,10 +78,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 			else if(activity == "TRACK")
 			{ 
 				_activityType = "TRACK";
-				_currentObject = _getCurrentObjectToTrack(false);
+				_currentManipulateObject = _getCurrentObjectToTrack(false);
 				_setObjectProperties(false, false, true);
 				_hideObjects(true);
-				processTrack(_currentObject as KStroke);
+				processTrack(_currentManipulateObject as KStroke);
 			}
 		}
 		
@@ -113,7 +106,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 					else if(isTrace)
 					{
 						currObj.template = true;
-						if(currObj.id == _currentObject.id)
+						if(currObj.id == _currentTemplateObject.id)
 							(view as KStrokeView).changeActivityHighlight(_KSketch.time, false);
 						else
 							(view as KStrokeView).changeActivityHighlight(_KSketch.time, true);
@@ -193,28 +186,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 				//remove the animation if the object is previously animated
 				_removeAnimationFromObject(currObj);
 			}
-			else //make a duplicate of the template object and use it
-			{
-				/*This portion creates a duplicate object
-				_interactionControl.begin_interaction_operation();
-				
-				var op:KCompositeOperation = new KCompositeOperation();
-				var newStroke:KStroke = _KSketch.object_Add_Stroke(currObj.points, _KSketch.time, currObj.color, currObj.thickness, op);
-				
-				//do a hit test objects between regions and this view
-				var view:KStrokeView = modelDisplay.viewsTable[newStroke];
-				var region:int = initRegion(view, regions);
-				newStroke.initRegion(region, region);
-				
-				// create a new list of model objects
-				var newObjects:KModelObjectList = new KModelObjectList();
-				
-				// add the new stroke to the list of model objects
-				newObjects.add(newStroke);
-				
-				// end the interaction
-				_interactionControl.end_interaction_operation(op, new KSelection(newObjects));*/
-			}
 		}
 		
 		private function _getCurrentObjectToTrack(useTemplate:Boolean):KObject
@@ -241,10 +212,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function autoSelectObjectToAnimate():void
 		{
-			if(_currentObject)
+			if(_currentManipulateObject)
 			{
 				var selectedList:KModelObjectList = new KModelObjectList();
-				selectedList.add(_currentObject);
+				selectedList.add(_currentManipulateObject);
 				_interactionControl.selection = new KSelection(selectedList);
 			}
 		}
@@ -342,9 +313,49 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 		}
 		
-		public function getCurrentObject():IObjectView
+		public function duplicateObject(currObj:KStroke):KObject
 		{
-			return _canvasView.getCurrentObject();
+			_interactionControl.begin_interaction_operation();
+			
+			var op:KCompositeOperation = new KCompositeOperation();
+			var newStroke:KStroke = new KStroke(0, currObj.points, currObj.color, currObj.thickness);
+			_interactionControl.end_interaction_operation();
+			
+			return (newStroke as KObject);
+		}
+		
+		public function getCurrentTemplateObjectView():IObjectView
+		{
+			return _canvasView.getCurrentTemplateObjectView();
+		}
+		
+		public function getCurrentObject(template:Boolean):KObject
+		{
+			var object:KObject = null;
+			for(var i:int=0; i<_KSketch.root.children.length(); i++)
+			{
+				var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
+				
+				if(!template)
+				{
+					if(currObj is KStroke && currObj.originalId == _currentObjectID && currObj.id != currObj.originalId)
+					{
+						object = currObj;
+						break;
+					}
+				}
+				else
+				{
+					if(currObj is KStroke && currObj.originalId == _currentObjectID && currObj.id == currObj.originalId)
+					{
+						object = currObj;
+						break;
+					}
+				}
+				
+			}
+			
+			return object;
 		}
 		
 		public function initRegion(object:DisplayObject, regionsArr:Array):int

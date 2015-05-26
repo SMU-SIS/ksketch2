@@ -630,7 +630,7 @@
 				return _activityControl.isNewSketch;
 			}
 
-			public function getCurrentObject():IObjectView
+			public function getCurrentTemplateObjectView():IObjectView
 			{
 				var currentId:int = _instructionsBox.currentObjectID();
 				for(var i:int=0; i<_KSketch.root.children.length(); i++)
@@ -649,7 +649,6 @@
 			 */
 			public function openInstructions():void
 			{
-				trace("Open instructions");
 				_instructionsBox.open(this,false);
 				PopUpManager.centerPopUp(_instructionsBox);
 				_instructionsBox.x = instructionsGroup.x + KSketchStyles.BUTTON_SIZE;

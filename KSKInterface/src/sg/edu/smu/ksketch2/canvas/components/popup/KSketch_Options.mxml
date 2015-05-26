@@ -12,9 +12,9 @@
 						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" initialize="initStyle()">
 	<fx:Script>
 		<![CDATA[
-			import mx.events.ItemClickEvent;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
 			
 			import spark.components.Application;
 			
@@ -77,14 +77,6 @@
 				KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_ON;
 			}
 			
-			/*
-			private function _difficultyEasy():void
-			{
-				diffEasy.selected = true;
-				KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_EASY;
-			}
-			*/
-			
 			private function _initiation(event:ItemClickEvent):void
 			{
 				if (event.currentTarget.selectedValue == "anywhere") {
@@ -94,19 +86,8 @@
 				}
 			}
 			
-			private function _difficulty(event:ItemClickEvent):void
+			private function _duration(event:Event):void
 			{
-				if (event.currentTarget.selectedValue == "Easy") {
-					KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_EASY;
-				} else if (event.currentTarget.selectedValue == "Medium") {
-					KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_MEDIUM;
-				} else {
-					KSketch_CanvasView_Preferences.difficulty = KSketch_CanvasView_Preferences.DIFFICULTY_HARD;
-				}
-			}
-			
-			private function _duration(event:Event):void{
-				trace("Here");
 				var tempArray:Array=activityDuration.text.split(":");
 				var durationInSec:int = 120;
 				if(tempArray.length == 1)
@@ -114,6 +95,13 @@
 				else if(tempArray.length == 2)
 					durationInSec = int(tempArray[0])*60 + int(tempArray[1]);
 				KSketch_CanvasView_Preferences.duration = durationInSec;
+			}
+			
+			private function _accuracy(event:Event):void
+			{
+				var accuracyInPercentage:int = parseInt(activityAccuracy.text);
+				if(!isNaN(accuracyInPercentage))
+					KSketch_CanvasView_Preferences.accuracy = accuracyInPercentage;
 			}
 			//================================================================================================================
 			
@@ -232,7 +220,6 @@
 		]]>
 	</fx:Script>
 	<fx:Declarations>
-		<s:RadioButtonGroup id="difficultyGroup" itemClick="_difficulty(event);"/>
 		<s:RadioButtonGroup id="initiationGroup" itemClick="_initiation(event);"/>
 	</fx:Declarations>
 	<s:filters>
@@ -284,16 +271,6 @@
 					<s:VerticalLayout/>
 				</s:layout>
 				
-				<!--
-				<s:Group>
-					<s:layout>
-						<s:HorizontalLayout/>
-					</s:layout>
-					<s:RadioButton groupName="difficultyGroup" id="diffEasy" value="Easy" label="Easy" fontSize="14"/>
-					<s:RadioButton groupName="difficultyGroup" id="diffMed" value="Medium" label="Medium" fontSize="14"/>
-					<s:RadioButton groupName="difficultyGroup" id="diffHard" value="Hard" label="Hard" fontSize="14"/>
-				</s:Group>
-				-->
 				<s:Group>
 					<s:layout>
 						<s:HorizontalLayout/>
@@ -306,8 +283,8 @@
 					<s:layout>
 						<s:HorizontalLayout/>
 					</s:layout>
-					<s:Label id="titleAccuracy" text="Accu{'\n'}Thres."/>
-					<s:TextArea id="accuracyThreshold" text="10%" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_100}"/>
+					<s:Label id="titleAccuracy" text="Accu Thres.{'\n'}(%)"/>
+					<s:TextArea id="activityAccuracy" text="100" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_100}" change="_accuracy(event)"/>
 				</s:Group>
 				
 			</s:Group>

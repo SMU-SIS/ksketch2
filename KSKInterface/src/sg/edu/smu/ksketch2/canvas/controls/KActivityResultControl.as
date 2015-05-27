@@ -1,6 +1,7 @@
 package sg.edu.smu.ksketch2.canvas.controls
 {
 	import flash.geom.Point;
+	import flash.system.Capabilities;
 	
 	import mx.collections.ArrayList;
 	
@@ -52,17 +53,25 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 			else if(activity == "TRACE")
 			{
-				var objTemplate:KObject = _activityControl.getCurrentObject(true);
-				var objDrawn:KObject = _activityControl.getCurrentObject(false);
+				var objTemplate:KObject = _activityControl.getCurrentObject(_instructionsBox.currentObjectID(), true);
+				var objDrawn:KObject = _activityControl.getCurrentObject(_instructionsBox.currentObjectID(), false);
 				
 				if(objDrawn)
 				{
-					//result = measureShapeAccuracy(result, objDrawn as KStroke, objTemplate as KStroke);
-					//result = measureTime(result);
+					result.shapeDistance = calculateShapeDistance(objDrawn as KStroke, objTemplate as KStroke);
+					result.shapeDistanceInCm = Math.round(result.shapeDistance* 2.54 / flash.system.Capabilities.screenDPI);
+					var strokeLengthProportion:Number = totalDistance(objDrawn as KStroke)/totalDistance(objTemplate as KStroke);
 					
-					//measures = 1;
+					result = measureTime(result);
+					
+					measures = 1;
+					
 					//stars += starTime(result);
-					//stars += starShapeAccuracy(result);
+					
+					//not sure
+					if(strokeLengthProportion > 0.002)
+						stars += starShapeDistance(result);
+					
 					//stars += starRegion(objDrawn, objTemplate);
 				}
 			}
@@ -93,7 +102,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function measureTime(result:KResult):KResult
 		{
 			var timeGiven:int = KSketch_CanvasView_Preferences.duration *1000;
-			var timeTaken:int = timeGiven - _canvasView.timeTaken;
+			var timeTaken:int = _canvasView.timeTaken;
 			
 			result.timeGiven = timeGiven;
 			result.timeTaken = timeTaken;
@@ -142,14 +151,99 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return stars;
 		}
 		
-		public function measureShapeAccuracy(result:KResult, objDrawn:KStroke, objTemplate:KStroke):KResult
+		public function maxDistance(object:KStroke):Number 
 		{
-			return result;
+			var _points:Vector.<Point> = object.points;
+			var maxDist:Number = Point.distance(_points[0],_points[1]);
+			for(var i:int = 0; i<_points.length; i++)
+			{
+				for(var j:int = 0; j<_points.length; j++){
+					var distance:Number = Point.distance(_points[i],_points[j]);
+					if(distance > maxDist) {
+						maxDist = distance;
+					}
+				}
+			}
+			
+			var distInCm:Number = maxDist * 2.54 / flash.system.Capabilities.screenDPI;
+			return distInCm;
 		}
 		
-		public function starShapeAccuracy(result:KResult):int
+		public function totalDistance(object:KStroke):Number 
 		{
+			var _points:Vector.<Point> = object.points;
+			var totDist:Number = 0;
+			for(var i:int = 0; i<_points.length; i++)
+			{
+				for(var j:int = 0; j<_points.length; j++){
+					totDist += Point.distance(_points[i],_points[j]);
+				}
+			}
+			
+			return totDist;
+		}
+
+		public function calculateShapeDistance(obj1:KStroke, obj2:KStroke):int
+		{
+			var points1:Vector.<Point> = obj1.points;
+			var points2:Vector.<Point> = obj2.points;
+			
+			var minDistanceTot:Number = 0;
+			var maxMinDistance:Number = 0;
+			var dist:Number = 0;
+			
+			for(var i:int = 0; i<points1.length; i++)
+			{
+				var minDistance:Number = Point.distance(points1[i],points2[0]) ;
+				if(minDistance > 0)
+				{
+					for(var j:int = 1; j<points2.length; j++) 
+					{
+						dist = Point.distance(points1[i],points2[j]);
+						if(dist<minDistance)
+						{
+							minDistance = dist;
+							
+							if(maxMinDistance == 0)
+								maxMinDistance = dist;
+							else if(maxMinDistance < dist)
+								maxMinDistance = dist;
+						}
+					}
+				}
+				minDistanceTot += minDistance;
+			}
+			
+			if(minDistanceTot > 0)
+				minDistanceTot = Math.round((minDistanceTot/points1.length) + maxMinDistance);
+			
+			return minDistanceTot;
+		}
+		
+		public function starShapeDistance(result:KResult):int
+		{
+			var maximumStarValues:Array = _canvasView.starValueArr;
 			var stars:int = 0;
+			
+			var maxDistance:int = maximumStarValues[0];
+			var oneStarDiff:int = maximumStarValues[1];
+			var twoStarDiff:int = maximumStarValues[2];
+			var threeStarDiff:int = maximumStarValues[3];
+			var diffDistance:int = Math.abs(maxDistance - result.shapeDistanceInCm);
+			
+			if (diffDistance >=0 && diffDistance <= threeStarDiff)
+				stars = 3;
+			if (diffDistance > threeStarDiff && diffDistance <= (threeStarDiff + twoStarDiff))
+				stars = 2;
+			if (diffDistance > (threeStarDiff + twoStarDiff) && diffDistance <= (threeStarDiff + twoStarDiff + oneStarDiff))
+				stars = 1;
+			
+			trace("star shape distance:************************");
+			trace("maxDistance: " + maxDistance);
+			trace("ACTUAL dist: " + result.shapeDistanceInCm);
+			trace("diffDistance: " + diffDistance);
+			trace("star values --> " + threeStarDiff + " , " + twoStarDiff + " , " + oneStarDiff);
+			trace("STARS EARNED --> " + stars);
 			
 			return stars;
 		}
@@ -220,44 +314,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		
 		
-		
-		
-		public function calculateShapeDistance(object1:KStroke, object2:KStroke):int 
-		{
-			var points1:Vector.<Point> = object1.points;
-			var points2:Vector.<Point> = object2.points;
-			
-			var minDistanceTot:Number = 0;
-			var maxMinDistance:Number = 0;
-			var dist:Number = 0;
-			
-			for(var i:int = 0; i<points1.length; i++)
-			{
-				var minDistance:Number = Point.distance(points1[i],points2[0]) ;
-				if(minDistance > 0)
-				{
-					for(var j:int = 1; j<points2.length; j++) 
-					{
-						dist = Point.distance(points1[i],points2[j]);
-						if(dist<minDistance)
-						{
-							minDistance = dist;
-							
-							if(maxMinDistance == 0)
-								maxMinDistance = dist;
-							else if(maxMinDistance < dist)
-								maxMinDistance = dist;
-						}
-					}
-				}
-				minDistanceTot += minDistance;
-			}
-			
-			if(minDistanceTot > 0)
-				minDistanceTot = Math.floor((minDistanceTot/points1.length) + maxMinDistance);
-
-			return minDistanceTot;
-		}
 		
 		public function measureTransformation(object1:KPath, object2:KPath):Number
 		{

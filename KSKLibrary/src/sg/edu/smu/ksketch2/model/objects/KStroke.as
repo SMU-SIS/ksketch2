@@ -9,7 +9,6 @@
 package sg.edu.smu.ksketch2.model.objects
 {
 	import flash.geom.Point;
-	import flash.system.Capabilities;
 	
 	import mx.utils.StringUtil;
 	
@@ -187,26 +186,6 @@ package sg.edu.smu.ksketch2.model.objects
 				newStroke.transformInterface = transformInterface.clone();
 			
 			return newStroke;
-		}
-		
-		/**
-		 * 
-		 * @return The maximum distance between all the points in a stroke
-		 */
-		public function maxDistance():Number {
-			var maxDist:Number = Point.distance(_points[0],_points[1]);
-			for(var i:int = 0; i<_points.length; i++)
-			{
-				for(var j:int = 0; j<_points.length; j++){
-					var distance:Number = Point.distance(_points[i],_points[j]);
-					if(distance > maxDist) {
-						maxDist = distance;
-					}
-				}
-			}
-			var distInCm:Number = maxDist * 2.54 / flash.system.Capabilities.screenDPI;
-			return distInCm;
-
 		}
 	}
 }

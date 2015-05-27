@@ -712,10 +712,19 @@
 			
 			public function get timeTaken():int
 			{
-				//_timeTaken = Math.floor(_timeTaken/1000);
+				trace("Canvas: " + _timeTaken);
 				return _timeTaken; //in milliseconds
 			}
+			
+			public function initAccuracySlider(value:int):void
+			{
+				_options.initAccuracySlider(value);
+			}
 
+			public function get starValueArr():Array
+			{
+				return _options.starValueArr;
+			}
 		]]>
 	</fx:Script>
 	

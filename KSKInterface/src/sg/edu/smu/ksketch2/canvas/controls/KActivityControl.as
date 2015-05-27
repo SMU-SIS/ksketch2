@@ -42,8 +42,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			var currentInstruction:int = _instructionsBox.currentInstruction();
 			_currentObjectID = _instructionsBox.currentObjectID();
-			_currentManipulateObject = getCurrentObject(false);
-			_currentTemplateObject = getCurrentObject(true);
+			_currentManipulateObject = getCurrentObject(_currentObjectID, false);
+			_currentTemplateObject = getCurrentObject(_currentObjectID, true);
 			//Reset settings
 			if(currentInstruction == 0)
 			{
@@ -71,8 +71,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			else if(activity == "TRACE")
 			{ 
 				//TODO: Implement logic to fix stars based on the maxDistance
-				trace("___________Distance_____________ " +  (_currentTemplateObject as KStroke).maxDistance());
 				_activityType = "TRACE";
+				
 				_discardSketchedObjects();
 				_setObjectProperties(false, true, false);
 			}
@@ -330,7 +330,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return _canvasView.getCurrentTemplateObjectView();
 		}
 		
-		public function getCurrentObject(template:Boolean):KObject
+		public function getCurrentObject(objID:int, template:Boolean):KObject
 		{
 			var object:KObject = null;
 			for(var i:int=0; i<_KSketch.root.children.length(); i++)
@@ -339,7 +339,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				
 				if(!template)
 				{
-					if(currObj is KStroke && currObj.originalId == _currentObjectID && currObj.id != currObj.originalId)
+					if(currObj is KStroke && currObj.originalId == objID && currObj.id != currObj.originalId)
 					{
 						object = currObj;
 						break;
@@ -347,7 +347,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				}
 				else
 				{
-					if(currObj is KStroke && currObj.originalId == _currentObjectID && currObj.id == currObj.originalId)
+					if(currObj is KStroke && currObj.originalId == objID && currObj.id == currObj.originalId)
 					{
 						object = currObj;
 						break;

@@ -8,9 +8,8 @@ package sg.edu.smu.ksketch2.model.objects
 		private var _time_taken:int;
 		private var _time_given:int;
 		private var _percentageQuadrant:int;
-		private var _shape_averageDistance:int;
-		private var _shape_maximumDistance:int;
-		private var _accuracyMotion:int;
+		private var _shapeDistance:int;
+		private var _shapeDistanceInCm:int;
 		private var _stars:int;
 		
 		public function KResult(activityType:String, instruction:int, id:int)
@@ -21,9 +20,8 @@ package sg.edu.smu.ksketch2.model.objects
 			_time_taken = 0;
 			_time_given = 0;
 			_percentageQuadrant = 0;
-			_shape_averageDistance = 0;
-			_shape_maximumDistance = 0;
-			_accuracyMotion = 0;
+			_shapeDistance = 0;
+			_shapeDistanceInCm = 0;
 			_stars = 0;
 		}
 		
@@ -61,34 +59,24 @@ package sg.edu.smu.ksketch2.model.objects
 			_percentageQuadrant = percentage;
 		}
 		
-		public function get averageDistance():int
+		public function get shapeDistance():int
 		{
-			return _shape_averageDistance;
+			return _shapeDistance;
 		}
 		
-		public function set averageDistance(distance:int):void
+		public function set shapeDistance(distance:int):void
 		{
-			_shape_averageDistance = distance;
+			_shapeDistance = distance;
 		}
 		
-		public function get maximumDistance():int
+		public function get shapeDistanceInCm():int
 		{
-			return _shape_maximumDistance;
+			return _shapeDistanceInCm;
 		}
 		
-		public function set maximumDistance(distance:int):void
+		public function set shapeDistanceInCm(distance:int):void
 		{
-			_shape_maximumDistance = distance;
-		}
-		
-		public function get accuracyMotion():int
-		{
-			return _accuracyMotion;
-		}
-		
-		public function set accuracyMotion(accuracy:int):void
-		{
-			_accuracyMotion = accuracy;
+			_shapeDistanceInCm = distance;
 		}
 		
 		public function get stars():int

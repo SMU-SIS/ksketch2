@@ -700,7 +700,7 @@
 					timerLabel.text = "Time: -" + int(-1*timeInSec/60) + ":" +int(-1*timeInSec %60);
 				}
 				
-				_timeTaken = _timeDuration*1000 - getTimer() - baseTimer;
+				_timeTaken = getTimer() - baseTimer;
 			}
 			
 			public function stopTimer():void

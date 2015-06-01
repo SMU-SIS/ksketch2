@@ -49,6 +49,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
+		 * Multiplies the x- and y-values from anther timed point into the timed point.
+		 * 
+		 * @param another_Point The other timed point to add from.
+		 */
+		public function multiply(another_Point:KTimedPoint):KTimedPoint
+		{
+			x *= another_Point.x;	// multiply the x-positions from both timed points
+			y *= another_Point.y;	// multiply the y-positions from both timed points
+			return this;
+		}
+		
+		/**
 		 * Subtracts the x- and y-values from another timed point into the timed point.
 		 * 
 		 * @param another_Point The other timed point to subtract from.

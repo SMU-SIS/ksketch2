@@ -425,7 +425,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 			keyXML.appendChild(pathXML);
 			
 			pathXML = scalePath.serialize();
-			pathXML.@type = "scale";
+			pathXML.@type = "scale2";
 			keyXML.appendChild(pathXML);
 			
 			return keyXML;
@@ -466,7 +466,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 						rotatePath.deserialize(currentPathXML.@points);
 						break;
 					
-					case "scale":
+					case "scale2":
 						scalePath.deserialize(currentPathXML.@points);
 						break;
 				}

@@ -22,7 +22,8 @@ package sg.edu.smu.ksketch2.utils
 	public class KPathProcessing
 	{
 		/**
-		 * Adds dx and dy to the portion of path starting from the start proportion to the end proportion.
+		 * Adds or multiplies dx and dy to the portion of path starting from the start proportion to the end proportion.
+		 * Adding is used for translation and rotation paths, while multiplying is use for scale paths.
 		 * 
 		 * @param The target path.
 		 * @param The start proportion.
@@ -48,8 +49,18 @@ package sg.edu.smu.ksketch2.utils
 			if(duration == 0)
 			{
 				index = 0;
-				points[points.length-1].x += dx;
-				points[points.length-1].y += dy;
+				if (path.type != KPath.SCALE)
+				{
+					// Translates and Rotates are additive
+					points[points.length-1].x += dx;
+					points[points.length-1].y += dy;
+				}
+				else
+				{
+					// Scales are multiplicative
+					points[points.length-1].x *= dx;
+					//points[points.length-1].y *= 1 + dy;  //stepDy should be 0 					
+				}
 			}
 			else
 			{
@@ -72,11 +83,25 @@ package sg.edu.smu.ksketch2.utils
 						else if(interpolationFactor > 1)
 							interpolationFactor = 1;
 						
-						stepDx = dx * interpolationFactor;
-						stepDy = dy * interpolationFactor;
-						
-						currentPoint.x += stepDx;
-						currentPoint.y += stepDy;
+						if (path.type != KPath.SCALE)
+						{
+							// Translates and Rotates are additive	
+							stepDx = dx * interpolationFactor;
+							stepDy = dy * interpolationFactor;
+							
+							currentPoint.x += stepDx;
+							currentPoint.y += stepDy;
+						}
+						else
+						{
+							// Scales are multiplicative
+							stepDx = (dx-1) * interpolationFactor;
+							//stepDy should be 0
+														
+							currentPoint.x *= 1 + stepDx;
+							//currentPoint.y *= stepDy;  //stepDy should be 0 
+						}
+
 					}
 				}
 			}
@@ -102,11 +127,17 @@ package sg.edu.smu.ksketch2.utils
 			var i:int;
 			var length:int = pathBefore.length; 		
 			var length2:int = pathAfter.length;
+			var firstX:Number = 0;
+			
+			if (pathBefore.type == KPath.SCALE)
+			{
+				firstX = 1;
+			}
 			
 			if(length == 0 && length2 == 0)
 			{
-				joinedPath.points.push(new KTimedPoint(0,0,0));
-				joinedPath.points.push(new KTimedPoint(0,0,durationBefore+durationAfter));				
+				joinedPath.points.push(new KTimedPoint(firstX,0,0));
+				joinedPath.points.push(new KTimedPoint(firstX,0,durationBefore+durationAfter));				
 			}
 			else
 			{
@@ -135,8 +166,8 @@ package sg.edu.smu.ksketch2.utils
 				}
 				else
 				{
-					joinedPath.points.push(new KTimedPoint(0,0,0));
-					joinedPath.points.push(new KTimedPoint(0,0,durationBefore));
+					joinedPath.points.push(new KTimedPoint(firstX,0,0));
+					joinedPath.points.push(new KTimedPoint(firstX,0,durationBefore));
 				}
 				
 				accumulatedPoint = joinedPath.points[joinedPath.length-1];
@@ -147,8 +178,18 @@ package sg.edu.smu.ksketch2.utils
 					for(i = 1; i<length2; i++)
 					{
 						currentPoint = pathAfter.points[i].clone();
-						currentPoint.x = currentPoint.x + accumulatedPoint.x;
-						currentPoint.y = currentPoint.y + accumulatedPoint.y;
+						if (pathBefore.type != KPath.SCALE)
+						{
+							// Translates and Rotates are additive
+							currentPoint.x += accumulatedPoint.x;
+							currentPoint.y += accumulatedPoint.y;
+						}
+						else
+						{
+							// Scales are multiplicative
+							currentPoint.x *= accumulatedPoint.x;
+							currentPoint.y *= accumulatedPoint.y;
+						}
 						currentPoint.time = currentPoint.time*afterScale + accumulatedPoint.time;
 						joinedPath.points.push(currentPoint);
 					}

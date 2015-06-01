@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/CollisionDetectionKit_v15/CollisionDetectionKit_v15.iml" filepath="$PROJECT_DIR$/CollisionDetectionKit_v15/CollisionDetectionKit_v15.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FLV Encoder/FLV Encoder.iml" filepath="$PROJECT_DIR$/FLV Encoder/FLV Encoder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Gestouch/Gestouch.iml" filepath="$PROJECT_DIR$/Gestouch/Gestouch.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KSKApp_Air/KSKApp_Air.iml" filepath="$PROJECT_DIR$/KSKApp_Air/KSKApp_Air.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KSKApp_Web/KSKApp_Web.iml" filepath="$PROJECT_DIR$/KSKApp_Web/KSKApp_Web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KSKInterface/KSKInterface.iml" filepath="$PROJECT_DIR$/KSKInterface/KSKInterface.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KSKLibrary/KSKLibrary.iml" filepath="$PROJECT_DIR$/KSKLibrary/KSKLibrary.iml" />
+    </modules>
+  </component>
+</project>

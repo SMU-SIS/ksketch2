@@ -27,38 +27,24 @@
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
-			private var _maxDistance:int;
 			public var mode:int;
+			
+			private var _oneStarAvg:Number;
+			private var _twoStarAvg:Number;
+			private var _threeStarAvg:Number;
+			
+			private var _oneStarMax:Number;
+			private var _twoStarMax:Number;
+			private var _threeStarMax:Number;
 			
 			[Bindable]
 			private var timeValue:String = "02:00";
 			
 			[Bindable]
-			private var threeStar_min:int = 0;
+			private var maximumSliderValue:int = 10;
 			
 			[Bindable]
-			private var threeStar_max:int = 0;
-			
-			[Bindable]
-			private var threeStar_val:int = 0;
-
-			[Bindable]
-			private var twoStar_min:int = 0;
-			
-			[Bindable]
-			private var twoStar_max:int = 0;
-			
-			[Bindable]
-			private var twoStar_val:int = 0;
-			
-			[Bindable]
-			private var oneStar_min:int = 0;
-			
-			[Bindable]
-			private var oneStar_max:int = 0;
-			
-			[Bindable]
-			private var oneStar_val:int = 0;
+			private var minimumSliderValue:int = 0;
 			
 			private function initStyle():void
 			{
@@ -130,80 +116,45 @@
 				KSketch_CanvasView_Preferences.duration = durationInSec;
 			}
 			
-			public function initAccuracySlider(distance:int):void
+			protected function oneStarSlider_Avg_changeEndHandler(event:FlexEvent):void
 			{
-				if(distance == 0)
-				{
-					threeStar_min = 0;
-					threeStar_max = 0;
-					threeStar_val = 0;
-					
-					twoStar_min = 0;
-					twoStar_max = 0;
-					twoStar_val = 0;
-					
-					oneStar_min = 0;
-					oneStar_max = 0;
-					oneStar_val = 0;
-				}
-				else
-				{
-					threeStar_min = 0;
-					threeStar_max = distance;
-					threeStar_val = distance;
-					
-					twoStar_min = distance;
-					twoStar_max = distance * 2;
-					twoStar_val = twoStar_max;
-					
-					oneStar_min = twoStar_max;
-					oneStar_max = twoStar_max * 2;
-					oneStar_val = oneStar_max;
-					
-					_maxDistance = distance;
-				}
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_oneStarAvg = changedValue;
 			}
 			
-			protected function oneStarSlider_changeEndHandler(event:FlexEvent):void
+			protected function twoStarSlider_Avg_changeEndHandler(event:FlexEvent):void
 			{
-				var changedValue:int = (event.currentTarget as HSlider).value;
-				oneStar_val = changedValue;
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_twoStarAvg = changedValue;
 			}
 			
-			protected function twoStarSlider_changeEndHandler(event:FlexEvent):void
+			protected function threeStarSlider_Avg_changeEndHandler(event:FlexEvent):void
 			{
-				var changedValue:int = (event.currentTarget as HSlider).value;
-				twoStar_val = changedValue;
-				
-				oneStar_min = changedValue;
-				oneStar_max = oneStar_min * 2;
-				oneStar_val = oneStar_max;
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_threeStarAvg = changedValue;
 			}
 			
-			protected function threeStarSlider_changeEndHandler(event:FlexEvent):void
+			protected function oneStarSlider_Max_changeEndHandler(event:FlexEvent):void
 			{
-				var changedValue:int = (event.currentTarget as HSlider).value;
-				
-				threeStar_val = changedValue;
-				
-				twoStar_min = changedValue;
-				twoStar_max = _maxDistance;
-				if(_maxDistance <= twoStar_min)
-					twoStar_max = _maxDistance * 2;
-				twoStar_val = twoStar_max;
-				
-				oneStar_min = twoStar_max;
-				oneStar_max = twoStar_max * 2;
-				oneStar_val = oneStar_max;
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_oneStarMax = changedValue;
+			}
+			
+			protected function twoStarSlider_Max_changeEndHandler(event:FlexEvent):void
+			{
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_twoStarMax = changedValue;
+			}
+			
+			protected function threeStarSlider_Max_changeEndHandler(event:FlexEvent):void
+			{
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_threeStarMax = changedValue;
 			}
 			
 			public function get starValueArr():Array
 			{
-				var oneStarDiff:int = oneStar_val - oneStar_min;
-				var twoStarDiff:int = twoStar_val - twoStar_min;
-				var threeStarDiff:int = threeStar_val - threeStar_min;
-				
-				var arr:Array = [_maxDistance, oneStarDiff, twoStarDiff, threeStarDiff];
+				var arr:Array = [_oneStarAvg, _twoStarAvg, _threeStarAvg, _oneStarMax, _twoStarMax, _threeStarMax];
 				return arr;
 			}
 			//================================================================================================================
@@ -364,6 +315,26 @@
 			</s:Group>
 		</s:Group>
 		
+		<s:Group id="initGroup">
+			<s:layout>
+				<s:VerticalLayout paddingLeft="10"/>
+			</s:layout>
+			<s:Label id="initLabel" text="Initiation"/>
+			<s:Group>
+				<s:layout>
+					<s:VerticalLayout/>
+				</s:layout>
+				
+				<s:Group>
+					<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+					<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+					<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"  fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+				</s:Group>
+			</s:Group>
+		</s:Group>
+		
 		<s:Group id="diffGroup">
 			<s:layout>
 				<s:VerticalLayout paddingLeft="10"/>
@@ -386,59 +357,72 @@
 					<s:layout>
 						<s:VerticalLayout/>
 					</s:layout>
-					<s:Label id="titleAccuracy" text="Accuracy Threshold (Max. Distance in cm)"/>
-					<s:Label id="distLabel" text="Maximum distance (in cm.): 0"/>
+					<s:Label id="titleAccuracyAvg" text="Accuracy Threshold - Average Distance"/>
 					<s:Group>
 						<s:Form>
 							<s:FormItem label="3-stars:">
-								<s:HSlider id="threeStarSlider"
-										   minimum="{threeStar_min}"
-										   maximum="{threeStar_max}"
-										   value="{threeStar_val}"
-										   changeEnd="threeStarSlider_changeEndHandler(event)"
+								<s:HSlider id="threeStarSlider_avg"
+										   minimum="{minimumSliderValue}"
+										   maximum="{maximumSliderValue}"
+										   snapInterval="0.05"
+										   changeEnd="threeStarSlider_Avg_changeEndHandler(event)"
 										   showDataTip="true"/>
 							</s:FormItem>
 							<s:FormItem label="2-stars:">
-								<s:HSlider id="twoStarSlider"
-										   minimum="{twoStar_min}"
-										   maximum="{twoStar_max}"
-										   value="{twoStar_val}"
-										   changeEnd="twoStarSlider_changeEndHandler(event)"
+								<s:HSlider id="twoStarSlider_avg"
+										   minimum="{minimumSliderValue}"
+										   maximum="{maximumSliderValue}"
+										   snapInterval="0.05"
+										   changeEnd="twoStarSlider_Avg_changeEndHandler(event)"
 										   showDataTip="true"/>
 							</s:FormItem>
 							<s:FormItem label="1-star :">
-								<s:HSlider id="oneStarSlider"
-										   minimum="{oneStar_min}"
-										   maximum="{oneStar_max}"
-										   value="{oneStar_val}"
-										   changeEnd="oneStarSlider_changeEndHandler(event)"
+								<s:HSlider id="oneStarSlider_avg"
+										   minimum="{minimumSliderValue}"
+										   maximum="{maximumSliderValue}"
+										   snapInterval="0.05"
+										   changeEnd="oneStarSlider_Avg_changeEndHandler(event)"
 										   showDataTip="true"/>
 							</s:FormItem>
 						</s:Form>
 					</s:Group>
-
 				</s:Group>
-				
-			</s:Group>
-		</s:Group>
-		
-		<s:Group id="initGroup">
-			<s:layout>
-				<s:VerticalLayout paddingLeft="10"/>
-			</s:layout>
-			<s:Label id="initLabel" text="Initiation"/>
-			<s:Group>
-				<s:layout>
-					<s:VerticalLayout/>
-				</s:layout>
 				
 				<s:Group>
 					<s:layout>
-						<s:HorizontalLayout/>
+						<s:VerticalLayout/>
 					</s:layout>
-					<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
-					<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"  fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+					<s:Label id="titleAccuracyMax" text="Accuracy Threshold - Maximum Distance"/>
+					<s:Group>
+						<s:Form>
+							<s:FormItem label="3-stars:">
+								<s:HSlider id="threeStarSlider_max"
+										   minimum="{minimumSliderValue}"
+										   maximum="{maximumSliderValue}"
+										   snapInterval="0.05"
+										   changeEnd="threeStarSlider_Max_changeEndHandler(event)"
+										   showDataTip="true"/>
+							</s:FormItem>
+							<s:FormItem label="2-stars:">
+								<s:HSlider id="twoStarSlider_max"
+										   minimum="{minimumSliderValue}"
+										   maximum="{maximumSliderValue}"
+										   snapInterval="0.05"
+										   changeEnd="twoStarSlider_Max_changeEndHandler(event)"
+										   showDataTip="true"/>
+							</s:FormItem>
+							<s:FormItem label="1-star :">
+								<s:HSlider id="oneStarSlider_max"
+										   minimum="{minimumSliderValue}"
+										   maximum="{maximumSliderValue}"
+										   snapInterval="0.05"
+										   changeEnd="oneStarSlider_Max_changeEndHandler(event)"
+										   showDataTip="true"/>
+							</s:FormItem>
+						</s:Form>
+					</s:Group>
 				</s:Group>
+				
 			</s:Group>
 		</s:Group>
 		
@@ -449,4 +433,5 @@
 			<s:Button id="closeButton" label="Close" click="close()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
 		</s:Group>
 	</s:Group>
+	
 </s:SkinnablePopUpContainer>

@@ -8,8 +8,8 @@ package sg.edu.smu.ksketch2.model.objects
 		private var _time_taken:int;
 		private var _time_given:int;
 		private var _percentageQuadrant:int;
-		private var _shapeDistance:int;
-		private var _shapeDistanceInCm:int;
+		private var _averageDistance:Number;
+		private var _maximumDistance:Number;
 		private var _stars:int;
 		
 		public function KResult(activityType:String, instruction:int, id:int)
@@ -20,8 +20,8 @@ package sg.edu.smu.ksketch2.model.objects
 			_time_taken = 0;
 			_time_given = 0;
 			_percentageQuadrant = 0;
-			_shapeDistance = 0;
-			_shapeDistanceInCm = 0;
+			_averageDistance = 0;
+			_maximumDistance = 0;
 			_stars = 0;
 		}
 		
@@ -59,24 +59,24 @@ package sg.edu.smu.ksketch2.model.objects
 			_percentageQuadrant = percentage;
 		}
 		
-		public function get shapeDistance():int
+		public function get averageDistance():Number
 		{
-			return _shapeDistance;
+			return _averageDistance;
 		}
 		
-		public function set shapeDistance(distance:int):void
+		public function set averageDistance(distance:Number):void
 		{
-			_shapeDistance = distance;
+			_averageDistance = distance;
 		}
 		
-		public function get shapeDistanceInCm():int
+		public function get maximumDistance():Number
 		{
-			return _shapeDistanceInCm;
+			return _maximumDistance;
 		}
 		
-		public function set shapeDistanceInCm(distance:int):void
+		public function set maximumDistance(distance:Number):void
 		{
-			_shapeDistanceInCm = distance;
+			_maximumDistance = distance;
 		}
 		
 		public function get stars():int

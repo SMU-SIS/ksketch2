@@ -715,11 +715,6 @@
 				trace("Canvas: " + _timeTaken);
 				return _timeTaken; //in milliseconds
 			}
-			
-			public function initAccuracySlider(value:int):void
-			{
-				_options.initAccuracySlider(value);
-			}
 
 			public function get starValueArr():Array
 			{

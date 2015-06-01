@@ -45,7 +45,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if(activity == "RECALL")
 			{
 				result = measureQuadrant(result);
-				//result = measureTime(result);
+				result = measureTime(result);
 				
 				measures = 1; 
 				stars += starQuadrant(result);
@@ -58,21 +58,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 				
 				if(objDrawn)
 				{
-					result.shapeDistance = calculateShapeDistance(objDrawn as KStroke, objTemplate as KStroke);
-					result.shapeDistanceInCm = Math.round(result.shapeDistance* 2.54 / flash.system.Capabilities.screenDPI);
-					var strokeLengthProportion:Number = totalDistance(objDrawn as KStroke)/totalDistance(objTemplate as KStroke);
-					
+					result = calculateShapeDistance(result, objDrawn as KStroke, objTemplate as KStroke);
 					result = measureTime(result);
 					
 					measures = 1;
-					
-					//stars += starTime(result);
-					
-					//not sure
-					if(strokeLengthProportion > 0.002)
-						stars += starShapeDistance(result);
-					
-					//stars += starRegion(objDrawn, objTemplate);
+					stars += starShapeDistance(result);
 				}
 			}
 			else if(activity == "TRACK")
@@ -169,21 +159,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return distInCm;
 		}
 		
-		public function totalDistance(object:KStroke):Number 
-		{
-			var _points:Vector.<Point> = object.points;
-			var totDist:Number = 0;
-			for(var i:int = 0; i<_points.length; i++)
-			{
-				for(var j:int = 0; j<_points.length; j++){
-					totDist += Point.distance(_points[i],_points[j]);
-				}
-			}
-			
-			return totDist;
-		}
-
-		public function calculateShapeDistance(obj1:KStroke, obj2:KStroke):int
+		public function calculateShapeDistance(result:KResult, obj1:KStroke, obj2:KStroke):KResult
 		{
 			var points1:Vector.<Point> = obj1.points;
 			var points2:Vector.<Point> = obj2.points;
@@ -201,50 +177,66 @@ package sg.edu.smu.ksketch2.canvas.controls
 					{
 						dist = Point.distance(points1[i],points2[j]);
 						if(dist<minDistance)
-						{
 							minDistance = dist;
-							
-							if(maxMinDistance == 0)
-								maxMinDistance = dist;
-							else if(maxMinDistance < dist)
-								maxMinDistance = dist;
-						}
 					}
+					
+					
+					if(maxMinDistance == 0)
+						maxMinDistance = minDistance;
+					else if(maxMinDistance < minDistance)
+						maxMinDistance = minDistance;
 				}
 				minDistanceTot += minDistance;
 			}
 			
 			if(minDistanceTot > 0)
-				minDistanceTot = Math.round((minDistanceTot/points1.length) + maxMinDistance);
+			{
+				result.averageDistance = minDistanceTot/points1.length;
+				result.maximumDistance = maxMinDistance;
+			}
 			
-			return minDistanceTot;
+			return result;
 		}
 		
 		public function starShapeDistance(result:KResult):int
 		{
-			var maximumStarValues:Array = _canvasView.starValueArr;
+			var accuracyThresholdValues:Array = _canvasView.starValueArr;
 			var stars:int = 0;
 			
-			var maxDistance:int = maximumStarValues[0];
-			var oneStarDiff:int = maximumStarValues[1];
-			var twoStarDiff:int = maximumStarValues[2];
-			var threeStarDiff:int = maximumStarValues[3];
-			var diffDistance:int = Math.abs(maxDistance - result.shapeDistanceInCm);
+			var oneStarAvg:Number = accuracyThresholdValues[0];
+			var twoStarAvg:Number = accuracyThresholdValues[1];
+			var threeStarAvg:Number = accuracyThresholdValues[2];
 			
-			if (diffDistance >=0 && diffDistance <= threeStarDiff)
+			var oneStarMax:Number = accuracyThresholdValues[3];
+			var twoStarMax:Number = accuracyThresholdValues[4];
+			var threeStarMax:Number = accuracyThresholdValues[5];
+			
+			var averageDistanceInCM:Number = result.averageDistance * 2.54 / flash.system.Capabilities.screenDPI;
+			var maximumDistanceInCM:Number = result.maximumDistance * 2.54 / flash.system.Capabilities.screenDPI;
+			
+			if (averageDistanceInCM >=0 && averageDistanceInCM <= threeStarAvg)
 				stars = 3;
-			if (diffDistance > threeStarDiff && diffDistance <= (threeStarDiff + twoStarDiff))
+			if (averageDistanceInCM > threeStarAvg && averageDistanceInCM <= twoStarAvg)
 				stars = 2;
-			if (diffDistance > (threeStarDiff + twoStarDiff) && diffDistance <= (threeStarDiff + twoStarDiff + oneStarDiff))
+			if (averageDistanceInCM > twoStarAvg && averageDistanceInCM <= oneStarAvg)
 				stars = 1;
 			
-			trace("star shape distance:************************");
-			trace("maxDistance: " + maxDistance);
-			trace("ACTUAL dist: " + result.shapeDistanceInCm);
-			trace("diffDistance: " + diffDistance);
-			trace("star values --> " + threeStarDiff + " , " + twoStarDiff + " , " + oneStarDiff);
-			trace("STARS EARNED --> " + stars);
+			trace("averageDistance: " + averageDistanceInCM);
+			trace("average values: " + threeStarAvg + "," + twoStarAvg + "," + oneStarAvg);
+			trace("stars: " + stars);
 			
+			if (maximumDistanceInCM >=0 && maximumDistanceInCM <= threeStarMax)
+				stars += 3;
+			if (maximumDistanceInCM > threeStarMax && maximumDistanceInCM <= twoStarMax)
+				stars += 2;
+			if (maximumDistanceInCM > twoStarMax && maximumDistanceInCM <= oneStarMax)
+				stars += 1;
+			
+			trace("averageDistance: " + maximumDistanceInCM);
+			trace("average values: " + threeStarMax + "," + twoStarAvg + "," + oneStarMax);
+			trace("stars: " + stars);
+			
+			stars = stars/2;
 			return stars;
 		}
 		
@@ -300,40 +292,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 				}
 			}
 			
-			trace("star region: " + stars + ", objDrawn: " + objDrawn.startRegion + ", objTemplate: " + objTemplate.startRegion);
 			return stars;
 		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		public function measureTransformation(object1:KPath, object2:KPath):Number
-		{
-			var points1:Vector.<KTimedPoint> = object1.points;
-			var points2:Vector.<KTimedPoint> = object2.points;
-			var minDistanceTot:Number = 0;
-			for(var i:int = 0; i<points1.length; i++)
-			{
-				var minDistance:Number = KTimedPoint.distance(points1[i],points2[0]) ;
-				for(var j:int = 1; j<points2.length; j++) {
-					var dist:Number = KTimedPoint.distance(points1[i],points2[j]);
-					if(dist<minDistance) {
-						minDistance = dist;
-					}
-					minDistanceTot += minDistance;
-				}
-			}
-			return minDistanceTot;
-		}
-	
 		public function get resultArr():ArrayList
 		{
 			return _resultArr;

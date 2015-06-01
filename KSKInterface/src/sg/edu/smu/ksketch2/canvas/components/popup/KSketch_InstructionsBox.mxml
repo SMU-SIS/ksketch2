@@ -203,7 +203,6 @@
 			instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 			instructionHeader.text = "Step " + (_currentInstruction + 1);
 			enableDisableButtons();
-			_initAccuracySlider();
 		}
 
 		private function nextInstruction():void {
@@ -218,7 +217,6 @@
 				_canvasView.openInstructions();
 				instructionButton_Start.label = "START";
 			}
-			_initAccuracySlider();
 		}
 
 		private function enableDisableButtons():void {
@@ -240,7 +238,6 @@
 			instructionHeader.text = "Step " + (_currentInstruction + 1);
 			enableDisableActivity();
 			enableDisableButtons();
-			_initAccuracySlider();
 		}
 
 		private function nextActvity():void {
@@ -250,7 +247,6 @@
 			instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 			instructionHeader.text = "Step " + (_currentInstruction + 1);
 			enableDisableActivity();
-			_initAccuracySlider();
 		}
 
 		private function enableDisableActivity():void {
@@ -262,18 +258,6 @@
 				activityButton_Next.enabled = false;
 			else
 				activityButton_Next.enabled = true;
-		}
-		
-		private function _initAccuracySlider():void
-		{
-			if(activityHeader.text == "TRACE")
-			{
-				trace("init accuracy slider for object id: " + currentObjectID());
-				var maxDistance:int = Math.round(_resultControl.maxDistance(_activityControl.getCurrentObject(currentObjectID(), true) as KStroke));
-				_canvasView.initAccuracySlider(maxDistance);
-			}
-			else
-				_canvasView.initAccuracySlider(0);
 		}
 
 		public function currentObjectID():int {

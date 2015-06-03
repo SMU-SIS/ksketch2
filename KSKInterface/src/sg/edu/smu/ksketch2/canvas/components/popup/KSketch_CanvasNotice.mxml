@@ -15,7 +15,9 @@
 		<![CDATA[
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
-			
+
+			import sg.edu.smu.ksketch2.KSketch_Config;
+
 			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketchStyles;
@@ -49,11 +51,11 @@
 				
 				this.removeEventListener(FlexEvent.INITIALIZE, init);
 				if(_parent == CANVASNOTICE_FAILED_SYNC)
-					notificationLabel.text = "Connection lost. Check your network connection or contact the K-Sketch team at ksketch@smu.edu.sg.\nYour changes will be saved when the connection is re-established.";
+					notificationLabel.text = "Connection lost. Check your network connection or contact the K-Sketch team at "+KSketch_Config.email+".\nYour changes will be saved when the connection is re-established.";
 				else if(_parent == CANVASNOTICE_FAILED_SKETCH)
-					notificationLabel.text = "Unable to display sketch. Check your network connection or\ncontact the K-Sketch team at ksketch@smu.edu.sg.";
+					notificationLabel.text = "Unable to display sketch. Check your network connection or\ncontact the K-Sketch team at "+KSketch_Config.email;
 				else if(_parent == CANVASNOTICE_FAILED_LOGIN)
-					notificationLabel.text = "Unable to login. Check your network connection or\ncontact the K-Sketch team at ksketch@smu.edu.sg.";
+					notificationLabel.text = "Unable to login. Check your network connection or\ncontact the K-Sketch team at "+KSketch_Config.email;
 				
 				notificationLabel.setStyle('textAlign', 'center');
 			}

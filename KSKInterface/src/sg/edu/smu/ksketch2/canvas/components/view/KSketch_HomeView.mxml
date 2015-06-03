@@ -15,7 +15,7 @@
 		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
-		initialize="init(true)"
+		initialize="init(KSketch_Config.isMobile)"
 		addedToStage="startMonitorConnection()"
 		destructionPolicy="auto"
 		>
@@ -36,7 +36,9 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.utils.ObjectProxy;
-			
+
+			import sg.edu.smu.ksketch2.KSketch_Config;
+
 			import spark.events.IndexChangeEvent;
 			
 			import air.net.URLMonitor;

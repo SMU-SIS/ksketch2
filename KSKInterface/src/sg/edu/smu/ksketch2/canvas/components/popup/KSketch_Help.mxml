@@ -14,7 +14,9 @@
 		<![CDATA[
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
-			
+
+			import sg.edu.smu.ksketch2.KSketch_Config;
+
 			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketchAssets;
@@ -48,7 +50,7 @@
 			
 			private function more():void
 			{
-				navigateToURL(new URLRequest("http://ksketch.smu.edu.sg/app/help.html"),"_blank");
+				navigateToURL(new URLRequest(KSketch_Config.host_name+"/app/help.html"),"_blank");
 			}
 			
 			override public function close(commit:Boolean=false, data:*=null):void

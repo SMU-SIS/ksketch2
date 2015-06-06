@@ -137,7 +137,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			var length:int = _transitionObjects.length();
 			
 			for(i; i < length; i++)
-				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), 0, 0, 0, _scale-1);
+				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), 0, 0, 0, _scale);
 
 		}
 	}

@@ -158,7 +158,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			
 			// update the rotation
 			for(i; i < length; i++)
-				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), 0, 0, _theta, 0 );
+				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), 0, 0, _theta, 1 );
 			
 			// set the previous point as the current touch location
 			_previousPoint = touchLocation;

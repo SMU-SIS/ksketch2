@@ -69,8 +69,9 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * Deserializes the XML object to a visibility key frame.
 		 * 
 		 * @param xml The target XML object.
+		 * @param params Optional state to be used in desearialization.
 		 */
-		override public function deserialize(xml:XML):void
+		override public function deserialize(xml:XML, params:Object = null):void
 		{
 			
 		}

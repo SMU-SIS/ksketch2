@@ -35,7 +35,7 @@ package sg.edu.smu.ksketch2.model.objects
 		private var _parent:KGroup;							// the object's parent
 		
 		protected var _selected:Boolean;					// the object's selection state flag
-		protected var _center:Point;						// the object's centroid
+		protected var _center:Point;						// the object's center of rotation/scaling
 		protected var _creationTime:Number;					// the object's creation time
 		
 		/**

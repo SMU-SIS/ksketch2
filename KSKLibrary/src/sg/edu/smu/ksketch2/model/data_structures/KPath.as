@@ -158,6 +158,27 @@ package sg.edu.smu.ksketch2.model.data_structures
 			points.push(new KTimedPoint(x,y,time));
 		}
 		
+		
+		/**
+		 * Adds an offset value to every point in the path.
+		 * 
+		 * @param x The x offset.
+		 * @param y The y offset.
+		 */
+		public function offset(x:Number,y:Number):void
+		{
+			var i:int;						// the loop variable
+			var length:int = points.length;	// the number of points in the key frames path
+			
+			for(i=1; i<length; i++)
+			{
+				points[i].x += x;
+				points[i].y += y;
+			}
+		}
+		
+		
+		
 		/**
 		 * Finds a point in the path located from the value
 		 * that is proportional to the total time duration
@@ -280,10 +301,25 @@ package sg.edu.smu.ksketch2.model.data_structures
 				((prevKey.time - prevKey.previous.time)/(pPrevLast.time - pPrevFirst.time));
 			var scaledTimeDiff:Number = actualTimeDiff*((pThisLast.time - pThisFirst.time)/(keyFrame.time - prevKey.time));
 			
-			return new KTimedPoint(
-				pThisFirst.x - (pPrevLast.x - pPrevPenultimate.x),
-				pThisFirst.y - (pPrevLast.y - pPrevPenultimate.y),
-				pThisFirst.time - scaledTimeDiff);
+			var previousPoint:KTimedPoint;
+			if (type != SCALE)
+			{
+				// Translates and Rotates are additive.
+				previousPoint = new KTimedPoint(
+					pThisFirst.x - (pPrevLast.x - pPrevPenultimate.x),
+					pThisFirst.y - (pPrevLast.y - pPrevPenultimate.y),
+					pThisFirst.time - scaledTimeDiff);
+			}
+			else
+			{
+				// Scales are multiplicative
+				previousPoint = new KTimedPoint(
+					pThisFirst.x * (pPrevPenultimate.x / pPrevLast.x ), // i.e. pThisFirst.x / (pPrevLast.x / pPrevPenultimate.x)
+					0,													// Must do this. Otherwise divide by 0.
+					pThisFirst.time - scaledTimeDiff);
+			}
+			
+			return previousPoint;
 		}
 
 		/**
@@ -335,10 +371,25 @@ package sg.edu.smu.ksketch2.model.data_structures
 				((nextKey.time - keyFrame.time)/(pNextLast.time - pNextFirst.time));
 			var scaledTimeDiff:Number = actualTimeDiff*((pThisLast.time - pThisFirst.time)/(keyFrame.time - keyFrame.previous.time));
 			
-			return new KTimedPoint(
-				pThisLast.x + (pNextSecond.x - pNextFirst.x),
-				pThisLast.y + (pNextSecond.y - pNextFirst.y),
-				pThisLast.time + scaledTimeDiff);
+			var nextPoint:KTimedPoint;
+			if (type != SCALE)
+			{
+				// Translates and Rotates are additive.
+				nextPoint = new KTimedPoint(
+					pThisLast.x + (pNextSecond.x - pNextFirst.x),
+					pThisLast.y + (pNextSecond.y - pNextFirst.y),
+					pThisLast.time + scaledTimeDiff);
+			}
+			else
+			{
+				// Scales are multiplicative
+				nextPoint = new KTimedPoint(
+					pThisLast.x * (pNextSecond.x / pNextFirst.x),
+					0, // Must do this. Otherwise divide by 0.
+					pThisLast.time + scaledTimeDiff);
+			}
+			
+			return nextPoint;
 		}
 		
 		
@@ -432,7 +483,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 		
 		/**
 		 * Finds the index of the point whose total distance from the starting point is
-		 * most closest below the given proportional distance.
+		 * closest below the given proportional distance.
 		 * 
 		 * @param proportion The target proportional time.
 		 * @return The index of the point whose total distance from the starting point is
@@ -576,7 +627,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 										find_IndexByMagnitudeProportion(proportion):
 										find_IndexAtOrBeforeProportion(proportion);
 			
-			// find the splice point between the front and back split key frame paths
+			// find the split point between the front and back split key frame paths
 			var splitPoint:KTimedPoint = find_Point(proportion, keyFrame);
 			
 			// initialize the front split key frames paths as the set of points
@@ -602,14 +653,25 @@ package sg.edu.smu.ksketch2.model.data_structures
 				var pathLength:int = points.length;		// the path distance
 				var currentPoint:KTimedPoint;			// the current timed point
 				
-				// since all the paths are supposed to have their deltas start from 0
-				// the loop subtracts from the splice points' values to reset those values
-				// for clean-up
+				// since all the paths are supposed to have their deltas start 
+				// from 0 (translation and rotation paths) or from 1 (scale paths)
+				// the loop subtracts or divides from the splice points' values 
+				// to reset those values for clean-up
 				for(i = 0; i<pathLength; i++)
 				{
 					currentPoint = points[i];
-					currentPoint.x -= splitPoint.x;
-					currentPoint.y -= splitPoint.y;
+					if (type != SCALE) 
+					{
+						// Translates and Rotates are additive
+						currentPoint.x -= splitPoint.x;
+						currentPoint.y -= splitPoint.y;
+					} 
+					else 
+					{
+						// Scales are multiplicative
+						currentPoint.x /= splitPoint.x;
+						//currentPoint.y /= splitPoint.y;	 // Should be 0 for scale				
+					}
 					currentPoint.time -= splitPoint.time;
 				}
 			}
@@ -634,22 +696,32 @@ package sg.edu.smu.ksketch2.model.data_structures
 			var currentPoint:KTimedPoint;	
 			var pathLength:int = length;
 
-			if(pathLength == 0)
+			if(pathLength == 0) // If this path is empty, just use sourcePath.
 			{
 				var sourceLength:int = sourcePath.points.length;
 				for(i = 0; i<sourceLength; i++)
 					points.push(sourcePath.points[i].clone());
 			}
-			else if(pathDuration==0)
+			else if(pathDuration==0) // If this path has duration 0, distribute the source points evenly.
 			{
 				for(i = 0; i<pathLength; i++)
 				{
 					currentPoint = points[i];
 					proportion = i/pathLength;
-					currentPoint.add(sourcePath.find_Point(proportion, sourcekeyFrame));
+					if (type != SCALE) 
+					{
+						// Translates and Rotates are additive
+						currentPoint.add(sourcePath.find_Point(proportion, sourcekeyFrame));
+					} 
+					else
+					{
+						// Scales are multiplicative
+						currentPoint.multiply(sourcePath.find_Point(proportion, sourcekeyFrame));						
+					}
+						
 				}
 			}
-			else
+			else // In the normal case, distribute the source points by time.
 			{
 				var offSetTime:Number = points[0].time;
 				var duration:Number = pathDuration - offSetTime;
@@ -658,7 +730,16 @@ package sg.edu.smu.ksketch2.model.data_structures
 				{
 					currentPoint = points[i];
 					proportion = (currentPoint.time - offSetTime)/duration;
-					currentPoint.add(sourcePath.find_Point(proportion, sourcekeyFrame));
+					if (type != SCALE) 
+					{
+						// Translates and Rotates are additive
+						currentPoint.add(sourcePath.find_Point(proportion, sourcekeyFrame));
+					}
+					else
+					{
+						// Scales are multiplicative
+						currentPoint.multiply(sourcePath.find_Point(proportion, sourcekeyFrame));												
+					}
 				}
 			}
 		}
@@ -685,8 +766,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 			{
 				currentPoint = toBeAppendedPath.points[i];
 				currentPoint.time += lastPoint.time;
-				currentPoint.x += lastPoint.x;
-				currentPoint.y += lastPoint.y;
+				if (type != SCALE)
+				{
+					// Translates and Rotates are additive
+					currentPoint.x += lastPoint.x;
+					currentPoint.y += lastPoint.y;
+				}
+				else
+				{
+					// Scales are multiplicative
+					currentPoint.x *= lastPoint.x;
+					currentPoint.y *= lastPoint.y;
+				}
 				points.push(currentPoint);
 			}
 		}

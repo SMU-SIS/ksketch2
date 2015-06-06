@@ -117,17 +117,17 @@ package sg.edu.smu.ksketch2.model.data_structures
 		}
 		
 		/**
-		 * Gets the total scale difference for the spatial key frame.
+		 * Gets the total scale factor for the spatial key frame.
 		 * 
-		 * @return The total scale difference.
+		 * @return The total scale factor.
 		 */
-		public function get dSigma():Number
+		public function get fSigma():Number
 		{
 			if (2 <= scalePath.length) {
-				return scalePath.points[scalePath.length -1].x - scalePath.points[0].x;			
+				return scalePath.points[scalePath.length -1].x / scalePath.points[0].x;			
 			}
 			else {
-				return 0;
+				return 1;
 			}
 		}
 		
@@ -425,7 +425,7 @@ package sg.edu.smu.ksketch2.model.data_structures
 			keyXML.appendChild(pathXML);
 			
 			pathXML = scalePath.serialize();
-			pathXML.@type = "scale";
+			pathXML.@type = "scale2";
 			keyXML.appendChild(pathXML);
 			
 			return keyXML;
@@ -435,12 +435,17 @@ package sg.edu.smu.ksketch2.model.data_structures
 		 * Deserializes the XML object to a key frame.
 		 * 
 		 * @param xml The target XML object.
+		 * @param params Optional state to be used in desearialization.
 		 */
-		override public function deserialize(xml:XML):void
+		override public function deserialize(xml:XML, params:Object = null):void
 		{
 			var centroidPosition:Array = ((xml.@center).toString()).split(",");
 			_center = new Point(centroidPosition[0], centroidPosition[1]);
+			var startScale:Number = 1;
 			
+			if (params) {
+				startScale = Number(params);
+			}
 			
 			//Passthrough edit
 			var passthroughValue:String = (xml.@passthrough.toString());
@@ -467,6 +472,18 @@ package sg.edu.smu.ksketch2.model.data_structures
 						break;
 					
 					case "scale":
+						scalePath.deserialize(currentPathXML.@points);
+						var length:int = scalePath.length;
+						var points:Vector.<KTimedPoint> = scalePath.points;
+						var x:Number;
+						for(var j:int = 0; j<length; j++)
+						{
+							x = points[j].x;
+							points[j].x = (x == 0) ? 1 : (startScale + x)/startScale;
+						}
+						break;
+					
+					case "scale2":
 						scalePath.deserialize(currentPathXML.@points);
 						break;
 				}

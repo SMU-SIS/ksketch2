@@ -145,7 +145,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.transitions
 			dxdy.y /= _KSketch.scaleY;
 			
 			for(i; i < length; i++)
-				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), dxdy.x, dxdy.y, 0, 0 );
+				_KSketch.updateTransform(_transitionObjects.getObjectAt(i), dxdy.x, dxdy.y, 0, 1 );
 
 		}
 	}

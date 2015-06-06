@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2010-2012 Singapore Management University
  * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
  * This Source Code Form is subject to the terms of the
@@ -104,7 +104,7 @@ package sg.edu.smu.ksketch2.operators
 		protected var _transitionX:Number;								// Current x difference from when interaction started.
 		protected var _transitionY:Number;								// Current y difference from when interaction started.
 		protected var _transitionTheta:Number;							// Current theta difference from when interaction started.
-		protected var _transitionSigma:Number;							// Current sigma difference from when interaction started.
+		protected var _transitionSigma:Number;							// Current sigma factor from when interaction started.
 		
 		// magnitude variables
 		protected var _magX:Number;										// The sum of all horizontal distance (x) changes (absolute value) since interaction started.
@@ -152,7 +152,7 @@ package sg.edu.smu.ksketch2.operators
 			_transitionX = 0;						// set the initial transition x-position
 			_transitionY = 0;						// set the initial transition y-position
 			_transitionTheta = 0;					// set the initial transition's theta
-			_transitionSigma = 0;					// set the initial transition's theta
+			_transitionSigma = 1;					// set the initial transition's theta
 	
 			// params: type:int, keys:Vector.<KSpatialKeyFrame>, sourcePaths:Dictionary[KSpatialKeyFrame:KPath], 
 			//         targetPaths:Dictionary[KSpatialKeyFrame:KPath], startPoints:Dictionary[KSpatialKeyFrame:Point], 
@@ -260,9 +260,9 @@ package sg.edu.smu.ksketch2.operators
 					point = currentKey.scalePath.find_Point(proportionKeyFrame, currentKey);
 					
 					// case: the located point is not null
-					// increment the scaling value
+					// multiply the scaling value
 					if(point)
-						sigma += point.x;
+						sigma *= point.x;
 				}
 				
 				// set the current key frame as the next key frame
@@ -339,7 +339,7 @@ package sg.edu.smu.ksketch2.operators
 			var x:Number = _transitionX;
 			var y:Number = _transitionY;
 			var theta:Number = _transitionTheta;
-			var sigma:Number = 1 + _transitionSigma;
+			var sigma:Number = _transitionSigma;
 			var point:KTimedPoint;
 			var proportionKeyFrame:Number;
 			var computeTime:Number;
@@ -396,12 +396,12 @@ package sg.edu.smu.ksketch2.operators
 					if(_magSigma <= EPSILON)
 					{
 						if(point)
-							sigma += point.x;
+							sigma *= point.x;
 					}
 					else
 					{
 						if(point)
-							_cachedSigma += point.x;
+							_cachedSigma *= point.x;
 						
 						hasScale = true;
 					}
@@ -413,7 +413,7 @@ package sg.edu.smu.ksketch2.operators
 			var result:Matrix = new Matrix();
 			result.translate(-_object.center.x,-_object.center.y);
 			result.rotate(theta+_cachedTheta);
-			result.scale(sigma+_cachedSigma, sigma+_cachedSigma);
+			result.scale(sigma*_cachedSigma, sigma*_cachedSigma);
 			result.translate(_object.center.x, _object.center.y);
 			result.translate(x+_cachedX, y+_cachedY);
 			return result;	
@@ -538,7 +538,7 @@ package sg.edu.smu.ksketch2.operators
 			_transitionX = 0;
 			_transitionY = 0;
 			_transitionTheta = 0;
-			_transitionSigma = 0;
+			_transitionSigma = 1;
 			
 			_magX = 0;
 			_magY = 0;
@@ -552,7 +552,7 @@ package sg.edu.smu.ksketch2.operators
 				_RStoredPath = new KPath(KPath.ROTATE);
 				_RStoredPath.push(0,0,0);
 				_SStoredPath = new KPath(KPath.SCALE);
-				_SStoredPath.push(0,0,0);
+				_SStoredPath.push(1,0,0);
 			}
 			else
 			{
@@ -565,7 +565,7 @@ package sg.edu.smu.ksketch2.operators
 			_cachedX = 0;
 			_cachedY = 0;
 			_cachedTheta = 0;
-			_cachedSigma = 0;
+			_cachedSigma = 1;
 			
 			var currentProportion:Number = 1;
 			var point:KTimedPoint;
@@ -590,7 +590,7 @@ package sg.edu.smu.ksketch2.operators
 				
 				point = currentKey.scalePath.find_Point(1, currentKey);
 				if(point)
-					_cachedSigma += point.x;
+					_cachedSigma *= point.x;
 				
 				currentKey = currentKey.next as KSpatialKeyFrame;
 			}
@@ -611,24 +611,24 @@ package sg.edu.smu.ksketch2.operators
 		 * @param dx The x-position displacement from when the interaction began.
 		 * @param dy The y-position displacement from when the interaction began.
 		 * @param dTheta The rotation displacement from when the interaction began.
-		 * @param dScale The scaling displacement from when the interaction began.
+		 * @param fScale The scaling factor from when the interaction began.
 		 */
-		public function updateTransition(time:Number, dx:Number, dy:Number, dTheta:Number, dScale:Number):void
+		public function updateTransition(time:Number, dx:Number, dy:Number, dTheta:Number, fScale:Number):void
 		{
 			var changeX:Number = dx - _transitionX;
 			var changeY:Number = dy - _transitionY;
 			var changeTheta:Number = dTheta - _transitionTheta;
-			var changeSigma:Number = dScale - _transitionSigma;
+			var changeSigma:Number = fScale / _transitionSigma;
 			
 			_magX += Math.abs(changeX);
 			_magY += Math.abs(changeY);
 			_magTheta += Math.abs(changeTheta);
-			_magSigma += Math.abs(changeSigma);
+			_magSigma += Math.abs(1-changeSigma);
 			
 			_transitionX = dx;
 			_transitionY = dy;
 			_transitionTheta = dTheta;
-			_transitionSigma = dScale;
+			_transitionSigma = fScale;
 			
 			if(_transitionType == KSketch2.TRANSITION_DEMONSTRATED)
 			{
@@ -641,7 +641,7 @@ package sg.edu.smu.ksketch2.operators
 				{
 					_TStoredPath.push(dx, dy, elapsedTime);
 					_RStoredPath.push(dTheta, 0, elapsedTime);
-					_SStoredPath.push(dScale, 0, elapsedTime);
+					_SStoredPath.push(fScale, 0, elapsedTime);
 				}
 			}
 			
@@ -660,7 +660,7 @@ package sg.edu.smu.ksketch2.operators
 					//_stretch(_transitionTheta, 0, time, _stretchRotParams);
 					_interpolate(changeTheta, 0, time, _stretchRotParams);
 				}
-				if(Math.abs(_transitionSigma) > EPSILON) {
+				if(Math.abs(_transitionSigma-1) > EPSILON) {
 					//_stretch(_transitionSigma, 0, time, _stretchScaleParams);
 					_interpolate(changeSigma, 0, time, _stretchScaleParams);
 				}
@@ -689,9 +689,9 @@ package sg.edu.smu.ksketch2.operators
 							//_stretch(-_transitionTheta, 0, time, _stretchRot2Params);
 							_interpolate(-changeTheta, 0, time, _stretchRot2Params);
 						}
-						if(Math.abs(_transitionSigma) > EPSILON) {
+						if(Math.abs(_transitionSigma-1) > EPSILON) {
 							//_stretch(-_transitionSigma, 0, time, _stretchScale2Params);
-							_interpolate(-changeSigma, 0, time, _stretchScale2Params);
+							_interpolate(1/changeSigma, 0, time, _stretchScale2Params);
 						}						
 					}
 					
@@ -712,7 +712,7 @@ package sg.edu.smu.ksketch2.operators
 //									_interpolate(-changeTheta, 0, tempKey, KSketch2.TRANSFORM_ROTATION, tempKey.time);
 //								}
 //								if(Math.abs(_transitionSigma) > EPSILON) {
-//									_interpolate(-changeSigma, 0, tempKey, KSketch2.TRANSFORM_SCALE, tempKey.time);	
+//									_interpolate(1/changeSigma, 0, tempKey, KSketch2.TRANSFORM_SCALE, tempKey.time);	
 //								}
 //								break;
 //							}
@@ -727,8 +727,8 @@ package sg.edu.smu.ksketch2.operators
 							_interpolate(-changeX,-changeY, time, _stretchTrans2Params);
 						if(Math.abs(_transitionTheta) > EPSILON)
 							_interpolate(-changeTheta, 0, time, _stretchRot2Params);
-						if(Math.abs(_transitionSigma) > EPSILON)
-							_interpolate(-changeSigma, 0, time, _stretchScale2Params);	
+						if(Math.abs(_transitionSigma-1) > EPSILON)
+							_interpolate(1/changeSigma, 0, time, _stretchScale2Params);	
 					}
 				}
 			}
@@ -935,7 +935,7 @@ package sg.edu.smu.ksketch2.operators
 						}
 						point = tmpCurrent.scalePath.find_Point(1, tmpCurrent);
 						if(point) {
-							sigma += point.x;
+							sigma *= point.x;
 						}
 
 						if (tmpCurrent === _interpolationKey) {
@@ -1366,8 +1366,13 @@ package sg.edu.smu.ksketch2.operators
 		}
 
 		/**
-		 * Adds a dx, dy interpolation to targetKey
-		 * target key should be a key at or before time;
+		 * Adds a dx, dy interpolation to targetKey.
+		 * Target key should be a key at or before time;
+		 * 
+		 * @param dx The x displacement from when the interaction began.
+		 * @param dy The y displacement from when the interaction began.
+		 * @param time The target time.
+		 * @param params Contains the original paths ("sourcePaths"), the new paths that will be used ("targetPaths"), "startPoints", "
 		 */
 		private function _interpolate(dx:Number, dy:Number, time:Number, params:Dictionary):void
 		{
@@ -1387,10 +1392,13 @@ package sg.edu.smu.ksketch2.operators
 			var eY:Number = params["eY"] as Number;
 			var i:uint, targetKey:KSpatialKeyFrame, targetPath:KPath;
 			var totalDuration:Number, durationProportion:Number, proportionElapsed:Number;
+			var xFirst:Number, xInterp:Number, yInterp:Number, currScaleDiff:Number, prevScaleDiff:Number;
+			var currPartialScale:Number, prevPartialScale:Number;
 
 			if(keys.length === 0)
 				throw new Error("No Key to interpolate!");
 			totalDuration = keys[keys.length-1].time - keys[0].startTime;
+			prevScaleDiff = 0;
 
 			for (i=0; i<keys.length; i++) {
 				targetKey = keys[i];
@@ -1426,6 +1434,24 @@ package sg.edu.smu.ksketch2.operators
 //				}	
 				// RCDavis replaced this, because it we now always insert key frames at movement points. 
 				proportionElapsed = 1;
+				if (type != KSketch2.TRANSFORM_SCALE)
+				{
+					// Translation or Rotation
+					xFirst = 0;
+					xInterp = dx * durationProportion;
+					yInterp = dy * durationProportion;
+				}
+				else
+				{
+					// Scale
+					xFirst = 1;
+					currScaleDiff = prevScaleDiff + (dx - 1) * durationProportion;
+					prevPartialScale = 1 + prevScaleDiff;
+					currPartialScale = 1 + currScaleDiff;
+					xInterp = currPartialScale / prevPartialScale;
+					
+					yInterp = 0;
+				}
 				
 				//var unInterpolate:Boolean = false;
 				//var oldPath:KPath = targetPath.clone();
@@ -1438,8 +1464,8 @@ package sg.edu.smu.ksketch2.operators
 						throw new Error("Someone created a path with 1 point somehow! Better check out the path functions");
 					
 					//Provide the empty path with the positive interpolation first
-					targetPath.push(0,0,0);
-					targetPath.push(dx * durationProportion, dy * durationProportion, targetKey.duration * proportionElapsed);
+					targetPath.push(xFirst,0,0);
+					targetPath.push(xInterp, yInterp, targetKey.duration * proportionElapsed);
 					
 					//If the interpolation is performed in the middle of a key, "uninterpolate" it to 0 interpolation
 //					if(time != targetKey.time)
@@ -1452,12 +1478,12 @@ package sg.edu.smu.ksketch2.operators
 				}
 				else
 				{
-					if(targetKey.time == time) //Case 2:interpolate at key time
-						KPathProcessing.interpolateSpan(targetPath, 0, proportionElapsed,
-							dx * durationProportion, dy * durationProportion);
-					else	//case 3:interpolate between two keys
-						KPathProcessing.interpolateSpan(targetPath, 0, proportionElapsed,
-							dx * durationProportion, dy * durationProportion);
+					// RCDavis replaced this with the immediately following code, since both cases are currently the same.
+//					if(targetKey.time == time) //Case 2:interpolate at key time
+//						KPathProcessing.interpolateSpan(targetPath, 0, proportionElapsed, xInterp, yInterp);
+//					else	//case 3:interpolate between two keys
+//						KPathProcessing.interpolateSpan(targetPath, 0, proportionElapsed, xInterp, yInterp);
+					KPathProcessing.interpolateSpan(targetPath, 0, proportionElapsed, xInterp, yInterp);
 					
 					if (targetPath == targetKey.rotatePath)
 						KPathProcessing.limitSegmentLength(targetPath, MAX_ROTATE_STEP);
@@ -1466,6 +1492,7 @@ package sg.edu.smu.ksketch2.operators
 				//trace("Time=" + targetKey.time);
 				//trace("Target Path");
 				targetPath.debug();
+				prevScaleDiff = currScaleDiff;
 			}
 			params["dirty"] = true;
 		}
@@ -2029,6 +2056,7 @@ package sg.edu.smu.ksketch2.operators
 		{
 			_refFrame = new KReferenceFrame();
 			var keyListXML:XMLList = xml.keylist.spatialkey;
+			var startScale:Number = 1;
 			
 			for(var i:int = 0; i<keyListXML.length(); i++)
 			{
@@ -2039,7 +2067,8 @@ package sg.edu.smu.ksketch2.operators
 				newCenter.y = Number(centerValues[1]);
 				
 				var newKey:KSpatialKeyFrame = new KSpatialKeyFrame(new Number(currentKeyXML.@time), new Point());
-				newKey.deserialize(currentKeyXML);
+				newKey.deserialize(currentKeyXML, startScale);
+				startScale *= newKey.fSigma;
 				_refFrame.insertKey(newKey);
 			}
 		}

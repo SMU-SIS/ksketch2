@@ -158,6 +158,27 @@ package sg.edu.smu.ksketch2.model.data_structures
 			points.push(new KTimedPoint(x,y,time));
 		}
 		
+		
+		/**
+		 * Adds an offset value to every point in the path.
+		 * 
+		 * @param x The x offset.
+		 * @param y The y offset.
+		 */
+		public function offset(x:Number,y:Number):void
+		{
+			var i:int;						// the loop variable
+			var length:int = points.length;	// the number of points in the key frames path
+			
+			for(i=1; i<length; i++)
+			{
+				points[i].x += x;
+				points[i].y += y;
+			}
+		}
+		
+		
+		
 		/**
 		 * Finds a point in the path located from the value
 		 * that is proportional to the total time duration

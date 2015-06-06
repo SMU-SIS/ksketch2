@@ -2056,6 +2056,7 @@ package sg.edu.smu.ksketch2.operators
 		{
 			_refFrame = new KReferenceFrame();
 			var keyListXML:XMLList = xml.keylist.spatialkey;
+			var startScale:Number = 1;
 			
 			for(var i:int = 0; i<keyListXML.length(); i++)
 			{
@@ -2066,7 +2067,8 @@ package sg.edu.smu.ksketch2.operators
 				newCenter.y = Number(centerValues[1]);
 				
 				var newKey:KSpatialKeyFrame = new KSpatialKeyFrame(new Number(currentKeyXML.@time), new Point());
-				newKey.deserialize(currentKeyXML);
+				newKey.deserialize(currentKeyXML, startScale);
+				startScale *= newKey.fSigma;
 				_refFrame.insertKey(newKey);
 			}
 		}

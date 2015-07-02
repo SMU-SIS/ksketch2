@@ -301,9 +301,10 @@
 			//returned result will be a stringified JSON object
 			var parameter:String;
 			if (data) {
-				parameter = "{\"sketchID\":[" + data.listSketches + "],\"userid\":" + userData.kUser.id + ", \"token\":"+userData.kUser.id+"}";
+				parameter = "{\"sketchID\":[" + data.listSketches + "],\"userid\":" + userData.kUser.id + ", \"token\":\"" + userData.kUser.token + "\"}";
 			} else {
-					parameter = "{\"sketchID\":[],\"userid\":" + userData.kUser.id + ", \"token\":"+userData.kUser.id+"}";
+				data = userData;
+				parameter = "{\"sketchID\":[],\"userid\":" + userData.kUser.id + ", \"token\":\""+userData.kUser.token+"\"}";
 			}
 
 			GetUserSketch.url = KSketchWebLinks.jsonurlSketch + "/" + parameter;
@@ -317,21 +318,20 @@
 			if (!_isXML && !_deleteSketchFlag) {
 				var syncSketchArr:ArrayCollection;
 				if (resultObj) {
-					if (resultObj.hasOwnProperty("status")) {
-						if (resultObj.status == "session_expired") {
+					if ((resultObj.hasOwnProperty("status")) &&  (resultObj.status == "session_expired")) {
 							_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_EXPIRED_SESSION;
 							_canvasNotice.open(this, true);
 							PopUpManager.centerPopUp(_canvasNotice);
-						}
-					}
+					} else {
 
-					var tempArr:Array = (resultObj.entities as Array);
-					for each(var tempObj:Object in tempArr) {
-						tempObj = KWebData.convertWebObjForMobile(tempObj);
-						_mobileControl.informationArr[1] = _fileControl.solveDiscrepancy(_mobileControl.informationArr[1], tempObj);
+						var tempArr:Array = (resultObj.entities as Array);
+						for each(var tempObj:Object in tempArr) {
+							tempObj = KWebData.convertWebObjForMobile(tempObj);
+							_mobileControl.informationArr[1] = _fileControl.solveDiscrepancy(_mobileControl.informationArr[1], tempObj);
+						}
+						tempArr = null;
+						data.listSketches = "";
 					}
-					tempArr = null;
-					data.listSketches = "";
 				}
 
 				//reset webcontrol
@@ -571,7 +571,7 @@
 			_mobileControl.writeToCache(_mobileControl.informationArr);
 			if (screenName.indexOf("RELOGIN") != -1) {
 				navigator.pushView(KSketch_LoginView);
-			}else if (screenName.indexOf("CANVAS") == -1) //if screen name is Login
+			} else if (screenName.indexOf("CANVAS") == -1) //if screen name is Login
 			{
 				KSketch_LoginView.userData = new Object();
 

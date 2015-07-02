@@ -8,7 +8,7 @@
 		>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<s:HTTPService id="GetUser"               
+		<s:HTTPService id="GetUser"
 					   resultFormat="text" 
 					   result="ParseJSONObject(event)" 
 					   showBusyCursor="false">                        
@@ -50,7 +50,7 @@
 			private var _monitorTimer:Timer;
 			private var _webView:StageWebView = new StageWebView();
 			private var _isLoggedOut:Boolean = false;
-			
+			private var token:String = "";
 			protected function viewActivateHandler(event:ViewNavigatorEvent):void
 			{
 				// TODO Auto-generated method stub
@@ -59,7 +59,7 @@
 				_webView.stage = stage;
 				_stageWidth = stage.stageWidth;
 				_stageHeight = stage.stageHeight;
-				
+
 				//check for network connection
 				_monitorTimer = new Timer(3000);
 				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.url));
@@ -167,12 +167,13 @@
 					_webView.viewPort = null;
 					_webView.dispose();
 					_webView = null;
-					
+
 					var arr:Array = currentURL.split(".html?");
 					var vars:URLVariables = new URLVariables(arr[1]);
 					
 					//get json url
 					GetUser.url = KSketchWebLinks.jsonurlUserMobile + "?id=" + vars.id;
+					token = vars.token;
 					GetUser.send();
 					GetUser.addEventListener(FaultEvent.FAULT, faultHandler);
 					startProgressBar();
@@ -194,6 +195,7 @@
 					// create a new User instance and
 					// save it to data property
 					var kUser:KSketch_User = new KSketch_User(obj);
+					kUser.token = token;
 					userData.kUser = kUser;
 					userData.listSketches = "";	
 					userData.resolveConflict = 1;

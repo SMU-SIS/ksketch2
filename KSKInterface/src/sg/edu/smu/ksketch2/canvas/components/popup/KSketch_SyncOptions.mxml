@@ -130,7 +130,7 @@
 						
 						var objToSend:Object = new Object();
 						objToSend["fileData"] = com.adobe.serialization.json.JSON.encode(currentObj);
-						objToSend["userid"] = userData.kUser.id;
+						objToSend["userid"] = _homeView.userData.kUser.id;
 						
 						httpService.url = KSketchWebLinks.jsonurlGetXML;
 						httpService.send(objToSend);
@@ -170,6 +170,7 @@
 					var objToSend:Object = new Object();
 					objToSend["sketchid"] = com.adobe.serialization.json.JSON.encode(currentObj.sketchId);
 					objToSend["userid"] = currentObj.owner_id;//userData.kUser.id;
+					objToSend["token"] = _homeView.userData.kUser.token;
 					
 					httpService.url = KSketchWebLinks.jsonurlDeleteSketch;
 					httpService.send(objToSend);

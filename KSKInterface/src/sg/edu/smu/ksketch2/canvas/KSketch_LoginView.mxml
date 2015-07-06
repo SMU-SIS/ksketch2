@@ -140,7 +140,7 @@
 				var currentURL:String = event.location.toString();
 				
 				//if successful login
-				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
+				if((currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) || (currentURL.indexOf(KSketchWebLinks.urlApproval) >= 0))
 				{
 					//retrieve id from HTML page
 					_webView.loadURL(KSketchWebLinks.urlUser);
@@ -156,7 +156,7 @@
 			{
 				var currentURL:String = event.location.toString();
 				
-				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
+				if((currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) || (currentURL.indexOf(KSketchWebLinks.urlApproval) >= 0))
 				{
 					//retrieve id from HTML page
 					_webView.loadURL(KSketchWebLinks.urlUser);

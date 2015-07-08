@@ -28,5 +28,6 @@ package sg.edu.smu.ksketch2
 		public static const jsonurlOverwriteGetXML:String = KSketch_Config.host_name+"/get/overwritesketchxml";	//To save a sketch from an older version to Datastore
 		
 		public static const jsonurlDeleteSketch:String = KSketch_Config.host_name+"/get/deletesketch";				//To delete a sketch from Datastore
+		public static const urlApproval:String = KSketch_Config.host_name+"/app/approval.html";
 	}
 }

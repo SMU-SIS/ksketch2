@@ -23,7 +23,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
@@ -152,7 +152,7 @@
 				else
 					textureControl.source = KSketchAssets.texture_pause;
 				
-				(skin as KSketch_Canvas_Button_Skin).upColor = KSketchStyles.CANVAS_BUTTON_PLAY_ACTIVATED;
+				(skin as KSketch_Canvas_Button_Skin).upColor = KSketchStyleSheet.CANVAS_BUTTON_PLAY_ACTIVATED;
 			}
 		]]>
 	</fx:Script>

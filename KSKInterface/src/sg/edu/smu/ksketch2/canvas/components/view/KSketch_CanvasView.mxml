@@ -43,7 +43,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
@@ -78,17 +78,10 @@
 			
 			public static const PLUG_IN:String = "PlugIn";
 			
-			[Bindable]
-			public static var isPlayer:Boolean = false;
-			
-			[Bindable]
-			public static var isMobile:Boolean = false;
-			
-			[Bindable]
-			public static var isWeb:Boolean = true;
-			
-			[Bindable]
-			public static var isWebViewer:Boolean = false;
+			[Bindable] public static var isPlayer:Boolean = false;
+			[Bindable] public static var isMobile:Boolean = false;
+			[Bindable] public static var isWeb:Boolean = true;
+			[Bindable] public static var isWebViewer:Boolean = false;
 			
 			public static var createNewSketch:Boolean = false;
 			
@@ -285,7 +278,7 @@
 				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);
 				instructionsButton.initSkin();
 				isTiming = false;
-				timerLabel.text = "Time: 00:00";
+				timerLabel.text = "Time: \n00:00";
 				
 				instructionsGroup.x = drawing_stage.x + ((Capabilities.screenResolutionX*0.7)/8);
 				instructionsGroup.y = drawing_stage.y + 30;
@@ -385,6 +378,9 @@
 				
 				_options.applyPreferences();
 				_magnifier.open(this);
+				
+				trace("LOOK AT THIS: " + drawing_stage.height);
+				trace("LOOK AT SCREENY: " + Capabilities.screenResolutionY);
 			}
 			
 			private function _getGroupObjectsOnLoad(list:KModelObjectList):void
@@ -651,8 +647,8 @@
 			{
 				_instructionsBox.open(this,false);
 				PopUpManager.centerPopUp(_instructionsBox);
-				_instructionsBox.x = instructionsGroup.x + KSketchStyles.BUTTON_SIZE;
-				_instructionsBox.y = instructionsGroup.y + (instructionsGroup.height + KSketchStyles.BUTTON_SIZE);
+				_instructionsBox.x = instructionsGroup.x + KSketchStyleSheet.BUTTON_SIZE;
+				_instructionsBox.y = instructionsGroup.y + (instructionsGroup.height + KSketchStyleSheet.BUTTON_SIZE);
 				
 				//change skin to down_arrow
 				instructionsButton.init(KSketchAssets.texture_instructions_2, KSketchAssets.texture_instructions_2);
@@ -695,9 +691,9 @@
 				var timeInMilli:int = _timeDuration*1000 - (getTimer() - baseTimer)
 				var timeInSec:int = int(timeInMilli/1000)
 				if(timeInSec >= 0) {
-					timerLabel.text = "Time: " + int(timeInSec/60) + ":" +int(timeInSec%60);
+					timerLabel.text = "Time: \n" + int(timeInSec/60) + ":" +int(timeInSec%60);
 				}else {
-					timerLabel.text = "Time: -" + int(-1*timeInSec/60) + ":" +int(-1*timeInSec %60);
+					timerLabel.text = "Time: \n-" + int(-1*timeInSec/60) + ":" +int(-1*timeInSec %60);
 				}
 				
 				_timeTaken = getTimer() - baseTimer;
@@ -722,7 +718,6 @@
 			}
 		]]>
 	</fx:Script>
-	
 	<s:Group width="100%" height="100%" id="mainCanvas">
 		<s:layout>
 			<s:VerticalLayout gap="0" id="mainCanvasLayout"/>
@@ -730,26 +725,26 @@
 		<!-- Timebar-->
 		<s:Group id="timebar_group" width="100%"  depth="1">
 			<s:filters>
-				<s:DropShadowFilter color="{KSketchStyles.TIMEBAR_SHADOW_COLOR}" angle="{KSketchStyles.TIMEBAR_SHADOW_ANGLE}"
-									alpha="{KSketchStyles.TIMEBAR_SHADOW_ALPHA}"
-									strength="{KSketchStyles.TIMEBAR_SHADOW_STRENGTH}"
-									blurX="{KSketchStyles.TIMEBAR_SHADOW_DISTANCE}"
-									blurY="{KSketchStyles.TIMEBAR_SHADOW_DISTANCE}"/>
+				<s:DropShadowFilter color="{KSketchStyleSheet.TIMEBAR_SHADOW_COLOR}" angle="{KSketchStyleSheet.TIMEBAR_SHADOW_ANGLE}"
+									alpha="{KSketchStyleSheet.TIMEBAR_SHADOW_ALPHA}"
+									strength="{KSketchStyleSheet.TIMEBAR_SHADOW_STRENGTH}"
+									blurX="{KSketchStyleSheet.TIMEBAR_SHADOW_DISTANCE}"
+									blurY="{KSketchStyleSheet.TIMEBAR_SHADOW_DISTANCE}"/>
 			</s:filters>
 			<s:Rect width="100%" height="100%">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.TIMEBAR_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchStyleSheet.TIMEBAR_BACKGROUND_COLOR}"/>
 				</s:fill>
 			</s:Rect>
 			<s:Group width="100%">
 				<s:layout>
 					<s:HorizontalLayout
 						horizontalAlign="center"
-						gap="{KSketchStyles.TIMEBAR_LAYOUT_GAP}"
-						paddingLeft="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_HORIZONTAL}"
-						paddingRight="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_HORIZONTAL}"
-						paddingTop="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_VERTICAL}"
-						paddingBottom="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_VERTICAL}"/>
+						gap="{KSketchStyleSheet.TIMEBAR_LAYOUT_GAP}"
+						paddingLeft="{KSketchStyleSheet.TIMEBAR_LAYOUT_PADDING_HORIZONTAL}"
+						paddingRight="{KSketchStyleSheet.TIMEBAR_LAYOUT_PADDING_HORIZONTAL}"
+						paddingTop="{KSketchStyleSheet.TIMEBAR_LAYOUT_PADDING_VERTICAL}"
+						paddingBottom="{KSketchStyleSheet.TIMEBAR_LAYOUT_PADDING_VERTICAL}"/>
 				</s:layout>
 				
 				<s:Group>
@@ -762,7 +757,7 @@
 								<s:layout><s:VerticalLayout/></s:layout>
 								<timebar:KSketch_TimeSkip_Button
 									id="leftTimeJumper"
-									width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
+									width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"/>
 							</s:Group>
 							
 							
@@ -771,20 +766,20 @@
 								click="playButton.playToggle(false)"
 								doubleClick="playButton.doubleClick()"
 								id="playButton"
-								width="{KSketchStyles.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
+								width="{KSketchStyleSheet.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyleSheet.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
 							
 							<!--
 							<buttons:KSketch_Play_Button
 								click="playButton.playToggle()"
 								id="playButton"
-								width="{KSketchStyles.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
+								width="{KSketchStyleSheet.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyleSheet.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
 							-->
 							
 							<s:Group>
 								<s:layout><s:VerticalLayout/></s:layout>
 								<timebar:KSketch_TimeSkip_Button
 									id="rightTimeJumper"
-									width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
+									width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"/>
 							</s:Group>
 						</s:Group>
 					</s:Group>
@@ -799,7 +794,7 @@
 		<s:Group id="canvas_component" width="100%" height="100%" depth="0">
 			<s:Rect left="-1" right="-1" top="-1" bottom="-1">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.APP_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchStyleSheet.APP_BACKGROUND_COLOR}"/>
 				</s:fill>
 			</s:Rect>
 			<!-- For show, all the visual elements that the user wont be able to "touch"-->
@@ -807,23 +802,25 @@
 				<s:layout>
 					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
-				<s:Group id="drawing_stage" height="92%" maxHeight="{Capabilities.screenResolutionX*0.7}"
-						 width="{drawing_stage.height/12*16}">
+				
+				<s:Group id="drawing_stage" height="{Capabilities.screenResolutionY*KSketchStyleSheet.CANVAS_SCALE}" maxHeight="{Capabilities.screenResolutionX*0.7}"
+						 width="{drawing_stage.height/9*16}">
+					
 					<s:Rect width="100%" height="100%">
 						<s:fill>
-							<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_COLOR}"/>
+							<s:SolidColor color="{KSketchStyleSheet.CANVAS_PAPER_COLOR}"/>
 						</s:fill>
 						<s:stroke>
-							<s:SolidColorStroke color="{KSketchStyles.CANVAS_BORDER_COLOR}"
-												weight="{KSketchStyles.CANVAS_BORDER_WEIGHT}"/>
+							<s:SolidColorStroke color="{KSketchStyleSheet.CANVAS_BORDER_COLOR}"
+												weight="{KSketchStyleSheet.CANVAS_BORDER_WEIGHT}"/>
 						</s:stroke>
 						<s:filters>
 							<s:DropShadowFilter 
-								color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-								alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA}"
-								strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-								blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE}"
-								blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE}"/>
+								color="{KSketchStyleSheet.CANVAS_SHADOW_COLOR}" angle="{KSketchStyleSheet.CANVAS_SHADOW_ANGLE}"
+								alpha="{KSketchStyleSheet.CANVAS_SHADOW_ALPHA}"
+								strength="{KSketchStyleSheet.CANVAS_SHADOW_STRENGTH}"
+								blurX="{KSketchStyleSheet.CANVAS_SHADOW_X_DISTANCE}"
+								blurY="{KSketchStyleSheet.CANVAS_SHADOW_Y_DISTANCE}"/>
 						</s:filters>
 					</s:Rect>
 					
@@ -839,21 +836,21 @@
 							<s:Group id="region_1" width="100%" height="100%">
 								<s:Rect width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+										<s:SolidColor color="{KSketchStyleSheet.CANVAS_PAPER_REGION}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
 							<s:Group id="region_2" width="100%" height="100%">
 								<s:Rect width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+										<s:SolidColor color="{KSketchStyleSheet.CANVAS_PAPER_REGION}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
 							<s:Group id="region_3" width="100%" height="100%">
 								<s:Rect width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+										<s:SolidColor color="{KSketchStyleSheet.CANVAS_PAPER_REGION}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
@@ -865,21 +862,21 @@
 							<s:Group id="region_4" width="100%" height="100%">
 								<s:Rect width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+										<s:SolidColor color="{KSketchStyleSheet.CANVAS_PAPER_REGION}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
 							<s:Group id="region_5" width="100%" height="100%">
 								<s:Rect width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+										<s:SolidColor color="{KSketchStyleSheet.CANVAS_PAPER_REGION}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
 							<s:Group id="region_6" width="100%" height="100%">
 								<s:Rect width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_REGION}"/>
+										<s:SolidColor color="{KSketchStyleSheet.CANVAS_PAPER_REGION}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
@@ -910,8 +907,8 @@
 					<buttons:KSketch_ListButton
 						id="instructionsButton"
 						click="actionInstructions()"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
+						width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"/>
 				</s:Group>
 				
 				<s:Group id="timeGroup">

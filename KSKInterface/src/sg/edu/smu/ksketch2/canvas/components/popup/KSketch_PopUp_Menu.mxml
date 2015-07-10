@@ -24,7 +24,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
@@ -152,18 +152,18 @@
 					case UP:
 					default:
 						x = _canvasOrigin.x + (_referenceComponent.width/2) - (width/2);
-						y = _canvasOrigin.y + KSketchStyles.MENU_GAP;
+						y = _canvasOrigin.y + KSketchStyleSheet.MENU_GAP;
 						break;
 					case DOWN:
 						x = _canvasOrigin.x + (_referenceComponent.width/2) - (width/2);
-						y = _canvasOrigin.y + _referenceComponent.height - height - KSketchStyles.MENU_GAP;
+						y = _canvasOrigin.y + _referenceComponent.height - height - KSketchStyleSheet.MENU_GAP;
 						break;
 					case LEFT:
-						x = _canvasOrigin.x + KSketchStyles.MENU_GAP;
+						x = _canvasOrigin.x + KSketchStyleSheet.MENU_GAP;
 						y = _canvasOrigin.y + (_referenceComponent.height/2) - (height/2);
 						break;
 					case RIGHT:
-						x = _canvasOrigin.x + _referenceComponent.width - width - KSketchStyles.MENU_GAP;
+						x = _canvasOrigin.x + _referenceComponent.width - width - KSketchStyleSheet.MENU_GAP;
 						y = _canvasOrigin.y + (_referenceComponent.height/2) - (height/2);
 						break;
 				}
@@ -190,25 +190,25 @@
 					case blackToggle:
 						KMultiTouchDrawInteractor.eraser = false;
 						_canvasControl.lasso = false;
-						KDrawInteractor.penColor = KSketchStyles.BLACK_PEN;
+						KDrawInteractor.penColor = KSketchStyleSheet.BLACK_PEN;
 						selectedTool = "Black Pen";
 						break;
 					case blueToggle:
 						KMultiTouchDrawInteractor.eraser = false;
 						_canvasControl.lasso = false;
-						KDrawInteractor.penColor = KSketchStyles.BLUE_PEN;
+						KDrawInteractor.penColor = KSketchStyleSheet.BLUE_PEN;
 						selectedTool = "Blue Pen";
 						break;
 					case redToggle:
 						KMultiTouchDrawInteractor.eraser = false;
 						_canvasControl.lasso = false;
-						KDrawInteractor.penColor = KSketchStyles.RED_PEN;
+						KDrawInteractor.penColor = KSketchStyleSheet.RED_PEN;
 						selectedTool = "Red Pen";
 						break;
 					case greenToggle:
 						KMultiTouchDrawInteractor.eraser = false;
 						_canvasControl.lasso = false;
-						KDrawInteractor.penColor = KSketchStyles.GREEN_PEN;
+						KDrawInteractor.penColor = KSketchStyleSheet.GREEN_PEN;
 						selectedTool = "Green Pen";
 						break;
 				}
@@ -395,51 +395,51 @@
 		<s:Group>
 			<s:filters>
 				<s:DropShadowFilter 
-					color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-					alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-					strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-					blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-					blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+					color="{KSketchStyleSheet.CANVAS_SHADOW_COLOR}" angle="{KSketchStyleSheet.CANVAS_SHADOW_ANGLE}"
+					alpha="{KSketchStyleSheet.CANVAS_SHADOW_ALPHA * 0.5}"
+					strength="{KSketchStyleSheet.CANVAS_SHADOW_STRENGTH}"
+					blurX="{KSketchStyleSheet.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+					blurY="{KSketchStyleSheet.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
 			</s:filters>
-			<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+			<s:Rect width="100%" height="100%" radiusX="{KSketchStyleSheet.MENU_CORNER_RADIUS}" radiusY="{KSketchStyleSheet.MENU_CORNER_RADIUS}">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchStyleSheet.MENU_BACKGROUND_COLOR}"/>
 				</s:fill>
 			</s:Rect>
 			<s:Group id="buttonContainer">
 				<s:layout>
 					<s:TileLayout id="buttonLayout" requestedColumnCount="1" requestedRowCount="-1"
-								  horizontalGap="{KSketchStyles.MENU_BUTTON_GAP}" verticalGap="{KSketchStyles.MENU_BUTTON_GAP}"
-								  paddingLeft="{KSketchStyles.MENU_PADDING}" paddingRight="{KSketchStyles.MENU_PADDING}"
-								  paddingBottom="{KSketchStyles.MENU_PADDING}" paddingTop="{KSketchStyles.MENU_PADDING}"/>
+								  horizontalGap="{KSketchStyleSheet.MENU_BUTTON_GAP}" verticalGap="{KSketchStyleSheet.MENU_BUTTON_GAP}"
+								  paddingLeft="{KSketchStyleSheet.MENU_PADDING}" paddingRight="{KSketchStyleSheet.MENU_PADDING}"
+								  paddingBottom="{KSketchStyleSheet.MENU_PADDING}" paddingTop="{KSketchStyleSheet.MENU_PADDING}"/>
 				</s:layout>
 				
 				<buttons:KSketch_Button
 					includeInLayout="{!KSketch_CanvasView.isWeb}"
 					click="_saveExit()"
 					id="exitButton"
-					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 					visible="false"
 					/>
 				<buttons:KSketch_Button
 					click="_undoRedoAction(true)"
 					id="undoButton"
-					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 					/>
 				<buttons:KSketch_Button
 					click="_undoRedoAction(false)"
 					id="redoButton"
-					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 					/>
 				
 				<!-- add in separator to the next button-->
 				<s:Group>
-					<s:layout> <s:VerticalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
+					<s:layout> <s:VerticalLayout gap="{KSketchStyleSheet.POPUP_SEPARATOR_GAP}"/> </s:layout>
 					<s:Group width="100%">
-						<s:Line xFrom="0" xTo="{KSketchStyles.POPUP_SEPARATOR_LINE}" yFrom="0" yTo="0">
+						<s:Line xFrom="0" xTo="{KSketchStyleSheet.POPUP_SEPARATOR_LINE}" yFrom="0" yTo="0">
 							<s:stroke>
 								<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
 							</s:stroke>
@@ -448,41 +448,41 @@
 					<buttons:KSketch_Toggle_Button
 						click="{_setPen(blackToggle, false)}"
 						id="blackToggle"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 						/>
 				</s:Group>
 				
 				<buttons:KSketch_Toggle_Button
 					click="{_setPen(redToggle, false)}"
 					id="redToggle"
-					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 					/>
 				<buttons:KSketch_Toggle_Button
 					click="{_setPen(blueToggle, false)}"
 					id="blueToggle"
-					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 					/>
 				<buttons:KSketch_Toggle_Button
 					click="{_setPen(greenToggle, false)}"
 					id="greenToggle"
-					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 					/>
 				<buttons:KSketch_Toggle_Button
 					click="{_setPen(eraserToggle, false)}"
 					id="eraserToggle"
-					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 					/>
 				
 				<!-- add in separator to the next button-->
 				<s:Group>
-					<s:layout> <s:VerticalLayout gap="{KSketchStyles.POPUP_SEPARATOR_GAP}"/> </s:layout>
+					<s:layout> <s:VerticalLayout gap="{KSketchStyleSheet.POPUP_SEPARATOR_GAP}"/> </s:layout>
 					<s:Group width="100%">
-						<s:Line xFrom="0" xTo="{KSketchStyles.POPUP_SEPARATOR_LINE}" yFrom="0" yTo="0">
+						<s:Line xFrom="0" xTo="{KSketchStyleSheet.POPUP_SEPARATOR_LINE}" yFrom="0" yTo="0">
 							<s:stroke>
 								<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
 							</s:stroke>
@@ -491,16 +491,16 @@
 					<buttons:KSketch_Button
 						click="_openOptions()"
 						id="optionButton"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 						/>
 				</s:Group>
 				
 				<buttons:KSketch_Button
 					click="_openConnect()"
 					id="connectButton"
-					width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-					height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+					width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+					height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 					/>
 			</s:Group>
 		</s:Group>
@@ -508,8 +508,8 @@
 		<buttons:KSketch_ListButton
 			id="instructionsButton"
 			click="actionInstructions()"
-			width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-			height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
+			width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+			height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"/>
 		<s:Group>
 			<s:layout>
 				<s:HorizontalLayout horizontalAlign="right"/>

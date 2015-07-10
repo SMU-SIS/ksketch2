@@ -31,7 +31,7 @@
 			
 			import air.net.URLMonitor;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
@@ -64,12 +64,12 @@
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				title.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				saveAsWarning.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SMALL_FONT);
-				saveButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				discardButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				cancelButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				header.setStyle("fontSize", KSketchStyleSheet.FONT_LARGE);
+				title.setStyle("fontSize", KSketchStyleSheet.FONT_MEDIUM);
+				saveAsWarning.setStyle("fontSize", KSketchStyleSheet.FONT_XSMALL);
+				saveButton.setStyle("fontSize", KSketchStyleSheet.FONT_STANDARD);
+				discardButton.setStyle("fontSize", KSketchStyleSheet.FONT_STANDARD);
+				cancelButton.setStyle("fontSize", KSketchStyleSheet.FONT_STANDARD);
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
@@ -354,39 +354,39 @@
 	</fx:Script>
 	<s:filters>
 		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+			color="{KSketchStyleSheet.CANVAS_SHADOW_COLOR}" angle="{KSketchStyleSheet.CANVAS_SHADOW_ANGLE}"
+			alpha="{KSketchStyleSheet.CANVAS_SHADOW_ALPHA * 0.5}"
+			strength="{KSketchStyleSheet.CANVAS_SHADOW_STRENGTH}"
+			blurX="{KSketchStyleSheet.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+			blurY="{KSketchStyleSheet.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
 	</s:filters>
 	<s:Group id="saveNewSketch" visible="true">
-		<s:Rect id="saveBox" width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+		<s:Rect id="saveBox" width="100%" height="100%" radiusX="{KSketchStyleSheet.MENU_CORNER_RADIUS}" radiusY="{KSketchStyleSheet.MENU_CORNER_RADIUS}">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+				<s:SolidColor color="{KSketchStyleSheet.MENU_BACKGROUND_COLOR}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}"/>
+				<s:VerticalLayout gap="{KSketchStyleSheet.DIALOG_PADDING_10}" paddingLeft="{KSketchStyleSheet.DIALOG_PADDING_5}" paddingRight="{KSketchStyleSheet.DIALOG_PADDING_5}" paddingTop="{KSketchStyleSheet.DIALOG_PADDING_5}" paddingBottom="{KSketchStyleSheet.DIALOG_PADDING_5}"/>
 			</s:layout>
 			<s:Label id="header" text="Save this sketch?"/>
 			
 			<s:Group>
 				<s:layout>
-					<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}"/>
+					<s:VerticalLayout paddingLeft="{KSketchStyleSheet.DIALOG_PADDING_10}"/>
 				</s:layout>
 				<s:Label id="title" text="Sketch Name"/>
-				<s:TextArea id="sketchName" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_300}"/>
+				<s:TextArea id="sketchName" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_50}" width="{KSketchStyleSheet.DIALOG_MEASUREMENT_300}"/>
 				<s:Label id="saveAsWarning" text="A different filename will save this sketch as a new copy" visible="false"/>
 			</s:Group>
 			<s:Group width="100%">
 				<s:layout>
-					<s:HorizontalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
+					<s:HorizontalLayout gap="{KSketchStyleSheet.DIALOG_PADDING_10}" horizontalAlign="right"/>
 				</s:layout>
-				<s:Button id="saveButton" label="Save" click="save()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-				<s:Button id="discardButton" label="Discard" click="discardSketch()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-				<s:Button id="cancelButton" label="Cancel" click="cancel()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				<s:Button id="saveButton" label="Save" click="save()" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}"/>
+				<s:Button id="discardButton" label="Discard" click="discardSketch()" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}"/>
+				<s:Button id="cancelButton" label="Cancel" click="cancel()" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

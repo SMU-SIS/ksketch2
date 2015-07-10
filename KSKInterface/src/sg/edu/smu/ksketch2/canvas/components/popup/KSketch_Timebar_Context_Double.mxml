@@ -24,7 +24,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
@@ -423,17 +423,17 @@
 			<s:Graphic>
 				<s:Path data="M 0 0 L 20 20 L -20 20 z">
 					<s:fill>
-						<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
+						<s:SolidColor color="{KSketchStyleSheet.CONTEXTMENU_BACKGROUND_COLOR}"/>
 					</s:fill>
 				</s:Path>
 			</s:Graphic>
 		</s:Group>
 		<s:Group id="calloutContents" x="{-calloutContents.width/2}" y="{arrowHead.height}">
 			<s:Rect width="100%" height="100%"
-					radiusX="{KSketchStyles.CONTEXTMENU_CORNERS}"
-					radiusY="{KSketchStyles.CONTEXTMENU_CORNERS}">
+					radiusX="{KSketchStyleSheet.CONTEXTMENU_CORNERS}"
+					radiusY="{KSketchStyleSheet.CONTEXTMENU_CORNERS}">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchStyleSheet.CONTEXTMENU_BACKGROUND_COLOR}"/>
 				</s:fill>
 			</s:Rect>
 			<s:Group>
@@ -443,42 +443,42 @@
 				<s:Group>
 					<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
 						<s:fill>
-							<s:SolidColor color="{KSketchStyles.MAGNIFIER_BACKGROUND_COLOR}"/>
+							<s:SolidColor color="{KSketchStyleSheet.MAGNIFIER_BACKGROUND_COLOR}"/>
 						</s:fill>
 					</s:Rect>
 					<s:Group>
 						<s:layout>
 							<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"
-												paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
-												paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
+												paddingTop="{KSketchStyleSheet.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyleSheet.MAGNIFIER_PADDING}"
+												paddingLeft="{KSketchStyleSheet.MAGNIFIER_PADDING}" paddingRight="{KSketchStyleSheet.MAGNIFIER_PADDING}"/>
 						</s:layout>
 						<buttons:KSketch_Timebar_Button_Double
 							id="leftFrame"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 							/>
 						<buttons:KSketch_Button
 							id="insertButton"
 							click="_insertKey(event)"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 							/>
 						<buttons:KSketch_Button
 							id="removeButton"
 							click="_removeKey(event)"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 							/>
 						<buttons:KSketch_Button
 							id="clearButton"
 							click="_clearKeys(event)"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 							/>
 						<buttons:KSketch_Timebar_Button_Double
 							id="rightFrame"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+							width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+							height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 							/>
 					</s:Group>
 				</s:Group>
@@ -488,7 +488,7 @@
 			<s:Graphic>
 				<s:Path data="M 0 20 L 20 0 L -20 0 z">
 					<s:fill>
-						<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
+						<s:SolidColor color="{KSketchStyleSheet.CONTEXTMENU_BACKGROUND_COLOR}"/>
 					</s:fill>
 				</s:Path>
 			</s:Graphic>

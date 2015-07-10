@@ -20,7 +20,7 @@
 
 			import spark.components.Application;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 
 			
 			private var _canvasView:KSketch_CanvasView;
@@ -42,7 +42,7 @@
 		
 			private function init():void
 			{
-				notificationLabel.setStyle("fontSize", KSketchStyles.DIALOG_MEASUREMENT_300);
+				notificationLabel.setStyle("fontSize", KSketchStyleSheet.DIALOG_MEASUREMENT_300);
 				this.removeEventListener(FlexEvent.INITIALIZE, init);
 				notificationLabel.text = " ";
 				notificationLabel.setStyle('textAlign', 'center');

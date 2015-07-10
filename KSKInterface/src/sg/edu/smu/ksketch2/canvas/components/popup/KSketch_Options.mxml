@@ -18,7 +18,7 @@
 			
 			import spark.components.Application;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
@@ -49,14 +49,14 @@
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				diffGroup.setStyle("fontSize", KSketchStyles.DIALOGBUTTON_FONT_SIZE);
-				diffLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				toolbarGroup.setStyle("fontSize", KSketchStyles.DIALOGBUTTON_FONT_SIZE);
-				toolLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				initGroup.setStyle("fontSize", KSketchStyles.DIALOGBUTTON_FONT_SIZE);
-				initLabel.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				closeButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				header.setStyle("fontSize", KSketchStyleSheet.FONT_LARGE);
+				diffGroup.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
+				diffLabel.setStyle("fontSize", KSketchStyleSheet.FONT_MEDIUM);
+				toolbarGroup.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
+				toolLabel.setStyle("fontSize", KSketchStyleSheet.FONT_MEDIUM);
+				initGroup.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
+				initLabel.setStyle("fontSize", KSketchStyleSheet.FONT_MEDIUM);
+				closeButton.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
 				var duration:int = KSketch_CanvasView_Preferences.duration;
 				timeValue = Math.ceil(duration/60)+":"+duration%60;	
 			}
@@ -154,6 +154,20 @@
 			
 			public function get starValueArr():Array
 			{
+				if(isNaN(_oneStarAvg))
+					_oneStarAvg = 5;
+				if(isNaN(_twoStarAvg))
+					_twoStarAvg = 3;
+				if(isNaN(_threeStarAvg))
+					_threeStarAvg = 1;
+				
+				if(isNaN(_oneStarMax))
+					_oneStarMax = 5;
+				if(isNaN(_twoStarMax))
+					_twoStarMax = 3;
+				if(isNaN(_threeStarMax))
+					_threeStarMax = 1;
+				
 				var arr:Array = [_oneStarAvg, _twoStarAvg, _threeStarAvg, _oneStarMax, _twoStarMax, _threeStarMax];
 				return arr;
 			}
@@ -278,20 +292,20 @@
 	</fx:Declarations>
 	<s:filters>
 		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+			color="{KSketchStyleSheet.CANVAS_SHADOW_COLOR}" angle="{KSketchStyleSheet.CANVAS_SHADOW_ANGLE}"
+			alpha="{KSketchStyleSheet.CANVAS_SHADOW_ALPHA * 0.5}"
+			strength="{KSketchStyleSheet.CANVAS_SHADOW_STRENGTH}"
+			blurX="{KSketchStyleSheet.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+			blurY="{KSketchStyleSheet.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
 	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+	<s:Rect width="100%" height="100%" radiusX="{KSketchStyleSheet.MENU_CORNER_RADIUS}" radiusY="{KSketchStyleSheet.MENU_CORNER_RADIUS}">
 		<s:fill>
-			<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+			<s:SolidColor color="{KSketchStyleSheet.MENU_BACKGROUND_COLOR}"/>
 		</s:fill>
 	</s:Rect>
 	<s:Group>
 		<s:layout>
-			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_20}" paddingLeft="{KSketchStyles.DIALOG_PADDING_15}" paddingRight="{KSketchStyles.DIALOG_PADDING_10}" paddingTop="{KSketchStyles.DIALOG_PADDING_20}" paddingBottom="{KSketchStyles.DIALOG_PADDING_10}"/>
+			<s:VerticalLayout gap="{KSketchStyleSheet.DIALOG_PADDING_20}" paddingLeft="{KSketchStyleSheet.DIALOG_PADDING_15}" paddingRight="{KSketchStyleSheet.DIALOG_PADDING_10}" paddingTop="{KSketchStyleSheet.DIALOG_PADDING_20}" paddingBottom="{KSketchStyleSheet.DIALOG_PADDING_10}"/>
 		</s:layout>
 		<s:Label id="header" text="Options"/>
 		
@@ -309,8 +323,8 @@
 					<s:layout>
 						<s:HorizontalLayout/>
 					</s:layout>
-					<s:RadioButton groupName="toolGroup" id="rightAlign" value="right" label="Right" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
-					<s:RadioButton groupName="toolGroup" id="leftAlign" value="left" label="Left"  fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+					<s:RadioButton groupName="toolGroup" id="rightAlign" value="right" label="Right" fontSize="{KSketchStyleSheet.FONT_SMALL}"/>
+					<s:RadioButton groupName="toolGroup" id="leftAlign" value="left" label="Left"  fontSize="{KSketchStyleSheet.FONT_SMALL}"/>
 				</s:Group>
 			</s:Group>
 		</s:Group>
@@ -329,8 +343,8 @@
 					<s:layout>
 						<s:HorizontalLayout/>
 					</s:layout>
-					<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
-					<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"  fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+					<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere" fontSize="{KSketchStyleSheet.FONT_SMALL}"/>
+					<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"  fontSize="{KSketchStyleSheet.FONT_SMALL}"/>
 				</s:Group>
 			</s:Group>
 		</s:Group>
@@ -350,7 +364,7 @@
 						<s:HorizontalLayout verticalAlign="middle"/>
 					</s:layout>
 					<s:Label id="titleTime" text="Time Threshold (MM:SS)"/>
-					<s:TextInput id="activityDuration" text="{timeValue}" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_100}" change="_duration(event)" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}" />
+					<s:TextInput id="activityDuration" text="{timeValue}" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_50}" width="{KSketchStyleSheet.DIALOG_MEASUREMENT_100}" change="_duration(event)" fontSize="{KSketchStyleSheet.FONT_SMALL}" />
 				</s:Group>
 				
 				<s:Group>
@@ -428,9 +442,9 @@
 		
 		<s:Group width="100%">
 			<s:layout>
-				<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
+				<s:VerticalLayout paddingLeft="{KSketchStyleSheet.DIALOG_PADDING_10}" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button id="closeButton" label="Close" click="close()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			<s:Button id="closeButton" label="Close" click="close()" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}"/>
 		</s:Group>
 	</s:Group>
 	

@@ -13,7 +13,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			
 			[Bindable]
 			public var strokeColor:uint = 0x6E6F71;
@@ -29,7 +29,7 @@
 		]]>
 	</fx:Script>
 	<s:Group id="boundary" mouseEnabled="false" mouseChildren="false"/>
-	<s:Group id="baseTrigger" scaleX="{KSketchStyles.SCALE}" scaleY="{KSketchStyles.SCALE}">
+	<s:Group id="baseTrigger" scaleX="{KSketchStyleSheet.SCALE}" scaleY="{KSketchStyleSheet.SCALE}">
 		<s:Graphic>
 			<s:Path winding="nonZero" data="M87.319-56.954
 					c0.069-0.069,18.315-18.173,18.315-18.173l9.649,9.787l4.025-53.302l-53.163,4.027l10.062,10.062c0,0-14.939,14.902-17.855,17.817
@@ -71,9 +71,9 @@
 		</s:Graphic>
 	</s:Group>
 	
-	<s:Group id="centroid" scaleX="{KSketchStyles.SCALE}" scaleY="{KSketchStyles.SCALE}"/>
+	<s:Group id="centroid" scaleX="{KSketchStyleSheet.SCALE}" scaleY="{KSketchStyleSheet.SCALE}"/>
 	
-	<s:Group id="middleTrigger" scaleX="{KSketchStyles.SCALE}" scaleY="{KSketchStyles.SCALE}">
+	<s:Group id="middleTrigger" scaleX="{KSketchStyleSheet.SCALE}" scaleY="{KSketchStyleSheet.SCALE}">
 		<s:Graphic>
 			<s:Ellipse x="-49.5894" y="-53.0474" width="110.589" height="108.515">
 				<s:fill>
@@ -82,7 +82,7 @@
 			</s:Ellipse>
 		</s:Graphic>
 	</s:Group>
-	<s:Group id="topTrigger" scaleX="{KSketchStyles.SCALE}" scaleY="{KSketchStyles.SCALE}">
+	<s:Group id="topTrigger" scaleX="{KSketchStyleSheet.SCALE}" scaleY="{KSketchStyleSheet.SCALE}">
 		<s:Graphic>
 			<s:Path x="-92.5415" y="-87.1927" winding="nonZero" data="M130.6 168.127C178.938 147.481 196.153 91.9671 178.053 52.6062 157.184 7.2371 105.571 -11.3684 62.1509 7.02225 33.5981 19.1004 18.5898 43.5808 13.2002 62.7264 7.99414 60.7058 0 58.0223 0 58.0223L17.3872 104.481 59.895 80.5496C59.895 80.5496 49.1919
 					75.8592 44.9341 74.2361 52.041 55.49 64.377 46.1961 76.3911 41.0076 108.239 27.2137 133.848 44.0476 143.75 67.3992 155.5 94.9788 148.481 122.629 117.042 136.028 91.4399 146.963 58.0962 135.766 47.9932 108.018 39.5068 111.492 23.6279 118.401 14.9028
@@ -94,6 +94,6 @@
 		</s:Graphic>
 	</s:Group>
 	
-	<s:Group id="centroidMove" scaleX="{KSketchStyles.SCALE}" scaleY="{KSketchStyles.SCALE}"/>
+	<s:Group id="centroidMove" scaleX="{KSketchStyleSheet.SCALE}" scaleY="{KSketchStyleSheet.SCALE}"/>
 	
 </s:Group>

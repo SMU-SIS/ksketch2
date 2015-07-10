@@ -43,10 +43,10 @@
     </fx:Metadata>
 	<fx:Script>
 		<![CDATA[
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			
 			[Bindable]
-			public var upColor:uint = KSketchStyles.CANVAS_BUTTON_NORMAL;
+			public var upColor:uint = KSketchStyleSheet.CANVAS_BUTTON_NORMAL;
 		]]>
 	</fx:Script>
     
@@ -60,25 +60,25 @@
 	
 	<s:filters>
 		<s:DropShadowFilter
-			alpha="{KSketchStyles.CANVAS_BUTTON_SHADOW_ALPHA}"
+			alpha="{KSketchStyleSheet.CANVAS_BUTTON_SHADOW_ALPHA}"
 			alpha.disabled="0"
-			angle="{KSketchStyles.CANVAS_BUTTON_SHADOW_ANGLE}"
-			color="{KSketchStyles.CANVAS_BUTTON_SHADOW_COLOR}"
-			distance="{KSketchStyles.CANVAS_BUTTON_SHADOW_DISTANCE}"
-			strength="{KSketchStyles.CANVAS_BUTTON_SHADOW_STRENGTH}"
+			angle="{KSketchStyleSheet.CANVAS_BUTTON_SHADOW_ANGLE}"
+			color="{KSketchStyleSheet.CANVAS_BUTTON_SHADOW_COLOR}"
+			distance="{KSketchStyleSheet.CANVAS_BUTTON_SHADOW_DISTANCE}"
+			strength="{KSketchStyleSheet.CANVAS_BUTTON_SHADOW_STRENGTH}"
 		/>
 	</s:filters>
 	
     <!--- @private -->
     <s:Rect left="1" right="1" top="1" bottom="1"
-			radiusX="{KSketchStyles.CANVAS_BUTTON_CORNER_RADIUS}"
-			radiusY="{KSketchStyles.CANVAS_BUTTON_CORNER_RADIUS}">
+			radiusX="{KSketchStyleSheet.CANVAS_BUTTON_CORNER_RADIUS}"
+			radiusY="{KSketchStyleSheet.CANVAS_BUTTON_CORNER_RADIUS}">
         <s:fill>
 			<s:SolidColor id="backgroundFill"
 				color.up="{upColor}"
-				color.over="{KSketchStyles.CANVAS_BUTTON_ACTIVATED}"
-				color.down="{KSketchStyles.CANVAS_BUTTON_ACTIVATED}"
-				color.disabled="{KSketchStyles.CANVAS_BUTTON_NORMAL}"/>
+				color.over="{KSketchStyleSheet.CANVAS_BUTTON_ACTIVATED}"
+				color.down="{KSketchStyleSheet.CANVAS_BUTTON_ACTIVATED}"
+				color.disabled="{KSketchStyleSheet.CANVAS_BUTTON_NORMAL}"/>
         </s:fill>
     </s:Rect>
 

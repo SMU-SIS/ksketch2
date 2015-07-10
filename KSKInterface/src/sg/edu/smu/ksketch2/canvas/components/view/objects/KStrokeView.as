@@ -11,7 +11,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 	import flash.filters.GlowFilter;
 	import flash.geom.Point;
 	
-	import sg.edu.smu.ksketch2.KSketchStyles;
+	import sg.edu.smu.ksketch2.KSketchStyleSheet;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.events.KObjectEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.IKeyFrame;
@@ -216,9 +216,9 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		public function changeActivityHighlight(time:int, hide:Boolean):void
 		{
 			if(!hide)
-				_render_DrawStroke(KSketchStyles.GREY_HIGHLIGHT);
+				_render_DrawStroke(KSketchStyleSheet.GREY_HIGHLIGHT);
 			else
-				_render_DrawStroke(KSketchStyles.WHITE_HIDE);
+				_render_DrawStroke(KSketchStyleSheet.WHITE_HIDE);
 			
 			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
 		}

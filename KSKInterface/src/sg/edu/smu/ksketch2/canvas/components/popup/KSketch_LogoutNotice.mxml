@@ -17,7 +17,7 @@
 			
 			import spark.components.Application;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
 			private var _homeView:KSketch_HomeView;
@@ -25,10 +25,10 @@
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				label_1.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				label_2.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				cancelButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				logoutButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				label_1.setStyle("fontSize", KSketchStyleSheet.FONT_STANDARD);
+				label_2.setStyle("fontSize", KSketchStyleSheet.FONT_STANDARD);
+				cancelButton.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
+				logoutButton.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
@@ -54,30 +54,30 @@
 	</fx:Script>
 	<s:filters>
 		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+			color="{KSketchStyleSheet.CANVAS_SHADOW_COLOR}" angle="{KSketchStyleSheet.CANVAS_SHADOW_ANGLE}"
+			alpha="{KSketchStyleSheet.CANVAS_SHADOW_ALPHA * 0.5}"
+			strength="{KSketchStyleSheet.CANVAS_SHADOW_STRENGTH}"
+			blurX="{KSketchStyleSheet.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+			blurY="{KSketchStyleSheet.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
 	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+	<s:Rect width="100%" height="100%" radiusX="{KSketchStyleSheet.MENU_CORNER_RADIUS}" radiusY="{KSketchStyleSheet.MENU_CORNER_RADIUS}">
 		<s:fill>
-			<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+			<s:SolidColor color="{KSketchStyleSheet.MENU_BACKGROUND_COLOR}"/>
 		</s:fill>
 	</s:Rect>
 	<s:Group width="50%">
 		<s:layout>
-			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}" verticalAlign="middle" horizontalAlign="center"/>
+			<s:VerticalLayout gap="{KSketchStyleSheet.DIALOG_PADDING_10}" paddingLeft="{KSketchStyleSheet.DIALOG_PADDING_5}" paddingRight="{KSketchStyleSheet.DIALOG_PADDING_5}" paddingTop="{KSketchStyleSheet.DIALOG_PADDING_5}" paddingBottom="{KSketchStyleSheet.DIALOG_PADDING_5}" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
 		<s:Label id="label_1" text="You are currently disconnected."/>
 		<s:Label id="label_2" text="Logging out will discard all unsaved changes."/>
 		
 		<s:Group width="100%">
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyleSheet.DIALOG_PADDING_10}" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button id="cancelButton" label="Cancel" click="close()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-			<s:Button id="logoutButton" label="Logout" click="forceLogout()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			<s:Button id="cancelButton" label="Cancel" click="close()" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}"/>
+			<s:Button id="logoutButton" label="Logout" click="forceLogout()" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

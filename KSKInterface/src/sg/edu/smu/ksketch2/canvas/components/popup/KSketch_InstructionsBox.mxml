@@ -29,7 +29,7 @@
 		import mx.managers.PopUpManager;
 		
 		import sg.edu.smu.ksketch2.KSketchAssets;
-		import sg.edu.smu.ksketch2.KSketchStyles;
+		import sg.edu.smu.ksketch2.KSketchStyleSheet;
 		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 		import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 		import sg.edu.smu.ksketch2.canvas.controls.KActivityResultControl;
@@ -89,15 +89,15 @@
 		private function initStyle():void {
 			this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
 
-			activityHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-			activityButton_Prev.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-			activityButton_Next.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			activityHeader.setStyle("fontSize", KSketchStyleSheet.FONT_STANDARD);
+			activityButton_Prev.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
+			activityButton_Next.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
 
-			instructionHeader.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-			instructionButton_Prev.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-			instructionButton_Next.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-			instructionButton_Start.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-			instructionMessage.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			instructionHeader.setStyle("fontSize", KSketchStyleSheet.FONT_STANDARD);
+			instructionButton_Prev.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
+			instructionButton_Next.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
+			instructionButton_Start.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
+			instructionMessage.setStyle("fontSize", KSketchStyleSheet.FONT_SMALL);
 
 			if (_canvasView.isTiming)
 				instructionButton_Start.label = "DONE";
@@ -271,29 +271,29 @@
 	</fx:Script>
 	<s:filters>
 		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+			color="{KSketchStyleSheet.CANVAS_SHADOW_COLOR}" angle="{KSketchStyleSheet.CANVAS_SHADOW_ANGLE}"
+			alpha="{KSketchStyleSheet.CANVAS_SHADOW_ALPHA * 0.5}"
+			strength="{KSketchStyleSheet.CANVAS_SHADOW_STRENGTH}"
+			blurX="{KSketchStyleSheet.CANVAS_SHADOW_X_DISTANCE * 0.75}"
+			blurY="{KSketchStyleSheet.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
 	</s:filters>
 	<s:Group id="instructions" visible="true">
-		<s:Rect id="instructionBox" width="100%" height="150%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+		<s:Rect id="instructionBox" width="100%" height="150%" radiusX="{KSketchStyleSheet.MENU_CORNER_RADIUS}" radiusY="{KSketchStyleSheet.MENU_CORNER_RADIUS}">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+				<s:SolidColor color="{KSketchStyleSheet.MENU_BACKGROUND_COLOR}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
+				<s:VerticalLayout gap="{KSketchStyleSheet.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
 			</s:layout>
 			<s:Group width="100%">
 				<s:layout>
-					<s:HorizontalLayout  gap="{KSketchStyles.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
+					<s:HorizontalLayout  gap="{KSketchStyleSheet.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
-				<buttons:KSketch_ListButton id="activityButton_Prev" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="previousActivity()"/>
-				<s:Label width="{KSketchStyles.DIALOG_MEASUREMENT_100}" id="activityHeader" textAlign="center"/>
-				<buttons:KSketch_ListButton id="activityButton_Next" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="nextActvity()"/>
+				<buttons:KSketch_ListButton id="activityButton_Prev" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}" click="previousActivity()"/>
+				<s:Label width="{KSketchStyleSheet.DIALOG_MEASUREMENT_100}" id="activityHeader" textAlign="center"/>
+				<buttons:KSketch_ListButton id="activityButton_Next" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}" click="nextActvity()"/>
 			</s:Group>
 			
 			
@@ -305,15 +305,15 @@
 			
 			<s:Group width="100%">
 				<s:layout>
-					<s:HorizontalLayout  gap="{KSketchStyles.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
+					<s:HorizontalLayout  gap="{KSketchStyleSheet.DIALOG_PADDING_20}" horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
-				<buttons:KSketch_ListButton id="instructionButton_Prev" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="previousInstruction()"/>
-				<s:Label width="{KSketchStyles.DIALOG_MEASUREMENT_100}" id="instructionHeader" text="Default" textAlign="center"/>
-				<buttons:KSketch_ListButton id="instructionButton_Next" height="{KSketchStyles.DIALOG_MEASUREMENT_25}" click="nextInstruction()"/>
+				<buttons:KSketch_ListButton id="instructionButton_Prev" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}" click="previousInstruction()"/>
+				<s:Label width="{KSketchStyleSheet.DIALOG_MEASUREMENT_100}" id="instructionHeader" text="Default" textAlign="center"/>
+				<buttons:KSketch_ListButton id="instructionButton_Next" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}" click="nextInstruction()"/>
 			</s:Group>
 			
 			<s:Label id="instructionMessage" text="This is the default text. {'\n'}Set message according to activity."/>
-			<s:Button id="instructionButton_Start" click="startStopActivity()" width="100%" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			<s:Button id="instructionButton_Start" click="startStopActivity()" width="100%" height="{KSketchStyleSheet.DIALOG_MEASUREMENT_25}"/>
 			
 		</s:Group>
 	</s:Group>

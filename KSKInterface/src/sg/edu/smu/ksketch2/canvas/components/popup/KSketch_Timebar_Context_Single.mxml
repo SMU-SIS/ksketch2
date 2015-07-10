@@ -23,7 +23,7 @@
 			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
@@ -137,25 +137,25 @@
 		<s:Group>
 			<s:Rect id="blacklabel" width="100%" height="100%" radiusX="5" radiusY="5">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.MAGNIFIER_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchStyleSheet.MAGNIFIER_BACKGROUND_COLOR}"/>
 				</s:fill>
 			</s:Rect>
 			<s:Group>
 				<s:Group id="magContent">
 					<s:layout>
 						<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"
-										  paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
-										  paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
+										  paddingTop="{KSketchStyleSheet.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyleSheet.MAGNIFIER_PADDING}"
+										  paddingLeft="{KSketchStyleSheet.MAGNIFIER_PADDING}" paddingRight="{KSketchStyleSheet.MAGNIFIER_PADDING}"/>
 					</s:layout>
 					<buttons:KSketch_Timebar_Button_Single
 						id="leftFrame"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 						/>
 					<buttons:KSketch_Timebar_Button_Single
 						id="rightFrame"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 						/>
 				</s:Group>
 			</s:Group>

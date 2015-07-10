@@ -15,15 +15,15 @@
 		 >
 	<fx:Script>
 		<![CDATA[
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 		]]>
 	</fx:Script>
 	
 	
-	<s:Group width="100%" height="{KSketchStyles.TIME_CONTROL_HEIGHT}" id="contentGroup" mouseChildren="false">
+	<s:Group width="100%" height="{KSketchStyleSheet.TIME_CONTROL_HEIGHT}" id="contentGroup" mouseChildren="false">
 		<s:Rect width="100%" height="40%" id="backgroundFill">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.TIMEBAR_BACKGROUND_COLOR}"/>
+				<s:SolidColor color="{KSketchStyleSheet.TIMEBAR_BACKGROUND_COLOR}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group width="100%" height="40%">
@@ -32,7 +32,7 @@
 			</s:layout>
 			<s:Rect width="100%" height="70%">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.TIME_CONTROL_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchStyleSheet.TIME_CONTROL_BACKGROUND_COLOR}"/>
 				</s:fill>
 			</s:Rect>
 		</s:Group>
@@ -41,7 +41,7 @@
 				<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
 			</s:layout>
 			<s:Group width="100%" height="70%" id="timeControlContents">
-				<s:Group id="unselectedTickMarkDisplay"  height="100%" alpha="{KSketchStyles.TIME_TICK_UNSELECTED_ALPHA}">
+				<s:Group id="unselectedTickMarkDisplay"  height="100%" alpha="{KSketchStyleSheet.TIME_TICK_UNSELECTED_ALPHA}">
 					<s:mask>
 						<s:Group width="{timeControlContents.width}" height="{timeControlContents.height}">
 							<s:Rect width="101%" height="100%" alpha="0.5">
@@ -63,7 +63,7 @@
 						</s:Group>
 					</s:mask>
 				</s:Group>
-				<s:Group id="selectedTickMarkDisplay"  height="100%" alpha="{KSketchStyles.TIME_TICK_SELECTED_ALPHA}">
+				<s:Group id="selectedTickMarkDisplay"  height="100%" alpha="{KSketchStyleSheet.TIME_TICK_SELECTED_ALPHA}">
 					<s:mask>
 						<s:Group width="{timeControlContents.width}" height="{timeControlContents.height}">
 							<s:Rect width="100%" height="100%" alpha="0.5">

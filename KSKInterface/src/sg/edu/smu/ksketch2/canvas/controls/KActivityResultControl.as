@@ -232,8 +232,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if (maximumDistanceInCM > twoStarMax && maximumDistanceInCM <= oneStarMax)
 				stars += 1;
 			
-			trace("averageDistance: " + maximumDistanceInCM);
-			trace("average values: " + threeStarMax + "," + twoStarAvg + "," + oneStarMax);
+			trace("maximumDistance: " + maximumDistanceInCM);
+			trace("maximum values: " + threeStarMax + "," + twoStarAvg + "," + oneStarMax);
 			trace("stars: " + stars);
 			
 			stars = stars/2;

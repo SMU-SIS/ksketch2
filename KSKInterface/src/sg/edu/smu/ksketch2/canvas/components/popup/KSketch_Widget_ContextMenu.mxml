@@ -24,7 +24,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
@@ -205,49 +205,49 @@
 	</fx:Script>
 	
 	<s:Group id="calloutContents" x="{-calloutContents.width/2}">
-		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.CONTEXTMENU_CORNERS}" radiusY="{KSketchStyles.CONTEXTMENU_CORNERS}">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchStyleSheet.CONTEXTMENU_CORNERS}" radiusY="{KSketchStyleSheet.CONTEXTMENU_CORNERS}">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
+				<s:SolidColor color="{KSketchStyleSheet.CONTEXTMENU_BACKGROUND_COLOR}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout paddingLeft="{KSketchStyles.CONTEXTMENU_PADDING}"
-								  paddingRight="{KSketchStyles.CONTEXTMENU_PADDING}"
-								  paddingTop="{KSketchStyles.CONTEXTMENU_PADDING}"
-								  paddingBottom="{KSketchStyles.CONTEXTMENU_PADDING}"/>
+				<s:VerticalLayout paddingLeft="{KSketchStyleSheet.CONTEXTMENU_PADDING}"
+								  paddingRight="{KSketchStyleSheet.CONTEXTMENU_PADDING}"
+								  paddingTop="{KSketchStyleSheet.CONTEXTMENU_PADDING}"
+								  paddingBottom="{KSketchStyleSheet.CONTEXTMENU_PADDING}"/>
 			</s:layout>
 			<s:Group>
 				<s:Rect width="100%" height="100%">
 					<s:fill>
-						<s:SolidColor color="{KSketchStyles.APP_BACKGROUND_COLOR}"/>
+						<s:SolidColor color="{KSketchStyleSheet.APP_BACKGROUND_COLOR}"/>
 					</s:fill>
 				</s:Rect>
 				<s:Group>
 					<s:layout>
 						<s:HorizontalLayout gap="2"
-											paddingLeft="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
-											paddingRight="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
-											paddingTop="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
-											paddingBottom="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"/>
+											paddingLeft="{KSketchStyleSheet.CONTEXTMENU_BUTTON_PADDING}"
+											paddingRight="{KSketchStyleSheet.CONTEXTMENU_BUTTON_PADDING}"
+											paddingTop="{KSketchStyleSheet.CONTEXTMENU_BUTTON_PADDING}"
+											paddingBottom="{KSketchStyleSheet.CONTEXTMENU_BUTTON_PADDING}"/>
 					</s:layout>
 					<buttons:KSketch_Button
 						id="groupButton"
 						click="_group(event)"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 						/>
 					<buttons:KSketch_Button
 						id="ungroupButton"
 						click="_ungroup(event)"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 						/>
 					<buttons:KSketch_Button
 						id="moveCenterButton"
 						click="_moveCenter(event)"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyleSheet.TIMEBAR_BUTTON_WIDTH}"
+						height="{KSketchStyleSheet.TIMEBAR_BUTTON_HEIGHT}"
 						/>
 				</s:Group>
 			</s:Group>

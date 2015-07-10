@@ -21,7 +21,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import mx.events.FlexEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.KSketchStyles;
+	import sg.edu.smu.ksketch2.KSketchStyleSheet;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Double;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Single;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
@@ -252,17 +252,17 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 						
 						if(Capabilities.version.indexOf('IOS') > -1)
 						{
-							if(_contextDouble.x >= KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE)
-								_contextDouble.x = KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE;
+							if(_contextDouble.x >= KSketchStyleSheet.TIMEBAR_X_LIMIT_DOUBLE)
+								_contextDouble.x = KSketchStyleSheet.TIMEBAR_X_LIMIT_DOUBLE;
 						}
 						else
 						{
-							if(_contextDouble.x >= KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE_ANDROID)
-								_contextDouble.x = KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE_ANDROID;
+							if(_contextDouble.x >= KSketchStyleSheet.TIMEBAR_X_LIMIT_DOUBLE_ANDROID)
+								_contextDouble.x = KSketchStyleSheet.TIMEBAR_X_LIMIT_DOUBLE_ANDROID;
 						}
 						
 						_contextDouble.position = position;
-						_contextDouble.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.TIMEBAR_GAP_CONTEXTMENU_DOUBLE;
+						_contextDouble.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyleSheet.TIMEBAR_GAP_CONTEXTMENU_DOUBLE;
 						
 						clearTimeout(mouseTimeout);
 						mouseTimeout = "undefined";	
@@ -287,16 +287,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 							
 							if(Capabilities.version.indexOf('IOS') > -1)
 							{
-								if(_contextSingle.x >= KSketchStyles.TIMEBAR_X_LIMIT_SINGLE)
-									_contextSingle.x = KSketchStyles.TIMEBAR_X_LIMIT_SINGLE;
+								if(_contextSingle.x >= KSketchStyleSheet.TIMEBAR_X_LIMIT_SINGLE)
+									_contextSingle.x = KSketchStyleSheet.TIMEBAR_X_LIMIT_SINGLE;
 							}
 							else
 							{
-								if(_contextSingle.x >= KSketchStyles.TIMEBAR_X_LIMIT_SINGLE_ANDROID)
-									_contextSingle.x =  KSketchStyles.TIMEBAR_X_LIMIT_SINGLE_ANDROID;
+								if(_contextSingle.x >= KSketchStyleSheet.TIMEBAR_X_LIMIT_SINGLE_ANDROID)
+									_contextSingle.x =  KSketchStyleSheet.TIMEBAR_X_LIMIT_SINGLE_ANDROID;
 							}
 							
-							_contextSingle.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.TIMEBAR_GAP_CONTEXTMENU_SINGLE;//190;//95;
+							_contextSingle.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyleSheet.TIMEBAR_GAP_CONTEXTMENU_SINGLE;//190;//95;
 						}
 						
 						mouseTimeout = "undefined";

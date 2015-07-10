@@ -11,8 +11,8 @@
 		<s:State name="show"/>
 	</s:states>
 	
-	<s:HGroup id="bc" horizontalAlign="center" height="{KSketchStyles.LIST_SKETCH_HEIGHT}" verticalAlign="middle" paddingLeft="15">
-		<s:Image id="imgData" width="{KSketchStyles.LIST_SKETCH_IMAGE_WIDTH}" height="{KSketchStyles.LIST_SKETCH_IMAGE_HEIGHT}"/>
+	<s:HGroup id="bc" horizontalAlign="center" height="{KSketchStyleSheet.LIST_SKETCH_HEIGHT}" verticalAlign="middle" paddingLeft="15">
+		<s:Image id="imgData" width="{KSketchStyleSheet.LIST_SKETCH_IMAGE_WIDTH}" height="{KSketchStyleSheet.LIST_SKETCH_IMAGE_HEIGHT}"/>
 		
 		<s:VGroup>
 			<s:Label id="sketchName"/>
@@ -29,7 +29,7 @@
 			import mx.events.FlexEvent;
 			import mx.utils.Base64Decoder;
 		
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchStyleSheet;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
 			
@@ -55,7 +55,7 @@
 					
 					//set name and date properties
 					sketchName.text = value.name;
-					sketchName.setStyle("fontSize",KSketchStyles.LIST_SKETCH_FONT);
+					sketchName.setStyle("fontSize",KSketchStyleSheet.LIST_SKETCH_FONT);
 					sketchDate.text = value.date;
 					sketchId.text = value.sketchId;
 					sketchVersion.text = value.version;
@@ -64,7 +64,7 @@
 					border.graphics.lineStyle(2, 0x990000, .75);
 					border.graphics.beginFill(0x00FF00);
 					border.graphics.moveTo(0, 0);
-					border.graphics.lineTo(KSketchStyles.LIST_SKETCH_LINE, 0);
+					border.graphics.lineTo(KSketchStyleSheet.LIST_SKETCH_LINE, 0);
 					
 					//decode for Image
 					var decoder:Base64Decoder = new Base64Decoder();

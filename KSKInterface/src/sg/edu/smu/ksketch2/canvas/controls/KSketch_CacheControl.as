@@ -89,12 +89,50 @@ package sg.edu.smu.ksketch2.canvas.controls
 			informationArr[0] = userObject;
 		}
 		
-		public function retrieveAllSketchList():void
+		public function retrieveAllSketchList():Array
 		{
+			var result:Object;
+
+			var cacheList:SortedList = new SortedList();
+			result = syncList(cacheList,webList);
+			//TODO: Handle toBeSavedList here
+			//result.toBeSavedList
+			return result.syncedList.toArray();
+
+		}
+		// Probably the most efficient way of syncing the sketch list in the cache and
+		// sketch list from the web
+		private function syncList(cacheList:SortedList,webList:SortedList): Object{
 			var allList:SortedList = new SortedList();
-			
-			
-			//var webSketchArr:Array = retrieveUserSketchList();
+			var updateList:SortedList = new SortedList();
+			var ret:Object = new Object();
+			var x:int =0 , y:int = 0;
+			while((x < cacheList.size) || (y < webList.size)){
+				if(y >= webList.size) {
+					if(!cacheList.itemAt(x).isSaved) {
+						updateList.add(cacheList.itemAt(x));
+					}
+					x += 1;
+				} else if (x >= cacheList.size) {
+					allList.add(webList.itemAt(y));
+					y+=1;
+				} else if (cacheList.itemAt(x).compare(webList.itemAt(y)) == -1) {
+					if(!cacheList.itemAt(x).isSaved) {
+						updateList.add(cacheList.itemAt(x));
+					}
+					x += 1;
+				} else if (cacheList.itemAt(x).compare(webList.itemAt(y)) == 1) {
+					allList.add(webList.itemAt(y));
+					y += 1;
+				} else {
+					allList.add(webList.itemAt(y));
+					x += 1;
+					y += 1;
+				}
+			}
+			ret.syncedList = allList;
+			ret.toBeSavedList = updateList;
+			return ret;
 		}
 		
 		public function retrieveWebSketchList():void
@@ -122,6 +160,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				_ksketchListItem.fromWebData(tempObj);
 				webList.add(_ksketchListItem);
 			}
+			return retrieveAllSketchList();
 		}
 		
 		private function faultHandler(event:FaultEvent):void

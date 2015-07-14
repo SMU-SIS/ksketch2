@@ -37,6 +37,8 @@
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
+			import data.KSketch_DataListItem;
+			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchStyles;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
@@ -53,7 +55,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
-			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.events.KSketchEvent;
@@ -62,7 +64,6 @@
 			import sg.edu.smu.ksketch2.model.objects.KObject;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
-			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			
 			public static const PLUG_IN:String = "PlugIn";
 			
@@ -86,11 +87,11 @@
 			private var _imageData:BitmapData;
 			private var _needToProcessData:Boolean;
 			private var _groupObjectsList:ArrayCollection;
-			public var _currentDocument:KSketchDocument;
+			public var _currentDocument:KSketch_DataListItem;
 			public var enableLog:Boolean = false;
 			
 			private var _KSketch:KSketch2;
-			public var mobileControl:KMobileControl;
+			private var _cacheControl:KSketch_CacheControl;
 			public var _interactionControl:KInteractionControl;
 			public var _isNewSketch:Boolean = true;
 			
@@ -179,7 +180,7 @@
 				}
 				
 				if(!isWeb)
-					mobileControl = userData.mobileControl;
+					_cacheControl = userData.cacheControl;
 				
 				//Actual setting up starts here
 				_KSketch = new KSketch2();
@@ -297,13 +298,13 @@
 				{
 					if(userData != null)
 					{
-						if(userData.kSketchDocument && userData.kSketchDocument is KSketchDocument)
+						if(userData.sketchData && userData.sketchData is KSketch_DataListItem)
 						{
 							_isNewSketch = false;
-							_currentDocument = userData.kSketchDocument as KSketchDocument;
+							_currentDocument = userData.sketchData as KSketch_DataListItem;
 							
-							if(_currentDocument.xml.scene.children().length() > 0)
-								_KSketch.generateSceneFromXML(new XML(_currentDocument.xml.scene));
+							if(_currentDocument.fileData.scene.children().length() > 0)
+								_KSketch.generateSceneFromXML(new XML(_currentDocument.fileData.scene));
 						}	
 					}
 					
@@ -357,8 +358,6 @@
 			
 			public function saveSketch(confirmSave:Boolean):Object
 			{
-				userData.resolveConflict = 1;
-				
 				//if save is confirmed, set all interaction selection to null
 				//to generate an "unselected" thumbnail
 				if(confirmSave)
@@ -368,26 +367,26 @@
 				}
 				
 				//get existing KSketchDocument object
-				var kSketchDocumentObj:KSketchDocument = (createReturnObject() as KSketchDocument); 
+				var sketchData:KSketch_DataListItem = (createReturnObject() as KSketch_DataListItem); 
 				
-				if(kSketchDocumentObj != null)
+				if(sketchData != null)
 				{
-					userData.name = kSketchDocumentObj.name.toString();
-					userData.lowerFileName = kSketchDocumentObj.name.toString().toLowerCase();
+					userData.name = sketchData.fileName;
+					userData.lowerFileName = sketchData.fileName.toString().toLowerCase();
 					
-					var fileData:String = kSketchDocumentObj.xml.toXMLString();
+					var fileData:String = sketchData.fileData.toXMLString();
 					
-					userData.kSketchDocument = kSketchDocumentObj;
+					userData.sketchData = sketchData;
 					
-					var thumbnailLength:int = userData.kSketchDocument.xml.child("thumbnail").length();
+					var thumbnailLength:int = sketchData.fileData.child("thumbnail").length();
 					
 					if(thumbnailLength > 0)
 					{
 						var recentThumbnail:int = thumbnailLength - 1;
-						userData.thumbnailData = userData.kSketchDocument.xml.child("thumbnail")[recentThumbnail].@data.toString();
+						//userData.thumbnailData = sketchData.fileData.child("thumbnail")[recentThumbnail].@data.toString();
 					}else
 					{
-						userData.thumbnailData = userData.kSketchDocument.xml.child("thumbnail").@data.toString();
+						userData.thumbnailData = sketchData.fileData.child("thumbnail").@data.toString();
 					}
 					
 					return userData;
@@ -402,9 +401,10 @@
 				_saveOptions.canvasDirty = false;
 				KSketch_SaveOptions.saveCounter = 0;
 				
-				KSketch_HomeView.canvasTimerDisabled = true;
+				//CAM:
+				/*KSketch_HomeView.canvasTimerDisabled = true;
 				if(KSketch_HomeView.hasBeenNotified)
-					KSketch_HomeView.hasBeenNotified = true;
+					KSketch_HomeView.hasBeenNotified = true;*/
 				
 				navigator.pushView(KSketch_HomeView, userData);
 				
@@ -429,7 +429,7 @@
 				
 				if(_currentDocument != null)
 				{
-					delete(_currentDocument.xml.scene);
+					delete(_currentDocument.fileData.scene);
 				}
 				
 				sceneXML = _KSketch.sceneXML;
@@ -463,11 +463,11 @@
 				if(_currentDocument == null)
 				{
 					//(name:String, xml:XML, id:String,  date:Date, originalName:String, version:int, sketchId:int, description:String = "")
-					_currentDocument = new KSketchDocument("",saveXML,"",new Date(),"", 0,-1,"");
+					_currentDocument = new KSketch_DataListItem(saveXML.toXMLString(), "", "", "", "", "", -1, 0);
 				}
 				else
 				{
-					_currentDocument.xml = saveXML;
+					_currentDocument.fileData = saveXML;
 				}
 				
 				return _currentDocument;
@@ -518,6 +518,11 @@
 				}
 				else
 					return null;
+			}
+			
+			public function get cacheControl():KSketch_CacheControl
+			{
+				return _cacheControl;
 			}
 			
 		]]>

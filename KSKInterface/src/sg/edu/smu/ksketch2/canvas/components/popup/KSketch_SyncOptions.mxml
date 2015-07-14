@@ -76,7 +76,7 @@
 			
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
-				_homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
+				//CAM: _homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
 				
 				resetSyncArrays();
 				
@@ -85,8 +85,8 @@
 				
 				if(_homeView && _success)
 					_homeView.refresh();
-				else if(_homeView)
-					_homeView.displaySketchData();
+				//CAM: else if(_homeView)
+				//CAM:	_homeView.displaySketchData();
 					
 			}
 			
@@ -123,7 +123,7 @@
 					syncSketchArr.getItemAt(i).owner = currentUser.u_realname;
 					syncSketchArr.getItemAt(i).owner_id = currentUser.id;
 					
-					if(_isConnected && KSketch_LoginView._isLoggedIn)
+					if(true) //CAM: _isConnected && KSketch_LoginView._isLoggedIn)
 					{
 						currentObj = syncSketchArr.getItemAt(i);
 						currentObj.save = 0;
@@ -242,8 +242,8 @@
 						if(_counterSave == syncSketchArr.length)
 							writeAllToCache();
 					}
-					else
-						_homeView.deleteSketchDocument(obj, KFileControl.DELETE_CACHE);
+					//CAM: else
+					//CAM:	_homeView.deleteSketchDocument(obj, KFileControl.DELETE_CACHE);
 				};
 			}
 			
@@ -294,7 +294,7 @@
 					for(i=0; i<resultArr.length; i++)
 					{
 						resultArr[i].save = 0;
-						_homeView._mobileControl.addSketchToList(resultArr[i], KFileControl.ADD_SYNC);	
+						//CAM: _homeView._mobileControl.addSketchToList(resultArr[i], KFileControl.ADD_SYNC);	
 					}
 				}
 				close();
@@ -302,10 +302,10 @@
 			
 			private function discard():void
 			{
-				_homeView._mobileControl.discardSavedSketches();
-				_homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
+				//CAM: _homeView._mobileControl.discardSavedSketches();
+				//CAM: _homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
 				_success = true;
-				KSketch_HomeView.autoSaveCounter = 0;
+				//CAM: KSketch_HomeView.autoSaveCounter = 0;
 				close();
 			}
 			

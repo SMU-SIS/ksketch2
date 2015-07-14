@@ -1,3 +1,11 @@
+/**
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ */
 package sg.edu.smu.ksketch2.canvas.controls
 {
 	import com.adobe.serialization.json.JSON;
@@ -8,26 +16,34 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.HTTPService;
 	
+	import data.KSketch_DataListItem;
 	import data.KSketch_ListItem;
 	
 	import org.as3commons.collections.SortedList;
 	
 	import sg.edu.smu.ksketch2.KSketchWebLinks;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 
 	public class KSketch_CacheControl
 	{
 		//class variables
 		public var informationArr:Array;
+		private var _selectedSketch:Array;
+		private var _homeView:KSketch_HomeView;
 		private var _mySO:SharedObject = SharedObject.getLocal("mydata");
-		private var httpService:HTTPService = new HTTPService();
-		private var webList:SortedList = new SortedList();
+		private var _httpService:HTTPService = new HTTPService();
+		private var _webList:SortedList = new SortedList();
+		private var _isData:Boolean = false;
 		
-		public function KSketch_CacheControl()
+		
+		public function KSketch_CacheControl(homeView:KSketch_HomeView)
 		{
-			informationArr = new Array(2);
+			_homeView = homeView;
+			
+			informationArr = new Array(4);
 			informationArr[0] = null;	//user: user object
 			informationArr[1] = null;	//cachedSketchList: cached sketch list
-			informationArr[2] = null;	//webSketchList: web sketch list
+			informationArr[2] = null;	//syncSketchList: cached sketch list to sync with web
 			informationArr[3] = null;	//syncSketchList: cached sketch list to sync with web
 			
 			if (_mySO.data) 
@@ -41,25 +57,23 @@ package sg.edu.smu.ksketch2.canvas.controls
 				{
 					informationArr[1] = _mySO.data.cachedSketchList;
 				}
-				
-				if(_mySO.data.webSketchList)
+				else
 				{
-					informationArr[0] = _mySO.data.webSketchList;
-				}
-				
-				if(_mySO.data.syncSketchList)
-				{
-					informationArr[1] = _mySO.data.syncSketchList;
-				}
+					informationArr[1] = new SortedList();
+				}	
 			}
 			
-			httpService.addEventListener(FaultEvent.FAULT, faultHandler);
-			httpService.addEventListener(ResultEvent.RESULT, resultHandler);
+			_httpService.resultFormat = "text";
 		}
 		
 		public function get user():Object
 		{
 			return informationArr[0];
+		}
+		
+		public function set user(userObject:Object):void
+		{
+			informationArr[0] = userObject;
 		}
 		
 		/** set user as anonymous **/
@@ -83,21 +97,19 @@ package sg.edu.smu.ksketch2.canvas.controls
 			informationArr[0] = userObject;
 		}
 		
-		/** set user based on received user object **/
-		public function set user(userObject:Object):void
+		public function get cachedList():SortedList
 		{
-			informationArr[0] = userObject;
+			return informationArr[1];
 		}
 		
-		public function retrieveAllSketchList():Array
+		public function retrieveAllSketchList():SortedList
 		{
+			_isData = false;
 			var result:Object;
-
-			var cacheList:SortedList = new SortedList();
-			result = syncList(cacheList,webList);
+			result = syncList(cachedList,_webList);
 			//TODO: Handle toBeSavedList here
 			//result.toBeSavedList
-			return result.syncedList.toArray();
+			return result.syncedList;
 
 		}
 		// Probably the most efficient way of syncing the sketch list in the cache and
@@ -111,6 +123,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				if(y >= webList.size) {
 					if(!cacheList.itemAt(x).isSaved) {
 						updateList.add(cacheList.itemAt(x));
+						allList.add(cacheList.itemAt(x));
 					}
 					x += 1;
 				} else if (x >= cacheList.size) {
@@ -142,12 +155,49 @@ package sg.edu.smu.ksketch2.canvas.controls
 				//make web request to pull list of sketches
 				var parameter:String = "{\"sketchID\":[],\"userid\":" + user.id + "}";
 				
-				httpService.url = KSketchWebLinks.jsonurlSketch + "/" + parameter;
-				httpService.send();
+				_httpService.removeEventListener(ResultEvent.RESULT, dataResultHandler);
+				_httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+				_httpService.addEventListener(ResultEvent.RESULT, listResultHandler);
+				
+				_httpService.url = KSketchWebLinks.jsonurlSketch + "/" + parameter;
+				_httpService.send();
+			}
+			else
+			{
+				_homeView.displaySketchList(null);
 			}
 		}
 		
-		private function resultHandler(event:ResultEvent):Array
+		public function retrieveSketchData(sketchName:String, sketchId:String, version:String):void
+		{
+			_selectedSketch = new Array(3);
+			_selectedSketch[0] = sketchName;
+			_selectedSketch[1] = sketchId;
+			_selectedSketch[2] = version;
+			
+			if(user.id != "n.a" && (user.status.indexOf("success") >= 0))
+			{
+				if(user.id != "n.a" && (user.status.indexOf("success") >= 0))
+				{
+					version = "-1";	//set to -1 to pull the latest version
+				}	
+				
+				_httpService.removeEventListener(ResultEvent.RESULT, listResultHandler);
+				_httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+				_httpService.addEventListener(ResultEvent.RESULT, dataResultHandler);
+				
+				_httpService.url = KSketchWebLinks.jsonurlSketchXML + "/" + sketchId + "/" + version + "/" + user.id;
+				_httpService.send();
+			}
+			else
+			{
+				//loop through cachedSketchList for the object
+				//then retrieve object from same index location in the cachedSketchData
+				//_sketchData = "";
+			}
+		}	
+		
+		private function listResultHandler(event:ResultEvent):void
 		{
 			//TODO: RAM check for negative cases
 			var rawData:String = String(event.result);
@@ -158,14 +208,40 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{
 				var _ksketchListItem:KSketch_ListItem = new KSketch_ListItem();
 				_ksketchListItem.fromWebData(tempObj);
-				webList.add(_ksketchListItem);
+				_webList.add(_ksketchListItem);
 			}
-			return retrieveAllSketchList();
+			
+			_homeView.displaySketchList(retrieveAllSketchList());
+		}
+		
+		private function dataResultHandler(event:ResultEvent):void
+		{
+			var rawData:String = String(event.result);
+			var resultObj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
+			var sketchData:KSketch_DataListItem = null;
+			
+			if(resultObj.data.fileData)
+			{
+				sketchData = new KSketch_DataListItem(resultObj.data.fileData, resultObj.data.fileName, resultObj.data.originalName, 
+													  resultObj.data.owner_id, resultObj.modified, resultObj.data.changeDescription, 
+													  resultObj.data.sketchId, resultObj.data.version);
+			}
+			
+			_homeView.displaySketchData(sketchData, _selectedSketch);
 		}
 		
 		private function faultHandler(event:FaultEvent):void
 		{
 			//TODO: RAM check for negative cases
+			_homeView.displaySketchList(null);
+		}
+		
+		public function reset():void
+		{
+			informationArr[0] = null;
+			informationArr[1] = null;
+			informationArr[2] = null;
+			informationArr[3] = null;
 		}
 	}
 }

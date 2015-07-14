@@ -29,12 +29,12 @@ package sg.edu.smu.ksketch2.utils
 			data.fileName = sketchName;
 			data.lowerFileName = sketchName.toLowerCase();
 			
-			if(userData.kSketchDocument.originalName != "" && (sketchName == userData.kSketchDocument.originalName))
+			if(userData.sketchData.originalName != "" && (sketchName == userData.sketchData.originalName))
 			{
-				data.sketchId = userData.kSketchDocument.sketchId;
-				data.originalVersion = userData.kSketchDocument.originalVersion;
-				data.originalSketch = userData.kSketchDocument.originalSketch;
-				data.originalName = userData.kSketchDocument.originalName;	
+				data.sketchId = userData.sketchData.sketchId;
+				data.originalVersion = userData.sketchData.originalVersion;
+				data.originalSketch = userData.sketchData.originalSketch;
+				data.originalName = userData.sketchData.originalName;	
 			}
 			else
 			{

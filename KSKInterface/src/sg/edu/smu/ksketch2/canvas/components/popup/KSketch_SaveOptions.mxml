@@ -25,6 +25,7 @@
 			import com.adobe.serialization.json.JSON;
 			
 			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -37,7 +38,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
-			import sg.edu.smu.ksketch2.canvas.controls.KMobileControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
 			import sg.edu.smu.ksketch2.utils.KWebData;
 			
 			public static var saveCounter:int = 0;
@@ -55,7 +56,7 @@
 			
 			public var result:Object;
 			public var userData:Object = new Object();
-			public var mobileControl:KMobileControl;
+			private var _cacheControl:KSketch_CacheControl;
 			
 			public var returnToHome:Boolean = false;
 			public var overwriteSave:Boolean = false;
@@ -85,11 +86,11 @@
 				
 				var confirmSave:Boolean = false;
 				userData = _canvasView.saveSketch(confirmSave);
-				mobileControl = _canvasView.mobileControl;
+				_cacheControl = _canvasView.cacheControl;
 				
 				if(saveCounter == 0)
 				{
-					saveCounter = KSketch_HomeView.autoSaveCounter;
+					//CAM: saveCounter = KSketch_HomeView.autoSaveCounter;
 					saveCounter ++;
 				}
 				
@@ -112,7 +113,7 @@
 				
 				if(_success)
 				{
-					mobileControl.writeToCache(mobileControl.informationArr);
+					//CAM: mobileControl.writeToCache(mobileControl.informationArr);
 					if(!returnToHome)
 					{
 						canvasDirty = true;
@@ -141,13 +142,13 @@
 				{
 					if(!canvasDirty)
 					{
-						if(userData.kSketchDocument.originalName == "N/A")
+						if(userData.sketchData.originalName == "")
 						{
-							sketchName.text = userData.kSketchDocument.name;
-							userData.kSketchDocument.originalName = userData.kSketchDocument.name;
+							sketchName.text = userData.sketchData.fileName;
+							userData.sketchData.originalName = userData.sketchData.fileName;
 						}
 						else
-							sketchName.text = userData.kSketchDocument.name;
+							sketchName.text = userData.sketchData.originalName;
 						
 						saveAsWarning.visible = true;
 					}
@@ -200,6 +201,7 @@
 				var finalFileName:String =  sketchName.text;
 				
 				objDoc = KWebData.prepareSketchDocument(userData, finalFileName);
+				
 				objDoc.save = -1;
 				objDoc.deleteFlag = 0;
 				
@@ -212,11 +214,11 @@
 				}
 				
 				//save to cache
-				mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
+				//CAM: mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
 
 				if(_canvasView._isNewSketch)
 				{
-					if(KSketch_LoginView._isLoggedIn)			//logged in
+					if(true)//CAM: KSketch_LoginView._isLoggedIn)			//logged in
 					{
 						if(_isConnected)						//connected
 							saveToWeb();							//save to web						
@@ -228,7 +230,7 @@
 				}
 				else											//existing sketch
 				{
-					if(KSketch_LoginView._isLoggedIn)			//logged in
+					if(true) //CAM: KSketch_LoginView._isLoggedIn)			//logged in
 					{
 						if(_isConnected)						//connected
 							saveToWeb();							//save to web
@@ -257,6 +259,57 @@
 				httpService.addEventListener(FaultEvent.FAULT, faultHandler);
 			}
 			
+			private function formatObjectForSave():Object
+			{
+				var data:Object = new Object();
+				data.group_permissions = [];
+				data.thumbnailData = userData.thumbnailData;
+				data.p_edit = true;
+				data.changeDescription = "";
+				data.date = generateTimestamp(null);
+				
+				data.fileName = sketchName;
+				//data.lowerFileName = sketchName.toLowerCase();
+				
+				if(userData.sketchData.originalName != "" && (sketchName == userData.sketchData.originalName))
+				{
+					data.sketchId = userData.sketchData.sketchId;
+					data.originalVersion = userData.sketchData.originalVersion;
+					data.originalSketch = userData.sketchData.originalSketch;
+					data.originalName = userData.sketchData.originalName;	
+				}
+				else
+				{
+					data.sketchId = "";
+					data.originalVersion = 1;
+					data.originalSketch = -1;
+					data.originalName = sketchName;
+				}
+				
+				data.appver = 1.0;
+				data.version = userData.kSketchDocument.version;
+				data.p_view = 1;
+				data.fileData = userData.kSketchDocument.xml.toXMLString();
+				data.p_comment = true;
+				data.owner = userData.kUser.u_realname;
+				data.owner_id = userData.kUser.id;
+				return data;
+			}
+			
+			private function generateTimestamp(timestamp:Date):String
+			{
+				if (timestamp == null)
+				{
+					timestamp = new Date();
+					var offsetMilliseconds:Number = timestamp.getTimezoneOffset() * 60 * 1000;
+					timestamp.setTime(timestamp.getTime() + offsetMilliseconds);
+				}
+				
+				var dateFormatter:DateFormatter = new DateFormatter();
+				dateFormatter.formatString = "DD MMM YYYY, HH:NN:SS";
+				return dateFormatter.format(timestamp);
+			}
+			
 			private function resultHandler(event:ResultEvent):void
 			{
 				var resultRaw:Object = event.result;
@@ -266,7 +319,7 @@
 				{
 					//save to cache
 					objDoc.save = 0;
-					mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
+					//CAM: mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
 					
 					overwriteSave = false;
 					_success = true;
@@ -292,7 +345,7 @@
 			{
 				objDoc.save = -1						//flag save to web for existing sketch
 					
-				mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);	//overwrite cached object	
+				//CAM: mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);	//overwrite cached object	
 				
 				navigateBack();
 			}
@@ -341,11 +394,13 @@
 						saveCounter ++;
 					}
 					
+					//CAM:
+					/*
 					if(saveCounter <= KSketch_HomeView.autoSaveCounter)
 					{
 						saveCounter = KSketch_HomeView.autoSaveCounter;
 						saveCounter ++;
-					}
+					}*/
 						
 					
 				}

@@ -17,7 +17,7 @@ package sg.edu.smu.ksketch2
 		public var u_isactive:String;
 		public var u_version:String;
 		public var u_email:String;
-		public var token:String;
+		
 		public function KSketch_User(obj:Object)
 		{
 			if(obj.status.indexOf("success") >= 0)
@@ -35,9 +35,6 @@ package sg.edu.smu.ksketch2
 				this.u_isactive = obj.u_isactive;
 				this.u_version = obj.u_version;
 				this.u_email = obj.u_email;
-				if(obj.hasOwnProperty("token")){
-					this.token = obj.token;
-				}
 			}
 			else
 			{

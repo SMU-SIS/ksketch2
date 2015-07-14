@@ -1,5 +1,10 @@
 /**
- * Created by ramvibhakar on 10/07/15.
+ * Copyright 2010-2012 Singapore Management University
+ * Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+ * This Source Code Form is subject to the terms of the
+ * Mozilla Public License, v. 2.0. If a copy of the MPL was
+ * not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
  */
 package data {
 
@@ -9,29 +14,32 @@ public class KSketch_ListItem implements IComparator{
     private var _sketchId:Number;
     private var _fileName:String;
     private var _thumbnailData:String;
+	private var _created:String;
     private var _version:int;
     private var _isSaved:Boolean;
 
     public function KSketch_ListItem() {
-        this.sketchId = 0;
-        this.fileName = "";
-        this.thumbnailData = "";
-        this.version = 0;
-        this.isSaved = true;
+        this._sketchId = 0;
+        this._fileName = "";
+        this._thumbnailData = "";
+		this._created = "";
+        this._version = 0;
+        this._isSaved = true;
     }
 
-    public function fromWebData(webData:Object) {
-        this.sketchId = webData.sketchId;
-        this.fileName = webData.fileName;
-        this.thumbnailData = webData.thumbnailData;
-        this.version = webData.version;
-        this.isSaved = true;
+    public function fromWebData(webData:Object):void {
+        this._sketchId = webData.data.sketchId;
+        this._fileName = webData.data.fileName;
+        this._thumbnailData = webData.data.thumbnailData;
+		this._created = webData.data.created;
+        this._version = webData.data.version;
+        this._isSaved = true;
     }
 
     public function compare(item1:*, item2:*):int {
-        if(item1.sketchId < item2.sketchId)
+        if(item1._sketchId < item2._sketchId)
             return -1;
-        if(item1.sketchId > item2.sketchId)
+        if(item1._sketchId > item2._sketchId)
             return 1;
         return 0;
     }
@@ -59,6 +67,14 @@ public class KSketch_ListItem implements IComparator{
     public function set thumbnailData(value:String):void {
         _thumbnailData = value;
     }
+	
+	public function get created():String {
+		return _created;
+	}
+	
+	public function set created(value:String):void {
+		_created = value;
+	}
 
     public function get version():int {
         return _version;

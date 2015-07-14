@@ -319,9 +319,7 @@
 				stream.writeUTFBytes(str);
 				stream.close();
 				
-				//save to cache
-				_canvasView.mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
-				_canvasView.mobileControl.writeToCache(_canvasView.mobileControl.informationArr);
+				//CAM:save to cache
 				_exit();
 			}
 			

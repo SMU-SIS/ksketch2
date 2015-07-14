@@ -3,7 +3,6 @@
   <includeClasses>
     <classEntry path="sg.edu.smu.ksketch2.KSketch_ImageEditingView"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences"/>
-    <classEntry path="sg.edu.smu.ksketch2.KSketchStyles"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSlider"/>
     <classEntry path="sg.edu.smu.ksketch2.KSketchAssets"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu"/>
@@ -22,6 +21,7 @@
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KWebControl"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

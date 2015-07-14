@@ -9,7 +9,7 @@
 package sg.edu.smu.ksketch2.canvas.controls
 {
 	import com.adobe.serialization.json.JSON;
-	
+
 	import flash.net.SharedObject;
 	
 	import mx.rpc.events.FaultEvent;
@@ -52,7 +52,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				{
 					informationArr[0] = _mySO.data.user;
 				}
-				
+
 				if(_mySO.data.cachedSketchList)
 				{
 					informationArr[1] = _mySO.data.cachedSketchList;
@@ -68,12 +68,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function get user():Object
 		{
-			return informationArr[0];
+			return com.adobe.serialization.json.JSON.decode(String(informationArr[0]),true);
 		}
 		
 		public function set user(userObject:Object):void
 		{
-			informationArr[0] = userObject;
+			informationArr[0] = com.adobe.serialization.json.JSON.encode(userObject);
 		}
 		
 		/** set user as anonymous **/
@@ -153,7 +153,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if(user.id != "n.a" && (user.status.indexOf("success") >= 0))
 			{
 				//make web request to pull list of sketches
-				var parameter:String = "{\"sketchID\":[],\"userid\":" + user.id + "}";
+				var parameter:String = "{\"sketchID\":[],\"userid\":" + user.id + ",\"token\":\""+user.token +"\"}";
 				
 				_httpService.removeEventListener(ResultEvent.RESULT, dataResultHandler);
 				_httpService.addEventListener(FaultEvent.FAULT, faultHandler);

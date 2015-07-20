@@ -20,19 +20,20 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import data.KSketch_ListItem;
 	
 	import org.as3commons.collections.SortedList;
-	
-	import sg.edu.smu.ksketch2.KSketchWebLinks;
+import org.as3commons.collections.framework.IComparator;
+import org.as3commons.collections.framework.IIterator;
+
+import sg.edu.smu.ksketch2.KSketchWebLinks;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 
 	public class KSketch_CacheControl
 	{
 		//class variables
-		public var informationArr:Array;
 		private var _selectedSketch:Array;
 		private var _homeView:KSketch_HomeView;
 		private var _mySO:SharedObject = SharedObject.getLocal("mydata");
 		private var _httpService:HTTPService = new HTTPService();
-		private var _webList:SortedList = new SortedList();
+		private var _webList:SortedList = new SortedList(new KSketch_ListItem() as IComparator);
 		private var _isData:Boolean = false;
 		
 		
@@ -40,12 +41,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			_homeView = homeView;
 			
-			informationArr = new Array(4);
+			/*informationArr = new Array(4);
 			informationArr[0] = null;	//user: user object
 			informationArr[1] = null;	//cachedSketchList: cached sketch list
 			informationArr[2] = null;	//syncSketchList: cached sketch list to sync with web
 			informationArr[3] = null;	//syncSketchList: cached sketch list to sync with web
-			
+
 			if (_mySO.data) 
 			{
 				if(_mySO.data.user)
@@ -62,18 +63,22 @@ package sg.edu.smu.ksketch2.canvas.controls
 					informationArr[1] = new SortedList();
 				}	
 			}
-			
+			*/
 			_httpService.resultFormat = "text";
 		}
 		
 		public function get user():Object
 		{
-			return com.adobe.serialization.json.JSON.decode(String(informationArr[0]),true);
+			if(_mySO.data.user) {
+				return com.adobe.serialization.json.JSON.decode(String(_mySO.data.user), true);
+			} else {
+				return null;
+			}
 		}
 		
 		public function set user(userObject:Object):void
 		{
-			informationArr[0] = com.adobe.serialization.json.JSON.encode(userObject);
+			_mySO.data.user = com.adobe.serialization.json.JSON.encode(userObject);
 		}
 		
 		/** set user as anonymous **/
@@ -93,20 +98,40 @@ package sg.edu.smu.ksketch2.canvas.controls
 			userObject.u_isactive = "n.a";
 			userObject.u_version = "n.a";
 			userObject.u_email = "n.a";
-			
-			informationArr[0] = userObject;
+
+			this.user = userObject;
 		}
 		
 		public function get cachedList():SortedList
 		{
-			return informationArr[1];
+			if(_mySO.data.cachedList == null){
+				return new SortedList(new KSketch_ListItem() as IComparator);
+			} else {
+				var list: SortedList = new SortedList(new KSketch_ListItem() as IComparator);
+				var arr:Array = com.adobe.serialization.json.JSON.decode(_mySO.data.cachedList,true);
+				for(var i=0; i<arr.length; i++) {
+					var obj:KSketch_ListItem = new KSketch_ListItem();
+					obj.fromCache(arr[i]);
+					list.add(obj);
+				}
+				return list;
+			}
 		}
-		
+
+		public function set cachedList(list:SortedList){
+			var iter:IIterator = list.iterator();
+			var arr:Array = new Array();
+			while(iter.hasNext()){
+				arr.push(iter.next());
+			}
+			_mySO.data.cachedList = com.adobe.serialization.json.JSON.encode(arr);
+		}
 		public function retrieveAllSketchList():SortedList
 		{
 			_isData = false;
 			var result:Object;
 			result = syncList(cachedList,_webList);
+			cachedList = result.syncedList;
 			//TODO: Handle toBeSavedList here
 			//result.toBeSavedList
 			return result.syncedList;
@@ -114,27 +139,29 @@ package sg.edu.smu.ksketch2.canvas.controls
 		}
 		// Probably the most efficient way of syncing the sketch list in the cache and
 		// sketch list from the web
-		private function syncList(cacheList:SortedList,webList:SortedList): Object{
-			var allList:SortedList = new SortedList();
-			var updateList:SortedList = new SortedList();
+		private function syncList(cacheList:SortedList,webList:SortedList): Object {
+			var comparator:IComparator = new KSketch_ListItem();
+			var allList:SortedList = new SortedList(comparator);
+			var updateList:SortedList = new SortedList(comparator);
+
 			var ret:Object = new Object();
-			var x:int =0 , y:int = 0;
-			while((x < cacheList.size) || (y < webList.size)){
-				if(y >= webList.size) {
-					if(!cacheList.itemAt(x).isSaved) {
+			var x:int = 0, y:int = 0;
+			while ((x < cacheList.size) || (y < webList.size)) {
+				if (y >= webList.size) {
+					if (!cacheList.itemAt(x).isSaved) {
 						updateList.add(cacheList.itemAt(x));
 						allList.add(cacheList.itemAt(x));
 					}
 					x += 1;
 				} else if (x >= cacheList.size) {
 					allList.add(webList.itemAt(y));
-					y+=1;
-				} else if (cacheList.itemAt(x).compare(webList.itemAt(y)) == -1) {
-					if(!cacheList.itemAt(x).isSaved) {
+					y += 1;
+				} else if (comparator.compare(cacheList.itemAt(x),webList.itemAt(y)) == -1) {
+					if (!cacheList.itemAt(x).isSaved) {
 						updateList.add(cacheList.itemAt(x));
 					}
 					x += 1;
-				} else if (cacheList.itemAt(x).compare(webList.itemAt(y)) == 1) {
+				} else if (comparator.compare(cacheList.itemAt(x),webList.itemAt(y)) == 1) {
 					allList.add(webList.itemAt(y));
 					y += 1;
 				} else {
@@ -202,7 +229,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			//TODO: RAM check for negative cases
 			var rawData:String = String(event.result);
 			var resultObj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
-			
+			_webList.clear();
 			var tempArr:Array = (resultObj.entities as Array);
 			for each(var tempObj:Object in tempArr)
 			{
@@ -238,10 +265,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function reset():void
 		{
-			informationArr[0] = null;
-			informationArr[1] = null;
-			informationArr[2] = null;
-			informationArr[3] = null;
+			_mySO.clear();
 		}
 	}
 }

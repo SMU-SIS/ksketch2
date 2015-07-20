@@ -23,11 +23,14 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+		import data.KSketch_ListItem;
 
 		import mx.collections.ArrayCollection;
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
 		import mx.utils.ObjectProxy;
+
+		import org.as3commons.collections.framework.IComparator;
 
 		import spark.events.IndexChangeEvent;
 
@@ -50,7 +53,7 @@
 		private static const DISPLAY_FAILED_SYNC:int = 1;
 
 		[Bindable]
-		private var sortedArr:SortedList = new SortedList();
+		private var sortedArr:SortedList = new SortedList(new KSketch_ListItem() as IComparator);
 		[Bindable]
 		private var arrDG:ArrayCollection = new ArrayCollection();
 
@@ -194,7 +197,7 @@
 			}
 			else if (!_anonymousUser) {
 				//cast data from previous view to ObjectProxy. This is to avoid getting IEventDispatcher error
-				var dataProxy:ObjectProxy = new ObjectProxy(data);
+				var dataProxy:Object = data as Object;
 				userData.userObject = dataProxy.userObject;
 				userData.listSketches = dataProxy.listSketches;
 				userData.resolveConflict = dataProxy.resolveConflict;
@@ -282,7 +285,7 @@
 
 			listSketches_unavailable.visible = true;
 
-			sortedArr.clear();
+			arrDG.removeAll();
 
 			_cacheControl.retrieveWebSketchList();
 		}
@@ -342,7 +345,7 @@
 		}
 
 		public function refresh():void {
-
+			_setupSketchListView();
 		}
 
 		public function logout():void {

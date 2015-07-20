@@ -36,6 +36,14 @@ public class KSketch_ListItem implements IComparator{
         this._isSaved = true;
     }
 
+    public function fromCache(cacheData:Object):void {
+        this._sketchId = cacheData.sketchId;
+        this._fileName = cacheData.fileName;
+        this._thumbnailData = cacheData.thumbnailData;
+        this._created = cacheData.created;
+        this._version = cacheData.version;
+        this._isSaved = cacheData.isSaved;
+    }
     public function compare(item1:*, item2:*):int {
         if(item1._sketchId < item2._sketchId)
             return -1;

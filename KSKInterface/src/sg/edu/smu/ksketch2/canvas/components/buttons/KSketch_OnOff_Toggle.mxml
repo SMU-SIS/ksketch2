@@ -22,16 +22,16 @@
 				
 				if(_on)
 				{
-					onLabel.setStyle("color", KSketchStyles.TOGGLEBUTTON_ON_COLOR);
+					onLabel.setStyle("color", KSketchStyles.COLOR_WHITE);
 					onStroke.alpha = 1;
-					offLabel.setStyle("color",KSketchStyles.TOGGLEBUTTON_OFF_COLOR);
+					offLabel.setStyle("color",KSketchStyles.COLOR_BLACK);
 					offStroke.alpha = 0;
 				}
 				else
 				{
-					onLabel.setStyle("color", KSketchStyles.TOGGLEBUTTON_OFF_COLOR);
+					onLabel.setStyle("color", KSketchStyles.COLOR_BLACK);
 					onStroke.alpha = 0;
-					offLabel.setStyle("color",KSketchStyles.TOGGLEBUTTON_ON_COLOR);
+					offLabel.setStyle("color",KSketchStyles.COLOR_WHITE);
 					offStroke.alpha = 1;
 				}
 				
@@ -55,32 +55,32 @@
 		</s:layout>
 		<s:Group>
 			<s:Rect width="100%" height="100%"
-					radiusX="{KSketchStyles.TOGGLEBUTTON_CORNERS}"
-					radiusY="{KSketchStyles.TOGGLEBUTTON_CORNERS}">
+					radiusX="{KSketchStyles.NUMBER_02}"
+					radiusY="{KSketchStyles.NUMBER_02}">
 				<s:stroke>
-					<s:SolidColorStroke color="{KSketchStyles.TOGGLEBUTTON_ON_COLOR}" id="onStroke" alpha="1"/>
+					<s:SolidColorStroke color="{KSketchStyles.COLOR_WHITE}" id="onStroke" alpha="1"/>
 				</s:stroke>
 			</s:Rect>
-			<s:Label text="on" fontFamily="{KSketchStyles.APP_FONT_FAMILY}" fontSize="{KSketchStyles.TOGGLEBUTTON_FONT_SIZE}"
+			<s:Label text="on" fontFamily="{KSketchStyles.FONT_FAMILY}" fontSize="{KSketchStyles.NUMBER_14}"
 					 id="onLabel"
-					 top="{KSketchStyles.TOGGLEBUTTON_PADDING}" bottom="{KSketchStyles.TOGGLEBUTTON_PADDING}"
-					 left="{KSketchStyles.TOGGLEBUTTON_PADDING}" right="{KSketchStyles.TOGGLEBUTTON_PADDING}"
-					 color="{KSketchStyles.TOGGLEBUTTON_ON_COLOR}"
+					 top="{KSketchStyles.NUMBER_02}" bottom="{KSketchStyles.NUMBER_02}"
+					 left="{KSketchStyles.NUMBER_02}" right="{KSketchStyles.NUMBER_02}"
+					 color="{KSketchStyles.COLOR_WHITE}"
 					 />
 		</s:Group>
 		<s:Group>
 			<s:Rect width="100%" height="100%"
-					radiusX="{KSketchStyles.TOGGLEBUTTON_CORNERS}"
-					radiusY="{KSketchStyles.TOGGLEBUTTON_CORNERS}">
+					radiusX="{KSketchStyles.NUMBER_02}"
+					radiusY="{KSketchStyles.NUMBER_02}">
 				<s:stroke>
-					<s:SolidColorStroke color="{KSketchStyles.TOGGLEBUTTON_ON_COLOR}" id="offStroke" alpha="0"/>
+					<s:SolidColorStroke color="{KSketchStyles.COLOR_WHITE}" id="offStroke" alpha="0"/>
 				</s:stroke>
 			</s:Rect>
-			<s:Label text="off" fontFamily="{KSketchStyles.APP_FONT_FAMILY}" fontSize="{KSketchStyles.TOGGLEBUTTON_FONT_SIZE}"
+			<s:Label text="off" fontFamily="{KSketchStyles.FONT_FAMILY}" fontSize="{KSketchStyles.NUMBER_14}"
 					 id="offLabel"
-					 top="{KSketchStyles.TOGGLEBUTTON_PADDING}" bottom="{KSketchStyles.TOGGLEBUTTON_PADDING}"
-					 left="{KSketchStyles.TOGGLEBUTTON_PADDING}" right="{KSketchStyles.TOGGLEBUTTON_PADDING}"
-					 color="{KSketchStyles.TOGGLEBUTTON_OFF_COLOR}"
+					 top="{KSketchStyles.NUMBER_02}" bottom="{KSketchStyles.NUMBER_02}"
+					 left="{KSketchStyles.NUMBER_02}" right="{KSketchStyles.NUMBER_02}"
+					 color="{KSketchStyles.COLOR_BLACK}"
 					 />
 		</s:Group>
 	</s:Group>

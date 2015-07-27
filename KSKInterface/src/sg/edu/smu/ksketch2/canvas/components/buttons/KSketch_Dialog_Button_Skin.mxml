@@ -81,10 +81,10 @@
 	<s:Group width="100%" height="100%">
 		<s:layout>
 			<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"
-							  paddingLeft="{KSketchStyles.DIALOGBUTTON_PADDING}" paddingRight="{KSketchStyles.DIALOGBUTTON_PADDING}"
-							  paddingTop="{KSketchStyles.DIALOGBUTTON_PADDING}" paddingBottom="{KSketchStyles.DIALOGBUTTON_PADDING}"/>
+							  paddingLeft="{KSketchStyles.NUMBER_10}" paddingRight="{KSketchStyles.NUMBER_10}"
+							  paddingTop="{KSketchStyles.NUMBER_10}" paddingBottom="{KSketchStyles.NUMBER_10}"/>
 		</s:layout>
 		<s:Image id="texture" width="60%" height="60%"/>
-		<s:Label id="buttonLabel" fontFamily="{KSketchStyles.APP_FONT_FAMILY}" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+		<s:Label id="buttonLabel" fontFamily="{KSketchStyles.FONT_FAMILY}" fontSize="{KSketchStyles.NUMBER_12}"/>
 	</s:Group>
 </s:SparkButtonSkin>

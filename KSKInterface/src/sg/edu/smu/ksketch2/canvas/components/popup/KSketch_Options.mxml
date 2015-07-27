@@ -31,11 +31,11 @@
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				autoInsertKey.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				doubleTap.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				autoLog.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				closeButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				header.setStyle("fontSize", KSketchStyles.FONT_SIZE_26);
+				autoInsertKey.setStyle("fontSize", KSketchStyles.FONT_SIZE_18);
+				doubleTap.setStyle("fontSize", KSketchStyles.FONT_SIZE_18);
+				autoLog.setStyle("fontSize", KSketchStyles.FONT_SIZE_18);
+				closeButton.setStyle("fontSize", KSketchStyles.FONT_SIZE_14);
 			}
 			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu):void
@@ -279,20 +279,20 @@
 	</fx:Script>
 	<s:filters>
 		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+			color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
+			alpha="{KSketchStyles.ALPHA_06}"
+			strength="{KSketchStyles.NUMBER_02}"
+			blurX="{KSketchStyles.NUMBER_10}"
+			blurY="{KSketchStyles.NUMBER_10}"/>
 	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.NUMBER_05}" radiusY="{KSketchStyles.NUMBER_05}">
 		<s:fill>
-			<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+			<s:SolidColor color="{KSketchStyles.COLOR_GREY_MEDIUM}"/>
 		</s:fill>
 	</s:Rect>
 	<s:Group>
 		<s:layout>
-			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_20}" paddingLeft="{KSketchStyles.DIALOG_PADDING_15}" paddingRight="{KSketchStyles.DIALOG_PADDING_10}" paddingTop="{KSketchStyles.DIALOG_PADDING_20}" paddingBottom="{KSketchStyles.DIALOG_PADDING_10}"/>
+			<s:VerticalLayout gap="{KSketchStyles.NUMBER_20}" paddingLeft="{KSketchStyles.NUMBER_05}" paddingRight="{KSketchStyles.NUMBER_05}" paddingTop="{KSketchStyles.NUMBER_20}" paddingBottom="{KSketchStyles.NUMBER_20}" verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>
 		<s:Label id="header" text="Options"/>
 		
@@ -366,30 +366,30 @@
 		-->
 		<s:Group>
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyles.NUMBER_10}" paddingRight="{KSketchStyles.NUMBER_15}" verticalAlign="middle"/>
 			</s:layout>
 			<s:CheckBox id="autoInsertKey" label="Insert key frames automatically" click="_autoInsertKey(autoInsertKey.selected)"/>
 		</s:Group>
 		
 		<s:Group>
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyles.NUMBER_10}" paddingRight="{KSketchStyles.NUMBER_15}" verticalAlign="middle"/>
 			</s:layout>
 			<s:CheckBox id="doubleTap" label="Double-tap left/right for undo/redo" click="_doubleTap(doubleTap.selected)"/>
 		</s:Group>
 		
 		<s:Group>
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
+				<s:HorizontalLayout paddingLeft="{KSketchStyles.NUMBER_10}" paddingRight="{KSketchStyles.NUMBER_15}" verticalAlign="middle"/>
 			</s:layout>
 			<s:CheckBox id="autoLog" label="Enable Log" click="_autoLog(autoLog.selected)"/>
 		</s:Group>
 		
 		<s:Group width="100%">
 			<s:layout>
-				<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
+				<s:VerticalLayout paddingLeft="{KSketchStyles.NUMBER_10}" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button id="closeButton" label="Close" click="close()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			<s:Button id="closeButton" label="Close" click="close()" height="{KSketchStyles.NUMBER_25}"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

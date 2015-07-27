@@ -40,9 +40,9 @@
 			}
 		]]>
 	</fx:Script>
-	<s:HGroup verticalAlign="top" horizontalAlign="right" width="100%" height="100%" gap="{KSketchStyles.LIST_SKETCH_GAP}" id="listButtons">
-		<buttons:KSketch_ListButton id="logButton" width="{KSketchStyles.LIST_SKETCH_WIDTH}" height="{KSketchStyles.LIST_SKETCH_HEIGHT}" click="button_logHandler(event)"/>
-		<buttons:KSketch_ListButton id="saveButton" width="{KSketchStyles.LIST_SKETCH_WIDTH}" height="{KSketchStyles.LIST_SKETCH_HEIGHT}" click="button_saveHandler(event)"/>
-		<buttons:KSketch_ListButton id="deleteButton" width="{KSketchStyles.LIST_SKETCH_WIDTH}" height="{KSketchStyles.LIST_SKETCH_HEIGHT}" click="button_deleteHandler(event)"/>
+	<s:HGroup verticalAlign="top" horizontalAlign="right" width="100%" height="100%" gap="0" id="listButtons">
+		<buttons:KSketch_ListButton id="logButton" width="{KSketchStyles.NUMBER_74}" height="{KSketchStyles.NUMBER_120}" click="button_logHandler(event)"/>
+		<buttons:KSketch_ListButton id="saveButton" width="{KSketchStyles.NUMBER_74}" height="{KSketchStyles.NUMBER_120}" click="button_saveHandler(event)"/>
+		<buttons:KSketch_ListButton id="deleteButton" width="{KSketchStyles.NUMBER_74}" height="{KSketchStyles.NUMBER_120}" click="button_deleteHandler(event)"/>
 	</s:HGroup>
 </s:Group>

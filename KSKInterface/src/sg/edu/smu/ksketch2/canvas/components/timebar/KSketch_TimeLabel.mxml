@@ -20,7 +20,7 @@
 			<s:HorizontalLayout gap="0" horizontalAlign="right"/>
 		</s:layout>
 		<s:Rect width="100%"/>
-		<s:Label id="timeLabelText" text="label" textAlign="right" fontFamily="{KSketchStyles.APP_FONT_FAMILY}"
-				 fontSize="{KSketchStyles.TIME_PARTITION_FONT_SIZE}"/>
+		<s:Label id="timeLabelText" text="label" textAlign="right" fontFamily="{KSketchStyles.FONT_FAMILY}"
+				 fontSize="{KSketchStyles.NUMBER_0105}"/>
 	</s:Group>
 </s:Group>

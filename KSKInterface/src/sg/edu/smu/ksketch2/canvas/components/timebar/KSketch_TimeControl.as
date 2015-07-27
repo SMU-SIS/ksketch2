@@ -251,17 +251,17 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 						
 						if(Capabilities.version.indexOf('IOS') > -1)
 						{
-							if(_contextDouble.x >= KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE)
-								_contextDouble.x = KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE;
+							if(_contextDouble.x >= KSketchStyles.NUMBER_875)
+								_contextDouble.x = KSketchStyles.NUMBER_875;
 						}
 						else
 						{
-							if(_contextDouble.x >= KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE_ANDROID)
-								_contextDouble.x = KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE_ANDROID;
+							if(_contextDouble.x >= KSketchStyles.NUMBER_1100)
+								_contextDouble.x = KSketchStyles.NUMBER_1100;
 						}
 						
 						_contextDouble.position = position;
-						_contextDouble.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.TIMEBAR_GAP_CONTEXTMENU_DOUBLE;
+						_contextDouble.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.NUMBER_15;
 						
 						clearTimeout(mouseTimeout);
 						mouseTimeout = "undefined";	
@@ -284,18 +284,17 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 							_contextSingle.open(contentGroup,true);
 							_contextSingle.x = _magnifier.x;
 							
-							if(Capabilities.version.indexOf('IOS') > -1)
+							if(_contextSingle.x >= KSketchStyles.NUMBER_960)
 							{
-								if(_contextSingle.x >= KSketchStyles.TIMEBAR_X_LIMIT_SINGLE)
-									_contextSingle.x = KSketchStyles.TIMEBAR_X_LIMIT_SINGLE;
+								_contextSingle.x = KSketchStyles.NUMBER_960;
 							}
 							else
 							{
-								if(_contextSingle.x >= KSketchStyles.TIMEBAR_X_LIMIT_SINGLE_ANDROID)
-									_contextSingle.x =  KSketchStyles.TIMEBAR_X_LIMIT_SINGLE_ANDROID;
-							}
+								if(_contextSingle.x >= KSketchStyles.NUMBER_1200)
+									_contextSingle.x =  KSketchStyles.NUMBER_1200;
+							}	
 							
-							_contextSingle.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.TIMEBAR_GAP_CONTEXTMENU_SINGLE;//190;//95;
+							_contextSingle.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.NUMBER_100;
 						}
 						
 						mouseTimeout = "undefined";

@@ -72,9 +72,9 @@
 		<s:DropShadowFilter 
 			color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
 			alpha="{KSketchStyles.ALPHA_06}"
-			strength="{KSketchStyles.NUMBER_02}"
-			blurX="{KSketchStyles.NUMBER_10}"
-			blurY="{KSketchStyles.NUMBER_10}"/>
+			strength="{KSketchStyles.NUMBER_01}"
+			blurX="{KSketchStyles.NUMBER_12}"
+			blurY="{KSketchStyles.NUMBER_12}"/>
 	</s:filters>
 	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.NUMBER_05}" radiusY="{KSketchStyles.NUMBER_05}">
 		<s:fill>

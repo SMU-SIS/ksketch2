@@ -8,6 +8,7 @@
  */
 package sg.edu.smu.ksketch2
 {
+	import flash.system.Capabilities;
 
 	public class KSketchStyles
 	{
@@ -84,9 +85,19 @@ package sg.edu.smu.ksketch2
 		public static var NUMBER_1100:Number = 1100;
 		public static var NUMBER_1200:Number = 1200;
 		
+		public static function setView():void
+		{
+			//trace("Screen X: " + Capabilities.screenResolutionX);
+			//trace("Screen Y: " + Capabilities.screenResolutionY);
+			
+			if(Capabilities.screenResolutionX > 1024 && Capabilities.screenResolutionY > 768)
+			{
+				KSketchStyles.scale(2);	
+			}
+		}
+		
 		public static function scale(scale:int):void
 		{ 
-			trace("Scaling by " + scale);
 			FONT_SIZE_14 = 14 * scale;
 			FONT_SIZE_18 = 18 * scale;
 			FONT_SIZE_26 = 26 * scale;

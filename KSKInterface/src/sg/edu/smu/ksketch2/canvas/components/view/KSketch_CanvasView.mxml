@@ -141,6 +141,9 @@
 			//Starts up the canvas in the following order
 			public function _initCanvas(isView:Boolean):void
 			{	
+				trace("init canvas");
+				scaleView();
+				
 				this.removeEventListener(FlexEvent.INITIALIZE, _initCanvas);
 				
 				userData = data;
@@ -525,6 +528,18 @@
 				return _cacheControl;
 			}
 			
+			private function scaleView():void
+			{
+				if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY > 1500)
+				{
+					KSketchStyles.scale(2);	
+				}
+				else if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY < 1500)
+				{
+					KSketchStyles.scale(2);
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -535,26 +550,26 @@
 		<!-- Timebar-->
 		<s:Group id="timebar_group" width="100%"  depth="1">
 			<s:filters>
-				<s:DropShadowFilter color="{KSketchStyles.TIMEBAR_SHADOW_COLOR}" angle="{KSketchStyles.TIMEBAR_SHADOW_ANGLE}"
-									alpha="{KSketchStyles.TIMEBAR_SHADOW_ALPHA}"
-									strength="{KSketchStyles.TIMEBAR_SHADOW_STRENGTH}"
-									blurX="{KSketchStyles.TIMEBAR_SHADOW_DISTANCE}"
-									blurY="{KSketchStyles.TIMEBAR_SHADOW_DISTANCE}"/>
+				<s:DropShadowFilter color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
+									alpha="{KSketchStyles.ALPHA_06}"
+									strength="{KSketchStyles.NUMBER_02}"
+									blurX="{KSketchStyles.NUMBER_10}"
+									blurY="{KSketchStyles.NUMBER_10}"/>
 			</s:filters>
 			<s:Rect width="100%" height="100%">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.TIMEBAR_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchStyles.COLOR_GREY_MEDIUM}"/>
 				</s:fill>
 			</s:Rect>
 			<s:Group width="100%">
 				<s:layout>
 					<s:HorizontalLayout
 						horizontalAlign="center"
-						gap="{KSketchStyles.TIMEBAR_LAYOUT_GAP}"
-						paddingLeft="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_HORIZONTAL}"
-						paddingRight="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_HORIZONTAL}"
-						paddingTop="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_VERTICAL}"
-						paddingBottom="{KSketchStyles.TIMEBAR_LAYOUT_PADDING_VERTICAL}"/>
+						gap="{KSketchStyles.NUMBER_04}"
+						paddingLeft="{KSketchStyles.NUMBER_05}"
+						paddingRight="{KSketchStyles.NUMBER_05}"
+						paddingTop="{KSketchStyles.NUMBER_05}"
+						paddingBottom="{KSketchStyles.NUMBER_05}"/>
 				</s:layout>
 				
 				<s:Group>
@@ -567,7 +582,7 @@
 								<s:layout><s:VerticalLayout/></s:layout>
 								<timebar:KSketch_TimeSkip_Button
 									id="leftTimeJumper"
-									width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
+									width="{KSketchStyles.NUMBER_50}" height="{KSketchStyles.NUMBER_50}"/>
 							</s:Group>
 							
 							
@@ -576,20 +591,20 @@
 								click="playButton.playToggle()"
 								doubleClick="playButton.doubleClick()"
 								id="playButton"
-								width="{KSketchStyles.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
+								width="{KSketchStyles.NUMBER_60}" height="{KSketchStyles.NUMBER_60}"/>
 							
 							<!--
 							<buttons:KSketch_Play_Button
 								click="playButton.playToggle()"
 								id="playButton"
-								width="{KSketchStyles.TIMEBAR_PLAY_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_PLAY_BUTTON_HEIGHT}"/>
+								width="{KSketchStyles.NUMBER_60}" height="{KSketchStyles.NUMBER_60}"/>
 							-->
 							
 							<s:Group>
 								<s:layout><s:VerticalLayout/></s:layout>
 								<timebar:KSketch_TimeSkip_Button
 									id="rightTimeJumper"
-									width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}" height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"/>
+									width="{KSketchStyles.NUMBER_50}" height="{KSketchStyles.NUMBER_50}"/>
 							</s:Group>
 						</s:Group>
 					</s:Group>
@@ -604,7 +619,7 @@
 		<s:Group id="canvas_component" width="100%" height="100%" depth="0">
 			<s:Rect left="-1" right="-1" top="-1" bottom="-1">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.APP_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchStyles.COLOR_GREY_VERYLIGHT}"/>
 				</s:fill>
 			</s:Rect>
 			<!-- For show, all the visual elements that the user wont be able to "touch"-->
@@ -616,19 +631,19 @@
 						 width="{drawing_stage.height/10*16}">
 					<s:Rect width="100%" height="100%">
 						<s:fill>
-							<s:SolidColor color="{KSketchStyles.CANVAS_PAPER_COLOR}"/>
+							<s:SolidColor color="{KSketchStyles.COLOR_WHITE}"/>
 						</s:fill>
 						<s:stroke>
-							<s:SolidColorStroke color="{KSketchStyles.CANVAS_BORDER_COLOR}"
-												weight="{KSketchStyles.CANVAS_BORDER_WEIGHT}"/>
+							<s:SolidColorStroke color="{KSketchStyles.COLOR_BLACK}"
+												weight="{KSketchStyles.NUMBER_01}"/>
 						</s:stroke>
 						<s:filters>
 							<s:DropShadowFilter 
-								color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-								alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA}"
-								strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-								blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE}"
-								blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE}"/>
+								color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
+								alpha="{KSketchStyles.ALPHA_06}"
+								strength="{KSketchStyles.NUMBER_02}"
+								blurX="{KSketchStyles.NUMBER_10}"
+								blurY="{KSketchStyles.NUMBER_10}"/>
 						</s:filters>
 					</s:Rect>
 					<!-- The model display displays the objects in the model -->
@@ -642,9 +657,9 @@
 			<!-- Things inside this group really dispatches gesture events-->
 			<s:Group width="100%" height="100%">
 				<s:Group id="canvas_region" width="100%" height="100%">
-					<s:Rect width="100%" height="100%" alpha="0">
+					<s:Rect width="100%" height="100%" alpha="{KSketchStyles.ALPHA_00}">
 						<s:fill>
-							<s:SolidColor color="0x000000"/>
+							<s:SolidColor color="{KSketchStyles.COLOR_BLACK}"/>
 						</s:fill>
 					</s:Rect>
 				</s:Group>

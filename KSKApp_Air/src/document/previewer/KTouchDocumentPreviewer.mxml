@@ -5,6 +5,7 @@
 		<![CDATA[
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.utils.ExportUtil;
+			import sg.edu.smu.ksketch2.KSketchStyles;
 			
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			
@@ -57,7 +58,7 @@
 	</s:Line>
 	<s:Group width="100%">
 		<s:layout>
-			<s:VerticalLayout paddingTop="15" paddingLeft="5"/>
+			<s:VerticalLayout paddingTop="KSketchStyles.PADDING_05" paddingLeft="KSketchStyles.PADDING_05"/>
 		</s:layout>
 		<s:Label color="0x9F9F9F" width="{width*0.95}" id="currentDocDescription" fontSize="24"/>
 	</s:Group>

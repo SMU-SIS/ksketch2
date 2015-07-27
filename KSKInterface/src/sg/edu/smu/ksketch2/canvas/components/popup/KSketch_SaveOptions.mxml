@@ -65,12 +65,12 @@
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				title.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				saveAsWarning.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SMALL_FONT);
-				saveButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				discardButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				cancelButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				header.setStyle("fontSize", KSketchStyles.FONT_SIZE_26);
+				title.setStyle("fontSize", KSketchStyles.FONT_SIZE_18);
+				saveAsWarning.setStyle("fontSize", KSketchStyles.FONT_SIZE_14);
+				saveButton.setStyle("fontSize", KSketchStyles.FONT_SIZE_14);
+				discardButton.setStyle("fontSize", KSketchStyles.FONT_SIZE_14);
+				cancelButton.setStyle("fontSize", KSketchStyles.FONT_SIZE_14);
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
@@ -409,39 +409,39 @@
 	</fx:Script>
 	<s:filters>
 		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+			color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
+			alpha="{KSketchStyles.ALPHA_06}"
+			strength="{KSketchStyles.NUMBER_02}"
+			blurX="{KSketchStyles.NUMBER_10}"
+			blurY="{KSketchStyles.NUMBER_10}"/>
 	</s:filters>
 	<s:Group id="saveNewSketch" visible="true">
-		<s:Rect id="saveBox" width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.NUMBER_05}" radiusY="{KSketchStyles.NUMBER_05}">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+				<s:SolidColor color="{KSketchStyles.COLOR_GREY_MEDIUM}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}"/>
+				<s:VerticalLayout gap="{KSketchStyles.NUMBER_10}" paddingLeft="{KSketchStyles.NUMBER_05}" paddingRight="{KSketchStyles.NUMBER_05}" paddingTop="{KSketchStyles.NUMBER_05}" paddingBottom="{KSketchStyles.NUMBER_05}"/>
 			</s:layout>
 			<s:Label id="header" text="Save this sketch?"/>
 			
 			<s:Group>
 				<s:layout>
-					<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}"/>
+					<s:VerticalLayout paddingLeft="{KSketchStyles.NUMBER_10}"/>
 				</s:layout>
 				<s:Label id="title" text="Sketch Name"/>
-				<s:TextArea id="sketchName" height="{KSketchStyles.DIALOG_MEASUREMENT_50}" width="{KSketchStyles.DIALOG_MEASUREMENT_300}"/>
+				<s:TextArea id="sketchName" height="{KSketchStyles.NUMBER_50}" width="{KSketchStyles.NUMBER_300}"/>
 				<s:Label id="saveAsWarning" text="A different filename will save this sketch as a new copy" visible="false"/>
 			</s:Group>
 			<s:Group width="100%">
 				<s:layout>
-					<s:HorizontalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
+					<s:HorizontalLayout gap="{KSketchStyles.NUMBER_10}" horizontalAlign="right"/>
 				</s:layout>
-				<s:Button id="saveButton" label="Save" click="save()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-				<s:Button id="discardButton" label="Discard" click="discardSketch()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-				<s:Button id="cancelButton" label="Cancel" click="cancel()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				<s:Button id="saveButton" label="Save" click="save()" height="{KSketchStyles.NUMBER_25}"/>
+				<s:Button id="discardButton" label="Discard" click="discardSketch()" height="{KSketchStyles.NUMBER_25}"/>
+				<s:Button id="cancelButton" label="Cancel" click="cancel()" height="{KSketchStyles.NUMBER_25}"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

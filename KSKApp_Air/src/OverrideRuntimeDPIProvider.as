@@ -3,7 +3,7 @@ package
 	import flash.system.Capabilities;
 	
 	import mx.core.RuntimeDPIProvider;
-	import sg.edu.smu.ksketch2.KSketchStyleSheet;
+	import sg.edu.smu.ksketch2.KSketchStyles;
 	
 	public class OverrideRuntimeDPIProvider extends RuntimeDPIProvider
 	{
@@ -14,15 +14,15 @@ package
 			
 			if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY > 1500)
 			{
-				KSketchStyleSheet.scaleHome(2);	
-				KSketchStyleSheet.scaleCanvas(1.8);
-				KSketchStyleSheet.scaleFont(2);	
+				//KSketchStyles.scaleHome(2);	
+				//KSketchStyles.scaleCanvas(1.8);
+				//KSketchStyles.scaleFont(2);	
 			}
 			else if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY < 1500)
 			{
-				KSketchStyleSheet.scaleHome(2);
-				KSketchStyleSheet.scaleCanvas(1.4);
-				KSketchStyleSheet.scaleFont(2);	
+				//KSketchStyles.scaleHome(2);
+				//KSketchStyles.scaleCanvas(1.4);
+				//KSketchStyles.scaleFont(2);	
 			}
 			
 			return super.runtimeDPI;

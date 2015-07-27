@@ -205,49 +205,49 @@
 	</fx:Script>
 	
 	<s:Group id="calloutContents" x="{-calloutContents.width/2}">
-		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.CONTEXTMENU_CORNERS}" radiusY="{KSketchStyles.CONTEXTMENU_CORNERS}">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.NUMBER_05}" radiusY="{KSketchStyles.NUMBER_05}">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
+				<s:SolidColor color="{KSketchStyles.COLOR_BLACK}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout paddingLeft="{KSketchStyles.CONTEXTMENU_PADDING}"
-								  paddingRight="{KSketchStyles.CONTEXTMENU_PADDING}"
-								  paddingTop="{KSketchStyles.CONTEXTMENU_PADDING}"
-								  paddingBottom="{KSketchStyles.CONTEXTMENU_PADDING}"/>
+				<s:VerticalLayout paddingLeft="{KSketchStyles.NUMBER_075}"
+								  paddingRight="{KSketchStyles.NUMBER_075}"
+								  paddingTop="{KSketchStyles.NUMBER_075}"
+								  paddingBottom="{KSketchStyles.NUMBER_075}"/>
 			</s:layout>
 			<s:Group>
 				<s:Rect width="100%" height="100%">
 					<s:fill>
-						<s:SolidColor color="{KSketchStyles.APP_BACKGROUND_COLOR}"/>
+						<s:SolidColor color="{KSketchStyles.COLOR_GREY_VERYLIGHT}"/>
 					</s:fill>
 				</s:Rect>
 				<s:Group>
 					<s:layout>
 						<s:HorizontalLayout gap="2"
-											paddingLeft="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
-											paddingRight="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
-											paddingTop="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"
-											paddingBottom="{KSketchStyles.CONTEXTMENU_BUTTON_PADDING}"/>
+											paddingLeft="{KSketchStyles.NUMBER_05}"
+											paddingRight="{KSketchStyles.NUMBER_05}"
+											paddingTop="{KSketchStyles.NUMBER_05}"
+											paddingBottom="{KSketchStyles.NUMBER_05}"/>
 					</s:layout>
 					<buttons:KSketch_Button
 						id="groupButton"
 						click="_group(event)"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyles.NUMBER_50}"
+						height="{KSketchStyles.NUMBER_50}"
 						/>
 					<buttons:KSketch_Button
 						id="ungroupButton"
 						click="_ungroup(event)"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyles.NUMBER_50}"
+						height="{KSketchStyles.NUMBER_50}"
 						/>
 					<buttons:KSketch_Button
 						id="moveCenterButton"
 						click="_moveCenter(event)"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
+						width="{KSketchStyles.NUMBER_50}"
+						height="{KSketchStyles.NUMBER_50}"
 						/>
 				</s:Group>
 			</s:Group>

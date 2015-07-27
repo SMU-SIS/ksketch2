@@ -29,8 +29,8 @@
 			{	
 				this.removeEventListener(FlexEvent.INITIALIZE, _init);
 				
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				exit_button.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				header.setStyle("fontSize", KSketchStyles.FONT_SIZE_26);
+				exit_button.setStyle("fontSize", KSketchStyles.FONT_SIZE_14);
 				
 				userData = data;
 				sketchTitle += userData.kSketchDocument.name;

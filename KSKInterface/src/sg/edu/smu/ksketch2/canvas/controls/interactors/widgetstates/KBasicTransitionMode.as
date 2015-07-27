@@ -69,9 +69,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		override public function set enabled(value:Boolean):void
 		{
 			if(value)
-				_widget.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
+				_widget.alpha = KSketchStyles.ALPHA_1;
 			else
-				_widget.alpha = KSketchStyles.WIDGET_DISABLED_ALPHA;
+				_widget.alpha = KSketchStyles.ALPHA_02;
 		}
 		
 		override public function set demonstrationMode(value:Boolean):void
@@ -79,16 +79,16 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			_widget.reset();
 			if(!value)
 			{
-				_widget.strokeColor = KSketchStyles.WIDGET_INTERPOLATE_COLOR;
-				_widget.centroid.graphics.beginFill(KSketchStyles.WIDGET_PERFORM_COLOR);
-				_widget.centroid.graphics.drawCircle(0,0,KSketchStyles.WIDGET_CENTROID_SIZE);
+				_widget.strokeColor = KSketchStyles.COLOR_GREY_MEDIUM;
+				_widget.centroid.graphics.beginFill(KSketchStyles.COLOR_RED_DARK);
+				_widget.centroid.graphics.drawCircle(0,0,KSketchStyles.NUMBER_10);
 				_widget.centroid.graphics.endFill();
 			}
 			else
 			{
-				_widget.strokeColor = KSketchStyles.WIDGET_PERFORM_COLOR;
-				_widget.centroid.graphics.beginFill(KSketchStyles.WIDGET_PERFORM_COLOR);
-				_widget.centroid.graphics.drawCircle(0,0,KSketchStyles.WIDGET_CENTROID_SIZE);
+				_widget.strokeColor = KSketchStyles.COLOR_RED_DARK;
+				_widget.centroid.graphics.beginFill(KSketchStyles.COLOR_RED_DARK);
+				_widget.centroid.graphics.drawCircle(0,0,KSketchStyles.NUMBER_10);
 				_widget.centroid.graphics.endFill();
 			}
 		}

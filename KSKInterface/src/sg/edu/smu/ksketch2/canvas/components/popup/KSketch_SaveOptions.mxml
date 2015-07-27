@@ -37,7 +37,6 @@
 		import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
-		import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
 		import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
 		import sg.edu.smu.ksketch2.utils.KWebData;
 

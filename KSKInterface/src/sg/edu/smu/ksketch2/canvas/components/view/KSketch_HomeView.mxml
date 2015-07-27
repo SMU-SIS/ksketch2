@@ -92,9 +92,9 @@
 		private var itemRender:IFactory = new ClassFactory(KSketch_HomeView_IconItemRenderer);
 
 		private function init(isMobile:Boolean):void {
-			
+
 			KSketchStyles.setView();
-			
+
 			//Check for mobile version. Set false to export for Desktop version
 			if (isMobile) {
 				mainButtons.removeElementAt(2);
@@ -211,7 +211,9 @@
 				_loginView = dataProxy.loginView;
 
 				if (userData.userObject.id != "n.a") {
-					dataProxy.userObject.token = dataProxy.token;
+					if (dataProxy.token) {
+						dataProxy.userObject.token = dataProxy.token;
+					}
 					_cacheControl.user = dataProxy.userObject;
 					loginButton.label = "Logout, " + userData.userObject.u_realname;
 					refreshButton.label = "Refresh";
@@ -227,7 +229,7 @@
 					refreshButton.visible = false;
 				}
 				_failedLogin = false;
-				refresh();
+				//refresh();
 			}
 			userData.homeView = this;
 			userData.cacheControl = _cacheControl;
@@ -304,7 +306,7 @@
 						arr.addItem(sortedArr.itemAt(i));
 					}
 					var sort:Sort = new Sort();
-					sort.fields = [new SortField("fileName",true)];
+					sort.fields = [new SortField("fileName", true)];
 					arr.sort = sort;
 					arr.refresh();
 					arrDG = arr;
@@ -383,15 +385,13 @@
 				//if this is a logout button, then reset view & delete cache
 				if (loginButton.label.indexOf("Login") == -1) {
 					logout();
-					if(!_cacheControl.unsavedSketchExist())
-					 {
-					 	logout();
-					 }
-					 else
-					 {
-						 _logoffNotice.open(this,true);
-						 PopUpManager.centerPopUp(_logoffNotice);
-					 }
+					if (!_cacheControl.unsavedSketchExist()) {
+						logout();
+					}
+					else {
+						_logoffNotice.open(this, true);
+						PopUpManager.centerPopUp(_logoffNotice);
+					}
 				}
 				else {
 					navigator.pushView(KSketch_LoginView);
@@ -408,7 +408,7 @@
 			var sketchName:String = KSketch_HomeView_IconItemRenderer.selectedSketchName;
 			var sketchId:String = KSketch_HomeView_IconItemRenderer.selectedSketchId;
 			var sketchVersion:String = KSketch_HomeView_IconItemRenderer.selectedVersion;
-			_cacheControl.deleteSketch(sketchId,int(sketchVersion),sketchName);
+			_cacheControl.deleteSketch(sketchId, int(sketchVersion), sketchName);
 		}
 
 		protected function listSketches_logSketchHandler(event:KSwipeEvent):void {
@@ -474,7 +474,7 @@
 
 			//if action bar is displayed and there is a delete sketch flag
 			if (KSketch_HomeView_IconItemRenderer.openActionBar && _deleteSketchFlag)
-				_cacheControl.deleteSketch(sketchId,int(sketchVersion),sketchName);
+				_cacheControl.deleteSketch(sketchId, int(sketchVersion), sketchName);
 
 			_isSwipe = false;
 		}
@@ -491,7 +491,7 @@
 			return itemRender;
 		}
 
-		public function handleExpiredSession(){
+		public function handleExpiredSession() {
 			_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_EXPIRED_SESSION;
 			_canvasNotice.open(this, true);
 			PopUpManager.centerPopUp(_canvasNotice);

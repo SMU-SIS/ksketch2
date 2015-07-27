@@ -355,6 +355,8 @@ import flash.net.SharedObject;
 			var list:SortedList = cachedList;
 			var obj:KSketch_ListItem = new KSketch_ListItem();
 			obj.fromCache(sketchObj);
+			obj.isSaved = false;
+			obj.uniqueId = sketchObj.uniqueId;
 			list.add(obj);
 			cachedList = list;
 		}
@@ -364,6 +366,15 @@ import flash.net.SharedObject;
 			for(var i:int=0;i<arr.length;i++){
 				if(arr[i].uniqueId == uniqueId){
 					arr[i].sketchId = sketchId;
+					break;
+				}
+			}
+			cachedDocuments = arr;
+			var list:SortedList = cachedList;
+			for(var i:int=0;i<list.size;i++) {
+				if(list.itemAt(i).uniqueId == uniqueId){
+					list.itemAt(i).sketchId = sketchId;
+					list.itemAt(i).isSaved = true;
 					break;
 				}
 			}

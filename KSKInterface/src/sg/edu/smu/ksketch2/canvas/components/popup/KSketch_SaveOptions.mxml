@@ -22,389 +22,357 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import com.adobe.serialization.json.JSON;
-			
-			import mx.events.FlexEvent;
-			import mx.formatters.DateFormatter;
-			import mx.managers.PopUpManager;
-			import mx.rpc.events.FaultEvent;
-			import mx.rpc.events.ResultEvent;
-			
-			import air.net.URLMonitor;
-			
-			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.KSketchWebLinks;
-			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
-			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
-			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
-			import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
-			import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
-			import sg.edu.smu.ksketch2.utils.KWebData;
-			
-			public static var saveCounter:int = 0;
-			
-			private var _canvasView:KSketch_CanvasView;
-			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
-			private var _menu:KSketch_PopUp_Menu;
-			
-			private var _monitor:URLMonitor;
-			private var _monitorTimer:Timer;
-			private var _isConnected:Boolean;
-			private var _success:Boolean;
-			
-			public var objDoc:Object;
-			
-			public var result:Object;
-			public var userData:Object = new Object();
-			private var _cacheControl:KSketch_CacheControl;
-			
-			public var returnToHome:Boolean = false;
-			public var overwriteSave:Boolean = false;
-			public var canvasDirty:Boolean = false;
-			
-			private function initStyle():void
-			{
-				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				title.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				saveAsWarning.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SMALL_FONT);
-				saveButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				discardButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				cancelButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-			}
-			
-			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
-			{
-				//check for network connection
-				_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.pingurl));
-				_monitor.addEventListener(StatusEvent.STATUS, isConnected);
-				_monitor.start();
-				
-				_monitorTimer = new Timer(5000);
-				_monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
-				_monitorTimer.start();
-				
-				var confirmSave:Boolean = false;
-				userData = _canvasView.saveSketch(confirmSave);
-				_cacheControl = _canvasView.cacheControl;
-				
-				if(saveCounter == 0)
-				{
-					//CAM: saveCounter = KSketch_HomeView.autoSaveCounter;
-					saveCounter ++;
-				}
-				
-				super.open(owner, modal);
-				saveAsWarning.visible = false;
-				setSketchName();
-			}
-			
-			override public function close(commit:Boolean=false, data:*=null):void
-			{
-				KSketch_CanvasView.createNewSketch = true;
-				super.close(commit,data);
-				
-				if(overwriteSave)
-				{
-					_overwriteSaveOptions.open(_canvasView,true);
-					PopUpManager.centerPopUp(_overwriteSaveOptions);
-					overwriteSave = false;
-				}
-				
-				if(_success)
-				{
-					//CAM: mobileControl.writeToCache(mobileControl.informationArr);
-					if(!returnToHome)
-					{
-						canvasDirty = true;
-						_canvasView._interactionControl.reset();
-						incrementSaveCounter();
-					}
-					else
-					{
-						_menu._exit();	
-						canvasDirty = false;
-					}
-					
-					_success = false;
-				}
-				
-			}
-			
-			public function setSketchName():void
-			{
-				//if this is an attempt to save a new sketch, 
-				//then show the textarea to enter sketch name
-				var defaultName:String = "My Sketch " + saveCounter;
-				sketchName.text = defaultName;
-				
-				if(!KSketch_CanvasView.createNewSketch)
-				{
-					if(!canvasDirty)
-					{
-						if(userData.sketchData.originalName == "")
-						{
-							sketchName.text = userData.sketchData.fileName;
-							userData.sketchData.originalName = userData.sketchData.fileName;
-						}
-						else
-							sketchName.text = userData.sketchData.originalName;
-						
-						saveAsWarning.visible = true;
-					}
-				}
-				
-				if(sketchName.text == "")
-				{
-					sketchName.text = defaultName;
-					saveAsWarning.visible = false;
-				}
-			}
-			
-			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, overwriteSave:KSketch_OverwriteSaveOptions):void
-			{
-				_canvasView = canvasView;
-				_overwriteSaveOptions = overwriteSave;
-				_menu = menu;
-			}
-			
-			private function isConnected(event:StatusEvent):void
-			{
-				if(_monitor.available)
-					_isConnected = true;
-				else
-					_isConnected = false;
-				
-				_monitor.stop();
-				_monitorTimer.stop();
-				
-				_monitor.removeEventListener(StatusEvent.STATUS, isConnected);
-				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
-			}
-			
-			private function endMonitor(event:TimerEvent):void
-			{
-				_isConnected = false;
-				
-				_monitor.stop();
-				_monitorTimer.stop();
-				
-				_monitor.removeEventListener(StatusEvent.STATUS, isConnected);
-				_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
-			}
-			
-			public function save():void
-			{
-				var confirmSave:Boolean = true;
-				userData = _canvasView.saveSketch(confirmSave);
-				
-				var finalFileName:String =  sketchName.text;
-				
-				objDoc = KWebData.prepareSketchDocument(userData, finalFileName);
-				
-				objDoc.save = -1;
-				objDoc.deleteFlag = 0;
-				
-				if(objDoc.sketchId == -1)
-				{
-					objDoc.version = 1;
-					objDoc.sketchId = "";
-					objDoc.originalVersion = 0;	//changed
-					objDoc.originalSketch = -1;
-				}
-				
-				//save to cache
-				//CAM: mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
+		import com.adobe.serialization.json.JSON;
 
-				if(_canvasView._isNewSketch)
-				{
-					if(true)//CAM: KSketch_LoginView._isLoggedIn)			//logged in
-					{
-						if(_isConnected)						//connected
-							saveToWeb();							//save to web						
-						else									//disconnected
-							navigateBack();							//navigate back
-					}
-					else										//anonymous
-						navigateBack();								//navigate back
-				}
-				else											//existing sketch
-				{
-					if(true) //CAM: KSketch_LoginView._isLoggedIn)			//logged in
-					{
-						if(_isConnected)						//connected
-							saveToWeb();							//save to web
-						else									//disconnected
-							overwriteCache();						//overwrite in cache	
-					}
-					else										//anonymous
-						overwriteCache();							//overwrite in cache
-				}
+		import mx.events.FlexEvent;
+		import mx.formatters.DateFormatter;
+		import mx.managers.PopUpManager;
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+
+		import air.net.URLMonitor;
+
+		import sg.edu.smu.ksketch2.KSketchStyles;
+		import sg.edu.smu.ksketch2.KSketchWebLinks;
+		import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
+		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+		import sg.edu.smu.ksketch2.canvas.controls.KFileControl;
+		import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
+		import sg.edu.smu.ksketch2.utils.KWebData;
+
+		public static var saveCounter:int = 0;
+
+		private var _canvasView:KSketch_CanvasView;
+		private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
+		private var _menu:KSketch_PopUp_Menu;
+
+		private var _monitor:URLMonitor;
+		private var _monitorTimer:Timer;
+		private var _isConnected:Boolean;
+		private var _success:Boolean;
+
+		public var objDoc:Object;
+
+		public var result:Object;
+		public var userData:Object = new Object();
+		private var _cacheControl:KSketch_CacheControl;
+
+		public var returnToHome:Boolean = false;
+		public var overwriteSave:Boolean = false;
+		public var canvasDirty:Boolean = false;
+
+		private function initStyle():void {
+			this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
+			header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
+			title.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
+			saveAsWarning.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SMALL_FONT);
+			saveButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			discardButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+			cancelButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+		}
+
+		override public function open(owner:DisplayObjectContainer, modal:Boolean = false):void {
+			//check for network connection
+			_monitor = new URLMonitor(new URLRequest(KSketchWebLinks.pingurl));
+			_monitor.addEventListener(StatusEvent.STATUS, isConnected);
+			_monitor.start();
+
+			_monitorTimer = new Timer(5000);
+			_monitorTimer.addEventListener(TimerEvent.TIMER, endMonitor);
+			_monitorTimer.start();
+
+			var confirmSave:Boolean = false;
+			userData = _canvasView.saveSketch(confirmSave);
+			_cacheControl = _canvasView.cacheControl;
+
+			if (saveCounter == 0) {
+				//CAM: saveCounter = KSketch_HomeView.autoSaveCounter;
+				saveCounter++;
 			}
-			
-			private function saveToWeb():void
-			{
-				//save to web
-				var objSaveToWeb:Object = new Object();
-				objSaveToWeb["fileData"] = com.adobe.serialization.json.JSON.encode(objDoc);
-				objSaveToWeb["userid"] = userData.kUser.id;
-				
-				if(!overwriteSave)
-					httpService.url = KSketchWebLinks.jsonurlGetXML;
-				else
-					httpService.url = KSketchWebLinks.jsonurlOverwriteGetXML;
-				
-				httpService.send(objSaveToWeb);
-				httpService.addEventListener(ResultEvent.RESULT, resultHandler);
-				httpService.addEventListener(FaultEvent.FAULT, faultHandler);
-			}
-			
-			private function formatObjectForSave():Object
-			{
-				var data:Object = new Object();
-				data.group_permissions = [];
-				data.thumbnailData = userData.thumbnailData;
-				data.p_edit = true;
-				data.changeDescription = "";
-				data.date = generateTimestamp(null);
-				
-				data.fileName = sketchName;
-				//data.lowerFileName = sketchName.toLowerCase();
-				
-				if(userData.sketchData.originalName != "" && (sketchName == userData.sketchData.originalName))
-				{
-					data.sketchId = userData.sketchData.sketchId;
-					data.originalVersion = userData.sketchData.originalVersion;
-					data.originalSketch = userData.sketchData.originalSketch;
-					data.originalName = userData.sketchData.originalName;	
-				}
-				else
-				{
-					data.sketchId = "";
-					data.originalVersion = 1;
-					data.originalSketch = -1;
-					data.originalName = sketchName;
-				}
-				
-				data.appver = 1.0;
-				data.version = userData.kSketchDocument.version;
-				data.p_view = 1;
-				data.fileData = userData.kSketchDocument.xml.toXMLString();
-				data.p_comment = true;
-				data.owner = userData.kUser.u_realname;
-				data.owner_id = userData.kUser.id;
-				return data;
-			}
-			
-			private function generateTimestamp(timestamp:Date):String
-			{
-				if (timestamp == null)
-				{
-					timestamp = new Date();
-					var offsetMilliseconds:Number = timestamp.getTimezoneOffset() * 60 * 1000;
-					timestamp.setTime(timestamp.getTime() + offsetMilliseconds);
-				}
-				
-				var dateFormatter:DateFormatter = new DateFormatter();
-				dateFormatter.formatString = "DD MMM YYYY, HH:NN:SS";
-				return dateFormatter.format(timestamp);
-			}
-			
-			private function resultHandler(event:ResultEvent):void
-			{
-				var resultRaw:Object = event.result;
-				result = com.adobe.serialization.json.JSON.decode(resultRaw.toString());
-				
-				if (result.status == "success")
-				{
-					//save to cache
-					objDoc.save = 0;
-					//CAM: mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
-					
-					overwriteSave = false;
-					_success = true;
-				}
-				else if (result.status == "errorDiscrepancy")
-				{
-					overwriteSave = true;
-					_success = false;
-				}
-				
-				close();
-			}
-			
-			private function navigateBack():void
-			{
+
+			super.open(owner, modal);
+			saveAsWarning.visible = false;
+			setSketchName();
+		}
+
+		override public function close(commit:Boolean = false, data:* = null):void {
+			KSketch_CanvasView.createNewSketch = true;
+			super.close(commit, data);
+
+			if (overwriteSave) {
+				_overwriteSaveOptions.open(_canvasView, true);
+				PopUpManager.centerPopUp(_overwriteSaveOptions);
 				overwriteSave = false;
-				_success = true;
-				
-				close();
 			}
-			
-			private function overwriteCache():void
-			{
-				objDoc.save = -1						//flag save to web for existing sketch
-					
-				//CAM: mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);	//overwrite cached object	
-				
-				navigateBack();
-			}
-			
-			private function faultHandler(event:FaultEvent):void
-			{
-				overwriteCache();
-			}
-			
-			private function discardSketch():void
-			{
-				close();
-				
-				if(!returnToHome)
-				{
+
+			if (_success) {
+				//CAM: mobileControl.writeToCache(mobileControl.informationArr);
+				if (!returnToHome) {
 					canvasDirty = true;
 					_canvasView._interactionControl.reset();
+					incrementSaveCounter();
 				}
-					
-				else
-				{
-					canvasDirty = true;
-					_menu._exit();	
+				else {
+					_menu._exit();
+					canvasDirty = false;
 				}
+
+				_success = false;
 			}
-			
-			private function cancel():void
-			{
-				close();
-				KSketch_CanvasView.createNewSketch = false;
-			}
-			
-			public function incrementSaveCounter():void
-			{
-				//if the filename is set to default - "My Sketch n", increment saveCounter
-				if(sketchName.text.indexOf("My Sketch") >= 0)
-				{
-					var tempFilename:String = sketchName.text;
-					var trimFilename:String = tempFilename.replace("My Sketch", ""); 
-					var isANumber:Boolean = !isNaN(Number(trimFilename));
-					
-					if(isANumber)
-					{
-						var tempNo:int = int(trimFilename);
-						saveCounter = tempNo;
-						saveCounter ++;
+
+		}
+
+		public function setSketchName():void {
+			//if this is an attempt to save a new sketch,
+			//then show the textarea to enter sketch name
+			var defaultName:String = "My Sketch " + saveCounter;
+			sketchName.text = defaultName;
+
+			if (!KSketch_CanvasView.createNewSketch) {
+				if (!canvasDirty) {
+					if (userData.sketchData.originalName == "") {
+						sketchName.text = userData.sketchData.fileName;
+						userData.sketchData.originalName = userData.sketchData.fileName;
 					}
-					
-					//CAM:
-					/*
-					if(saveCounter <= KSketch_HomeView.autoSaveCounter)
-					{
-						saveCounter = KSketch_HomeView.autoSaveCounter;
-						saveCounter ++;
-					}*/
-						
-					
+					else
+						sketchName.text = userData.sketchData.originalName;
+
+					saveAsWarning.visible = true;
 				}
 			}
+
+			if (sketchName.text == "") {
+				sketchName.text = defaultName;
+				saveAsWarning.visible = false;
+			}
+		}
+
+		public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, overwriteSave:KSketch_OverwriteSaveOptions):void {
+			_canvasView = canvasView;
+			_overwriteSaveOptions = overwriteSave;
+			_menu = menu;
+		}
+
+		private function isConnected(event:StatusEvent):void {
+			if (_monitor.available)
+				_isConnected = true;
+			else
+				_isConnected = false;
+
+			_monitor.stop();
+			_monitorTimer.stop();
+
+			_monitor.removeEventListener(StatusEvent.STATUS, isConnected);
+			_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+		}
+
+		private function endMonitor(event:TimerEvent):void {
+			_isConnected = false;
+
+			_monitor.stop();
+			_monitorTimer.stop();
+
+			_monitor.removeEventListener(StatusEvent.STATUS, isConnected);
+			_monitorTimer.removeEventListener(TimerEvent.TIMER, endMonitor);
+		}
+
+		public function save():void {
+			var confirmSave:Boolean = true;
+			userData = _canvasView.saveSketch(confirmSave);
+
+			var finalFileName:String = sketchName.text;
+
+			objDoc = KWebData.prepareSketchDocument(userData, finalFileName,_cacheControl.user);
+
+			objDoc.save = -1;
+			objDoc.deleteFlag = 0;
+
+			if (objDoc.sketchId == -1) {
+				objDoc.version = 1;
+				objDoc.sketchId = "";
+				objDoc.originalVersion = 0;	//changed
+				objDoc.originalSketch = -1;
+			}
+
+			//save to cache
+			//CAM: mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
+			if (!overwriteSave) {
+				_cacheControl.addToCache(objDoc);
+			} else {
+				//TODO:Ram
+			}
+			if (_canvasView._isNewSketch) {
+				if (_cacheControl.isLoggedIn())			//logged in
+				{
+					if (_isConnected)						//connected
+						saveToWeb();							//save to web
+					else									//disconnected
+						navigateBack();							//navigate back
+				}
+				else										//anonymous
+					navigateBack();								//navigate back
+			}
+			else											//existing sketch
+			{
+				if (_cacheControl.isLoggedIn())			//logged in
+				{
+					if (_isConnected)						//connected
+						saveToWeb();							//save to web
+					else									//disconnected
+						overwriteCache();						//overwrite in cache
+				}
+				else										//anonymous
+					overwriteCache();							//overwrite in cache
+			}
+		}
+
+		private function saveToWeb():void {
+			//save to web
+			var objSaveToWeb:Object = new Object();
+			objSaveToWeb["fileData"] = com.adobe.serialization.json.JSON.encode(objDoc);
+			objSaveToWeb["userid"] = _cacheControl.user.id;
+
+			if (!overwriteSave)
+				httpService.url = KSketchWebLinks.jsonurlGetXML;
+			else
+				httpService.url = KSketchWebLinks.jsonurlOverwriteGetXML;
+
+			httpService.send(objSaveToWeb);
+			httpService.addEventListener(ResultEvent.RESULT, resultHandler);
+			httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+		}
+
+		private function formatObjectForSave():Object {
+			var data:Object = new Object();
+			data.group_permissions = [];
+			data.thumbnailData = userData.thumbnailData;
+			data.p_edit = true;
+			data.changeDescription = "";
+			data.date = generateTimestamp(null);
+
+			data.fileName = sketchName;
+			//data.lowerFileName = sketchName.toLowerCase();
+
+			if (userData.sketchData.originalName != "" && (sketchName == userData.sketchData.originalName)) {
+				data.sketchId = userData.sketchData.sketchId;
+				data.originalVersion = userData.sketchData.originalVersion;
+				data.originalSketch = userData.sketchData.originalSketch;
+				data.originalName = userData.sketchData.originalName;
+			}
+			else {
+				data.sketchId = "";
+				data.originalVersion = 1;
+				data.originalSketch = -1;
+				data.originalName = sketchName;
+			}
+
+			data.appver = 1.0;
+			data.version = userData.kSketchDocument.version;
+			data.p_view = 1;
+			data.fileData = userData.kSketchDocument.xml.toXMLString();
+			data.p_comment = true;
+			data.owner = _cacheControl.user.u_realname;
+			data.owner_id = _cacheControl.user.id;
+			return data;
+		}
+
+		private function generateTimestamp(timestamp:Date):String {
+			if (timestamp == null) {
+				timestamp = new Date();
+				var offsetMilliseconds:Number = timestamp.getTimezoneOffset() * 60 * 1000;
+				timestamp.setTime(timestamp.getTime() + offsetMilliseconds);
+			}
+
+			var dateFormatter:DateFormatter = new DateFormatter();
+			dateFormatter.formatString = "DD MMM YYYY, HH:NN:SS";
+			return dateFormatter.format(timestamp);
+		}
+
+		private function resultHandler(event:ResultEvent):void {
+			var resultRaw:Object = event.result;
+			result = com.adobe.serialization.json.JSON.decode(resultRaw.toString());
+
+			if (result.status == "success") {
+				//save to cache
+				objDoc.save = 0;
+				//CAM: mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);
+				if(!overwriteSave){
+					_cacheControl.updateSketchDocument(result.uniqueId, result.sketchId);
+				}
+				overwriteSave = false;
+				_success = true;
+			}
+			else if (result.status == "errorDiscrepancy") {
+				overwriteSave = true;
+				_success = false;
+			}
+
+			close();
+		}
+
+		private function navigateBack():void {
+			overwriteSave = false;
+			_success = true;
+
+			close();
+		}
+
+		private function overwriteCache():void {
+			objDoc.save = -1						//flag save to web for existing sketch
+
+			//CAM: mobileControl.addSketchToList(objDoc, KFileControl.ADD_SAVE_CACHE);	//overwrite cached object
+
+			navigateBack();
+		}
+
+		private function faultHandler(event:FaultEvent):void {
+			overwriteCache();
+		}
+
+		private function discardSketch():void {
+			close();
+
+			if (!returnToHome) {
+				canvasDirty = true;
+				_canvasView._interactionControl.reset();
+			}
+
+			else {
+				canvasDirty = true;
+				_menu._exit();
+			}
+		}
+
+		private function cancel():void {
+			close();
+			KSketch_CanvasView.createNewSketch = false;
+		}
+
+		public function incrementSaveCounter():void {
+			//if the filename is set to default - "My Sketch n", increment saveCounter
+			if (sketchName.text.indexOf("My Sketch") >= 0) {
+				var tempFilename:String = sketchName.text;
+				var trimFilename:String = tempFilename.replace("My Sketch", "");
+				var isANumber:Boolean = !isNaN(Number(trimFilename));
+
+				if (isANumber) {
+					var tempNo:int = int(trimFilename);
+					saveCounter = tempNo;
+					saveCounter++;
+				}
+
+				//CAM:
+				/*
+				 if(saveCounter <= KSketch_HomeView.autoSaveCounter)
+				 {
+				 saveCounter = KSketch_HomeView.autoSaveCounter;
+				 saveCounter ++;
+				 }*/
+
+
+			}
+		}
 		]]>
 	</fx:Script>
 	<s:filters>

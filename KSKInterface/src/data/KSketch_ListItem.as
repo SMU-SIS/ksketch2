@@ -17,14 +17,17 @@ public class KSketch_ListItem implements IComparator{
 	private var _created:String;
     private var _version:int;
     private var _isSaved:Boolean;
+    private var _uniqueId:String;
+    private var _lowerFileName:String;
 
     public function KSketch_ListItem() {
-        this._sketchId = 0;
+        this._sketchId = -1;
         this._fileName = "";
         this._thumbnailData = "";
 		this._created = "";
         this._version = 0;
         this._isSaved = true;
+        this._lowerFileName = "";
     }
 
     public function fromWebData(webData:Object):void {
@@ -34,15 +37,22 @@ public class KSketch_ListItem implements IComparator{
 		this._created = webData.data.created;
         this._version = webData.data.version;
         this._isSaved = true;
+        this._lowerFileName = this._fileName.toLowerCase();
     }
 
     public function fromCache(cacheData:Object):void {
-        this._sketchId = cacheData.sketchId;
+        if(cacheData.sketchId == ""){
+            this._sketchId = -1;
+        }else {
+            this._sketchId = int(cacheData.sketchId);
+        }
         this._fileName = cacheData.fileName;
         this._thumbnailData = cacheData.thumbnailData;
         this._created = cacheData.created;
         this._version = cacheData.version;
         this._isSaved = cacheData.isSaved;
+        this._uniqueId = cacheData.uniqueId;
+        this._lowerFileName = this._fileName.toLowerCase();
     }
     public function compare(item1:*, item2:*):int {
         if(item1._sketchId < item2._sketchId)
@@ -98,6 +108,22 @@ public class KSketch_ListItem implements IComparator{
 
     public function set isSaved(value:Boolean):void {
         _isSaved = value;
+    }
+
+    public function get uniqueId():String {
+        return _uniqueId;
+    }
+
+    public function set uniqueId(value:String):void {
+        _uniqueId = value;
+    }
+
+    public function get lowerFileName():String {
+        return _lowerFileName;
+    }
+
+    public function set lowerFileName(value:String):void {
+        _lowerFileName = value;
     }
 }
 }

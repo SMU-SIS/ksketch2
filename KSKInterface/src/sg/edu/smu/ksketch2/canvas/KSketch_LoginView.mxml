@@ -48,7 +48,7 @@
 			private var _monitorTimer:Timer;
 			private var _webView:StageWebView = new StageWebView();
 			private var _isLoggedOut:Boolean = false;
-			
+			private var _token:String = "";
 			protected function viewActivateHandler(event:ViewNavigatorEvent):void
 			{
 				// TODO Auto-generated method stub
@@ -171,6 +171,7 @@
 					
 					//get json url
 					GetUser.url = KSketchWebLinks.jsonurlUserMobile + "?id=" + vars.id;
+					_token = vars.token;
 					GetUser.send();
 					GetUser.addEventListener(FaultEvent.FAULT, faultHandler);
 					startProgressBar();
@@ -195,7 +196,7 @@
 					userData.loginView = this;
 					userData.listSketches = "";	
 					userData.resolveConflict = 1;
-					
+					userData.token = _token;
 					navigator.pushView(KSketch_HomeView, userData);
 				}
 					

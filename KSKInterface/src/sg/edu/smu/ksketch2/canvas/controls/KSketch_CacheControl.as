@@ -10,7 +10,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 {
 	import com.adobe.serialization.json.JSON;
 
-	import flash.net.SharedObject;
+import flash.events.HTTPStatusEvent;
+
+import flash.net.SharedObject;
 	
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
@@ -20,10 +22,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import data.KSketch_ListItem;
 	
 	import org.as3commons.collections.SortedList;
-import org.as3commons.collections.framework.IComparator;
-import org.as3commons.collections.framework.IIterator;
+	import org.as3commons.collections.framework.IComparator;
+	import org.as3commons.collections.framework.IIterator;
 
-import sg.edu.smu.ksketch2.KSketchWebLinks;
+	import sg.edu.smu.ksketch2.KSketchWebLinks;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 
 	public class KSketch_CacheControl
@@ -33,6 +35,7 @@ import sg.edu.smu.ksketch2.KSketchWebLinks;
 		private var _homeView:KSketch_HomeView;
 		private var _mySO:SharedObject = SharedObject.getLocal("mydata");
 		private var _httpService:HTTPService = new HTTPService();
+		private var _deleteService:HTTPService = new HTTPService();
 		private var _webList:SortedList = new SortedList(new KSketch_ListItem() as IComparator);
 		private var _isData:Boolean = false;
 		
@@ -65,6 +68,7 @@ import sg.edu.smu.ksketch2.KSketchWebLinks;
 			}
 			*/
 			_httpService.resultFormat = "text";
+			_deleteService.resultFormat = "text";
 		}
 		
 		public function get user():Object
@@ -79,6 +83,20 @@ import sg.edu.smu.ksketch2.KSketchWebLinks;
 		public function set user(userObject:Object):void
 		{
 			_mySO.data.user = com.adobe.serialization.json.JSON.encode(userObject);
+		}
+
+		public function get deletedSketches():Array
+		{
+			if(_mySO.data.deletedSketches){
+				return com.adobe.serialization.json.JSON.decode(String(_mySO.data.deletedSketches), true);
+			} else {
+				return new Array();
+			}
+		}
+
+		public function set deletedSketches(delArr:Array):void
+		{
+			_mySO.data.deletedSketches = com.adobe.serialization.json.JSON.encode(delArr);
 		}
 		
 		/** set user as anonymous **/
@@ -126,6 +144,19 @@ import sg.edu.smu.ksketch2.KSketchWebLinks;
 			}
 			_mySO.data.cachedList = com.adobe.serialization.json.JSON.encode(arr);
 		}
+
+		public function get cachedDocuments():Array {
+			if(_mySO.data.cachedDocuments == null){
+				return null
+			} else {
+				return com.adobe.serialization.json.JSON.decode(_mySO.data.cachedDocuments, true) as Array;
+			}
+		}
+
+		public function set cachedDocuments(list:Array){
+			_mySO.data.cachedDocuments = com.adobe.serialization.json.JSON.encode(list);
+		}
+
 		public function retrieveAllSketchList():SortedList
 		{
 			_isData = false;
@@ -162,7 +193,11 @@ import sg.edu.smu.ksketch2.KSketchWebLinks;
 					}
 					x += 1;
 				} else if (comparator.compare(cacheList.itemAt(x),webList.itemAt(y)) == 1) {
-					allList.add(webList.itemAt(y));
+					if(isDeletedSketch(webList.itemAt(y).sketchId)) {
+						deleteSketchOnWeb(isDeletedSketch(webList.itemAt(y).sketchId));
+					}else {
+						allList.add(webList.itemAt(y));
+					}
 					y += 1;
 				} else {
 					allList.add(webList.itemAt(y));
@@ -191,7 +226,7 @@ import sg.edu.smu.ksketch2.KSketchWebLinks;
 			}
 			else
 			{
-				_homeView.displaySketchList(null);
+				_homeView.displaySketchList(cachedList);
 			}
 		}
 		
@@ -210,7 +245,7 @@ import sg.edu.smu.ksketch2.KSketchWebLinks;
 				}	
 				
 				_httpService.removeEventListener(ResultEvent.RESULT, listResultHandler);
-				_httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+				_httpService.addEventListener(FaultEvent.FAULT, dataFaultHandler);
 				_httpService.addEventListener(ResultEvent.RESULT, dataResultHandler);
 				
 				_httpService.url = KSketchWebLinks.jsonurlSketchXML + "/" + sketchId + "/" + version + "/" + user.id;
@@ -218,9 +253,21 @@ import sg.edu.smu.ksketch2.KSketchWebLinks;
 			}
 			else
 			{
-				//loop through cachedSketchList for the object
-				//then retrieve object from same index location in the cachedSketchData
-				//_sketchData = "";
+				var sketchData:KSketch_DataListItem = null;
+				if(_selectedSketch[1] == "" || _selectedSketch[1]== -1){
+					var arr:Array = cachedDocuments;
+					if(arr !=null){
+						for(var i:int=0;i<arr.length;i++){
+							if(arr[i].fileName = _selectedSketch[0]){
+								sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
+										arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
+										arr[i].sketchId, int(arr[i].version));
+								_homeView.displaySketchData(sketchData, _selectedSketch);
+								return;
+							}
+						}
+					}
+				}
 			}
 		}	
 		
@@ -256,16 +303,150 @@ import sg.edu.smu.ksketch2.KSketchWebLinks;
 			
 			_homeView.displaySketchData(sketchData, _selectedSketch);
 		}
-		
+
+		private function dataFaultHandler(event:FaultEvent):void
+		{
+			var sketchData:KSketch_DataListItem = null;
+			if(_selectedSketch[1] == "" || _selectedSketch[1]== -1){
+				var arr:Array = cachedDocuments;
+				if(arr !=null){
+					for(var i:int=0;i<arr.length;i++){
+						if(arr[i].fileName = _selectedSketch[0]){
+							sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
+									arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
+									arr[i].sketchId, int(arr[i].version));
+							_homeView.displaySketchData(sketchData, _selectedSketch);
+						}
+					}
+				}
+			}
+		}
+
 		private function faultHandler(event:FaultEvent):void
 		{
 			//TODO: RAM check for negative cases
-			_homeView.displaySketchList(null);
+			_homeView.displaySketchList(cachedList);
 		}
 		
 		public function reset():void
 		{
 			_mySO.clear();
+		}
+
+		public function addToCache(sketchObj: Object):void
+		{
+			var arr:Array = cachedDocuments;
+			if(arr == null){
+				arr = new Array();
+			}
+			arr.push(sketchObj);
+			cachedDocuments = arr;
+			var list:SortedList = cachedList;
+			var obj:KSketch_ListItem = new KSketch_ListItem();
+			obj.fromCache(sketchObj);
+			list.add(obj);
+			cachedList = list;
+		}
+
+		public function updateSketchDocument(uniqueId:String, sketchId:Number){
+			var arr:Array = cachedDocuments;
+			for(var i:int=0;i<arr.length;i++){
+				if(arr[i].uniqueId == uniqueId){
+					arr[i].sketchId = sketchId;
+					break;
+				}
+			}
+			cachedDocuments = arr;
+		}
+
+		public function isLoggedIn():Boolean
+		{
+			if(user.id != "n.a") {
+				return true;
+			} else {
+				return false;
+			}
+
+		}
+
+		public function unsavedSketchExist():Boolean {
+			var list:SortedList = cachedList;
+			for(var i:int=0;i<list.size;i++) {
+				if((list.itemAt(i) as KSketch_ListItem).isSaved == false)
+					return true;
+			}
+			return false;
+		}
+		public function deleteSketchOnWeb (sketchID:Number) {
+			var objToSend:Object = new Object();
+			objToSend["sketchid"] = com.adobe.serialization.json.JSON.encode(sketchID);
+			objToSend["userid"] = user.id;
+			objToSend["token"] = user.token;
+
+			_deleteService.url = KSketchWebLinks.jsonurlDeleteSketch;
+			_deleteService.send(objToSend);
+			_deleteService.addEventListener(ResultEvent.RESULT, deleteResultHandler(objToSend));
+			_deleteService.addEventListener(FaultEvent.FAULT, deleteFaultHandler(objToSend));
+		}
+
+		function deleteResultHandler(obj:Object):Function {
+			return function(event:ResultEvent):void {
+				var delArr:Array  = deletedSketches;
+				for(var i:int=0; i < delArr.length; i++) {
+					if(delArr[i] == obj["sketchid"])
+						delArr.splice(i,1);
+				}
+				deletedSketches = delArr;
+			};
+		}
+
+		function deleteFaultHandler(obj:Object):Function {
+			return function(event:FaultEvent):void {
+				return; //Do nothing
+			};
+		}
+
+		private function isDeletedSketch(sketchID:Number){
+			var arr:Array = deletedSketches;
+			for(var i:int =0; i<arr.length;i++){
+				if(sketchID == arr[i])
+					return true;
+			}
+			return false;
+		}
+		public function deleteFromCache(sketchID:String, fileName:String) {
+			if (_mySO.data.cachedList != null) {
+				var arr:Array = com.adobe.serialization.json.JSON.decode(_mySO.data.cachedList, true);
+				for (var i:int = 0; i < arr.length; i++) {
+					var obj:Object = arr[i];
+					if ((obj.sketchId == sketchID) && (obj.fileName == fileName)) {
+						arr.splice(i, 1);
+						break;
+					}
+				}
+				_mySO.data.cachedList = com.adobe.serialization.json.JSON.encode(arr);
+			}
+			if (_mySO.data.cachedDocuments){
+				var arr:Array = com.adobe.serialization.json.JSON.decode(_mySO.data.cachedDocuments, true);
+				for (var i:int = 0; i < arr.length; i++) {
+					var obj:Object = arr[i];
+					if ((obj.sketchId == sketchID) && (obj.fileName == fileName))
+						arr.splice(i, 1);
+				}
+				_mySO.data.cachedDocuments = com.adobe.serialization.json.JSON.encode(arr);
+			}
+		}
+		public function deleteSketch(sketchID:String,version:Number,fileName:String) {
+			if((sketchID == "-1")||(sketchID == "")) {
+				this.deleteFromCache(sketchID,fileName);
+			} else {
+				var delArr:Array  = deletedSketches;
+				delArr.push(Number(sketchID));
+				deletedSketches = delArr;
+				deleteSketchOnWeb(Number(sketchID));
+				this.deleteFromCache(sketchID,fileName);
+			}
+			_homeView.refresh();
 		}
 	}
 }

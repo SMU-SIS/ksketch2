@@ -20,7 +20,7 @@ package data {
 		private var _originalSketchId:int;
 		private var _version:int;
 		private var _newVersion:int;
-		
+		private var _lowerFileName:String;
 		
 	    public function KSketch_DataListItem(fileData:String, fileName:String, originalName:String, id:String, 
 											 modified:String, changeDescription:String, sketchId:int, version:int) {
@@ -63,6 +63,7 @@ package data {
 			{
 				_newVersion = _version;
 			}
+			_lowerFileName = fileName.toLowerCase();
 		}
 		
 		public function set fileData(value:XML):void
@@ -164,6 +165,13 @@ package data {
 		{
 			return _newVersion;
 		}
-		
+
+		public function get lowerFileName():String {
+			return _lowerFileName;
+		}
+
+		public function set lowerFileName(value:String):void {
+			_lowerFileName = value;
+		}
 	}
 }

@@ -303,7 +303,7 @@
 				
 				var finalFileName:String =  newFile.name;
 				
-				var objDoc:Object = KWebData.prepareSketchDocument(userData, finalFileName);
+				var objDoc:Object = KWebData.prepareSketchDocument(userData, finalFileName,null);
 				objDoc.save = -1;
 				objDoc.deleteFlag = 0;
 				objDoc.version = 1;

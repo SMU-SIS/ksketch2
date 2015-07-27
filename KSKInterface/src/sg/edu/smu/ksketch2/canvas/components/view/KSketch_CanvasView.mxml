@@ -377,14 +377,15 @@
 					var fileData:String = sketchData.fileData.toXMLString();
 					
 					userData.sketchData = sketchData;
-					
+					userData.fileData = fileData;
 					var thumbnailLength:int = sketchData.fileData.child("thumbnail").length();
 					
 					if(thumbnailLength > 0)
 					{
-						var recentThumbnail:int = thumbnailLength - 1;
-						//userData.thumbnailData = sketchData.fileData.child("thumbnail")[recentThumbnail].@data.toString();
-					}else
+						var recentThumbnail:XML = sketchData.fileData.child("thumbnail")[thumbnailLength - 1];
+						userData.thumbnailData = recentThumbnail.@data.toString();
+					}
+					else
 					{
 						userData.thumbnailData = sketchData.fileData.child("thumbnail").@data.toString();
 					}

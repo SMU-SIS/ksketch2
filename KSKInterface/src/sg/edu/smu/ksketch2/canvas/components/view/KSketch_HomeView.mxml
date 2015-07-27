@@ -26,6 +26,8 @@
 		import data.KSketch_ListItem;
 
 		import mx.collections.ArrayCollection;
+		import mx.collections.Sort;
+		import mx.collections.SortField;
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
 		import mx.utils.ObjectProxy;
@@ -169,7 +171,7 @@
 			else {
 				_failedLogin = true;
 
-				if (_cacheControl.user == null) {
+				if (_cacheControl.user == null || _cacheControl.user.id == "n.a") {
 					_anonymousUser = true;
 				}
 			}
@@ -206,6 +208,7 @@
 				_loginView = dataProxy.loginView;
 
 				if (userData.userObject.id != "n.a") {
+					dataProxy.userObject.token = dataProxy.token;
 					_cacheControl.user = dataProxy.userObject;
 					loginButton.label = "Logout, " + userData.userObject.u_realname;
 					refreshButton.label = "Refresh";
@@ -222,6 +225,7 @@
 				}
 
 				_failedLogin = false;
+				refresh();
 			}
 			userData.homeView = this;
 			userData.cacheControl = _cacheControl;
@@ -292,11 +296,16 @@
 
 		public function displaySketchList(sortedArr:SortedList):void {
 			if (sortedArr) {
+				//var arr:ArrayCollection = new ArrayCollection();
 				if (sortedArr.size > 0) {
 					for (var i:int = 0; i < sortedArr.size; i++) {
 						arrDG.addItem(sortedArr.itemAt(i));
 					}
-
+//					var sort:Sort = new Sort();
+//					sort.fields = [new SortField("fileName",true)];
+//					arr.sort = sort;
+//					arr.refresh();
+//					arrDG = arr;
 					listSketches_unavailable.visible = false;
 				}
 			}
@@ -309,7 +318,6 @@
 				userData.sketchData = sketchData;
 				navigateToScreen("CANVAS");
 			}
-
 			_stopProgressBar();
 		}
 
@@ -370,15 +378,15 @@
 				//if this is a logout button, then reset view & delete cache
 				if (loginButton.label.indexOf("Login") == -1) {
 					logout();
-					/*if(!_fileControl.unsavedSketchExist(_mobileControl.informationArr[1]))
+					if(!_cacheControl.unsavedSketchExist())
 					 {
-					 logout();
+					 	logout();
 					 }
 					 else
 					 {
-					 _logoffNotice.open(this,true);
-					 PopUpManager.centerPopUp(_logoffNotice);
-					 }*/
+						 _logoffNotice.open(this,true);
+						 PopUpManager.centerPopUp(_logoffNotice);
+					 }
 				}
 				else {
 					navigator.pushView(KSketch_LoginView);
@@ -392,6 +400,10 @@
 
 		protected function listSketches_deleteSketchHandler(event:KSwipeEvent):void {
 			_deleteSketchFlag = true;
+			var sketchName:String = KSketch_HomeView_IconItemRenderer.selectedSketchName;
+			var sketchId:String = KSketch_HomeView_IconItemRenderer.selectedSketchId;
+			var sketchVersion:String = KSketch_HomeView_IconItemRenderer.selectedVersion;
+			_cacheControl.deleteSketch(sketchId,int(sketchVersion),sketchName);
 		}
 
 		protected function listSketches_logSketchHandler(event:KSwipeEvent):void {
@@ -457,7 +469,7 @@
 
 			//if action bar is displayed and there is a delete sketch flag
 			if (KSketch_HomeView_IconItemRenderer.openActionBar && _deleteSketchFlag)
-				_setupSketchDelete(); //_isXML = true;
+				_cacheControl.deleteSketch(sketchId,int(sketchVersion),sketchName);
 
 			_isSwipe = false;
 		}

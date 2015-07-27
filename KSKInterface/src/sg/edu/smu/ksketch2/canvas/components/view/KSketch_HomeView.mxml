@@ -224,7 +224,6 @@
 					loginButton.label = "Login";
 					refreshButton.visible = false;
 				}
-
 				_failedLogin = false;
 				refresh();
 			}
@@ -297,16 +296,16 @@
 
 		public function displaySketchList(sortedArr:SortedList):void {
 			if (sortedArr) {
-				//var arr:ArrayCollection = new ArrayCollection();
+				var arr:ArrayCollection = new ArrayCollection();
 				if (sortedArr.size > 0) {
 					for (var i:int = 0; i < sortedArr.size; i++) {
-						arrDG.addItem(sortedArr.itemAt(i));
+						arr.addItem(sortedArr.itemAt(i));
 					}
-//					var sort:Sort = new Sort();
-//					sort.fields = [new SortField("fileName",true)];
-//					arr.sort = sort;
-//					arr.refresh();
-//					arrDG = arr;
+					var sort:Sort = new Sort();
+					sort.fields = [new SortField("fileName",true)];
+					arr.sort = sort;
+					arr.refresh();
+					arrDG = arr;
 					listSketches_unavailable.visible = false;
 				}
 			}
@@ -489,12 +488,12 @@
 		public function kSketchItemRendererFuntion(item:*):IFactory {
 			return itemRender;
 		}
-			
+
 		private function scaleView():void
 		{
 			if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY > 1500)
 			{
-				KSketchStyles.scale(2);	
+				KSketchStyles.scale(2);
 			}
 			else if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY < 1500)
 			{

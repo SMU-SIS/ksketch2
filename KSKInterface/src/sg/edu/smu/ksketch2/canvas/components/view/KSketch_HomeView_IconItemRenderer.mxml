@@ -11,8 +11,8 @@
 		<s:State name="show"/>
 	</s:states>
 	
-	<s:HGroup id="bc" horizontalAlign="center" height="{KSketchStyles.LIST_SKETCH_HEIGHT}" verticalAlign="middle" paddingLeft="15">
-		<s:Image id="imgData" width="{KSketchStyles.LIST_SKETCH_IMAGE_WIDTH}" height="{KSketchStyles.LIST_SKETCH_IMAGE_HEIGHT}"/>
+	<s:HGroup id="bc" horizontalAlign="center" height="{KSketchStyles.NUMBER_120}" verticalAlign="middle" paddingLeft="{KSketchStyles.NUMBER_15}">
+		<s:Image id="imgData" width="{KSketchStyles.NUMBER_160}" height="{KSketchStyles.NUMBER_90}"/>
 		
 		<s:VGroup>
 			<s:Label id="sketchName"/>
@@ -52,7 +52,7 @@
 
 				//set name and date properties
 				sketchName.text = value.fileName;
-				sketchName.setStyle("fontSize", KSketchStyles.LIST_SKETCH_FONT);
+				sketchName.setStyle("fontSize", KSketchStyles.NUMBER_20);
 				sketchDate.text = value.created;
 				sketchId.text = value.sketchId;
 				sketchVersion.text = value.version;
@@ -61,7 +61,7 @@
 				border.graphics.lineStyle(2, 0x990000, .75);
 				border.graphics.beginFill(0x00FF00);
 				border.graphics.moveTo(0, 0);
-				border.graphics.lineTo(KSketchStyles.LIST_SKETCH_LINE, 0);
+				border.graphics.lineTo(KSketchStyles.NUMBER_1000, 0);
 
 				//decode for Image
 				var decoder:Base64Decoder = new Base64Decoder();

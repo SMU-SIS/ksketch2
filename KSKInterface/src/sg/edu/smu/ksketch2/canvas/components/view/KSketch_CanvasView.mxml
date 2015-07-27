@@ -531,13 +531,13 @@
 			
 			private function scaleView():void
 			{
-				if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY > 1500)
+				KSketchStyles.setView();
+				
+				if(Capabilities.screenResolutionX > 1024)
 				{
-					KSketchStyles.scale(2);	
-				}
-				else if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY < 1500)
-				{
-					KSketchStyles.scale(2);
+					trace("init drawing stage");
+					drawing_stage.percentHeight = 80;
+					drawing_stage.width = drawing_stage.height/9*16;
 				}
 			}
 			
@@ -553,9 +553,9 @@
 			<s:filters>
 				<s:DropShadowFilter color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
 									alpha="{KSketchStyles.ALPHA_06}"
-									strength="{KSketchStyles.NUMBER_02}"
-									blurX="{KSketchStyles.NUMBER_10}"
-									blurY="{KSketchStyles.NUMBER_10}"/>
+									strength="{KSketchStyles.NUMBER_01}"
+									blurX="{KSketchStyles.NUMBER_12}"
+									blurY="{KSketchStyles.NUMBER_12}"/>
 			</s:filters>
 			<s:Rect width="100%" height="100%">
 				<s:fill>
@@ -629,7 +629,7 @@
 					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
 				<s:Group id="drawing_stage" height="92%" maxHeight="{Capabilities.screenResolutionX*0.7}"
-						 width="{drawing_stage.height/10*16}">
+						 width="{drawing_stage.height/9*16}">
 					<s:Rect width="100%" height="100%">
 						<s:fill>
 							<s:SolidColor color="{KSketchStyles.COLOR_WHITE}"/>
@@ -642,9 +642,9 @@
 							<s:DropShadowFilter 
 								color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
 								alpha="{KSketchStyles.ALPHA_06}"
-								strength="{KSketchStyles.NUMBER_02}"
-								blurX="{KSketchStyles.NUMBER_10}"
-								blurY="{KSketchStyles.NUMBER_10}"/>
+								strength="{KSketchStyles.NUMBER_01}"
+								blurX="{KSketchStyles.NUMBER_12}"
+								blurY="{KSketchStyles.NUMBER_12}"/>
 						</s:filters>
 					</s:Rect>
 					<!-- The model display displays the objects in the model -->

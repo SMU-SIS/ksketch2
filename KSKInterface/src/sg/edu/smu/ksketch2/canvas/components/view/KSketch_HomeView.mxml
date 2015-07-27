@@ -16,7 +16,6 @@
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
 		initialize="init(true)"
-		addedToStage="scaleView()"
 		destructionPolicy="auto"
 		>
 	<fx:Declarations>
@@ -93,6 +92,9 @@
 		private var itemRender:IFactory = new ClassFactory(KSketch_HomeView_IconItemRenderer);
 
 		private function init(isMobile:Boolean):void {
+			
+			KSketchStyles.setView();
+			
 			//Check for mobile version. Set false to export for Desktop version
 			if (isMobile) {
 				mainButtons.removeElementAt(2);
@@ -487,18 +489,6 @@
 
 		public function kSketchItemRendererFuntion(item:*):IFactory {
 			return itemRender;
-		}
-
-		private function scaleView():void
-		{
-			if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY > 1500)
-			{
-				KSketchStyles.scale(2);
-			}
-			else if(Capabilities.screenResolutionX > 1280 && Capabilities.screenResolutionY < 1500)
-			{
-				KSketchStyles.scale(2);
-			}
 		}
 
 		public function handleExpiredSession(){

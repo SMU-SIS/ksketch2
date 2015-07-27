@@ -157,11 +157,11 @@ import flash.net.SharedObject;
 			_mySO.data.cachedDocuments = com.adobe.serialization.json.JSON.encode(list);
 		}
 
-		public function retrieveAllSketchList():SortedList
+		public function retrieveAllSketchList(fromWeb:Boolean=true):SortedList
 		{
 			_isData = false;
 			var result:Object;
-			result = syncList(cachedList,_webList);
+			result = syncList(cachedList,_webList,fromWeb);
 			cachedList = result.syncedList;
 			//TODO: Handle toBeSavedList here
 			//result.toBeSavedList
@@ -170,7 +170,7 @@ import flash.net.SharedObject;
 		}
 		// Probably the most efficient way of syncing the sketch list in the cache and
 		// sketch list from the web
-		private function syncList(cacheList:SortedList,webList:SortedList): Object {
+		private function syncList(cacheList:SortedList,webList:SortedList,fromWeb:Boolean=true): Object {
 			var comparator:IComparator = new KSketch_ListItem();
 			var allList:SortedList = new SortedList(comparator);
 			var updateList:SortedList = new SortedList(comparator);
@@ -194,7 +194,9 @@ import flash.net.SharedObject;
 					x += 1;
 				} else if (comparator.compare(cacheList.itemAt(x),webList.itemAt(y)) == 1) {
 					if(isDeletedSketch(webList.itemAt(y).sketchId)) {
-						deleteSketchOnWeb(isDeletedSketch(webList.itemAt(y).sketchId));
+						if(fromWeb) {
+							deleteSketchOnWeb(isDeletedSketch(webList.itemAt(y).sketchId));
+						}
 					}else {
 						allList.add(webList.itemAt(y));
 					}
@@ -210,19 +212,23 @@ import flash.net.SharedObject;
 			return ret;
 		}
 		
-		public function retrieveWebSketchList():void
+		public function retrieveWebSketchList(fromWeb:Boolean = true):void
 		{
 			if(user.id != "n.a" && (user.status.indexOf("success") >= 0))
 			{
-				//make web request to pull list of sketches
-				var parameter:String = "{\"sketchID\":[],\"userid\":" + user.id + ",\"token\":\""+user.token +"\"}";
-				
-				_httpService.removeEventListener(ResultEvent.RESULT, dataResultHandler);
-				_httpService.addEventListener(FaultEvent.FAULT, faultHandler);
-				_httpService.addEventListener(ResultEvent.RESULT, listResultHandler);
-				
-				_httpService.url = KSketchWebLinks.jsonurlSketch + "/" + parameter;
-				_httpService.send();
+				if(fromWeb) {
+					//make web request to pull list of sketches
+					var parameter:String = "{\"sketchID\":[],\"userid\":" + user.id + ",\"token\":\"" + user.token + "\"}";
+
+					_httpService.removeEventListener(ResultEvent.RESULT, dataResultHandler);
+					_httpService.addEventListener(FaultEvent.FAULT, faultHandler);
+					_httpService.addEventListener(ResultEvent.RESULT, listResultHandler);
+
+					_httpService.url = KSketchWebLinks.jsonurlSketch + "/" + parameter;
+					_httpService.send();
+				} else {
+					_homeView.displaySketchList(retrieveAllSketchList(fromWeb));
+				}
 			}
 			else
 			{
@@ -273,18 +279,23 @@ import flash.net.SharedObject;
 		
 		private function listResultHandler(event:ResultEvent):void
 		{
-			//TODO: RAM check for negative cases
 			var rawData:String = String(event.result);
 			var resultObj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 			_webList.clear();
 			var tempArr:Array = (resultObj.entities as Array);
-			for each(var tempObj:Object in tempArr)
-			{
-				var _ksketchListItem:KSketch_ListItem = new KSketch_ListItem();
-				_ksketchListItem.fromWebData(tempObj);
-				_webList.add(_ksketchListItem);
+			if(resultObj) {
+				if (resultObj.hasOwnProperty("status")) {
+					if (resultObj.status == "session_expired") {
+						_homeView.handleExpiredSession();
+					}
+				}else {
+					for each(var tempObj:Object in tempArr) {
+						var _ksketchListItem:KSketch_ListItem = new KSketch_ListItem();
+						_ksketchListItem.fromWebData(tempObj);
+						_webList.add(_ksketchListItem);
+					}
+				}
 			}
-			
 			_homeView.displaySketchList(retrieveAllSketchList());
 		}
 		
@@ -446,7 +457,7 @@ import flash.net.SharedObject;
 				deleteSketchOnWeb(Number(sketchID));
 				this.deleteFromCache(sketchID,fileName);
 			}
-			_homeView.refresh();
+			_homeView.refresh(false);
 		}
 	}
 }

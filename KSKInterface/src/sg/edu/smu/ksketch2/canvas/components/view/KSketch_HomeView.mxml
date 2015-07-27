@@ -285,14 +285,14 @@
 
 		}
 
-		private function _setupSketchListView():void {
+		private function _setupSketchListView(fromWeb:Boolean = true):void {
 			_startProgressBar();
 
 			listSketches_unavailable.visible = true;
 
 			arrDG.removeAll();
 
-			_cacheControl.retrieveWebSketchList();
+			_cacheControl.retrieveWebSketchList(fromWeb);
 		}
 
 		public function displaySketchList(sortedArr:SortedList):void {
@@ -353,8 +353,8 @@
 
 		}
 
-		public function refresh():void {
-			_setupSketchListView();
+		public function refresh(fromWeb:Boolean = true):void {
+			_setupSketchListView(fromWeb);
 		}
 
 		public function logout():void {
@@ -372,7 +372,10 @@
 		}
 
 		public function navigateToScreen(screenName:String):void {
-			if (screenName.indexOf("CANVAS") == -1) //if screen name is Login
+			if (screenName.indexOf("RELOGIN") != -1) {
+				navigator.pushView(KSketch_LoginView);
+			}
+			else if (screenName.indexOf("CANVAS") == -1) //if screen name is Login
 			{
 				KSketch_LoginView.userData = new Object();
 
@@ -497,6 +500,12 @@
 			{
 				KSketchStyles.scale(2);
 			}
+		}
+
+		public function handleExpiredSession(){
+			_canvasNotice._parent = KSketch_CanvasNotice.CANVASNOTICE_EXPIRED_SESSION;
+			_canvasNotice.open(this, true);
+			PopUpManager.centerPopUp(_canvasNotice);
 		}
 		]]>
 	</fx:Script>

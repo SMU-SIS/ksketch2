@@ -179,7 +179,7 @@ import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 				}
 			}
 			if(updateList.size > 0) {
-				_saveOptions.saveUnsavedSketches(updateList);
+				_saveOptions.saveUnsavedSketches(updateList,this);
 			}
 			return allList;
 		}

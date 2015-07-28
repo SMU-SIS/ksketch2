@@ -241,7 +241,11 @@
             httpService.addEventListener(FaultEvent.FAULT, faultHandler);
         }
 
-        public function saveUnsavedSketches(unsavedList:SortedList) {
+        public function saveUnsavedSketches(unsavedList:SortedList, cacheCtr:KSketch_CacheControl) {
+            if(_cacheControl == null)
+            {
+                _cacheControl = cacheCtr;
+            }
             var arr:Array = _cacheControl.cachedDocuments;
             for (var i:int = 0; i < unsavedList.size; i++) {
                 var fileData:Object = null;
@@ -264,9 +268,11 @@
                 if (fileData == null) {
                     continue;
                 }
-                var obj:Object = KWebData.prepareSketchDocument(fileData, unsavedList.itemAt(i).fileName, _cacheControl.user);
+                //var obj:Object = KWebData.prepareSketchDocument(fileData, unsavedList.itemAt(i).fileName, _cacheControl.user);
                 var objSaveToWeb:Object = new Object();
-                objSaveToWeb["fileData"] = com.adobe.serialization.json.JSON.encode(obj);
+                fileData.owner_id = _cacheControl.user.id;
+                objSaveToWeb["fileData"] = com.adobe.serialization.json.JSON.encode(fileData);
+
                 objSaveToWeb["userid"] = _cacheControl.user.id;
                 if ((unsavedList.itemAt(i).sketchId == -1) || (unsavedList.itemAt(i) == null)) {
                     httpService.url = KSketchWebLinks.jsonurlGetXML;
@@ -331,7 +337,7 @@
 
             if (result.status == "success") {
                 //save to cache
-                objDoc.save = 0;
+                //objDoc.save = 0;
                 if (!overwriteSave) {
                     _cacheControl.updateSketchDocument(result.uniqueId, result.sketchId);
                 }
@@ -352,7 +358,7 @@
 
             if (result.status == "success") {
                 //save to cache
-                objDoc.save = 0;
+                //objDoc.save = 0;
                 if (!overwriteSave) {
                     _cacheControl.updateSketchDocument(result.uniqueId, result.sketchId);
                 }

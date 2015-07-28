@@ -47,7 +47,7 @@
 		}
 
 		override public function set data(value:Object):void {
-			if (value.thumbnailData) {
+			if ((value!=null) &&(value.thumbnailData)) {
 				super.data = value;
 
 				//set name and date properties

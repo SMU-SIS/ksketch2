@@ -16,6 +16,7 @@
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
 		initialize="init(true)"
+		addedToStage="KSketchStyles.setView();"
 		destructionPolicy="auto"
 		>
 	<fx:Declarations>
@@ -83,9 +84,6 @@
 		private var itemRender:IFactory = new ClassFactory(KSketch_HomeView_IconItemRenderer);
 
 		private function init(isMobile:Boolean):void {
-
-			KSketchStyles.setView();
-
 			//Check for mobile version. Set false to export for Desktop version
 			if (isMobile) {
 				mainButtons.removeElementAt(2);
@@ -483,6 +481,13 @@
 			_canvasNotice.open(this, true);
 			PopUpManager.centerPopUp(_canvasNotice);
 		}
+			
+		protected function view_addedToStageHandler(event:Event):void
+		{
+			// TODO Auto-generated method stub
+			
+		}
+			
 		]]>
 	</fx:Script>
 	<s:Group width="100%" height="100%">
@@ -513,24 +518,24 @@
 					
 					<s:Group width="100%">
 						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.NUMBER_10}"/> </s:layout>
-						<s:Button id="createButton" width="100%" click="createSketch()"/>
+						<s:Button id="createButton" width="100%" click="createSketch()" height="{KSketchStyles.NUMBER_50}"/>
 					</s:Group>
 					
 					<!-- DESKTOP ENABLE -->
 					<s:Group width="100%">
 						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.NUMBER_10}"/> </s:layout>
-						<s:Button id="loadButton" width="100%" click="loadSketch()"/>
+						<s:Button id="loadButton" width="100%" click="loadSketch()" height="{KSketchStyles.NUMBER_50}"/>
 					</s:Group>
 					<!-- END OF DESKTOP ENABLE -->
 					
 					<s:Group width="100%">
 						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.NUMBER_10}"/> </s:layout>
-						<s:Button id="loginButton" width="100%" click="navigateToScreen('Login')"/>
+						<s:Button id="loginButton" width="100%" click="navigateToScreen('Login')" height="{KSketchStyles.NUMBER_50}"/>
 					</s:Group>
 					
 					<s:Group width="100%">
 						<s:layout> <s:VerticalLayout paddingBottom="{KSketchStyles.NUMBER_10}"/> </s:layout>
-						<s:Button id="refreshButton" width="100%" click="refresh()"/>
+						<s:Button id="refreshButton" width="100%" click="refresh()" height="{KSketchStyles.NUMBER_50}"/>
 					</s:Group>
 					
 					<!-- end alignment for buttons -->
@@ -559,7 +564,7 @@
 						</s:filters>
 					</s:Rect>
 					
-					<s:Group top="15" left="15" right="15" bottom="15">
+					<s:Group top="{KSketchStyles.NUMBER_15}" left="{KSketchStyles.NUMBER_15}" right="{KSketchStyles.NUMBER_15}" bottom="{KSketchStyles.NUMBER_15}">
 						<s:Group width="100%" height="100%">
 							<s:layout>
 								<s:VerticalLayout></s:VerticalLayout>

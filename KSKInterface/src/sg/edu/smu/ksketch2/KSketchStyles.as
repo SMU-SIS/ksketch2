@@ -85,12 +85,31 @@ package sg.edu.smu.ksketch2
 		public static var NUMBER_1100:Number = 1100;
 		public static var NUMBER_1200:Number = 1200;
 		
+		public static var width:int = 0;
+		public static var height:int = 0;
+		public static var aspectRatio:Number = 0;
+		
+		public static function setResolution():void
+		{
+			if(Capabilities.screenResolutionX > Capabilities.screenResolutionY)
+			{
+				width = Capabilities.screenResolutionX;
+				height = Capabilities.screenResolutionY;
+			}
+			else
+			{
+				width = Capabilities.screenResolutionY;
+				height = Capabilities.screenResolutionX;
+			}
+			
+			aspectRatio = int((width/height)*100)/100;
+		}
+		
 		public static function setView():void
 		{
-			//trace("Screen X: " + Capabilities.screenResolutionX);
-			//trace("Screen Y: " + Capabilities.screenResolutionY);
+			setResolution();
 			
-			if(Capabilities.screenResolutionX > 1024 && Capabilities.screenResolutionY > 768)
+			if(width > 1280 && height > 960)
 			{
 				KSketchStyles.scale(2);	
 			}

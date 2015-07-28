@@ -528,9 +528,13 @@
 			{
 				KSketchStyles.setView();
 				
-				if(Capabilities.screenResolutionX > 1024)
+				if(KSketchStyles.aspectRatio != 1.33)
 				{
-					trace("init drawing stage");
+					drawing_stage.percentHeight = 82;
+					drawing_stage.width = drawing_stage.height/9*16;
+				}
+				else if(KSketchStyles.width > 1280 && KSketchStyles.aspectRatio == 1.33)
+				{
 					drawing_stage.percentHeight = 80;
 					drawing_stage.width = drawing_stage.height/9*16;
 				}

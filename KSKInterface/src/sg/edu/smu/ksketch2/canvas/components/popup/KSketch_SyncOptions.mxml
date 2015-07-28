@@ -69,8 +69,6 @@
 			
 			override public function close(commit:Boolean=false, data:*=null):void
 			{
-				//CAM: _homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
-				
 				resetSyncArrays();
 				
 				super.close(commit, data);
@@ -78,9 +76,7 @@
 				
 				if(_homeView && _success)
 					_homeView.refresh();
-				//CAM: else if(_homeView)
-				//CAM:	_homeView.displaySketchData();
-					
+
 			}
 			
 			private function init():void
@@ -235,8 +231,6 @@
 						if(_counterSave == syncSketchArr.length)
 							writeAllToCache();
 					}
-					//CAM: else
-					//CAM:	_homeView.deleteSketchDocument(obj, KFileControl.DELETE_CACHE);
 				};
 			}
 			
@@ -287,7 +281,6 @@
 					for(i=0; i<resultArr.length; i++)
 					{
 						resultArr[i].save = 0;
-						//CAM: _homeView._mobileControl.addSketchToList(resultArr[i], KFileControl.ADD_SYNC);	
 					}
 				}
 				close();
@@ -295,10 +288,7 @@
 			
 			private function discard():void
 			{
-				//CAM: _homeView._mobileControl.discardSavedSketches();
-				//CAM: _homeView._mobileControl.writeToCache(_homeView._mobileControl.informationArr);
 				_success = true;
-				//CAM: KSketch_HomeView.autoSaveCounter = 0;
 				close();
 			}
 			

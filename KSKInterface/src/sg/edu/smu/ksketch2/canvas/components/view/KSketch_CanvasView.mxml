@@ -405,11 +405,6 @@
 				_saveOptions.canvasDirty = false;
 				KSketch_SaveOptions.saveCounter = 0;
 				
-				//CAM:
-				/*KSketch_HomeView.canvasTimerDisabled = true;
-				if(KSketch_HomeView.hasBeenNotified)
-					KSketch_HomeView.hasBeenNotified = true;*/
-				
 				navigator.pushView(KSketch_HomeView, userData);
 				
 				System.pauseForGCIfCollectionImminent();

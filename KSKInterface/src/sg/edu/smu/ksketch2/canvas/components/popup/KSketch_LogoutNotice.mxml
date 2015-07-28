@@ -39,7 +39,6 @@
 			
 			private function forceLogout():void
 			{
-				//CAM: _homeView._mobileControl.informationArr[1] = null;
 				_homeView.navigateToScreen("LOGIN");
 				close();
 			}
@@ -48,7 +47,6 @@
 			{
 				super.close(commit, data);
 				(FlexGlobals.topLevelApplication as Application).setFocus();
-				//CAM: _homeView.startMonitorConnection();
 			}
 		]]>
 	</fx:Script>

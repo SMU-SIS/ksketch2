@@ -308,7 +308,7 @@
 				objDoc.version = 1;
 				objDoc.originalVersion = 0;	
 				objDoc.originalSketch = -1;
-				objDoc.sketchId = "";
+				objDoc.sketchId = -1;
 				
 				var str:String = com.adobe.serialization.json.JSON.encode(objDoc);
 				
@@ -318,7 +318,6 @@
 				stream.writeUTFBytes(str);
 				stream.close();
 				
-				//CAM:save to cache
 				_exit();
 			}
 			

@@ -9,24 +9,20 @@
 package sg.edu.smu.ksketch2.canvas.controls
 {
 	import com.adobe.serialization.json.JSON;
+	import flash.net.SharedObject;
 
-import flash.events.HTTPStatusEvent;
-
-import flash.net.SharedObject;
-	
-	import mx.rpc.events.FaultEvent;
+import mx.collections.Sort;
+import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.HTTPService;
-	
 	import data.KSketch_DataListItem;
 	import data.KSketch_ListItem;
-	
 	import org.as3commons.collections.SortedList;
 	import org.as3commons.collections.framework.IComparator;
 	import org.as3commons.collections.framework.IIterator;
-
 	import sg.edu.smu.ksketch2.KSketchWebLinks;
-	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
+import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 
 	public class KSketch_CacheControl
 	{
@@ -38,35 +34,11 @@ import flash.net.SharedObject;
 		private var _deleteService:HTTPService = new HTTPService();
 		private var _webList:SortedList = new SortedList(new KSketch_ListItem() as IComparator);
 		private var _isData:Boolean = false;
-		
+		private var _saveOptions:KSketch_SaveOptions = new KSketch_SaveOptions();
 		
 		public function KSketch_CacheControl(homeView:KSketch_HomeView)
 		{
 			_homeView = homeView;
-			
-			/*informationArr = new Array(4);
-			informationArr[0] = null;	//user: user object
-			informationArr[1] = null;	//cachedSketchList: cached sketch list
-			informationArr[2] = null;	//syncSketchList: cached sketch list to sync with web
-			informationArr[3] = null;	//syncSketchList: cached sketch list to sync with web
-
-			if (_mySO.data) 
-			{
-				if(_mySO.data.user)
-				{
-					informationArr[0] = _mySO.data.user;
-				}
-
-				if(_mySO.data.cachedSketchList)
-				{
-					informationArr[1] = _mySO.data.cachedSketchList;
-				}
-				else
-				{
-					informationArr[1] = new SortedList();
-				}	
-			}
-			*/
 			_httpService.resultFormat = "text";
 			_deleteService.resultFormat = "text";
 		}
@@ -147,7 +119,7 @@ import flash.net.SharedObject;
 
 		public function get cachedDocuments():Array {
 			if(_mySO.data.cachedDocuments == null){
-				return null
+				return null;
 			} else {
 				return com.adobe.serialization.json.JSON.decode(_mySO.data.cachedDocuments, true) as Array;
 			}
@@ -160,22 +132,18 @@ import flash.net.SharedObject;
 		public function retrieveAllSketchList(fromWeb:Boolean=true):SortedList
 		{
 			_isData = false;
-			var result:Object;
-			result = syncList(cachedList,_webList,fromWeb);
-			cachedList = result.syncedList;
-			//TODO: Handle toBeSavedList here
-			//result.toBeSavedList
-			return result.syncedList;
+			cachedList = syncList(cachedList,_webList,fromWeb);
+			return cachedList;
 
 		}
+
 		// Probably the most efficient way of syncing the sketch list in the cache and
 		// sketch list from the web
-		private function syncList(cacheList:SortedList,webList:SortedList,fromWeb:Boolean=true): Object {
+		private function syncList(cacheList:SortedList,webList:SortedList,fromWeb:Boolean=true): SortedList {
 			var comparator:IComparator = new KSketch_ListItem();
 			var allList:SortedList = new SortedList(comparator);
 			var updateList:SortedList = new SortedList(comparator);
 
-			var ret:Object = new Object();
 			var x:int = 0, y:int = 0;
 			while ((x < cacheList.size) || (y < webList.size)) {
 				if (y >= webList.size) {
@@ -188,8 +156,11 @@ import flash.net.SharedObject;
 					allList.add(webList.itemAt(y));
 					y += 1;
 				} else if (comparator.compare(cacheList.itemAt(x),webList.itemAt(y)) == -1) {
-					if (!cacheList.itemAt(x).isSaved) {
+					if (!cacheList.itemAt(x).isSaved) {  // cache[present, ?deleted, !isSaved] web[?present]
 						updateList.add(cacheList.itemAt(x));
+						allList.add(cacheList.itemAt(x));
+					} else {   // CASE:cache[present, ?deleted, isSaved] web[!present
+						deleteFromCache(String(cacheList.itemAt(x).sketchId),cacheList.itemAt(x).fileName);
 					}
 					x += 1;
 				} else if (comparator.compare(cacheList.itemAt(x),webList.itemAt(y)) == 1) {
@@ -201,15 +172,16 @@ import flash.net.SharedObject;
 						allList.add(webList.itemAt(y));
 					}
 					y += 1;
-				} else {
+				} else {   // CASE:cache[present, ?deleted, isSaved] web[present]
 					allList.add(webList.itemAt(y));
 					x += 1;
 					y += 1;
 				}
 			}
-			ret.syncedList = allList;
-			ret.toBeSavedList = updateList;
-			return ret;
+			if(updateList.size > 0) {
+				_saveOptions.saveUnsavedSketches(updateList);
+			}
+			return allList;
 		}
 		
 		public function retrieveWebSketchList(fromWeb:Boolean = true):void
@@ -361,6 +333,12 @@ import flash.net.SharedObject;
 			cachedList = list;
 		}
 
+		public function updateCache(sketchObj: Object):void
+		{
+			this.deleteFromCache(sketchObj.sketchId,sketchObj.fileName);
+			this.addToCache(sketchObj);
+		}
+
 		public function updateSketchDocument(uniqueId:String, sketchId:Number){
 			var arr:Array = cachedDocuments;
 			for(var i:int=0;i<arr.length;i++){
@@ -399,6 +377,7 @@ import flash.net.SharedObject;
 			}
 			return false;
 		}
+
 		public function deleteSketchOnWeb (sketchID:Number) {
 			var objToSend:Object = new Object();
 			objToSend["sketchid"] = com.adobe.serialization.json.JSON.encode(sketchID);
@@ -436,6 +415,7 @@ import flash.net.SharedObject;
 			}
 			return false;
 		}
+
 		public function deleteFromCache(sketchID:String, fileName:String) {
 			if (_mySO.data.cachedList != null) {
 				var arr:Array = com.adobe.serialization.json.JSON.decode(_mySO.data.cachedList, true);
@@ -458,6 +438,7 @@ import flash.net.SharedObject;
 				_mySO.data.cachedDocuments = com.adobe.serialization.json.JSON.encode(arr);
 			}
 		}
+
 		public function deleteSketch(sketchID:String,version:Number,fileName:String) {
 			if((sketchID == "-1")||(sketchID == "")) {
 				this.deleteFromCache(sketchID,fileName);

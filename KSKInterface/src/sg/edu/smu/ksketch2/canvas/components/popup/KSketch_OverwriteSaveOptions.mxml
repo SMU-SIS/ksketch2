@@ -63,7 +63,6 @@
 			
 			private function cancel():void
 			{
-				//CAM: _saveOptions.mobileControl.reset();
 				_saveOptions.overwriteSave = false;
 				close();
 			}

@@ -39,7 +39,7 @@ import mx.utils.UIDUtil;
 			}
 			else
 			{
-				data.sketchId = "";
+				data.sketchId = -1;
 				data.originalVersion = 1;
 				data.originalSketch = -1;
 				data.originalName = sketchName;

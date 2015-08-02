@@ -10,9 +10,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 {
 	import com.adobe.serialization.json.JSON;
 	import flash.net.SharedObject;
-
-import mx.collections.Sort;
-import mx.rpc.events.FaultEvent;
+	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.HTTPService;
 	import data.KSketch_DataListItem;
@@ -21,15 +19,15 @@ import mx.rpc.events.FaultEvent;
 	import org.as3commons.collections.framework.IComparator;
 	import org.as3commons.collections.framework.IIterator;
 	import sg.edu.smu.ksketch2.KSketchWebLinks;
-import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
-import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 
 	public class KSketch_CacheControl
 	{
 		//class variables
 		private var _selectedSketch:Array;
 		private var _homeView:KSketch_HomeView;
-		private var _mySO:SharedObject = SharedObject.getLocal("mydata");
+		private var _mySO:SharedObject = SharedObject.getLocal("mydata_v2");
 		private var _httpService:HTTPService = new HTTPService();
 		private var _deleteService:HTTPService = new HTTPService();
 		private var _webList:SortedList = new SortedList(new KSketch_ListItem() as IComparator);
@@ -356,7 +354,7 @@ import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 					break;
 				}
 			}
-			cachedDocuments = arr;
+			cachedList = list;
 		}
 
 		public function isLoggedIn():Boolean

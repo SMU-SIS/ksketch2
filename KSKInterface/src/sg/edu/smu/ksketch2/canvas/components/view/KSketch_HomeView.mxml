@@ -458,8 +458,8 @@
 				_setupSketchSave(); //_isXML = true;
 
 			//if action bar is displayed and there is a delete sketch flag
-			if (KSketch_HomeView_IconItemRenderer.openActionBar && _deleteSketchFlag)
-				_cacheControl.deleteSketch(sketchId, int(sketchVersion), sketchName);
+			//if (KSketch_HomeView_IconItemRenderer.openActionBar && _deleteSketchFlag)
+			//	_cacheControl.deleteSketch(sketchId, int(sketchVersion), sketchName);
 
 			_isSwipe = false;
 		}

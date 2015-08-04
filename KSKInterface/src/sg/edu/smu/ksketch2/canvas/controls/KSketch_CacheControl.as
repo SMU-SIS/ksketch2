@@ -164,7 +164,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				} else if (comparator.compare(cacheList.itemAt(x),webList.itemAt(y)) == 1) {
 					if(isDeletedSketch(webList.itemAt(y).sketchId)) {
 						if(fromWeb) {
-							deleteSketchOnWeb(isDeletedSketch(webList.itemAt(y).sketchId));
+							deleteSketchOnWeb(webList.itemAt(y).sketchId);
 						}
 					}else {
 						allList.add(webList.itemAt(y));
@@ -197,7 +197,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 					_httpService.url = KSketchWebLinks.jsonurlSketch + "/" + parameter;
 					_httpService.send();
 				} else {
-					_homeView.displaySketchList(retrieveAllSketchList(fromWeb));
+					_homeView.displaySketchList(cachedList);
 				}
 			}
 			else

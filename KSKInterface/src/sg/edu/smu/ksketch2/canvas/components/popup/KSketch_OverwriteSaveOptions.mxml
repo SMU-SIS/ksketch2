@@ -9,7 +9,9 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" initialize="initStyle()">
+						   xmlns:s="library://ns.adobe.com/flex/spark" 
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+						   backgroundAlpha="0" initialize="initStyle()">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<s:HTTPService id="httpService"
@@ -24,8 +26,12 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			
+			private var GAP:Number = 10 * KSketchGlobals.SCALE;
+			private var PADDING_5:Number = 5 * KSketchGlobals.SCALE;
+			private var PADDING_10:Number = 10 * KSketchGlobals.SCALE;
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _saveOptions:KSketch_SaveOptions;
@@ -33,9 +39,14 @@
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				label.setStyle("fontSize", KSketchStyles.FONT_SIZE_18);
-				cancelButton.setStyle("fontSize", KSketchStyles.FONT_SIZE_14);
-				saveButton.setStyle("fontSize", KSketchStyles.FONT_SIZE_14);
+				label.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				cancelButton.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				saveButton.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				
+				cancelButton.init("Cancel");
+				saveButton.init("Save Anyway");
+				cancelButton.initSkin();
+				saveButton.initSkin();
 			}
 			
 			public function init(canvasView:KSketch_CanvasView, saveOptions:KSketch_SaveOptions):void
@@ -71,34 +82,37 @@
 	</fx:Script>
 	<s:filters>
 		<s:DropShadowFilter 
-			color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
-			alpha="{KSketchStyles.ALPHA_06}"
-			strength="{KSketchStyles.NUMBER_01}"
-			blurX="{KSketchStyles.NUMBER_12}"
-			blurY="{KSketchStyles.NUMBER_12}"/>
+			color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+			alpha="{KSketchGlobals.ALPHA_06}"
+			strength="{KSketchGlobals.RECT_STRENGTH}"
+			blurX="{KSketchGlobals.RECT_BLURX}"
+			blurY="{KSketchGlobals.RECT_BLURY}"/>
 	</s:filters>
 	<s:Group id="overwriteSketch" visible="true">
-		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.NUMBER_05}" radiusY="{KSketchStyles.NUMBER_05}">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.COLOR_GREY_MEDIUM}"/>
+				<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout gap="{KSketchStyles.NUMBER_10}" paddingLeft="{KSketchStyles.NUMBER_05}" paddingRight="{KSketchStyles.NUMBER_05}" paddingTop="{KSketchStyles.NUMBER_05}" paddingBottom="{KSketchStyles.NUMBER_05}"/>
+				<s:VerticalLayout gap="{GAP}" paddingLeft="{PADDING_5}" 
+								  paddingRight="{PADDING_5}" 
+								  paddingTop="{PADDING_5}" 
+								  paddingBottom="{PADDING_5}"/>
 			</s:layout>
 			<s:Group>
 				<s:layout>
-					<s:VerticalLayout paddingLeft="{KSketchStyles.NUMBER_10}"/>
+					<s:VerticalLayout paddingLeft="{PADDING_10}"/>
 				</s:layout>
 				<s:Label id="label" text="You are trying to save an older version of this sketch."/>
 			</s:Group>
 			<s:Group width="100%">
 				<s:layout>
-					<s:HorizontalLayout paddingLeft="{KSketchStyles.NUMBER_10}" horizontalAlign="right"/>
+					<s:HorizontalLayout paddingLeft="{PADDING_10}" horizontalAlign="right"/>
 				</s:layout>
-				<s:Button id="saveButton" label="Save Anyway" click="save()" height="{KSketchStyles.NUMBER_50}"/>
-				<s:Button id="cancelButton" label="Cancel" click="cancel()" height="{KSketchStyles.NUMBER_50}"/>
+				<buttons:KSketch_DialogButton id="saveButton" click="save()"/>
+				<buttons:KSketch_DialogButton id="cancelButton" click="cancel()"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

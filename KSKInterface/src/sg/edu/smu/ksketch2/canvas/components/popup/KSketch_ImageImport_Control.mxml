@@ -9,8 +9,12 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundColor="0xFFFFFF" backgroundAlpha="0.75"
-						   creationComplete="_onCreateHandler()" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
+						   xmlns:s="library://ns.adobe.com/flex/spark" 
+						   backgroundColor="{KSketchGlobals.COLOR_WHITE}" 
+						   backgroundAlpha="{KSketchGlobals.ALPHA_06}"
+						   creationComplete="_onCreateHandler()" 
+						   initialize="_initStyle()"
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
@@ -24,18 +28,13 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.KSketch_ImageEditingView;
 			import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.ImageProcessing;
-			
-			//Style values
-			public static const IMAGE_EDIT_EXTERNALPADDING:Number = 15;
-			public static const IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS:Number = 100;
 			
 			//Lasso values
 			private static const DIRECTION_STRENGTH:Number = 20;
@@ -46,6 +45,9 @@
 			public static const IMAGE_FILE_FILTER:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png");
 			public static const IMAGE_MAX_WIDTH:Number = 480;
 			public static const CAMERA_FPS:int = 16;
+			
+			private var EXTERNALPADDING:Number = 15 * KSketchGlobals.SCALE;
+			private var BUTTON_DIMENSIONS:Number = 100 * KSketchGlobals.SCALE;
 			
 			private var cropPoints:Vector.<Number>;
 			private var pointCommand:Vector.<int>;
@@ -75,6 +77,15 @@
 				_KSketch = KSketchInstance;	
 				_interactionControl = interactionControl;
 				_canvasView = canvas;
+			}
+			
+			public function _initStyle():void
+			{	
+				okButton.init("OK");
+				okButton.initSkin();
+				
+				exitButton.init("Cancel");
+				exitButton.initSkin();
 			}
 			
 			private function _onCreateHandler():void
@@ -503,15 +514,15 @@
 	<s:Group id="imageEditMain">
 		<s:filters>
 			<s:DropShadowFilter 
-				color="{sg.edu.smu.ksketch2.KSketchStyles.COLOR_BLACK}" angle="{sg.edu.smu.ksketch2.KSketchStyles.ANGLE_50}"
-				alpha="{sg.edu.smu.ksketch2.KSketchStyles.ALPHA_06}"
-				strength="{sg.edu.smu.ksketch2.KSketchStyles.NUMBER_02}"
-				blurX="{sg.edu.smu.ksketch2.KSketchStyles.NUMBER_10}"
-				blurY="{sg.edu.smu.ksketch2.KSketchStyles.NUMBER_10}"/>
+				color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+				alpha="{KSketchGlobals.ALPHA_06}"
+				strength="{KSketchGlobals.RECT_STRENGTH}"
+				blurX="{KSketchGlobals.RECT_BLURX}"
+				blurY="{KSketchGlobals.RECT_BLURY}"/>
 		</s:filters>
-		<s:Rect width="100%" height="100%" radiusX="{sg.edu.smu.ksketch2.KSketchStyles.NUMBER_05}" radiusY="{sg.edu.smu.ksketch2.KSketchStyles.NUMBER_05}">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
 			<s:fill>
-				<s:SolidColor color="{sg.edu.smu.ksketch2.KSketchStyles.COLOR_GREY_MEDIUM}"/>
+				<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
 			</s:fill>
 		</s:Rect>
 		
@@ -519,30 +530,30 @@
 			<s:layout>
 				<s:VerticalLayout
 					verticalAlign="middle" horizontalAlign="left"
-					paddingLeft="{IMAGE_EDIT_EXTERNALPADDING}" paddingRight="{IMAGE_EDIT_EXTERNALPADDING}"
-					paddingTop="{IMAGE_EDIT_EXTERNALPADDING}" paddingBottom="{IMAGE_EDIT_EXTERNALPADDING}"/>
+					paddingLeft="{EXTERNALPADDING}" paddingRight="{EXTERNALPADDING}"
+					paddingTop="{EXTERNALPADDING}" paddingBottom="{EXTERNALPADDING}"/>
 			</s:layout>
-			<s:Label text="Import an image from:" fontFamily="{sg.edu.smu.ksketch2.KSketchStyles.FONT_FAMILY}" fontSize="{sg.edu.smu.ksketch2.KSketchStyles.FONT_SIZE_14}"
+			<s:Label text="Import an image from:" fontFamily="{KSketchGlobals.FONT_FAMILY}" fontSize="{KSketchGlobals.FONT_SIZE_14}"
 					 fontWeight="bold"/>
 			<s:Group>
 				<s:layout>
 					<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
 				</s:layout>
-				<buttons:KSketch_Button
+				<buttons:KSketch_CanvasButton
 					id="activateCameraButton"
 					skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"
-					width="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}" height="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}"
+					width="{BUTTON_DIMENSIONS}" height="{BUTTON_DIMENSIONS}"
 					click="{_enterCameraMode()}"/>
-				<buttons:KSketch_Button
+				<buttons:KSketch_CanvasButton
 					id="activateGalleryButton"
 					skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"
-					width="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}" height="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}"
+					width="{BUTTON_DIMENSIONS}" height="{BUTTON_DIMENSIONS}"
 					click="{_enterImageMode()}"/>
-				<buttons:KSketch_Button
+				<buttons:KSketch_CanvasButton
 					id="cancelButton"
 					skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin"
-					width="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}" height="{IMAGE_EDIT_OPTION_BUTTON_DIMENSIONS}"
-					click="{closeImageInsertion()}"/>
+					width="{BUTTON_DIMENSIONS}" height="{BUTTON_DIMENSIONS}"
+					click="closeImageInsertion()"/>
 			</s:Group>
 		</s:Group>
 		<s:Group id="videoDisplayGroup">
@@ -580,8 +591,8 @@
 				<s:layout>
 					<s:HorizontalLayout horizontalAlign="center"/>
 				</s:layout>
-				<s:Button label="Ok" click="_setLasso()"/>
-				<s:Button label="Cancel" click="_exitLasso()"/>
+				<buttons:KSketch_DialogButton id="okButton" click="_setLasso()"/>
+				<buttons:KSketch_DialogButton id="exitButton" click="_exitLasso()"/>
 			</s:Group>	
 		</s:Group>
 	</s:Group>	

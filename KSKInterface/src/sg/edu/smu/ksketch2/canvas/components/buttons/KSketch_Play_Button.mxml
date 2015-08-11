@@ -23,7 +23,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
@@ -41,11 +41,13 @@
 			private const SHOW_PLAY:int = 0;
 			private const SHOW_PAUSE:int = 1;
 			
-			
 			private var _doubleClickTimer:Timer;
 			private var _doubleClickTrigger:Boolean;
 			
-			public function init(timeControl:KSketch_TimeControl, interactionControl:KInteractionControl,
+			//KSKETCH-SYNPHNE
+			private var _canvasView:KSketch_CanvasView;
+			
+			public function init(timeControl:KSketch_TimeControl, canvas:KSketch_CanvasView, interactionControl:KInteractionControl,
 								KSketchInstance:KSketch2, menu:SkinnablePopUpContainer):void
 			{
 				_KSketch = KSketchInstance;
@@ -53,11 +55,14 @@
 				_timeControl = timeControl;
 				_menu = menu;
 				
+				//KSKETCH-SYNPHNE
+				_canvasView = canvas;
+				
 				timeControl.addEventListener(KSketch_TimeControl.PLAY_START, _handlePlayPause);
 				timeControl.addEventListener(KSketch_TimeControl.PLAY_STOP, _handlePlayPause);
 			}
 			
-			public function playToggle():void
+			public function playToggle(activity:Boolean):void
 			{
 				_doubleClickTrigger = false;
 				
@@ -68,8 +73,9 @@
 					_doubleClickTimer.start();
 				}
 				else
+				{
 					_timeControl.stop();
-				
+				}
 			}
 			
 			private function triggerPlay(event:TimerEvent):void
@@ -138,7 +144,7 @@
 				else
 					textureControl.source = KSketchAssets.texture_pause;
 				
-				(skin as KSketch_Canvas_Button_Skin).upColor = KSketchStyles.COLOR_RED;
+				(skin as KSketch_Canvas_Button_Skin).upColor = KSketchGlobals.COLOR_RED;
 			}
 		]]>
 	</fx:Script>

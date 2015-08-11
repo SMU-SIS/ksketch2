@@ -11,8 +11,8 @@
 		<s:State name="show"/>
 	</s:states>
 	
-	<s:HGroup id="bc" horizontalAlign="center" height="{KSketchStyles.NUMBER_120}" verticalAlign="middle" paddingLeft="{KSketchStyles.NUMBER_15}">
-		<s:Image id="imgData" width="{KSketchStyles.NUMBER_160}" height="{KSketchStyles.NUMBER_90}"/>
+	<s:HGroup id="bc" horizontalAlign="center" height="{RENDERER_LIST_HEIGHT}" verticalAlign="middle" paddingLeft="{RENDERER_LIST_PADDING}">
+		<s:Image id="imgData" width="{RENDERER_IMAGE_WIDTH}" height="{RENDERER_IMAGE_HEIGHT}"/>
 		
 		<s:VGroup>
 			<s:Label id="sketchName"/>
@@ -29,10 +29,16 @@
 		import mx.events.FlexEvent;
 		import mx.utils.Base64Decoder;
 
-		import sg.edu.smu.ksketch2.KSketchStyles;
+		import sg.edu.smu.ksketch2.KSketchGlobals;
 		import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 		import sg.edu.smu.ksketch2.utils.KSwipeEvent;
 
+		private var RENDERER_LIST_HEIGHT:Number = 120 * KSketchGlobals.SCALE;
+		private var RENDERER_LIST_PADDING:Number = 15 * KSketchGlobals.SCALE;
+		private var RENDERER_IMAGE_WIDTH:Number = 160 * KSketchGlobals.SCALE;
+		private var RENDERER_IMAGE_HEIGHT:Number = 90 * KSketchGlobals.SCALE;
+		private var RENDERER_LINE:Number = 1000 * KSketchGlobals.SCALE;	
+			
 		private var _myIcon:Bitmap;
 		private var _oldSelection:String;
 		private var _loader:Loader
@@ -41,7 +47,7 @@
 		public static var selectedSketchId:String;
 		public static var selectedVersion:String;
 		public static var openActionBar:Boolean = false;
-
+			
 		protected function state1_enterStateHandler(event:FlexEvent):void {
 			bc.setStyle("backgroundColor", 0xff0018);
 		}
@@ -52,7 +58,7 @@
 
 				//set name and date properties
 				sketchName.text = value.fileName;
-				sketchName.setStyle("fontSize", KSketchStyles.NUMBER_20);
+				sketchName.setStyle("fontSize", KSketchGlobals.FONT_SIZE_20);
 				sketchDate.text = value.created;
 				sketchId.text = value.sketchId;
 				sketchVersion.text = value.version;
@@ -61,7 +67,7 @@
 				border.graphics.lineStyle(2, 0x990000, .75);
 				border.graphics.beginFill(0x00FF00);
 				border.graphics.moveTo(0, 0);
-				border.graphics.lineTo(KSketchStyles.NUMBER_1000, 0);
+				border.graphics.lineTo(RENDERER_LINE, 0);
 
 				//decode for Image
 				var decoder:Base64Decoder = new Base64Decoder();

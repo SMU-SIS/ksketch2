@@ -11,27 +11,36 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
         xmlns:s="library://ns.adobe.com/flex/spark"
         xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
+		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
         actionBarVisible="false"
-        xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
+        
         destructionPolicy="auto"
         addedToStage="addedToStageHandler()"
-        initialize="init()">
+        initialize="_init()">
     <fx:Script>
         <![CDATA[
-        import sg.edu.smu.ksketch2.KSketchAssets;
-        import sg.edu.smu.ksketch2.KSketchStyles;
         import sg.edu.smu.ksketch2.utils.KSketch_Preference;
+		import sg.edu.smu.ksketch2.KSketchGlobals;
 
+		private var LICENSE_PADDING:Number = 15;
+			
         private var timer:Timer;
         public static var initialOrientation:String = null;
 
-        private function init():void {
-
+        private function _init():void {
+			agreeButton.init("I Agree");
+			disagreeButton.init("I Disagree");
+			agreeButton.initSkin();
+			disagreeButton.initSkin();
         }
 
         private function addedToStageHandler():void {
-            this.removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-
+			KSketchGlobals.setView();
+            
+			LICENSE_PADDING = 15 * KSketchGlobals.SCALE;
+			
+			this.removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 
             if (!initialOrientation)
                 initialOrientation = stage.orientation;
@@ -60,7 +69,8 @@
         <s:layout>
             <s:BasicLayout/>
         </s:layout>
-        <s:VGroup left="10" right="10" top="10" bottom="10" horizontalCenter="0">
+        <s:VGroup left="{LICENSE_PADDING}" right="{LICENSE_PADDING}" 
+				  top="{LICENSE_PADDING}" bottom="{LICENSE_PADDING}" horizontalCenter="0">
             <s:Label id="notificationLabel" text="End user license aggrement" width="100%" textAlign="center"
                      fontWeight="bold"/>
             <s:TextArea width="100%" height="80%" editable="false">
@@ -70,8 +80,8 @@
                 <s:layout>
                     <s:HorizontalLayout horizontalAlign="center"/>
                 </s:layout>
-                <s:Button id="agreeButton" label="I Agree"  click="accept()" />
-                <s:Button id="disagreeButton" label="I Disagree" click="exitApp()" />
+                <buttons:KSketch_DialogButton id="agreeButton" click="accept()" />
+				<buttons:KSketch_DialogButton id="disagreeButton" click="exitApp()" />
             </s:Group>
 
         </s:VGroup>

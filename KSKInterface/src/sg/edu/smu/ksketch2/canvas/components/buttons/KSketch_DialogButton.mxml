@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" initialize="initSkin()"
+		 skinClass="sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_Dialog_Button_Skin">
+	<fx:Script>
+		<![CDATA[
+			import spark.components.Label;
+			import spark.layouts.VerticalLayout;
+			
+			protected var _label:String;
+			
+			public function init(label:String):void
+			{
+				_label = label;
+			}
+			
+			public function initSkin():void
+			{
+				if(!skin)
+					return;
+
+				var labelControl:Label = (skin as Object).buttonLabel;
+				labelControl.text = _label;	
+			}
+			
+			override public function get label():String
+			{
+				return _label;
+			}
+		]]>
+	</fx:Script>	
+</s:Button>

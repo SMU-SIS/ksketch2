@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
 		 xmlns:s="library://ns.adobe.com/flex/spark"
-		 xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" initialize="initStyle()" 
+		 xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" initialize="_initStyle()" 
 		 width="100%" height="100%">
 	
 	<fx:Script>
@@ -9,12 +9,15 @@
 			import mx.events.FlexEvent;
 			
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
 			
-			private function initStyle():void
+			private var HOME_LISTBUTTON_WIDTH:Number = 74 * KSketchGlobals.SCALE;
+			private var HOME_LISTBUTTON_HEIGHT:Number = 120 * KSketchGlobals.SCALE;
+			
+			private function _initStyle():void
 			{
-				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
+				this.removeEventListener(FlexEvent.INITIALIZE, _initStyle);
 				
 				logButton.init(KSketchAssets.actionList_log , KSketchAssets.actionList_log);
 				saveButton.init(KSketchAssets.actionList_save , KSketchAssets.actionList_save);
@@ -41,8 +44,8 @@
 		]]>
 	</fx:Script>
 	<s:HGroup verticalAlign="top" horizontalAlign="right" width="100%" height="100%" gap="0" id="listButtons">
-		<buttons:KSketch_ListButton id="logButton" width="{KSketchStyles.NUMBER_74}" height="{KSketchStyles.NUMBER_120}" click="button_logHandler(event)"/>
-		<buttons:KSketch_ListButton id="saveButton" width="{KSketchStyles.NUMBER_74}" height="{KSketchStyles.NUMBER_120}" click="button_saveHandler(event)"/>
-		<buttons:KSketch_ListButton id="deleteButton" width="{KSketchStyles.NUMBER_74}" height="{KSketchStyles.NUMBER_120}" click="button_deleteHandler(event)"/>
+		<buttons:KSketch_ListButton id="logButton" width="{HOME_LISTBUTTON_WIDTH}" height="{HOME_LISTBUTTON_HEIGHT}" click="button_logHandler(event)"/>
+		<buttons:KSketch_ListButton id="saveButton" width="{HOME_LISTBUTTON_WIDTH}" height="{HOME_LISTBUTTON_HEIGHT}" click="button_saveHandler(event)"/>
+		<buttons:KSketch_ListButton id="deleteButton" width="{HOME_LISTBUTTON_WIDTH}" height="{HOME_LISTBUTTON_HEIGHT}" click="button_deleteHandler(event)"/>
 	</s:HGroup>
 </s:Group>

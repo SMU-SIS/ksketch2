@@ -25,25 +25,17 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
-			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			
 			public static const LEFT:int = -1;
 			public static const RIGHT:int = 1;
 
 			private var _KSketch:KSketch2;
-			private var _interactionControl:KInteractionControl;
 			private var _type:int;
 			private var _timeControl:KSketch_TimeControl;
-			
-			private var _firstDelay:Number = 300; // Initial delay (in msecs) for auto-changing minutes.
-			private var _timer:Timer = new Timer(_firstDelay,0); // Timer object for auto-changing minutes.
-			private var _isPrevious:Boolean = false;
 
-			public function init(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
-								timeControl:KSketch_TimeControl, type:int):void
+			public function init(KSketchInstance:KSketch2, timeControl:KSketch_TimeControl, type:int):void
 			{
 				_KSketch = KSketchInstance;
-				_interactionControl = interactionControl;
 				_timeControl = timeControl;
 				_type = type;
 			}
@@ -51,12 +43,13 @@
 			private function _initSkin():void
 			{
 				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
+				
 				skin.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, _onStateChange);
 				
 				if(_type == LEFT)
-					textureControl.source = KSketchAssets.texture_frame_previous;
+					textureControl.source = KSketchAssets.texture_time_previous;
 				else
-					textureControl.source = KSketchAssets.texture_frame_next;	
+					textureControl.source = KSketchAssets.texture_time_next;	
 			}
 			
 			private function _onStateChange(event:StateChangeEvent):void
@@ -66,16 +59,16 @@
 				if(_type == LEFT)
 				{
 					if(event.newState == "up")
-						textureControl.source = KSketchAssets.texture_frame_previous;
+						textureControl.source = KSketchAssets.texture_time_previous;
 					else
-						textureControl.source = KSketchAssets.texture_frame_previous_down;
+						textureControl.source = KSketchAssets.texture_time_previous_down;
 				}
 				else
 				{
 					if(event.newState == "up")
-						textureControl.source = KSketchAssets.texture_frame_next;	
+						textureControl.source = KSketchAssets.texture_time_next;	
 					else
-						textureControl.source = KSketchAssets.texture_frame_next_down;
+						textureControl.source = KSketchAssets.texture_time_next_down;
 				}
 			}
 		]]>

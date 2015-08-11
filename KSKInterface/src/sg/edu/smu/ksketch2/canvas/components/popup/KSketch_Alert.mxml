@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="1"
+						   initialize="init()">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			import spark.components.Application;
+			
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			
+			
+			private var _canvasView:KSketch_CanvasView;
+			public var _parent:String;
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				init();
+				
+				_canvasView = owner as KSketch_CanvasView;
+				super.open(owner, modal);
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				super.close(commit, data);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
+			}
+			
+			private function init():void
+			{
+				notificationLabel.setStyle("fontSize", KSketchGlobals.FONT_SIZE_300);
+				this.removeEventListener(FlexEvent.INITIALIZE, init);
+				notificationLabel.text = " ";
+				notificationLabel.setStyle('textAlign', 'center');
+			}
+			
+			public function updateText(count:String):void {
+				notificationLabel.text = count;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:Group width="50%">
+		<s:Label id="notificationLabel"/>
+	</s:Group>
+</s:SkinnablePopUpContainer>

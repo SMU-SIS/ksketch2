@@ -383,5 +383,30 @@ package sg.edu.smu.ksketch2
 		[Embed("/assets/Button_ActionList_Save.png")] 
 		[Bindable] 
 		public static var actionList_save:Class;
+		
+		//KSKETCH-SYNPHNE
+		[Embed("assets/Button_Texture_Instructions_1.png")] 
+		[Bindable] 
+		public static var texture_instructions_1:Class;
+		
+		[Embed("assets/Button_Texture_Instructions_2.png")] 
+		[Bindable] 
+		public static var texture_instructions_2:Class;
+		
+		[Embed("assets/Button_Texture_Instructions_Next.png")] 
+		[Bindable] 
+		public static var texture_instructions_next:Class;
+		
+		[Embed("assets/Button_Texture_Instructions_Prev.png")] 
+		[Bindable] 
+		public static var texture_instructions_prev:Class;
+		
+		[Embed("assets/Star_Empty_KSketch.png")] 
+		[Bindable] 
+		public static var star_empty:Class;
+		
+		[Embed("assets/Star_Fill_KSketch.png")] 
+		[Bindable] 
+		public static var star_fill:Class;
 	}
 }

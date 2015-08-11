@@ -16,7 +16,7 @@
 		xmlns:transformWidget2="sg.edu.smu.ksketch2.canvas.components.transformWidget.*"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
 		addedToStage="initializeTrackerForWeb()"
-		initialize="_initCanvas(false)"
+		initialize="_initCanvas(false, true)"
 		add="_checkForImageData()"
 		creationPolicy="all"
 		destructionPolicy="auto" 
@@ -27,11 +27,14 @@
 			import com.google.analytics.AnalyticsTracker;
 			import com.google.analytics.GATracker;
 			
+			import flash.utils.getTimer;
+			
 			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
 			import mx.events.FlexEvent;
 			import mx.graphics.codec.JPEGEncoder;
+			import mx.managers.PopUpManager;
 			import mx.utils.Base64Encoder;
 			
 			import spark.events.ViewNavigatorEvent;
@@ -40,20 +43,26 @@
 			import data.KSketch_DataListItem;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchAssets;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Help;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_OverwriteSaveOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_PopUp_Menu;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SharingOptions;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Double;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Single;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeSkip_Button;
 			import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
+			import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
+			import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KActivityResultControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
@@ -61,11 +70,22 @@
 			import sg.edu.smu.ksketch2.events.KSketchEvent;
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
+			import sg.edu.smu.ksketch2.model.objects.KInstructions;
 			import sg.edu.smu.ksketch2.model.objects.KObject;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			
 			public static const PLUG_IN:String = "PlugIn";
+			
+			private var DRAWINGSTAGE_BORDER:Number = 1 * KSketchGlobals.SCALE;
+			private var TIMEBAR_GAP:Number = 4 * KSketchGlobals.SCALE;
+			private var TIMEBAR_PADDING:Number = 5 * KSketchGlobals.SCALE;
+			private var SYNPHNE_PADDINGTOP:Number = 10 * KSketchGlobals.SCALE;
+			private var SYNPHNE_PADDINGRIGHT:Number = 5 * KSketchGlobals.SCALE;
+			private var SYNPHNE_TIMERLABEL_WIDTH:Number = 100 * KSketchGlobals.SCALE;
+			private var SYNPHNE_TIMERLABEL_HEIGHT:Number = 50 * KSketchGlobals.SCALE;
+			private var SYNPHNE_INSTRUCTIONS_WIDTH:Number = 50 * KSketchGlobals.SCALE;
+			private var SYNPHNE_INSTRUCTIONS_HEIGHT:Number = 50 * KSketchGlobals.SCALE;
 			
 			[Bindable]
 			public static var isPlayer:Boolean = false;
@@ -96,11 +116,10 @@
 			public var _isNewSketch:Boolean = true;
 			
 			//Pop Ups
+			private var _dialogPopUp:KSketch_DialogBox_Skin;
 			private var _feedbackPopUp:KSketch_Feedback_Message;
 			private var _menuPopUp:KSketch_PopUp_Menu;
 			private var _options:KSketch_Options;
-			private var _shareOptions:KSketch_SharingOptions;
-			private var _help:KSketch_Help;
 			private var _saveOptions:KSketch_SaveOptions;
 			private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
 			private var _magnifier:KSketch_Timebar_Magnifier;
@@ -110,6 +129,21 @@
 			private var _selectionHelper:KCanvasInteractorManager;
 			
 			protected var persistanceManager:PersistenceManager = new PersistenceManager();
+			
+			//KSKETCH-SYNPHNE
+			private const TIMER_INTERVAL:int = 10;
+			public static var isSynphne:Boolean = false;
+			private var _t:Timer;
+			private var _timeTaken:int;
+			private var _baseTimer:int;
+			private var _timeDuration:int;
+			private var _isTiming:Boolean = false;
+			private var _kAlertBox:KSketch_Alert;
+			private var _instructionsBox:KSketch_InstructionsBox;
+			private var _resultControl:KActivityResultControl;
+			private var _activityControl:KActivityControl;
+			private var _kInstructions:KInstructions;
+			
 			
 			//Starting up is hopefully done in the following stages
 			//Should not depend on the events beingfired in the correct sequence all the time
@@ -139,10 +173,9 @@
 			}
 			
 			//Starts up the canvas in the following order
-			public function _initCanvas(isView:Boolean):void
+			public function _initCanvas(isView:Boolean, isSyn:Boolean):void
 			{	
-				trace("init canvas");
-				scaleView();
+				_scale();
 				
 				this.removeEventListener(FlexEvent.INITIALIZE, _initCanvas);
 				
@@ -192,8 +225,6 @@
 				_feedbackPopUp = new KSketch_Feedback_Message();
 				_feedbackPopUp.init(this);
 				_options = new KSketch_Options();
-				_shareOptions = new KSketch_SharingOptions;
-				_help = new KSketch_Help();
 				_contextDouble = new KSketch_Timebar_Context_Double();
 				_contextSingle = new KSketch_Timebar_Context_Single();
 				_saveOptions = new KSketch_SaveOptions();
@@ -201,15 +232,28 @@
 				_menuPopUp = new KSketch_PopUp_Menu();
 				_magnifier = new KSketch_Timebar_Magnifier();
 				_magnifier.init(canvas_component, timeControl);
-				_help.init(this, _menuPopUp);
 				_options.init(this, _menuPopUp);
-				_shareOptions.init(this, _menuPopUp);
+				
+				//KSKETCH-SYNPHNE
+				isSynphne = isSyn;
+				if(isSynphne)
+				{
+					_instructionsBox = new KSketch_InstructionsBox();
+					_activityControl = new KActivityControl(_instructionsBox, this, _KSketch, _interactionControl);
+					_resultControl = new KActivityResultControl(_instructionsBox, this, _KSketch, _interactionControl, _activityControl);
+					_kAlertBox = new KSketch_Alert();
+				}
 				
 				//Initiate the controls
 				if(!isPlayer)
 				{
 					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-					_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, canvas_region, modelDisplay, motionDisplay, _feedbackPopUp);
+					
+					//KSKETCH-SYNPHNE
+					if(!isSynphne)
+						_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, null, canvas_region, modelDisplay, motionDisplay, _feedbackPopUp);
+					else
+						_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, _activityControl, canvas_region, modelDisplay, motionDisplay, _feedbackPopUp);
 				}
 				
 				if(!isWeb)
@@ -217,16 +261,21 @@
 					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions);
 					_overwriteSaveOptions.init(this, _saveOptions);
 					
-					_menuPopUp.init(canvas_component, this, _options, _shareOptions, _help, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
+					_menuPopUp.init(canvas_component, this, _options, _saveOptions, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 					_saveOptions.createDeferredContent();
 				}
 				else
-					_menuPopUp.init(canvas_component, this, _options, _shareOptions, _help, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
+					_menuPopUp.init(canvas_component, this, _options, null, _KSketch, _interactionControl, _selectionHelper, _feedbackPopUp);
 				
 				_options.createDeferredContent();
-				_shareOptions.createDeferredContent();
-				_help.createDeferredContent();
 				_menuPopUp.createDeferredContent();
+				
+				//KSKETCH-SYNPHNE
+				if(isSynphne)
+				{
+					_instructionsBox.createDeferredContent();
+					_kAlertBox.createDeferredContent();
+				}
 				
 				if(isWebViewer)
 					_menuPopUp.alpha = 0;
@@ -234,8 +283,8 @@
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl,_interactionControl);
 				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _contextDouble, _contextSingle);
 				
-				leftTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.LEFT);
-				rightTimeJumper.init(_KSketch, timeControl, KSketch_TimeSkip_Button.RIGHT);
+				leftTimeJumper.init(_KSketch, this, timeControl, KSketch_TimeSkip_Button.LEFT);
+				rightTimeJumper.init(_KSketch, this, timeControl, KSketch_TimeSkip_Button.RIGHT);
 				
 				_contextDouble.init(_KSketch, _interactionControl, timeTickControl, timeControl);
 				_contextDouble.createDeferredContent();
@@ -247,7 +296,7 @@
 				motionDisplay.init(_KSketch, _interactionControl);
 				
 				//This is the layer that blocks interaction whenever the app is playing
-				playButton.init(timeControl, _interactionControl,_KSketch, _menuPopUp);
+				playButton.init(timeControl, this, _interactionControl,_KSketch, _menuPopUp);
 				
 				_interactionControl.reset();
 				
@@ -257,6 +306,12 @@
 				//Fail safe measure
 				if(_needToProcessData)
 					_enterView_ProcessData();
+				
+				//KSKETCH-SYNPHNE
+				if(isSynphne)
+					_setSynphneComponent();
+				else
+					synphne_component.visible = false;
 			}
 			
 			private function _checkForImageData():void
@@ -308,7 +363,23 @@
 							
 							if(_currentDocument.fileData.scene.children().length() > 0)
 								_KSketch.generateSceneFromXML(new XML(_currentDocument.fileData.scene));
+						
+							if(isSynphne)
+							{
+								//KSKETCH-SYNPHNE
+								_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
+								_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
+							}
 						}	
+					}
+					else
+					{
+						if(isSynphne)
+						{
+							//KSKETCH-SYNPHNE
+							_activityControl.isNewSketch = true;
+							instructionsButton.visible = false;
+						}
 					}
 					
 					data = null;
@@ -414,7 +485,6 @@
 			{
 				//comment out these two lines to get toolbar stay when it is reactivated.
 				_options.close();
-				_help.close();
 				_menuPopUp.close();
 				_feedbackPopUp.close();
 				_magnifier.close();
@@ -524,52 +594,195 @@
 				return _cacheControl;
 			}
 			
-			private function scaleView():void
+			private function _scale():void
 			{
-				KSketchStyles.setView();
+				KSketchGlobals.setView();
 				
-				if(KSketchStyles.aspectRatio != 1.33)
+				if(KSketchGlobals.ASPECTRATIO != 1.33)
 				{
 					drawing_stage.percentHeight = 82;
 					drawing_stage.width = drawing_stage.height/9*16;
 				}
-				else if(KSketchStyles.width > 1280 && KSketchStyles.aspectRatio == 1.33)
+				else if(KSketchGlobals.WIDTH > 1280 && KSketchGlobals.ASPECTRATIO == 1.33)
 				{
 					drawing_stage.percentHeight = 80;
 					drawing_stage.width = drawing_stage.height/9*16;
 				}
 			}
 			
+			//KSKETCH-SYNPHNE
+			private function _setSynphneComponent():void
+			{
+				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);
+				instructionsButton.initSkin();
+				_isTiming = false;
+				timerLabel.text = "Time: 00:00";
+			}
+			
+			public function actionInstructions():void
+			{
+				if(_instructionsBox.isOpen)
+					closeInstructions();
+				else
+					openInstructions();
+			}
+			
+			public function openInstructions():void
+			{
+				_instructionsBox.open(this,false);
+				PopUpManager.centerPopUp(_instructionsBox);
+				_instructionsBox.x = instructionsButton.x;
+				_instructionsBox.y = instructionsButton.y + instructionsButton.height;
+				
+				//change skin to down_arrow
+				instructionsButton.init(KSketchAssets.texture_instructions_2, KSketchAssets.texture_instructions_2);
+				instructionsButton.initSkin();
+			}
+			
+			public function closeInstructions():void
+			{
+				_instructionsBox.close();
+				
+				//change skin to side_arrow
+				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);
+				instructionsButton.initSkin();
+			}
+			
+			public function startTimer():void
+			{
+				_timeTaken = 0;
+				_isTiming = true;
+				_t = new Timer(TIMER_INTERVAL);
+				_t.addEventListener(TimerEvent.TIMER, updateTimer);
+				_timeDuration = KSketch_CanvasView_Preferences.duration;
+				_baseTimer = getTimer();
+				_t.start();
+			}
+			
+			private function updateTimer(evt:TimerEvent):void {
+				
+				var timeInMilli:int = _timeDuration*1000 - (getTimer() - _baseTimer)
+				var timeInSec:int = int(timeInMilli/1000)
+				if(timeInSec >= 0) {
+					timerLabel.text = "Time: " + int(timeInSec/60) + ":" +int(timeInSec%60);
+				}else {
+					timerLabel.text = "Time: -" + int(-1*timeInSec/60) + ":" +int(-1*timeInSec %60);
+				}
+				
+				_timeTaken = getTimer() - _baseTimer;
+			}
+			
+			public function stopTimer():void
+			{
+				_isTiming = false;
+				_t.stop();
+				_t.removeEventListener(TimerEvent.TIMER, updateTimer);
+			}
+			
+			public function resetTimeControl():void
+			{
+				_KSketch.time = 0;
+				//_magnifier.setToTime(_KSketch.time);
+			}
+			
+			public function autoPlayAnimation():void
+			{
+				playButton.playToggle(true);
+				_activityControl.autoSelectObjectToAnimate();
+			}
+			
+			public function get activityType():String
+			{
+				var activityType:String = "SKETCH";
+				if(_activityControl)
+					activityType = _activityControl.activityType;
+				return activityType;
+			}
+			
+			public function setAnimationPlaying(value:Boolean):void
+			{
+				_activityControl.isAnimationPlaying = value;
+			}
+			
+			public function get isTiming():Boolean
+			{
+				if(_isTiming != null)
+					return _isTiming;
+				else
+					return false;
+			}
+			
+			public function setRegionVisibility(visible:Boolean):void
+			{
+				region_1.visible = visible;
+				region_2.visible = visible;
+				region_3.visible = visible;
+				region_4.visible = visible;
+				region_5.visible = visible;
+				region_6.visible = visible;
+			}
+			
+			public function get regions():Array
+			{
+				var regionsArr:Array = new Array(6);
+				regionsArr[0] = region_1;
+				regionsArr[1] = region_2;
+				regionsArr[2] = region_3;
+				regionsArr[3] = region_4;
+				regionsArr[4] = region_5;
+				regionsArr[5] = region_6;
+				
+				return regionsArr;
+			}
+			
+			
+			public function getCurrentTemplateObjectView():IObjectView
+			{
+				var currentId:int = _instructionsBox.currentObjectID();
+				for(var i:int=0; i<_KSketch.root.children.length(); i++)
+				{
+					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
+					/*if(currObj is KStroke && currObj.id == currentId)
+					{
+						return modelDisplay.viewsTable[currObj];
+					}*/
+				}
+				return null;
+			}
+			
+			//END OF KSKETCH-SYNPHNE
+			
 		]]>
 	</fx:Script>
 	
 	<s:Group width="100%" height="100%" id="mainCanvas">
 		<s:layout>
-			<s:VerticalLayout gap="0" id="mainCanvasLayout"/>
+			<s:VerticalLayout gap="0" id="mainCanvasLayout" horizontalAlign="center" verticalAlign="middle"/>
 		</s:layout>
+		
 		<!-- Timebar-->
 		<s:Group id="timebar_group" width="100%"  depth="1">
 			<s:filters>
-				<s:DropShadowFilter color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
-									alpha="{KSketchStyles.ALPHA_06}"
-									strength="{KSketchStyles.NUMBER_01}"
-									blurX="{KSketchStyles.NUMBER_12}"
-									blurY="{KSketchStyles.NUMBER_12}"/>
+				<s:DropShadowFilter color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+									alpha="{KSketchGlobals.ALPHA_06}"
+									strength="{KSketchGlobals.RECT_STRENGTH}"
+									blurX="{KSketchGlobals.RECT_BLURX}"
+									blurY="{KSketchGlobals.RECT_BLURY}"/>
 			</s:filters>
 			<s:Rect width="100%" height="100%">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.COLOR_GREY_MEDIUM}"/>
+					<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
 				</s:fill>
 			</s:Rect>
 			<s:Group width="100%">
 				<s:layout>
 					<s:HorizontalLayout
 						horizontalAlign="center"
-						gap="{KSketchStyles.NUMBER_04}"
-						paddingLeft="{KSketchStyles.NUMBER_05}"
-						paddingRight="{KSketchStyles.NUMBER_05}"
-						paddingTop="{KSketchStyles.NUMBER_05}"
-						paddingBottom="{KSketchStyles.NUMBER_05}"/>
+						gap="{TIMEBAR_GAP}"
+						paddingLeft="{TIMEBAR_PADDING}"
+						paddingRight="{TIMEBAR_PADDING}"
+						paddingTop="{TIMEBAR_PADDING}"
+						paddingBottom="{TIMEBAR_PADDING}"/>
 				</s:layout>
 				
 				<s:Group>
@@ -581,30 +794,20 @@
 							<s:Group>
 								<s:layout><s:VerticalLayout/></s:layout>
 								<timebar:KSketch_TimeSkip_Button
-									id="leftTimeJumper"
-									width="{KSketchStyles.NUMBER_50}" height="{KSketchStyles.NUMBER_50}"/>
+									id="leftTimeJumper"/>
 							</s:Group>
 							
 							
 							<buttons:KSketch_Play_Button
 								doubleClickEnabled="true"
-								click="playButton.playToggle()"
+								click="playButton.playToggle(false)"
 								doubleClick="playButton.doubleClick()"
-								id="playButton"
-								width="{KSketchStyles.NUMBER_60}" height="{KSketchStyles.NUMBER_60}"/>
-							
-							<!--
-							<buttons:KSketch_Play_Button
-								click="playButton.playToggle()"
-								id="playButton"
-								width="{KSketchStyles.NUMBER_60}" height="{KSketchStyles.NUMBER_60}"/>
-							-->
+								id="playButton"/>
 							
 							<s:Group>
 								<s:layout><s:VerticalLayout/></s:layout>
 								<timebar:KSketch_TimeSkip_Button
-									id="rightTimeJumper"
-									width="{KSketchStyles.NUMBER_50}" height="{KSketchStyles.NUMBER_50}"/>
+									id="rightTimeJumper"/>
 							</s:Group>
 						</s:Group>
 					</s:Group>
@@ -619,33 +822,95 @@
 		<s:Group id="canvas_component" width="100%" height="100%" depth="0">
 			<s:Rect left="-1" right="-1" top="-1" bottom="-1">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.COLOR_GREY_VERYLIGHT}"/>
+					<s:SolidColor color="{KSketchGlobals.COLOR_GREY_VERYLIGHT}"/>
 				</s:fill>
 			</s:Rect>
 			<!-- For show, all the visual elements that the user wont be able to "touch"-->
 			<s:Group width="100%" height="100%">
 				<s:layout>
-					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+					<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
+				
 				<s:Group id="drawing_stage" height="92%" maxHeight="{Capabilities.screenResolutionX*0.7}"
 						 width="{drawing_stage.height/9*16}">
 					<s:Rect width="100%" height="100%">
 						<s:fill>
-							<s:SolidColor color="{KSketchStyles.COLOR_WHITE}"/>
+							<s:SolidColor color="{KSketchGlobals.COLOR_WHITE}"/>
 						</s:fill>
 						<s:stroke>
-							<s:SolidColorStroke color="{KSketchStyles.COLOR_BLACK}"
-												weight="{KSketchStyles.NUMBER_01}"/>
+							<s:SolidColorStroke color="{KSketchGlobals.COLOR_BLACK}"
+												weight="{DRAWINGSTAGE_BORDER}"/>
 						</s:stroke>
 						<s:filters>
 							<s:DropShadowFilter 
-								color="{KSketchStyles.COLOR_BLACK}" angle="{KSketchStyles.ANGLE_50}"
-								alpha="{KSketchStyles.ALPHA_06}"
-								strength="{KSketchStyles.NUMBER_01}"
-								blurX="{KSketchStyles.NUMBER_12}"
-								blurY="{KSketchStyles.NUMBER_12}"/>
+								color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+								alpha="{KSketchGlobals.ALPHA_06}"
+								strength="{KSketchGlobals.RECT_STRENGTH}"
+								blurX="{KSketchGlobals.RECT_BLURX}"
+								blurY="{KSketchGlobals.RECT_BLURY}"/>
 						</s:filters>
 					</s:Rect>
+					
+					<!-- start of region -->
+					<s:Group height="100%" width="100%" alpha="0.5">
+						<s:layout>
+							<s:VerticalLayout/>
+						</s:layout>
+						<s:Group height="100%" width="100%">
+							<s:layout>
+								<s:HorizontalLayout/>
+							</s:layout>
+							<s:Group id="region_1" width="100%" height="100%" visible="false">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+							<s:Group id="region_2" width="100%" height="100%" visible="false">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+							<s:Group id="region_3" width="100%" height="100%" visible="false">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+						</s:Group>
+						<s:Group height="100%" width="100%">
+							<s:layout>
+								<s:HorizontalLayout/>
+							</s:layout>
+							<s:Group id="region_4" width="100%" height="100%" visible="false">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+							<s:Group id="region_5" width="100%" height="100%" visible="false">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+							<s:Group id="region_6" width="100%" height="100%" visible="false">
+								<s:Rect width="100%" height="100%">
+									<s:fill>
+										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+									</s:fill>
+								</s:Rect>
+							</s:Group>
+						</s:Group>
+					</s:Group>
+					<!-- end of region -->
+					
 					<!-- The model display displays the objects in the model -->
 					<view:KMotionDisplay id="motionDisplay" scaleX="{drawing_stage.width/KSketch2.CANONICAL_WIDTH}"
 										 scaleY="{drawing_stage.height/KSketch2.CANONICAL_HEIGHT}"/>
@@ -657,13 +922,29 @@
 			<!-- Things inside this group really dispatches gesture events-->
 			<s:Group width="100%" height="100%">
 				<s:Group id="canvas_region" width="100%" height="100%">
-					<s:Rect width="100%" height="100%" alpha="{KSketchStyles.ALPHA_00}">
+					<s:Rect width="100%" height="100%" alpha="{KSketchGlobals.ALPHA_00}">
 						<s:fill>
-							<s:SolidColor color="{KSketchStyles.COLOR_BLACK}"/>
+							<s:SolidColor color="{KSketchGlobals.COLOR_BLACK}"/>
 						</s:fill>
 					</s:Rect>
 				</s:Group>
 				<transformWidget2:KSketch_Widget_Component id="widget" visible="false"/>
+				
+				<!-- KSKETCH-SYNPHNE -->
+				<s:Group id="synphne_component" width="100%" depth="0">
+					<s:layout>
+						<s:HorizontalLayout paddingTop="{SYNPHNE_PADDINGTOP}" verticalAlign="middle" horizontalAlign="center"/>
+					</s:layout>
+					<buttons:KSketch_ListButton id="instructionsButton" width="{SYNPHNE_INSTRUCTIONS_WIDTH}" 
+												height="{SYNPHNE_INSTRUCTIONS_HEIGHT}" click="actionInstructions()"/>
+					
+					<s:Group id="emptyGroup" width="70%"/>
+					
+					<s:Label id="timerLabel" width="{SYNPHNE_TIMERLABEL_WIDTH}" height="{SYNPHNE_TIMERLABEL_HEIGHT}" 
+							 paddingRight="{SYNPHNE_PADDINGRIGHT}" fontSize="{KSketchGlobals.FONT_SIZE_18}"/> 
+				</s:Group>
+				<!-- end of KSKETCH-SYNPHNE -->
+				
 			</s:Group>
 		</s:Group>
 	</s:Group>

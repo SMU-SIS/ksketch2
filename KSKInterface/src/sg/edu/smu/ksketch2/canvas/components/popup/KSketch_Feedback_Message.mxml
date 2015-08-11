@@ -14,7 +14,7 @@
 		<![CDATA[
 			import mx.core.UIComponent;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 
 			private var timer:Timer;
 			private var _parentContainer:UIComponent;
@@ -25,7 +25,7 @@
 			 */
 			public function init(parentContainer:UIComponent):void
 			{
-				timer = new Timer(KSketchStyles.NUMBER_250);
+				timer = new Timer(250);
 				timer.addEventListener(TimerEvent.TIMER, _closeMessage);
 				_parentContainer = parentContainer;
 			}
@@ -59,6 +59,6 @@
 			}
 		]]>
 	</fx:Script>
-	<s:Label id="messageText" fontSize="{KSketchStyles.FONT_SIZE_60}" fontFamily="{KSketchStyles.FONT_FAMILY}"
+	<s:Label id="messageText" fontSize="{KSketchGlobals.FONT_SIZE_60}" fontFamily="{KSketchGlobals.FONT_FAMILY}"
 			 x="{-messageText.width/2}" y="{-(messageText.height*1.25)}"/>
 </s:SkinnablePopUpContainer>

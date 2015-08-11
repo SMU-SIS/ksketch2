@@ -91,6 +91,15 @@ package sg.edu.smu.ksketch2.canvas
 		 */
 		public static const MOBILE_OFF:String = "MOBILE_OFF";
 		
+		//KSKETCH-SYNPHNE
+		public static const DEFAULT_DURATION:int = 120;
+		public static const DEFAULT_ACCURACY:int = 100;
+		public static const TAPANYWHERE_ON:String = "TAPANYWHERE_ON";
+		public static const TAPANYWHERE_OFF:String = "TAPANYWHERE_OFF";
+		public static const DIFFICULTY_EASY:String = "DIFFICULTY_EASY";
+		public static const DIFFICULTY_MEDIUM:String = "DIFFICULTY_MEDIUM";
+		public static const DIFFICULTY_HARD:String = "DIFFICULTY_HARD";
+		
 		/**
  		 * Gets the shared object.
  		 * 
@@ -282,6 +291,39 @@ package sg.edu.smu.ksketch2.canvas
 		{
 			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
 			prefs.data.mobileEnabled = value;
+			prefs.flush();
+		}
+		
+		//KSKETCH-SYNPHNE
+		public static function get tapAnywhere():String
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.tapAnywhere)
+				return prefs.data.tapAnywhere;
+			else
+				return TAPANYWHERE_ON;
+		}
+		
+		public static function set tapAnywhere(value:String):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.tapAnywhere = value;
+			prefs.flush();
+		}
+		
+		public static function get duration():int
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			if(prefs.data.duration_time)
+				return prefs.data.duration_time;
+			else
+				return DEFAULT_DURATION;
+		}
+		
+		public static function set duration(value:int):void
+		{
+			var prefs:SharedObject = SharedObject.getLocal(SHARED_OBJECT_ID);
+			prefs.data.duration_time = value;
 			prefs.flush();
 		}
 	}

@@ -9,7 +9,8 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
+						   xmlns:s="library://ns.adobe.com/flex/spark" 
+						   backgroundAlpha="0">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
@@ -19,9 +20,20 @@
 			import spark.components.Application;
 			import spark.components.Image;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			
+			private var SCALEX:Number = 2 * KSketchGlobals.SCALE;
+			private var SCALEY:Number = 2 * KSketchGlobals.SCALE;
+			private var PADDINGTOP:Number = 10 * KSketchGlobals.SCALE;
+			private var PADDINGBOTTOM:Number = 10 * KSketchGlobals.SCALE;
+			private var CONTENT_PADDING:Number = 7.5 * KSketchGlobals.SCALE;
+			private var WIDTH:Number = 50 * KSketchGlobals.SCALE;
+			private var CIRCLE_OUTER:Number = 23 * KSketchGlobals.SCALE;
+			private var CIRCLE_SMALL:Number = 14 * KSketchGlobals.SCALE;
+			private var CIRCLE_LARGE:Number = 18 * KSketchGlobals.SCALE;
+			private var LINE_THICKNESS:Number = 2 * KSketchGlobals.SCALE;
 			
 			private const ORIGIN:Point = new Point();
 			
@@ -44,8 +56,8 @@
 				
 				//Display for the magnified timeline
 				_magnifiedImage = new Image();
-				_magnifiedImage.scaleX = KSketchStyles.MAGNIFIER_SCALE;
-				_magnifiedImage.scaleY = KSketchStyles.MAGNIFIER_SCALE;
+				_magnifiedImage.scaleX = SCALEX;
+				_magnifiedImage.scaleY = SCALEY;
 				
 				_sourceRect = new Rectangle();
 				
@@ -72,14 +84,14 @@
 				if(_timeControl.position == KSketch_TimeControl.BAR_TOP)
 				{
 					//Place this popup at top, below the time bar
-					y = topLimit + KSketchStyles.MENU_GAP;	
+					y = topLimit + PADDINGTOP;	
 					
 					appBounds = magContents.getBounds(FlexGlobals.topLevelApplication as Application);
 					
 					indicator.graphics.clear();
 					indicatorTouch.graphics.clear();
-					indicator.graphics.lineStyle(KSketchStyles.MAGNIFIER_INDICATOR_THICKNESS,KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
-					indicatorTouch.graphics.beginFill(KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
+					indicator.graphics.lineStyle(LINE_THICKNESS,KSketchGlobals.COLOR_BLACK);
+					indicatorTouch.graphics.beginFill(KSketchGlobals.COLOR_BLACK);
 					indicatorTouch.graphics.drawCircle(0, -25, 14);
 					indicatorTouch.graphics.endFill();
 					indicatorTouch.graphics.beginFill(0xffffff);
@@ -95,7 +107,7 @@
 				else
 				{
 					//Place this popup above the timebar at the bottom of the canvas
-					y = bottomLimit - height - KSketchStyles.MENU_BUTTON_GAP;
+					y = bottomLimit - height - PADDINGBOTTOM;
 					
 					//Compute and draw the indicator
 					var maxY:Number = (FlexGlobals.topLevelApplication as Application).height - y;
@@ -103,12 +115,12 @@
 					
 					indicator.graphics.clear();
 					indicatorTouch.graphics.clear();
-					indicator.graphics.lineStyle(KSketchStyles.MAGNIFIER_INDICATOR_THICKNESS,KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
-					indicatorTouch.graphics.beginFill(KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
-					indicatorTouch.graphics.drawCircle(0, maxY-KSketchStyles.MAGNIFIER_CIRCLE_POS, KSketchStyles.MAGNIFIER_CIRCLE_1);
+					indicator.graphics.lineStyle(LINE_THICKNESS,KSketchGlobals.COLOR_BLACK);
+					indicatorTouch.graphics.beginFill(KSketchGlobals.COLOR_BLACK);
+					indicatorTouch.graphics.drawCircle(0, maxY-CIRCLE_OUTER, CIRCLE_LARGE);
 					indicatorTouch.graphics.endFill();
 					indicatorTouch.graphics.beginFill(0xffffff);
-					indicatorTouch.graphics.drawCircle(0, maxY-KSketchStyles.MAGNIFIER_CIRCLE_POS, KSketchStyles.MAGNIFIER_CIRCLE_2);
+					indicatorTouch.graphics.drawCircle(0, maxY-CIRCLE_OUTER, CIRCLE_SMALL);
 					indicatorTouch.graphics.endFill();
 					
 					var finalHeight_1:Number = height;
@@ -128,7 +140,7 @@
 					indicator.graphics.lineTo(0, finalHeight_2);
 				}
 				
-				_sourceRect.width = KSketchStyles.MAGNIFIER_IMAGE_UNSCALED_WIDTH;
+				_sourceRect.width = WIDTH;
 				_sourceRect.height = _timeControl.contentGroup.height/2.5;
 				_sourceRect.y = 0;
 				_magnifiedData = new BitmapData(_sourceRect.width, _sourceRect.height);
@@ -159,7 +171,7 @@
 			{	
 				/* Disable magnifier
 				//create a black line for current time in magnifying glass
-				var bitmapdata:BitmapData = new BitmapData(KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_THICKNESS, _timeControl.height);
+				var bitmapdata:BitmapData = new BitmapData(MAGNIFIER_CURRENTTIMELABEL_THICKNESS, _timeControl.height);
 				var currentTimeLabel:Label = new Label();
 				bitmapdata.draw(currentTimeLabel);
 				bitmapdata.colorTransform(bitmapdata.rect, new ColorTransform(1,0,0,0,0,0,0,0));
@@ -169,13 +181,13 @@
 				
 				//Copy out the pixels from the source
 				_sourceRect.x = xPos-(_sourceRect.width*0.5);
-				_magnifiedData = new BitmapData(_magnifiedData.width, _magnifiedData.height ,true, KSketchStyles.MAGNIFIER_BACKGROUND_COLOR);
+				_magnifiedData = new BitmapData(_magnifiedData.width, _magnifiedData.height ,true, KSketchGlobals.COLOR_BLACK);
 				_magnifiedData.copyPixels(bd, _sourceRect, ORIGIN);
-				_magnifiedData.merge(bitmapdata, bd.rect, new Point(KSketchStyles.MAGNIFIER_IMAGE_UNSCALED_WIDTH/2,0),
-					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
-					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
-					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
-					KSketchStyles.MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER);
+				_magnifiedData.merge(bitmapdata, bd.rect, new Point(WIDTH/2,0),
+					MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
+					MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
+					MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER,
+					MAGNIFIER_CURRENTTIMELABEL_COLOR_MULTIPLIER);
 				
 				//Display the source
 				if(!_magnifiedImage.parent)
@@ -203,9 +215,9 @@
 	-magContents.width*0.5 causes the objects to be centered at 0
 	-->
 	<s:Group x="{-magContents.width*0.5}" width="100%">
-		<s:Rect id="blacklabel" width="100%" height="100%" radiusX="5" radiusY="5">
+		<s:Rect id="blacklabel" width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.MAGNIFIER_BACKGROUND_COLOR}" />
+				<s:SolidColor color="{KSketchGlobals.COLOR_BLACK}" />
 			</s:fill>
 		</s:Rect>
 		<s:Group id="timeframelabel">
@@ -213,16 +225,16 @@
 			<s:Group id="magContents">
 				<s:layout>
 					<s:VerticalLayout horizontalAlign="center" verticalAlign="bottom"
-									  paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
-									  paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
+									  paddingTop="{CONTENT_PADDING}" paddingBottom="{CONTENT_PADDING}"
+									  paddingLeft="{CONTENT_PADDING}" paddingRight="{CONTENT_PADDING}"/>
 				</s:layout>
 				<s:Group width="105%">
 					<s:layout>
 						<s:HorizontalLayout/>
 					</s:layout>
-					<s:Label id="timeLabel" color="{KSketchStyles.MAGNIFIER_FONT_COLOR}" fontSize="{KSketchStyles.MAGNIFIER_FONT_SIZE}"/>
+					<s:Label id="timeLabel" color="{KSketchGlobals.COLOR_WHITE}" fontSize="{KSketchGlobals.FONT_SIZE_10}"/>
 					<s:Group width="100%"/>
-					<s:Label id="frameLabel" color="{KSketchStyles.MAGNIFIER_FONT_COLOR}" fontSize="{KSketchStyles.MAGNIFIER_FONT_SIZE}"/>
+					<s:Label id="frameLabel" color="{KSketchGlobals.COLOR_WHITE}" fontSize="{KSketchGlobals.FONT_SIZE_10}"/>
 				</s:Group>
 			</s:Group>
 		</s:Group>

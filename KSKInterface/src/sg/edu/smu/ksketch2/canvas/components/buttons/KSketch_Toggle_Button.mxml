@@ -8,13 +8,14 @@
 *not distributed with this file, You can obtain one at
 *http://mozilla.org/MPL/2.0/.
 -->
-<buttons:KSketch_Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						xmlns:s="library://ns.adobe.com/flex/spark" xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
+<buttons:KSketch_CanvasButton xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						xmlns:s="library://ns.adobe.com/flex/spark" 
+						xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
 	<fx:Script>
 		<![CDATA[
 			import spark.components.Image;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			
 			private var _selected:Boolean;
 			
@@ -24,6 +25,7 @@
 					return;
 				
 				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
+				
 				selected = false;
 			}
 			
@@ -33,17 +35,17 @@
 				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
 
 				textureControl.source = _up;
-				(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchStyles.CANVAS_BUTTON_NORMAL;
-				(skin as KSketch_Canvas_Button_Skin).upColor = KSketchStyles.CANVAS_BUTTON_NORMAL;
+				(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchGlobals.COLOR_GREY_LIGHT;
+				(skin as KSketch_Canvas_Button_Skin).upColor = KSketchGlobals.COLOR_GREY_LIGHT;
 				
 				if(_selected)
 				{
 					textureControl.source = _down;
-					(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchStyles.CANVAS_BUTTON_ACTIVATED;
-					(skin as KSketch_Canvas_Button_Skin).upColor = KSketchStyles.CANVAS_BUTTON_ACTIVATED;
+					(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchGlobals.COLOR_GREY_DARK;
+					(skin as KSketch_Canvas_Button_Skin).upColor = KSketchGlobals.COLOR_GREY_DARK;
 				}
 				
 			}
 		]]>
 	</fx:Script>
-</buttons:KSketch_Button>
+</buttons:KSketch_CanvasButton>

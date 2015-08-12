@@ -12,7 +12,7 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" width="100%">
 	<fx:Script>
 		<![CDATA[
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 		]]>
 	</fx:Script>
 	<s:Group width="100%">
@@ -20,7 +20,7 @@
 			<s:HorizontalLayout gap="0" horizontalAlign="right"/>
 		</s:layout>
 		<s:Rect width="100%"/>
-		<s:Label id="timeLabelText" text="label" textAlign="right" fontFamily="{KSketchStyles.APP_FONT_FAMILY}"
-				 fontSize="{KSketchStyles.TIME_PARTITION_FONT_SIZE}"/>
+		<s:Label id="timeLabelText" text="label" textAlign="right" fontFamily="{KSketchGlobals.FONT_FAMILY}"
+				 fontSize="{KSketchGlobals.FONT_SIZE_10_5}"/>
 	</s:Group>
 </s:Group>

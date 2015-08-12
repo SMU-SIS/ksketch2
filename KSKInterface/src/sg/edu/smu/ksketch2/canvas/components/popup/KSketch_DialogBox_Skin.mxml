@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark"
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+						   backgroundAlpha="0" initialize="_initStyle()">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			import spark.components.Application;
+			
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
+			
+			private var GAP:Number = 20 * KSketchGlobals.SCALE;
+			private var PADDINGLEFT:Number = 15 * KSketchGlobals.SCALE;
+			private var PADDINGRIGHT:Number = 10 * KSketchGlobals.SCALE;
+			private var PADDINGTOP:Number = 20 * KSketchGlobals.SCALE;
+			private var PADDINGBOTTOM:Number = 10 * KSketchGlobals.SCALE;
+			
+			private var _homeView:KSketch_HomeView;
+			private var _canvasView:KSketch_CanvasView;
+			private var _menu:KSketch_PopUp_Menu;
+			private var _activity:KActivityControl;
+			private var _dialogShare:KSketch_DialogBox_Share;
+			private var _dialogHelp:KSketch_DialogBox_Help;
+			private var _dialogResult:KSketch_DialogBox_Result;
+			private var _dialogNotification:KSketch_DialogBox_Notifications;
+			private var _dialogLogout:KSketch_DialogBox_Logout;
+			private var _mode:String;
+			
+			private function _initStyle():void
+			{
+				this.removeEventListener(FlexEvent.INITIALIZE, _initStyle);
+				
+				if(_mode == "Share")
+					_dialogShare = new KSketch_DialogBox_Share(this);
+				else if(_mode == "Help")
+					_dialogHelp = new KSketch_DialogBox_Help(this);
+				else if(_mode == "Results")
+					_dialogResult = new KSketch_DialogBox_Result(this, _activity);
+				else if(_mode == "Notification")
+					_dialogNotification = new KSketch_DialogBox_Notifications(this, _homeView, _homeView.notice);
+				else if(_mode == "Logout")
+					_dialogLogout = new KSketch_DialogBox_Logout(this, _homeView);
+			}
+			
+			public function init(homeView:KSketch_HomeView, canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, activity:KActivityControl, mode:String):void
+			{
+				_mode = mode;
+				_canvasView = canvasView;
+				
+				if(homeView)
+					_homeView = homeView;	
+				
+				if(canvasView)
+					_canvasView = canvasView;
+				
+				if(menu)
+				{
+					_menu = menu;
+					_menu.open(_canvasView);	
+				}
+				
+				if(activity)
+				{
+					_activity = activity;
+					_dialogResult.initStars(_activity.stars);
+				}
+			}
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean=false):void
+			{
+				super.open(owner, modal);
+			}
+			
+			override public function close(commit:Boolean=false, data:*=null):void
+			{
+				super.close(commit, data);
+				(FlexGlobals.topLevelApplication as Application).setFocus();
+			}
+		]]>
+	</fx:Script>
+	<s:filters>
+		<s:DropShadowFilter 
+			color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+			alpha="{KSketchGlobals.ALPHA_06}"
+			strength="{KSketchGlobals.RECT_STRENGTH}"
+			blurX="{KSketchGlobals.RECT_BLURX}"
+			blurY="{KSketchGlobals.RECT_BLURY}"/>
+	</s:filters>
+	<s:Rect width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
+		<s:fill>
+			<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
+		</s:fill>
+	</s:Rect>
+	<s:Group>
+		<s:layout>
+			<s:VerticalLayout gap="{GAP}" 
+							  paddingLeft="{PADDINGLEFT}" 
+							  paddingRight="{PADDINGRIGHT}" 
+							  paddingTop="{PADDINGTOP}" 
+							  paddingBottom="{PADDINGBOTTOM}"/>
+		</s:layout>
+		<s:Label id="header"/>
+		
+		<s:Group id="contentComponent">
+			<!-- add components dynamically -->
+		</s:Group>
+		
+		
+		<s:Group id="buttonComponent">
+			<!-- add components dynamically -->
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

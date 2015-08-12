@@ -11,22 +11,23 @@ package sg.edu.smu.ksketch2
 	public class KSketchWebLinks
 	{
 		public static const pingurl:String = "http://google.com";
-		public static const url:String = "http://ksketch.smu.edu.sg/app/login.html";								//Page displayed on stagewebview
-		public static const jsonurlUser:String = "http://ksketch.smu.edu.sg/user/getuser";							//To retrieve user information after login
-		public static const jsonurlUserMobile:String = "http://ksketch.smu.edu.sg/user/getusermobile";				//To retrieve user information after login using ID
-		public static const urlUser:String = "http://ksketch.smu.edu.sg/user/urlUser";								//To retrieve user id through URL
+		public static const url:String = KSketch_Config.host_name+"/app/login.html";								//Page displayed on stagewebview
+		public static const jsonurlUser:String = KSketch_Config.host_name+"/user/getuser";							//To retrieve user information after login
+		public static const jsonurlUserMobile:String = KSketch_Config.host_name+"/user/getusermobile";				//To retrieve user information after login using ID
+		public static const urlUser:String = KSketch_Config.host_name+"/user/urlUserV2";							//To retrieve user id through URL
 		
-		public static const login_success:String = "http://ksketch.smu.edu.sg/app/login_successful";		
-		public static const redirecturl_login:String = "http://ksketch.smu.edu.sg/app/profile.html";				//Indicates successful login
-		public static const redirecturl_index:String = "http://ksketch.smu.edu.sg/app/index.html";					
-		public static const redirecturl_skip:String = "http://ksketch.smu.edu.sg/app/skip.html";					//Indicates user chooses to skip login process
+		public static const login_success:String = KSketch_Config.host_name+"/app/login_successful";
+		public static const redirecturl_login:String = KSketch_Config.host_name+"/app/profile.html";				//Indicates successful login
+		public static const redirecturl_index:String = KSketch_Config.host_name+"/app/index.html";
+		public static const redirecturl_skip:String = KSketch_Config.host_name+"/app/skip.html";					//Indicates user chooses to skip login process
 		
-		public static const jsonurlSketch:String = "http://ksketch.smu.edu.sg/list/sketch/latest"; //user/"; 		//To retrieve list of sketches
-		public static const jsonurlSketchXML:String = "http://ksketch.smu.edu.sg/get/sketch/view"; 					//To retrieve XML of a specific sketch
+		public static const jsonurlSketch:String = KSketch_Config.host_name+"/list/sketch/latest"; //user/"; 		//To retrieve list of sketches
+		public static const jsonurlSketchXML:String = KSketch_Config.host_name+"/get/sketch/view"; 					//To retrieve XML of a specific sketch
 		
-		public static const jsonurlGetXML:String = "http://ksketch.smu.edu.sg/get/sketchxml";						//To save a sketch to Datastore
-		public static const jsonurlOverwriteGetXML:String = "http://ksketch.smu.edu.sg/get/overwritesketchxml";	//To save a sketch from an older version to Datastore
+		public static const jsonurlGetXML:String = KSketch_Config.host_name+"/get/sketchxml";						//To save a sketch to Datastore
+		public static const jsonurlOverwriteGetXML:String = KSketch_Config.host_name+"/get/overwritesketchxml";	//To save a sketch from an older version to Datastore
 		
-		public static const jsonurlDeleteSketch:String = "http://ksketch.smu.edu.sg/get/deletesketch";				//To delete a sketch from Datastore
+		public static const jsonurlDeleteSketch:String = KSketch_Config.host_name+"/get/deletesketch";				//To delete a sketch from Datastore
+		public static const urlApproval:String = KSketch_Config.host_name+"/app/register_complete.html";
 	}
 }

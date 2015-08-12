@@ -36,13 +36,6 @@
 				}
 			}
 			
-			/*
-			disable on/off function for release
-			private function _toggleLabelVisibility():void
-			{
-				labels.visible = onButton.on;
-			}*/
-			
 			private function _updateLabels(event:Event):void
 			{
 				var maxTime:Number = _timeControl.maximum/1000;
@@ -86,14 +79,6 @@
 		]]>
 	</fx:Script>
 	<s:Group width="100%" height="100%" id="timeLabels">
-		<!-- disable on/off for release
-		<s:Group height="100%">
-			<s:layout>
-				<s:VerticalLayout verticalAlign="middle"/>
-			</s:layout>
-			<buttons:KSketch_OnOff_Toggle id="onButton" click="_toggleLabelVisibility()"/>
-		</s:Group>
-		-->
 		<s:Group id="labels" width="100%" height="100%">
 			<s:layout>
 				<s:HorizontalLayout verticalAlign="middle" gap="0"/>

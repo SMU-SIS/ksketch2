@@ -21,7 +21,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import mx.events.FlexEvent;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.KSketchStyles;
+	import sg.edu.smu.ksketch2.KSketchGlobals;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Double;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Single;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
@@ -48,6 +48,12 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		private const CLICK_TIME:int = 300;
 		private const DOUBLE_CLICK_SPEED:int = 300;
+		
+		private var PADDING:Number = 15 * KSketchGlobals.SCALE;
+		private var SCREENLIMIT_DOUBLETAP_IOS_X:Number = 875 * KSketchGlobals.SCALE;
+		private var SCREENLIMIT_DOUBLETAP_AND_X:Number = 1100 * KSketchGlobals.SCALE;
+		private var SCREENLIMIT_SINGLETAP_LOWER_X:Number = 960 * KSketchGlobals.SCALE;
+		private var SCREENLIMIT_SINGLETAP_UPPER_X:Number = 1200 * KSketchGlobals.SCALE;
 		
 		protected var _KSketch:KSketch2;
 		protected var _tickmarkControl:KSketch_TickMark_Control;
@@ -83,6 +89,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		private var _xPrev2:Number = -1;
 		private var _xPrev:Number = -1;
 		private var _xCurr:Number = -1;
+		
+		//KSKETCH-SYNPHNE
+		private var _playRepeat:Boolean = false;
 		
 		public function KSketch_TimeControl()
 		{
@@ -251,17 +260,17 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 						
 						if(Capabilities.version.indexOf('IOS') > -1)
 						{
-							if(_contextDouble.x >= KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE)
-								_contextDouble.x = KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE;
+							if(_contextDouble.x >= SCREENLIMIT_DOUBLETAP_IOS_X)
+								_contextDouble.x = SCREENLIMIT_DOUBLETAP_IOS_X;
 						}
 						else
 						{
-							if(_contextDouble.x >= KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE_ANDROID)
-								_contextDouble.x = KSketchStyles.TIMEBAR_X_LIMIT_DOUBLE_ANDROID;
+							if(_contextDouble.x >= SCREENLIMIT_DOUBLETAP_AND_X)
+								_contextDouble.x = SCREENLIMIT_DOUBLETAP_AND_X;
 						}
 						
 						_contextDouble.position = position;
-						_contextDouble.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.TIMEBAR_GAP_CONTEXTMENU_DOUBLE;
+						_contextDouble.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - PADDING;
 						
 						clearTimeout(mouseTimeout);
 						mouseTimeout = "undefined";	
@@ -284,18 +293,12 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 							_contextSingle.open(contentGroup,true);
 							_contextSingle.x = _magnifier.x;
 							
-							if(Capabilities.version.indexOf('IOS') > -1)
-							{
-								if(_contextSingle.x >= KSketchStyles.TIMEBAR_X_LIMIT_SINGLE)
-									_contextSingle.x = KSketchStyles.TIMEBAR_X_LIMIT_SINGLE;
-							}
-							else
-							{
-								if(_contextSingle.x >= KSketchStyles.TIMEBAR_X_LIMIT_SINGLE_ANDROID)
-									_contextSingle.x =  KSketchStyles.TIMEBAR_X_LIMIT_SINGLE_ANDROID;
-							}
+							if(_contextSingle.x >= SCREENLIMIT_SINGLETAP_LOWER_X && _contextSingle.x <= SCREENLIMIT_SINGLETAP_UPPER_X)
+								_contextSingle.x = SCREENLIMIT_SINGLETAP_LOWER_X;
+							else if(_contextSingle.x >= SCREENLIMIT_SINGLETAP_UPPER_X)
+								_contextSingle.x =  SCREENLIMIT_SINGLETAP_UPPER_X;
 							
-							_contextSingle.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - KSketchStyles.TIMEBAR_GAP_CONTEXTMENU_SINGLE;//190;//95;
+							_contextSingle.y = contentGroup.localToGlobal(new Point()).y + contentGroup.y - 100;
 						}
 						
 						mouseTimeout = "undefined";
@@ -554,6 +557,16 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_STOP));
 			_KSketch.removeEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateMovingWidget);
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateWidget);
+			
+			trace("play repeat says... " + _playRepeat); 
+			//KSKETCH-SYNPHNE
+			if(_playRepeat)
+			{
+				play(true);
+				trace("playing...");
+			}
+				
+			
 		}
 				
 		/**
@@ -643,6 +656,17 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		{
 			var newValue:int = Math.floor(value/10) * 10;
 			return newValue;
+		}
+		
+		//KSKETCH-SYNPHNE
+		public function set playRepeat(value:Boolean):void
+		{
+			_playRepeat = value;
+		}
+		
+		public function get playRepeat():Boolean
+		{
+			return _playRepeat;
 		}
 	}
 }

@@ -9,12 +9,12 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="{KSketchStyles.FEEDBACK_BACKGROUND_ALPHA}">
+		 xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.UIComponent;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 
 			private var timer:Timer;
 			private var _parentContainer:UIComponent;
@@ -25,7 +25,7 @@
 			 */
 			public function init(parentContainer:UIComponent):void
 			{
-				timer = new Timer(KSketchStyles.FEEDBACK_FADE_TIME);
+				timer = new Timer(250);
 				timer.addEventListener(TimerEvent.TIMER, _closeMessage);
 				_parentContainer = parentContainer;
 			}
@@ -59,6 +59,6 @@
 			}
 		]]>
 	</fx:Script>
-	<s:Label id="messageText" fontSize="{KSketchStyles.FEEDBACK_FONT_SIZE}" fontFamily="{KSketchStyles.APP_FONT_FAMILY}"
+	<s:Label id="messageText" fontSize="{KSketchGlobals.FONT_SIZE_60}" fontFamily="{KSketchGlobals.FONT_FAMILY}"
 			 x="{-messageText.width/2}" y="{-(messageText.height*1.25)}"/>
 </s:SkinnablePopUpContainer>

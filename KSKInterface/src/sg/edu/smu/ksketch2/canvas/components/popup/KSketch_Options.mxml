@@ -9,33 +9,75 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" initialize="initStyle()">
+						   xmlns:s="library://ns.adobe.com/flex/spark" 
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+						   backgroundAlpha="0" 
+						   initialize="_initStyle()"
+						   creationComplete="_initContent()">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
 			
 			import spark.components.Application;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.model.data_structures.KKeyFrame;
 			import sg.edu.smu.ksketch2.operators.KSingleReferenceFrameOperator;
 			
+			private var GAP:Number = 20 * KSketchGlobals.SCALE;
+			private var PADDINGLEFT:Number = 5 * KSketchGlobals.SCALE;
+			private var PADDINGRIGHT:Number = 5 * KSketchGlobals.SCALE;
+			private var PADDINGTOP:Number = 20 * KSketchGlobals.SCALE;
+			private var PADDINGBOTTOM:Number = 20 * KSketchGlobals.SCALE;
+			private var CONTENT_PADDING:Number = 10 * KSketchGlobals.SCALE;
+			private var TIMELABEL_WIDTH:Number = 100 * KSketchGlobals.SCALE;
+			private var TIMELABEL_HEIGHT:Number = 50 * KSketchGlobals.SCALE;
+			
 			private var _canvasView:KSketch_CanvasView;
 			private var _menu:KSketch_PopUp_Menu;
 			public var mode:int;
 			
-			private function initStyle():void
+			//KSKETCH-SYNPHNE
+			private var _oneStarAvg:Number;
+			private var _twoStarAvg:Number;
+			private var _threeStarAvg:Number;
+			
+			private var _oneStarMax:Number;
+			private var _twoStarMax:Number;
+			private var _threeStarMax:Number;
+			
+			[Bindable] private var timeValue:String = "02:00";
+			[Bindable] private var maximumSliderValue:int = 10;
+			[Bindable] private var minimumSliderValue:int = 0;
+			
+			private function _initStyle():void
 			{
-				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				autoInsertKey.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				doubleTap.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				autoLog.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				closeButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				this.removeEventListener(FlexEvent.INITIALIZE, _initStyle);
+				
+				header.setStyle("fontSize", KSketchGlobals.FONT_SIZE_26);
+				menuLabel.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				autoInsertKey.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				doubleTap.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				autoLog.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				initLabel.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				tapAnywhere.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				tapObject.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				titleTime.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				activityDuration.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				titleAccuracyAvg.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				titleAccuracyMax.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				
+				closeButton.init("Close");
+				menuLeftButton.init("Left");
+				menuRightButton.init("Right");
+				closeButton.initSkin();
+				menuLeftButton.initSkin();
+				menuRightButton.initSkin();
 			}
 			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu):void
@@ -81,6 +123,8 @@
 			
 			public function applyPreferences():void
 			{
+				_menuOpen(true); 
+				
 				switch(KSketch_CanvasView_Preferences.timebarPosition)
 				{
 					case KSketch_CanvasView_Preferences.POS_TOP:
@@ -90,17 +134,6 @@
 						_timebarBottom();
 				}
 				
-				/*switch(KSketch_CanvasView_Preferences.menuOpen)
-				{
-					case KSketch_CanvasView_Preferences.OPEN:
-						menuOpen.selected = false;
-						_menuOpen(false);
-						break;
-					default:
-						menuOpen.selected = true;
-						_menuOpen(true);
-				}*/
-
 				switch(KSketch_CanvasView_Preferences.menuPosition)
 				{
 					case KSketch_CanvasView_Preferences.POS_LEFT:
@@ -149,6 +182,9 @@
 						autoLog.selected = false;
 						_autoLog(false);
 				}
+				
+				if(KSketch_CanvasView.isSynphne)
+					_menuLeft();
 			}
 			
 			private function _timebarPos1():void
@@ -275,121 +311,287 @@
 				super.close(commit, data);
 				(FlexGlobals.topLevelApplication as Application).setFocus();
 			}
+			
+			//KSKETCH-SYNPHNE
+			private function _initContent():void
+			{
+				if(KSketch_CanvasView.isSynphne)
+				{
+					optionContainer.removeElementAt(2);
+				}
+				else
+					optionContainer.removeElementAt(3);
+			}
+			
+			private function _tapAnywhere():void
+			{
+				tapAnywhere.selected = true;
+				KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_ON;
+			}
+			
+			private function _initiation(event:ItemClickEvent):void
+			{
+				if (event.currentTarget.selectedValue == "anywhere") {
+					KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_ON;
+				} else {
+					KSketch_CanvasView_Preferences.tapAnywhere = KSketch_CanvasView_Preferences.TAPANYWHERE_OFF;
+				}
+			}
+			
+			private function _duration(event:Event):void
+			{
+				var tempArray:Array=activityDuration.text.split(":");
+				var durationInSec:int = 120;
+				if(tempArray.length == 1)
+					durationInSec = int(tempArray[0])*60;
+				else if(tempArray.length == 2)
+					durationInSec = int(tempArray[0])*60 + int(tempArray[1]);
+				KSketch_CanvasView_Preferences.duration = durationInSec;
+			}
+			
+			protected function oneStarSlider_Avg_changeEndHandler(event:FlexEvent):void
+			{
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_oneStarAvg = changedValue;
+			}
+			
+			protected function twoStarSlider_Avg_changeEndHandler(event:FlexEvent):void
+			{
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_twoStarAvg = changedValue;
+			}
+			
+			protected function threeStarSlider_Avg_changeEndHandler(event:FlexEvent):void
+			{
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_threeStarAvg = changedValue;
+			}
+			
+			protected function oneStarSlider_Max_changeEndHandler(event:FlexEvent):void
+			{
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_oneStarMax = changedValue;
+			}
+			
+			protected function twoStarSlider_Max_changeEndHandler(event:FlexEvent):void
+			{
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_twoStarMax = changedValue;
+			}
+			
+			protected function threeStarSlider_Max_changeEndHandler(event:FlexEvent):void
+			{
+				var changedValue:Number = (event.currentTarget as HSlider).value;
+				_threeStarMax = changedValue;
+			}
+			
+			public function get starValueArr():Array
+			{
+				if(isNaN(_oneStarAvg))
+					_oneStarAvg = 5;
+				if(isNaN(_twoStarAvg))
+					_twoStarAvg = 3;
+				if(isNaN(_threeStarAvg))
+					_threeStarAvg = 1;
+				
+				if(isNaN(_oneStarMax))
+					_oneStarMax = 5;
+				if(isNaN(_twoStarMax))
+					_twoStarMax = 3;
+				if(isNaN(_threeStarMax))
+					_threeStarMax = 1;
+				
+				var arr:Array = [_oneStarAvg, _twoStarAvg, _threeStarAvg, _oneStarMax, _twoStarMax, _threeStarMax];
+				return arr;
+			}
 		]]>
 	</fx:Script>
 	<s:filters>
 		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+			color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+			alpha="{KSketchGlobals.ALPHA_06}"
+			strength="{KSketchGlobals.RECT_STRENGTH}"
+			blurX="{KSketchGlobals.RECT_BLURX}"
+			blurY="{KSketchGlobals.RECT_BLURY}"/>
 	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+	<s:Rect width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
 		<s:fill>
-			<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+			<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
 		</s:fill>
 	</s:Rect>
-	<s:Group>
+	<s:Group id="optionContainer">
 		<s:layout>
-			<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_20}" paddingLeft="{KSketchStyles.DIALOG_PADDING_15}" paddingRight="{KSketchStyles.DIALOG_PADDING_10}" paddingTop="{KSketchStyles.DIALOG_PADDING_20}" paddingBottom="{KSketchStyles.DIALOG_PADDING_10}"/>
+			<s:VerticalLayout gap="{GAP}" paddingLeft="{PADDINGLEFT}" 
+							  paddingRight="{PADDINGRIGHT}" paddingTop="{PADDINGTOP}" 
+							  paddingBottom="{PADDINGBOTTOM}" verticalAlign="middle" horizontalAlign="left"/>
 		</s:layout>
 		<s:Label id="header" text="Options"/>
 		
-		<!-- disable option for release
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout paddingLeft="10"/>
+				<s:VerticalLayout paddingLeft="{CONTENT_PADDING}"/>
 			</s:layout>
-			<s:Label text="Timebar position" fontSize="18"/>
-			<s:Group>
-				<s:layout>
-					<s:VerticalLayout/>
-				</s:layout>
-				<s:RadioButton label="Toolbar top and Timebar bottom" click="_timebarPos1()" fontSize="14"/>
-				<s:RadioButton label="Toolbar bottom and Timebar top" click="_timebarPos2()" fontSize="14"/>
-			</s:Group>
-		</s:Group>
-		
-		<s:Group>
-			<s:layout>
-				<s:VerticalLayout paddingLeft="10"/>
-			</s:layout>
-			<s:Label text="Timebar position" fontSize="18"/>
+			<s:Label id="menuLabel" text="Menu position"/>
 			<s:Group>
 				<s:layout>
 					<s:HorizontalLayout/>
 				</s:layout>
-				<s:Button label="Top" click="_timebarTop()" fontSize="14"/>
-				<s:Button label="Bottom" click="_timebarBottom()" fontSize="14"/>
+				<buttons:KSketch_DialogButton id="menuLeftButton" click="_menuLeft()"/>
+				<buttons:KSketch_DialogButton id="menuRightButton" click="_menuRight()"/>
 			</s:Group>
 		</s:Group>
 		
-		<s:Group>
-			<s:layout>
-				<s:VerticalLayout paddingLeft="10"/>
-			</s:layout>
-			<s:Label text="Menu position" fontSize="18"/>
+		<s:Group id="optionItems">
 			<s:Group>
 				<s:layout>
-					<s:HorizontalLayout/>
+					<s:HorizontalLayout paddingLeft="{CONTENT_PADDING}" 
+										paddingRight="{CONTENT_PADDING}" 
+										verticalAlign="middle"/>
 				</s:layout>
-				<s:Button label="Top" click="_menuTop()" fontSize="14"/>
-				<s:Button label="Bottom" click="_menuBottom()" fontSize="14"/>
-				<s:Button label="Left" click="_menuLeft()" fontSize="14"/>
-				<s:Button label="Right" click="_menuRight()" fontSize="14"/>
+				<s:CheckBox id="autoInsertKey" label="Insert key frames automatically" click="_autoInsertKey(autoInsertKey.selected)"/>
 			</s:Group>
-		</s:Group>
-		
-		<s:Group>
-			<s:layout>
-				<s:VerticalLayout paddingLeft="10"/>
-			</s:layout>
-			<s:Label text="Study Mode" fontSize="18"/>
+			
 			<s:Group>
 				<s:layout>
-					<s:HorizontalLayout/>
+					<s:HorizontalLayout paddingLeft="{CONTENT_PADDING}" 
+										paddingRight="{CONTENT_PADDING}" 
+										verticalAlign="middle"/>
 				</s:layout>
-				<s:RadioButton label="K" click="_setStudy(0)" fontSize="14"/>
-				<s:RadioButton label="P" click="_setStudy(1)" fontSize="14"/>
-				<s:RadioButton label="KP" click="_setStudy(2)" fontSize="14"/>
-				<s:RadioButton label="KP2" click="_setStudy(3)" fontSize="14"/>
+				<s:CheckBox id="doubleTap" label="Double-tap left/right for undo/redo" click="_doubleTap(doubleTap.selected)"/>
+			</s:Group>
+			
+			<s:Group>
+				<s:layout>
+					<s:HorizontalLayout paddingLeft="{CONTENT_PADDING}" 
+										paddingRight="{CONTENT_PADDING}" 
+										verticalAlign="middle"/>
+				</s:layout>
+				<s:CheckBox id="autoLog" label="Enable Log" click="_autoLog(autoLog.selected)"/>
 			</s:Group>
 		</s:Group>
 		
-		<s:Group>
+		<s:Group id="synphneItems">
 			<s:layout>
-				<s:HorizontalLayout paddingLeft="10" verticalAlign="middle"/>
+				<s:VerticalLayout/>
 			</s:layout>
-			<s:CheckBox label="Menu Auto Open" id="menuOpen" click="_menuOpen(menuOpen.selected)" fontSize="14"/>
-		</s:Group>
-		-->
-		<s:Group>
-			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
-			</s:layout>
-			<s:CheckBox id="autoInsertKey" label="Insert key frames automatically" click="_autoInsertKey(autoInsertKey.selected)"/>
-		</s:Group>
-		
-		<s:Group>
-			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
-			</s:layout>
-			<s:CheckBox id="doubleTap" label="Double-tap left/right for undo/redo" click="_doubleTap(doubleTap.selected)"/>
-		</s:Group>
-		
-		<s:Group>
-			<s:layout>
-				<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" paddingRight="{KSketchStyles.DIALOG_PADDING_15}" verticalAlign="middle"/>
-			</s:layout>
-			<s:CheckBox id="autoLog" label="Enable Log" click="_autoLog(autoLog.selected)"/>
+			<s:Group id="initGroup">
+				<s:layout>
+					<s:VerticalLayout paddingLeft="{CONTENT_PADDING}"/>
+				</s:layout>
+				<s:Label id="initLabel" text="Initiation"/>
+				<s:Group>
+					<s:layout>
+						<s:VerticalLayout/>
+					</s:layout>
+					
+					<s:Group>
+						<s:layout>
+							<s:HorizontalLayout/>
+						</s:layout>
+						<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere"/>
+						<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"/>
+					</s:Group>
+				</s:Group>
+			</s:Group>
+			
+			<s:Group id="diffGroup">
+				<s:layout>
+					<s:VerticalLayout paddingLeft="{CONTENT_PADDING}"/>
+				</s:layout>
+				<s:Group>
+					<s:layout>
+						<s:VerticalLayout/>
+					</s:layout>
+					
+					<s:Group>
+						<s:layout>
+							<s:HorizontalLayout verticalAlign="middle"/>
+						</s:layout>
+						<s:Label id="titleTime" text="Time Threshold (MM:SS)"/>
+						<s:TextInput id="activityDuration" text="{timeValue}" 
+									 height="{TIMELABEL_HEIGHT}" 
+									 width="{TIMELABEL_WIDTH}" change="_duration(event)"/>
+					</s:Group>
+					
+					<s:Group>
+						<s:layout>
+							<s:VerticalLayout/>
+						</s:layout>
+						<s:Label id="titleAccuracyAvg" text="Accuracy Threshold - Average Distance"/>
+						<s:Group>
+							<s:Form>
+								<s:FormItem label="3-stars:">
+									<s:HSlider id="threeStarSlider_avg"
+											   minimum="{minimumSliderValue}"
+											   maximum="{maximumSliderValue}"
+											   snapInterval="0.05"
+											   changeEnd="threeStarSlider_Avg_changeEndHandler(event)"
+											   showDataTip="true"/>
+								</s:FormItem>
+								<s:FormItem label="2-stars:">
+									<s:HSlider id="twoStarSlider_avg"
+											   minimum="{minimumSliderValue}"
+											   maximum="{maximumSliderValue}"
+											   snapInterval="0.05"
+											   changeEnd="twoStarSlider_Avg_changeEndHandler(event)"
+											   showDataTip="true"/>
+								</s:FormItem>
+								<s:FormItem label="1-star :">
+									<s:HSlider id="oneStarSlider_avg"
+											   minimum="{minimumSliderValue}"
+											   maximum="{maximumSliderValue}"
+											   snapInterval="0.05"
+											   changeEnd="oneStarSlider_Avg_changeEndHandler(event)"
+											   showDataTip="true"/>
+								</s:FormItem>
+							</s:Form>
+						</s:Group>
+					</s:Group>
+					
+					<s:Group>
+						<s:layout>
+							<s:VerticalLayout/>
+						</s:layout>
+						<s:Label id="titleAccuracyMax" text="Accuracy Threshold - Maximum Distance"/>
+						<s:Group>
+							<s:Form>
+								<s:FormItem label="3-stars:">
+									<s:HSlider id="threeStarSlider_max"
+											   minimum="{minimumSliderValue}"
+											   maximum="{maximumSliderValue}"
+											   snapInterval="0.05"
+											   changeEnd="threeStarSlider_Max_changeEndHandler(event)"
+											   showDataTip="true"/>
+								</s:FormItem>
+								<s:FormItem label="2-stars:">
+									<s:HSlider id="twoStarSlider_max"
+											   minimum="{minimumSliderValue}"
+											   maximum="{maximumSliderValue}"
+											   snapInterval="0.05"
+											   changeEnd="twoStarSlider_Max_changeEndHandler(event)"
+											   showDataTip="true"/>
+								</s:FormItem>
+								<s:FormItem label="1-star :">
+									<s:HSlider id="oneStarSlider_max"
+											   minimum="{minimumSliderValue}"
+											   maximum="{maximumSliderValue}"
+											   snapInterval="0.05"
+											   changeEnd="oneStarSlider_Max_changeEndHandler(event)"
+											   showDataTip="true"/>
+								</s:FormItem>
+							</s:Form>
+						</s:Group>
+					</s:Group>
+					
+				</s:Group>
+			</s:Group>
 		</s:Group>
 		
 		<s:Group width="100%">
 			<s:layout>
-				<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
+				<s:VerticalLayout paddingLeft="{CONTENT_PADDING}" horizontalAlign="right"/>
 			</s:layout>
-			<s:Button id="closeButton" label="Close" click="close()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+			<buttons:KSketch_DialogButton id="closeButton" click="close()"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

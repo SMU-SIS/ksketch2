@@ -23,11 +23,13 @@
 			import spark.components.Application;
 			
 			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 			
+			private var PADDING:Number = 7.5 * KSketchGlobals.SCALE;
+				
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
 			private var _timeControl:KSketch_TimeControl;
@@ -46,8 +48,9 @@
 			private function _initButtons():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, _initButtons);
-				leftFrame.init(_KSketch, _timeControl, KSketch_Timebar_Button_Single.LEFT);
-				rightFrame.init(_KSketch, _timeControl, KSketch_Timebar_Button_Single.RIGHT);
+				
+				leftFrame.init(_KSketch, _timeControl, KSketch_TimebarButton.LEFT);
+				rightFrame.init(_KSketch, _timeControl, KSketch_TimebarButton.RIGHT);
 				
 				leftFrame.addEventListener(MouseEvent.MOUSE_DOWN, _mouseDownHandler_prev);
 				leftFrame.addEventListener(MouseEvent.ROLL_OUT, _mouseUpHandler);
@@ -135,27 +138,23 @@
 	</fx:Script>
 	<s:Group x="{-magContent.width*0.5}" width="100%">
 		<s:Group>
-			<s:Rect id="blacklabel" width="100%" height="100%" radiusX="5" radiusY="5">
+			<s:Rect id="blacklabel" width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.MAGNIFIER_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchGlobals.COLOR_BLACK}"/>
 				</s:fill>
 			</s:Rect>
 			<s:Group>
 				<s:Group id="magContent">
 					<s:layout>
 						<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"
-										  paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
-										  paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
+										  paddingTop="{PADDING}" paddingBottom="{PADDING}"
+										  paddingLeft="{PADDING}" paddingRight="{PADDING}"/>
 					</s:layout>
-					<buttons:KSketch_Timebar_Button_Single
+					<buttons:KSketch_TimebarButton
 						id="leftFrame"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 						/>
-					<buttons:KSketch_Timebar_Button_Single
+					<buttons:KSketch_TimebarButton
 						id="rightFrame"
-						width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-						height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 						/>
 				</s:Group>
 			</s:Group>

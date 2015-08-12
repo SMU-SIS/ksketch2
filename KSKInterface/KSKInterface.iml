@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="Flex" version="4">
+  <component name="FlexBuildConfigurationManager" active="KSKInterface">
+    <configurations>
+      <configuration name="KSKInterface" target-platform="Mobile" output-type="Library" output-file="KSKInterface.swc" output-folder="$MODULE_DIR$/bin">
+        <dependencies>
+          <entries>
+            <entry module-name="KSKLibrary" build-configuration-name="KSKLibrary">
+              <dependency linkage="Merged" />
+            </entry>
+            <entry module-name="Gestouch" build-configuration-name="Gestouch">
+              <dependency linkage="Merged" />
+            </entry>
+            <entry module-name="FLV Encoder" build-configuration-name="FLV Encoder">
+              <dependency linkage="Merged" />
+            </entry>
+            <entry module-name="CollisionDetectionKit_v15" build-configuration-name="CollisionDetectionKit_v15">
+              <dependency linkage="Merged" />
+            </entry>
+            <entry library-id="2a092ec7-190b-4d54-8f2a-ae8e67ae4a54">
+              <dependency linkage="Merged" />
+            </entry>
+            <entry library-id="d57dd5da-5200-4101-aa05-f124fa1ddc52">
+              <dependency linkage="Merged" />
+            </entry>
+            <entry library-id="022304c5-d4d7-49a4-b3e0-f3a75d0df079">
+              <dependency linkage="Merged" />
+            </entry>
+            <entry library-id="6e9fbefc-b107-44cf-825d-18e19d90588f">
+              <dependency linkage="Merged" />
+            </entry>
+          </entries>
+          <sdk name="AIRSDK_Compiler" />
+        </dependencies>
+        <compiler-options>
+          <map>
+            <entry key="compiler.locale" value="en_US" />
+          </map>
+          <option name="additionalOptions" value="-swf-version=12" />
+        </compiler-options>
+        <packaging-air-desktop />
+        <packaging-android />
+        <packaging-ios />
+      </configuration>
+    </configurations>
+    <compiler-options />
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="AIRSDK_Compiler" jdkType="Flex SDK Type (new)" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="2a092ec7-190b-4d54-8f2a-ae8e67ae4a54" />
+        <CLASSES>
+          <root url="jar://$PROJECT_FRAMEWORKS$/libs/mx/mx.swc!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="d57dd5da-5200-4101-aa05-f124fa1ddc52" />
+        <CLASSES>
+          <root url="jar://$DOCUMENTS$/gaforflash/lib/analytics.swc!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="022304c5-d4d7-49a4-b3e0-f3a75d0df079" />
+        <CLASSES>
+          <root url="jar://$DOCUMENTS$/as3corelib.swc!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="6e9fbefc-b107-44cf-825d-18e19d90588f" />
+        <CLASSES>
+          <root url="jar://$DOCUMENTS$/as3commons-collections-1.3.2.swc!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>

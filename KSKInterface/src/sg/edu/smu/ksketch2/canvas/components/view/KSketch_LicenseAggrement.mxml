@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2015 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
+		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+        actionBarVisible="false"
+        
+        destructionPolicy="auto"
+        addedToStage="addedToStageHandler()"
+        initialize="_init()">
+    <fx:Script>
+        <![CDATA[
+        import sg.edu.smu.ksketch2.utils.KSketch_Preference;
+		import sg.edu.smu.ksketch2.KSketchGlobals;
+
+		private var LICENSE_PADDING:Number = 15;
+			
+        private var timer:Timer;
+        public static var initialOrientation:String = null;
+
+        private function _init():void {
+			agreeButton.init("I Agree");
+			disagreeButton.init("I Disagree");
+			agreeButton.initSkin();
+			disagreeButton.initSkin();
+        }
+
+        private function addedToStageHandler():void {
+			KSketchGlobals.setView();
+            
+			LICENSE_PADDING = 15 * KSketchGlobals.SCALE;
+			
+			this.removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+
+            if (!initialOrientation)
+                initialOrientation = stage.orientation;
+
+            if (Capabilities.version.indexOf('IOS') > -1) {
+                if (stage.orientation == StageOrientation.DEFAULT || stage.orientation == StageOrientation.UPSIDE_DOWN)
+                    stage.setOrientation(StageOrientation.ROTATED_RIGHT);
+                else
+                    stage.setOrientation(stage.orientation);
+            }
+
+        }
+
+        private function exitApp():void {
+            NativeApplication.nativeApplication.exit();
+        }
+
+        private function accept():void {
+            KSketch_Preference.createPreferences();
+            navigator.pushView(KSketch_HomeView);
+        }
+        ]]>
+    </fx:Script>
+
+    <s:Group width="100%" height="100%">
+        <s:layout>
+            <s:BasicLayout/>
+        </s:layout>
+        <s:VGroup left="{LICENSE_PADDING}" right="{LICENSE_PADDING}" 
+				  top="{LICENSE_PADDING}" bottom="{LICENSE_PADDING}" horizontalCenter="0">
+            <s:Label id="notificationLabel" text="End user license aggrement" width="100%" textAlign="center"
+                     fontWeight="bold"/>
+            <s:TextArea width="100%" height="80%" editable="false">
+                <s:text>*The licence goes here*</s:text>
+            </s:TextArea>
+            <s:Group width="100%">
+                <s:layout>
+                    <s:HorizontalLayout horizontalAlign="center"/>
+                </s:layout>
+                <buttons:KSketch_DialogButton id="agreeButton" click="accept()" />
+				<buttons:KSketch_DialogButton id="disagreeButton" click="exitApp()" />
+            </s:Group>
+
+        </s:VGroup>
+
+    </s:Group>
+
+</s:View>

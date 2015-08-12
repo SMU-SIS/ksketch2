@@ -18,7 +18,7 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			[Bindable]
 			private var sketchTitle:String = "Log: ";
 			
@@ -29,8 +29,8 @@
 			{	
 				this.removeEventListener(FlexEvent.INITIALIZE, _init);
 				
-				header.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_HEADER);
-				exit_button.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				header.setStyle("fontSize", KSketchGlobals.FONT_SIZE_26);
+				exit_button.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
 				
 				userData = data;
 				sketchTitle += userData.kSketchDocument.name;

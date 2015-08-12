@@ -9,15 +9,16 @@
 package sg.edu.smu.ksketch2.utils
 {
 	import mx.formatters.DateFormatter;
-	
-	/**
+import mx.utils.UIDUtil;
+
+/**
  	 * The KSketchDocument class serves as the concrete class for handling
  	 * sketch documents in K-Sketch.
  	 */
 	[Bindable]
 	public class KWebData
 	{	
-		public static function prepareSketchDocument(userData:Object, sketchName:String):Object
+		public static function prepareSketchDocument(userData:Object, sketchName:String, userDetails:Object):Object
 		{
 			var data:Object = new Object();
 			data.group_permissions = [];
@@ -29,28 +30,29 @@ package sg.edu.smu.ksketch2.utils
 			data.fileName = sketchName;
 			data.lowerFileName = sketchName.toLowerCase();
 			
-			if(userData.kSketchDocument.originalName != "" && (sketchName == userData.kSketchDocument.originalName))
+			if(userData.sketchData.originalName != "" && (sketchName == userData.sketchData.originalName))
 			{
-				data.sketchId = userData.kSketchDocument.sketchId;
-				data.originalVersion = userData.kSketchDocument.originalVersion;
-				data.originalSketch = userData.kSketchDocument.originalSketch;
-				data.originalName = userData.kSketchDocument.originalName;	
+				data.sketchId = userData.sketchData.sketchId;
+				data.originalVersion = userData.sketchData.originalVersion;
+				data.originalSketch = userData.sketchData.originalSketch;
+				data.originalName = userData.sketchData.originalName;	
 			}
 			else
 			{
-				data.sketchId = "";
+				data.sketchId = -1;
 				data.originalVersion = 1;
 				data.originalSketch = -1;
 				data.originalName = sketchName;
+				data.uniqueId = UIDUtil.createUID();    //Since sketchID is not available. Let's identify locally by UID
 			}
 			
 			data.appver = 1.0;
-			data.version = userData.kSketchDocument.version;
+			data.version = userData.sketchData.version;
 			data.p_view = 1;
-			data.fileData = userData.kSketchDocument.xml.toXMLString();
+			data.fileData = userData.fileData;
 			data.p_comment = true;
-			data.owner = userData.kUser.u_realname;
-			data.owner_id = userData.kUser.id;
+			data.owner = userDetails.u_realname;
+			data.owner_id = userDetails.id;
 			return data;
 		}
 		

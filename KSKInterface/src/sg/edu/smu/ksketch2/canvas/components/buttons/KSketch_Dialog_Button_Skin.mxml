@@ -31,7 +31,6 @@
 <s:SparkButtonSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
              xmlns:s="library://ns.adobe.com/flex/spark" 
              xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
-             minWidth="21" minHeight="21" 
              alpha.disabled="0.5">
      
     <fx:Metadata>
@@ -44,8 +43,9 @@
     </fx:Metadata>
 	<fx:Script>
 		<![CDATA[
-			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			
+			private var BUTTONHEIGHT = 50 * KSketchGlobals.SCALE;
 		]]>
 	</fx:Script>
     
@@ -59,32 +59,21 @@
     
     <!-- layer 2: fill -->
     <!--- @private -->
-    <s:Rect id="fill" left="1" right="1" top="1" bottom="1" radiusX="2">
-        <s:fill>
-            <s:LinearGradient rotation="90">
-                <s:GradientEntry color="0xFFFFFF" 
-                                 color.over="0xBBBDBD" 
-                                 color.down="0xAAAAAA" 
-                                 alpha="0"
-								 alpha.over="0.85"
-								 alpha.down="0.85"/>
-                <s:GradientEntry color="0xD8D8D8" 
-                                 color.over="0x9FA0A1" 
-                                 color.down="0x929496" 
-								 alpha="0"
-								 alpha.over="0.85"
-								 alpha.down="0.85"/>
-            </s:LinearGradient>
-        </s:fill>
+    <s:Rect id="fill" left="1" right="1" top="1" bottom="1" radiusX="5">
+		<s:stroke>
+			<s:SolidColorStroke color="{KSketchGlobals.COLOR_BLACK}"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="{KSketchGlobals.COLOR_GREY_VERYLIGHT}"/>
+		</s:fill>
     </s:Rect>
     
-	<s:Group width="100%" height="100%">
+	<s:Group id="buttonGroup" height="{BUTTONHEIGHT}">
 		<s:layout>
 			<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"
-							  paddingLeft="{KSketchStyles.DIALOGBUTTON_PADDING}" paddingRight="{KSketchStyles.DIALOGBUTTON_PADDING}"
-							  paddingTop="{KSketchStyles.DIALOGBUTTON_PADDING}" paddingBottom="{KSketchStyles.DIALOGBUTTON_PADDING}"/>
+							  paddingLeft="20" paddingRight="20"
+							  paddingTop="10" paddingBottom="10" />
 		</s:layout>
-		<s:Image id="texture" width="60%" height="60%"/>
-		<s:Label id="buttonLabel" fontFamily="{KSketchStyles.APP_FONT_FAMILY}" fontSize="{KSketchStyles.DIALOGBUTTON_FONT_SIZE}"/>
+		<s:Label id="buttonLabel" fontFamily="{KSketchGlobals.FONT_FAMILY}" fontSize="{KSketchGlobals.FONT_SIZE_14}"/>
 	</s:Group>
 </s:SparkButtonSkin>

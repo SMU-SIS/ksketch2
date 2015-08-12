@@ -24,7 +24,7 @@
 			
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TickMark_Control;
 			import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
@@ -37,8 +37,10 @@
 			import sg.edu.smu.ksketch2.utils.KSelection;	
 			
 			public static const CONTROLPOINT:int = 0;
-			public static const KEYFRAME:int = 1;			
+			public static const KEYFRAME:int = 1;	
 			public static var mode: int = KEYFRAME;
+			
+			private var PADDING:Number = 7.5 * KSketchGlobals.SCALE;
 			
 			private var _KSketch:KSketch2;
 			private var _interactionControl:KInteractionControl;
@@ -150,12 +152,12 @@
 				clearButton.init(KSketchAssets.texture_clear , KSketchAssets.texture_clear_down, false);
 				clearButton.initSkin();
 				
-				leftFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Timebar_Button_Double.LEFT);
+				leftFrame.init(_KSketch, _timeControl, KSketch_TimebarButton.LEFT);
 				leftFrame.addEventListener(MouseEvent.MOUSE_DOWN, _mouseDownHandler_prev);
 				leftFrame.addEventListener(MouseEvent.ROLL_OUT, _mouseUpHandler);
 				leftFrame.addEventListener(MouseEvent.MOUSE_UP, _mouseUpHandler);
 				
-				rightFrame.init(_KSketch, _interactionControl, _timeControl, KSketch_Timebar_Button_Double.RIGHT);
+				rightFrame.init(_KSketch, _timeControl, KSketch_TimebarButton.RIGHT);
 				rightFrame.addEventListener(MouseEvent.MOUSE_DOWN, _mouseDownHandler_next);
 				rightFrame.addEventListener(MouseEvent.ROLL_OUT, _mouseUpHandler);
 				rightFrame.addEventListener(MouseEvent.MOUSE_UP, _mouseUpHandler);
@@ -423,17 +425,17 @@
 			<s:Graphic>
 				<s:Path data="M 0 0 L 20 20 L -20 20 z">
 					<s:fill>
-						<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
+						<s:SolidColor color="{KSketchGlobals.COLOR_BLACK}"/>
 					</s:fill>
 				</s:Path>
 			</s:Graphic>
 		</s:Group>
 		<s:Group id="calloutContents" x="{-calloutContents.width/2}" y="{arrowHead.height}">
 			<s:Rect width="100%" height="100%"
-					radiusX="{KSketchStyles.CONTEXTMENU_CORNERS}"
-					radiusY="{KSketchStyles.CONTEXTMENU_CORNERS}">
+					radiusX="{KSketchGlobals.RECT_RADIUSX}"
+					radiusY="{KSketchGlobals.RECT_RADIUSY}">
 				<s:fill>
-					<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
+					<s:SolidColor color="{KSketchGlobals.COLOR_BLACK}"/>
 				</s:fill>
 			</s:Rect>
 			<s:Group>
@@ -443,42 +445,32 @@
 				<s:Group>
 					<s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
 						<s:fill>
-							<s:SolidColor color="{KSketchStyles.MAGNIFIER_BACKGROUND_COLOR}"/>
+							<s:SolidColor color="{KSketchGlobals.COLOR_BLACK}"/>
 						</s:fill>
 					</s:Rect>
 					<s:Group>
 						<s:layout>
 							<s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"
-												paddingTop="{KSketchStyles.MAGNIFIER_PADDING}" paddingBottom="{KSketchStyles.MAGNIFIER_PADDING}"
-												paddingLeft="{KSketchStyles.MAGNIFIER_PADDING}" paddingRight="{KSketchStyles.MAGNIFIER_PADDING}"/>
+												paddingTop="{PADDING}" paddingBottom="{PADDING}"
+												paddingLeft="{PADDING}" paddingRight="{PADDING}"/>
 						</s:layout>
-						<buttons:KSketch_Timebar_Button_Double
+						<buttons:KSketch_TimebarButton
 							id="leftFrame"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 							/>
-						<buttons:KSketch_Button
+						<buttons:KSketch_CanvasButton
 							id="insertButton"
 							click="_insertKey(event)"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 							/>
-						<buttons:KSketch_Button
+						<buttons:KSketch_CanvasButton
 							id="removeButton"
 							click="_removeKey(event)"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 							/>
-						<buttons:KSketch_Button
+						<buttons:KSketch_CanvasButton
 							id="clearButton"
 							click="_clearKeys(event)"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 							/>
-						<buttons:KSketch_Timebar_Button_Double
+						<buttons:KSketch_TimebarButton
 							id="rightFrame"
-							width="{KSketchStyles.TIMEBAR_BUTTON_WIDTH}"
-							height="{KSketchStyles.TIMEBAR_BUTTON_HEIGHT}"
 							/>
 					</s:Group>
 				</s:Group>
@@ -488,7 +480,7 @@
 			<s:Graphic>
 				<s:Path data="M 0 20 L 20 0 L -20 0 z">
 					<s:fill>
-						<s:SolidColor color="{KSketchStyles.CONTEXTMENU_BACKGROUND_COLOR}"/>
+						<s:SolidColor color="{KSketchGlobals.COLOR_BLACK}"/>
 					</s:fill>
 				</s:Path>
 			</s:Graphic>

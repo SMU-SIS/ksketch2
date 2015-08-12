@@ -13,7 +13,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import spark.components.Group;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.KSketchStyles;
+	import sg.edu.smu.ksketch2.KSketchGlobals;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
@@ -36,6 +36,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	public class KSketch_TickMark_Control
 	{	
 		public static const GRAB_THRESHOLD:Number = 10;
+		private static const CONTROLPOINT:Number = 3;
+		private static const KEYFRAME:Number = 7;
+		
 		public var moveLeft:Boolean = false;
 		
 		private var _KSketch:KSketch2;
@@ -230,7 +233,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//Rigth now it is drawing if and only if there is only 1 object selected
 			if(_interactionControl.selection && _interactionControl.selection.objects.length() == 1)
 			{
-				_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS, KSketchStyles.ACTIVITY_OTHER_COLOR);
+				_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(CONTROLPOINT, KSketchGlobals.COLOR_GREY_LIGHT);
 				
 				drawTarget = _timeControl.activityDisplay;
 				
@@ -254,12 +257,12 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 						if(firstFrame)
 						{
 							if(firstFrame.passthrough)
-								_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_A, KSketchStyles.TIME_TICK_CONTROLPOINT);
+								_timeControl.selectedTickMarkDisplay.graphics.lineStyle(CONTROLPOINT, KSketchGlobals.COLOR_RED_DARK);
 							else
-								_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_B, KSketchStyles.TIME_TICK_KEYFRAME);
+								_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KEYFRAME, KSketchGlobals.COLOR_BLACK);
 						}
 						else
-							_timeControl.selectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_A, KSketchStyles.TIME_TICK_CONTROLPOINT);
+							_timeControl.selectedTickMarkDisplay.graphics.lineStyle(CONTROLPOINT, KSketchGlobals.COLOR_RED_DARK);
 						
 						if(drawTarget.x <= currentX)
 						{
@@ -273,7 +276,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 								{
 									if((currentMarker.key as ISpatialKeyFrame).hasActivityAtTime())
 									{
-										drawTarget.graphics.beginFill(KSketchStyles.ACTIVITY_COLOR, 0.6);
+										drawTarget.graphics.beginFill(KSketchGlobals.COLOR_RED, KSketchGlobals.ALPHA_06);
 										drawTarget.graphics.drawRect(currentMarker.prev.x, 0, currentMarker.x - currentMarker.prev.x, drawTarget.height);	
 										drawTarget.graphics.endFill();	
 									}
@@ -285,8 +288,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			}
 			else
 			{
-				_timeControl.unselectedTickMarkDisplay.alpha = KSketchStyles.TIME_TICK_SELECTED_ALPHA;
-				_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(KSketchStyles.TIME_TICK_THICKNESS_A, KSketchStyles.ACTIVITY_OTHER_COLOR);
+				_timeControl.unselectedTickMarkDisplay.alpha = KSketchGlobals.ALPHA_1;
+				_timeControl.unselectedTickMarkDisplay.graphics.lineStyle(CONTROLPOINT, KSketchGlobals.COLOR_GREY_LIGHT);
 			}
 			
 			//Draw unselected markers

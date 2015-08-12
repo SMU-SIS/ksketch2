@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2012 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark"
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+						   backgroundAlpha="0" initialize="_initStyle()"
+						   creationComplete="_initButtons()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:HTTPService id="httpService"
+					   useProxy="false"  
+					   method="POST"
+					   resultFormat="text" 
+					   >
+		</s:HTTPService>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import sg.edu.smu.ksketch2.KSketchAssets;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
+			import sg.edu.smu.ksketch2.canvas.controls.KActivityResultControl;
+			import sg.edu.smu.ksketch2.model.objects.KInstructions;
+			
+			private var HEADER_GAP:Number = 20 * KSketchGlobals.SCALE;
+			private var HEADER_WIDTH:Number = 100 * KSketchGlobals.SCALE;
+			
+			private var _canvasView:KSketch_CanvasView;
+			private var _dialogPopUp:KSketch_DialogBox_Skin;
+			private var _kInstructions:KInstructions;
+			private var _currentInstruction:int;
+			private var _currentActivity:int;
+			private var _activityTypes:Array = ['INTRO', 'RECALL', 'TRACE', 'TRACK', 'RECREATE'];
+			private var instructionObjectIDs:Array;
+			private var instructionMessages:Array;
+			private var _kAlertBox:KSketch_Alert;
+			private var _activityControl:KActivityControl;
+			private var _resultControl:KActivityResultControl;
+			private var _alertTimer:Timer;
+			
+			public function init(canvasView:KSketch_CanvasView, kInstructions:KInstructions,
+								kAlertBox:KSketch_Alert, activityControl:KActivityControl, resultControl:KActivityResultControl):void {
+				_canvasView = canvasView;
+				_kAlertBox = kAlertBox;
+				_activityControl = activityControl;
+				_resultControl = resultControl;
+				
+				_kInstructions = kInstructions;
+				_currentInstruction = 0;
+				_currentActivity = 0;
+				
+				activityButton_Prev.enabled = false;
+				instructionButton_Prev.enabled = false;
+				
+				instructionObjectIDs = new Array();
+				instructionMessages = new Array();
+				instructionObjectIDs = _kInstructions.getObjectIDs();
+				instructionMessages = _kInstructions.getInstructions();
+				
+				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+				instructionHeader.text = "Step " + (_currentInstruction + 1);
+				activityHeader.text = _activityTypes[_currentActivity];
+			}
+			
+			private function _initButtons():void {
+				activityButton_Prev.init(KSketchAssets.texture_instructions_prev, KSketchAssets.texture_instructions_prev);
+				activityButton_Prev.initSkin();
+				activityButton_Next.init(KSketchAssets.texture_instructions_next, KSketchAssets.texture_instructions_next);
+				activityButton_Next.initSkin();
+				
+				instructionButton_Prev.init(KSketchAssets.texture_instructions_prev, KSketchAssets.texture_instructions_prev);
+				instructionButton_Prev.initSkin();
+				instructionButton_Next.init(KSketchAssets.texture_instructions_next, KSketchAssets.texture_instructions_next);
+				instructionButton_Next.initSkin();
+			}
+			
+			private function _initStyle():void {
+				this.removeEventListener(FlexEvent.INITIALIZE, _initStyle);
+				
+				activityHeader.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				
+				instructionHeader.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				instructionMessage.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				
+				if (_canvasView.isTiming)
+					instructionButton_Start.init("DONE");
+				else
+					instructionButton_Start.init("START");
+				
+				instructionButton_Start.initSkin();
+			}
+			
+			override public function open(owner:DisplayObjectContainer, modal:Boolean = false):void {
+				_initStyle();
+				super.open(owner, modal);
+			}
+			
+			override public function close(commit:Boolean = false, data:* = null):void {
+				super.close(commit, data);
+			}
+			
+			public function startStopActivity():void {
+				
+				if (instructionButton_Start.label == "START") 
+				{
+					instructionButton_Start.init("DONE");
+					instructionButton_Start.initSkin();
+					
+					activityButton_Prev.enabled = false;
+					activityButton_Next.enabled = false;
+					instructionButton_Prev.enabled = false;
+					instructionButton_Next.enabled = false;
+					
+					_canvasView.actionInstructions();
+					_activityControl.startActivity(activityHeader.text);
+					
+					if (_currentInstruction == 0 && _activityTypes[_currentActivity] == "TRACK") 
+					{
+						_alertTimer = new Timer(1000, 3);
+						_alertTimer.addEventListener(TimerEvent.TIMER, updateCount);
+						_alertTimer.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
+						if (!_kAlertBox.isOpen) 
+						{
+							_kAlertBox.open(_canvasView, true);
+							_kAlertBox.updateText("3");
+							PopUpManager.centerPopUp(_kAlertBox);
+						}
+						_alertTimer.start();
+					}
+					else {
+						_canvasView.startTimer();
+					}
+				}
+				else if (instructionButton_Start.label == "DONE") 
+				{
+					if (activityHeader.text == "TRACE")
+						_activityControl.processTrace();
+					
+					instructionButton_Start.init("START");
+					instructionButton_Start.initSkin();
+					
+					enableDisableActivity();
+					enableDisableButtons();
+					
+					_canvasView.stopTimer();
+					
+					if(this.isOpen)
+						_canvasView.closeInstructions();
+					
+					if(activityHeader.text != "INTRO")
+					{
+						//compute result at the end of every activity
+						var stars:int = 1;//_resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
+						_activityControl.stars = stars;
+						_dialogPopUp = new KSketch_DialogBox_Skin();
+						_dialogPopUp.init(null, _canvasView, null, _activityControl, "Results");
+						_dialogPopUp.open(_canvasView,true);
+						PopUpManager.centerPopUp(_dialogPopUp);
+					}
+					else
+					{
+						initNextInstruction();
+						trace("init next instructions");
+					}
+				}
+			}
+			
+			public function initNextInstruction():void
+			{
+				nextInstruction();
+				if (instructionMessage.text == "")
+					nextActvity();
+				
+				openInstructions();
+			}
+			
+			public function openInstructions():void
+			{
+				_activityControl.startActivity(activityHeader.text);
+				_canvasView.openInstructions();
+			}
+			
+			private function startTiming(event:TimerEvent):void {
+				_kAlertBox.close();
+				_canvasView.autoPlayAnimation();
+				_activityControl.autoSelectObjectToAnimate();
+				_canvasView.startTimer();
+			}
+			
+			private function updateCount(event:TimerEvent):void {
+				
+				_kAlertBox.updateText(String(3 - _alertTimer.currentCount));
+			}
+			
+			private function previousInstruction():void {
+				_currentInstruction -= 1;
+				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+				instructionHeader.text = "Step " + (_currentInstruction + 1);
+				enableDisableButtons();
+			}
+			
+			private function nextInstruction():void {
+				if (_currentInstruction < instructionMessages[_currentActivity].length - 1) {
+					_currentInstruction += 1;
+					instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+					instructionHeader.text = "Step " + (_currentInstruction + 1);
+					enableDisableButtons();
+				} else {
+					nextActvity();
+					enableDisableButtons();
+					_canvasView.openInstructions();
+					instructionButton_Start.label = "START";
+				}
+			}
+			
+			private function enableDisableButtons():void {
+				if (_currentInstruction != 0)
+					instructionButton_Prev.enabled = true;
+				else
+					instructionButton_Prev.enabled = false;
+				if (_currentInstruction == instructionMessages[_currentActivity].length - 1)
+					instructionButton_Next.enabled = false;
+				else
+					instructionButton_Next.enabled = true;
+			}
+			
+			private function previousActivity():void {
+				_currentActivity -= 1;
+				_currentInstruction = 0;
+				activityHeader.text = _activityTypes[_currentActivity];
+				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+				instructionHeader.text = "Step " + (_currentInstruction + 1);
+				enableDisableActivity();
+				enableDisableButtons();
+			}
+			
+			private function nextActvity():void {
+				_currentInstruction = 0;
+				_currentActivity += 1;
+				activityHeader.text = _activityTypes[_currentActivity];
+				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+				instructionHeader.text = "Step " + (_currentInstruction + 1);
+				enableDisableActivity();
+			}
+			
+			private function enableDisableActivity():void {
+				if (_currentActivity != 0)
+					activityButton_Prev.enabled = true;
+				else
+					activityButton_Prev.enabled = false;
+				if (_currentActivity == instructionMessages.length - 1)
+					activityButton_Next.enabled = false;
+				else
+					activityButton_Next.enabled = true;
+			}
+			
+			public function currentObjectID():int {
+				return int(instructionObjectIDs[_currentActivity][_currentInstruction]);
+			}
+			
+			public function currentInstruction():int {
+				return _currentInstruction;
+			}
+		]]>
+	</fx:Script>
+	<s:filters>
+		<s:DropShadowFilter 
+			color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+			alpha="{KSketchGlobals.ALPHA_06}"
+			strength="{KSketchGlobals.RECT_STRENGTH}"
+			blurX="{KSketchGlobals.RECT_BLURX}"
+			blurY="{KSketchGlobals.RECT_BLURY}"/>
+	</s:filters>
+	<s:Group id="instructions" visible="true">
+		<s:Rect id="instructionBox" width="100%" height="150%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
+			<s:fill>
+				<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
+			</s:fill>
+		</s:Rect>
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle"/>
+			</s:layout>
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout  gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle"/>
+				</s:layout>
+				<buttons:KSketch_ListButton id="activityButton_Prev" click="previousActivity()"/>
+				<s:Label width="{HEADER_WIDTH}" id="activityHeader" textAlign="center"/>
+				<buttons:KSketch_ListButton id="activityButton_Next" click="nextActvity()"/>
+			</s:Group>
+			
+			
+			<s:Line xFrom="0" xTo="225" yFrom="0" yTo="0">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
+				</s:stroke>
+			</s:Line>
+			
+			<s:Group width="100%">
+				<s:layout>
+					<s:HorizontalLayout  gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle"/>
+				</s:layout>
+				<buttons:KSketch_ListButton id="instructionButton_Prev" click="previousInstruction()"/>
+				<s:Label width="{HEADER_WIDTH}" id="instructionHeader" text="Default" textAlign="center"/>
+				<buttons:KSketch_ListButton id="instructionButton_Next" click="nextInstruction()"/>
+			</s:Group>
+			
+			<s:Label id="instructionMessage" text="This is the default text. {'\n'}Set message according to activity."/>
+			<buttons:KSketch_DialogButton id="instructionButton_Start" click="startStopActivity()"/>
+			
+		</s:Group>
+	</s:Group>
+</s:SkinnablePopUpContainer>

@@ -31,7 +31,6 @@
 			import air.net.URLMonitor;
 			
 			import sg.edu.smu.ksketch2.KSketchWebLinks;
-			import sg.edu.smu.ksketch2.KSketch_User;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
@@ -41,7 +40,6 @@
 			
 			
 			public static var userData:Object = new Object();
-			public static var _isLoggedIn:Boolean = false;
 			
 			private var progressTimer:Timer;
 			private var _stageWidth:Number;
@@ -50,7 +48,7 @@
 			private var _monitorTimer:Timer;
 			private var _webView:StageWebView = new StageWebView();
 			private var _isLoggedOut:Boolean = false;
-			
+			private var _token:String = "";
 			protected function viewActivateHandler(event:ViewNavigatorEvent):void
 			{
 				// TODO Auto-generated method stub
@@ -140,7 +138,7 @@
 				var currentURL:String = event.location.toString();
 				
 				//if successful login
-				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
+				if((currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) || (currentURL.indexOf(KSketchWebLinks.urlApproval) >= 0))
 				{
 					//retrieve id from HTML page
 					_webView.loadURL(KSketchWebLinks.urlUser);
@@ -148,6 +146,8 @@
 				else if((currentURL.indexOf(KSketchWebLinks.redirecturl_skip) >= 0) || (currentURL.indexOf(KSketchWebLinks.redirecturl_index) >= 0))
 				{
 					skipConnection(LOGIN_CANCEL);
+				} else {
+				//	_webView.loadURL(currentURL);
 				}
 			}
 			
@@ -156,7 +156,7 @@
 			{
 				var currentURL:String = event.location.toString();
 				
-				if(currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) 
+				if((currentURL.indexOf(KSketchWebLinks.redirecturl_login) >= 0) || (currentURL.indexOf(KSketchWebLinks.urlApproval) >= 0))
 				{
 					//retrieve id from HTML page
 					_webView.loadURL(KSketchWebLinks.urlUser);
@@ -173,6 +173,7 @@
 					
 					//get json url
 					GetUser.url = KSketchWebLinks.jsonurlUserMobile + "?id=" + vars.id;
+					_token = vars.token;
 					GetUser.send();
 					GetUser.addEventListener(FaultEvent.FAULT, faultHandler);
 					startProgressBar();
@@ -180,6 +181,8 @@
 				else if((currentURL.indexOf(KSketchWebLinks.redirecturl_skip) >= 0) || (currentURL.indexOf(KSketchWebLinks.redirecturl_index) >= 0))
 				{
 					skipConnection(LOGIN_CANCEL);
+				} else {
+				//	_webView.loadURL(currentURL);
 				}
 			}
 			
@@ -193,12 +196,11 @@
 				{
 					// create a new User instance and
 					// save it to data property
-					var kUser:KSketch_User = new KSketch_User(obj);
-					userData.kUser = kUser;
+					userData.userObject = obj;
+					userData.loginView = this;
 					userData.listSketches = "";	
 					userData.resolveConflict = 1;
-					_isLoggedIn = true;
-					
+					userData.token = _token;
 					navigator.pushView(KSketch_HomeView, userData);
 				}
 					
@@ -234,6 +236,15 @@
 				skipConnection(LOGIN_LOSTCONN);
 			}
 			
+			public function set isLoggedOut(value:Boolean):void
+			{
+				_isLoggedOut = value;
+			}
+			
+			public function get isLoggedOut():Boolean
+			{
+				return _isLoggedOut;
+			}
 		]]>
 	</fx:Script>
 	<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"

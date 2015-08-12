@@ -9,7 +9,9 @@
 *http://mozilla.org/MPL/2.0/.
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-						   xmlns:s="library://ns.adobe.com/flex/spark" backgroundAlpha="0" initialize="initStyle()">
+						   xmlns:s="library://ns.adobe.com/flex/spark" 
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+						   backgroundAlpha="0" initialize="initStyle()">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<s:HTTPService id="httpService"
@@ -24,8 +26,12 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			
-			import sg.edu.smu.ksketch2.KSketchStyles;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			
+			private var GAP:Number = 10 * KSketchGlobals.SCALE;
+			private var PADDING_5:Number = 5 * KSketchGlobals.SCALE;
+			private var PADDING_10:Number = 10 * KSketchGlobals.SCALE;
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _saveOptions:KSketch_SaveOptions;
@@ -33,9 +39,14 @@
 			private function initStyle():void
 			{
 				this.removeEventListener(FlexEvent.INITIALIZE, initStyle);
-				label.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_NORMAL_FONT);
-				cancelButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
-				saveButton.setStyle("fontSize", KSketchStyles.DIALOG_BUTTON_SIZE);
+				label.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				cancelButton.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				saveButton.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+				
+				cancelButton.init("Cancel");
+				saveButton.init("Save Anyway");
+				cancelButton.initSkin();
+				saveButton.initSkin();
 			}
 			
 			public function init(canvasView:KSketch_CanvasView, saveOptions:KSketch_SaveOptions):void
@@ -63,7 +74,6 @@
 			
 			private function cancel():void
 			{
-				_saveOptions.mobileControl.reset();
 				_saveOptions.overwriteSave = false;
 				close();
 			}
@@ -72,34 +82,37 @@
 	</fx:Script>
 	<s:filters>
 		<s:DropShadowFilter 
-			color="{KSketchStyles.CANVAS_SHADOW_COLOR}" angle="{KSketchStyles.CANVAS_SHADOW_ANGLE}"
-			alpha="{KSketchStyles.CANVAS_SHADOW_ALPHA * 0.5}"
-			strength="{KSketchStyles.CANVAS_SHADOW_STRENGTH}"
-			blurX="{KSketchStyles.CANVAS_SHADOW_X_DISTANCE * 0.75}"
-			blurY="{KSketchStyles.CANVAS_SHADOW_Y_DISTANCE * 0.75}"/>
+			color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+			alpha="{KSketchGlobals.ALPHA_06}"
+			strength="{KSketchGlobals.RECT_STRENGTH}"
+			blurX="{KSketchGlobals.RECT_BLURX}"
+			blurY="{KSketchGlobals.RECT_BLURY}"/>
 	</s:filters>
 	<s:Group id="overwriteSketch" visible="true">
-		<s:Rect width="100%" height="100%" radiusX="{KSketchStyles.MENU_CORNER_RADIUS}" radiusY="{KSketchStyles.MENU_CORNER_RADIUS}">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
 			<s:fill>
-				<s:SolidColor color="{KSketchStyles.MENU_BACKGROUND_COLOR}"/>
+				<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
 			</s:fill>
 		</s:Rect>
 		<s:Group>
 			<s:layout>
-				<s:VerticalLayout gap="{KSketchStyles.DIALOG_PADDING_10}" paddingLeft="{KSketchStyles.DIALOG_PADDING_5}" paddingRight="{KSketchStyles.DIALOG_PADDING_5}" paddingTop="{KSketchStyles.DIALOG_PADDING_5}" paddingBottom="{KSketchStyles.DIALOG_PADDING_5}"/>
+				<s:VerticalLayout gap="{GAP}" paddingLeft="{PADDING_5}" 
+								  paddingRight="{PADDING_5}" 
+								  paddingTop="{PADDING_5}" 
+								  paddingBottom="{PADDING_5}"/>
 			</s:layout>
 			<s:Group>
 				<s:layout>
-					<s:VerticalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}"/>
+					<s:VerticalLayout paddingLeft="{PADDING_10}"/>
 				</s:layout>
 				<s:Label id="label" text="You are trying to save an older version of this sketch."/>
 			</s:Group>
 			<s:Group width="100%">
 				<s:layout>
-					<s:HorizontalLayout paddingLeft="{KSketchStyles.DIALOG_PADDING_10}" horizontalAlign="right"/>
+					<s:HorizontalLayout paddingLeft="{PADDING_10}" horizontalAlign="right"/>
 				</s:layout>
-				<s:Button id="saveButton" label="Save Anyway" click="save()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
-				<s:Button id="cancelButton" label="Cancel" click="cancel()" height="{KSketchStyles.DIALOG_MEASUREMENT_25}"/>
+				<buttons:KSketch_DialogButton id="saveButton" click="save()"/>
+				<buttons:KSketch_DialogButton id="cancelButton" click="cancel()"/>
 			</s:Group>
 		</s:Group>
 	</s:Group>

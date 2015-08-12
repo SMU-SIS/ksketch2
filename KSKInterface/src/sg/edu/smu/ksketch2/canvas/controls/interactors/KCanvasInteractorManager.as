@@ -26,11 +26,14 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.IInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KLoopSelectInteractor;
 
+	//KSKETCH-SYNPHNE
+	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 	/**
 	 * The KCanvasInteractorManager class serves as the concrete class for
 	 * managing canvas interactions in K-Sketch. Specifically, it serves
@@ -72,6 +75,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		public var lasso:Boolean;										// the lasso boolean flag
 		public var doubleTapOn:Boolean = false;							// the double tap feature flag
 		
+		//KSKETCH-SYNPHNE
+		private var _activityControl:KActivityControl;
+		
 		/**
 		 * The main constructor for the KCanvasInteractorManager class.
 		 * 
@@ -81,7 +87,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 * @param modelDisplay The model display linked to the given ksketch object.
 		 * @param feedbackMessage The feedback message.
 		 */
-		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
+		public function KCanvasInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, activity:KActivityControl,
 												 inputComponent:UIComponent, modelDisplay:KModelDisplay, motionDisplay:KMotionDisplay,
 												 feedbackMessage:KSketch_Feedback_Message)
 		{
@@ -95,6 +101,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_feedbackMessage = feedbackMessage;			// initialize the feedback display
 			_keyDown = false;							// set the key down boolean flag as off
 
+			//KSKETCH-SYNPHNE
+			_activityControl = activity;
+			
 			/**
 			 * set the draw, tap, and loop select interactors
 			 * this implementation is inconsistent with the transition module
@@ -251,33 +260,43 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			if(_interactionControl.currentInteraction)
 				return;
 			
-			var prevSelection:Boolean = false;
-			if(_interactionControl.selection)
-				prevSelection = true;
-			
-			_activeInteractor = _tapSelectInteractor;
-			selected = _tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location),_KSketch.time, lasso);
-			
-			//LOG
-			_KSketch.logCounter ++;
-			var log:XML = <Action/>;
-			var date:Date = new Date();
-			log.@category = "Multi Touch Tap";
-			
-			if(selected)
+			//KSKETCH-SYNPHNE
+			if(!KSketch_CanvasView.isSynphne)
 			{
-				log.@type = "Tap to select object";
-				//trace("ACTION " + _KSketch.logCounter + ": Tap to select Object");
+				var prevSelection:Boolean = false;
+				if(_interactionControl.selection)
+					prevSelection = true;
+				
+				_activeInteractor = _tapSelectInteractor;
+				selected = _tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location),_KSketch.time, lasso);
+				
+				//LOG
+				_KSketch.logCounter ++;
+				var log:XML = <Action/>;
+				var date:Date = new Date();
+				log.@category = "Multi Touch Tap";
+				
+				if(selected)
+				{
+					log.@type = "Tap to select object";
+					//trace("ACTION " + _KSketch.logCounter + ": Tap to select Object");
+				}
+				else
+				{
+					log.@type = "Tap to deselect object";
+					//trace("ACTION " + _KSketch.logCounter + ": Tap to deselect Object");
+				}
+				KSketch2.log.appendChild(log);
+				
+				if(!selected && !prevSelection)
+					_recogniseDraw(event);
 			}
 			else
 			{
-				log.@type = "Tap to deselect object";
-				//trace("ACTION " + _KSketch.logCounter + ": Tap to deselect Object");
+				trace("recognise synphne");
+				_recogniseTapSynphne(event);
 			}
-			KSketch2.log.appendChild(log);
 			
-			if(!selected && !prevSelection)
-				_recogniseDraw(event);
 		}
 		
 		/**
@@ -292,10 +311,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				return;
 			
 			// switch interactor based on draw gesture's nTouches
-			if(lasso)// || _drawGesture.touchesCount == 2)
+			if(lasso)
 				_activeInteractor = _loopSelectInteractor;
 			else if(_drawGesture.touchesCount <= 1)
 				_activeInteractor = _drawInteractor;
+			
 			
 			_interactionControl.selection = null;
 
@@ -345,6 +365,62 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			_drawGesture.removeAllEventListeners();
 			_drawGesture.addEventListener(GestureEvent.GESTURE_BEGAN, _recogniseDraw);
 			_interactionControl.dispatchEvent(new Event(KInteractionControl.EVENT_INTERACTION_END));
-		}	
+		}
+		
+		//KSKETCH-SYNPHNE
+		private function _recogniseTapSynphne(event:GestureEvent):void
+		{
+			var tapLocation:Point = _modelDisplay.globalToLocal(_tapGesture.location);
+			
+			if(_activityControl.activityType == "RECALL")
+			{
+				_activityControl.incrementRecallCounter();
+				
+				trace("handle for RECALL");
+			}
+			else 
+			{
+				lasso = true;
+				_activeInteractor = _tapSelectInteractor;
+				_tapSelectInteractor.tap(_modelDisplay.globalToLocal(_tapGesture.location),_KSketch.time, lasso);
+				lasso = false;
+				
+				if(_activityControl.isAnimationPlaying && _activityControl.activityType == "INTRO")
+				{
+					trace("handle for INTRO");
+					_recogniseTapIntro();
+				}
+			}
+		}
+		
+		private function _recogniseTapIntro():void
+		{
+			trace("tap detected " + KSketch_CanvasView_Preferences.tapAnywhere);
+			if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_ON")
+			{
+				trace("tap ok");
+				_activityControl.stopIntroductionAnimation();
+				_activityControl.processIntro(true);
+			}
+			else if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_OFF" && _interactionControl.selection)
+			{
+				/*
+				var view:IObjectView = _activityControl.getCurrentTemplateObjectView();
+				if(view) {
+					var selectionArea:Sprite = new Sprite();
+					selectionArea.graphics.clear();
+					selectionArea.graphics.beginFill(0xFFFF22, 1);
+					selectionArea.graphics.drawCircle(tapLocation.x, tapLocation.y, 5);
+					selectionArea.graphics.endFill();
+					_modelDisplay.addChild(selectionArea);
+					if (selectionArea.hitTestObject(view as DisplayObject)) {
+						_activityControl.processIntro(true);
+						_activityControl.stopIntroductionAnimation();
+					}
+					_modelDisplay.removeChild(selectionArea);
+				}
+				*/
+			}
+		}
 	}
 }

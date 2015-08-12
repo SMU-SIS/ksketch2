@@ -3,7 +3,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import flash.display.DisplayObject;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.KSketchStyles;
+	import sg.edu.smu.ksketch2.KSketchGlobals;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.KMoveCenterInteractor;
@@ -57,23 +57,23 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		override public function set enabled(value:Boolean):void
 		{
 			// set the widget's alpha value to the enabled color
-			_widget.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
+			_widget.alpha = KSketchGlobals.ALPHA_1;
 			
 			// case: the widget is enabled
 			// set the the trigger disabled alpha values
 			if(value)
 			{
-				_widget.baseTrigger.alpha = KSketchStyles.WIDGET_DISABLED_ALPHA;
-				_widget.middleTrigger.alpha = KSketchStyles.WIDGET_DISABLED_ALPHA;
-				_widget.topTrigger.alpha = KSketchStyles.WIDGET_DISABLED_ALPHA;
+				_widget.baseTrigger.alpha = KSketchGlobals.ALPHA_02;
+				_widget.middleTrigger.alpha = KSketchGlobals.ALPHA_02;
+				_widget.topTrigger.alpha = KSketchGlobals.ALPHA_02;
 			}
 			// case: the widget is disabled
 			// set the trigger enabled alpha values
 			else
 			{
-				_widget.baseTrigger.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
-				_widget.middleTrigger.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
-				_widget.topTrigger.alpha = KSketchStyles.WIDGET_ENABLED_ALPHA;
+				_widget.baseTrigger.alpha = KSketchGlobals.ALPHA_1;
+				_widget.middleTrigger.alpha = KSketchGlobals.ALPHA_1;
+				_widget.topTrigger.alpha = KSketchGlobals.ALPHA_1;
 			}
 		}
 	}

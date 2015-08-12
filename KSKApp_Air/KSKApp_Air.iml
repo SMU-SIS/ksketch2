@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="Flex" version="4">
+  <component name="FlexBuildConfigurationManager" active="KSketch_Portable">
+    <configurations>
+      <configuration name="KSketch_Portable" target-platform="Mobile" main-class="KSketch_Portable" output-file="KSketch_Portable.swf" output-folder="$MODULE_DIR$/bin-debug">
+        <dependencies>
+          <entries>
+            <entry module-name="KSKInterface" build-configuration-name="KSKInterface">
+              <dependency linkage="Merged" />
+            </entry>
+            <entry library-id="d9a95dcf-fe6c-46ea-a991-61f219d3071a">
+              <dependency linkage="Merged" />
+            </entry>
+          </entries>
+          <sdk name="AIRSDK_Compiler" />
+        </dependencies>
+        <compiler-options>
+          <map>
+            <entry key="compiler.locale" value="en_US" />
+          </map>
+        </compiler-options>
+        <packaging-air-desktop />
+        <packaging-android enabled="true" use-generated-descriptor="false" custom-descriptor-path="$MODULE_DIR$/src/KSketch_Portable-app.xml" package-file-name="KSketch_Portable">
+          <files-to-package>
+            <FilePathAndPathInPackage file-path="$MODULE_DIR$/src/assets" path-in-package="assets" />
+          </files-to-package>
+          <AirSigningOptions keystore-path="/Volumes/ksketch/Releases/2014-02-04.latest/Android/KsketchAndroidDeveloper.p12" use-temp-certificate="false" />
+        </packaging-android>
+        <packaging-ios enabled="true" use-generated-descriptor="false" custom-descriptor-path="$MODULE_DIR$/src/KSketch_Portable-app.xml" package-file-name="KSketch_Portable">
+          <files-to-package>
+            <FilePathAndPathInPackage file-path="$MODULE_DIR$/src/assets" path-in-package="assets" />
+          </files-to-package>
+          <AirSigningOptions keystore-path="/Users/nurcamelliaz/Documents/2014-02-04.latest/KsketchDevelop-2014-10-01.p12" provisioning-profile-path="/Users/nurcamelliaz/Documents/2014-02-04.latest/Ksketch.mobileprovision" />
+        </packaging-ios>
+      </configuration>
+    </configurations>
+    <compiler-options />
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="AIRSDK_Compiler" jdkType="Flex SDK Type (new)" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="d9a95dcf-fe6c-46ea-a991-61f219d3071a" />
+        <CLASSES>
+          <root url="jar://$DOCUMENTS$/gaforflash/lib/analytics.swc!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="KSKInterface" exported="" />
+  </component>
+</module>

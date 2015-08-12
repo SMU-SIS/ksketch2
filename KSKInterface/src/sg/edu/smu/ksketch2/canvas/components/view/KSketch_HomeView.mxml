@@ -15,7 +15,7 @@
 		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
-		initialize="_init(true)"
+		initialize="_init(KSketch_Config.isMobile)"
 		addedToStage="_scale()"
 		destructionPolicy="auto"
 		>
@@ -38,6 +38,7 @@
 		
 		import sg.edu.smu.ksketch2.KSketchAssets;
 		import sg.edu.smu.ksketch2.KSketchGlobals;
+		import sg.edu.smu.ksketch2.KSketch_Config;
 		import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 		import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
 		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Notifications;

@@ -16,7 +16,7 @@
 		xmlns:transformWidget2="sg.edu.smu.ksketch2.canvas.components.transformWidget.*"
 		xmlns:timebar="sg.edu.smu.ksketch2.canvas.components.timebar.*"
 		addedToStage="initializeTrackerForWeb()"
-		initialize="_initCanvas(false, true)"
+		initialize="_initCanvas(false, KSketch_Config.enableSynphne)"
 		add="_checkForImageData()"
 		creationPolicy="all"
 		destructionPolicy="auto" 
@@ -36,7 +36,9 @@
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.managers.PopUpManager;
 			import mx.utils.Base64Encoder;
-			
+
+			import sg.edu.smu.ksketch2.KSketch_Config;
+
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			

@@ -26,6 +26,9 @@
             <entry library-id="022304c5-d4d7-49a4-b3e0-f3a75d0df079">
               <dependency linkage="Merged" />
             </entry>
+            <entry library-id="6e9fbefc-b107-44cf-825d-18e19d90588f">
+              <dependency linkage="Merged" />
+            </entry>
           </entries>
           <sdk name="AIRSDK_Compiler" />
         </dependencies>
@@ -79,9 +82,15 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="Gestouch" exported="" />
-    <orderEntry type="module" module-name="FLV Encoder" exported="" />
-    <orderEntry type="module" module-name="CollisionDetectionKit_v15" exported="" />
-    <orderEntry type="module" module-name="KSKLibrary" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="6e9fbefc-b107-44cf-825d-18e19d90588f" />
+        <CLASSES>
+          <root url="jar://$DOCUMENTS$/as3commons-collections-1.3.2.swc!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

@@ -9,10 +9,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
-	import sg.edu.smu.ksketch2.model.data_structures.KPath;
-	import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
-	//import sg.edu.smu.ksketch2.model.objects.KResult;
+	import sg.edu.smu.ksketch2.model.objects.KResult;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	
 	public class KActivityResultControl
@@ -36,9 +34,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_activityControl = activity;
 		}
 		
-		public function computeResult(activity:String, instruction:int, id:int):void
+		public function computeResult(activity:String, instruction:int, id:int):int
 		{
-			/*var stars:int = 0;
+			var stars:int = 0;
 			var measures:int = 0;
 			var result:KResult = new KResult(activity, instruction, id);
 			
@@ -87,12 +85,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 				_resultArr.addItem(result);
 			
 			return stars;
-			*/
 		}
 		
-		public function measureTime():void//(result:KResult):KResult
+		public function measureTime(result:KResult):KResult
 		{
-			/*
 			var timeGiven:int = KSketch_CanvasView_Preferences.duration *1000;
 			var timeTaken:int = _canvasView.timeTaken;
 			
@@ -100,12 +96,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 			result.timeTaken = timeTaken;
 			
 			return result;
-			*/
 		}
 		
-		public function starTime():void//(result:KResult):int
+		public function starTime(result:KResult):int
 		{
-			/*
 			var stars:int = 0;
 			var ratio:Number = (result.timeTaken/result.timeGiven) * 100;
 			
@@ -117,12 +111,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 				stars = 1;
 			
 			return stars;
-			*/
 		}
 		
-		public function measureQuadrant():void//(result:KResult):KResult
+		public function measureQuadrant(result:KResult):KResult
 		{
-			/*
 			var trials:int = _activityControl.recallCounter - 1;
 			
 			var percentage:int = 100;
@@ -131,12 +123,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			result.percentageQuadrant = percentage;
 			return result;
-			*/
 		}
 		
-		public function starQuadrant():void//(result:KResult):int
+		public function starQuadrant(result:KResult):int
 		{
-			/*
 			var stars:int = 0;
 			
 			if(result.percentageQuadrant >= 83)
@@ -147,12 +137,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 				stars = 1;
 			
 			return stars;
-			*/
 		}
 		
-		public function maxDistance(object:KStroke):void 
+		public function maxDistance(object:KStroke):Number 
 		{
-			/*
 			var _points:Vector.<Point> = object.points;
 			var maxDist:Number = Point.distance(_points[0],_points[1]);
 			for(var i:int = 0; i<_points.length; i++)
@@ -167,12 +155,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			var distInCm:Number = maxDist * 2.54 / flash.system.Capabilities.screenDPI;
 			return distInCm;
-			*/
 		}
 		
-		public function calculateShapeDistance():void//(result:KResult, obj1:KStroke, obj2:KStroke):KResult
+		public function calculateShapeDistance(result:KResult, obj1:KStroke, obj2:KStroke):KResult
 		{
-			/*
 			var points1:Vector.<Point> = obj1.points;
 			var points2:Vector.<Point> = obj2.points;
 			
@@ -208,12 +194,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 			
 			return result;
-			*/
 		}
 		
-		public function starShapeDistance():void//(result:KResult):int
+		public function starShapeDistance(result:KResult):int
 		{
-			/*
 			var accuracyThresholdValues:Array = _canvasView.starValueArr;
 			var stars:int = 0;
 			
@@ -252,12 +236,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			stars = stars/2;
 			return stars;
-			*/
 		}
 		
-		public function starRegion():void//(objDrawn:KObject, objTemplate:KObject):int
+		public function starRegion(objDrawn:KObject, objTemplate:KObject):int
 		{
-			/*
 			var stars:int = 0;
 			
 			if(objDrawn.startRegion == objTemplate.startRegion)
@@ -309,7 +291,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 			
 			return stars;
-			*/
 		}
 		
 		public function get resultArr():ArrayList

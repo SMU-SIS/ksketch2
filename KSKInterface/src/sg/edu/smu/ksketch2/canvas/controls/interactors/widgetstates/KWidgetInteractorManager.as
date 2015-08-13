@@ -27,6 +27,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 	import sg.edu.smu.ksketch2.canvas.components.timebar.KSketch_TimeControl;
 	import sg.edu.smu.ksketch2.canvas.components.transformWidget.KSketch_Widget_Component;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 	import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.KMoveCenterInteractor;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
@@ -62,6 +63,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		public var centerMode:IWidgetMode;							// the center widget mode
 		public var freeTransformMode:IWidgetMode;					// the free transform widget mode
 				
+		//KSKETCH-SYNPHNE
+		private var _activityControl:KActivityControl;
 		
 		/**
  		 * The main constructor for the KWidgetInteractorManager class.
@@ -71,12 +74,15 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
  		 * @param widgetBase The sketch widget base component.
  		 * @param modelSpace The model space.
  		 */
-		public function KWidgetInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl,
+		public function KWidgetInteractorManager(KSketchInstance:KSketch2, interactionControl:KInteractionControl, activityControl:KActivityControl,
 												 widgetBase:KSketch_Widget_Component, modelSpace:DisplayObject)
 		{
 			_KSketch = KSketchInstance;
 			_interactionControl = interactionControl;
 			_keyDown = false;
+			
+			//KSKETCH-SYNPHNE
+			_activityControl = activityControl;
 			
 			_widget = widgetBase;
 			_widget.doubleClickEnabled = true;

@@ -209,6 +209,12 @@
 				super.open(owner, modal);
 				_updateYPosition(null);
 			}
+			
+			//KSKETCH-SYNPHNE
+			public function setToTime(time:Number):void
+			{
+				showTime(KSketch_TimeControl.toTimeCode(time), _timeControl.timeToFrame(time), _timeControl.timeToX(time));
+			}
 		]]>
 	</fx:Script>
 	<!--

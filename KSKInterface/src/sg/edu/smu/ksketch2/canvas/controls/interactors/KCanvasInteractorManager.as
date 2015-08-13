@@ -33,7 +33,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KLoopSelectInteractor;
 
 	//KSKETCH-SYNPHNE
+	import flash.display.Sprite;
+	import flash.display.DisplayObject;
+	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
+	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
+	
 	/**
 	 * The KCanvasInteractorManager class serves as the concrete class for
 	 * managing canvas interactions in K-Sketch. Specifically, it serves
@@ -375,8 +380,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			if(_activityControl.activityType == "RECALL")
 			{
 				_activityControl.incrementRecallCounter();
-				
-				trace("handle for RECALL");
+				_recogniseTapRecall(tapLocation);
 			}
 			else 
 			{
@@ -386,14 +390,11 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 				lasso = false;
 				
 				if(_activityControl.isAnimationPlaying && _activityControl.activityType == "INTRO")
-				{
-					trace("handle for INTRO");
-					_recogniseTapIntro();
-				}
+					_recogniseTapIntro(tapLocation);
 			}
 		}
 		
-		private function _recogniseTapIntro():void
+		private function _recogniseTapIntro(tapLocation:Point):void
 		{
 			trace("tap detected " + KSketch_CanvasView_Preferences.tapAnywhere);
 			if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_ON")
@@ -404,9 +405,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 			else if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_OFF" && _interactionControl.selection)
 			{
-				/*
 				var view:IObjectView = _activityControl.getCurrentTemplateObjectView();
-				if(view) {
+				if(view) 
+				{
 					var selectionArea:Sprite = new Sprite();
 					selectionArea.graphics.clear();
 					selectionArea.graphics.beginFill(0xFFFF22, 1);
@@ -414,12 +415,40 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 					selectionArea.graphics.endFill();
 					_modelDisplay.addChild(selectionArea);
 					if (selectionArea.hitTestObject(view as DisplayObject)) {
-						_activityControl.processIntro(true);
+						trace("hit");
 						_activityControl.stopIntroductionAnimation();
+						_activityControl.processIntro(true);
 					}
 					_modelDisplay.removeChild(selectionArea);
 				}
-				*/
+			}
+		}
+		
+		private function _recogniseTapRecall(tapLocation:Point):void
+		{
+			for(var i:int=0; i<_KSketch.root.children.length(); i++)
+			{
+				var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
+				if(currObj.id == _activityControl.currentObjectID)
+				{
+					var region:int = currObj.startRegion;
+					var regionDisplay:DisplayObject = _activityControl.getRegionByIndex(region);
+					
+					var selectionArea:Sprite = new Sprite();
+					selectionArea.graphics.clear();
+					selectionArea.graphics.beginFill(0xFFFF22, 1);
+					selectionArea.graphics.drawCircle(tapLocation.x, tapLocation.y, 5);
+					selectionArea.graphics.endFill();
+					
+					_modelDisplay.addChild(selectionArea);
+					if(selectionArea.hitTestObject(regionDisplay))
+					{
+						_activityControl.processRecall(true);
+					}
+					
+					_modelDisplay.removeChild(selectionArea);
+					
+				}
 			}
 		}
 	}

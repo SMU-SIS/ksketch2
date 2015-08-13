@@ -164,7 +164,7 @@
 					if(activityHeader.text != "INTRO")
 					{
 						//compute result at the end of every activity
-						var stars:int = 1;//_resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
+						var stars:int = _resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
 						_activityControl.stars = stars;
 						_dialogPopUp = new KSketch_DialogBox_Skin();
 						_dialogPopUp.init(null, _canvasView, null, _activityControl, "Results");

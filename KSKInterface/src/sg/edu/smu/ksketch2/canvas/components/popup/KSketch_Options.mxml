@@ -406,6 +406,9 @@
 			}
 		]]>
 	</fx:Script>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="initiationGroup" itemClick="_initiation(event);"/>
+	</fx:Declarations>
 	<s:filters>
 		<s:DropShadowFilter 
 			color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"

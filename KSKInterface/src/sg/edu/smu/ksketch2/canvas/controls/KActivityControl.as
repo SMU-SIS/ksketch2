@@ -43,8 +43,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			var currentInstruction:int = _instructionsBox.currentInstruction();
 			_currentObjectID = _instructionsBox.currentObjectID();
-			//_currentManipulateObject = getCurrentObject(_currentObjectID, false);
-			//_currentTemplateObject = getCurrentObject(_currentObjectID, true);
+			_currentManipulateObject = getCurrentObject(_currentObjectID, false);
+			_currentTemplateObject = getCurrentObject(_currentObjectID, true);
+			
 			//Reset settings
 			if(currentInstruction == 0)
 			{
@@ -56,7 +57,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			if(activity == "INTRO")
 			{
-				trace("trigger INTRO");
 				_activityType = "INTRO";
 				_hideObjects(true);
 				startIntroductionAnimation();
@@ -72,9 +72,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 			else if(activity == "TRACE")
 			{ 
-				//TODO: Implement logic to fix stars based on the maxDistance
 				_activityType = "TRACE";
-				
 				_discardSketchedObjects();
 				_setObjectProperties(false, true, false);
 			}
@@ -96,7 +94,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				if(currObj is KStroke)
 				{
 					var view:IObjectView = _canvasView.modelDisplay.viewsTable[currObj];
-					/*
+					
 					//reset
 					currObj.template = false;
 					(view as KStrokeView).resetActivityHighlight(_KSketch.time);
@@ -119,7 +117,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 						currObj.template = true;
 						(view as KStrokeView).changeActivityHighlight(_KSketch.time, false);
 					}
-					*/
+					
 				}	
 			}
 		}
@@ -130,9 +128,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{
 				_instructionsBox.startStopActivity();
 				
-				//_setObjectProperties(false, false, false);	
+				_setObjectProperties(false, false, false);	
 				_canvasView.setRegionVisibility(true);	
-				//_hideObjects(false);
+				_hideObjects(false);
 			}
 		}
 		
@@ -163,7 +161,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function processTrace():void
 		{
-			/*
+			
 			for(var i:int=0; i<_KSketch.root.children.length(); i++)
 			{
 				var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
@@ -172,14 +170,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 					currObj.originalId = _currentObjectID;
 				}	
 			}
-			*/
 		}
 		
 		public function processTrack(currObj:KStroke):void
 		{
 			if(currObj)	//if there is a sketched object
 			{
-				/*
 				//unhide current object and disable it as a template
 				var tempArr:Array = new Array(_KSketch.root.children.length());
 				var view:IObjectView;
@@ -192,14 +188,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 				
 				//remove the animation if the object is previously animated
 				_removeAnimationFromObject(currObj);
-				*/
 			}
 		}
 		
 		private function _getCurrentObjectToTrack(useTemplate:Boolean):KObject
 		{
 			var currObj:KObject = null;
-			/*
+			
 			for(var i:int=0; i<_KSketch.root.children.length(); i++)
 			{
 				currObj = _KSketch.root.children.getObjectAt(i) as KObject;
@@ -215,7 +210,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 						break;
 				}
 			}
-			*/
+			
 			return currObj;
 		}
 		
@@ -234,7 +229,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var tempArr:Array = new Array(_KSketch.root.children.length());
 			var i:int;
 			var currObj:KObject;
-			/*
+			
 			for(i=0; i<_KSketch.root.children.length(); i++)
 			{
 				currObj = _KSketch.root.children.getObjectAt(i) as KObject;
@@ -263,7 +258,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 					_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 				}
 			}
-			*/
 		}	
 		
 		private function _hideObjects(sketched:Boolean):void
@@ -273,7 +267,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var tempArr:Array = new Array(_KSketch.root.children.length());
 			var i:int;
 			var currObj:KObject
-			/*
+			
 			for(i=0; i<_KSketch.root.children.length(); i++)
 			{
 				currObj = _KSketch.root.children.getObjectAt(i) as KObject;
@@ -302,9 +296,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 					var view:IObjectView = _canvasView.modelDisplay.viewsTable[currObj];
 					var op:KCompositeOperation = new KCompositeOperation();
 					(view as KStrokeView).hardErase(_KSketch.time, _interactionControl.currentInteraction);
+					*/
 				}
 			}
-			*/
+		
 			_interactionControl.end_interaction_operation();
 			tempArr = null;
 		}
@@ -342,13 +337,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function getCurrentObject(objID:int, template:Boolean):KObject
 		{
 			var object:KObject = null;
-			/*
+			
 			for(var i:int=0; i<_KSketch.root.children.length(); i++)
 			{
 				var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
 				
 				if(!template)
 				{
+					//grab the sketched object 
 					if(currObj is KStroke && currObj.originalId == objID && currObj.id != currObj.originalId)
 					{
 						object = currObj;
@@ -357,6 +353,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				}
 				else
 				{
+					//grab the original template object
 					if(currObj is KStroke && currObj.originalId == objID && currObj.id == currObj.originalId)
 					{
 						object = currObj;
@@ -365,7 +362,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				}
 				
 			}
-			*/
+			
 			return object;
 		}
 		

@@ -38,6 +38,13 @@ package sg.edu.smu.ksketch2.model.objects
 		protected var _center:Point;						// the object's centroid
 		protected var _creationTime:Number;					// the object's creation time
 		
+		//KSKETCH-SYNPHNE
+		private var _template:Boolean;	
+		private var _hide:Boolean;
+		private var _originalId:int;
+		private var _startRegion:int;
+		private var _endRegion:int;
+		
 		/**
 		 * The main constructor of the KObject class.
 		 * 
@@ -50,6 +57,12 @@ package sg.edu.smu.ksketch2.model.objects
 				throw new new Error("KObject is an Abstract class. You can't instantiate it!");
 			_id = id;
 			_selected = false;
+			
+			//KSKETCH-SYNPHNE
+			_template = false;
+			_hide = false;
+			_originalId = id;
+			
 			visibilityControl = new KVisibilityControl(this);
 		}
 		
@@ -326,6 +339,14 @@ package sg.edu.smu.ksketch2.model.objects
 			var objectXML:XML = <KObject/>;
 			objectXML.@id = id.toString();
 			objectXML.@creationTime = _creationTime.toString();
+			
+			//KSKETCH-SYNPHNE
+			objectXML.@hide = _hide.toString();
+			objectXML.@template = _template.toString();
+			objectXML.@originalId = _originalId.toString();
+			objectXML.@startRegion = _startRegion.toString();
+			objectXML.@endRegion = _endRegion.toString();
+			
 			if(_center)
 				objectXML.@centroid = _center.x.toString()+","+_center.y.toString();
 			
@@ -360,6 +381,45 @@ package sg.edu.smu.ksketch2.model.objects
 			{
 				_creationTime = Number((xml.@creationTime).toString());
 			}
+			
+			//KSKETCH-SYNPHNE
+			if(xml.@startRegion)
+			{
+				_startRegion = Number((xml.@startRegion).toString());
+			}
+			
+			if(xml.@endRegion)
+			{
+				_endRegion = Number((xml.@endRegion).toString());
+			}
+			
+			if(xml.@originalId)
+			{
+				_originalId = Number((xml.@originalId).toString());
+			}
+			
+			if(xml.@hide)
+			{
+				var temp:String = (xml.@hide.toString());
+				if(temp == null)
+					_hide = false;
+				else if (temp.indexOf("true") >= 0)
+					_hide = true;
+				else
+					_hide = false;
+			}
+			
+			if(xml.@template)
+			{
+				var temp:String = (xml.@template.toString());
+				if(temp == null)
+					_template = false;
+				else if (temp.indexOf("true") >= 0)
+					_template = true;
+				else
+					_template = false;
+			}
+			//END KSKETCH-SYNPHNE
 				
 			visibilityControl.deserializeVisibility(new XML(xml.Activity));
 			transformInterface.deserializeTransform(new XML(xml.transform));
@@ -381,6 +441,63 @@ package sg.edu.smu.ksketch2.model.objects
 				throw new new Error("You don't ask a KObject for its centroid. Ask a KStroke or Group instead");
 			
 			return null;
+		}
+		
+		//KSKETCH-SYNPHNE
+		public function initRegion(start:int, end:int):void
+		{
+			_startRegion = start;
+			_endRegion = end;
+		}
+		
+		public function get startRegion():int
+		{
+			return _startRegion;
+		}
+		
+		public function set startRegion(value:int):void
+		{
+			_startRegion = value;
+		}
+		
+		public function get endRegion():int
+		{
+			return _endRegion;
+		}
+		
+		public function set endRegion(value:int):void
+		{
+			_endRegion = value;
+		}
+		
+		public function get hide():Boolean
+		{
+			return _hide;
+		}
+		
+		public function set hide(value:Boolean):void
+		{
+			_hide = value;
+		}
+		
+		public function get originalId():int
+		{
+			return _originalId;
+		}
+		
+		public function set originalId(id:int):void
+		{
+			_originalId = id;
+		}
+		
+		public function get template():Boolean
+		{
+			return _template;
+		}
+		
+		public function set template(value:Boolean):void
+		{
+			_template = value;
 		}
 	}
 }

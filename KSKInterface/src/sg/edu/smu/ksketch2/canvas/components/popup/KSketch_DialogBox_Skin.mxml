@@ -50,7 +50,10 @@
 				else if(_mode == "Help")
 					_dialogHelp = new KSketch_DialogBox_Help(this);
 				else if(_mode == "Results")
+				{
 					_dialogResult = new KSketch_DialogBox_Result(this, _activity);
+					_dialogResult.initStars(_activity.stars);
+				}
 				else if(_mode == "Notification")
 					_dialogNotification = new KSketch_DialogBox_Notifications(this, _homeView, _homeView.notice);
 				else if(_mode == "Logout")
@@ -77,7 +80,6 @@
 				if(activity)
 				{
 					_activity = activity;
-					_dialogResult.initStars(_activity.stars);
 				}
 			}
 			

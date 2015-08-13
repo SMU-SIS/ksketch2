@@ -48,9 +48,9 @@ package sg.edu.smu.ksketch2
 		public static var FONT_SIZE_300:Number = 300;
 		
 		//Main rectangle
-		public static var RECT_STRENGTH:Number = 1;
-		public static var RECT_BLURX:Number = 12;
-		public static var RECT_BLURY:Number = 12;
+		public static const RECT_STRENGTH:Number = 1;
+		public static const RECT_BLURX:Number = 12;
+		public static const RECT_BLURY:Number = 12;
 		public static var RECT_RADIUSX:Number = 5;
 		public static var RECT_RADIUSY:Number = 5;
 		
@@ -62,36 +62,38 @@ package sg.edu.smu.ksketch2
 		
 		public static function setView():void
 		{
-			if(Capabilities.screenResolutionX > Capabilities.screenResolutionY)
+			
+			if(Capabilities.playerType != "PlugIn")
 			{
-				WIDTH = Capabilities.screenResolutionX;
-				HEIGHT = Capabilities.screenResolutionY;
+				if(Capabilities.screenResolutionX > Capabilities.screenResolutionY)
+				{
+					WIDTH = Capabilities.screenResolutionX;
+					HEIGHT = Capabilities.screenResolutionY;
+				}
+				else
+				{
+					WIDTH = Capabilities.screenResolutionY;
+					HEIGHT = Capabilities.screenResolutionX;
+				}
+				
+				ASPECTRATIO = int((WIDTH/HEIGHT)*100)/100;
+				
+				if(WIDTH > 1280 && HEIGHT > 960)
+					SCALE = 2;
+				
+				FONT_SIZE_10 = 10 * SCALE;
+				FONT_SIZE_10_5 = 10.5 * SCALE;
+				FONT_SIZE_14 = 14 * SCALE;
+				FONT_SIZE_18 = 18 * SCALE;
+				FONT_SIZE_20 = 20 * SCALE;
+				FONT_SIZE_26 = 26 * SCALE;
+				FONT_SIZE_60 = 60 * SCALE;
+				FONT_SIZE_300 = 300 * SCALE;
+				
+				RECT_RADIUSX = 5 * SCALE;
+				RECT_RADIUSY = 5 * SCALE;
 			}
-			else
-			{
-				WIDTH = Capabilities.screenResolutionY;
-				HEIGHT = Capabilities.screenResolutionX;
-			}
 			
-			ASPECTRATIO = int((WIDTH/HEIGHT)*100)/100;
-			
-			if(WIDTH > 1280 && HEIGHT > 960)
-				SCALE = 2;
-			
-			FONT_SIZE_10 = 10 * SCALE;
-			FONT_SIZE_10_5 = 10.5 * SCALE;
-			FONT_SIZE_14 = 14 * SCALE;
-			FONT_SIZE_18 = 18 * SCALE;
-			FONT_SIZE_20 = 20 * SCALE;
-			FONT_SIZE_26 = 26 * SCALE;
-			FONT_SIZE_60 = 60 * SCALE;
-			FONT_SIZE_300 = 300 * SCALE;
-			
-			RECT_STRENGTH = 1 * SCALE;
-			RECT_BLURX = 12 * SCALE;
-			RECT_BLURY = 12 * SCALE;
-			RECT_RADIUSX = 5 * SCALE;
-			RECT_RADIUSY = 5 * SCALE;
 		}
 	}
 }

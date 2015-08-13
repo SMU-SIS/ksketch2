@@ -14,7 +14,6 @@
 	<fx:Script>
 		<![CDATA[
 			import spark.components.Label;
-			import spark.layouts.VerticalLayout;
 			
 			protected var _label:String;
 			

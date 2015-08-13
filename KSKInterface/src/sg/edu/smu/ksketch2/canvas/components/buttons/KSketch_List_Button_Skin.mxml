@@ -36,7 +36,6 @@ in accordance with the terms of the license agreement accompanying it.
 	<fx:Metadata>
 		[HostComponent("spark.components.Button")]
 	</fx:Metadata>
-	
 	<s:states>
 		<s:State name="up"/>
 		<s:State name="over"/>

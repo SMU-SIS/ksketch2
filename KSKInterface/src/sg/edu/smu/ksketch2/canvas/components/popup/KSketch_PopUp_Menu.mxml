@@ -103,11 +103,11 @@
 				helpButton.init(KSketchAssets.texture_help, KSketchAssets.texture_help_down, false);
 				helpButton.initSkin();
 				
-				if((Capabilities.version.indexOf('IOS') > -1) || (Capabilities.os.toLowerCase().indexOf("mac") == -1))
+				/*if((Capabilities.version.indexOf('IOS') > -1) || (Capabilities.os.toLowerCase().indexOf("mac") == -1))
 					shareButton.init(KSketchAssets.texture_share_ios, KSketchAssets.texture_share_ios_down, false);
 				else
 					shareButton.init(KSketchAssets.texture_share_android, KSketchAssets.texture_share_android_down, false);
-				shareButton.initSkin();
+				shareButton.initSkin();*/
 				
 				if(_saveOptions)
 				{
@@ -550,9 +550,11 @@
 			id="helpButton"
 			/>
 		
+		<!--
 		<buttons:KSketch_CanvasButton
 			click="_openSharingOptions()"
 			id="shareButton"
 			/>
+		-->
 	</s:Group>
 </s:SkinnablePopUpContainer>

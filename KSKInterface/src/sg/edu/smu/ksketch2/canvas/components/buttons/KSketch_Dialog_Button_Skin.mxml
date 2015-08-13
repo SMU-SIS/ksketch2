@@ -45,7 +45,7 @@
 		<![CDATA[
 			import sg.edu.smu.ksketch2.KSketchGlobals;
 			
-			private var BUTTONHEIGHT = 50 * KSketchGlobals.SCALE;
+			private var BUTTONHEIGHT:Number = 50 * KSketchGlobals.SCALE;
 		]]>
 	</fx:Script>
     
@@ -56,7 +56,7 @@
         <s:State name="down" />
         <s:State name="disabled" />
     </s:states>
-    
+	
     <!-- layer 2: fill -->
     <!--- @private -->
     <s:Rect id="fill" left="1" right="1" top="1" bottom="1" radiusX="5">
@@ -64,7 +64,9 @@
 			<s:SolidColorStroke color="{KSketchGlobals.COLOR_BLACK}"/>
 		</s:stroke>
 		<s:fill>
-			<s:SolidColor color="{KSketchGlobals.COLOR_GREY_VERYLIGHT}"/>
+			<s:SolidColor color.up="{KSketchGlobals.COLOR_GREY_VERYLIGHT}" 
+						  color.over="{KSketchGlobals.COLOR_GREY_DARK}"
+						  color.down="{KSketchGlobals.COLOR_GREY_DARK}"/>
 		</s:fill>
     </s:Rect>
     

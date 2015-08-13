@@ -48,8 +48,7 @@
 			[Bindable]
 			public var upColor:uint = KSketchGlobals.COLOR_GREY_LIGHT;
 			
-			private var BUTTONWIDTH:Number = 50 * KSketchGlobals.SCALE;
-			private var BUTTONHEIGHT:Number = 50 * KSketchGlobals.SCALE;
+			private var BUTTONDIMENSION:Number = 55 * KSketchGlobals.SCALE;
 			
 		]]>
 	</fx:Script>
@@ -64,7 +63,7 @@
 	
 	<s:filters>
 		<s:DropShadowFilter
-			alpha="0.6"
+			alpha="0.4"
 			alpha.disabled="0"
 			angle="0.5"
 			color="{KSketchGlobals.COLOR_BLACK}"
@@ -93,7 +92,7 @@
         </s:stroke>
     </s:Rect>
     
-	<s:Group id="buttonGroup" width="{BUTTONWIDTH}" height="{BUTTONHEIGHT}" alpha.disabled="0.25">
+	<s:Group id="buttonGroup" width="{BUTTONDIMENSION}" height="{BUTTONDIMENSION}" alpha.disabled="0.25">
 		<s:layout>
 			<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
 		</s:layout>

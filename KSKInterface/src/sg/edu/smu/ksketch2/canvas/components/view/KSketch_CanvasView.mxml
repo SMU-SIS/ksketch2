@@ -36,9 +36,7 @@
 			import mx.graphics.codec.JPEGEncoder;
 			import mx.managers.PopUpManager;
 			import mx.utils.Base64Encoder;
-
-			import sg.edu.smu.ksketch2.KSketch_Config;
-
+			
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
@@ -47,6 +45,7 @@
 			import sg.edu.smu.ksketch2.KSketch2;
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.KSketch_Config;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
@@ -74,6 +73,7 @@
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
 			import sg.edu.smu.ksketch2.model.objects.KInstructions;
 			import sg.edu.smu.ksketch2.model.objects.KObject;
+			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
 			
@@ -82,6 +82,7 @@
 			private var DRAWINGSTAGE_BORDER:Number = 1 * KSketchGlobals.SCALE;
 			private var TIMEBAR_GAP:Number = 4 * KSketchGlobals.SCALE;
 			private var TIMEBAR_PADDING:Number = 5 * KSketchGlobals.SCALE;
+			private var TIMEBAR_PLAYDIMENSION:Number = 60 * KSketchGlobals.SCALE;
 			private var SYNPHNE_PADDINGTOP:Number = 10 * KSketchGlobals.SCALE;
 			private var SYNPHNE_PADDINGRIGHT:Number = 5 * KSketchGlobals.SCALE;
 			private var SYNPHNE_TIMERLABEL_WIDTH:Number = 100 * KSketchGlobals.SCALE;
@@ -249,13 +250,17 @@
 				//Initiate the controls
 				if(!isPlayer)
 				{
-					_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, widget, modelDisplay);
-					
 					//KSKETCH-SYNPHNE
 					if(!isSynphne)
+					{
+						_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, null, widget, modelDisplay);
 						_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, null, canvas_region, modelDisplay, motionDisplay, _feedbackPopUp);
+					}
 					else
+					{
+						_transitionHelper = new KWidgetInteractorManager(_KSketch, _interactionControl, _activityControl, widget, modelDisplay);
 						_selectionHelper = new KCanvasInteractorManager(_KSketch, _interactionControl, _activityControl, canvas_region, modelDisplay, motionDisplay, _feedbackPopUp);
+					}
 				}
 				
 				if(!isWeb)
@@ -684,21 +689,18 @@
 			public function resetTimeControl():void
 			{
 				_KSketch.time = 0;
-				//_magnifier.setToTime(_KSketch.time);
+				_magnifier.setToTime(_KSketch.time);
+			}
+			
+			public function get timeTaken():int
+			{
+				return _timeTaken; //in milliseconds
 			}
 			
 			public function autoPlayAnimation():void
 			{
 				playButton.playToggle(true);
 				_activityControl.autoSelectObjectToAnimate();
-			}
-			
-			public function get activityType():String
-			{
-				var activityType:String = "SKETCH";
-				if(_activityControl)
-					activityType = _activityControl.activityType;
-				return activityType;
 			}
 			
 			public function setAnimationPlaying(value:Boolean):void
@@ -737,6 +739,10 @@
 				return regionsArr;
 			}
 			
+			public function get starValueArr():Array
+			{
+				return _options.starValueArr;
+			}
 			
 			public function getCurrentTemplateObjectView():IObjectView
 			{
@@ -744,10 +750,10 @@
 				for(var i:int=0; i<_KSketch.root.children.length(); i++)
 				{
 					var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
-					/*if(currObj is KStroke && currObj.id == currentId)
+					if(currObj is KStroke && currObj.id == currentId)
 					{
 						return modelDisplay.viewsTable[currObj];
-					}*/
+					}
 				}
 				return null;
 			}

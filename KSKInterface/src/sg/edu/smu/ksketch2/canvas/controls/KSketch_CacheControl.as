@@ -449,5 +449,24 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 			_homeView.refresh(false);
 		}
+
+		public function migrateCache(sketchObj: Object):void
+		{
+			var arr:Array = cachedDocuments;
+			if(arr == null){
+				arr = new Array();
+			}
+			arr.push(sketchObj);
+			cachedDocuments = arr;
+			var list:SortedList = cachedList;
+			var obj:KSketch_ListItem = new KSketch_ListItem();
+			obj.fromCache(sketchObj);
+			if(sketchObj.save == -1) {
+				obj.isSaved = false;
+			}
+			obj.uniqueId = sketchObj.uniqueId;
+			list.add(obj);
+			cachedList = list;
+		}
 	}
 }

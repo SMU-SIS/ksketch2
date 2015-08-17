@@ -234,7 +234,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 					var arr:Array = cachedDocuments;
 					if(arr !=null){
 						for(var i:int=0;i<arr.length;i++){
-							if(arr[i].fileName = _selectedSketch[0]){
+							if(arr[i].fileName == _selectedSketch[0]){
 								sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
 										arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
 										arr[i].sketchId, int(arr[i].version));
@@ -292,7 +292,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var arr:Array = cachedDocuments;
 				if(arr !=null){
 					for(var i:int=0;i<arr.length;i++){
-						if(arr[i].fileName = _selectedSketch[0]){
+						if(arr[i].fileName == _selectedSketch[0]){
 							sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
 									arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
 									arr[i].sketchId, int(arr[i].version));

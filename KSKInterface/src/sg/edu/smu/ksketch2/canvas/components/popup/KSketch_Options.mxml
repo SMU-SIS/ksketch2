@@ -73,9 +73,11 @@
 				titleAccuracyMax.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
 				
 				closeButton.init("Close");
+				menuTopButton.init("Top");
 				menuLeftButton.init("Left");
 				menuRightButton.init("Right");
 				closeButton.initSkin();
+				menuTopButton.initSkin();
 				menuLeftButton.initSkin();
 				menuRightButton.initSkin();
 			}
@@ -439,12 +441,16 @@
 				<s:layout>
 					<s:HorizontalLayout/>
 				</s:layout>
+				<buttons:KSketch_DialogButton id="menuTopButton" click="_menuTop()"/>
 				<buttons:KSketch_DialogButton id="menuLeftButton" click="_menuLeft()"/>
 				<buttons:KSketch_DialogButton id="menuRightButton" click="_menuRight()"/>
 			</s:Group>
 		</s:Group>
 		
 		<s:Group id="optionItems">
+			<s:layout>
+				<s:VerticalLayout paddingLeft="{CONTENT_PADDING}"/>
+			</s:layout>
 			<s:Group>
 				<s:layout>
 					<s:HorizontalLayout paddingLeft="{CONTENT_PADDING}" 

@@ -376,17 +376,10 @@
 								//KSKETCH-SYNPHNE
 								_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
 								_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
+								_activityControl.isNewSketch = true;
+								synphne_component.visible = true;
 							}
 						}	
-					}
-					else
-					{
-						if(isSynphne)
-						{
-							//KSKETCH-SYNPHNE
-							_activityControl.isNewSketch = true;
-							instructionsButton.visible = false;
-						}
 					}
 					
 					data = null;
@@ -700,7 +693,6 @@
 			public function autoPlayAnimation():void
 			{
 				playButton.playToggle(true);
-				_activityControl.autoSelectObjectToAnimate();
 			}
 			
 			public function setAnimationPlaying(value:Boolean):void
@@ -939,7 +931,7 @@
 				<transformWidget2:KSketch_Widget_Component id="widget" visible="false"/>
 				
 				<!-- KSKETCH-SYNPHNE -->
-				<s:Group id="synphne_component" width="100%" depth="0">
+				<s:Group id="synphne_component" width="100%" depth="0" visible="false">
 					<s:layout>
 						<s:HorizontalLayout paddingTop="{SYNPHNE_PADDINGTOP}" verticalAlign="middle" horizontalAlign="center"/>
 					</s:layout>

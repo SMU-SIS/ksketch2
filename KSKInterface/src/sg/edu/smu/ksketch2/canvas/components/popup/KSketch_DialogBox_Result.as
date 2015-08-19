@@ -77,6 +77,7 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 			_closeButton.initSkin();
 			_closeButton.addEventListener(MouseEvent.CLICK, _continue);
 			
+			_dialogPopUp.buttonComponent.addElement(_retryButton);
 			_dialogPopUp.buttonComponent.addElement(_closeButton);
 		}
 		

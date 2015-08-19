@@ -65,6 +65,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				
 		//KSKETCH-SYNPHNE
 		private var _activityControl:KActivityControl;
+		private var _widgetHighlight:Boolean = false;
 		
 		/**
  		 * The main constructor for the KWidgetInteractorManager class.
@@ -278,6 +279,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 		 */
 		public function updateWidget(event:Event):void
 		{
+			//KSKETCH-SYNPHNE
+			_widgetHighlight = false;
+			
 			_widget.visible = false;
 			
 			if(event.type == KInteractionControl.EVENT_INTERACTION_BEGIN)
@@ -295,7 +299,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				_widget.visible = false;
 				activeMode = defaultMode;
 				_contextMenu.close();
-				return;
+				return;	
 			}
 			
 			if(!_isInteracting)
@@ -328,6 +332,19 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
  		 */
 		public function updateMovingWidget(event:Event):void
 		{
+			//KSKETCH-SYNPHNE
+			if(_activityControl && !_widgetHighlight)
+			{
+				if(_activityControl.activityType == "TRACK")
+				{
+					//select the object to track and set it to demonstration mode
+					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
+					_activityControl.autoSelectObjectToAnimate();
+					_widget.visible = true;
+					_widgetHighlight = true;
+				}
+			}
+			
 			if(_interactionControl.selection)
 			{
 				_widget.visible = true;

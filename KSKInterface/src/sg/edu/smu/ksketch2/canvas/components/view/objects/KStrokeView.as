@@ -63,7 +63,9 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		
 		override public function eraseIfHit(xPoint:Number, yPoint:Number, time:Number, op:KCompositeOperation):void
 		{
-			if(hitTestPoint(xPoint, yPoint, true))
+			//if(hitTestPoint(xPoint, yPoint, true))
+			//KSKETCH-SYNPHNE
+			if(hitTestPoint(xPoint, yPoint, true) && !_object.template)
 			{
 				//do a check if object belongs to a group and if all the objects in the group are erased at that time
 				var parent:KGroup = _object.parent;

@@ -298,7 +298,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			}
 			else
 			{
-				trace("recognise synphne");
 				_recogniseTapSynphne(event);
 			}
 			
@@ -311,6 +310,19 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		 */
 		private function _recogniseDraw(event:GestureEvent):void
 		{
+			//KSKETCH-SYNPHNE
+			if(KSketch_CanvasView.isSynphne)
+			{
+				if(_activityControl.activityType == "INTRO")
+					return;
+				
+				if(_activityControl.activityType == "RECALL")
+				{
+					_activityControl.incrementRecallCounter();
+					return;
+				}
+			}
+			
 			KSketch_CanvasView.tracker.trackPageview( "/canvas/draw" );
 			if(_interactionControl.currentInteraction)
 				return;
@@ -396,10 +408,8 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		
 		private function _recogniseTapIntro(tapLocation:Point):void
 		{
-			trace("tap detected " + KSketch_CanvasView_Preferences.tapAnywhere);
 			if(KSketch_CanvasView_Preferences.tapAnywhere == "TAPANYWHERE_ON")
 			{
-				trace("tap ok");
 				_activityControl.stopIntroductionAnimation();
 				_activityControl.processIntro(true);
 			}
@@ -415,7 +425,6 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 					selectionArea.graphics.endFill();
 					_modelDisplay.addChild(selectionArea);
 					if (selectionArea.hitTestObject(view as DisplayObject)) {
-						trace("hit");
 						_activityControl.stopIntroductionAnimation();
 						_activityControl.processIntro(true);
 					}

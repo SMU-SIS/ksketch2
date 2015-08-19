@@ -138,7 +138,6 @@
 				//KSKETCH-SYNPHNE
 				if(KSketch_CanvasView.isSynphne)
 				{
-					buttonContainer.removeElementAt(13);
 					buttonContainer.removeElementAt(12);
 					buttonContainer.removeElementAt(10);
 					buttonContainer.removeElementAt(4);

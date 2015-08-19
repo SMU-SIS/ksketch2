@@ -1,6 +1,7 @@
 package sg.edu.smu.ksketch2.canvas.controls
 {
 	import flash.display.DisplayObject;
+	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
@@ -53,11 +54,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 				_setObjectProperties(false, false, false);
 			}
 			_canvasView.resetTimeControl();
-			_interactionControl.selection = null;
 			
 			if(activity == "INTRO")
 			{
 				_activityType = "INTRO";
+				_discardSketchedObjects();
 				_hideObjects(true);
 				startIntroductionAnimation();
 				_isAnimationPlaying = true;
@@ -79,10 +80,28 @@ package sg.edu.smu.ksketch2.canvas.controls
 			else if(activity == "TRACK")
 			{ 
 				_activityType = "TRACK";
+				trace("before");
 				_currentManipulateObject = _getCurrentObjectToTrack(false);
+				
+				trace("after");
+				//If there is no sketched object to track, then duplicate copy of the original
+				if(!_currentManipulateObject)
+				{
+					_currentManipulateObject = _duplicateObject(_currentTemplateObject as KStroke);
+					trace("Implement duplicate object for track without trace");	
+				}
 				_setObjectProperties(false, false, true);
 				_hideObjects(true);
 				processTrack(_currentManipulateObject as KStroke);
+			}
+			else if(activity == "RECREATE")
+			{ 
+				_interactionControl.selection = null;
+				_activityType = "RECREATE";
+				_currentManipulateObject = null; //_getCurrentObjectToTrack(false);
+				_setObjectProperties(false, false, false);
+				_hideObjects(false);
+				//processTrack(_currentManipulateObject as KStroke);
 			}
 		}
 		
@@ -132,6 +151,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				_canvasView.setRegionVisibility(true);	
 				_hideObjects(false);
 			}
+			_interactionControl.selection = null;
 		}
 		
 		public function processRecall(correctRecall:Boolean):void
@@ -152,6 +172,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				_instructionsBox.open(_canvasView, false);
 				_instructionsBox.startStopActivity();
 			}
+			_interactionControl.selection = null;
 		}
 		
 		public function incrementRecallCounter():void
@@ -170,11 +191,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 					currObj.originalId = _currentObjectID;
 				}	
 			}
+			
+			_interactionControl.selection = null;
 		}
 		
 		public function processTrack(currObj:KStroke):void
 		{
-			if(currObj)	//if there is a sketched object
+			if(currObj)
 			{
 				//unhide current object and disable it as a template
 				var tempArr:Array = new Array(_KSketch.root.children.length());
@@ -203,11 +226,15 @@ package sg.edu.smu.ksketch2.canvas.controls
 				{
 					if(currObj is KStroke && currObj.id != currObj.originalId && currObj.originalId == _currentObjectID)
 						break;
+					else
+						currObj = null;
 				}
 				else
 				{
 					if(currObj is KStroke && currObj.id == currObj.originalId && currObj.originalId == _currentObjectID)
 						break;
+					else 
+						currObj = null;
 				}
 			}
 			
@@ -291,7 +318,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 					var view:IObjectView = _canvasView.modelDisplay.viewsTable[currObj];
 					(view as DisplayObject).visible = false;
 					
-					trace("hide this view and obj " + currObj.id);
+					//trace("hide this view and obj " + currObj.id);
 					/*This portion will delete the stroke/view
 					var view:IObjectView = _canvasView.modelDisplay.viewsTable[currObj];
 					var op:KCompositeOperation = new KCompositeOperation();
@@ -318,12 +345,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_KSketch.dispatchEvent(new KSketchEvent(KSketchEvent.EVENT_MODEL_UPDATED));
 		}
 		
-		public function duplicateObject(currObj:KStroke):KObject
+		private function _duplicateObject(currObj:KStroke):KObject
 		{
 			_interactionControl.begin_interaction_operation();
 			
 			var op:KCompositeOperation = new KCompositeOperation();
-			var newStroke:KStroke = new KStroke(0, currObj.points, currObj.color, currObj.thickness);
+			var newStroke:KStroke = _KSketch.object_Add_Stroke(currObj.points, _KSketch.time, currObj.color, currObj.thickness, op);
+			(newStroke as KObject).originalId = (currObj as KObject).id;
+			
 			_interactionControl.end_interaction_operation();
 			
 			return (newStroke as KObject);

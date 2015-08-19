@@ -207,7 +207,7 @@
             }
 
             //save to cache
-            if (!overwriteSave) {
+            if (_canvasView._isNewSketch) {
                 _cacheControl.addToCache(objDoc);
             } else {
                 _cacheControl.updateCache(objDoc);

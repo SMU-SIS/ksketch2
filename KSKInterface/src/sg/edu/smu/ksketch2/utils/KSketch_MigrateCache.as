@@ -12,15 +12,13 @@ public class KSketch_MigrateCache {
     public function KSketch_MigrateCache() {
     }
     public function migrateData(){
-        if(_mySOV1.data){
+        if(_mySOV1.data != null){
             if(_mySOV1.data.userSketch) {
                 var obj:Object = com.adobe.serialization.json.JSON.decode(_mySOV1.data.userSketch, true);
                 buildCacheV2(obj.sketches)
             }
             if(_mySOV1.data.user){
                 _cacheControl.user = com.adobe.serialization.json.JSON.decode(_mySOV1.data.user,true);
-            } else {
-                _cacheControl.newUser();
             }
             _mySOV1.clear();
         }

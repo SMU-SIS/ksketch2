@@ -63,7 +63,7 @@ package sg.edu.smu.ksketch2
 		public static function setView():void
 		{
 			
-			if(Capabilities.playerType != "PlugIn" && Capabilities.playerType != "Desktop")
+			if(Capabilities.playerType != "PlugIn")// && Capabilities.playerType != "Desktop")
 			{
 				if(Capabilities.screenResolutionX > Capabilities.screenResolutionY)
 				{

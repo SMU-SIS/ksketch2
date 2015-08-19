@@ -243,6 +243,18 @@ package sg.edu.smu.ksketch2.canvas.controls
 							}
 						}
 					}
+				} else {
+					var arr:Array = cachedDocuments;
+					if(arr !=null){
+						for(var i:int=0;i<arr.length;i++){
+							if(arr[i].sketchId == _selectedSketch[1]){
+								sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
+										arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
+										arr[i].sketchId, int(arr[i].version));
+								_homeView.displaySketchData(sketchData, _selectedSketch);
+							}
+						}
+					}
 				}
 			}
 		}	
@@ -280,6 +292,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				sketchData = new KSketch_DataListItem(resultObj.data.fileData, resultObj.data.fileName, resultObj.data.originalName, 
 													  resultObj.data.owner_id, resultObj.modified, resultObj.data.changeDescription, 
 													  resultObj.data.sketchId, resultObj.data.version);
+				updateCache(resultObj.data);
 			}
 			
 			_homeView.displaySketchData(sketchData, _selectedSketch);
@@ -293,6 +306,18 @@ package sg.edu.smu.ksketch2.canvas.controls
 				if(arr !=null){
 					for(var i:int=0;i<arr.length;i++){
 						if(arr[i].fileName == _selectedSketch[0]){
+							sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
+									arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
+									arr[i].sketchId, int(arr[i].version));
+							_homeView.displaySketchData(sketchData, _selectedSketch);
+						}
+					}
+				}
+			} else {
+				var arr:Array = cachedDocuments;
+				if(arr !=null){
+					for(var i:int=0;i<arr.length;i++){
+						if(arr[i].sketchId == _selectedSketch[1]){
 							sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
 									arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
 									arr[i].sketchId, int(arr[i].version));

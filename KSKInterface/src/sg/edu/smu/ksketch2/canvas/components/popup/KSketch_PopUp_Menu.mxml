@@ -16,431 +16,404 @@
 						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
 	<fx:Script>
 		<![CDATA[
-			import com.adobe.serialization.json.JSON;
-			
-			import mx.core.UIComponent;
-			import mx.events.FlexEvent;
-			import mx.managers.PopUpManager;
-			
-			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchGlobals;
-			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
-			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
-			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
-			import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
-			import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
-			import sg.edu.smu.ksketch2.utils.KWebData;
-			
-			public static const ORIGIN:Point = new Point();
-			public static const LEFT:int = 0;
-			public static const RIGHT:int = 1;
-			public static const UP:int = 2;
-			public static const DOWN:int = 3;
-			
-			private var OFFSET:Number = 10 * KSketchGlobals.SCALE;
-			private var GAP:Number = 10 * KSketchGlobals.SCALE;
-			private var PADDING:Number = 5 * KSketchGlobals.SCALE;
-			private var LINE_GAP:Number = 5 * KSketchGlobals.SCALE;
-			private var LINE_STROKE:Number = 2 * KSketchGlobals.SCALE;
-			
-			//Positioning variables
-			private var _referenceComponent:UIComponent;
-			private var _canvasOrigin:Point = new Point();
-			private var _position:int;
-			
-			private var dataSource:IDataInput;
-			
-			//Current pen button that has been toggled
-			private var _selectedButton:KSketch_Toggle_Button;
-			
-			private var _canvasView:KSketch_CanvasView;
-			private var _options:KSketch_Options;
-			private var _dialogPopUp:KSketch_DialogBox_Skin;
-			private var _saveOptions:KSketch_SaveOptions;
-			private var _feedback:KSketch_Feedback_Message;
-			
-			private var _KSketch:KSketch2;
-			private var _interactionControl:KInteractionControl;
-			private var _canvasControl:KCanvasInteractorManager;
-			
-			/**
-			 * @referenceComponent: the component that this menu will refer to for positioning itself
-			 * @canvasView: the host view
-			 * @optionsPanel: an initialised KSketch_Options (this has to be done in the canvas first because of the timebar)
-			 * @ksketchInstance: The canvas's ksketch instance
-			 */
-			public function init(referenceComponent:UIComponent, canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options, 
-								 savePanel:KSketch_SaveOptions, KSketchInstance:KSketch2, interactionControl:KInteractionControl, 
-								 canvasControl:KCanvasInteractorManager, feedback:KSketch_Feedback_Message):void
-			{
-				_referenceComponent = referenceComponent;
-				_canvasOrigin = referenceComponent.localToGlobal(_canvasOrigin);
-				_position = 1;
-				
-				_canvasView = canvasView;
-				_KSketch = KSketchInstance;
-				_interactionControl = interactionControl;
-				_canvasControl = canvasControl;
-				_options = optionsPanel;
-				_feedback = feedback;
-				
-				if(savePanel)
-					_saveOptions = savePanel;
-			}
-			
-			public function _initButtons():void
-			{
-				this.removeEventListener(FlexEvent.CREATION_COMPLETE, _initButtons);
-				undoButton.init(KSketchAssets.texture_undo, KSketchAssets.texture_undo_down, false);
-				undoButton.initSkin();
-				redoButton.init(KSketchAssets.texture_redo, KSketchAssets.texture_redo_down, false);
-				redoButton.initSkin();
-				optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down, false);
-				optionButton.initSkin();
+		import com.adobe.serialization.json.JSON;
+
+		import mx.core.UIComponent;
+		import mx.events.FlexEvent;
+		import mx.managers.PopUpManager;
+
+		import sg.edu.smu.ksketch2.KSketch2;
+		import sg.edu.smu.ksketch2.KSketchAssets;
+		import sg.edu.smu.ksketch2.KSketchGlobals;
+		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+		import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+		import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
+		import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
+		import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
+		import sg.edu.smu.ksketch2.utils.KWebData;
+
+		public static const ORIGIN:Point = new Point();
+		public static const LEFT:int = 0;
+		public static const RIGHT:int = 1;
+		public static const UP:int = 2;
+		public static const DOWN:int = 3;
+
+		private var OFFSET:Number = 10 * KSketchGlobals.SCALE;
+		private var GAP:Number = 10 * KSketchGlobals.SCALE;
+		private var PADDING:Number = 5 * KSketchGlobals.SCALE;
+		private var LINE_GAP:Number = 5 * KSketchGlobals.SCALE;
+		private var LINE_STROKE:Number = 2 * KSketchGlobals.SCALE;
+
+		//Positioning variables
+		private var _referenceComponent:UIComponent;
+		private var _canvasOrigin:Point = new Point();
+		private var _position:int;
+
+		private var dataSource:IDataInput;
+
+		//Current pen button that has been toggled
+		private var _selectedButton:KSketch_Toggle_Button;
+
+		private var _canvasView:KSketch_CanvasView;
+		private var _options:KSketch_Options;
+		private var _dialogPopUp:KSketch_DialogBox_Skin;
+		private var _saveOptions:KSketch_SaveOptions;
+		private var _feedback:KSketch_Feedback_Message;
+
+		private var _KSketch:KSketch2;
+		private var _interactionControl:KInteractionControl;
+		private var _canvasControl:KCanvasInteractorManager;
+
+		/**
+		 * @referenceComponent: the component that this menu will refer to for positioning itself
+		 * @canvasView: the host view
+		 * @optionsPanel: an initialised KSketch_Options (this has to be done in the canvas first because of the timebar)
+		 * @ksketchInstance: The canvas's ksketch instance
+		 */
+		public function init(referenceComponent:UIComponent, canvasView:KSketch_CanvasView, optionsPanel:KSketch_Options,
+							 savePanel:KSketch_SaveOptions, KSketchInstance:KSketch2, interactionControl:KInteractionControl,
+							 canvasControl:KCanvasInteractorManager, feedback:KSketch_Feedback_Message):void {
+			_referenceComponent = referenceComponent;
+			_canvasOrigin = referenceComponent.localToGlobal(_canvasOrigin);
+			_position = 1;
+
+			_canvasView = canvasView;
+			_KSketch = KSketchInstance;
+			_interactionControl = interactionControl;
+			_canvasControl = canvasControl;
+			_options = optionsPanel;
+			_feedback = feedback;
+
+			if (savePanel)
+				_saveOptions = savePanel;
+		}
+
+		public function _initButtons():void {
+			this.removeEventListener(FlexEvent.CREATION_COMPLETE, _initButtons);
+			undoButton.init(KSketchAssets.texture_undo, KSketchAssets.texture_undo_down, false);
+			undoButton.initSkin();
+			redoButton.init(KSketchAssets.texture_redo, KSketchAssets.texture_redo_down, false);
+			redoButton.initSkin();
+			optionButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down, false);
+			optionButton.initSkin();
+			if (!KSketch_CanvasView.isWeb) {
 				optSynphneButton.init(KSketchAssets.texture_options, KSketchAssets.texture_options_down, false);
 				optSynphneButton.initSkin();
-				helpButton.init(KSketchAssets.texture_help, KSketchAssets.texture_help_down, false);
-				helpButton.initSkin();
-				
-				/*if((Capabilities.version.indexOf('IOS') > -1) || (Capabilities.os.toLowerCase().indexOf("mac") == -1))
-					shareButton.init(KSketchAssets.texture_share_ios, KSketchAssets.texture_share_ios_down, false);
-				else
-					shareButton.init(KSketchAssets.texture_share_android, KSketchAssets.texture_share_android_down, false);
-				shareButton.initSkin();*/
-				
-				if(_saveOptions)
-				{
-					newButton.visible = true;
-					newButton.init(KSketchAssets.texture_new, KSketchAssets.texture_new_down, false);
-					newButton.initSkin();
-					
-					exitButton.visible = true;
-					exitButton.init(KSketchAssets.texture_prevScreen, KSketchAssets.texture_prevScreen_down, false);
-					exitButton.initSkin();
-				}
-				
-				eraserToggle.init(KSketchAssets.texture_eraser, KSketchAssets.texture_eraser_down, false);
-				eraserToggle.initSkin();
-				blackToggle.init(KSketchAssets.texture_blackPen, KSketchAssets.texture_blackPen_down, false);
-				blackToggle.initSkin();
-				redToggle.init(KSketchAssets.texture_redPen, KSketchAssets.texture_redPen_down, false);
-				redToggle.initSkin();
-				blueToggle.init(KSketchAssets.texture_bluePen, KSketchAssets.texture_bluePen_down, false);
-				blueToggle.initSkin();
-				greenToggle.init(KSketchAssets.texture_greenPen, KSketchAssets.texture_greenPen_down, false);
-				greenToggle.initSkin();
-				lassoToggle.init(KSketchAssets.texture_lasso, KSketchAssets.texture_lasso_down, false);
-				lassoToggle.initSkin();
-				
-				_setPen(blackToggle, true);
-				
-				//KSKETCH-SYNPHNE
-				if(KSketch_CanvasView.isSynphne)
-				{
-					buttonContainer.removeElementAt(12);
-					buttonContainer.removeElementAt(10);
-					buttonContainer.removeElementAt(4);
-					buttonContainer.removeElementAt(1);
-				}
-				else
-					buttonContainer.removeElementAt(11);
 			}
-			
-			public function set position(value:int):void
-			{
-				_position = value;
-				switch(_position)
-				{
-					case UP:
-					case DOWN:
-						buttonLayout.requestedColumnCount = -1;
-						buttonLayout.requestedRowCount = 1;
-						break;
-					case LEFT:
-					case RIGHT:
-					default:
-						buttonLayout.requestedColumnCount = 1;
-						buttonLayout.requestedRowCount = -1;
-						break;
-				}
-				
-				dispatchEvent(new FlexEvent(FlexEvent.UPDATE_COMPLETE));
+			helpButton.init(KSketchAssets.texture_help, KSketchAssets.texture_help_down, false);
+			helpButton.initSkin();
+
+			/*if((Capabilities.version.indexOf('IOS') > -1) || (Capabilities.os.toLowerCase().indexOf("mac") == -1))
+			 shareButton.init(KSketchAssets.texture_share_ios, KSketchAssets.texture_share_ios_down, false);
+			 else
+			 shareButton.init(KSketchAssets.texture_share_android, KSketchAssets.texture_share_android_down, false);
+			 shareButton.initSkin();*/
+
+			if (_saveOptions) {
+				newButton.visible = true;
+				newButton.init(KSketchAssets.texture_new, KSketchAssets.texture_new_down, false);
+				newButton.initSkin();
+
+				exitButton.visible = true;
+				exitButton.init(KSketchAssets.texture_prevScreen, KSketchAssets.texture_prevScreen_down, false);
+				exitButton.initSkin();
 			}
-			
-			public function updateMenuDisplay():void
-			{
-				this.removeEventListener(FlexEvent.UPDATE_COMPLETE, updateMenuDisplay);
-				
-				if(_referenceComponent)
-					_canvasOrigin = _referenceComponent.localToGlobal(ORIGIN);
-				
-				switch(_position)
-				{ 
-					case UP:
-					default:
-						x = _canvasOrigin.x + (_referenceComponent.width/2) - (width/2);
-						y = _canvasOrigin.y + OFFSET;
-						break;
-					case DOWN:
-						x = _canvasOrigin.x + (_referenceComponent.width/2) - (width/2);
-						y = _canvasOrigin.y + _referenceComponent.height - height - OFFSET;
-						break;
-					case LEFT:
-						x = _canvasOrigin.x + OFFSET;
-						y = _canvasOrigin.y + (_referenceComponent.height/2) - (height/2);
-						break;
-					case RIGHT:
-						x = _canvasOrigin.x + _referenceComponent.width - width - OFFSET;
-						y = _canvasOrigin.y + (_referenceComponent.height/2) - (height/2);
-						break;
-				}
+
+			eraserToggle.init(KSketchAssets.texture_eraser, KSketchAssets.texture_eraser_down, false);
+			eraserToggle.initSkin();
+			blackToggle.init(KSketchAssets.texture_blackPen, KSketchAssets.texture_blackPen_down, false);
+			blackToggle.initSkin();
+			redToggle.init(KSketchAssets.texture_redPen, KSketchAssets.texture_redPen_down, false);
+			redToggle.initSkin();
+			blueToggle.init(KSketchAssets.texture_bluePen, KSketchAssets.texture_bluePen_down, false);
+			blueToggle.initSkin();
+			greenToggle.init(KSketchAssets.texture_greenPen, KSketchAssets.texture_greenPen_down, false);
+			greenToggle.initSkin();
+			lassoToggle.init(KSketchAssets.texture_lasso, KSketchAssets.texture_lasso_down, false);
+			lassoToggle.initSkin();
+
+			_setPen(blackToggle, true);
+
+			//KSKETCH-SYNPHNE
+			if (KSketch_CanvasView.isSynphne) {
+				buttonContainer.removeElementAt(12);
+				buttonContainer.removeElementAt(10);
+				buttonContainer.removeElementAt(4);
+				buttonContainer.removeElementAt(1);
 			}
-			
-			private function _setPen(button:KSketch_Toggle_Button, init:Boolean):void
-			{
-				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/" + button.id);
-				
-				if(_selectedButton)
-					_selectedButton.selected = false;
-				
-				button.selected = true;
-				_selectedButton = button;
-				var selectedTool:String = "";
-				
-				switch(_selectedButton)
-				{
-					case eraserToggle:
-						KMultiTouchDrawInteractor.eraser = true;
-						_canvasControl.lasso = false;
-						selectedTool = "Eraser";
-						break;
-					case blackToggle:
-						KMultiTouchDrawInteractor.eraser = false;
-						_canvasControl.lasso = false;
-						KDrawInteractor.penColor = KSketchGlobals.COLOR_BLACK;
-						selectedTool = "Black Pen";
-						break;
-					case blueToggle:
-						KMultiTouchDrawInteractor.eraser = false;
-						_canvasControl.lasso = false;
-						KDrawInteractor.penColor = KSketchGlobals.COLOR_BLUE;
-						selectedTool = "Blue Pen";
-						break;
-					case redToggle:
-						KMultiTouchDrawInteractor.eraser = false;
-						_canvasControl.lasso = false;
-						KDrawInteractor.penColor = KSketchGlobals.COLOR_RED;
-						selectedTool = "Red Pen";
-						break;
-					case greenToggle:
-						KMultiTouchDrawInteractor.eraser = false;
-						_canvasControl.lasso = false;
-						KDrawInteractor.penColor = KSketchGlobals.COLOR_GREEN;
-						selectedTool = "Green Pen";
-						break;
-					case lassoToggle:
-						KMultiTouchDrawInteractor.eraser = false;
-						_canvasControl.lasso = true;
-						selectedTool = "Lasso";
-						break;
-				}
-				//LOG
-				if(!init)
-				{
-					_KSketch.logCounter ++;
-					var log:XML = <Action/>;
-					var date:Date = new Date();
-					log.@category = "Pop Up Menu";
-					log.@type = "Set " + selectedTool;
-					//trace("ACTION " + _KSketch.logCounter + ": Selected a " + selectedTool);
-					KSketch2.log.appendChild(log);
-				}
+			else
+				buttonContainer.removeElementAt(11);
+		}
+
+		public function set position(value:int):void {
+			_position = value;
+			switch (_position) {
+				case UP:
+				case DOWN:
+					buttonLayout.requestedColumnCount = -1;
+					buttonLayout.requestedRowCount = 1;
+					break;
+				case LEFT:
+				case RIGHT:
+				default:
+					buttonLayout.requestedColumnCount = 1;
+					buttonLayout.requestedRowCount = -1;
+					break;
 			}
-			
-			/**
-			 * Clears the current document of every single content, without saving it.
-			 */
-			private function _clear():void
-			{
-				//LOG
-				_KSketch.logCounter ++;
+
+			dispatchEvent(new FlexEvent(FlexEvent.UPDATE_COMPLETE));
+		}
+
+		public function updateMenuDisplay():void {
+			this.removeEventListener(FlexEvent.UPDATE_COMPLETE, updateMenuDisplay);
+
+			if (_referenceComponent)
+				_canvasOrigin = _referenceComponent.localToGlobal(ORIGIN);
+
+			switch (_position) {
+				case UP:
+				default:
+					x = _canvasOrigin.x + (_referenceComponent.width / 2) - (width / 2);
+					y = _canvasOrigin.y + OFFSET;
+					break;
+				case DOWN:
+					x = _canvasOrigin.x + (_referenceComponent.width / 2) - (width / 2);
+					y = _canvasOrigin.y + _referenceComponent.height - height - OFFSET;
+					break;
+				case LEFT:
+					x = _canvasOrigin.x + OFFSET;
+					y = _canvasOrigin.y + (_referenceComponent.height / 2) - (height / 2);
+					break;
+				case RIGHT:
+					x = _canvasOrigin.x + _referenceComponent.width - width - OFFSET;
+					y = _canvasOrigin.y + (_referenceComponent.height / 2) - (height / 2);
+					break;
+			}
+		}
+
+		private function _setPen(button:KSketch_Toggle_Button, init:Boolean):void {
+			KSketch_CanvasView.tracker.trackPageview("/popupmenu/" + button.id);
+
+			if (_selectedButton)
+				_selectedButton.selected = false;
+
+			button.selected = true;
+			_selectedButton = button;
+			var selectedTool:String = "";
+
+			switch (_selectedButton) {
+				case eraserToggle:
+					KMultiTouchDrawInteractor.eraser = true;
+					_canvasControl.lasso = false;
+					selectedTool = "Eraser";
+					break;
+				case blackToggle:
+					KMultiTouchDrawInteractor.eraser = false;
+					_canvasControl.lasso = false;
+					KDrawInteractor.penColor = KSketchGlobals.COLOR_BLACK;
+					selectedTool = "Black Pen";
+					break;
+				case blueToggle:
+					KMultiTouchDrawInteractor.eraser = false;
+					_canvasControl.lasso = false;
+					KDrawInteractor.penColor = KSketchGlobals.COLOR_BLUE;
+					selectedTool = "Blue Pen";
+					break;
+				case redToggle:
+					KMultiTouchDrawInteractor.eraser = false;
+					_canvasControl.lasso = false;
+					KDrawInteractor.penColor = KSketchGlobals.COLOR_RED;
+					selectedTool = "Red Pen";
+					break;
+				case greenToggle:
+					KMultiTouchDrawInteractor.eraser = false;
+					_canvasControl.lasso = false;
+					KDrawInteractor.penColor = KSketchGlobals.COLOR_GREEN;
+					selectedTool = "Green Pen";
+					break;
+				case lassoToggle:
+					KMultiTouchDrawInteractor.eraser = false;
+					_canvasControl.lasso = true;
+					selectedTool = "Lasso";
+					break;
+			}
+			//LOG
+			if (!init) {
+				_KSketch.logCounter++;
 				var log:XML = <Action/>;
 				var date:Date = new Date();
 				log.@category = "Pop Up Menu";
-				log.@type = "Set New Canvas";
-				//trace("ACTION " + _KSketch.logCounter + ": Set up a new canvas");
+				log.@type = "Set " + selectedTool;
+				//trace("ACTION " + _KSketch.logCounter + ": Selected a " + selectedTool);
 				KSketch2.log.appendChild(log);
-				
-				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/clearCanvas" );
-				
-				_saveOptions.returnToHome = false;
-				if(_canvasView._interactionControl.hasUndo)
-				{
-					_saveOptions.open(_canvasView);
-					PopUpManager.centerPopUp(_saveOptions);
-				}
-				else
-				{
-					KSketch_CanvasView.createNewSketch = true;
-					_interactionControl.reset();
-				}
 			}
-			
-			/**
-			 * Saves the current document to a file.
-			 */
-			private function _saveToFile():void
-			{
-				var docsDir:File = File.documentsDirectory;
-				try
-				{
-					docsDir.browseForSave("Save As");
-					docsDir.addEventListener(Event.SELECT, saveData);
-				}
-				catch (error:Error)
-				{
-					trace("Failed:", error.message);
-				}
-			}
-			
-			private function saveData(event:Event):void 
-			{
-				var newFile:File = event.target as File;
-				
-				var confirmSave:Boolean = true;
-				var userData:Object = _canvasView.saveSketch(confirmSave);
-				
-				var finalFileName:String =  newFile.name;
-				
-				var objDoc:Object = KWebData.prepareSketchDocument(userData, finalFileName,null);
-				objDoc.save = -1;
-				objDoc.deleteFlag = 0;
-				objDoc.version = 1;
-				objDoc.originalVersion = 0;	
-				objDoc.originalSketch = -1;
-				objDoc.sketchId = -1;
-				
-				var str:String = com.adobe.serialization.json.JSON.encode(objDoc);
-				
-				//save to file
-				var stream:FileStream = new FileStream();
-				stream.open(newFile, FileMode.WRITE);
-				stream.writeUTFBytes(str);
-				stream.close();
-				
-				_exit();
-			}
-			
-			/**
-			 * Triggers undo/redo action
-			 */
-			public function _undoRedoAction(action:Boolean):void
-			{
-				_canvasControl.doubleTapAction(action, _feedback);
-			}
-			
-			public function turnOnDoubleTapAction(value:Boolean):void
-			{
-				_canvasControl.doubleTapOn = value;
-			}
-			
-			/**
-			 * Triggers exit
-			 */
-			public function _saveExit():void
-			{
-				//LOG
-				_KSketch.logCounter ++;
-				var log:XML = <Action/>;
-				var date:Date = new Date();
-				log.@category = "Pop Up Menu";
-				log.@type = "Exit Canvas";
-				//trace("ACTION " + _KSketch.logCounter + ": Exit canvas");
-				KSketch2.log.appendChild(log);
-				
-				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/exitCanvas" );
-				
-				_saveOptions.returnToHome = true;
-				if(_canvasView._interactionControl.hasUndo)
-				{
-					_saveOptions.open(_canvasView);
-					PopUpManager.centerPopUp(_saveOptions);
-				}
-				else
-					_exit();
-			}
-			
-			public function _exit():void
-			{
-				close();
-				_canvasView.exit();
-				KSketch_CanvasView.createNewSketch = false;
-			}
-			
-			/**
-			 * Opens the options dialog box
-			 */
-			private function _openOptions():void
-			{
-				//LOG
-				_KSketch.logCounter ++;
-				var log:XML = <Action/>;
-				var date:Date = new Date();
-				log.@category = "Pop Up Menu";
-				log.@type = "Open Option Box";
-				//trace("ACTION " + _KSketch.logCounter + ": Open option box");
-				KSketch2.log.appendChild(log);
-				
-				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/openOptions" );
-				_options.open(_canvasView,true);
-				PopUpManager.centerPopUp(_options);
-			}
-			
-			/**
-			 * Opens the sharing options dialog box
-			 */
-			private function _openSharingOptions():void
-			{
-				_dialogPopUp = new KSketch_DialogBox_Skin();
-				_dialogPopUp.init(null, _canvasView, this, null, "Share");
-				_dialogPopUp.open(_canvasView,true);
-				PopUpManager.centerPopUp(_dialogPopUp);
-			}
-			
-			/**
-			 * Opens the help dialog box
-			 */
-			private function _openHelp():void
-			{
-				_dialogPopUp = new KSketch_DialogBox_Skin();
-				_dialogPopUp.init(null, _canvasView, this, null, "Help");
-				_dialogPopUp.open(_canvasView,true);
-				PopUpManager.centerPopUp(_dialogPopUp);
-			}
-			
-			/**
-			 * Opens the save dialog box
-			 */
-			private function _openSaveOptions():void
-			{
+		}
+
+		/**
+		 * Clears the current document of every single content, without saving it.
+		 */
+		private function _clear():void {
+			//LOG
+			_KSketch.logCounter++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Pop Up Menu";
+			log.@type = "Set New Canvas";
+			//trace("ACTION " + _KSketch.logCounter + ": Set up a new canvas");
+			KSketch2.log.appendChild(log);
+
+			KSketch_CanvasView.tracker.trackPageview("/popupmenu/clearCanvas");
+
+			_saveOptions.returnToHome = false;
+			if (_canvasView._interactionControl.hasUndo) {
 				_saveOptions.open(_canvasView);
 				PopUpManager.centerPopUp(_saveOptions);
 			}
-			
-			/**
-			 * Import image
-			 */
-			private function _importImage():void				
-			{
-				KSketch_CanvasView.tracker.trackPageview( "/popupmenu/importImage" );
-				var newImageWindow:KSketch_ImageImport_Control = new KSketch_ImageImport_Control();
-				newImageWindow.init(_KSketch, _interactionControl, _canvasView);
-				newImageWindow.createDeferredContent();
-				newImageWindow.open(_canvasView, true);
-				PopUpManager.centerPopUp(newImageWindow);
+			else {
+				KSketch_CanvasView.createNewSketch = true;
+				_interactionControl.reset();
 			}
-			
+		}
+
+		/**
+		 * Saves the current document to a file.
+		 */
+		private function _saveToFile():void {
+			var docsDir:File = File.documentsDirectory;
+			try {
+				docsDir.browseForSave("Save As");
+				docsDir.addEventListener(Event.SELECT, saveData);
+			}
+			catch (error:Error) {
+				trace("Failed:", error.message);
+			}
+		}
+
+		private function saveData(event:Event):void {
+			var newFile:File = event.target as File;
+
+			var confirmSave:Boolean = true;
+			var userData:Object = _canvasView.saveSketch(confirmSave);
+
+			var finalFileName:String = newFile.name;
+
+			var objDoc:Object = KWebData.prepareSketchDocument(userData, finalFileName, null);
+			objDoc.save = -1;
+			objDoc.deleteFlag = 0;
+			objDoc.version = 1;
+			objDoc.originalVersion = 0;
+			objDoc.originalSketch = -1;
+			objDoc.sketchId = -1;
+
+			var str:String = com.adobe.serialization.json.JSON.encode(objDoc);
+
+			//save to file
+			var stream:FileStream = new FileStream();
+			stream.open(newFile, FileMode.WRITE);
+			stream.writeUTFBytes(str);
+			stream.close();
+
+			_exit();
+		}
+
+		/**
+		 * Triggers undo/redo action
+		 */
+		public function _undoRedoAction(action:Boolean):void {
+			_canvasControl.doubleTapAction(action, _feedback);
+		}
+
+		public function turnOnDoubleTapAction(value:Boolean):void {
+			_canvasControl.doubleTapOn = value;
+		}
+
+		/**
+		 * Triggers exit
+		 */
+		public function _saveExit():void {
+			//LOG
+			_KSketch.logCounter++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Pop Up Menu";
+			log.@type = "Exit Canvas";
+			//trace("ACTION " + _KSketch.logCounter + ": Exit canvas");
+			KSketch2.log.appendChild(log);
+
+			KSketch_CanvasView.tracker.trackPageview("/popupmenu/exitCanvas");
+
+			_saveOptions.returnToHome = true;
+			if (_canvasView._interactionControl.hasUndo) {
+				_saveOptions.open(_canvasView);
+				PopUpManager.centerPopUp(_saveOptions);
+			}
+			else
+				_exit();
+		}
+
+		public function _exit():void {
+			close();
+			_canvasView.exit();
+			KSketch_CanvasView.createNewSketch = false;
+		}
+
+		/**
+		 * Opens the options dialog box
+		 */
+		private function _openOptions():void {
+			//LOG
+			_KSketch.logCounter++;
+			var log:XML = <Action/>;
+			var date:Date = new Date();
+			log.@category = "Pop Up Menu";
+			log.@type = "Open Option Box";
+			//trace("ACTION " + _KSketch.logCounter + ": Open option box");
+			KSketch2.log.appendChild(log);
+
+			KSketch_CanvasView.tracker.trackPageview("/popupmenu/openOptions");
+			_options.open(_canvasView, true);
+			PopUpManager.centerPopUp(_options);
+		}
+
+		/**
+		 * Opens the sharing options dialog box
+		 */
+		private function _openSharingOptions():void {
+			_dialogPopUp = new KSketch_DialogBox_Skin();
+			_dialogPopUp.init(null, _canvasView, this, null, "Share");
+			_dialogPopUp.open(_canvasView, true);
+			PopUpManager.centerPopUp(_dialogPopUp);
+		}
+
+		/**
+		 * Opens the help dialog box
+		 */
+		private function _openHelp():void {
+			_dialogPopUp = new KSketch_DialogBox_Skin();
+			_dialogPopUp.init(null, _canvasView, this, null, "Help");
+			_dialogPopUp.open(_canvasView, true);
+			PopUpManager.centerPopUp(_dialogPopUp);
+		}
+
+		/**
+		 * Opens the save dialog box
+		 */
+		private function _openSaveOptions():void {
+			_saveOptions.open(_canvasView);
+			PopUpManager.centerPopUp(_saveOptions);
+		}
+
+		/**
+		 * Import image
+		 */
+		private function _importImage():void {
+			KSketch_CanvasView.tracker.trackPageview("/popupmenu/importImage");
+			var newImageWindow:KSketch_ImageImport_Control = new KSketch_ImageImport_Control();
+			newImageWindow.init(_KSketch, _interactionControl, _canvasView);
+			newImageWindow.createDeferredContent();
+			newImageWindow.open(_canvasView, true);
+			PopUpManager.centerPopUp(newImageWindow);
+		}
 		]]>
 	</fx:Script>
 	
@@ -542,7 +515,7 @@
 		<buttons:KSketch_CanvasButton
 			click="_openOptions()"
 			id="optSynphneButton"
-			/>
+			includeInLayout="{!KSketch_CanvasView.isWeb}"/>
 		
 		<buttons:KSketch_CanvasButton
 			click="_openHelp()"

@@ -21,7 +21,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.KSketchWebLinks;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
-
+	import mx.utils.UIDUtil;
 	public class KSketch_CacheControl
 	{
 		//class variables
@@ -171,9 +171,17 @@ package sg.edu.smu.ksketch2.canvas.controls
 					}
 					y += 1;
 				} else {   // CASE:cache[present, ?deleted, isSaved] web[present]
-					allList.add(webList.itemAt(y));
-					x += 1;
-					y += 1;
+					if(cacheList.itemAt(x).isSaved == false){
+						allList.add(cacheList.itemAt(x));
+						updateList.add(cacheList.itemAt(x));
+						x += 1;
+						y += 1;
+					} else {
+						allList.add(webList.itemAt(y));
+						x += 1;
+						y += 1;
+					}
+
 				}
 			}
 			if(updateList.size > 0) {
@@ -287,12 +295,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var resultObj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 			var sketchData:KSketch_DataListItem = null;
 			
-			if(resultObj.data.fileData)
+			if(resultObj.status !="Forbidden" && resultObj.status != "Error" && resultObj.data.fileData)
 			{
 				sketchData = new KSketch_DataListItem(resultObj.data.fileData, resultObj.data.fileName, resultObj.data.originalName, 
 													  resultObj.data.owner_id, resultObj.modified, resultObj.data.changeDescription, 
 													  resultObj.data.sketchId, resultObj.data.version);
 				updateCache(resultObj.data);
+			} else {
+				this.dataFaultHandler(null);
 			}
 			
 			_homeView.displaySketchData(sketchData, _selectedSketch);
@@ -478,16 +488,22 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function migrateCache(sketchObj: Object):void
 		{
 			var arr:Array = cachedDocuments;
+			if(!sketchObj.hasOwnProperty("uniqueId") || sketchObj.uniqueId == null){
+				sketchObj.uniqueId = UIDUtil.createUID();
+			}
 			if(arr == null){
 				arr = new Array();
 			}
 			arr.push(sketchObj);
 			cachedDocuments = arr;
+
 			var list:SortedList = cachedList;
 			var obj:KSketch_ListItem = new KSketch_ListItem();
 			obj.fromCache(sketchObj);
 			if(sketchObj.save == -1) {
 				obj.isSaved = false;
+			} else {
+				obj.isSaved = true;
 			}
 			obj.uniqueId = sketchObj.uniqueId;
 			list.add(obj);

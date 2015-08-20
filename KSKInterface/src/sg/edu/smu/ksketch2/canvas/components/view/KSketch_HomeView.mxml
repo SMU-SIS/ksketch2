@@ -156,7 +156,7 @@
 			//initialize login button based on the KUser object
 			var _anonymousUser:Boolean = false;
 
-			if (data) {
+			if (data && data != KSketch_LoginView.LOGIN_CANCEL) {
 				var errorMessage:String = String(data);
 
 				//prompt once for failed login

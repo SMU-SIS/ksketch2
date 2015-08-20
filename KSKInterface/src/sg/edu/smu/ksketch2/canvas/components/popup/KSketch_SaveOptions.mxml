@@ -24,30 +24,30 @@
 
     <fx:Script>
 		<![CDATA[
-		import com.adobe.serialization.json.JSON;
-		
-		import mx.events.FlexEvent;
-		import mx.formatters.DateFormatter;
-		import mx.managers.PopUpManager;
-		import mx.rpc.events.FaultEvent;
-		import mx.rpc.events.ResultEvent;
-		
-		import air.net.URLMonitor;
-		
-		import org.as3commons.collections.SortedList;
-		
-		import sg.edu.smu.ksketch2.KSketchGlobals;
-		import sg.edu.smu.ksketch2.KSketchWebLinks;
-		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
-		import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
-		import sg.edu.smu.ksketch2.utils.KWebData;
+        import com.adobe.serialization.json.JSON;
+
+        import mx.events.FlexEvent;
+        import mx.formatters.DateFormatter;
+        import mx.managers.PopUpManager;
+        import mx.rpc.events.FaultEvent;
+        import mx.rpc.events.ResultEvent;
+
+        import air.net.URLMonitor;
+
+        import org.as3commons.collections.SortedList;
+
+        import sg.edu.smu.ksketch2.KSketchGlobals;
+        import sg.edu.smu.ksketch2.KSketchWebLinks;
+        import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+        import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
+        import sg.edu.smu.ksketch2.utils.KWebData;
 
         public static var saveCounter:int = 0;
-			
-		private var GAP:Number = 10 * KSketchGlobals.SCALE;
-		private var PADDING_HEADER:Number = 5 * KSketchGlobals.SCALE;
-		private var SKECTHNAME_WIDTH:Number = 300 * KSketchGlobals.SCALE;
-		private var SKECTHNAME_HEIGHT:Number = 50 * KSketchGlobals.SCALE;
+
+        private var GAP:Number = 10 * KSketchGlobals.SCALE;
+        private var PADDING_HEADER:Number = 5 * KSketchGlobals.SCALE;
+        private var SKECTHNAME_WIDTH:Number = 300 * KSketchGlobals.SCALE;
+        private var SKECTHNAME_HEIGHT:Number = 50 * KSketchGlobals.SCALE;
 
         private var _canvasView:KSketch_CanvasView;
         private var _overwriteSaveOptions:KSketch_OverwriteSaveOptions;
@@ -70,21 +70,21 @@
 
         private function _initStyle():void {
             this.removeEventListener(FlexEvent.INITIALIZE, _initStyle);
-			
+
             header.setStyle("fontSize", KSketchGlobals.FONT_SIZE_26);
             title.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
             saveAsWarning.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
-           	sketchName.height = SKECTHNAME_HEIGHT;
-			sketchName.percentWidth = 95;
-				
-			saveButton.init("Save");
-			discardButton.init("Delete");
-			cancelButton.init("Cancel");
-			saveButton.initSkin();
-			discardButton.initSkin();
-			cancelButton.initSkin();
+            sketchName.height = SKECTHNAME_HEIGHT;
+            sketchName.percentWidth = 95;
+
+            saveButton.init("Save");
+            discardButton.init("Delete");
+            cancelButton.init("Cancel");
+            saveButton.initSkin();
+            discardButton.initSkin();
+            cancelButton.initSkin();
         }
-			
+
         override public function open(owner:DisplayObjectContainer, modal:Boolean = false):void {
             //check for network connection
             _monitor = new URLMonitor(new URLRequest(KSketchWebLinks.pingurl));
@@ -254,8 +254,7 @@
         }
 
         public function saveUnsavedSketches(unsavedList:SortedList, cacheCtr:KSketch_CacheControl) {
-            if(_cacheControl == null)
-            {
+            if (_cacheControl == null) {
                 _cacheControl = cacheCtr;
             }
             var arr:Array = _cacheControl.cachedDocuments;
@@ -372,7 +371,11 @@
                 //save to cache
                 //objDoc.save = 0;
                 if (!overwriteSave) {
-                    _cacheControl.updateSketchDocument(result.uniqueId, result.sketchId);
+                    if (result.uniqueId == null && result.data != null) {
+                        _cacheControl.updateSketchDocument(result.data.uniqueId, result.data.sketchId);
+                    } else {
+                        _cacheControl.updateSketchDocument(result.uniqueId, result.sketchId);
+                    }
                 }
                 overwriteSave = false;
                 _success = true;

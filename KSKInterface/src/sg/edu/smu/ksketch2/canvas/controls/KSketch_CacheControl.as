@@ -300,7 +300,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				sketchData = new KSketch_DataListItem(resultObj.data.fileData, resultObj.data.fileName, resultObj.data.originalName, 
 													  resultObj.data.owner_id, resultObj.modified, resultObj.data.changeDescription, 
 													  resultObj.data.sketchId, resultObj.data.version);
-				updateCache(resultObj.data);
+				updateCache(resultObj.data, false);
 			} else {
 				this.dataFaultHandler(null);
 			}
@@ -349,7 +349,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_mySO.clear();
 		}
 
-		public function addToCache(sketchObj: Object):void
+		public function addToCache(sketchObj: Object,toBeUpdated:Boolean = true):void
 		{
 			var arr:Array = cachedDocuments;
 			if(arr == null){
@@ -360,16 +360,21 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var list:SortedList = cachedList;
 			var obj:KSketch_ListItem = new KSketch_ListItem();
 			obj.fromCache(sketchObj);
-			obj.isSaved = false;
+			if(toBeUpdated) {
+				obj.isSaved = false;
+			}else{
+				obj.isSaved = true;
+			}
 			obj.uniqueId = sketchObj.uniqueId;
 			list.add(obj);
 			cachedList = list;
 		}
 
-		public function updateCache(sketchObj: Object):void
+		public function updateCache(sketchObj: Object, toBeUpdated:Boolean = true):void
 		{
 			this.deleteFromCache(sketchObj.sketchId,sketchObj.fileName);
-			this.addToCache(sketchObj);
+			this.addToCache(sketchObj,toBeUpdated);
+
 		}
 
 		public function updateSketchDocument(uniqueId:String, sketchId:Number){

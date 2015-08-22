@@ -21,12 +21,18 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KMathUtil;
 	
+	//KSKETCH-SYNPHNE
+	import sg.edu.smu.ksketch2.KSketchGlobals;
+	
 	public class KStrokeView extends KObjectView
 	{
 		private var _points:Vector.<Point>;
 		private var _thickness:Number = KDrawInteractor.penThickness;
 		private var _color:uint = KDrawInteractor.penColor;
 		private var _glowFilter:Array;
+		
+		//KSKETCH-SYNPHNE
+		private var _hide:Boolean;
 		
 		/**
 		 * Object view representing strokes
@@ -41,6 +47,9 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 				_color = object.color;
 				_thickness = object.thickness;
 				_ghost = new KStrokeGhost(object.points, object.color, object.thickness);
+				
+				//KSKETCH-SYNPHNE
+				_hide = object.hide;
 			}
 			else
 				_points = new Vector.<Point>();
@@ -54,7 +63,9 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		
 		override public function eraseIfHit(xPoint:Number, yPoint:Number, time:Number, op:KCompositeOperation):void
 		{
-			if(hitTestPoint(xPoint, yPoint, true))
+			//if(hitTestPoint(xPoint, yPoint, true))
+			//KSKETCH-SYNPHNE
+			if(hitTestPoint(xPoint, yPoint, true) && !_object.template)
 			{
 				//do a check if object belongs to a group and if all the objects in the group are erased at that time
 				var parent:KGroup = _object.parent;
@@ -164,13 +175,14 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 		private function checkDynamicInGroup(parent:KGroup, time:Number):Boolean
 		{
 			var isDynamic:Boolean = false;
+			var activeKey:IKeyFrame;
 			
 			var children:KModelObjectList = parent.children;
 			
 			if(children.length() < 1)
 				return true;
 			
-			var activeKey:IKeyFrame = parent.transformInterface.getActiveKey(0);
+			activeKey = parent.transformInterface.getActiveKey(0);
 			if(activeKey.previous || activeKey.next)
 				return true;
 			
@@ -183,7 +195,7 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 				
 				dynamicArr[i] = 0;
 				
-				var activeKey:IKeyFrame = object.transformInterface.getActiveKey(0);
+				activeKey = object.transformInterface.getActiveKey(0);
 				if(activeKey.previous || activeKey.next)
 					dynamicArr[i] = 1;
 			}
@@ -251,7 +263,6 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 				return;
 			
 			// Initialize for rendering the path				
-
 			if (_points.length == 1 || (_points.length == 2 && _points[0].x == _points[1].x && _points[0].y == _points[1].y))
 			{
 				graphics.lineStyle();
@@ -315,6 +326,29 @@ package sg.edu.smu.ksketch2.canvas.components.view.objects
 				
 			
 			super._updateSelection(event);
+		}
+		
+		//KSKETCH-SYNPHNE
+		public function changeActivityHighlight(time:int, hide:Boolean):void
+		{
+			if(!hide)
+				_render_DrawStroke(KSketchGlobals.COLOR_GREY_LIGHT);
+			else
+				_render_DrawStroke(KSketchGlobals.COLOR_WHITE);
+			
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
+		}
+		
+		public function resetActivityHighlight(time:int):void
+		{
+			_render_DrawStroke(_color);
+			_object.dispatchEvent(new KObjectEvent(KObjectEvent.OBJECT_VISIBILITY_CHANGED, _object, time));
+		}
+		
+		public function hardErase(time:Number, op:KCompositeOperation):void
+		{
+			_object.visibilityControl.setVisibility(false, time, op, false);
+			_object.transformInterface.clearAllMotionsAfterTime(time, op);	
 		}
 	}
 }

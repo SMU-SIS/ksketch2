@@ -38,6 +38,7 @@
 			
 			private var HEADER_GAP:Number = 20 * KSketchGlobals.SCALE;
 			private var HEADER_WIDTH:Number = 100 * KSketchGlobals.SCALE;
+			private var INST_BUTTONDIMENSION = 50 * KSketchGlobals.SCALE;
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _dialogPopUp:KSketch_DialogBox_Skin;
@@ -164,7 +165,7 @@
 					if(activityHeader.text != "INTRO")
 					{
 						//compute result at the end of every activity
-						var stars:int = 1;//_resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
+						var stars:int = _resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
 						_activityControl.stars = stars;
 						_dialogPopUp = new KSketch_DialogBox_Skin();
 						_dialogPopUp.init(null, _canvasView, null, _activityControl, "Results");
@@ -197,7 +198,6 @@
 			private function startTiming(event:TimerEvent):void {
 				_kAlertBox.close();
 				_canvasView.autoPlayAnimation();
-				_activityControl.autoSelectObjectToAnimate();
 				_canvasView.startTimer();
 			}
 			
@@ -299,9 +299,9 @@
 				<s:layout>
 					<s:HorizontalLayout  gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
-				<buttons:KSketch_ListButton id="activityButton_Prev" click="previousActivity()"/>
+				<buttons:KSketch_ListButton id="activityButton_Prev" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="previousActivity()"/>
 				<s:Label width="{HEADER_WIDTH}" id="activityHeader" textAlign="center"/>
-				<buttons:KSketch_ListButton id="activityButton_Next" click="nextActvity()"/>
+				<buttons:KSketch_ListButton id="activityButton_Next" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="nextActvity()"/>
 			</s:Group>
 			
 			
@@ -315,9 +315,9 @@
 				<s:layout>
 					<s:HorizontalLayout  gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
-				<buttons:KSketch_ListButton id="instructionButton_Prev" click="previousInstruction()"/>
+				<buttons:KSketch_ListButton id="instructionButton_Prev" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="previousInstruction()"/>
 				<s:Label width="{HEADER_WIDTH}" id="instructionHeader" text="Default" textAlign="center"/>
-				<buttons:KSketch_ListButton id="instructionButton_Next" click="nextInstruction()"/>
+				<buttons:KSketch_ListButton id="instructionButton_Next" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="nextInstruction()"/>
 			</s:Group>
 			
 			<s:Label id="instructionMessage" text="This is the default text. {'\n'}Set message according to activity."/>

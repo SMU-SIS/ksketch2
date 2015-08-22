@@ -33,8 +33,16 @@ import mx.utils.UIDUtil;
 			if(userData.sketchData.originalName != "" && (sketchName == userData.sketchData.originalName))
 			{
 				data.sketchId = userData.sketchData.sketchId;
-				data.originalVersion = userData.sketchData.originalVersion;
-				data.originalSketch = userData.sketchData.originalSketch;
+				if((userData.sketchData as Object).hasOwnProperty('originalVersion')) {
+					data.originalVersion = userData.sketchData.originalVersion;
+				} else {
+					data.originalVersion = userData.sketchData.version;
+				}
+				if((userData.sketchData as Object).hasOwnProperty('originalSketch')) {
+					data.originalSketch = userData.sketchData.originalSketch;
+				} else {
+					data.originalSketch = userData.sketchData.originalSketchId;
+				}
 				data.originalName = userData.sketchData.originalName;	
 			}
 			else

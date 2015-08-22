@@ -136,7 +136,6 @@
 			private function set buttonState(value:int):void
 			{
 				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
-
 				_buttonState = value;
 
 				if(_buttonState == SHOW_PLAY)
@@ -145,6 +144,8 @@
 					textureControl.source = KSketchAssets.texture_pause;
 				
 				(skin as KSketch_Canvas_Button_Skin).upColor = KSketchGlobals.COLOR_RED;
+				(skin as KSketch_Canvas_Button_Skin).width = 60 * KSketchGlobals.SCALE;
+				(skin as KSketch_Canvas_Button_Skin).height = 60 * KSketchGlobals.SCALE;
 			}
 		]]>
 	</fx:Script>

@@ -23,6 +23,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.utils.KInteractionOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	
+	//KSKETCH-SYNPHNE
+	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	
 	/**
 	 * The KInteractionControl class serves as the concrete class for
 	 * interaction control in K-Sketch.
@@ -101,6 +104,16 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			if(newSelection)
 			{
+				//KSKETCH-SYNPHNE
+				if(KSketch_CanvasView.isSynphne)
+				{
+					if(newSelection.objects.getObjectAt(0) != null)
+					{
+						if(newSelection.objects.getObjectAt(0).template)
+							return;
+					}
+				}
+				
 				if(newSelection.objects.length() == 0)
 					newSelection = null;
 				else

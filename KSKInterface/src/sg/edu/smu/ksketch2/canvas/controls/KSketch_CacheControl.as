@@ -21,7 +21,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.KSketchWebLinks;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_SaveOptions;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
-
+	import mx.utils.UIDUtil;
 	public class KSketch_CacheControl
 	{
 		//class variables
@@ -171,9 +171,17 @@ package sg.edu.smu.ksketch2.canvas.controls
 					}
 					y += 1;
 				} else {   // CASE:cache[present, ?deleted, isSaved] web[present]
-					allList.add(webList.itemAt(y));
-					x += 1;
-					y += 1;
+					if(cacheList.itemAt(x).isSaved == false){
+						allList.add(cacheList.itemAt(x));
+						updateList.add(cacheList.itemAt(x));
+						x += 1;
+						y += 1;
+					} else {
+						allList.add(webList.itemAt(y));
+						x += 1;
+						y += 1;
+					}
+
 				}
 			}
 			if(updateList.size > 0) {
@@ -234,12 +242,24 @@ package sg.edu.smu.ksketch2.canvas.controls
 					var arr:Array = cachedDocuments;
 					if(arr !=null){
 						for(var i:int=0;i<arr.length;i++){
-							if(arr[i].fileName = _selectedSketch[0]){
+							if(arr[i].fileName == _selectedSketch[0]){
 								sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
 										arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
 										arr[i].sketchId, int(arr[i].version));
 								_homeView.displaySketchData(sketchData, _selectedSketch);
 								return;
+							}
+						}
+					}
+				} else {
+					var arr:Array = cachedDocuments;
+					if(arr !=null){
+						for(var i:int=0;i<arr.length;i++){
+							if(arr[i].sketchId == _selectedSketch[1]){
+								sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
+										arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
+										arr[i].sketchId, int(arr[i].version));
+								_homeView.displaySketchData(sketchData, _selectedSketch);
 							}
 						}
 					}
@@ -275,11 +295,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var resultObj:Object = com.adobe.serialization.json.JSON.decode(rawData,true);
 			var sketchData:KSketch_DataListItem = null;
 			
-			if(resultObj.data.fileData)
+			if(resultObj.status !="Forbidden" && resultObj.status != "Error" && resultObj.data.fileData)
 			{
 				sketchData = new KSketch_DataListItem(resultObj.data.fileData, resultObj.data.fileName, resultObj.data.originalName, 
 													  resultObj.data.owner_id, resultObj.modified, resultObj.data.changeDescription, 
 													  resultObj.data.sketchId, resultObj.data.version);
+				updateCache(resultObj.data, false);
+			} else {
+				this.dataFaultHandler(null);
 			}
 			
 			_homeView.displaySketchData(sketchData, _selectedSketch);
@@ -292,7 +315,19 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var arr:Array = cachedDocuments;
 				if(arr !=null){
 					for(var i:int=0;i<arr.length;i++){
-						if(arr[i].fileName = _selectedSketch[0]){
+						if(arr[i].fileName == _selectedSketch[0]){
+							sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
+									arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
+									arr[i].sketchId, int(arr[i].version));
+							_homeView.displaySketchData(sketchData, _selectedSketch);
+						}
+					}
+				}
+			} else {
+				var arr:Array = cachedDocuments;
+				if(arr !=null){
+					for(var i:int=0;i<arr.length;i++){
+						if(arr[i].sketchId == _selectedSketch[1]){
 							sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
 									arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
 									arr[i].sketchId, int(arr[i].version));
@@ -314,7 +349,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_mySO.clear();
 		}
 
-		public function addToCache(sketchObj: Object):void
+		public function addToCache(sketchObj: Object,toBeUpdated:Boolean = true):void
 		{
 			var arr:Array = cachedDocuments;
 			if(arr == null){
@@ -325,16 +360,21 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var list:SortedList = cachedList;
 			var obj:KSketch_ListItem = new KSketch_ListItem();
 			obj.fromCache(sketchObj);
-			obj.isSaved = false;
+			if(toBeUpdated) {
+				obj.isSaved = false;
+			}else{
+				obj.isSaved = true;
+			}
 			obj.uniqueId = sketchObj.uniqueId;
 			list.add(obj);
 			cachedList = list;
 		}
 
-		public function updateCache(sketchObj: Object):void
+		public function updateCache(sketchObj: Object, toBeUpdated:Boolean = true):void
 		{
 			this.deleteFromCache(sketchObj.sketchId,sketchObj.fileName);
-			this.addToCache(sketchObj);
+			this.addToCache(sketchObj,toBeUpdated);
+
 		}
 
 		public function updateSketchDocument(uniqueId:String, sketchId:Number){
@@ -448,6 +488,31 @@ package sg.edu.smu.ksketch2.canvas.controls
 				this.deleteFromCache(sketchID,fileName);
 			}
 			_homeView.refresh(false);
+		}
+
+		public function migrateCache(sketchObj: Object):void
+		{
+			var arr:Array = cachedDocuments;
+			if(!sketchObj.hasOwnProperty("uniqueId") || sketchObj.uniqueId == null){
+				sketchObj.uniqueId = UIDUtil.createUID();
+			}
+			if(arr == null){
+				arr = new Array();
+			}
+			arr.push(sketchObj);
+			cachedDocuments = arr;
+
+			var list:SortedList = cachedList;
+			var obj:KSketch_ListItem = new KSketch_ListItem();
+			obj.fromCache(sketchObj);
+			if(sketchObj.save == -1) {
+				obj.isSaved = false;
+			} else {
+				obj.isSaved = true;
+			}
+			obj.uniqueId = sketchObj.uniqueId;
+			list.add(obj);
+			cachedList = list;
 		}
 	}
 }

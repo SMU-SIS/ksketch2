@@ -21,6 +21,7 @@ package data {
 		private var _version:int;
 		private var _newVersion:int;
 		private var _lowerFileName:String;
+		private var _thumbnailData:String;
 		
 	    public function KSketch_DataListItem(fileData:String, fileName:String, originalName:String, id:String, 
 											 modified:String, changeDescription:String, sketchId:int, version:int) {
@@ -172,6 +173,14 @@ package data {
 
 		public function set lowerFileName(value:String):void {
 			_lowerFileName = value;
+		}
+
+		public function get thumbnailData():String {
+			return _thumbnailData;
+		}
+
+		public function set thumbnailData(value:String):void {
+			_thumbnailData = value;
 		}
 	}
 }

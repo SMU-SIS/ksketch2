@@ -514,5 +514,21 @@ package sg.edu.smu.ksketch2.canvas.controls
 			list.add(obj);
 			cachedList = list;
 		}
+		public function retrieveSketchForSave(fileName:String,sketchId:String):Object {
+			var arr:Array = cachedDocuments;
+			var sketchData:Object;
+			if(arr !=null){
+				for(var i:int=0;i<arr.length;i++){
+					if(arr[i].sketchId == sketchId){
+						sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
+								arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
+								arr[i].sketchId, int(arr[i].version));
+						sketchData.thumbnailData = arr[i].thumbnailData;
+						break;
+					}
+				}
+			}
+			return sketchData;
+		}
 	}
 }

@@ -29,13 +29,15 @@
 		import mx.collections.SortField;
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
-		
+
 		import data.KSketch_DataListItem;
 		import data.KSketch_ListItem;
-		
+
 		import org.as3commons.collections.SortedList;
 		import org.as3commons.collections.framework.IComparator;
-		
+
+		import com.adobe.serialization.json.JSON;
+
 		import sg.edu.smu.ksketch2.KSketchAssets;
 		import sg.edu.smu.ksketch2.KSketchGlobals;
 		import sg.edu.smu.ksketch2.KSketch_Config;
@@ -44,11 +46,13 @@
 		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Notifications;
 		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
 		import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
+		import sg.edu.smu.ksketch2.utils.KSketchDocument;
 		import sg.edu.smu.ksketch2.utils.KSwipeEvent;
+		import sg.edu.smu.ksketch2.utils.KWebData;
 
 		private static const DISPLAY_FAILED_DEFAULT:int = -1;
 		private static const DISPLAY_FAILED_LOGIN:int = 0;
-		
+
 		private var HOME_DIVIDER_GAP:Number = 2 * KSketchGlobals.SCALE;
 		private var HOME_PADDING:Number = 15 * KSketchGlobals.SCALE;
 		private var HOME_LOGO_PADDINGTOP:Number = 40 * KSketchGlobals.SCALE;
@@ -90,7 +94,7 @@
 		private var itemRender:IFactory = new ClassFactory(KSketch_HomeView_IconItemRenderer);
 
 		private function _init(isMobile:Boolean):void {
-			
+
 			//Check for mobile version. Set false to export for Desktop version
 			if (isMobile) {
 				mainButtons.removeElementAt(2);
@@ -133,17 +137,16 @@
 			_setupUser();
 		}
 
-		private function _scale():void
-		{
+		private function _scale():void {
 			KSketchGlobals.setView();
-			
-			HOME_DIVIDER_GAP = 2 
+
+			HOME_DIVIDER_GAP = 2
 			HOME_PADDING = 15 * KSketchGlobals.SCALE;
 			HOME_LOGO_PADDINGTOP = 40 * KSketchGlobals.SCALE;
 			HOME_LOGO_WIDTH = 150 * KSketchGlobals.SCALE;
 			HOME_LOGO_HEIGHT = 150 * KSketchGlobals.SCALE;
 		}
-			
+
 		private function timerComplete(event:TimerEvent):void {
 			_canvasTimer.removeEventListener(TimerEvent.TIMER, timerComplete);
 			_canvasTimer.stop();
@@ -244,16 +247,16 @@
 		}
 
 		private function _displayFailedNotification(event:TimerEvent):void {
-			
+
 			if (_displayFailedMessage == DISPLAY_FAILED_LOGIN) {
 				_notice = KSketch_DialogBox_Notifications.CANVASNOTICE_FAILED_LOGIN;
 			}
 
 			var dialogPopUp:KSketch_DialogBox_Skin = new KSketch_DialogBox_Skin();
 			dialogPopUp.init(this, null, null, null, "Notification");
-			
+
 			if (_displayFailedMessage != DISPLAY_FAILED_DEFAULT) {
-				dialogPopUp.open(this,true);
+				dialogPopUp.open(this, true);
 				PopUpManager.centerPopUp(dialogPopUp);
 
 				_displayFailedMessage = DISPLAY_FAILED_DEFAULT;
@@ -272,7 +275,43 @@
 		}
 
 		private function _setupSketchSave():void {
+			var sketchName:String = KSketch_HomeView_IconItemRenderer.selectedSketchName;
+			var sketchId:String = KSketch_HomeView_IconItemRenderer.selectedSketchId;
+			var sketchVersion:String = KSketch_HomeView_IconItemRenderer.selectedVersion;
+			var docsDir:File = File.documentsDirectory;
+			try {
+				docsDir.browseForSave("Save As");
+				docsDir.addEventListener(Event.SELECT, saveData(sketchName,sketchId,sketchVersion));
+			}
+			catch (error:Error) {
+				trace("Failed:", error.message);
+			}
+			//stage.dispatchEvent(new MouseEvent(MouseEvent.RIGHT_CLICK));
+		}
 
+		function saveData(sketchName:String,sketchId:String,sketchVersion:String):Function {
+			return function(event:Event):void {
+				var newFile:File = event.target as File;
+				var finalFileName:String = newFile.name;
+				var sketchData:Object = _cacheControl.retrieveSketchForSave(sketchName, sketchId);
+				//create XML and date object from JSON to create a KSketchDocument object
+				var xml:XML = new XML(sketchData.fileData);
+				var date:Date = new Date(sketchData.modified);
+				var obj:Object = new Object();
+				obj.sketchData = new KSketchDocument(sketchName, xml,"0", date, sketchData.fileName, sketchData.version, int(sketchId), sketchData.changeDescription);
+				obj.thumbnailData = sketchData.thumbnailData;
+				obj.fileData = xml.toString();
+				var saveObj:Object = KWebData.prepareSketchDocument(obj, finalFileName, _cacheControl.user);
+
+				//save to file
+				var str:String = com.adobe.serialization.json.JSON.encode(saveObj);
+				var stream:FileStream = new FileStream();
+				stream.open(newFile, FileMode.WRITE);
+				stream.writeUTFBytes(str);
+				stream.close();
+
+				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.SAVE_CLOSE_ACTION));
+			}
 		}
 
 		private function _setupSketchListView(fromWeb:Boolean = true):void {
@@ -340,7 +379,40 @@
 		}
 
 		private function loadSketch():void {
+			try {
+				var file:File = File.documentsDirectory;
+				file.browseForOpen("Open");
+				file.addEventListener(Event.SELECT, fileSelected);
+			}
+			catch (error:Error) {
+				trace("Failed:", error.message);
+			}
+		}
 
+		private function fileSelected(event:Event):void {
+			var stream:FileStream = new FileStream();
+			stream.open(event.target as File, FileMode.READ);
+			var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
+
+			//create XML and date object from JSON to create a KSketchDocument object
+			try {
+				var fileObj:Object = com.adobe.serialization.json.JSON.decode(fileData);
+
+				if (fileObj.hasOwnProperty("fileName") && fileObj.hasOwnProperty("fileData") &&
+						fileObj.hasOwnProperty("originalName") && fileObj.hasOwnProperty("version") &&
+						fileObj.hasOwnProperty("sketchId") && fileObj.hasOwnProperty("changeDescription")) {
+					fileObj.lowerFileName = fileObj.fileName.toString().toLowerCase();
+					var xml:XML = new XML(fileObj.fileData);
+					var sketchData:KSketch_DataListItem = new KSketch_DataListItem(xml, fileObj.fileName, fileObj.originalName,
+							_cacheControl.user.id, fileObj.modified, fileObj.changeDescription,
+							fileObj.id, int(fileObj.version));
+					displaySketchData(sketchData, null);
+					navigateToScreen("CANVAS");
+				}
+			}
+			catch (error:Error) {
+				trace("Unknown file");
+			}
 		}
 
 		public function refresh(fromWeb:Boolean = true):void {
@@ -375,11 +447,10 @@
 					if (!_cacheControl.unsavedSketchExist()) {
 						logout();
 					}
-					else 
-					{
+					else {
 						var dialogPopUp = new KSketch_DialogBox_Skin();
 						dialogPopUp.init(this, null, null, null, "Logout");
-						dialogPopUp.open(this,true);
+						dialogPopUp.open(this, true);
 						PopUpManager.centerPopUp(dialogPopUp);
 					}
 				}
@@ -483,24 +554,21 @@
 
 		public function handleExpiredSession() {
 			_notice = KSketch_DialogBox_Notifications.CANVASNOTICE_EXPIRED_SESSION;
-			
+
 			var dialogPopUp:KSketch_DialogBox_Skin = new KSketch_DialogBox_Skin();
 			dialogPopUp.init(this, null, null, null, "Notification");
-			dialogPopUp.open(this,true);
+			dialogPopUp.open(this, true);
 			PopUpManager.centerPopUp(dialogPopUp);
 		}
-			
-		protected function view_addedToStageHandler(event:Event):void
-		{
+
+		protected function view_addedToStageHandler(event:Event):void {
 			// TODO Auto-generated method stub
-			
+
 		}
-			
-		public function get notice():String
-		{
+
+		public function get notice():String {
 			return _notice;
 		}
-			
 		]]>
 	</fx:Script>
 	<s:Group width="100%" height="100%">

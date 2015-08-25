@@ -55,11 +55,11 @@
 			//Migrate old cache to new cache structure if it exists
 			var migrations:KSketch_MigrateCache = new KSketch_MigrateCache();
 			migrations.migrateData();
-			if (!KSketch_Config.isMobile && !KSketch_Preference.isPrefsAvailable()) {
+			//if (!KSketch_Config.isMobile && !KSketch_Preference.isPrefsAvailable()) {
 				navigator.pushView(KSketch_LicenseAggrement);
-			} else {
-				navigator.pushView(KSketch_HomeView);
-			}
+			//} else {
+			//	navigator.pushView(KSketch_HomeView);
+			//}
 		}
 		]]>
 	</fx:Script>

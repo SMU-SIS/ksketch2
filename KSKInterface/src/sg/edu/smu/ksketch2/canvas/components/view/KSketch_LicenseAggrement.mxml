@@ -23,16 +23,24 @@
         import sg.edu.smu.ksketch2.utils.KSketch_Preference;
 		import sg.edu.smu.ksketch2.KSketchGlobals;
 
-		private var LICENSE_PADDING:Number = 15;
+        import spark.components.supportClasses.StyleableTextField;
+
+        private var LICENSE_PADDING:Number = 15;
 			
         private var timer:Timer;
         public static var initialOrientation:String = null;
-
+        //License agreement
+        [Embed("/assets/mpl2.html",mimeType="application/octet-stream")]
+        [Bindable]
+        private var licenseText:Class;
         private function _init():void {
 			agreeButton.init("I Agree");
 			disagreeButton.init("I Disagree");
 			agreeButton.initSkin();
 			disagreeButton.initSkin();
+            var b:ByteArray = new licenseText();
+            var s:String = b.readUTFBytes(b.length);
+            StyleableTextField(licenseTextArea.textDisplay).htmlText = s;
         }
 
         private function addedToStageHandler():void {
@@ -73,7 +81,7 @@
 				  top="{LICENSE_PADDING}" bottom="{LICENSE_PADDING}" horizontalCenter="0">
             <s:Label id="notificationLabel" text="End user license aggrement" width="100%" textAlign="center"
                      fontWeight="bold"/>
-            <s:TextArea width="100%" height="80%" editable="false">
+            <s:TextArea width="100%" height="80%" editable="false" id="licenseTextArea" skinClass="spark.skins.mobile.TextAreaSkin">
                 <s:text>*The licence goes here*</s:text>
             </s:TextArea>
             <s:Group width="100%">

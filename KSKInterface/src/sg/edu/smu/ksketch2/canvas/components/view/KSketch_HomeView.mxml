@@ -298,7 +298,7 @@
 				var xml:XML = new XML(sketchData.fileData);
 				var date:Date = new Date(sketchData.modified);
 				var obj:Object = new Object();
-				obj.sketchData = new KSketchDocument(sketchName, xml,"0", date, sketchData.fileName, sketchData.version, int(sketchId), sketchData.changeDescription);
+				obj.sketchData = new KSketchDocument(sketchName, xml,"-1", date, sketchData.fileName, sketchData.version, -1, sketchData.changeDescription);
 				obj.thumbnailData = sketchData.thumbnailData;
 				obj.fileData = xml.toString();
 				var saveObj:Object = KWebData.prepareSketchDocument(obj, finalFileName, _cacheControl.user);

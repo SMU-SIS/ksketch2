@@ -29,5 +29,9 @@ package sg.edu.smu.ksketch2
 		
 		public static const jsonurlDeleteSketch:String = KSketch_Config.host_name+"/get/deletesketch";				//To delete a sketch from Datastore
 		public static const urlApproval:String = KSketch_Config.host_name+"/app/register_complete.html";
+		
+		public static const localAgreement:String = "app:/assets/html/mpl2.html";
+		public static const localAgreementAccept:String = "/assets/html/mpl2-accept.html";
+		public static const localAgreementDecline:String = "/assets/html/mpl2-decline.html";
 	}
 }

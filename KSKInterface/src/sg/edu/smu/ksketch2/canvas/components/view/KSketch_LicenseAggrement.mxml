@@ -1,99 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-*Copyright 2015 Singapore Management University
-*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
-
-*This Source Code Form is subject to the terms of the
-*Mozilla Public License, v. 2.0. If a copy of the MPL was
-*not distributed with this file, You can obtain one at
-*http://mozilla.org/MPL/2.0/.
--->
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
-        xmlns:s="library://ns.adobe.com/flex/spark"
-        xmlns:mx="library://ns.adobe.com/flex/mx"
 		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
-		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
-        actionBarVisible="false"
+		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
+		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false" 
+		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
+		viewActivate="viewActivateHandler(event)"
+		>
+	<fx:Script>
         
-        destructionPolicy="auto"
-        addedToStage="addedToStageHandler()"
-        initialize="_init()">
-    <fx:Script>
-        <![CDATA[
-        import sg.edu.smu.ksketch2.utils.KSketch_Preference;
-		import sg.edu.smu.ksketch2.KSketchGlobals;
-
-        import spark.components.supportClasses.StyleableTextField;
-
-        private var LICENSE_PADDING:Number = 15;
+		<![CDATA[
+			import flash.media.StageWebView;
 			
-        private var timer:Timer;
-        public static var initialOrientation:String = null;
-        //License agreement
-        [Embed("/assets/mpl2.html",mimeType="application/octet-stream")]
-        [Bindable]
-        private var licenseText:Class;
-        private function _init():void {
-			agreeButton.init("I Agree");
-			disagreeButton.init("I Disagree");
-			agreeButton.initSkin();
-			disagreeButton.initSkin();
-            var b:ByteArray = new licenseText();
-            var s:String = b.readUTFBytes(b.length);
-            StyleableTextField(licenseTextArea.textDisplay).htmlText = s;
-        }
-
-        private function addedToStageHandler():void {
-			KSketchGlobals.setView();
-            
-			LICENSE_PADDING = 15 * KSketchGlobals.SCALE;
+			import spark.events.ViewNavigatorEvent;
 			
-			this.removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-
-            if (!initialOrientation)
-                initialOrientation = stage.orientation;
-
-            if (Capabilities.version.indexOf('IOS') > -1) {
-                if (stage.orientation == StageOrientation.DEFAULT || stage.orientation == StageOrientation.UPSIDE_DOWN)
-                    stage.setOrientation(StageOrientation.ROTATED_RIGHT);
-                else
-                    stage.setOrientation(stage.orientation);
-            }
-
-        }
-
-        private function exitApp():void {
-            NativeApplication.nativeApplication.exit();
-        }
-
-        private function accept():void {
-            KSketch_Preference.createPreferences();
-            navigator.pushView(KSketch_HomeView);
-        }
-        ]]>
-    </fx:Script>
-
-    <s:Group width="100%" height="100%">
-        <s:layout>
-            <s:BasicLayout/>
-        </s:layout>
-        <s:VGroup left="{LICENSE_PADDING}" right="{LICENSE_PADDING}" 
-				  top="{LICENSE_PADDING}" bottom="{LICENSE_PADDING}" horizontalCenter="0">
-            <s:Label id="notificationLabel" text="End user license aggrement" width="100%" textAlign="center"
-                     fontWeight="bold"/>
-            <s:TextArea width="100%" height="80%" editable="false" id="licenseTextArea" skinClass="spark.skins.mobile.TextAreaSkin">
-                <s:text>*The licence goes here*</s:text>
-            </s:TextArea>
-            <s:Group width="100%">
-                <s:layout>
-                    <s:HorizontalLayout horizontalAlign="center"/>
-                </s:layout>
-                <buttons:KSketch_DialogButton id="agreeButton" click="accept()" />
-				<buttons:KSketch_DialogButton id="disagreeButton" click="exitApp()" />
-            </s:Group>
-
-        </s:VGroup>
-
-    </s:Group>
-
+			import air.net.URLMonitor;
+			
+			import sg.edu.smu.ksketch2.KSketchWebLinks;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar;
+			import sg.edu.smu.ksketch2.utils.KSketch_Preference;
+			
+			public static var userData:Object = new Object();
+			
+			private var progressTimer:Timer;
+			private var _stageWidth:Number;
+			private var _stageHeight:Number;
+			private var _monitor:URLMonitor;
+			private var _monitorTimer:Timer;
+			private var _webView:StageWebView = new StageWebView();
+			private var _isLoggedOut:Boolean = false;
+			private var _token:String = "";
+			
+			protected function viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				data = null;
+				_webView.stage = stage;
+				_stageWidth = stage.stageWidth;
+				_stageHeight = stage.stageHeight;
+				
+				if(_stageWidth > _stageHeight)
+					_webView.viewPort = new Rectangle(0, 0, _stageWidth, _stageHeight);
+				else
+					_webView.viewPort = new Rectangle(0, 0, _stageHeight, _stageWidth);
+				
+				var fPath:String = new File(new File(KSketchWebLinks.localAgreement).nativePath).url; 
+				
+				try
+				{
+					_webView.loadURL( fPath);
+					_webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGE, locationChangedHandler);				//for IOS
+					_webView.addEventListener(flash.events.LocationChangeEvent.LOCATION_CHANGING, locationChangingHandler);			//for ANDROID
+					_webView.addEventListener(ErrorEvent.ERROR, errorEventHandler);
+				}
+				catch (err:Error) { trace(err); }
+			}
+			
+			//FOR Android
+			private function locationChangingHandler(event:LocationChangeEvent):void
+			{
+				var currentURL:String = event.location.toString();
+				
+				try
+				{
+					if((currentURL.indexOf(KSketchWebLinks.localAgreementAccept) >= 0))
+						agree();
+					else
+						decline();
+				}
+				catch (err:Error) { trace(err); }
+				
+			}
+			
+			//FOR IOS
+			private function locationChangedHandler(event:LocationChangeEvent):void
+			{
+				var currentURL:String = event.location.toString();
+				
+				try
+				{
+					if((currentURL.indexOf(KSketchWebLinks.localAgreementAccept) >= 0))
+						agree();
+					else
+						decline();
+					
+				}
+				catch (err:Error) { trace(err); }
+			}
+			
+			private function decline():void
+			{
+				disposeView();
+				NativeApplication.nativeApplication.exit();
+			}
+			
+			private function agree():void
+			{
+				disposeView();
+				KSketch_Preference.createPreferences();
+				navigator.pushView(KSketch_HomeView);
+			}
+			
+			private function disposeView():void
+			{
+				_webView.removeEventListener(ErrorEvent.ERROR, errorEventHandler);
+				_webView.stop();
+				_webView.viewPort = null;
+				_webView.dispose();
+				_webView = null;
+			}
+			
+			private function errorEventHandler(event:ErrorEvent):void
+			{
+				trace("error handled: " + event);
+			}
+		]]>
+	</fx:Script>
+	<popup:DataProgressBar id="progressBar" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
+						   horizontalCenter="0" verticalCenter="0" visible="false"/>
 </s:View>

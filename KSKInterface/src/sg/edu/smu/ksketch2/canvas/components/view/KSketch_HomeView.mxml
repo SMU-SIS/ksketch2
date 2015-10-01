@@ -24,31 +24,32 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
-		import mx.collections.ArrayCollection;
-		import mx.collections.Sort;
-		import mx.collections.SortField;
-		import mx.events.FlexEvent;
-		import mx.managers.PopUpManager;
-
-		import data.KSketch_DataListItem;
-		import data.KSketch_ListItem;
-
-		import org.as3commons.collections.SortedList;
-		import org.as3commons.collections.framework.IComparator;
-
-		import com.adobe.serialization.json.JSON;
-
-		import sg.edu.smu.ksketch2.KSketchAssets;
-		import sg.edu.smu.ksketch2.KSketchGlobals;
-		import sg.edu.smu.ksketch2.KSketch_Config;
-		import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
-		import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
-		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Notifications;
-		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
-		import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
-		import sg.edu.smu.ksketch2.utils.KSketchDocument;
-		import sg.edu.smu.ksketch2.utils.KSwipeEvent;
-		import sg.edu.smu.ksketch2.utils.KWebData;
+			import com.adobe.serialization.json.JSON;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import data.KSketch_DataListItem;
+			import data.KSketch_ListItem;
+			
+			import org.as3commons.collections.SortedList;
+			import org.as3commons.collections.framework.IComparator;
+			
+			import sg.edu.smu.ksketch2.KSketchAssets;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.KSketch_Config;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
+			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Notifications;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
+			import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
+			import sg.edu.smu.ksketch2.utils.KSketchDocument;
+			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
+			import sg.edu.smu.ksketch2.utils.KWebData;
 
 		private static const DISPLAY_FAILED_DEFAULT:int = -1;
 		private static const DISPLAY_FAILED_LOGIN:int = 0;
@@ -293,7 +294,15 @@
 			return function(event:Event):void {
 				var newFile:File = event.target as File;
 				var finalFileName:String = newFile.name;
-				var sketchData:Object = _cacheControl.retrieveSketchForSave(sketchName, sketchId);
+				var fullPath:String=newFile.nativePath;				
+				
+				var arr:Array = verifyFileType(finalFileName,newFile.extension,fullPath);	
+				if(arr == null || arr.length == 0)
+					return;
+				finalFileName = arr[0];
+				fullPath = arr[1];
+				
+				var sketchData:Object = _cacheControl.retrieveSketchForSave(sketchName, sketchId);		
 				//create XML and date object from JSON to create a KSketchDocument object
 				var xml:XML = new XML(sketchData.fileData);
 				var date:Date = new Date(sketchData.modified);
@@ -305,12 +314,15 @@
 
 				//save to file
 				var str:String = com.adobe.serialization.json.JSON.encode(saveObj);
-				var stream:FileStream = new FileStream();
-				stream.open(newFile, FileMode.WRITE);
+				var stream:FileStream = new FileStream();				
+				if(newFile.name != finalFileName)
+					stream.open(new File(fullPath), FileMode.WRITE);
+				else
+					stream.open(newFile, FileMode.WRITE);
 				stream.writeUTFBytes(str);
 				stream.close();
-
-				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.SAVE_CLOSE_ACTION));
+				if(stage!=null)
+					stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.SAVE_CLOSE_ACTION));
 			}
 		}
 
@@ -412,6 +424,7 @@
 			}
 			catch (error:Error) {
 				trace("Unknown file");
+				handleUnknownSketchFile();
 			}
 		}
 
@@ -448,10 +461,7 @@
 						logout();
 					}
 					else {
-						var dialogPopUp = new KSketch_DialogBox_Skin();
-						dialogPopUp.init(this, null, null, null, "Logout");
-						dialogPopUp.open(this, true);
-						PopUpManager.centerPopUp(dialogPopUp);
+						showDialogBox("Logout");
 					}
 				}
 				else {
@@ -513,7 +523,7 @@
 			var sketchVersion:String = KSketch_HomeView_IconItemRenderer.selectedVersion;
 
 			if (_isSwipe) {
-				listSketches.selectedIndex = -1;
+				listSketches.selectedIndex = -1;			
 				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.TAP_ACTION));
 			}
 
@@ -554,13 +564,46 @@
 
 		public function handleExpiredSession() {
 			_notice = KSketch_DialogBox_Notifications.CANVASNOTICE_EXPIRED_SESSION;
+			showDialogBox("Notification");
+		}
 
+		private function handleUnknownSketchFile():void
+		{
+			_notice = KSketch_DialogBox_Notifications.CANVASNOTICE_UNKNOWN_FILE;	
+			showDialogBox("Notification");			
+		}
+			
+		private function verifyFileType(fileName:String,fileExt:String,filePath:String):Array
+		{
+			var arrResult:Array = new Array();
+			arrResult[0] = fileName;
+			arrResult[1] = filePath;			
+			
+			if(fileExt == null || fileExt == "") 
+			{
+				arrResult[0] = fileName + ".kmv";
+				arrResult[1] = filePath + ".kmv"
+			}
+			else if(fileExt != "kmv") 
+			{
+				_notice = KSketch_DialogBox_Notifications.CANVASNOTICE_CONFIRM_FILETYPE;
+				showDialogBox("Notification");
+				
+				var arr:Array = filePath.split(".");
+				arrResult[0] = fileName.replace(fileExt,"kmv");
+				arrResult[1] = arr[0]+".kmv";
+			}		
+			return arrResult;
+		}
+			
+		private function showDialogBox(mode:String):void
+		{
 			var dialogPopUp:KSketch_DialogBox_Skin = new KSketch_DialogBox_Skin();
-			dialogPopUp.init(this, null, null, null, "Notification");
+			dialogPopUp.init(this, null, null, null, mode);
 			dialogPopUp.open(this, true);
 			PopUpManager.centerPopUp(dialogPopUp);
 		}
-
+			
 		protected function view_addedToStageHandler(event:Event):void {
 			// TODO Auto-generated method stub
 

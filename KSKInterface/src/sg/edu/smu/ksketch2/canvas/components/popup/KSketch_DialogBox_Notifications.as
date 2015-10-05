@@ -15,12 +15,15 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 		public static const CANVASNOTICE_FAILED_SKETCH:String = "FAILEDSKETCH";
 		public static const CANVASNOTICE_FAILED_LOGIN:String = "FAILEDLOGIN";
 		public static const CANVASNOTICE_EXPIRED_SESSION:String = "EXPIREDSESSION";
+		public static const CANVASNOTICE_UNKNOWN_FILE:String = "UNKNOWNFILE";
+		public static const CANVASNOTICE_CONFIRM_FILETYPE:String = "CONFIRMFILETYPE";
 		
 		private var PADDINGLEFT:Number = 10 * KSketchGlobals.SCALE;
 		
 		private var _homeView:KSketch_HomeView;
 		private var _dialogPopUp:KSketch_DialogBox_Skin;
 		private var _failedMessage:String;
+		private var _failedMessageCode:String;
 		private var _label:Label;
 		private var _yesButton:KSketch_DialogButton;
 		private var _okButton:KSketch_DialogButton;
@@ -32,22 +35,31 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 			
 			_homeView = homeView;
 			
-			_failedMessage = message;
-			if(_failedMessage == CANVASNOTICE_FAILED_SKETCH)
+			_failedMessageCode = message;
+			if(_failedMessageCode == CANVASNOTICE_FAILED_SKETCH)
 			{
 				_failedMessage = "Unable to display sketch. Check your network connection or\ncontact the K-Sketch team at " + KSketch_Config.email;
 				_dialogPopUp.header.text = "Network Error";
 			}
-			else if(_failedMessage == CANVASNOTICE_FAILED_LOGIN)
+			else if(_failedMessageCode == CANVASNOTICE_FAILED_LOGIN)
 			{
 				_failedMessage = "Unable to login. Check your network connection or\ncontact the K-Sketch team at " + KSketch_Config.email;
 				_dialogPopUp.header.text = "Login Error";
 			}
-			else if(_failedMessage == CANVASNOTICE_EXPIRED_SESSION)
+			else if(_failedMessageCode == CANVASNOTICE_EXPIRED_SESSION)
 			{
 				_failedMessage = "Your K-Sketch session has expired. Please login to retrieve your sketches. Do you want to login now?";
-				_dialogPopUp.header.text = "Session Expired";
-				
+				_dialogPopUp.header.text = "Session Expired";				
+			}
+			else if(_failedMessageCode == CANVASNOTICE_UNKNOWN_FILE)
+			{
+				_failedMessage = "Not a sketch file. Unable to display sketch.";
+				_dialogPopUp.header.text = "Unknown file";
+			}
+			else if(_failedMessageCode == CANVASNOTICE_CONFIRM_FILETYPE)
+			{
+				_failedMessage = "Sketch file is saved with extension 'kmv'.";
+				_dialogPopUp.header.text = "Information";
 			}
 			
 			_initContentComponent();
@@ -61,14 +73,8 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 			_dialogPopUp.contentComponent.layout = horizontalLayout;
 			
 			_label = new Label();
-			
-			if(_failedMessage == CANVASNOTICE_FAILED_SKETCH)
-				_label.text = "Unable to display sketch. Check your network connection or\ncontact the K-Sketch team at " + KSketch_Config.email;
-			else if(_failedMessage == CANVASNOTICE_FAILED_LOGIN)
-				_label.text = "Unable to login. Check your network connection or\ncontact the K-Sketch team at " + KSketch_Config.email;
-			else if(_failedMessage == CANVASNOTICE_EXPIRED_SESSION)
-				_label.text = "Your K-Sketch session has expired. Please login to retrieve your sketches. Do you want to login now?";
-			
+			_label.text=_failedMessage;				
+						
 			_dialogPopUp.contentComponent.addElement(_label);
 		}
 		
@@ -86,7 +92,7 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 			_yesButton.addEventListener(MouseEvent.CLICK, _login);
 			
 			_okButton = new KSketch_DialogButton();
-			if(_failedMessage == CANVASNOTICE_EXPIRED_SESSION)
+			if(_failedMessageCode == CANVASNOTICE_EXPIRED_SESSION)
 			{
 				_okButton.init("NO");
 				_yesButton.setVisible(true);

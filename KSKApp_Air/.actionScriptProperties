@@ -37,6 +37,12 @@
     <application path="KSketch_Portable.mxml">
       <airExcludes/>
     </application>
+    <application path="KSketch_Desktop.mxml">
+      <airExcludes/>
+    </application>
+    <application path="KSketch_SynPhNe.mxml">
+      <airExcludes/>
+    </application>
   </applications>
   <modules/>
   <workers/>

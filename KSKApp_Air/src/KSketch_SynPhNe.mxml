@@ -12,10 +12,11 @@
 							xmlns:s="library://ns.adobe.com/flex/spark"
 							xmlns:canvas="sg.edu.smu.ksketch2.canvas.*"
 							firstView="sg.edu.smu.ksketch2.canvas.components.view.KSketch_SplashView">
-	<fx:Script>
-		<![CDATA[
-			import sg.edu.smu.ksketch2.KSketch_Config;
-			KSketch_Config.isMobile = true;
-		]]>
-	</fx:Script>
+<fx:Script>
+	<![CDATA[
+		import sg.edu.smu.ksketch2.KSketch_Config;
+		KSketch_Config.isMobile = true;
+		KSketch_Config.enableSynphne = true;
+	]]>
+</fx:Script>
 </s:ViewNavigatorApplication>

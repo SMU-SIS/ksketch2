@@ -15,7 +15,7 @@
 	<fx:Script>
 		<![CDATA[
 			import sg.edu.smu.ksketch2.KSketch_Config;
-			KSketch_Config.isMobile = true;
+			KSketch_Config.isMobile = false;
 		]]>
 	</fx:Script>
 </s:ViewNavigatorApplication>

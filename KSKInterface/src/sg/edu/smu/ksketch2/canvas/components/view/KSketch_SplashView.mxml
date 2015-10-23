@@ -18,10 +18,11 @@
 		>
 	<fx:Script>
 		<![CDATA[
-		import sg.edu.smu.ksketch2.KSketchAssets;
-		import sg.edu.smu.ksketch2.KSketch_Config;
-		import sg.edu.smu.ksketch2.utils.KSketch_MigrateCache;
-		import sg.edu.smu.ksketch2.utils.KSketch_Preference;
+			import sg.edu.smu.ksketch2.KSketchAssets;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.KSketch_Config;
+			import sg.edu.smu.ksketch2.utils.KSketch_MigrateCache;
+			import sg.edu.smu.ksketch2.utils.KSketch_Preference;
 
 		private var timer:Timer;
 		public static var initialOrientation:String = null;
@@ -50,11 +51,15 @@
 			timer.removeEventListener(TimerEvent.TIMER, timerComplete);
 			timer.stop();
 
+			KSketchGlobals.DEVICE_WIDTH = this.stage.stageWidth;
+			KSketchGlobals.DEVICE_HEIGHT = this.stage.stageHeight;
+			
 			canvasCover.visible = true;
 			stage.setAspectRatio("landscape");
 			//Migrate old cache to new cache structure if it exists
 			var migrations:KSketch_MigrateCache = new KSketch_MigrateCache();
 			migrations.migrateData();
+			
 			if(!KSketch_Config.isMobile && !KSketch_Config.enableSynphne)
 			{
 				navigator.pushView(KSketch_LicenseAggrement);

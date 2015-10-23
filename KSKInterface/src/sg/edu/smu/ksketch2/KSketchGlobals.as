@@ -60,6 +60,9 @@ package sg.edu.smu.ksketch2
 		public static var HEIGHT:int = 0;
 		public static var ASPECTRATIO:Number = 0;
 		
+		public static var DEVICE_WIDTH:Number;
+		public static var DEVICE_HEIGHT:Number;
+		
 		public static function setView():void
 		{
 			
@@ -76,10 +79,26 @@ package sg.edu.smu.ksketch2
 					HEIGHT = Capabilities.screenResolutionX;
 				}
 				
-				ASPECTRATIO = int((WIDTH/HEIGHT)*100)/100;
+//				ASPECTRATIO = int((WIDTH/HEIGHT)*100)/100;
 				
-				if(WIDTH > 1280 && HEIGHT > 960)
-					SCALE = 2;
+//				if(WIDTH > 1280 && HEIGHT > 960)
+//					SCALE = 2;	
+				
+				/**
+				 * 23.10.2015: NTN-START
+				 * This fix is for enabling viewing app in various available emulators on FB.
+				 * Capabilities.screenResolutionX and Capabilities.screenResolutionY show resolution of monitor, not the resolution of the emulated device.	
+				 * Actual device resolution is captured in KSketch_SplashView.
+				 * For emulators having width or height greater than the monitor respective values, emulator screen would be cut off.
+				 * in this case, change the display monitor resolution to greater values than the emulated device resolution.
+				 */
+				var ratio1:Number = int((DEVICE_WIDTH/WIDTH)*100)/100;
+				var ratio2:Number = int((DEVICE_HEIGHT / HEIGHT)*100)/100;
+				var minRatio:Number = Math.min(ratio1,ratio2);
+				SCALE = minRatio;
+				/**
+				 * NTN-END
+				 */		
 				
 				FONT_SIZE_10 = 10 * SCALE;
 				FONT_SIZE_10_5 = 10.5 * SCALE;
@@ -93,7 +112,6 @@ package sg.edu.smu.ksketch2
 				RECT_RADIUSX = 5 * SCALE;
 				RECT_RADIUSY = 5 * SCALE;
 			}
-			
-		}
+		}			
 	}
 }

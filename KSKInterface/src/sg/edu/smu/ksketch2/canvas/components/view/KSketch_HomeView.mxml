@@ -302,7 +302,9 @@
 				finalFileName = arr[0];
 				fullPath = arr[1];
 				
-				var sketchData:Object = _cacheControl.retrieveSketchForSave(sketchName, sketchId);		
+				var sketchData:Object = _cacheControl.retrieveSketchForSave(sketchName, sketchId);	
+				if(sketchData == null)
+					return;
 				//create XML and date object from JSON to create a KSketchDocument object
 				var xml:XML = new XML(sketchData.fileData);
 				var date:Date = new Date(sketchData.modified);
@@ -418,6 +420,7 @@
 					var sketchData:KSketch_DataListItem = new KSketch_DataListItem(xml, fileObj.fileName, fileObj.originalName,
 							_cacheControl.user.id, fileObj.modified, fileObj.changeDescription,
 							fileObj.id, int(fileObj.version));
+					KSketch_CanvasView.loadedFromFile = true;
 					displaySketchData(sketchData, null);
 					navigateToScreen("CANVAS");
 				}
@@ -527,6 +530,10 @@
 				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.TAP_ACTION));
 			}
 
+			//if action bar is not displayed and there is a save sketch flag
+			if (!KSketch_HomeView_IconItemRenderer.openActionBar && _saveSketchFlag)
+				_saveSketchFlag = false;
+			
 			//if action bar is displayed, reset selection to -1
 			if (KSketch_HomeView_IconItemRenderer.openActionBar)
 				listSketches.selectedIndex = -1;

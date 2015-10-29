@@ -147,6 +147,8 @@
 			private var _activityControl:KActivityControl;
 			private var _kInstructions:KInstructions;
 			
+			//KSKETCH-DESKTOP
+			public static var loadedFromFile:Boolean = false;
 			
 			//Starting up is hopefully done in the following stages
 			//Should not depend on the events beingfired in the correct sequence all the time
@@ -265,6 +267,9 @@
 				
 				if(!isWeb)
 				{
+					if(!isMobile && !isSynphne && loadedFromFile)
+						_saveOptions.canvasDirty = true;
+					
 					_saveOptions.init(this, _menuPopUp, _overwriteSaveOptions);
 					_overwriteSaveOptions.init(this, _saveOptions);
 					

@@ -74,7 +74,8 @@
             header.setStyle("fontSize", KSketchGlobals.FONT_SIZE_26);
             title.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
             saveAsWarning.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
-            sketchName.height = SKECTHNAME_HEIGHT;
+			//set height for sketchName control would prevent sketch name from being displayed fully
+            //sketchName.height = SKECTHNAME_HEIGHT;
             sketchName.percentWidth = 95;
 
             saveButton.init("Save");
@@ -137,6 +138,7 @@
         public function setSketchName():void {
             //if this is an attempt to save a new sketch,
             //then show the textarea to enter sketch name
+			getMaxCounter();
             var defaultName:String = "My Sketch " + saveCounter;
             sketchName.text = defaultName;
 
@@ -157,6 +159,14 @@
                 sketchName.text = defaultName;
                 saveAsWarning.visible = false;
             }
+			
+			if(KSketch_CanvasView.loadedFromFile){
+				var fileName:String = userData.sketchData.fileName;
+				if(fileName.indexOf(".kmv"))
+					fileName = fileName.replace(".kmv","");
+				sketchName.text = fileName;
+				KSketch_CanvasView.loadedFromFile = false;
+			}
         }
 
         public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu, overwriteSave:KSketch_OverwriteSaveOptions):void {
@@ -428,18 +438,42 @@
 
         public function incrementSaveCounter():void {
             //if the filename is set to default - "My Sketch n", increment saveCounter
-            if (sketchName.text.indexOf("My Sketch") >= 0) {
-                var tempFilename:String = sketchName.text;
-                var trimFilename:String = tempFilename.replace("My Sketch", "");
-                var isANumber:Boolean = !isNaN(Number(trimFilename));
-
-                if (isANumber) {
-                    var tempNo:int = int(trimFilename);
-                    saveCounter = tempNo;
-                    saveCounter++;
-                }
-            }
+			var number:int = getNumberFromDefaultName(sketchName.text);
+			if(number!=-1)
+			{
+				saveCounter = number;
+				saveCounter++;
+			}
         }
+
+		//Ensure default name for sketch should not be the same as an existing sketch
+		private function getMaxCounter():void {
+			if(_cacheControl.cachedList !=null)
+			{
+				var maxNumber:int = 0;
+				for(var i:int;i<_cacheControl.cachedList.size;i++)
+				{
+					var tempFilename:String = _cacheControl.cachedList.itemAt(i).fileName;
+					var number:int = getNumberFromDefaultName(tempFilename);
+					if(number > maxNumber)
+						maxNumber = number;
+				}
+				if(maxNumber >= saveCounter)
+					saveCounter = maxNumber + 1;
+			}
+		}
+			
+		private function getNumberFromDefaultName(name:String):int{
+			var number:int = -1;
+			if (name.indexOf("My Sketch") >= 0) {
+				var trimFilename:String = name.replace("My Sketch", "");
+				var isANumber:Boolean = !isNaN(Number(trimFilename));
+				
+				if (isANumber) 
+					number = int(trimFilename);
+			}
+			return number;
+		}
         ]]>
 	</fx:Script>
     <s:filters>

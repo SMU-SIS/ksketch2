@@ -343,10 +343,10 @@
 			KSketch_CanvasView.tracker.trackPageview("/popupmenu/exitCanvas");
 
 			_saveOptions.returnToHome = true;
-			if (_canvasView._interactionControl.hasUndo) {
+			if (_canvasView._interactionControl.hasUndo || _saveOptions.canvasDirty){
 				_saveOptions.open(_canvasView);
 				PopUpManager.centerPopUp(_saveOptions);
-			}
+			}			
 			else
 				_exit();
 		}

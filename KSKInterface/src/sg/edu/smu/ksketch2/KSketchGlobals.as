@@ -93,9 +93,8 @@ package sg.edu.smu.ksketch2
 				 * in this case, change the display monitor resolution to greater values than the emulated device resolution.
 				 */
 				var ratio1:Number = int((DEVICE_WIDTH/WIDTH)*100)/100;
-				var ratio2:Number = int((DEVICE_HEIGHT / HEIGHT)*100)/100;
-				var minRatio:Number = Math.min(ratio1,ratio2);
-				SCALE = minRatio;
+				var ratio2:Number = int((DEVICE_HEIGHT/HEIGHT)*100)/100;
+				SCALE = Math.min(ratio1,ratio2);
 				/**
 				 * NTN-END
 				 */		

@@ -519,7 +519,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var sketchData:Object;
 			if(arr !=null){
 				for(var i:int=0;i<arr.length;i++){
-					if(arr[i].sketchId == sketchId){
+					if(arr[i].sketchId == sketchId && arr[i].fileName == fileName){
 						sketchData = new KSketch_DataListItem(arr[i].fileData, arr[i].fileName, arr[i].originalName,
 								arr[i].owner_id, arr[i].modified, arr[i].changeDescription,
 								arr[i].sketchId, int(arr[i].version));

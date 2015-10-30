@@ -534,6 +534,9 @@
 			if (!KSketch_HomeView_IconItemRenderer.openActionBar && _saveSketchFlag)
 				_saveSketchFlag = false;
 			
+			if (!KSketch_HomeView_IconItemRenderer.openActionBar && _deleteSketchFlag)
+				_deleteSketchFlag = false;
+			
 			//if action bar is displayed, reset selection to -1
 			if (KSketch_HomeView_IconItemRenderer.openActionBar)
 				listSketches.selectedIndex = -1;

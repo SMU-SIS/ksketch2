@@ -705,6 +705,14 @@
 				_activityControl.isAnimationPlaying = value;
 			}
 			
+			public function setTherapyIntroduction(value:Boolean):void
+			{
+				if(value)
+					_activityControl.startIntroductionAnimation();
+				else
+					_activityControl.stopIntroductionAnimation();					
+			}
+			
 			public function get isTiming():Boolean
 			{
 				if(_isTiming != null)

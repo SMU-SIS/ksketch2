@@ -174,6 +174,11 @@
 					}
 					else
 					{
+						//stop introduction animation if user taps on the DONE button in Instruction Box instead of tapping on the therapy object
+						if(_activityControl.isAnimationPlaying){
+							_canvasView.setTherapyIntroduction(false);						
+						}
+						
 						initNextInstruction();
 						trace("init next instructions");
 					}
@@ -241,7 +246,13 @@
 			private function previousActivity():void {
 				_currentActivity -= 1;
 				_currentInstruction = 0;
-				activityHeader.text = _activityTypes[_currentActivity];
+				activityHeader.text = _activityTypes[_currentActivity];				
+				_activityControl.startActivity(activityHeader.text); //reset canvas when activity changes
+				if(activityHeader.text == "INTRO" && instructionButton_Start.label == "START")
+				{
+					_canvasView.setTherapyIntroduction(false);
+					_activityControl.isAnimationPlaying = false;
+				}				
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 				instructionHeader.text = "Step " + (_currentInstruction + 1);
 				enableDisableActivity();
@@ -252,6 +263,7 @@
 				_currentInstruction = 0;
 				_currentActivity += 1;
 				activityHeader.text = _activityTypes[_currentActivity];
+				_activityControl.startActivity(activityHeader.text); //reset canvas when activity changes
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 				instructionHeader.text = "Step " + (_currentInstruction + 1);
 				enableDisableActivity();

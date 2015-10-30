@@ -352,6 +352,8 @@
 		}
 
 		public function _exit():void {
+			if(KSketch_CanvasView.isSynphne) 
+				_canvasView.closeInstructions(); 
 			close();
 			_canvasView.exit();
 			KSketch_CanvasView.createNewSketch = false;

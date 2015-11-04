@@ -73,6 +73,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 			else if(activity == "TRACE")
 			{ 
+				removeSelectObjectToAnimate();
 				_activityType = "TRACE";
 				_discardSketchedObjects();
 				_setObjectProperties(false, true, false);
@@ -248,6 +249,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var selectedList:KModelObjectList = new KModelObjectList();
 				selectedList.add(_currentManipulateObject);
 				_interactionControl.selection = new KSelection(selectedList);
+			}
+		}
+		
+		public function removeSelectObjectToAnimate():void
+		{
+			if(_currentManipulateObject && _interactionControl.selection)
+			{
+				_interactionControl.selection = null;				
 			}
 		}
 		

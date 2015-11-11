@@ -622,7 +622,7 @@
 					drawing_stage.percentHeight = 82;
 					drawing_stage.width = drawing_stage.height/9*16;
 				}
-				else if(KSketchGlobals.WIDTH > 1280 && KSketchGlobals.ASPECTRATIO == 1.33)
+				else if(KSketchGlobals.STAGE_WIDTH > 1280 && KSketchGlobals.ASPECTRATIO == 1.33)
 				{
 					drawing_stage.percentHeight = 80;
 					drawing_stage.width = drawing_stage.height/9*16;

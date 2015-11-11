@@ -51,8 +51,8 @@
 			timer.removeEventListener(TimerEvent.TIMER, timerComplete);
 			timer.stop();
 
-			KSketchGlobals.DEVICE_WIDTH = this.stage.stageWidth;
-			KSketchGlobals.DEVICE_HEIGHT = this.stage.stageHeight;
+			KSketchGlobals.STAGE_WIDTH = this.stage.stageWidth;
+			KSketchGlobals.STAGE_HEIGHT = this.stage.stageHeight;
 			
 			canvasCover.visible = true;
 			stage.setAspectRatio("landscape");

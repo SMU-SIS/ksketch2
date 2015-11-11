@@ -56,12 +56,12 @@ package sg.edu.smu.ksketch2
 		
 		//Scaling
 		public static var SCALE:Number = 1;
-		public static var WIDTH:int = 0;
-		public static var HEIGHT:int = 0;
+		public static var SCREEN_WIDTH:int = 0;
+		public static var SCREEN_HEIGHT:int = 0;
 		public static var ASPECTRATIO:Number = 0;
 		
-		public static var DEVICE_WIDTH:Number;
-		public static var DEVICE_HEIGHT:Number;
+		public static var STAGE_WIDTH:Number;
+		public static var STAGE_HEIGHT:Number;
 		
 		public static function setView():void
 		{
@@ -70,19 +70,19 @@ package sg.edu.smu.ksketch2
 			{
 				if(Capabilities.screenResolutionX > Capabilities.screenResolutionY)
 				{
-					WIDTH = Capabilities.screenResolutionX;
-					HEIGHT = Capabilities.screenResolutionY;
+					SCREEN_WIDTH = Capabilities.screenResolutionX;
+					SCREEN_HEIGHT = Capabilities.screenResolutionY;
 				}
 				else
 				{
-					WIDTH = Capabilities.screenResolutionY;
-					HEIGHT = Capabilities.screenResolutionX;
+					SCREEN_WIDTH = Capabilities.screenResolutionY;
+					SCREEN_HEIGHT = Capabilities.screenResolutionX;
 				}
 				
-//				ASPECTRATIO = int((WIDTH/HEIGHT)*100)/100;
+				ASPECTRATIO = int((STAGE_WIDTH/STAGE_HEIGHT)*100)/100;
 				
-//				if(WIDTH > 1280 && HEIGHT > 960)
-//					SCALE = 2;	
+				if(STAGE_WIDTH > 1280 && STAGE_HEIGHT > 960)
+					SCALE = 2;	
 				
 				/**
 				 * 23.10.2015: NTN-START
@@ -92,9 +92,12 @@ package sg.edu.smu.ksketch2
 				 * For emulators having width or height greater than the monitor respective values, emulator screen would be cut off.
 				 * in this case, change the display monitor resolution to greater values than the emulated device resolution.
 				 */
-				var ratio1:Number = int((DEVICE_WIDTH/WIDTH)*100)/100;
-				var ratio2:Number = int((DEVICE_HEIGHT/HEIGHT)*100)/100;
-				SCALE = Math.min(ratio1,ratio2);
+				if (SCREEN_WIDTH < STAGE_WIDTH  || SCREEN_HEIGHT < STAGE_HEIGHT)
+				{
+					var ratio1:Number = int((STAGE_WIDTH/SCREEN_WIDTH)*100)/100;
+					var ratio2:Number = int((STAGE_HEIGHT/SCREEN_HEIGHT)*100)/100;
+					SCALE = Math.min(ratio1,ratio2);
+				}
 				/**
 				 * NTN-END
 				 */		

@@ -377,25 +377,21 @@
 								_KSketch.generateSceneFromXML(new XML(_currentDocument.fileData.scene));
 						
 							if(isSynphne)
-							{
-								if(isSynphne)
-								{									
-									if(_currentDocument.fileData.activities.children().length() == 0) 
-									{
-										//generate empty activities node
-										var xmlData:XML = _currentDocument.fileData;
-										xmlData.appendChild(<activities/>);
-										_currentDocument.fileData = xmlData;
-										instructionsButton.visible = false;							
-									}
-									else 
-									{ 
-										//KSKETCH-SYNPHNE
-										_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
-										_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
-										_activityControl.isNewSketch = true;
-										synphne_component.visible = true;
-									}
+							{								
+								if(_currentDocument.fileData.activities == undefined || _currentDocument.fileData.activities.children().length() == 0) 
+								{														
+									if(_currentDocument.fileData.activities == undefined)
+										_saveOptions.canvasDirty = true;
+									
+									instructionsButton.visible = false;										
+								}
+								else 
+								{ 
+									//KSKETCH-SYNPHNE
+									_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
+									_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
+									_activityControl.isNewSketch = true;
+									synphne_component.visible = true;
 								}								
 							}
 						}	
@@ -466,6 +462,13 @@
 				{
 					userData.name = sketchData.fileName;
 					userData.lowerFileName = sketchData.fileName.toString().toLowerCase();
+					
+					//KSKETCH-THERAPY:START - generate empty activities node for non-Therapy object					
+					if(isSynphne && sketchData.fileData.activities == undefined)
+					{
+						sketchData.fileData.appendChild(<activities/>);
+					}
+					//KSKETCH-THERAPY:END
 					
 					var fileData:String = sketchData.fileData.toXMLString();
 					

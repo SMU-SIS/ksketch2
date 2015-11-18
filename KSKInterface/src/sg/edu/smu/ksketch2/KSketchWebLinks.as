@@ -11,7 +11,7 @@ package sg.edu.smu.ksketch2
 	public class KSketchWebLinks
 	{
 		public static const pingurl:String = "http://google.com";
-		public static const url:String = KSketch_Config.host_name+"/app/login.html";								//Page displayed on stagewebview
+		public static const url:String = KSketch_Config.host_name+"/app/login_app.html";							//Page displayed on stagewebview
 		public static const jsonurlUser:String = KSketch_Config.host_name+"/user/getuser";							//To retrieve user information after login
 		public static const jsonurlUserMobile:String = KSketch_Config.host_name+"/user/getusermobile";				//To retrieve user information after login using ID
 		public static const urlUser:String = KSketch_Config.host_name+"/user/urlUserV2";							//To retrieve user id through URL

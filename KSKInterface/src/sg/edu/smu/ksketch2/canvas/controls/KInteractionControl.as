@@ -1,5 +1,5 @@
 /**
-*Copyright 2010-2012 Singapore Management University
+*Copyright 2010-2015 Singapore Management University
 *Developed under a grant from the Singapore-MIT GAMBIT Game Lab
 
 *This Source Code Form is subject to the terms of the

@@ -87,6 +87,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 			else if(activity == "TRACK")
 			{ 
+				removeSelectObjectToAnimate();
 				_activityType = "TRACK";
 				trace("before");
 				_currentManipulateObject = _getCurrentObjectToTrack(false);

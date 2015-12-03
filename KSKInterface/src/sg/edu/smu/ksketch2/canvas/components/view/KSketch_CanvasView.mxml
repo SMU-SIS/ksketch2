@@ -76,6 +76,7 @@
 			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
+			import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 			
 			public static const PLUG_IN:String = "PlugIn";
 			
@@ -710,6 +711,13 @@
 			public function get timeTaken():int
 			{
 				return _timeTaken; //in milliseconds
+			}
+			
+			public function updateTrackWidget():void
+			{
+				_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateMovingWidget);
+				var timeChangedEvent:KTimeChangedEvent = new KTimeChangedEvent(KTimeChangedEvent.EVENT_TIME_CHANGED, 0, 0);
+				dispatchEvent(timeChangedEvent);
 			}
 			
 			public function autoPlayAnimation():void

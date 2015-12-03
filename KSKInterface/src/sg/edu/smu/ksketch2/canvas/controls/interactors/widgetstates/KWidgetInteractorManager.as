@@ -308,6 +308,16 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			if(KSketch_TimeControl.isPlaying && !_isInteracting)
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 				
+			//KSKETCH-SYNPHNE
+			if(_activityControl && !_widgetHighlight)
+			{
+				if(_activityControl.activityType == "TRACK")
+				{
+					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
+					_widgetHighlight = true;
+				}
+			}
+			
 			var _isErasedObject:Boolean = _interactionControl.isSelectionErased(_interactionControl.selection);
 			if(!_isErasedObject)
 			{

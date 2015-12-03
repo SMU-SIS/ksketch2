@@ -89,10 +89,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{ 
 				removeSelectObjectToAnimate();
 				_activityType = "TRACK";
-				trace("before");
 				_currentManipulateObject = _getCurrentObjectToTrack(false);
 				
-				trace("after");
 				//If there is no sketched object to track, then duplicate copy of the original
 				if(!_currentManipulateObject)
 				{
@@ -102,6 +100,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 				_setObjectProperties(false, false, true);
 				_hideObjects(true);
 				processTrack(_currentManipulateObject as KStroke);
+				autoSelectObjectToAnimate();
+				_canvasView.updateTrackWidget();
 			}
 			else if(activity == "RECREATE")
 			{ 

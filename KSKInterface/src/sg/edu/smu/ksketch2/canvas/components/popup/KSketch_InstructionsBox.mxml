@@ -136,7 +136,7 @@
 						_alertTimer.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
 						if (!_kAlertBox.isOpen) 
 						{
-							_kAlertBox.open(_canvasView, true);
+							_kAlertBox.open(_canvasView, false);
 							_kAlertBox.updateText("3");
 							PopUpManager.centerPopUp(_kAlertBox);
 						}

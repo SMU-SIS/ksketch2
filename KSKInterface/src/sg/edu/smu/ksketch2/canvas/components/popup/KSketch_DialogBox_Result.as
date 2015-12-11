@@ -80,7 +80,10 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 			_retryButton.addEventListener(MouseEvent.CLICK, _retry);
 			
 			_closeButton = new KSketch_DialogButton();
-			_closeButton.init("Continue");
+			if(_activityControl.activityType == "RECREATE" && _activityControl.currentIntruction == "Animate")
+				_closeButton.init("Finish");
+			else
+				_closeButton.init("Continue");
 			_closeButton.initSkin();
 			_closeButton.addEventListener(MouseEvent.CLICK, _continue);
 			
@@ -97,7 +100,14 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 		
 		private function _continue(event:MouseEvent):void
 		{
-			_activityControl.continueActivity();
+			if(_activityControl.activityType == "RECREATE" && _activityControl.currentIntruction == "Animate")
+			{
+				_activityControl.completeActivity();
+			}
+			else
+			{
+				_activityControl.continueActivity();				
+			}
 			_dialogPopUp.close();
 			_closeButton.removeEventListener(MouseEvent.CLICK, _continue);
 		}

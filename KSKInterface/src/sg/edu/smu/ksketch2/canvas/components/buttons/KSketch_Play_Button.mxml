@@ -92,6 +92,11 @@
 				_doubleClickTrigger = true;
 			}
 			
+			public function stopPlay():void
+			{
+				_timeControl.stop();
+			}
+			
 			private function _handlePlayPause(event:Event):void
 			{
 				var action:String;

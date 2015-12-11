@@ -17,11 +17,11 @@
 	<fx:Script>
 		<![CDATA[
 		import com.adobe.serialization.json.JSON;
-
+		
 		import mx.core.UIComponent;
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
-
+		
 		import sg.edu.smu.ksketch2.KSketch2;
 		import sg.edu.smu.ksketch2.KSketchAssets;
 		import sg.edu.smu.ksketch2.KSketchGlobals;
@@ -415,6 +415,14 @@
 			newImageWindow.createDeferredContent();
 			newImageWindow.open(_canvasView, true);
 			PopUpManager.centerPopUp(newImageWindow);
+		}
+			
+		public function setPenAccessibility(isEnabled:Boolean):void{
+			blackToggle.enabled = isEnabled;
+			redToggle.enabled = isEnabled;
+			blueToggle.enabled = isEnabled;
+			greenToggle.enabled = isEnabled;
+			eraserToggle.enabled = isEnabled;
 		}
 		]]>
 	</fx:Script>

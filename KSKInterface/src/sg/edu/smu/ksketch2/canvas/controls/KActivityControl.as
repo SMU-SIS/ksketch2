@@ -54,6 +54,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_currentManipulateObject = getCurrentObject(_currentObjectID, false);
 			_currentTemplateObject = getCurrentObject(_currentObjectID, true);
 			
+			//Disable pens in TRACK mode
+			if(activity == "TRACK")
+				_canvasView.setPenAccessibility(false);
+			else
+				_canvasView.setPenAccessibility(true);
+			
 			//Reset settings
 			if(currentInstruction == 0)
 			{
@@ -447,12 +453,19 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function continueActivity():void
 		{
 			_instructionsBox.initNextInstruction();
+			_canvasView.isEnabledInstructionsButton(true);
 		}
 		
 		public function retryActivity():void
 		{
 			startActivity(_activityType);
 			_instructionsBox.openInstructions();
+			_canvasView.isEnabledInstructionsButton(true);
+		}
+		
+		public function completeActivity():void
+		{
+			_canvasView.setTherapyCompletion();
 		}
 		
 		public function getRegionByIndex(index:int):DisplayObject
@@ -514,6 +527,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function set stars(value:int):void
 		{
 			_stars = value;
+		}
+		
+		public function get currentIntruction():String
+		{
+			return _instructionsBox.currentInstructionMessage();
 		}
 	}
 }

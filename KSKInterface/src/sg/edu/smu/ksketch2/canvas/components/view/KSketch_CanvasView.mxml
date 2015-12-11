@@ -69,6 +69,7 @@
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
 			import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 			import sg.edu.smu.ksketch2.events.KSketchEvent;
+			import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 			import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 			import sg.edu.smu.ksketch2.model.objects.KGroup;
 			import sg.edu.smu.ksketch2.model.objects.KInstructions;
@@ -76,7 +77,6 @@
 			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
-			import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 			
 			public static const PLUG_IN:String = "PlugIn";
 			
@@ -376,7 +376,7 @@
 							
 							if(_currentDocument.fileData.scene.children().length() > 0)
 								_KSketch.generateSceneFromXML(new XML(_currentDocument.fileData.scene));
-						
+							
 							if(isSynphne)
 							{								
 								if(_currentDocument.fileData.activities == undefined || _currentDocument.fileData.activities.children().length() == 0) 
@@ -671,6 +671,11 @@
 				instructionsButton.initSkin();
 			}
 			
+			public function isEnabledInstructionsButton(isEnable:Boolean):void
+			{
+				instructionsButton.enabled = isEnable;
+			}
+			
 			public function startTimer():void
 			{
 				_timeTaken = 0;
@@ -723,6 +728,11 @@
 			public function autoPlayAnimation():void
 			{
 				playButton.playToggle(true);
+			}
+			
+			public function stopAnimation():void
+			{
+				playButton.stopPlay();
 			}
 			
 			public function setAnimationPlaying(value:Boolean):void
@@ -788,6 +798,17 @@
 				return null;
 			}
 			
+			public function setTherapyCompletion():void
+			{
+				_saveOptions.returnToHome = true;
+				_saveOptions.open(this);
+				PopUpManager.centerPopUp(_saveOptions);					
+			}
+			
+			public function setPenAccessibility(isEnabled:Boolean):void
+			{
+				_menuPopUp.setPenAccessibility(isEnabled);
+			}
 			//END OF KSKETCH-SYNPHNE
 			
 		]]>

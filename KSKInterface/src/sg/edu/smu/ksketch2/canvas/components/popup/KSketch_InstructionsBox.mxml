@@ -134,6 +134,7 @@
 						_alertTimer = new Timer(1000, 3);
 						_alertTimer.addEventListener(TimerEvent.TIMER, updateCount);
 						_alertTimer.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
+						_canvasView.isEnabledInstructionsButton(false);
 						if (!_kAlertBox.isOpen) 
 						{
 							_kAlertBox.open(_canvasView, false);
@@ -164,6 +165,10 @@
 					
 					if(activityHeader.text != "INTRO")
 					{
+						//stop 'TRACK' animation if user taps on the DONE button in Instruction Box 
+						_canvasView.stopAnimation();						
+						_canvasView.isEnabledInstructionsButton(false);
+						
 						//compute result at the end of every activity
 						var stars:int = _resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
 						_activityControl.stars = stars;
@@ -202,6 +207,7 @@
 			
 			private function startTiming(event:TimerEvent):void {
 				_kAlertBox.close();
+				_canvasView.isEnabledInstructionsButton(true);
 				_canvasView.autoPlayAnimation();
 				_canvasView.startTimer();
 			}
@@ -286,6 +292,10 @@
 			
 			public function currentInstruction():int {
 				return _currentInstruction;
+			}
+			
+			public function currentInstructionMessage():String {
+				return instructionMessages[_currentActivity][_currentInstruction];
 			}
 		]]>
 	</fx:Script>

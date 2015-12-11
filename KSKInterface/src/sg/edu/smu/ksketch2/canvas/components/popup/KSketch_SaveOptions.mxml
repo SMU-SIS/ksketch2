@@ -79,7 +79,7 @@
             sketchName.percentWidth = 95;
 
             saveButton.init("Save");
-            discardButton.init("Delete");
+            discardButton.init("Discard");
             cancelButton.init("Cancel");
             saveButton.initSkin();
             discardButton.initSkin();
@@ -433,6 +433,8 @@
 
         private function cancel():void {
             close();
+			if(KSketch_CanvasView.isSynphne)
+				_canvasView.isEnabledInstructionsButton(true);
             KSketch_CanvasView.createNewSketch = false;
         }
 

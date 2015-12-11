@@ -11,7 +11,8 @@
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 						   xmlns:s="library://ns.adobe.com/flex/spark" 
 						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
-						   backgroundAlpha="0" 
+						   backgroundAlpha="0"
+						   xmlns:mx="library://ns.adobe.com/flex/mx"
 						   initialize="_initStyle()"
 						   creationComplete="_initContent()">
 	<fx:Script>
@@ -60,26 +61,42 @@
 				this.removeEventListener(FlexEvent.INITIALIZE, _initStyle);
 				
 				header.setStyle("fontSize", KSketchGlobals.FONT_SIZE_26);
-				menuLabel.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
-				autoInsertKey.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
-				doubleTap.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
-				autoLog.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
-				initLabel.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
-				tapAnywhere.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
-				tapObject.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
-				titleTime.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
-				activityDuration.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
-				titleAccuracyAvg.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
-				titleAccuracyMax.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
-				
 				closeButton.init("Close");
-				menuTopButton.init("Top");
-				menuLeftButton.init("Left");
-				menuRightButton.init("Right");
 				closeButton.initSkin();
-				menuTopButton.initSkin();
-				menuLeftButton.initSkin();
-				menuRightButton.initSkin();
+				
+				if(!KSketch_CanvasView.isSynphne)
+				{
+					menuLabel.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+					menuTopButton.init("Top");
+					menuLeftButton.init("Left");
+					menuRightButton.init("Right");
+					menuTopButton.initSkin();
+					menuLeftButton.initSkin();
+					menuRightButton.initSkin();
+					
+					autoInsertKey.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+					doubleTap.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+					autoLog.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+					initLabel.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+					tapAnywhere.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+					tapObject.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+					vs.height=0;
+				}
+				else
+				{
+					menuLabel_syn.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+					menuTopButton_syn.init("Top");
+					menuLeftButton_syn.init("Left");
+					menuRightButton_syn.init("Right");
+					menuTopButton_syn.initSkin();
+					menuLeftButton_syn.initSkin();
+					menuRightButton_syn.initSkin();
+					
+					titleTime.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+					activityDuration.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
+					titleAccuracyAvg.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+					titleAccuracyMax.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
+				}
 			}
 			
 			public function init(canvasView:KSketch_CanvasView, menu:KSketch_PopUp_Menu):void
@@ -319,10 +336,16 @@
 			{
 				if(KSketch_CanvasView.isSynphne)
 				{
+					mainContainer.fill = new SolidColor(KSketchGlobals.COLOR_WHITE);
 					optionContainer.removeElementAt(2);
+					optionContainer.removeElementAt(1);
 				}
 				else
+				{
+					mainContainer.fill = new SolidColor(KSketchGlobals.COLOR_GREY_MEDIUM);
+					vs.height = 0;
 					optionContainer.removeElementAt(3);
+				}
 			}
 			
 			private function _tapAnywhere():void
@@ -362,7 +385,7 @@
 				var changedValue:Number = (event.currentTarget as HSlider).value;
 				_twoStarAvg = changedValue;
 			}
-			
+
 			protected function threeStarSlider_Avg_changeEndHandler(event:FlexEvent):void
 			{
 				var changedValue:Number = (event.currentTarget as HSlider).value;
@@ -410,7 +433,25 @@
 	</fx:Script>
 	<fx:Declarations>
 		<s:RadioButtonGroup id="initiationGroup" itemClick="_initiation(event);"/>
-	</fx:Declarations>
+	</fx:Declarations>	
+	<fx:Style>
+			@namespace s "library://ns.adobe.com/flex/spark";
+			@namespace mx "library://ns.adobe.com/flex/mx";
+			
+			.myTabs {
+				backgroundColor: #A6A8AB;
+			}
+			.myTextTabs{
+				font-weight:bold;
+			}
+			s|TabBar{
+				tab-style-name:"myTabs";
+				first-tab-style-name:"myTabs";
+				last-tab-style-name:"myTabs";
+				selectedTabTextStyleName:"myTextTabs"; 
+			}
+	</fx:Style>
+	
 	<s:filters>
 		<s:DropShadowFilter 
 			color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
@@ -419,9 +460,9 @@
 			blurX="{KSketchGlobals.RECT_BLURX}"
 			blurY="{KSketchGlobals.RECT_BLURY}"/>
 	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
+	<s:Rect id="mainContainer" width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
 		<s:fill>
-			<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
+			<s:SolidColor color="{KSketchGlobals.COLOR_WHITE}"/>
 		</s:fill>
 	</s:Rect>
 	<s:Group id="optionContainer">
@@ -479,122 +520,226 @@
 			</s:Group>
 		</s:Group>
 		
-		<s:Group id="synphneItems">
-			<s:layout>
-				<s:VerticalLayout/>
-			</s:layout>
-			<s:Group id="initGroup">
-				<s:layout>
-					<s:VerticalLayout paddingLeft="{CONTENT_PADDING}"/>
-				</s:layout>
-				<s:Label id="initLabel" text="Initiation"/>
-				<s:Group>
-					<s:layout>
-						<s:VerticalLayout/>
-					</s:layout>
-					
-					<s:Group>
-						<s:layout>
-							<s:HorizontalLayout/>
-						</s:layout>
-						<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere"/>
-						<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"/>
-					</s:Group>
-				</s:Group>
-			</s:Group>
-			
-			<s:Group id="diffGroup">
-				<s:layout>
-					<s:VerticalLayout paddingLeft="{CONTENT_PADDING}"/>
-				</s:layout>
-				<s:Group>
-					<s:layout>
-						<s:VerticalLayout/>
-					</s:layout>
-					
-					<s:Group>
-						<s:layout>
-							<s:HorizontalLayout verticalAlign="middle"/>
-						</s:layout>
-						<s:Label id="titleTime" text="Time Threshold (MM:SS)"/>
-						<s:TextInput id="activityDuration" text="{timeValue}" 
-									 height="{TIMELABEL_HEIGHT}" 
-									 width="{TIMELABEL_WIDTH}" change="_duration(event)"/>
-					</s:Group>
-					
-					<s:Group>
-						<s:layout>
-							<s:VerticalLayout/>
-						</s:layout>
-						<s:Label id="titleAccuracyAvg" text="Accuracy Threshold - Average Distance"/>
-						<s:Group>
-							<s:Form>
-								<s:FormItem label="3-stars:">
-									<s:HSlider id="threeStarSlider_avg"
-											   minimum="{minimumSliderValue}"
-											   maximum="{maximumSliderValue}"
-											   snapInterval="0.05"
-											   changeEnd="threeStarSlider_Avg_changeEndHandler(event)"
-											   showDataTip="true"/>
-								</s:FormItem>
-								<s:FormItem label="2-stars:">
-									<s:HSlider id="twoStarSlider_avg"
-											   minimum="{minimumSliderValue}"
-											   maximum="{maximumSliderValue}"
-											   snapInterval="0.05"
-											   changeEnd="twoStarSlider_Avg_changeEndHandler(event)"
-											   showDataTip="true"/>
-								</s:FormItem>
-								<s:FormItem label="1-star :">
-									<s:HSlider id="oneStarSlider_avg"
-											   minimum="{minimumSliderValue}"
-											   maximum="{maximumSliderValue}"
-											   snapInterval="0.05"
-											   changeEnd="oneStarSlider_Avg_changeEndHandler(event)"
-											   showDataTip="true"/>
-								</s:FormItem>
-							</s:Form>
-						</s:Group>
-					</s:Group>
-					
-					<s:Group>
-						<s:layout>
-							<s:VerticalLayout/>
-						</s:layout>
-						<s:Label id="titleAccuracyMax" text="Accuracy Threshold - Maximum Distance"/>
-						<s:Group>
-							<s:Form>
-								<s:FormItem label="3-stars:">
-									<s:HSlider id="threeStarSlider_max"
-											   minimum="{minimumSliderValue}"
-											   maximum="{maximumSliderValue}"
-											   snapInterval="0.05"
-											   changeEnd="threeStarSlider_Max_changeEndHandler(event)"
-											   showDataTip="true"/>
-								</s:FormItem>
-								<s:FormItem label="2-stars:">
-									<s:HSlider id="twoStarSlider_max"
-											   minimum="{minimumSliderValue}"
-											   maximum="{maximumSliderValue}"
-											   snapInterval="0.05"
-											   changeEnd="twoStarSlider_Max_changeEndHandler(event)"
-											   showDataTip="true"/>
-								</s:FormItem>
-								<s:FormItem label="1-star :">
-									<s:HSlider id="oneStarSlider_max"
-											   minimum="{minimumSliderValue}"
-											   maximum="{maximumSliderValue}"
-											   snapInterval="0.05"
-											   changeEnd="oneStarSlider_Max_changeEndHandler(event)"
-											   showDataTip="true"/>
-								</s:FormItem>
-							</s:Form>
-						</s:Group>
-					</s:Group>
-					
-				</s:Group>
-			</s:Group>
-		</s:Group>
+		<!--Tabs control for Therapy: START-->
+		<s:VGroup gap="0" width="100%">
+			<s:TabBar id="synphneItems" left="30" top="10" fontSize="{KSketchGlobals.FONT_SIZE_18}" dataProvider="{vs}" height="40" width="220"/>
+			<mx:ViewStack id="vs" width="460" height="550" left="30" y="23" creationPolicy="all" >				
+				<s:NavigatorContent label="General" creationPolicy="all">					
+					<s:BorderContainer width="100%" height="100%" borderWeight="0" cornerRadius="3" styleName="myTabs">
+						<s:Group id="generalGroup">
+							<s:layout>
+								<s:VerticalLayout paddingLeft="{CONTENT_PADDING}" paddingTop="{CONTENT_PADDING}" verticalAlign="top"/>
+							</s:layout>
+							
+							<s:Group>
+								<s:layout>
+									<s:VerticalLayout paddingTop="{CONTENT_PADDING}"/>
+								</s:layout>
+								<s:Label id="menuLabel_syn" text="Menu position"/>
+								<s:Group>
+									<s:layout>
+										<s:HorizontalLayout/>
+									</s:layout>
+									<buttons:KSketch_DialogButton id="menuTopButton_syn" click="_menuTop()"/>
+									<buttons:KSketch_DialogButton id="menuLeftButton_syn" click="_menuLeft()"/>
+									<buttons:KSketch_DialogButton id="menuRightButton_syn" click="_menuRight()"/>
+								</s:Group>
+							</s:Group>
+							<s:Group id="initGroup">
+								<s:layout>
+									<s:VerticalLayout paddingTop="{CONTENT_PADDING}"/>
+								</s:layout>
+								<s:Label id="initLabel" text="Initiation"/>
+								<s:Group>
+									<s:layout>
+										<s:VerticalLayout/>
+									</s:layout>
+									
+									<s:Group>
+										<s:layout>
+											<s:HorizontalLayout/>
+										</s:layout>
+										<s:RadioButton groupName="initiationGroup" id="tapAnywhere" value="anywhere" label="Tap Anywhere"/>
+										<s:RadioButton groupName="initiationGroup" id="tapObject" value="object" label="Tap Object"/>
+									</s:Group>
+								</s:Group>
+							</s:Group>
+						</s:Group>		
+					</s:BorderContainer>
+				</s:NavigatorContent>
+				<s:NavigatorContent label="Difficulty" creationPolicy="all">			
+					<s:BorderContainer width="100%" height="100%" borderWeight="0" cornerRadius="3" styleName="myTabs">
+						<s:Group id="diffGroup">
+							<s:layout>
+								<s:VerticalLayout paddingLeft="{CONTENT_PADDING}" paddingTop="{CONTENT_PADDING}" verticalAlign="top"/>
+							</s:layout>
+							<s:Group>
+								<s:layout>
+									<s:VerticalLayout/>
+								</s:layout>
+								
+								<s:Group>
+									<s:layout>
+										<s:HorizontalLayout verticalAlign="middle"/>
+									</s:layout>
+									<s:Label id="titleTime" text="Time Threshold (MM:SS)"/>
+									<s:TextInput id="activityDuration" text="{timeValue}" 
+												 height="{TIMELABEL_HEIGHT}" color="{KSketchGlobals.COLOR_BLACK}"
+												 width="{TIMELABEL_WIDTH}" change="_duration(event)"/>
+								</s:Group>
+								
+								<s:Group>
+									<s:layout>
+										<s:VerticalLayout paddingTop="{CONTENT_PADDING}"/>
+									</s:layout>
+									<s:Label id="titleAccuracyAvg" text="Accuracy Threshold - Average Distance"/>
+									
+									<s:Form>
+										<s:layout>
+											<s:HorizontalLayout horizontalAlign="center"/>
+										</s:layout>
+										<s:Group>
+											<s:layout>
+												<s:VerticalLayout/>
+											</s:layout>											
+											<s:Label text="High" paddingTop="40"/>
+											<s:Label text="accuracy"/>
+											<s:Label text="Low" paddingTop="40"/>
+											<s:Label text="accuracy"/>
+										</s:Group>
+										<s:FormItem>
+											<s:layout>
+												<s:VerticalLayout horizontalAlign="center"/>
+											</s:layout>
+											<s:Label text="3-stars"/>											
+											<s:HSlider id="threeStarSlider_avg" 
+													   minimum="{minimumSliderValue}"
+													   maximum="{maximumSliderValue}"
+													   value="1" 
+													   horizontalCenter="true" 
+													   rotation="90"
+													   width="140"
+													   liveDragging="true"
+													   snapInterval="0.05"
+													   changeEnd="threeStarSlider_Avg_changeEndHandler(event)"
+													   showDataTip="true"/>											
+										</s:FormItem>
+										<s:FormItem>
+											<s:layout>
+												<s:VerticalLayout horizontalAlign="center"/>
+											</s:layout>
+											<s:Label text="2-stars"/>
+											<s:HSlider id="twoStarSlider_avg"
+													   minimum="{minimumSliderValue}"
+													   maximum="{maximumSliderValue}"
+													   value="3"
+													   width="140"
+													   horizontalCenter="true" 
+													   rotation="90"
+													   liveDragging="true"
+													   snapInterval="0.05"
+													   changeEnd="twoStarSlider_Avg_changeEndHandler(event)"
+													   showDataTip="true"/>
+										</s:FormItem>
+										<s:FormItem>
+											<s:layout>
+												<s:VerticalLayout horizontalAlign="center"/>
+											</s:layout>
+											<s:Label text="1-stars"/>
+											<s:HSlider id="oneStarSlider_avg"
+													   minimum="{minimumSliderValue}"
+													   maximum="{maximumSliderValue}"
+													   value="5"
+													   horizontalCenter="true"
+													   width="140"
+													   rotation="90"
+													   liveDragging="true"
+													   snapInterval="0.05"
+													   changeEnd="oneStarSlider_Avg_changeEndHandler(event)"
+													   showDataTip="true"/>
+										</s:FormItem>
+									</s:Form>	
+								</s:Group>
+								
+								<s:Group>
+									<s:layout>
+										<s:VerticalLayout paddingTop="{CONTENT_PADDING}"/>
+									</s:layout>
+									<s:Label id="titleAccuracyMax" text="Accuracy Threshold - Maximum Distance"/>
+									
+									<s:Form>
+										<s:layout>
+											<s:HorizontalLayout horizontalAlign="center"/>
+										</s:layout>
+										<s:Group>
+											<s:layout>
+												<s:VerticalLayout/>
+											</s:layout>
+											<s:Label text="High" paddingTop="40"/>
+											<s:Label text="accuracy"/>
+											<s:Label text="Low" paddingTop="40"/>
+											<s:Label text="accuracy"/>
+										</s:Group>
+										<s:FormItem>
+											<s:layout>
+												<s:VerticalLayout horizontalAlign="center"/>
+											</s:layout>
+											<s:Label text="3-stars"/>
+											<s:HSlider id="threeStarSlider_max"
+													   minimum="{minimumSliderValue}"
+													   maximum="{maximumSliderValue}"
+													   value="1"
+													   width="140"
+													   horizontalCenter="true" 
+													   rotation="90"
+													   liveDragging="true"
+													   snapInterval="0.05"
+													   changeEnd="threeStarSlider_Max_changeEndHandler(event)"
+													   showDataTip="true"/>											
+										</s:FormItem>
+										<s:FormItem>
+											<s:layout>
+												<s:VerticalLayout horizontalAlign="center"/>
+											</s:layout>
+											<s:Label text="2-stars"/>
+											<s:HSlider id="twoStarSlider_max"
+													   minimum="{minimumSliderValue}"
+													   maximum="{maximumSliderValue}"
+													   value="3"
+													   width="140"
+													   horizontalCenter="true" 
+													   rotation="90"
+													   liveDragging="true"
+													   snapInterval="0.05"
+													   changeEnd="twoStarSlider_Max_changeEndHandler(event)"
+													   showDataTip="true"/>											
+										</s:FormItem>
+										<s:FormItem>
+											<s:layout>
+												<s:VerticalLayout horizontalAlign="center"/>
+											</s:layout>
+											<s:Label text="1-stars"/>
+											<s:HSlider id="oneStarSlider_max"
+													   minimum="{minimumSliderValue}"
+													   maximum="{maximumSliderValue}"
+													   value="5"
+													   width="140"
+													   horizontalCenter="true" 
+													   rotation="90"
+													   liveDragging="true"
+													   snapInterval="0.05"
+													   changeEnd="oneStarSlider_Max_changeEndHandler(event)"
+													   showDataTip="true"/>											
+										</s:FormItem>
+									</s:Form>
+								</s:Group>						
+							</s:Group>
+						</s:Group>	
+					</s:BorderContainer>
+				</s:NavigatorContent>
+			</mx:ViewStack>
+		</s:VGroup>
+		<!--Tabs control for Therapy: END-->
 		
 		<s:Group width="100%">
 			<s:layout>

@@ -19,6 +19,7 @@ package sg.edu.smu.ksketch2.model.objects
 		private var _recreateQuadrant:int;
 		private var _averageDistance:Number;
 		private var _maximumDistance:Number;
+		private var _rotationCountDifference:int;
 		private var _stars:int;
 		
 		public function KResult(activityType:String, instruction:int, id:int)
@@ -31,6 +32,7 @@ package sg.edu.smu.ksketch2.model.objects
 			_quadrantAttempt = 0;
 			_averageDistance = 0;
 			_maximumDistance = 0;
+			_rotationCountDifference = 0;
 			_stars = 0;
 		}
 		
@@ -67,7 +69,6 @@ package sg.edu.smu.ksketch2.model.objects
 			_time_given = t;
 		}
 		
-		
 		public function get quadrantAttempt():int
 		{
 			return _quadrantAttempt;
@@ -96,6 +97,16 @@ package sg.edu.smu.ksketch2.model.objects
 		public function set maximumDistance(distance:Number):void
 		{
 			_maximumDistance = distance;
+		}
+		
+		public function get rotationCountDifference():int
+		{
+			return _rotationCountDifference;
+		}
+		
+		public function set rotationCountDifference(count:int):void
+		{
+			_rotationCountDifference = count;
 		}
 		
 		public function get stars():int

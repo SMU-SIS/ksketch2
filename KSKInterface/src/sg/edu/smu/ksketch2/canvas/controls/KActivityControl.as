@@ -8,11 +8,11 @@
 package sg.edu.smu.ksketch2.canvas.controls
 {
 	import flash.display.DisplayObject;
-	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
+	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
@@ -97,6 +97,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{ 
 				removeSelectObjectToAnimate();
 				_activityType = "TRACK";
+				_discardSketchedObjects();
 				_currentManipulateObject = _getCurrentObjectToTrack(false);
 				
 				//If there is no sketched object to track, then duplicate copy of the original
@@ -115,6 +116,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{ 
 				_interactionControl.selection = null;
 				_activityType = "RECREATE";
+				_discardSketchedObjects();
 				_currentManipulateObject = null; 
 				_setObjectProperties(false, false, false);
 				_hideObjects(false);
@@ -499,6 +501,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function get modelDisplay():KModelDisplay
 		{
 			return _canvasView.modelDisplay;
+		}
+		
+		public function get motionDisplay():KMotionDisplay
+		{
+			return _canvasView.motionDisplay;
 		}
 		
 		public function get activityType():String

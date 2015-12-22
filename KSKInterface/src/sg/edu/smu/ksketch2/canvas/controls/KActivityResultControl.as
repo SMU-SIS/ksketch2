@@ -18,6 +18,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
+	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
@@ -51,45 +52,48 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var measures:int = 0;
 			var result:KResult = new KResult(activity, instruction, id);
 			
+			var objTemplate:KObject;
+			var objDrawn:KObject;
+
 			if(activity == "RECALL")
 			{
 				result = measureQuadrantAttempt(result);
-				//result = measureTime(result);
+				stars += starQuadrantAttempt(result);
 				
 				measures = 1; 
-				stars += starQuadrantAttempt(result);
-				//stars += starTime(result);
 			}
 			else if(activity == "TRACE")
 			{
-				var objTemplate:KObject = _activityControl.getCurrentObject(_instructionsBox.currentObjectID(), true);
-				var objDrawn:KObject = _activityControl.getCurrentObject(_instructionsBox.currentObjectID(), false);
+				objTemplate = _activityControl.getCurrentObject(_instructionsBox.currentObjectID(), true);
+				objDrawn = _activityControl.getCurrentObject(_instructionsBox.currentObjectID(), false);
 				
 				if(objDrawn)
 				{
-					result = calculateShapeDistance(result, objDrawn as KStroke, objTemplate as KStroke);
-					//result = measureTime(result);
+					result = measureTraceAccuracy(result, objDrawn as KStroke, objTemplate as KStroke);
+					stars += starShapeDistance(result);
 					
 					measures = 1;
-					stars += starShapeDistance(result);
 				}
 			}
 			else if(activity == "TRACK")
 			{
-				//result = measureTime(result);
-				//TO DO: implement shape accuracy
-				//TO DO: implement motion accuracy (shape of motion path)
+				objTemplate = _activityControl.getCurrentObject(_instructionsBox.currentObjectID(), true);
+				objDrawn = _activityControl.getCurrentObject(_instructionsBox.currentObjectID(), false);
+
+				result = measureTrackAccuracy(result, objTemplate as KStroke, objDrawn as KStroke, 0); //translation
+				stars += starShapeDistance(result);
 				
-				//measures = 4;
-				//stars += starTime(result);
-				//stars += starStartRegion(result);
-				//stars += starEndRegion(result);
-				//stars += starShapeAccuracy(result);
+				result = measureTrackAccuracy(result, objDrawn as KStroke, objTemplate as KStroke, 1); //rotation
+				stars += starRotationDifference(result);
+				
+				measures = 2;
 			}
 			else if(activity == "RECREATE")
 			{				
-				stars = evaluateRecreation();
-				//to implement: track accuracy - translate and rotate
+				stars += measureRecreateRegion();
+				
+				result = measureRecreateAccuracy(result);
+				stars += result.stars;
 				
 				measures = 2;
 			}
@@ -290,11 +294,80 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return distInCm;
 		}
 		
-		public function calculateShapeDistance(result:KResult, obj1:KStroke, obj2:KStroke):KResult
+		public function measureTraceAccuracy(result:KResult, obj1:KStroke, obj2:KStroke):KResult
 		{
 			var points1:Vector.<Point> = obj1.points;
 			var points2:Vector.<Point> = obj2.points;
 			
+			result = measureShapeDistance(result, points1, points2);
+			return result;
+		}
+		
+		public function measureTrackAccuracy(result:KResult, objTemplate:KStroke, objDrawn:KStroke, mode:int):KResult
+		{
+			var motionDisplay:KMotionDisplay = _activityControl.motionDisplay;
+			
+			if(mode == 0) //translate
+			{
+				var pathTemplate:Vector.<Point> = new Vector.<Point>();
+				var pathDrawn:Vector.<Point> = new Vector.<Point>();
+				pathTemplate = motionDisplay.trackTranslation(objTemplate);
+				pathDrawn = motionDisplay.trackTranslation(objDrawn);
+				result = measureShapeDistance(result, pathTemplate, pathDrawn);
+			}
+			
+			if(mode == 1) //rotate
+			{
+				var count1:int = motionDisplay.trackRotation(objTemplate);
+				var count2:int = motionDisplay.trackRotation(objDrawn);
+				result.rotationCountDifference = Math.abs(count1-count2);
+			}
+			
+			if(mode == 2) //scale
+			{}
+			
+			return result;
+		}
+
+		public function measureRecreateAccuracy(result:KResult):KResult
+		{
+			var stars:int;
+			
+			var templateObjects:KModelObjectList = _activityControl.getAllObjects(true);
+			var drawnObjects:KModelObjectList = _activityControl.getAllObjects(false);	
+			var templateObject:KStroke, drawnObject:KStroke;
+			
+			for(var i:int = 0; i<templateObjects.length(); i++)
+			{
+				templateObject = templateObjects.getObjectAt(i) as KStroke;
+				
+				for(var j:int = 0; j<drawnObjects.length(); j++)
+				{
+					if((drawnObjects.getObjectAt(j) as KStroke).originalId == templateObject.id)
+					{
+						drawnObject= drawnObjects.getObjectAt(j) as KStroke;
+						break;
+					}	
+				}
+				
+				if(drawnObject && templateObject)
+				{
+					result = measureTrackAccuracy(result, templateObject, drawnObject, 0); //translation
+					stars += starShapeDistance(result);
+					
+					result = measureTrackAccuracy(result, templateObject, drawnObject, 1); //rotation
+					stars += starRotationDifference(result);
+				}
+			}
+			
+			stars = Math.floor(stars / (templateObjects.length() * 2));
+			result.stars = stars;
+			
+			return result;
+		}
+		
+		public function measureShapeDistance(result:KResult, points1:Vector.<Point>, points2:Vector.<Point>):KResult
+		{
 			var minDistanceTot:Number = 0;
 			var maxMinDistance:Number = 0;
 			var dist:Number = 0;
@@ -310,7 +383,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 						if(dist<minDistance)
 							minDistance = dist;
 					}
-					
 					
 					if(maxMinDistance == 0)
 						maxMinDistance = minDistance;
@@ -352,10 +424,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if (averageDistanceInCM > twoStarAvg && averageDistanceInCM <= oneStarAvg)
 				stars = 1;
 			
-			trace("averageDistance: " + averageDistanceInCM);
-			trace("average values: " + threeStarAvg + "," + twoStarAvg + "," + oneStarAvg);
-			trace("stars: " + stars);
-			
 			if (maximumDistanceInCM >=0 && maximumDistanceInCM <= threeStarMax)
 				stars += 3;
 			if (maximumDistanceInCM > threeStarMax && maximumDistanceInCM <= twoStarMax)
@@ -363,15 +431,25 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if (maximumDistanceInCM > twoStarMax && maximumDistanceInCM <= oneStarMax)
 				stars += 1;
 			
-			trace("maximumDistance: " + maximumDistanceInCM);
-			trace("maximum values: " + threeStarMax + "," + twoStarAvg + "," + oneStarMax);
-			trace("stars: " + stars);
-			
 			stars = stars/2;
 			return stars;
 		}
 		
-		public function evaluateRecreation():int
+		public function starRotationDifference(result:KResult):int
+		{
+			var stars:int = 0;
+			
+			if(result.rotationCountDifference <= 2)
+				stars += 3;
+			if(result.rotationCountDifference > 2 && result.rotationCountDifference <= 5)
+				stars += 2;
+			if(result.rotationCountDifference > 5)
+				stars += 1;
+
+			return stars;
+		}
+		
+		public function measureRecreateRegion():int
 		{
 			var stars: int;
 			var templateObjects:KModelObjectList = _activityControl.getAllObjects(true);
@@ -380,16 +458,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 			for(var i:int = 0; i<drawnObjects.length(); i++)
 			{
 				var drawnObject:KStroke = drawnObjects.getObjectAt(i) as KStroke;
-				trace("testing-------------------------------------    "  + drawnObject.id);
 				
 				//set start region
 				var keyTime:Number = drawnObject.transformInterface.firstKeyTime;
 				var currentMatrix:Matrix = drawnObject.fullPathMatrix(keyTime);
 				var currentPosition:Point = currentMatrix.transformPoint(drawnObject.center);				
 				drawnObject.startRegion = getDrawnObjectRegion(currentPosition);				
-				trace("start region: " + drawnObject.startRegion);
-				trace("start key time: " + keyTime);
-				trace("start position: " + currentPosition.x + "," + currentPosition.y);
 				
 				//set Original ID
 				var objectTemplate:KStroke = getTemplateForDrawnObject(drawnObject);	
@@ -400,9 +474,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 				currentMatrix = drawnObject.fullPathMatrix(keyTime);
 				currentPosition = currentMatrix.transformPoint(drawnObject.center);
 				drawnObject.endRegion =  getDrawnObjectRegion(currentPosition);
-				trace("end region: " + drawnObject.endRegion);
-				trace("last key time: " + keyTime);
-				trace("last position: " + currentPosition.x + "," + currentPosition.y);
 				
 				if(objectTemplate)
 				{
@@ -411,7 +482,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				}
 			}	
 			
-			stars = Math.floor(stars / drawnObjects.length());
+			stars = Math.floor(stars / (drawnObjects.length() * 2));
 			
 			return stars;
 		}

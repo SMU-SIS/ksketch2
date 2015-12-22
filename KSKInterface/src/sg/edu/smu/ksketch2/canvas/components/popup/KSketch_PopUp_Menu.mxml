@@ -418,6 +418,8 @@
 		}
 			
 		public function setPenAccessibility(isEnabled:Boolean):void{
+			undoButton.enabled = isEnabled;
+			redoButton.enabled = isEnabled;
 			blackToggle.enabled = isEnabled;
 			redToggle.enabled = isEnabled;
 			blueToggle.enabled = isEnabled;

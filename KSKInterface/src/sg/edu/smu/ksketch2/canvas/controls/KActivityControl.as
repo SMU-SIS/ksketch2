@@ -38,6 +38,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _isNewSketch:Boolean;
 		private var _recallCounter:int;
 		private var _stars:int;
+		public var recogniseDraw:Boolean;
 		
 		public function KActivityControl(instructionsBox:KSketch_InstructionsBox, canvas:KSketch_CanvasView, ksketch:KSketch2, interaction:KInteractionControl)
 		{
@@ -45,6 +46,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_canvasView = canvas;
 			_KSketch = ksketch;
 			_interactionControl = interaction;
+			recogniseDraw = true;
 		}
 		
 		public function startActivity(activity:String):void
@@ -113,7 +115,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{ 
 				_interactionControl.selection = null;
 				_activityType = "RECREATE";
-				_currentManipulateObject = null; //_getCurrentObjectToTrack(false);
+				_currentManipulateObject = null; 
 				_setObjectProperties(false, false, false);
 				_hideObjects(false);
 				//processTrack(_currentManipulateObject as KStroke);
@@ -418,6 +420,21 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return object;
 		}
 		
+		public function getAllObjects(template:Boolean):KModelObjectList
+		{
+			var allRelatedObjects:KModelObjectList = new KModelObjectList();
+			
+			for(var i:int=0; i<_KSketch.root.children.length(); i++)
+			{
+				var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
+				
+				if(currObj.template == template)
+					allRelatedObjects.add(currObj);
+				
+			}
+			return allRelatedObjects;
+		}
+		
 		public function initRegion(object:DisplayObject, regionsArr:Array):int
 		{
 			var region:int = 0;
@@ -532,6 +549,20 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function get currentIntruction():String
 		{
 			return _instructionsBox.currentInstructionMessage();
+		}
+		
+		public function resetCanvas():void
+		{
+			_currentObjectID = _instructionsBox.currentObjectID();
+			_currentManipulateObject = getCurrentObject(_currentObjectID, false);
+			_currentTemplateObject = getCurrentObject(_currentObjectID, true);
+			
+			removeSelectObjectToAnimate();
+			if(_activityType == "TRACE")
+			{
+				_discardSketchedObjects();
+				_setObjectProperties(false, true, false);
+			}
 		}
 	}
 }

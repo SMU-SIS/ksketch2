@@ -15,7 +15,8 @@ package sg.edu.smu.ksketch2.model.objects
 		private var _objectID:int;
 		private var _time_taken:int;
 		private var _time_given:int;
-		private var _percentageQuadrant:int;
+		private var _quadrantAttempt:int;
+		private var _recreateQuadrant:int;
 		private var _averageDistance:Number;
 		private var _maximumDistance:Number;
 		private var _stars:int;
@@ -27,7 +28,7 @@ package sg.edu.smu.ksketch2.model.objects
 			_objectID = id;
 			_time_taken = 0;
 			_time_given = 0;
-			_percentageQuadrant = 0;
+			_quadrantAttempt = 0;
 			_averageDistance = 0;
 			_maximumDistance = 0;
 			_stars = 0;
@@ -36,6 +37,16 @@ package sg.edu.smu.ksketch2.model.objects
 		/**
 		 * Get/Set methods for all attributes
 		 */
+		public function get activityType():String
+		{
+			return _activityType;
+		}
+		
+		public function set activityType(activity:String):void
+		{
+			_activityType = activity;
+		}
+		
 		public function get timeTaken():int
 		{
 			return _time_taken;
@@ -57,14 +68,14 @@ package sg.edu.smu.ksketch2.model.objects
 		}
 		
 		
-		public function get percentageQuadrant():int
+		public function get quadrantAttempt():int
 		{
-			return _percentageQuadrant;
+			return _quadrantAttempt;
 		}
 		
-		public function set percentageQuadrant(percentage:int):void
+		public function set quadrantAttempt(percentage:int):void
 		{
-			_percentageQuadrant = percentage;
+			_quadrantAttempt = percentage;
 		}
 		
 		public function get averageDistance():Number

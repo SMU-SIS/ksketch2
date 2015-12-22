@@ -7,6 +7,9 @@
  */
 package sg.edu.smu.ksketch2.canvas.controls
 {
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.system.Capabilities;
 	
@@ -16,6 +19,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KResult;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
@@ -49,11 +53,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			if(activity == "RECALL")
 			{
-				result = measureQuadrant(result);
-				result = measureTime(result);
+				result = measureQuadrantAttempt(result);
+				//result = measureTime(result);
 				
 				measures = 1; 
-				stars += starQuadrant(result);
+				stars += starQuadrantAttempt(result);
 				//stars += starTime(result);
 			}
 			else if(activity == "TRACE")
@@ -64,7 +68,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				if(objDrawn)
 				{
 					result = calculateShapeDistance(result, objDrawn as KStroke, objTemplate as KStroke);
-					result = measureTime(result);
+					//result = measureTime(result);
 					
 					measures = 1;
 					stars += starShapeDistance(result);
@@ -82,6 +86,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 				//stars += starEndRegion(result);
 				//stars += starShapeAccuracy(result);
 			}
+			else if(activity == "RECREATE")
+			{				
+				stars = evaluateRecreation();
+				//to implement: track accuracy - translate and rotate
+				
+				measures = 2;
+			}
 			
 			if(stars != 0 && measures != 0)
 				stars = Math.floor(stars/measures);
@@ -94,6 +105,52 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return stars;
 		}
 		
+		/*
+			Get the canvas region where the center point of drawn object belongs to
+		*/
+		private function getDrawnObjectRegion(point:Point):int
+		{
+			var selectionArea:Sprite = new Sprite();
+			selectionArea.graphics.clear();
+			selectionArea.graphics.beginFill(0xFFFF22, 1);
+			selectionArea.graphics.drawCircle(point.x, point.y, 2);
+			selectionArea.graphics.endFill();
+			_canvasView.modelDisplay.addChild(selectionArea);
+			
+			var regions:Array = _canvasView.regions;
+			for(var i:int=0;i<regions.length;i++)
+			{
+				var index:int = i+1;
+				var regionDisplay:DisplayObject = _activityControl.getRegionByIndex(index);
+				if (regionDisplay){
+					if(regionDisplay.hitTestObject(selectionArea)) 
+					{
+						_canvasView.modelDisplay.removeChild(selectionArea);
+						return index;
+					}
+				}
+			}			
+			_canvasView.modelDisplay.removeChild(selectionArea);
+			return 0;
+		}
+		
+		/*
+			Get matched template object of the passed in drawn object
+		*/
+		private function getTemplateForDrawnObject(drawnObject:KStroke):KStroke
+		{
+			var templateObjects:KModelObjectList = _activityControl.getAllObjects(true);
+			for(var i:int = 0; i<templateObjects.length(); i++)
+			{
+				var templateObject:KStroke = templateObjects.getObjectAt(i) as KStroke;
+				if(drawnObject.startRegion == templateObject.startRegion)
+				{
+					return templateObject;
+				}
+			}	
+			return templateObject;
+		}
+
 		public function measureTime(result:KResult):KResult
 		{
 			var timeGiven:int = KSketch_CanvasView_Preferences.duration *1000;
@@ -120,7 +177,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return stars;
 		}
 		
-		public function measureQuadrant(result:KResult):KResult
+		//only for recall
+		public function measureQuadrantAttempt(result:KResult):KResult
 		{
 			var trials:int = _activityControl.recallCounter - 1;
 			
@@ -128,20 +186,88 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if(trials != 0)
 				percentage = Math.floor(100 - ((trials/6)*100));
 			
-			result.percentageQuadrant = percentage;
+			result.quadrantAttempt = percentage;
 			return result;
 		}
 		
-		public function starQuadrant(result:KResult):int
+		public function starQuadrantAttempt(result:KResult):int
 		{
 			var stars:int = 0;
 			
-			if(result.percentageQuadrant >= 83)
+			if(result.quadrantAttempt >= 83)
 				stars = 3;
-			else if(result.percentageQuadrant >=50 && result.percentageQuadrant < 83)
+			else if(result.quadrantAttempt >=50 && result.quadrantAttempt < 83)
 				stars = 2;
-			else if(result.percentageQuadrant >= 16 && result.percentageQuadrant < 50)
+			else if(result.quadrantAttempt >= 16 && result.quadrantAttempt < 50)
 				stars = 1;
+			
+			return stars;
+		}
+		
+		//For trace, track and recreate
+		public function measureQuadrantAccuracy(objDrawn:KObject, objTemplate:KObject, isStart:Boolean):int
+		{
+			var stars:int = 0;
+			var drawnRegion:int, templateRegion:int = 0;
+			
+			if(isStart)
+			{
+				drawnRegion = objDrawn.startRegion;
+				templateRegion = objTemplate.startRegion;
+			}
+			else
+			{
+				drawnRegion = objDrawn.endRegion;
+				templateRegion = objTemplate.endRegion;
+			}
+			
+			if(drawnRegion == templateRegion)
+				stars = 3;
+			else
+			{
+				if(templateRegion == 1)
+				{
+					if(drawnRegion == 2 || drawnRegion == 4 || drawnRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 2)
+				{
+					if(drawnRegion == 1 || drawnRegion == 3 || drawnRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 3)
+				{
+					if(drawnRegion == 2 || drawnRegion == 5 || drawnRegion == 6)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 4)
+				{
+					if(drawnRegion == 1 || drawnRegion == 2 || drawnRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 5)
+				{
+					if(drawnRegion == 2 || drawnRegion == 4 || drawnRegion == 6)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 6)
+				{
+					if(drawnRegion == 2 || drawnRegion == 3 || drawnRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+			}
 			
 			return stars;
 		}
@@ -245,57 +371,47 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return stars;
 		}
 		
-		public function starRegion(objDrawn:KObject, objTemplate:KObject):int
+		public function evaluateRecreation():int
 		{
-			var stars:int = 0;
+			var stars: int;
+			var templateObjects:KModelObjectList = _activityControl.getAllObjects(true);
+			var drawnObjects:KModelObjectList = _activityControl.getAllObjects(false);	
 			
-			if(objDrawn.startRegion == objTemplate.startRegion)
-				stars = 3;
-			else
+			for(var i:int = 0; i<drawnObjects.length(); i++)
 			{
-				if(objTemplate.startRegion == 1)
+				var drawnObject:KStroke = drawnObjects.getObjectAt(i) as KStroke;
+				trace("testing-------------------------------------    "  + drawnObject.id);
+				
+				//set start region
+				var keyTime:Number = drawnObject.transformInterface.firstKeyTime;
+				var currentMatrix:Matrix = drawnObject.fullPathMatrix(keyTime);
+				var currentPosition:Point = currentMatrix.transformPoint(drawnObject.center);				
+				drawnObject.startRegion = getDrawnObjectRegion(currentPosition);				
+				trace("start region: " + drawnObject.startRegion);
+				trace("start key time: " + keyTime);
+				trace("start position: " + currentPosition.x + "," + currentPosition.y);
+				
+				//set Original ID
+				var objectTemplate:KStroke = getTemplateForDrawnObject(drawnObject);	
+				drawnObject.originalId = objectTemplate ? objectTemplate.id : 0;				
+				
+				//set end region
+				keyTime = drawnObject.transformInterface.lastKeyTime;
+				currentMatrix = drawnObject.fullPathMatrix(keyTime);
+				currentPosition = currentMatrix.transformPoint(drawnObject.center);
+				drawnObject.endRegion =  getDrawnObjectRegion(currentPosition);
+				trace("end region: " + drawnObject.endRegion);
+				trace("last key time: " + keyTime);
+				trace("last position: " + currentPosition.x + "," + currentPosition.y);
+				
+				if(objectTemplate)
 				{
-					if(objDrawn.startRegion == 2 || objDrawn.startRegion == 4 || objDrawn.startRegion == 5)
-						stars = 2;
-					else
-						stars = 1;
+					stars += measureQuadrantAccuracy(drawnObject, objectTemplate, true); // start region
+					stars += measureQuadrantAccuracy(drawnObject, objectTemplate, false); // end region
 				}
-				else if(objTemplate.startRegion == 2)
-				{
-					if(objDrawn.startRegion == 1 || objDrawn.startRegion == 3 || objDrawn.startRegion == 5)
-						stars = 2;
-					else
-						stars = 1;
-				}
-				else if(objTemplate.startRegion == 3)
-				{
-					if(objDrawn.startRegion == 2 || objDrawn.startRegion == 5 || objDrawn.startRegion == 6)
-						stars = 2;
-					else
-						stars = 1;
-				}
-				else if(objTemplate.startRegion == 4)
-				{
-					if(objDrawn.startRegion == 1 || objDrawn.startRegion == 2 || objDrawn.startRegion == 5)
-						stars = 2;
-					else
-						stars = 1;
-				}
-				else if(objTemplate.startRegion == 5)
-				{
-					if(objDrawn.startRegion == 2 || objDrawn.startRegion == 4 || objDrawn.startRegion == 6)
-						stars = 2;
-					else
-						stars = 1;
-				}
-				else if(objTemplate.startRegion == 6)
-				{
-					if(objDrawn.startRegion == 2 || objDrawn.startRegion == 3 || objDrawn.startRegion == 5)
-						stars = 2;
-					else
-						stars = 1;
-				}
-			}
+			}	
+			
+			stars = Math.floor(stars / drawnObjects.length());
 			
 			return stars;
 		}

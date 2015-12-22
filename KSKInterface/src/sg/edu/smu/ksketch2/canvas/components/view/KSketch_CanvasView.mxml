@@ -384,13 +384,15 @@
 									if(_currentDocument.fileData.activities == undefined)
 										_saveOptions.canvasDirty = true;
 									
-									instructionsButton.visible = false;										
+									instructionsButton.visible = false;			
+									_activityControl.recogniseDraw = true;
 								}
 								else 
 								{ 
 									//KSKETCH-SYNPHNE
 									_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
 									_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
+									_activityControl.recogniseDraw = false;
 									_activityControl.isNewSketch = true;
 									synphne_component.visible = true;
 								}								
@@ -469,12 +471,12 @@
 					{
 						sketchData.fileData.appendChild(<activities/>);
 					}
-					//KSKETCH-THERAPY:END
+					//KSKETCH-THERAPY:END 
 					
 					var fileData:String = sketchData.fileData.toXMLString();
 					
-					userData.sketchData = sketchData;
-					userData.fileData = fileData;
+					userData.sketchData = sketchData;					
+					userData.fileData = fileData;					
 					var thumbnailLength:int = sketchData.fileData.child("thumbnail").length();
 					
 					if(thumbnailLength > 0)
@@ -484,12 +486,11 @@
 					}
 					else
 					{
-						userData.thumbnailData = sketchData.fileData.child("thumbnail").@data.toString();
-					}
-					
+						if(sketchData.fileData.toString().indexOf("data") > 0)
+							userData.thumbnailData = sketchData.fileData.child("thumbnail").@data.toString();
+					}	
 					return userData;
-				}
-				
+				}				
 				return null;
 			}
 			
@@ -510,6 +511,8 @@
 				_options.close();
 				_menuPopUp.close();
 				_feedbackPopUp.close();
+				if(!_magnifier.enabled)
+					_magnifier.enabled = true;
 				_magnifier.close();
 			}
 			
@@ -652,7 +655,7 @@
 			
 			public function openInstructions():void
 			{
-				_instructionsBox.open(this,false);
+				_instructionsBox.open(this,false); 	
 				PopUpManager.centerPopUp(_instructionsBox);
 				_instructionsBox.x = instructionsButton.x;
 				_instructionsBox.y = instructionsButton.y + instructionsButton.height;
@@ -660,6 +663,10 @@
 				//change skin to down_arrow
 				instructionsButton.init(KSketchAssets.texture_instructions_2, KSketchAssets.texture_instructions_2);
 				instructionsButton.initSkin();
+				if(_activityControl.activityType == "TRACK")
+					setControlAccessibility(true);
+				else
+					setControlAccessibility(false);
 			}
 			
 			public function closeInstructions():void
@@ -778,7 +785,7 @@
 				
 				return regionsArr;
 			}
-			
+
 			public function get starValueArr():Array
 			{
 				return _options.starValueArr;
@@ -808,6 +815,19 @@
 			public function setPenAccessibility(isEnabled:Boolean):void
 			{
 				_menuPopUp.setPenAccessibility(isEnabled);
+			}
+			
+			public function setControlAccessibility(isEnabled:Boolean):void
+			{
+				_magnifier.enabled = isEnabled;
+				leftTimeJumper.enabled = isEnabled;
+				rightTimeJumper.enabled = isEnabled;
+				playButton.enabled = isEnabled;
+				timeControl.enabled = isEnabled;
+				
+				if(!isEnabled){
+					_instructionsBox.enabled = true;
+				}
 			}
 			//END OF KSKETCH-SYNPHNE
 			
@@ -892,7 +912,7 @@
 				
 				<s:Group id="drawing_stage" height="92%" maxHeight="{Capabilities.screenResolutionX*0.7}"
 						 width="{drawing_stage.height/9*16}">
-					<s:Rect width="100%" height="100%">
+					<s:Rect id="drawing_stage_bg" width="100%" height="100%">
 						<s:fill>
 							<s:SolidColor color="{KSketchGlobals.COLOR_WHITE}"/>
 						</s:fill>
@@ -911,7 +931,7 @@
 					</s:Rect>
 					
 					<!-- start of region -->
-					<s:Group height="100%" width="100%" alpha="0.5">
+					<s:Group id="region_group" height="100%" width="100%" alpha="0.5">
 						<s:layout>
 							<s:VerticalLayout/>
 						</s:layout>
@@ -920,21 +940,21 @@
 								<s:HorizontalLayout/>
 							</s:layout>
 							<s:Group id="region_1" width="100%" height="100%" visible="false">
-								<s:Rect width="100%" height="100%">
+								<s:Rect id="region_1_rect" width="100%" height="100%">
 									<s:fill>
 										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
 							<s:Group id="region_2" width="100%" height="100%" visible="false">
-								<s:Rect width="100%" height="100%">
+								<s:Rect id="region_2_rect" width="100%" height="100%">
 									<s:fill>
 										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
 							<s:Group id="region_3" width="100%" height="100%" visible="false">
-								<s:Rect width="100%" height="100%">
+								<s:Rect id="region_3_rect" width="100%" height="100%">
 									<s:fill>
 										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
 									</s:fill>
@@ -946,21 +966,21 @@
 								<s:HorizontalLayout/>
 							</s:layout>
 							<s:Group id="region_4" width="100%" height="100%" visible="false">
-								<s:Rect width="100%" height="100%">
+								<s:Rect id="region_4_rect" width="100%" height="100%">
 									<s:fill>
 										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
 							<s:Group id="region_5" width="100%" height="100%" visible="false">
-								<s:Rect width="100%" height="100%">
+								<s:Rect id="region_5_rect" width="100%" height="100%">
 									<s:fill>
 										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
 									</s:fill>
 								</s:Rect>
 							</s:Group>
 							<s:Group id="region_6" width="100%" height="100%" visible="false">
-								<s:Rect width="100%" height="100%">
+								<s:Rect id="region_6_rect" width="100%" height="100%">
 									<s:fill>
 										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
 									</s:fill>

@@ -313,6 +313,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 			//KSKETCH-SYNPHNE
 			if(KSketch_CanvasView.isSynphne)
 			{
+				if(!_activityControl.recogniseDraw)
+					return;
+				
 				if(_activityControl.activityType == "INTRO")
 					return;
 				

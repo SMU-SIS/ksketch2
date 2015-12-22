@@ -63,6 +63,7 @@
 				_kInstructions = kInstructions;
 				_currentInstruction = 0;
 				_currentActivity = 0;
+				_activityControl.recogniseDraw = true;
 				
 				activityButton_Prev.enabled = false;
 				instructionButton_Prev.enabled = false;
@@ -75,6 +76,7 @@
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 				instructionHeader.text = "Step " + (_currentInstruction + 1);
 				activityHeader.text = _activityTypes[_currentActivity];
+				enableDisableButtons();
 			}
 			
 			private function _initButtons():void {
@@ -124,10 +126,12 @@
 					activityButton_Prev.enabled = false;
 					activityButton_Next.enabled = false;
 					instructionButton_Prev.enabled = false;
-					instructionButton_Next.enabled = false;
+					instructionButton_Next.enabled = false;				
 					
 					_canvasView.actionInstructions();
-					_activityControl.startActivity(activityHeader.text);
+					_canvasView.setControlAccessibility(true);					
+					
+					_activityControl.startActivity(activityHeader.text);					
 					
 					if (_currentInstruction == 0 && _activityTypes[_currentActivity] == "TRACK") 
 					{
@@ -135,6 +139,7 @@
 						_alertTimer.addEventListener(TimerEvent.TIMER, updateCount);
 						_alertTimer.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
 						_canvasView.isEnabledInstructionsButton(false);
+						_activityControl.recogniseDraw = false;
 						if (!_kAlertBox.isOpen) 
 						{
 							_kAlertBox.open(_canvasView, false);
@@ -144,6 +149,7 @@
 						_alertTimer.start();
 					}
 					else {
+						_activityControl.recogniseDraw = true;
 						_canvasView.startTimer();
 					}
 				}
@@ -151,7 +157,7 @@
 				{
 					if (activityHeader.text == "TRACE")
 						_activityControl.processTrace();
-					
+					_activityControl.recogniseDraw = false;
 					instructionButton_Start.init("START");
 					instructionButton_Start.initSkin();
 					
@@ -218,10 +224,15 @@
 			}
 			
 			private function previousInstruction():void {
-				_currentInstruction -= 1;
-				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
-				instructionHeader.text = "Step " + (_currentInstruction + 1);
-				enableDisableButtons();
+				if(_currentInstruction > 0)
+				{
+					_currentInstruction -= 1;
+					instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
+					instructionHeader.text = "Step " + (_currentInstruction + 1);
+					enableDisableButtons();
+					if(activityHeader.text == "TRACE")
+						_activityControl.resetCanvas()
+				}
 			}
 			
 			private function nextInstruction():void {
@@ -230,6 +241,8 @@
 					instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 					instructionHeader.text = "Step " + (_currentInstruction + 1);
 					enableDisableButtons();
+					if(activityHeader.text == "TRACE")
+						_activityControl.resetCanvas()
 				} else {
 					nextActvity();
 					enableDisableButtons();
@@ -258,11 +271,15 @@
 				{
 					_canvasView.setTherapyIntroduction(false);
 					_activityControl.isAnimationPlaying = false;
-				}				
+				}							
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 				instructionHeader.text = "Step " + (_currentInstruction + 1);
 				enableDisableActivity();
 				enableDisableButtons();
+				if(activityHeader.text != "TRACK")
+					_canvasView.setControlAccessibility(false);
+				else
+					_canvasView.setControlAccessibility(true);
 			}
 			
 			private function nextActvity():void {
@@ -273,6 +290,11 @@
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
 				instructionHeader.text = "Step " + (_currentInstruction + 1);
 				enableDisableActivity();
+				enableDisableButtons();
+				if(activityHeader.text != "TRACK")
+					_canvasView.setControlAccessibility(false);
+				else
+					_canvasView.setControlAccessibility(true);
 			}
 			
 			private function enableDisableActivity():void {

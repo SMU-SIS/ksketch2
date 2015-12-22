@@ -25,17 +25,17 @@
     <fx:Script>
 		<![CDATA[
         import com.adobe.serialization.json.JSON;
-
+        
         import mx.events.FlexEvent;
         import mx.formatters.DateFormatter;
         import mx.managers.PopUpManager;
         import mx.rpc.events.FaultEvent;
         import mx.rpc.events.ResultEvent;
-
+        
         import air.net.URLMonitor;
-
+        
         import org.as3commons.collections.SortedList;
-
+        
         import sg.edu.smu.ksketch2.KSketchGlobals;
         import sg.edu.smu.ksketch2.KSketchWebLinks;
         import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
@@ -67,6 +67,9 @@
         public var returnToHome:Boolean = false;
         public var overwriteSave:Boolean = false;
         public var canvasDirty:Boolean = false;
+			
+		//KSKETCH-THERAPY
+		private var _therapyName:String;
 
         private function _initStyle():void {
             this.removeEventListener(FlexEvent.INITIALIZE, _initStyle);
@@ -138,8 +141,10 @@
         public function setSketchName():void {
             //if this is an attempt to save a new sketch,
             //then show the textarea to enter sketch name
+			if(KSketch_CanvasView.isSynphne)
+				_therapyName = userData.sketchData.fileName;
 			getMaxCounter();
-            var defaultName:String = "My Sketch " + saveCounter;
+            var defaultName:String = "My Sketch " + saveCounter;						
             sketchName.text = defaultName;
 
             if (!KSketch_CanvasView.createNewSketch) {
@@ -149,7 +154,12 @@
                         userData.sketchData.originalName = userData.sketchData.fileName;
                     }
                     else
-                        sketchName.text = userData.sketchData.originalName;
+					{
+						if(KSketch_CanvasView.isSynphne)
+							sketchName.text = _therapyName + "_" + ConvertDateToString(new Date()) + "_" + saveCounter;
+						else
+                        	sketchName.text = userData.sketchData.originalName;
+					}
 
                     saveAsWarning.visible = true;
                 }
@@ -465,16 +475,48 @@
 			}
 		}
 			
+		/*
+			Default user's Therapy file name: [Therapy Template Name]_[YYYYMMDD]_#
+		*/
 		private function getNumberFromDefaultName(name:String):int{
-			var number:int = -1;
-			if (name.indexOf("My Sketch") >= 0) {
-				var trimFilename:String = name.replace("My Sketch", "");
+			var number:int = -1;			
+			var prefix:String = KSketch_CanvasView.isSynphne ? _therapyName : "My Sketch";
+
+			if (name.indexOf(prefix) >= 0) {
+				var trimFilename:String = name.replace(prefix, "");
+				if(prefix == _therapyName)
+					trimFilename = getTherapySaveCounter(name);
 				var isANumber:Boolean = !isNaN(Number(trimFilename));
 				
 				if (isANumber) 
 					number = int(trimFilename);
 			}
 			return number;
+		}
+			
+		/*
+			Default user's Therapy file name: [Therapy Template Name]_[YYYYMMDD]_#
+			Compare the Date part in file name with the current date:
+			- if same date: return the # number in file name
+			- else: return an empty string
+		*/
+		private function getTherapySaveCounter(name:String):String{
+			var index:String = "";
+			if(name.indexOf("_") > -1)
+			{
+				var array:Array = name.split("_");			
+				if(array.length >= 3)
+				{
+					var dateText:String = array[1];
+					if(ConvertDateToString(new Date()) == dateText)
+						index = array[array.length-1];
+				}
+			}
+			return index;
+		}
+			
+		private function ConvertDateToString(date:Date):String{
+			return date.fullYear.toString() + (date.month+1).toString() + date.date.toString();
 		}
         ]]>
 	</fx:Script>

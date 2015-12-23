@@ -147,6 +147,7 @@
 			private var _resultControl:KActivityResultControl;
 			private var _activityControl:KActivityControl;
 			private var _kInstructions:KInstructions;
+			public var isTherapyObject:Boolean = false;
 			
 			//KSKETCH-DESKTOP
 			public static var loadedFromFile:Boolean = false;
@@ -390,6 +391,7 @@
 								else 
 								{ 
 									//KSKETCH-SYNPHNE
+									isTherapyObject = true;
 									_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
 									_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
 									_activityControl.recogniseDraw = false;
@@ -663,15 +665,11 @@
 				//change skin to down_arrow
 				instructionsButton.init(KSketchAssets.texture_instructions_2, KSketchAssets.texture_instructions_2);
 				instructionsButton.initSkin();
-				if(_activityControl.activityType == "TRACK")
-					setControlAccessibility(true);
-				else
-					setControlAccessibility(false);
 			}
 			
 			public function closeInstructions():void
 			{
-				_instructionsBox.close();
+				_instructionsBox.close();				
 				
 				//change skin to side_arrow
 				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);

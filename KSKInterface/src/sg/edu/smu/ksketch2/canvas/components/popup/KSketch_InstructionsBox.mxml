@@ -77,6 +77,8 @@
 				instructionHeader.text = "Step " + (_currentInstruction + 1);
 				activityHeader.text = _activityTypes[_currentActivity];
 				enableDisableButtons();
+				_canvasView.setPenAccessibility(false);
+				_canvasView.setControlAccessibility(false);
 			}
 			
 			private function _initButtons():void {
@@ -129,7 +131,10 @@
 					instructionButton_Next.enabled = false;				
 					
 					_canvasView.actionInstructions();
-					_canvasView.setControlAccessibility(true);					
+					if(_activityTypes[_currentActivity] != "INTRO" && _activityTypes[_currentActivity] != "RECALL" && _activityTypes[_currentActivity] != "TRACE")
+						_canvasView.setControlAccessibility(true);		
+					if(_activityTypes[_currentActivity] == "TRACE" || _activityTypes[_currentActivity] == "RECREATE")
+						_canvasView.setPenAccessibility(true);
 					
 					_activityControl.startActivity(activityHeader.text);					
 					
@@ -165,6 +170,8 @@
 					enableDisableButtons();
 					
 					_canvasView.stopTimer();
+					_canvasView.setPenAccessibility(false);
+					_canvasView.setControlAccessibility(false);
 					
 					if(this.isOpen)
 						_canvasView.closeInstructions();
@@ -203,6 +210,7 @@
 					nextActvity();
 				
 				openInstructions();
+				_canvasView.setPenAccessibility(false);
 			}
 			
 			public function openInstructions():void
@@ -224,6 +232,7 @@
 			}
 			
 			private function previousInstruction():void {
+				_canvasView.setPenAccessibility(false);
 				if(_currentInstruction > 0)
 				{
 					_currentInstruction -= 1;
@@ -236,6 +245,7 @@
 			}
 			
 			private function nextInstruction():void {
+				_canvasView.setPenAccessibility(false);
 				if (_currentInstruction < instructionMessages[_currentActivity].length - 1) {
 					_currentInstruction += 1;
 					instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
@@ -276,10 +286,8 @@
 				instructionHeader.text = "Step " + (_currentInstruction + 1);
 				enableDisableActivity();
 				enableDisableButtons();
-				if(activityHeader.text != "TRACK")
-					_canvasView.setControlAccessibility(false);
-				else
-					_canvasView.setControlAccessibility(true);
+				_canvasView.setPenAccessibility(false);
+				_canvasView.setControlAccessibility(false);
 			}
 			
 			private function nextActvity():void {
@@ -291,10 +299,8 @@
 				instructionHeader.text = "Step " + (_currentInstruction + 1);
 				enableDisableActivity();
 				enableDisableButtons();
-				if(activityHeader.text != "TRACK")
-					_canvasView.setControlAccessibility(false);
-				else
-					_canvasView.setControlAccessibility(true);
+				_canvasView.setPenAccessibility(false);
+				_canvasView.setControlAccessibility(false);
 			}
 			
 			private function enableDisableActivity():void {

@@ -141,7 +141,7 @@
         public function setSketchName():void {
             //if this is an attempt to save a new sketch,
             //then show the textarea to enter sketch name
-			if(KSketch_CanvasView.isSynphne)
+			if(KSketch_CanvasView.isSynphne && _canvasView.isTherapyObject)
 				_therapyName = userData.sketchData.fileName;
 			getMaxCounter();
             var defaultName:String = "My Sketch " + saveCounter;						
@@ -155,7 +155,7 @@
                     }
                     else
 					{
-						if(KSketch_CanvasView.isSynphne)
+						if(KSketch_CanvasView.isSynphne && _canvasView.isTherapyObject)
 							sketchName.text = _therapyName + "_" + ConvertDateToString(new Date()) + "_" + saveCounter;
 						else
                         	sketchName.text = userData.sketchData.originalName;
@@ -480,7 +480,7 @@
 		*/
 		private function getNumberFromDefaultName(name:String):int{
 			var number:int = -1;			
-			var prefix:String = KSketch_CanvasView.isSynphne ? _therapyName : "My Sketch";
+			var prefix:String = (KSketch_CanvasView.isSynphne && _canvasView.isTherapyObject) ? _therapyName : "My Sketch";
 
 			if (name.indexOf(prefix) >= 0) {
 				var trimFilename:String = name.replace(prefix, "");

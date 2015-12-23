@@ -390,6 +390,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 		//KSKETCH-SYNPHNE
 		private function _recogniseTapSynphne(event:GestureEvent):void
 		{
+			if(!_activityControl.recogniseDraw)
+				return;
+			
 			var tapLocation:Point = _modelDisplay.globalToLocal(_tapGesture.location);
 			
 			if(_activityControl.activityType == "RECALL")

@@ -56,8 +56,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_currentManipulateObject = getCurrentObject(_currentObjectID, false);
 			_currentTemplateObject = getCurrentObject(_currentObjectID, true);
 			
-			//Disable pens in TRACK mode
-			if(activity == "TRACK")
+			//Disable pens in INTRO, RECALL and TRACK mode
+			if(activity == "INTRO" || activity == "RECALL" || activity == "TRACK")
 				_canvasView.setPenAccessibility(false);
 			else
 				_canvasView.setPenAccessibility(true);
@@ -480,6 +480,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			startActivity(_activityType);
 			_instructionsBox.openInstructions();
 			_canvasView.isEnabledInstructionsButton(true);
+			_canvasView.setPenAccessibility(false);
+			_canvasView.setControlAccessibility(false);
 		}
 		
 		public function completeActivity():void

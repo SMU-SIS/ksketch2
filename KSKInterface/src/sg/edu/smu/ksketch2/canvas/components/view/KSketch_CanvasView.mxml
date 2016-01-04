@@ -391,7 +391,6 @@
 								else 
 								{ 
 									//KSKETCH-SYNPHNE
-									isTherapyObject = true;
 									_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
 									_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
 									_activityControl.recogniseDraw = false;
@@ -645,6 +644,9 @@
 				instructionsButton.initSkin();
 				_isTiming = false;
 				timerLabel.text = "Time: 00:00";
+
+				if(userData.sketchData != null)
+					isTherapyObject = (userData.sketchData.fileData.activities == undefined || userData.sketchData.fileData.activities.children().length() == 0) ? false :true;			
 			}
 			
 			public function actionInstructions():void

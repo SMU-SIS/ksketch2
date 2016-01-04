@@ -14,10 +14,12 @@
 						   creationComplete="_initButtons()"
 						   updateComplete="updateMenuDisplay()"
 						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*">
+
 	<fx:Script>
 		<![CDATA[
 		import com.adobe.serialization.json.JSON;
 		
+		import mx.controls.Alert;
 		import mx.core.UIComponent;
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
@@ -140,9 +142,20 @@
 				buttonContainer.removeElementAt(10);
 				buttonContainer.removeElementAt(4);
 				buttonContainer.removeElementAt(1);
+				if(_canvasView.isTherapyObject)
+				{
+					webServiceButton.visible = true;
+					webServiceButton.init(KSketchAssets.texture_connect, KSketchAssets.texture_connect_down, false);
+					webServiceButton.initSkin();
+				}
+				else
+					webServiceButton.visible = false;
 			}
 			else
 				buttonContainer.removeElementAt(11);
+			
+			if (!webServiceButton.visible && buttonContainer.containsElement(webServiceButton))
+				buttonContainer.removeElement(webServiceButton);
 		}
 
 		public function set position(value:int):void {
@@ -406,6 +419,16 @@
 		}
 
 		/**
+		 * Calls web service
+		 */
+		private function _callWebService():void{
+			//TO-DO: call web service
+			var myAlert:Alert = Alert.show("Web service is called","", Alert.OK);
+			myAlert.height=100;
+			myAlert.width=250;
+		}
+			
+		/**
 		 * Import image
 		 */
 		private function _importImage():void {
@@ -533,7 +556,11 @@
 			click="_openHelp()"
 			id="helpButton"
 			/>
-		
+		<buttons:KSketch_CanvasButton
+			click="_callWebService()"
+			id="webServiceButton"
+			visible="false"
+			/>
 		<!--
 		<buttons:KSketch_CanvasButton
 			click="_openSharingOptions()"

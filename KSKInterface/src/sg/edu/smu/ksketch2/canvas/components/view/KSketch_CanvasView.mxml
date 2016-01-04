@@ -817,6 +817,11 @@
 				_menuPopUp.setPenAccessibility(isEnabled);
 			}
 			
+			public function setRedoUndoAccessibility(isEnabled:Boolean):void
+			{
+				_menuPopUp.setRedoUndoAccessibility(isEnabled);
+			}
+			
 			public function setControlAccessibility(isEnabled:Boolean):void
 			{
 				_magnifier.enabled = isEnabled;
@@ -828,6 +833,12 @@
 				if(!isEnabled){
 					_instructionsBox.enabled = true;
 				}
+			}
+			
+			public function setControlAccessibilityForRecreate():void
+			{
+				if(_activityControl.activityType == "RECREATE")
+					setControlAccessibility(true);
 			}
 			//END OF KSKETCH-SYNPHNE
 			

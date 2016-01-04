@@ -62,6 +62,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 			else
 				_canvasView.setPenAccessibility(true);
 			
+			if(activity == "TRACK")
+				_canvasView.setRedoUndoAccessibility(true);
+			
 			//Reset settings
 			if(currentInstruction == 0)
 			{

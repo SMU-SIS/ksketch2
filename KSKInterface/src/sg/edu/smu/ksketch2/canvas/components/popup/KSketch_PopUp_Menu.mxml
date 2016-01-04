@@ -449,6 +449,11 @@
 			greenToggle.enabled = isEnabled;
 			eraserToggle.enabled = isEnabled;
 		}
+			
+		public function setRedoUndoAccessibility(isEnabled:Boolean):void{
+			undoButton.enabled = isEnabled;
+			redoButton.enabled = isEnabled;
+		}
 		]]>
 	</fx:Script>
 	

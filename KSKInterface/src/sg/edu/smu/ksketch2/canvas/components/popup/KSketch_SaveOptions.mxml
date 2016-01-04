@@ -443,8 +443,11 @@
 
         private function cancel():void {
             close();
-			if(KSketch_CanvasView.isSynphne)
+			if(KSketch_CanvasView.isSynphne && _canvasView.isTherapyObject)
+			{
 				_canvasView.isEnabledInstructionsButton(true);
+				_canvasView.setControlAccessibilityForRecreate();
+			}
             KSketch_CanvasView.createNewSketch = false;
         }
 

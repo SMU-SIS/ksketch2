@@ -21,6 +21,7 @@ package sg.edu.smu.ksketch2.model.objects
 		private var _maximumDistance:Number;
 		private var _rotationCountDifference:int;
 		private var _stars:int;
+		private var _trials:int;
 		
 		public function KResult(activityType:String, instruction:int, id:int)
 		{
@@ -34,6 +35,7 @@ package sg.edu.smu.ksketch2.model.objects
 			_maximumDistance = 0;
 			_rotationCountDifference = 0;
 			_stars = 0;
+			_trials = 0;
 		}
 		
 		/**
@@ -117,6 +119,16 @@ package sg.edu.smu.ksketch2.model.objects
 		public function set stars(stars:int):void
 		{
 			_stars = stars;
+		}
+		
+		public function get trials():int
+		{
+			return _trials;
+		}
+		
+		public function set trials(trials:int):void
+		{
+			_trials = trials;
 		}
 	}
 }

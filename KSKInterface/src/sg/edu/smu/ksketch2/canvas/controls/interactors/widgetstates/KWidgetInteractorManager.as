@@ -219,8 +219,12 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				transitionMode = _prevTransitionMode;
 				_isDoubleTap = false;
 			}
-			else
+			else if(_activityControl)
 			{
+				if(_activityControl.activityType == "TRACK")
+					return;
+			}
+			else{
 				action = "Deactivate Demonstration Mode";
 				transitionMode = KSketch2.TRANSITION_INTERPOLATED;
 			}
@@ -309,7 +313,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 				transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 				
 			//KSKETCH-SYNPHNE
-			if(_activityControl && !_widgetHighlight)
+			if(_activityControl)// && !_widgetHighlight)
 			{
 				if(_activityControl.activityType == "TRACK")
 				{

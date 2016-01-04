@@ -295,7 +295,7 @@
 					_menuPopUp.alpha = 0;
 				
 				var timeTickControl:KSketch_TickMark_Control = new KSketch_TickMark_Control(_KSketch, timeControl,_interactionControl);
-				timeControl.init(_KSketch, timeTickControl, _transitionHelper, _magnifier, _contextDouble, _contextSingle);
+				timeControl.init(_KSketch, timeTickControl, _activityControl, _transitionHelper, _magnifier, _contextDouble, _contextSingle);
 				
 				leftTimeJumper.init(_KSketch, this, timeControl, KSketch_TimeSkip_Button.LEFT);
 				rightTimeJumper.init(_KSketch, this, timeControl, KSketch_TimeSkip_Button.RIGHT);

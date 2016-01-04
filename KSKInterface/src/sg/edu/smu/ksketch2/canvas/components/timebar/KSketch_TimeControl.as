@@ -26,6 +26,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Context_Single;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Timebar_Magnifier;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+	import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 	import sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates.KWidgetInteractorManager;
 	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	
@@ -57,6 +58,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		protected var _KSketch:KSketch2;
 		protected var _tickmarkControl:KSketch_TickMark_Control;
+		protected var _activityControl:KActivityControl;
 		protected var _transitionHelper:KWidgetInteractorManager;
 		protected var _magnifier:KSketch_Timebar_Magnifier;
 		protected var _contextDouble:KSketch_Timebar_Context_Double;
@@ -92,18 +94,20 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		
 		//KSKETCH-SYNPHNE
 		private var _playRepeat:Boolean = false;
+		private var _isInteracting:Boolean = false;
 		
 		public function KSketch_TimeControl()
 		{
 			super();
 		}
 		
-		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control,
+		public function init(KSketchInstance:KSketch2, tickmarkControl:KSketch_TickMark_Control, activityControl:KActivityControl,
 							 transitionHelper:KWidgetInteractorManager, magnifier:KSketch_Timebar_Magnifier, 
 							 contextDouble:KSketch_Timebar_Context_Double, contextSingle:KSketch_Timebar_Context_Single):void
 		{
 			_KSketch = KSketchInstance;
 			_tickmarkControl = tickmarkControl;
+			_activityControl = activityControl;
 			_transitionHelper = transitionHelper;
 			_magnifier = magnifier;
 			_contextDouble = contextDouble;
@@ -499,6 +503,19 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		private function playHandler(event:TimerEvent):void 
 		{
+			//KSKETCH-SYNPHNE
+			if(_activityControl)
+			{
+				if(_activityControl.activityType == "TRACK" && time >= _maxPlayTime)
+				{
+					if(_isInteracting)
+						isPlaying = false;
+					else
+						stop();
+					return;
+				}
+			}
+			
 			if(time >= _maxPlayTime)
 			{
 				time = _rewindToTime;
@@ -558,6 +575,9 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			//KSKETCH-SYNPHNE
 			if(_playRepeat)
 				play(true);
+			
+			if(_isInteracting)
+				_isInteracting = false;
 		}
 				
 		/**
@@ -567,6 +587,13 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function startRecording():void
 		{
+			//KSKETCH-SYNPHNE
+			if(_activityControl)
+			{
+				if(_activityControl.activityType == "TRACK")
+					_isInteracting = true;	
+			}
+			
 			KSketch_CanvasView.tracker.trackPageview( "/timebar/recording" );
 			if(_recordingSpeed <= 0)
 				throw new Error("One does not record in 0 or negative time!");
@@ -582,6 +609,18 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 		 */
 		public function stopRecording():void
 		{
+			//KSKETCH-SYNPHNE
+			if(_activityControl)
+			{
+				if(_activityControl.activityType == "TRACK")
+				{
+					_isInteracting = false;
+					
+					if(isPlaying)
+						return;
+				}	
+			}
+			
 			_timer.removeEventListener(TimerEvent.TIMER, _recordHandler);
 			_timer.stop();
 			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_STOP));

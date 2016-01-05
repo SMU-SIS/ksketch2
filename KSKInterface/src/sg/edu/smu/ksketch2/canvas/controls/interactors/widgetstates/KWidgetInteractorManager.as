@@ -354,8 +354,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 					//select the object to track and set it to demonstration mode
 					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 					_activityControl.autoSelectObjectToAnimate();
+					_activityControl.closeCountDown();
 					_widget.visible = true;
-					_widgetHighlight = true;
+					_widgetHighlight = true;					
 				}
 			}
 			

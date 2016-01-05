@@ -457,9 +457,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors
 					
 					_modelDisplay.addChild(selectionArea);
 					if(selectionArea.hitTestObject(regionDisplay))
-					{
-						_activityControl.processRecall(true);
-					}
+						_activityControl.processRecall(true, tapLocation, region);
+					else
+						_activityControl.processRecall(false, tapLocation, region);
 					
 					_modelDisplay.removeChild(selectionArea);
 					

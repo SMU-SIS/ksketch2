@@ -104,9 +104,10 @@
 				if (_canvasView.isTiming)
 					instructionButton_Start.init("DONE");
 				else
-					instructionButton_Start.init("START");
+					instructionButton_Start.init("START");		
 				
 				instructionButton_Start.initSkin();
+				_activityControl.recogniseDraw = instructionButton_Start.label == "START" ? false : true;
 			}
 			
 			override public function open(owner:DisplayObjectContainer, modal:Boolean = false):void {
@@ -184,11 +185,7 @@
 						
 						//compute result at the end of every activity
 						var stars:int = _resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
-						_activityControl.stars = stars;
-						_dialogPopUp = new KSketch_DialogBox_Skin();
-						_dialogPopUp.init(null, _canvasView, null, _activityControl, "Results");
-						_dialogPopUp.open(_canvasView,true);
-						PopUpManager.centerPopUp(_dialogPopUp);
+						showResult(stars);
 					}
 					else
 					{
@@ -252,7 +249,7 @@
 					instructionHeader.text = "Step " + (_currentInstruction + 1);
 					enableDisableButtons();
 					if(activityHeader.text == "TRACE")
-						_activityControl.resetCanvas()
+						_activityControl.resetCanvas();
 				} else {
 					nextActvity();
 					enableDisableButtons();
@@ -324,6 +321,19 @@
 			
 			public function currentInstructionMessage():String {
 				return instructionMessages[_currentActivity][_currentInstruction];
+			}
+			
+			public function closeCountDown():void{
+				if(_kAlertBox.isOpen)
+					_kAlertBox.close();
+			}
+			
+			public function showResult(stars:int):void{
+				_activityControl.stars = stars;
+				_dialogPopUp = new KSketch_DialogBox_Skin();
+				_dialogPopUp.init(null, _canvasView, null, _activityControl, "Results");
+				_dialogPopUp.open(_canvasView,true);
+				PopUpManager.centerPopUp(_dialogPopUp);
 			}
 		]]>
 	</fx:Script>

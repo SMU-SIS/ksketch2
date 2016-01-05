@@ -59,8 +59,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{
 				result = measureQuadrantAttempt(result);
 				stars += starQuadrantAttempt(result);
+				stars += _activityControl.stars;
 				
-				measures = 1; 
+				measures = 2; 
 			}
 			else if(activity == "TRACE")
 			{
@@ -108,36 +109,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			
 			return stars;
 		}
-		
-		/*
-			Get the canvas region where the center point of drawn object belongs to
-		*/
-		private function getDrawnObjectRegion(point:Point):int
-		{
-			var selectionArea:Sprite = new Sprite();
-			selectionArea.graphics.clear();
-			selectionArea.graphics.beginFill(0xFFFF22, 1);
-			selectionArea.graphics.drawCircle(point.x, point.y, 2);
-			selectionArea.graphics.endFill();
-			_canvasView.modelDisplay.addChild(selectionArea);
-			
-			var regions:Array = _canvasView.regions;
-			for(var i:int=0;i<regions.length;i++)
-			{
-				var index:int = i+1;
-				var regionDisplay:DisplayObject = _activityControl.getRegionByIndex(index);
-				if (regionDisplay){
-					if(regionDisplay.hitTestObject(selectionArea)) 
-					{
-						_canvasView.modelDisplay.removeChild(selectionArea);
-						return index;
-					}
-				}
-			}			
-			_canvasView.modelDisplay.removeChild(selectionArea);
-			return 0;
-		}
-		
+	
 		/*
 			Get matched template object of the passed in drawn object
 		*/
@@ -211,7 +183,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 		//For trace, track and recreate
 		public function measureQuadrantAccuracy(objDrawn:KObject, objTemplate:KObject, isStart:Boolean):int
 		{
-			var stars:int = 0;
 			var drawnRegion:int, templateRegion:int = 0;
 			
 			if(isStart)
@@ -225,55 +196,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				templateRegion = objTemplate.endRegion;
 			}
 			
-			if(drawnRegion == templateRegion)
-				stars = 3;
-			else
-			{
-				if(templateRegion == 1)
-				{
-					if(drawnRegion == 2 || drawnRegion == 4 || drawnRegion == 5)
-						stars = 2;
-					else
-						stars = 1;
-				}
-				else if(templateRegion == 2)
-				{
-					if(drawnRegion == 1 || drawnRegion == 3 || drawnRegion == 5)
-						stars = 2;
-					else
-						stars = 1;
-				}
-				else if(templateRegion == 3)
-				{
-					if(drawnRegion == 2 || drawnRegion == 5 || drawnRegion == 6)
-						stars = 2;
-					else
-						stars = 1;
-				}
-				else if(templateRegion == 4)
-				{
-					if(drawnRegion == 1 || drawnRegion == 2 || drawnRegion == 5)
-						stars = 2;
-					else
-						stars = 1;
-				}
-				else if(templateRegion == 5)
-				{
-					if(drawnRegion == 2 || drawnRegion == 4 || drawnRegion == 6)
-						stars = 2;
-					else
-						stars = 1;
-				}
-				else if(templateRegion == 6)
-				{
-					if(drawnRegion == 2 || drawnRegion == 3 || drawnRegion == 5)
-						stars = 2;
-					else
-						stars = 1;
-				}
-			}
-			
-			return stars;
+			return _activityControl.computeQuadrantAccuracy(drawnRegion, templateRegion);
 		}
 		
 		public function maxDistance(object:KStroke):Number 
@@ -463,7 +386,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				var keyTime:Number = drawnObject.transformInterface.firstKeyTime;
 				var currentMatrix:Matrix = drawnObject.fullPathMatrix(keyTime);
 				var currentPosition:Point = currentMatrix.transformPoint(drawnObject.center);				
-				drawnObject.startRegion = getDrawnObjectRegion(currentPosition);				
+				drawnObject.startRegion = _activityControl.getDrawnObjectRegion(currentPosition);				
 				
 				//set Original ID
 				var objectTemplate:KStroke = getTemplateForDrawnObject(drawnObject);	
@@ -473,7 +396,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				keyTime = drawnObject.transformInterface.lastKeyTime;
 				currentMatrix = drawnObject.fullPathMatrix(keyTime);
 				currentPosition = currentMatrix.transformPoint(drawnObject.center);
-				drawnObject.endRegion =  getDrawnObjectRegion(currentPosition);
+				drawnObject.endRegion = _activityControl.getDrawnObjectRegion(currentPosition);
 				
 				if(objectTemplate)
 				{

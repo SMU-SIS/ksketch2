@@ -8,6 +8,8 @@
 package sg.edu.smu.ksketch2.canvas.controls
 {
 	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.geom.Point;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
@@ -176,7 +178,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_interactionControl.selection = null;
 		}
 		
-		public function processRecall(correctRecall:Boolean):void
+		public function processRecall(correctRecall:Boolean, tapPoint:Point, templateRegion:int):void
 		{
 			if(correctRecall)
 			{
@@ -190,11 +192,69 @@ package sg.edu.smu.ksketch2.canvas.controls
 						(view as DisplayObject).visible = true;
 					}
 				}
-				
-				_instructionsBox.open(_canvasView, false);
-				_instructionsBox.startStopActivity();
+				stars = 3;				
 			}
+			else
+			{
+				var tapRegion:int = getDrawnObjectRegion(tapPoint);
+				stars = computeQuadrantAccuracy(tapRegion,templateRegion);
+			}
+			_instructionsBox.open(_canvasView, false);
+			_instructionsBox.startStopActivity();
 			_interactionControl.selection = null;
+		}
+		
+		public function computeQuadrantAccuracy(drawnRegion:int, templateRegion:int):int
+		{
+			var stars:int = 0;
+			if(drawnRegion == templateRegion)
+				stars = 3;
+			else
+			{
+				if(templateRegion == 1)
+				{
+					if(drawnRegion == 2 || drawnRegion == 4 || drawnRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 2)
+				{
+					if(drawnRegion == 1 || drawnRegion == 3 || drawnRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 3)
+				{
+					if(drawnRegion == 2 || drawnRegion == 5 || drawnRegion == 6)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 4)
+				{
+					if(drawnRegion == 1 || drawnRegion == 2 || drawnRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 5)
+				{
+					if(drawnRegion == 2 || drawnRegion == 4 || drawnRegion == 6)
+						stars = 2;
+					else
+						stars = 1;
+				}
+				else if(templateRegion == 6)
+				{
+					if(drawnRegion == 2 || drawnRegion == 3 || drawnRegion == 5)
+						stars = 2;
+					else
+						stars = 1;
+				}
+			}
+			return stars;
 		}
 		
 		public function incrementRecallCounter():void
@@ -575,6 +635,40 @@ package sg.edu.smu.ksketch2.canvas.controls
 				_discardSketchedObjects();
 				_setObjectProperties(false, true, false);
 			}
+		}
+		
+		public function closeCountDown():void
+		{
+			_instructionsBox.closeCountDown();
+		}
+		
+		/*
+		Get the canvas region where the center point of drawn object belongs to
+		*/
+		public function getDrawnObjectRegion(point:Point):int
+		{
+			var selectionArea:Sprite = new Sprite();
+			selectionArea.graphics.clear();
+			selectionArea.graphics.beginFill(0xFFFF22, 1);
+			selectionArea.graphics.drawCircle(point.x, point.y, 2);
+			selectionArea.graphics.endFill();
+			_canvasView.modelDisplay.addChild(selectionArea);
+			
+			var regions:Array = _canvasView.regions;
+			for(var i:int=0;i<regions.length;i++)
+			{
+				var index:int = i+1;
+				var regionDisplay:DisplayObject = getRegionByIndex(index);
+				if (regionDisplay){
+					if(regionDisplay.hitTestObject(selectionArea)) 
+					{
+						_canvasView.modelDisplay.removeChild(selectionArea);
+						return index;
+					}
+				}
+			}			
+			_canvasView.modelDisplay.removeChild(selectionArea);
+			return 0;
 		}
 	}
 }

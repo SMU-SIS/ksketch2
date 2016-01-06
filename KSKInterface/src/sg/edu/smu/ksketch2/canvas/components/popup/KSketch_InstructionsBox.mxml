@@ -155,6 +155,8 @@
 						_alertTimer.start();
 					}
 					else {
+						if(_activityTypes[_currentActivity] == "TRACE" || _activityTypes[_currentActivity] == "RECREATE")
+							_activityControl._discardSketchedObjects();
 						_activityControl.recogniseDraw = true;
 						_canvasView.startTimer();
 					}

@@ -77,6 +77,7 @@
 			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
+			import sg.edu.smu.ksketch2.KSketch_Config;
 			
 			public static const PLUG_IN:String = "PlugIn";
 			

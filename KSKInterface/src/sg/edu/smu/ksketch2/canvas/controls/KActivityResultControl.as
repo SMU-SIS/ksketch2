@@ -58,9 +58,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if(activity == "RECALL")
 			{
 				result = measureQuadrantAttempt(result);
-				stars += starQuadrantAttempt(result);
-				stars += _activityControl.stars;
-				
+				if(_activityControl.stars == 3) //user tapped at the correct quadrant
+				{
+					stars += starQuadrantAttempt(result);
+					stars += _activityControl.stars;		
+				}
 				measures = 2; 
 			}
 			else if(activity == "TRACE")

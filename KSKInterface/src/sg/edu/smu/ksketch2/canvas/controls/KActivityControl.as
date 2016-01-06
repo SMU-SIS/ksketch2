@@ -95,14 +95,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{ 
 				removeSelectObjectToAnimate();
 				_activityType = "TRACE";
-				_discardSketchedObjects();
+				//only discard sketch objects after the Start button is clicked.
+				//_discardSketchedObjects();
 				_setObjectProperties(false, true, false);
 			}
 			else if(activity == "TRACK")
 			{ 
 				removeSelectObjectToAnimate();
 				_activityType = "TRACK";
-				_discardSketchedObjects();
 				_currentManipulateObject = _getCurrentObjectToTrack(false);
 				
 				//If there is no sketched object to track, then duplicate copy of the original
@@ -121,7 +121,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{ 
 				_interactionControl.selection = null;
 				_activityType = "RECREATE";
-				_discardSketchedObjects();
+				//only discard sketch objects after the Start button is clicked.
+				//_discardSketchedObjects(); 
 				_currentManipulateObject = null; 
 				_setObjectProperties(false, false, false);
 				_hideObjects(false);
@@ -192,15 +193,16 @@ package sg.edu.smu.ksketch2.canvas.controls
 						(view as DisplayObject).visible = true;
 					}
 				}
-				stars = 3;				
+				stars = 3;			
+				_instructionsBox.open(_canvasView, false);
+				_instructionsBox.startStopActivity();
 			}
 			else
 			{
 				var tapRegion:int = getDrawnObjectRegion(tapPoint);
 				stars = computeQuadrantAccuracy(tapRegion,templateRegion);
 			}
-			_instructionsBox.open(_canvasView, false);
-			_instructionsBox.startStopActivity();
+			
 			_interactionControl.selection = null;
 		}
 		
@@ -335,13 +337,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function removeSelectObjectToAnimate():void
 		{
-			if(_currentManipulateObject && _interactionControl.selection)
+			if(_interactionControl.selection)
 			{
 				_interactionControl.selection = null;				
 			}
 		}
 		
-		private function _discardSketchedObjects():void
+		public function _discardSketchedObjects():void
 		{
 			var tempArr:Array = new Array(_KSketch.root.children.length());
 			var i:int;

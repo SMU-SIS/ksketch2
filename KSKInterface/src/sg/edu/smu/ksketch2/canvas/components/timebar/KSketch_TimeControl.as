@@ -559,6 +559,8 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_rewindToTime = time;
 			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_START));
 			_KSketch.removeEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateWidget);
+			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateMovingWidget);
+
 		}
 		
 		/**
@@ -570,6 +572,7 @@ package sg.edu.smu.ksketch2.canvas.components.timebar
 			_timer.stop();
 			isPlaying = false;
 			this.dispatchEvent(new Event(KSketch_TimeControl.PLAY_STOP));
+			_KSketch.removeEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateMovingWidget);
 			_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, _transitionHelper.updateWidget);
 			
 			//KSKETCH-SYNPHNE

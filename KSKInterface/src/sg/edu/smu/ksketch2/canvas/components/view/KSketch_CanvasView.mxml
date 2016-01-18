@@ -48,6 +48,7 @@
 			import sg.edu.smu.ksketch2.KSketch_Config;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
@@ -77,7 +78,7 @@
 			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
-			import sg.edu.smu.ksketch2.KSketch_Config;
+			import sg.edu.smu.ksketch2.utils.KTherapyResult;
 			
 			public static const PLUG_IN:String = "PlugIn";
 			
@@ -121,7 +122,7 @@
 			public var _isNewSketch:Boolean = true;
 			
 			//Pop Ups
-			private var _dialogPopUp:KSketch_DialogBox_Skin;
+			private var _dialogPopUp:KSketch_DialogBox_Skin;			
 			private var _feedbackPopUp:KSketch_Feedback_Message;
 			private var _menuPopUp:KSketch_PopUp_Menu;
 			private var _options:KSketch_Options;
@@ -149,6 +150,7 @@
 			private var _activityControl:KActivityControl;
 			private var _kInstructions:KInstructions;
 			public var isTherapyObject:Boolean = false;
+			public var dialogMessage:KSketch_DialogBox_Message;
 			
 			//KSKETCH-DESKTOP
 			public static var loadedFromFile:Boolean = false;
@@ -512,6 +514,7 @@
 				//comment out these two lines to get toolbar stay when it is reactivated.
 				_options.close();
 				_menuPopUp.close();
+				closeMessageDialog();
 				_feedbackPopUp.close();
 				if(!_magnifier.enabled)
 					_magnifier.enabled = true;
@@ -647,7 +650,7 @@
 				timerLabel.text = "Time: 00:00";
 
 				if(userData.sketchData != null)
-					isTherapyObject = (userData.sketchData.fileData.activities == undefined || userData.sketchData.fileData.activities.children().length() == 0) ? false :true;			
+					isTherapyObject = (userData.sketchData.fileData.activities == undefined || userData.sketchData.fileData.activities.children().length() == 0) ? false : true;	
 			}
 			
 			public function actionInstructions():void
@@ -840,6 +843,30 @@
 			{
 				if(_activityControl.activityType == "RECREATE")
 					setControlAccessibility(true);
+			}
+			
+			public function sendTherapyResult():void{
+				var therapyResult:KTherapyResult = new KTherapyResult(this);
+				therapyResult.sendTherapyResult(_resultControl.getCurrentResultObject());
+			}
+			
+			public function closeMessageDialog():void{
+				if(dialogMessage && dialogMessage.isOpen)
+					dialogMessage.close();
+			}
+			
+			public function getTherapyTemplateName():String{
+				if(userData.sketchData)
+				{
+					var fileName:String = (userData.sketchData as KSketch_DataListItem).fileName;
+					if(fileName.indexOf("_"))
+						return fileName.split("_")[0];
+				}
+				return "";
+			}
+			
+			public function getCurrentUserName():String{
+				return _cacheControl.user.u_name; 
 			}
 			//END OF KSKETCH-SYNPHNE
 			

@@ -40,6 +40,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _isNewSketch:Boolean;
 		private var _recallCounter:int;
 		private var _stars:int;
+		private var _isRetry:Boolean = false;
 		public var recogniseDraw:Boolean;
 		
 		public function KActivityControl(instructionsBox:KSketch_InstructionsBox, canvas:KSketch_CanvasView, ksketch:KSketch2, interaction:KInteractionControl)
@@ -78,7 +79,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if(activity == "INTRO")
 			{
 				_activityType = "INTRO";
-				_discardSketchedObjects();
+				discardSketchedObjects();
 				_hideObjects(true);
 				startIntroductionAnimation();
 				_isAnimationPlaying = true;
@@ -343,7 +344,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}
 		}
 		
-		public function _discardSketchedObjects():void
+		public function discardSketchedObjects():void
 		{
 			var tempArr:Array = new Array(_KSketch.root.children.length());
 			var i:int;
@@ -536,12 +537,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function continueActivity():void
 		{
+			_isRetry = false;
 			_instructionsBox.initNextInstruction();
 			_canvasView.isEnabledInstructionsButton(true);
 		}
 		
 		public function retryActivity():void
 		{
+			_isRetry = true;
 			startActivity(_activityType);
 			_instructionsBox.openInstructions();
 			_canvasView.isEnabledInstructionsButton(true);
@@ -620,6 +623,16 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_stars = value;
 		}
 		
+		public function get isRetry():Boolean
+		{
+			return _isRetry;
+		}
+		
+		public function set isRetry(value:Boolean):void
+		{
+			_isRetry = value;
+		}
+		
 		public function get currentIntruction():String
 		{
 			return _instructionsBox.currentInstructionMessage();
@@ -634,7 +647,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			removeSelectObjectToAnimate();
 			if(_activityType == "TRACE")
 			{
-				_discardSketchedObjects();
+				discardSketchedObjects();
 				_setObjectProperties(false, true, false);
 			}
 		}

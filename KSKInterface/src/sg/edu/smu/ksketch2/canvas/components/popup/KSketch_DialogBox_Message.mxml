@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2015 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" 
+						   backgroundColor="{KSketchGlobals.COLOR_GREY_MEDIUM}"
+						   backgroundAlpha="1"
+						   creationComplete="_initButtonComponent()">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import spark.layouts.HorizontalLayout;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.utils.KTherapyResult;			
+			
+			private var GAP:Number = 20 * KSketchGlobals.SCALE;
+			private var PADDINGLEFT:Number = 5 * KSketchGlobals.SCALE;
+			private var PADDINGRIGHT:Number = 5 * KSketchGlobals.SCALE;
+			private var PADDINGTOP:Number = 20 * KSketchGlobals.SCALE;
+			private var PADDINGBOTTOM:Number = 20 * KSketchGlobals.SCALE;
+			
+			private var _parentContainer:UIComponent;
+			private var _btnNo:Button;
+			private var _message:String;
+			private var _yesButtonLabel:String;
+			private var _noButtonLabel:String;
+			private var _numberOfButton:int = 1;
+			
+			/**
+			 * Initializes the message box content
+			 */
+			public function init(parentContainer:UIComponent, message:String, yesButtonLabel:String, noButtonLabel:String):void
+			{
+				_parentContainer = parentContainer;
+				_message = message;
+				_yesButtonLabel = yesButtonLabel;
+				_noButtonLabel = noButtonLabel;
+			}			
+			
+			private function _initButtonComponent():void
+			{
+				_setButtonLabel(btnYes, _yesButtonLabel);
+				if(_noButtonLabel != "")
+				{
+					_btnNo = new Button();
+					_btnNo.addEventListener(MouseEvent.CLICK, _btnNo_clickHandler);
+					panelButton.addElement(_btnNo);
+					_setButtonLabel(_btnNo, _noButtonLabel);
+				}				
+			}
+			
+			private function _setButtonLabel(button:Button, value:String):void
+			{
+				if(button && value != "")
+				{
+					button.label = value; 
+					button.visible = true;
+				}
+			}
+			
+			public function showMessage():void
+			{		
+				open(_parentContainer);				
+				messageText.text = _message;
+			}
+			
+			protected function _btnYes_clickHandler(event:MouseEvent):void
+			{
+				if(!_btnNo)
+					close();				
+				else
+				{
+					if(_parentContainer is KSketch_HomeView)
+					{
+						if(_message == KTherapyResult.CONFIRM_RESET)
+						{
+							(_parentContainer as KSketch_HomeView).closeMessageDialog();
+							var therapyResult:KTherapyResult = new KTherapyResult(_parentContainer);
+							therapyResult.resetTherapyResult();
+						}
+					}
+				}					
+			}
+			
+			protected function _btnNo_clickHandler(event:MouseEvent):void
+			{
+				close();				
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group>
+		<s:layout>
+			<s:VerticalLayout gap="{GAP}" paddingLeft="{PADDINGLEFT}" 
+							  paddingRight="{PADDINGRIGHT}" paddingTop="{PADDINGTOP}" 
+							  paddingBottom="{PADDINGBOTTOM}" verticalAlign="middle" horizontalAlign="center"/>
+		</s:layout> 
+		<s:Label id="messageText" fontSize="{KSketchGlobals.FONT_SIZE_18}" fontFamily="{KSketchGlobals.FONT_FAMILY}"
+				 x="{-messageText.width/2}" y="{-(messageText.height*1.25)}"/>
+		<s:Group id="panelButton">
+			<s:layout>
+				<s:HorizontalLayout horizontalAlign="center"/>
+			</s:layout>
+			<s:Button id="btnYes" label="Yes" click="_btnYes_clickHandler(event)"/>
+		</s:Group>
+	</s:Group>	
+</s:SkinnablePopUpContainer>

@@ -43,12 +43,13 @@
 			import sg.edu.smu.ksketch2.KSketch_Config;
 			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Alert;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Notifications;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
 			import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
+			import sg.edu.smu.ksketch2.utils.KTherapyResult;
 			import sg.edu.smu.ksketch2.utils.KWebData;
 
 		private static const DISPLAY_FAILED_DEFAULT:int = -1;
@@ -94,6 +95,9 @@
 		//variable for item renderer
 		private var itemRender:IFactory = new ClassFactory(KSketch_HomeView_IconItemRenderer);
 
+		//THERAPY
+		public var dialogMessage:KSketch_DialogBox_Message;
+			
 		private function _init(isMobile:Boolean):void {
 
 			//Check for mobile version. Set false to export for Desktop version
@@ -237,7 +241,15 @@
 			loadButton.initSkin();
 			loginButton.initSkin();
 			refreshButton.initSkin();
-
+			sendResultButton.visible = KSketch_Config.enableSynphne ? true : false;
+			resetResultButton.visible = KSketch_Config.enableSynphne ? true : false;
+			if(KSketch_Config.enableSynphne)
+			{				
+				sendResultButton.init("Send all therapy data");
+				sendResultButton.initSkin();
+				resetResultButton.init("Reset all therapy data");
+				resetResultButton.initSkin();
+			}
 			_setupSketchListView();
 		}
 
@@ -389,6 +401,7 @@
 		private function createSketch():void {
 			userData.kSketchDocument = null;
 			_createNewSketch = true;
+			closeMessageDialog();
 			navigateToScreen('CANVAS');
 		}
 
@@ -397,6 +410,7 @@
 				var file:File = File.documentsDirectory;
 				file.browseForOpen("Open");
 				file.addEventListener(Event.SELECT, fileSelected);
+				closeMessageDialog();
 			}
 			catch (error:Error) {
 				trace("Failed:", error.message);
@@ -432,6 +446,7 @@
 		}
 
 		public function refresh(fromWeb:Boolean = true):void {
+			closeMessageDialog();
 			_setupSketchListView(fromWeb);
 		}
 
@@ -450,6 +465,7 @@
 		}
 
 		public function navigateToScreen(screenName:String):void {
+			closeMessageDialog();
 			if (screenName.indexOf("RELOGIN") != -1) {
 				navigator.pushView(KSketch_LoginView);
 			}
@@ -557,6 +573,7 @@
 			//if (KSketch_HomeView_IconItemRenderer.openActionBar && _deleteSketchFlag)
 			//	_cacheControl.deleteSketch(sketchId, int(sketchVersion), sketchName);
 
+			closeMessageDialog();
 			_isSwipe = false;
 		}
 
@@ -622,6 +639,26 @@
 		public function get notice():String {
 			return _notice;
 		}
+			
+			private function _sendTherapyResult():void{
+				closeMessageDialog();
+				var therapyResult:KTherapyResult = new KTherapyResult(this);
+				therapyResult.sendAllTherapyResult();
+			}
+			
+			private function _resetTherapyResult():void{
+				closeMessageDialog();
+				dialogMessage = new KSketch_DialogBox_Message();
+				dialogMessage.init(this, KTherapyResult.CONFIRM_RESET,"Yes","No");
+				dialogMessage.showMessage();
+				PopUpManager.centerPopUp(dialogMessage);
+			}
+			
+			public function closeMessageDialog():void{
+				if(dialogMessage && dialogMessage.isOpen)
+					dialogMessage.close();
+				
+			}
 		]]>
 	</fx:Script>
 	<s:Group width="100%" height="100%">
@@ -675,6 +712,13 @@
 						<buttons:KSketch_DialogButton id="refreshButton" click="refresh()" width="100%"/>
 					</s:Group>
 					
+					<!-- THERAPY ENABLE -->
+					<s:Group width="100%">
+						<s:layout> <s:VerticalLayout paddingBottom="{HOME_PADDING}" verticalAlign="middle" horizontalAlign="center"/> </s:layout>
+						<buttons:KSketch_DialogButton id="sendResultButton" click="_sendTherapyResult()" width="100%" visible="false"/>
+						<buttons:KSketch_DialogButton id="resetResultButton" click="_resetTherapyResult()" width="100%" visible="false"/>
+					</s:Group>
+					<!-- END OF THERAPY ENABLE -->
 					<!-- end alignment for buttons -->
 				</s:Group>
 			</s:Group>

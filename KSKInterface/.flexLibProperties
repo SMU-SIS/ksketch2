@@ -20,6 +20,7 @@
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView_IconItemRenderer"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Message"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

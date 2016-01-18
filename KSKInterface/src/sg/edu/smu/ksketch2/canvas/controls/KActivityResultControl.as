@@ -11,9 +11,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
+	import flash.net.SharedObject;
 	import flash.system.Capabilities;
 	
 	import mx.collections.ArrayList;
+	
+	import data.KSketch_DataListItem;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
@@ -24,9 +27,14 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KResult;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
+	import sg.edu.smu.ksketch2.utils.KTherapyResult;
 	
 	public class KActivityResultControl
-	{
+	{			
+		public var allResultSO:SharedObject = SharedObject.getLocal(KTherapyResult.THERAPY_RESULT_NAME);
+		public var resultSO:SharedObject;
+		private var resultSO_List:ArrayList = allResultSO.data.result;
+		
 		private var _resultArr:ArrayList;
 		
 		private var _instructionsBox:KSketch_InstructionsBox;
@@ -44,6 +52,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_KSketch = kSketch;
 			_interactionControl = interactionControl;
 			_activityControl = activity;
+			_initTherapyResult();
 		}
 		
 		public function computeResult(activity:String, instruction:int, id:int):int
@@ -57,7 +66,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 
 			if(activity == "RECALL")
 			{
-				result = measureQuadrantAttempt(result);
+				result = measureQuadrantPercentage(result);
 				if(_activityControl.stars == 3) //user tapped at the correct quadrant
 				{
 					stars += starQuadrantAttempt(result);
@@ -105,13 +114,17 @@ package sg.edu.smu.ksketch2.canvas.controls
 				stars = Math.floor(stars/measures);
 			
 			result.stars = stars;
+			result.retry = _activityControl.isRetry;
+			result = measureTime(result);
 			
 			if(_resultArr)
 				_resultArr.addItem(result);
 			
+			_storeResult(activity, result);
+			
 			return stars;
 		}
-	
+
 		/*
 			Get matched template object of the passed in drawn object
 		*/
@@ -156,7 +169,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		}
 		
 		//only for recall
-		public function measureQuadrantAttempt(result:KResult):KResult
+		public function measureQuadrantPercentage(result:KResult):KResult
 		{
 			var trials:int = _activityControl.recallCounter - 1;
 			
@@ -164,7 +177,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if(trials != 0)
 				percentage = Math.floor(100 - ((trials/6)*100));
 			
-			result.quadrantAttempt = percentage;
+			result.quadrantAttempt = trials + 1;
+			result.quadrantPercentage = percentage;
 			return result;
 		}
 		
@@ -172,11 +186,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 		{
 			var stars:int = 0;
 			
-			if(result.quadrantAttempt >= 83)
+			if(result.quadrantPercentage >= 83)
 				stars = 3;
-			else if(result.quadrantAttempt >=50 && result.quadrantAttempt < 83)
+			else if(result.quadrantPercentage >=50 && result.quadrantPercentage < 83)
 				stars = 2;
-			else if(result.quadrantAttempt >= 16 && result.quadrantAttempt < 50)
+			else if(result.quadrantPercentage >= 16 && result.quadrantPercentage < 50)
 				stars = 1;
 			
 			return stars;
@@ -415,6 +429,55 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function get resultArr():ArrayList
 		{
 			return _resultArr;
+		}		
+		
+		private function _initTherapyResult():void
+		{
+			var cacheName:String = KTherapyResult.getTherapyCacheName(_canvasView.getTherapyTemplateName(), _canvasView.getCurrentUserName());
+			resultSO = SharedObject.getLocal(cacheName);
+			if(!resultSO.data.resultRecall && !resultSO.data.resultTrace && !resultSO.data.resultTrack && !resultSO.data.resultRecreate)
+			{
+				resultSO.data.resultRecall = "";
+				resultSO.data.resultTrace = "";
+				resultSO.data.resultTrack = "";
+				resultSO.data.resultRecreate = "";	
+			}			
+			if(!resultSO_List)
+			{
+				resultSO_List = new ArrayList();
+			}
+			if(resultSO_List.getItemIndex(resultSO) == -1)
+			{
+				resultSO.data.userName = _canvasView.getCurrentUserName();
+				resultSO.data.templateName = _canvasView.getTherapyTemplateName();
+				resultSO.data.resultDate = KTherapyResult.getCurrentDate();
+				resultSO.data.id=cacheName;
+				resultSO_List.addItem(resultSO);
+			}
+			allResultSO.data.result = resultSO_List;
 		}
+		
+		/*
+			Store therapy results for sending to datastore
+		*/
+		private function _storeResult(activityName:String, result:KResult):void
+		{			
+			if(activityName == "RECALL")
+				resultSO.data.resultRecall += KTherapyResult.deserializeResult(_activityControl.currentObjectID.toString(), result);	
+			else if(activityName == "TRACE")
+				resultSO.data.resultTrace += KTherapyResult.deserializeResult(_activityControl.currentObjectID.toString(), result);
+			else if(activityName == "TRACK")
+				resultSO.data.resultTrack += KTherapyResult.deserializeResult(_activityControl.currentObjectID.toString(), result);
+			else if(activityName == "RECREATE")
+				resultSO.data.resultRecreate += KTherapyResult.deserializeResult(_activityControl.currentObjectID.toString(), result);
+			resultSO.flush();
+			allResultSO.flush();
+		}
+		
+		public function getCurrentResultObject():Object
+		{
+			return KTherapyResult.getResultObject(resultSO);
+		}
+		
 	}
 }

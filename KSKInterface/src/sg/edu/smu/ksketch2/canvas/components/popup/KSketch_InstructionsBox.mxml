@@ -132,6 +132,7 @@
 					instructionButton_Next.enabled = false;				
 					
 					_canvasView.actionInstructions();
+					_canvasView.closeMessageDialog();
 					if(_activityTypes[_currentActivity] != "INTRO" && _activityTypes[_currentActivity] != "RECALL" && _activityTypes[_currentActivity] != "TRACE")
 						_canvasView.setControlAccessibility(true);		
 					if(_activityTypes[_currentActivity] == "TRACE" || _activityTypes[_currentActivity] == "RECREATE")
@@ -156,7 +157,7 @@
 					}
 					else {
 						if(_activityTypes[_currentActivity] == "TRACE" || _activityTypes[_currentActivity] == "RECREATE")
-							_activityControl._discardSketchedObjects();
+							_activityControl.discardSketchedObjects();
 						_activityControl.recogniseDraw = true;
 						_canvasView.startTimer();
 					}

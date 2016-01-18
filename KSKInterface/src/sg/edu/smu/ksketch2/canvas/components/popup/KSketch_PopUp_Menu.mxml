@@ -17,22 +17,25 @@
 
 	<fx:Script>
 		<![CDATA[
-		import com.adobe.serialization.json.JSON;
-		
-		import mx.controls.Alert;
-		import mx.core.UIComponent;
-		import mx.events.FlexEvent;
-		import mx.managers.PopUpManager;
-		
-		import sg.edu.smu.ksketch2.KSketch2;
-		import sg.edu.smu.ksketch2.KSketchAssets;
-		import sg.edu.smu.ksketch2.KSketchGlobals;
-		import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
-		import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
-		import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
-		import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
-		import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
-		import sg.edu.smu.ksketch2.utils.KWebData;
+			import com.adobe.serialization.json.JSON;
+			
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import sg.edu.smu.ksketch2.KSketch2;
+			import sg.edu.smu.ksketch2.KSketchAssets;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.KSketchWebLinks;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.canvas.controls.KInteractionControl;
+			import sg.edu.smu.ksketch2.canvas.controls.interactors.KCanvasInteractorManager;
+			import sg.edu.smu.ksketch2.canvas.controls.interactors.KMultiTouchDrawInteractor;
+			import sg.edu.smu.ksketch2.canvas.controls.interactors.draw.KDrawInteractor;
+			import sg.edu.smu.ksketch2.utils.KWebData;
 
 		public static const ORIGIN:Point = new Point();
 		public static const LEFT:int = 0;
@@ -144,18 +147,18 @@
 				buttonContainer.removeElementAt(1);
 				if(_canvasView.isTherapyObject)
 				{
-					webServiceButton.visible = true;
-					webServiceButton.init(KSketchAssets.texture_connect, KSketchAssets.texture_connect_down, false);
-					webServiceButton.initSkin();
+					sendResultButton.visible = true;
+					sendResultButton.init(KSketchAssets.texture_connect, KSketchAssets.texture_connect_down, false);
+					sendResultButton.initSkin();
 				}
 				else
-					webServiceButton.visible = false;
+					sendResultButton.visible = false;
 			}
 			else
 				buttonContainer.removeElementAt(11);
 			
-			if (!webServiceButton.visible && buttonContainer.containsElement(webServiceButton))
-				buttonContainer.removeElement(webServiceButton);
+			if (!sendResultButton.visible && buttonContainer.containsElement(sendResultButton))
+				buttonContainer.removeElement(sendResultButton);
 		}
 
 		public function set position(value:int):void {
@@ -421,11 +424,8 @@
 		/**
 		 * Calls web service
 		 */
-		private function _callWebService():void{
-			//TO-DO: call web service
-			var myAlert:Alert = Alert.show("Web service is called","", Alert.OK);
-			myAlert.height=100;
-			myAlert.width=250;
+		private function _sendTherapyResult():void{
+			_canvasView.sendTherapyResult();
 		}
 			
 		/**
@@ -562,8 +562,8 @@
 			id="helpButton"
 			/>
 		<buttons:KSketch_CanvasButton
-			click="_callWebService()"
-			id="webServiceButton"
+			click="_sendTherapyResult()"
+			id="sendResultButton"
 			visible="false"
 			/>
 		<!--

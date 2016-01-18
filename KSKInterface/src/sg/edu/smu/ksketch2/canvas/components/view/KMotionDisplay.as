@@ -10,7 +10,6 @@ package sg.edu.smu.ksketch2.canvas.components.view
 {
 	import flash.events.Event;
 	import flash.utils.Dictionary;
-	import flash.geom.Point;
 	
 	import spark.core.SpriteVisualElement;
 	
@@ -149,33 +148,5 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			_motionDisplays = new Dictionary(true);
 			_objectsWithPath = new KModelObjectList();
 		}
-		
-		//KSKETCH-SYNPHYNE
-		public function trackTranslation(obj:KObject):Vector.<Point>
-		{
-			registerObject(obj);
-			
-			var newObjectMotion:KObjectMotions = _motionDisplays[obj];
-			newObjectMotion.object = obj;
-			
-			var vectorPoints:Vector.<Point> = new Vector.<Point>();
-			
-			vectorPoints = newObjectMotion.getTranslatePath();
-			
-			return vectorPoints;
-		}
-		
-		public function trackRotation(obj:KObject):int
-		{
-			registerObject(obj);
-			
-			var newObjectMotion:KObjectMotions = _motionDisplays[obj];
-			newObjectMotion.object = obj;
-			
-			var count:int = newObjectMotion.getRotationCount();
-			
-			return count;
-		}
-
 	}
 }

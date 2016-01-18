@@ -28,6 +28,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.model.objects.KResult;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.utils.KTherapyResult;
+	import sg.edu.smu.ksketch2.utils.iterators.INumberIterator;
+
 	
 	public class KActivityResultControl
 	{			
@@ -244,21 +246,19 @@ package sg.edu.smu.ksketch2.canvas.controls
 		
 		public function measureTrackAccuracy(result:KResult, objTemplate:KStroke, objDrawn:KStroke, mode:int):KResult
 		{
-			var motionDisplay:KMotionDisplay = _activityControl.motionDisplay;
-			
 			if(mode == 0) //translate
 			{
 				var pathTemplate:Vector.<Point> = new Vector.<Point>();
 				var pathDrawn:Vector.<Point> = new Vector.<Point>();
-				pathTemplate = motionDisplay.trackTranslation(objTemplate);
-				pathDrawn = motionDisplay.trackTranslation(objDrawn);
+				pathTemplate = _trackTranslation(objTemplate);
+				pathDrawn = _trackTranslation(objDrawn);
 				result = measureShapeDistance(result, pathTemplate, pathDrawn);
 			}
 			
 			if(mode == 1) //rotate
 			{
-				var count1:int = motionDisplay.trackRotation(objTemplate);
-				var count2:int = motionDisplay.trackRotation(objDrawn);
+				var count1:int = _trackRotationCount(objTemplate);
+				var count2:int = _trackRotationCount(objDrawn);
 				result.rotationCountDifference = Math.abs(count1-count2);
 			}
 			
@@ -266,6 +266,72 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{}
 			
 			return result;
+		}
+		
+		private function _trackTranslation(obj:KObject):Vector.<Point>
+		{
+			var _vectorPoints:Vector.<Point> = new Vector.<Point>();
+			var numIter:INumberIterator = null;
+			var t1:Number = -1;
+			var p1:Point = null;
+			
+			var centroid:Point = obj.center;
+			numIter = obj.translateTimeIterator();
+			numIter.reset();
+			
+			while (numIter.hasNext()) 
+			{ 
+				t1 = numIter.next(); 
+				p1 = obj.fullPathMatrix(t1).transformPoint(centroid);
+				_vectorPoints.push(new Point(p1.x, p1.y));
+			}
+			
+			return _vectorPoints;
+		}
+		
+		private function _trackRotationCount(obj:KObject):int
+		{
+			var numIter:INumberIterator = null;
+			var t1:Number = -1;
+			var p1:Point = null;
+			var totalRotation = 0;
+			var theta0:Number, theta1:Number;
+			
+			numIter = obj.rotateTimeIterator();
+			numIter.reset();
+			t1 = numIter.empty ? 0 : numIter.next();
+			theta1 = numIter.empty ? 0 : _getObjectRotation(obj, t1, 0);
+			
+			while (numIter.hasNext())
+			{
+				t1 = numIter.next();
+				theta0 = theta1;
+				theta1 = _getObjectRotation(obj, t1, theta0);
+				totalRotation += Math.abs(theta1 - theta0);
+			}
+			return totalRotation;
+		}
+
+		private function _getObjectRotation(obj:KObject, t:Number, rPrev:Number):Number
+		{
+			var transformer:Sprite = new Sprite();
+			transformer.transform.matrix = obj.fullPathMatrix(t);
+			var r:Number = (transformer.rotation / 180) * Math.PI;			
+			
+			var turns:int = Math.round(rPrev/(2*Math.PI));
+			var rScaled:Number = r + (turns * 2 * Math.PI);
+			var diff:Number = rScaled - rPrev;
+			
+			if (Math.PI < diff)
+			{
+				rScaled -= 2 * Math.PI;
+			}
+			else if (diff < -Math.PI)
+			{
+				rScaled += 2 * Math.PI;				
+			}
+			
+			return rScaled;
 		}
 
 		public function measureRecreateAccuracy(result:KResult):KResult

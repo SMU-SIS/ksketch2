@@ -544,51 +544,5 @@ package sg.edu.smu.ksketch2.canvas.components.view
 			
 			updateMotionPath(time);
 		}
-		
-		//KSKETCH-SYNPHNE
-		public function getTranslatePath():Vector.<Point> 
-		{
-			var _vectorPoints:Vector.<Point> = new Vector.<Point>();
-			var numIter:INumberIterator = null;
-			var t1:Number = -1;
-			var p1:Point = null;
-			
-			var centroid:Point = _object.center;
-			numIter = _object.translateTimeIterator();
-			numIter.reset();
-			
-			while (numIter.hasNext()) 
-			{ 
-				t1 = numIter.next(); 
-				p1 = _object.fullPathMatrix(t1).transformPoint(centroid);
-				_vectorPoints.push(new Point(p1.x, p1.y));
-			}
-			
-			return _vectorPoints;
-		}
-		
-		public function getRotationCount():int
-		{
-			var numIter:INumberIterator = null;
-			var t1:Number = -1;
-			var p1:Point = null;
-			var totalRotation = 0;
-			var theta0:Number, theta1:Number;
-			
-			numIter = _object.rotateTimeIterator();
-			numIter.reset();
-			t1 = numIter.empty ? 0 : numIter.next();
-			theta1 = numIter.empty ? 0 : _getObjectRotation(t1, 0);
-			
-			while (numIter.hasNext())
-			{
-				t1 = numIter.next();
-				theta0 = theta1;
-				theta1 = _getObjectRotation(t1, theta0);
-				totalRotation += Math.abs(theta1 - theta0);
-			}
-			return totalRotation;
-		}
-
 	}
 }

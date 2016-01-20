@@ -394,11 +394,14 @@
 								else 
 								{ 
 									//KSKETCH-SYNPHNE
-									_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
-									_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
-									_activityControl.recogniseDraw = false;
-									_activityControl.isNewSketch = true;
-									synphne_component.visible = true;
+									if(!_kInstructions)
+									{
+										_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
+										_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
+										_activityControl.recogniseDraw = false;
+										_activityControl.isNewSketch = true;
+										synphne_component.visible = true;
+									}
 								}								
 							}
 						}	

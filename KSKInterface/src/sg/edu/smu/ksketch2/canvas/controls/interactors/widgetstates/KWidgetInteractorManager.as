@@ -315,7 +315,7 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			//KSKETCH-SYNPHNE
 			if(_activityControl)// && !_widgetHighlight)
 			{
-				if(_activityControl.activityType == "TRACK")
+				if(_activityControl.activityType == "TRACK" || _activityControl.activityType == "RECREATE")
 				{
 					transitionMode = KSketch2.TRANSITION_DEMONSTRATED;
 					_widgetHighlight = true;

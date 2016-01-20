@@ -136,7 +136,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			for(var i:int = 0; i<templateObjects.length(); i++)
 			{
 				var templateObject:KStroke = templateObjects.getObjectAt(i) as KStroke;
-				if(templateObject.template && drawnObject.startRegion == templateObject.startRegion)
+				if(templateObject.template && drawnObject.startRegion == templateObject.startRegion && drawnObject.color == templateObject.color)
 				{
 					return templateObject;
 				}

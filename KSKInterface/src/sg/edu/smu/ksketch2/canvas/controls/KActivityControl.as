@@ -59,6 +59,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_currentManipulateObject = getCurrentObject(_currentObjectID, false);
 			_currentTemplateObject = getCurrentObject(_currentObjectID, true);
 			
+			trace("CURRENT TEMPLATE OBJECT ID: " + _currentTemplateObject.id);
 			//Disable pens in INTRO, RECALL and TRACK mode
 			if(activity == "INTRO" || activity == "RECALL" || activity == "TRACK")
 				_canvasView.setPenAccessibility(false);
@@ -153,14 +154,21 @@ package sg.edu.smu.ksketch2.canvas.controls
 					{
 						currObj.template = true;
 						if(currObj.id == _currentTemplateObject.id)
+						{
 							(view as KStrokeView).changeActivityHighlight(_KSketch.time, false);
+							(view as KStrokeView).visible = true;
+						}
 						else
+						{
 							(view as KStrokeView).changeActivityHighlight(_KSketch.time, true);
+							(view as KStrokeView).visible = false;
+						}
 					}
 					else if(isTrack)
 					{
 						currObj.template = true;
 						(view as KStrokeView).changeActivityHighlight(_KSketch.time, false);
+						(view as KStrokeView).visible = true;
 					}
 					
 				}	
@@ -302,6 +310,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private function _getCurrentObjectToTrack(useTemplate:Boolean):KObject
 		{
 			var currObj:KObject = null;
+			var newestObj:KObject = null;
 			
 			for(var i:int=0; i<_KSketch.root.children.length(); i++)
 			{
@@ -310,20 +319,23 @@ package sg.edu.smu.ksketch2.canvas.controls
 				if(!useTemplate)
 				{
 					if(currObj is KStroke && currObj.id != currObj.originalId && currObj.originalId == _currentObjectID)
-						break;
+						newestObj = currObj;
 					else
 						currObj = null;
 				}
 				else
 				{
 					if(currObj is KStroke && currObj.id == currObj.originalId && currObj.originalId == _currentObjectID)
+					{ 
+						newestObj = currObj;
 						break;
+					}
 					else 
 						currObj = null;
 				}
 			}
 			
-			return currObj;
+			return newestObj;
 		}
 		
 		public function autoSelectObjectToAnimate():void
@@ -349,25 +361,33 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var tempArr:Array = new Array(_KSketch.root.children.length());
 			var i:int;
 			var currObj:KObject;
+			var retainSketchObject:KObject;
 			
 			for(i=0; i<_KSketch.root.children.length(); i++)
 			{
 				currObj = _KSketch.root.children.getObjectAt(i) as KObject;
 				if(currObj is KStroke)
 				{
-					if(currObj.id != currObj.originalId && currObj.originalId == _currentObjectID)
+					if((currObj.id != currObj.originalId && currObj.originalId == _currentObjectID) ||
+						(_activityType == "RECREATE" && !currObj.template && currObj.id == currObj.originalId))
 					{
 						_removeAnimationFromObject(currObj);
 						tempArr[i] = currObj;
+						if(currObj.id != currObj.originalId && currObj.originalId == _currentObjectID)
+							retainSketchObject = currObj;
 					}
 				}	
 			}
-			
+
 			for(i=0; i<tempArr.length; i++)
 			{
 				if(tempArr[i] as KStroke)
 				{
 					currObj = tempArr[i];
+					
+					//RECREATE: retain the latest sketch object which matches the template region
+					if(_activityType == "RECREATE" && retainSketchObject && currObj.id == retainSketchObject.id)
+						continue;
 					
 					_interactionControl.begin_interaction_operation();
 					
@@ -545,6 +565,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 		public function retryActivity():void
 		{
 			_isRetry = true;
+			
+			//only keep the latest sketch object drawn by user
+			if(_activityType == "RECREATE")
+				discardSketchedObjects();
+			
 			startActivity(_activityType);
 			_instructionsBox.openInstructions();
 			_canvasView.isEnabledInstructionsButton(true);

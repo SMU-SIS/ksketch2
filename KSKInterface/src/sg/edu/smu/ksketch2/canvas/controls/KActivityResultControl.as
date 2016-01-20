@@ -136,12 +136,12 @@ package sg.edu.smu.ksketch2.canvas.controls
 			for(var i:int = 0; i<templateObjects.length(); i++)
 			{
 				var templateObject:KStroke = templateObjects.getObjectAt(i) as KStroke;
-				if(drawnObject.startRegion == templateObject.startRegion)
+				if(templateObject.template && drawnObject.startRegion == templateObject.startRegion)
 				{
 					return templateObject;
 				}
 			}	
-			return templateObject;
+			return null;
 		}
 
 		public function measureTime(result:KResult):KResult
@@ -472,16 +472,16 @@ package sg.edu.smu.ksketch2.canvas.controls
 				
 				//set Original ID
 				var objectTemplate:KStroke = getTemplateForDrawnObject(drawnObject);	
-				drawnObject.originalId = objectTemplate ? objectTemplate.id : 0;				
-				
-				//set end region
-				keyTime = drawnObject.transformInterface.lastKeyTime;
-				currentMatrix = drawnObject.fullPathMatrix(keyTime);
-				currentPosition = currentMatrix.transformPoint(drawnObject.center);
-				drawnObject.endRegion = _activityControl.getDrawnObjectRegion(currentPosition);
-				
 				if(objectTemplate)
 				{
+					drawnObject.originalId = objectTemplate ? objectTemplate.id : 0;
+					
+					//set end region
+					keyTime = drawnObject.transformInterface.lastKeyTime;
+					currentMatrix = drawnObject.fullPathMatrix(keyTime);
+					currentPosition = currentMatrix.transformPoint(drawnObject.center);
+					drawnObject.endRegion = _activityControl.getDrawnObjectRegion(currentPosition);
+				
 					stars += measureQuadrantAccuracy(drawnObject, objectTemplate, true); // start region
 					stars += measureQuadrantAccuracy(drawnObject, objectTemplate, false); // end region
 				}

@@ -144,6 +144,7 @@
 					{
 						_alertTimer = new Timer(1000, 3);
 						_alertTimer.addEventListener(TimerEvent.TIMER, updateCount);
+						_canvasView.addEventListener(MouseEvent.MOUSE_DOWN, _startPlay);
 						_alertTimer.addEventListener(TimerEvent.TIMER_COMPLETE, startTiming);
 						_canvasView.isEnabledInstructionsButton(false);
 						_activityControl.recogniseDraw = false;
@@ -220,10 +221,23 @@
 			}
 			
 			private function startTiming(event:TimerEvent):void {
-				_kAlertBox.close();
-				_canvasView.isEnabledInstructionsButton(true);
-				_canvasView.autoPlayAnimation();
-				_canvasView.startTimer();
+				_startAnimationForTrack();
+			}
+			
+			private function _startPlay(e:MouseEvent):void{
+				_startAnimationForTrack();
+				_canvasView.removeEventListener(MouseEvent.MOUSE_DOWN, _startPlay);
+			}
+			
+			private function _startAnimationForTrack():void
+			{
+				if(_kAlertBox.isOpen)
+				{
+					_kAlertBox.close();
+					_canvasView.isEnabledInstructionsButton(true);
+					_canvasView.autoPlayAnimation();
+					_canvasView.startTimer();					
+				}	
 			}
 			
 			private function updateCount(event:TimerEvent):void {

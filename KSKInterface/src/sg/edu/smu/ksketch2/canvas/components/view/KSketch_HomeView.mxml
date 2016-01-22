@@ -241,9 +241,9 @@
 			loadButton.initSkin();
 			loginButton.initSkin();
 			refreshButton.initSkin();
-			sendResultButton.visible = KSketch_Config.enableSynphne ? true : false;
-			resetResultButton.visible = KSketch_Config.enableSynphne ? true : false;
-			if(KSketch_Config.enableSynphne)
+			sendResultButton.visible = KSketch_Config.enableSynphne && !_anonymousUser ? true : false;
+			resetResultButton.visible = KSketch_Config.enableSynphne && !_anonymousUser ? true : false;
+			if(KSketch_Config.enableSynphne && !_anonymousUser)
 			{				
 				sendResultButton.init("Send all therapy data");
 				sendResultButton.initSkin();

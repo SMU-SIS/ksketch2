@@ -14,11 +14,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import flash.net.SharedObject;
 	import flash.system.Capabilities;
 	
+	import mx.collections.ArrayCollection;
 	import mx.collections.ArrayList;
 	
 	import data.KSketch_DataListItem;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.KSketchGlobals;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
@@ -85,8 +87,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 				{
 					result = measureTraceAccuracy(result, objDrawn as KStroke, objTemplate as KStroke);
 					stars += starShapeDistance(result);
-					
-					measures = 1;
+					stars += starColorMatch(objTemplate, objDrawn);
+					measures = 2;
 				}
 			}
 			else if(activity == "TRACK")
@@ -132,15 +134,34 @@ package sg.edu.smu.ksketch2.canvas.controls
 		*/
 		private function getTemplateForDrawnObject(drawnObject:KStroke):KStroke
 		{
+			//in "hard" level therapy template, background objects are in black color, template objects are in Red/Green/Blue color.
+			if(_canvasView.therapyLevel > 1 && drawnObject.color == KSketchGlobals.COLOR_BLACK)
+				return null;
+			
 			var templateObjects:KModelObjectList = _activityControl.getAllObjects(true);
+			var tempArr:ArrayCollection = new ArrayCollection();
+			
 			for(var i:int = 0; i<templateObjects.length(); i++)
 			{
 				var templateObject:KStroke = templateObjects.getObjectAt(i) as KStroke;
-				if(templateObject.template && drawnObject.startRegion == templateObject.startRegion && drawnObject.color == templateObject.color)
+				if(templateObject.template && drawnObject.startRegion == templateObject.startRegion)
 				{
-					return templateObject;
+					if(_canvasView.therapyLevel > 1) //level = "hard"
+						tempArr.addItem(templateObject);						
+					else //level = "easy" or "medium"						
+						return templateObject;
 				}
 			}	
+			
+			if(tempArr && tempArr.length > 0)
+			{
+				for(var i:int=0; i<tempArr.length; i++)
+				{
+					var obj:KStroke = tempArr[i] as KStroke;					
+					if(obj.color == drawnObject.color)
+						return obj;
+				}
+			}
 			return null;
 		}
 
@@ -454,6 +475,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return stars;
 		}
 		
+		public function starColorMatch(templateObj:KObject, drawnObj:KObject):int
+		{
+			return ((templateObj as KStroke).color == (drawnObj as KStroke).color) ? 3 : 0;
+		}
+		
 		public function measureRecreateRegion():int
 		{
 			var stars: int;
@@ -484,10 +510,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 				
 					stars += measureQuadrantAccuracy(drawnObject, objectTemplate, true); // start region
 					stars += measureQuadrantAccuracy(drawnObject, objectTemplate, false); // end region
+					stars += starColorMatch(objectTemplate, drawnObject);
 				}
 			}	
 			
-			stars = Math.floor(stars / (drawnObjects.length() * 2));
+			stars = Math.floor(stars / (drawnObjects.length() * 3));
 			
 			return stars;
 		}

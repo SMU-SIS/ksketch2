@@ -151,6 +151,7 @@
 			private var _kInstructions:KInstructions;
 			public var isTherapyObject:Boolean = false;
 			public var dialogMessage:KSketch_DialogBox_Message;
+			public var therapyLevel:int=0;
 			
 			//KSKETCH-DESKTOP
 			public static var loadedFromFile:Boolean = false;
@@ -398,6 +399,8 @@
 									{
 										_kInstructions = new KInstructions(new XML(_currentDocument.fileData.activities));
 										_instructionsBox.init(this, _kInstructions, _kAlertBox, _activityControl, _resultControl);
+										var level = _currentDocument.fileData.activities.@level;
+										therapyLevel = !level ? 0 : level.toString() == "hard" ? 2 : level.toString() == "medium" ? 1 : 0;
 										_activityControl.recogniseDraw = false;
 										_activityControl.isNewSketch = true;
 										synphne_component.visible = true;

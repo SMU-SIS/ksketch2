@@ -140,7 +140,7 @@
 					
 					_activityControl.startActivity(activityHeader.text);					
 					
-					if (_currentInstruction == 0 && _activityTypes[_currentActivity] == "TRACK") 
+					if (_activityTypes[_currentActivity] == "TRACK") 
 					{
 						_alertTimer = new Timer(1000, 3);
 						_alertTimer.addEventListener(TimerEvent.TIMER, updateCount);

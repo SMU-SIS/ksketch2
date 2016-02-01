@@ -364,6 +364,9 @@ package sg.edu.smu.ksketch2.canvas.controls.interactors.widgetstates
 			{
 				_widget.visible = true;
 				
+				if(_isInteracting)
+					_widget.visible = false;
+				
 				//Need to localise the point
 				var selectionCenter:Point = _interactionControl.selection.centerAt(_KSketch.time);
 				

@@ -346,6 +346,9 @@
 			}
 			
 			public function showResult(stars:int):void{
+				if(stars == 3)
+					_canvasView.sound_cheer.play();
+				
 				_activityControl.stars = stars;
 				_dialogPopUp = new KSketch_DialogBox_Skin();
 				_dialogPopUp.init(null, _canvasView, null, _activityControl, "Results");

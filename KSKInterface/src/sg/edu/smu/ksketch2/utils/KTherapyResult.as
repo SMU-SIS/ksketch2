@@ -90,7 +90,8 @@ package sg.edu.smu.ksketch2.utils
 		/*
 			Sends Therapy data to datastore
 		*/
-		public function sendTherapyResult(objTherapy:Object):void{			
+		public function sendTherapyResult(objTherapy:Object):void{	
+			_currentCount++;
 			if(objTherapy)
 			{
 				_currentObject = objTherapy;

@@ -152,6 +152,8 @@
 			public var isTherapyObject:Boolean = false;
 			public var dialogMessage:KSketch_DialogBox_Message;
 			public var therapyLevel:int=0;
+			public var sound_bye:Sound;
+			public var sound_cheer:Sound;
 			
 			//KSKETCH-DESKTOP
 			public static var loadedFromFile:Boolean = false;
@@ -650,13 +652,18 @@
 			//KSKETCH-SYNPHNE
 			private function _setSynphneComponent():void
 			{
-				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);
-				instructionsButton.initSkin();
+				var avatar:SharedObject = SharedObject.getLocal("avatar");
+				instructionsButton.source = avatar.data.image;
 				_isTiming = false;
 				timerLabel.text = "Time: 00:00";
 
 				if(userData.sketchData != null)
 					isTherapyObject = (userData.sketchData.fileData.activities == undefined || userData.sketchData.fileData.activities.children().length() == 0) ? false : true;	
+				if(isTherapyObject)
+				{
+					sound_bye = new KSketchAssets.sound_byebye();
+					sound_cheer = new KSketchAssets.sound_cheering();
+				}
 			}
 			
 			public function actionInstructions():void
@@ -673,19 +680,11 @@
 				PopUpManager.centerPopUp(_instructionsBox);
 				_instructionsBox.x = instructionsButton.x;
 				_instructionsBox.y = instructionsButton.y + instructionsButton.height;
-				
-				//change skin to down_arrow
-				instructionsButton.init(KSketchAssets.texture_instructions_2, KSketchAssets.texture_instructions_2);
-				instructionsButton.initSkin();
 			}
 			
 			public function closeInstructions():void
 			{
-				_instructionsBox.close();				
-				
-				//change skin to side_arrow
-				instructionsButton.init(KSketchAssets.texture_instructions_1, KSketchAssets.texture_instructions_1);
-				instructionsButton.initSkin();
+				_instructionsBox.close();		
 			}
 			
 			public function isEnabledInstructionsButton(isEnable:Boolean):void
@@ -1059,13 +1058,18 @@
 					<s:layout>
 						<s:HorizontalLayout paddingTop="{SYNPHNE_PADDINGTOP}" verticalAlign="middle" horizontalAlign="center"/>
 					</s:layout>
-					<buttons:KSketch_ListButton id="instructionsButton" width="{SYNPHNE_INSTRUCTIONS_WIDTH}" 
-												height="{SYNPHNE_INSTRUCTIONS_HEIGHT}" click="actionInstructions()"/>
+					<s:Image id="instructionsButton" source="{KSketchAssets.therapy_avatar_boy}" width="{SYNPHNE_INSTRUCTIONS_WIDTH}" 
+							 height="{SYNPHNE_INSTRUCTIONS_HEIGHT}" click="actionInstructions()"/>
+					<s:Group id="emptyGroup" width="55%"/>
+					<s:Group>
+						<s:layout>
+							<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+						</s:layout>
+						<s:Image source="{KSketchAssets.texture_therapy_time}" height="{SYNPHNE_TIMERLABEL_HEIGHT}"/>
+						<s:Label id="timerLabel" width="{SYNPHNE_TIMERLABEL_WIDTH}" height="{SYNPHNE_TIMERLABEL_HEIGHT}" 
+								paddingLeft="-15" fontSize="{KSketchGlobals.FONT_SIZE_18}" verticalAlign="middle"/> 
+					</s:Group>
 					
-					<s:Group id="emptyGroup" width="70%"/>
-					
-					<s:Label id="timerLabel" width="{SYNPHNE_TIMERLABEL_WIDTH}" height="{SYNPHNE_TIMERLABEL_HEIGHT}" 
-							 paddingRight="{SYNPHNE_PADDINGRIGHT}" fontSize="{KSketchGlobals.FONT_SIZE_18}"/> 
 				</s:Group>
 				<!-- end of KSKETCH-SYNPHNE -->
 				

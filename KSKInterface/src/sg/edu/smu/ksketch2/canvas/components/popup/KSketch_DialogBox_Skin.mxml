@@ -93,6 +93,16 @@
 				super.close(commit, data);
 				(FlexGlobals.topLevelApplication as Application).setFocus();
 			}
+			
+			public function transparentBackground():void
+			{
+				backgroundRect.alpha = 0.3;
+				backgroundRect.fill = new SolidColor(KSketchGlobals.COLOR_BLACK);
+				backgroundRect.height = _canvasView.height;
+				backgroundRect.width = _canvasView.width;
+				this.height = _canvasView.height;
+				this.width = _canvasView.width;
+			}
 		]]>
 	</fx:Script>
 	<s:filters>
@@ -103,7 +113,7 @@
 			blurX="{KSketchGlobals.RECT_BLURX}"
 			blurY="{KSketchGlobals.RECT_BLURY}"/>
 	</s:filters>
-	<s:Rect width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
+	<s:Rect id="backgroundRect" width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
 		<s:fill>
 			<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
 		</s:fill>

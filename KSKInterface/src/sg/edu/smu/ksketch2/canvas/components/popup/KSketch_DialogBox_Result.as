@@ -10,86 +10,54 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 	import flash.events.MouseEvent;
 	
 	import spark.components.Image;
+	import spark.layouts.HorizontalAlign;
 	import spark.layouts.HorizontalLayout;
+	import spark.layouts.VerticalAlign;
 	
 	import sg.edu.smu.ksketch2.KSketchAssets;
-	import sg.edu.smu.ksketch2.KSketchGlobals;
-	import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_DialogButton;
+	import sg.edu.smu.ksketch2.canvas.components.buttons.KSketch_CanvasButton;
 	import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 
 	public class KSketch_DialogBox_Result
 	{
-		private var PADDINGLEFT:Number = 10 * KSketchGlobals.SCALE;
-		
 		private var _activityControl:KActivityControl;
 		private var _dialogPopUp:KSketch_DialogBox_Skin;
-		private var _retryButton:KSketch_DialogButton;
-		private var _closeButton:KSketch_DialogButton;
-		private var _image1:Image;
-		private var _image2:Image;
-		private var _image3:Image;
+		
+		private var _retryButton:KSketch_CanvasButton;
+		private var _closeButton:KSketch_CanvasButton;
+		private var _image:Image;
 		
 		public function KSketch_DialogBox_Result(dialogPopUp:KSketch_DialogBox_Skin, activityControl:KActivityControl)
-		{
-			PADDINGLEFT = PADDINGLEFT;
-			
+		{		
 			_dialogPopUp = dialogPopUp;
-			_dialogPopUp.header.text = "Results";
-			_dialogPopUp.header.setStyle("fontSize", KSketchGlobals.FONT_SIZE_26);
-			
-			_activityControl = activityControl;
-			
+			_activityControl = activityControl;		
+			_dialogPopUp.transparentBackground();
 			_initContentComponent();
-			_initButtonComponent();
 		}
 		
 		private function _initContentComponent():void
 		{
-			_dialogPopUp.contentComponent.percentWidth = 100;
+			_dialogPopUp.contentComponent.width = _dialogPopUp.width;
 			var horizontalLayout:HorizontalLayout = new HorizontalLayout();
+			horizontalLayout.horizontalAlign = HorizontalAlign.CENTER;
+			horizontalLayout.verticalAlign = VerticalAlign.BOTTOM;
 			_dialogPopUp.contentComponent.layout = horizontalLayout;
 			
-			_image1 = new Image();
-			_image1.id = "star1";
-			_image1.source = KSketchAssets.star_empty;
-			
-			_image2 = new Image();
-			_image2.id = "star2";
-			_image2.source = KSketchAssets.star_empty;
-			
-			_image3 = new Image();
-			_image3.id = "star3";
-			_image3.source = KSketchAssets.star_empty;
-			
-			_dialogPopUp.contentComponent.addElement(_image1);
-			_dialogPopUp.contentComponent.addElement(_image2);
-			_dialogPopUp.contentComponent.addElement(_image3);
-		}
-	
-		private function _initButtonComponent():void
-		{
-			_dialogPopUp.buttonComponent.percentWidth = 100;
-			var horizontalLayout:HorizontalLayout = new HorizontalLayout();
-			horizontalLayout.horizontalAlign = "center";
-			horizontalLayout.paddingLeft = PADDINGLEFT;
-			_dialogPopUp.buttonComponent.layout = horizontalLayout;
-			
-			_retryButton = new KSketch_DialogButton();
-			_retryButton.init("Retry");
+			_retryButton = new KSketch_CanvasButton();
+			_retryButton.init(KSketchAssets.texture_therapy_refresh, KSketchAssets.texture_therapy_refresh_down, false);
 			_retryButton.initSkin();
 			_retryButton.addEventListener(MouseEvent.CLICK, _retry);
+			_dialogPopUp.contentComponent.addElement(_retryButton);
 			
-			_closeButton = new KSketch_DialogButton();
-			if(_activityControl.activityType == "RECREATE")
-				_closeButton.init("Finish");
-			else
-				_closeButton.init("Continue");
+			_image = _initImageControl("stars", KSketchAssets.therapy_0star);			
+			_dialogPopUp.contentComponent.addElement(_image);
+			
+			_closeButton = new KSketch_CanvasButton();
+			_closeButton.init(KSketchAssets.texture_therapy_next, KSketchAssets.texture_therapy_next_down, false);
 			_closeButton.initSkin();
 			_closeButton.addEventListener(MouseEvent.CLICK, _continue);
-			
-			_dialogPopUp.buttonComponent.addElement(_retryButton);
-			_dialogPopUp.buttonComponent.addElement(_closeButton);
-		}
+			_dialogPopUp.contentComponent.addElement(_closeButton);
+		}		
 		
 		private function _retry(event:MouseEvent):void
 		{
@@ -114,21 +82,25 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 		
 		public function initStars(stars:int):void
 		{
-			if(stars == 1)
-			{
-				_image1.source = KSketchAssets.star_fill;
-			}
+			if(stars == 0)
+				_image.source = KSketchAssets.therapy_0star;
+			else if(stars == 1)
+				_image.source = KSketchAssets.therapy_1star;
 			else if(stars == 2)
-			{
-				_image1.source = KSketchAssets.star_fill;
-				_image2.source = KSketchAssets.star_fill;
-			}
+				_image.source = KSketchAssets.therapy_2stars;
 			else if(stars == 3)
-			{
-				_image1.source = KSketchAssets.star_fill;
-				_image2.source = KSketchAssets.star_fill;
-				_image3.source = KSketchAssets.star_fill;
-			}
+				_image.source = KSketchAssets.therapy_3stars;
+		}		
+		
+		private function _initImageControl(id:String, imageClass:Class):Image
+		{
+			var targetImage:Image = new Image();
+			targetImage = new Image();
+			targetImage.id = id;
+			targetImage.source = imageClass;
+			targetImage.height = 0.8 * _dialogPopUp.height;
+			targetImage.verticalAlign = VerticalAlign.TOP;
+			return targetImage;
 		}
 	}
 }

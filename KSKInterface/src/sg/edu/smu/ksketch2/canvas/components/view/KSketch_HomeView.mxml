@@ -15,9 +15,10 @@
 		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
+		xmlns:l="sg.edu.smu.ksketch2.canvas.utils.*"
 		initialize="_init(KSketch_Config.isMobile)"
 		addedToStage="_scale()"
-		destructionPolicy="auto"
+		destructionPolicy="auto" xmlns:utils="sg.edu.smu.ksketch2.utils.*"
 		>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -29,6 +30,10 @@
 			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
+			import mx.containers.Grid;
+			import mx.containers.GridItem;
+			import mx.containers.GridRow;
+			import mx.controls.Text;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
@@ -46,6 +51,8 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Notifications;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_TherapyResult;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options_Profile;
 			import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
 			import sg.edu.smu.ksketch2.utils.KSketchDocument;
 			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
@@ -60,6 +67,7 @@
 		private var HOME_LOGO_PADDINGTOP:Number = 40 * KSketchGlobals.SCALE;
 		private var HOME_LOGO_WIDTH:Number = 150 * KSketchGlobals.SCALE;
 		private var HOME_LOGO_HEIGHT:Number = 150 * KSketchGlobals.SCALE;
+		private var HOME_AVATAR_HEIGHT:Number = 0.8 * HOME_LOGO_HEIGHT;
 
 		[Bindable]
 		private var sortedArr:SortedList = new SortedList(new KSketch_ListItem() as IComparator);
@@ -97,6 +105,11 @@
 
 		//THERAPY
 		public var dialogMessage:KSketch_DialogBox_Message;
+		private var _dialogTherapy:KSketch_DialogBox_TherapyResult;
+		private var _dialogAvatar:KSketch_Options_Profile = new KSketch_Options_Profile();
+		private var _mySound:Sound;
+		private var _itemRender_Therapy:IFactory = new ClassFactory(KSketch_HomeView_IconItemRenderer_Therapy);	
+		private var _avatar:SharedObject;	
 			
 		private function _init(isMobile:Boolean):void {
 
@@ -194,8 +207,7 @@
 				userData.resolveConflict = 0;
 				userData.loginView = null;
 
-				loginButton.init("Login");
-				refreshButton.visible = false;
+				_setLoginButtonState(true);
 			}
 			else if (!_anonymousUser && _failedLogin) {
 				userData.userObject = _cacheControl.user;
@@ -203,8 +215,7 @@
 				userData.resolveConflict = 0;
 				userData.loginView = null;
 
-				loginButton.init("Logout, " + userData.userObject.u_realname);
-				refreshButton.init("Refresh");
+				_setLoginButtonState(false);
 			}
 			else if (!_anonymousUser) {
 				//cast data from previous view to ObjectProxy. This is to avoid getting IEventDispatcher error
@@ -221,38 +232,71 @@
 						dataProxy.userObject.token = dataProxy.token;
 					}
 					_cacheControl.user = dataProxy.userObject;
-					loginButton.init("Logout, " + userData.userObject.u_realname);
-					refreshButton.init("Refresh");
+					_setLoginButtonState(false);
 				}
 				else {
-					loginButton.init("Login");
-					refreshButton.visible = false;
+					_setLoginButtonState(true);
 				}
 				_failedLogin = false;
-				//refresh();
 			}
 			userData.homeView = this;
 			userData.cacheControl = _cacheControl;
 			userData.sketchData = null;
 
-			createButton.init("Create a Sketch");
-			loadButton.init("Load Sketch from File");
-			createButton.initSkin();
-			loadButton.initSkin();
-			loginButton.initSkin();
-			refreshButton.initSkin();
-			sendResultButton.visible = KSketch_Config.enableSynphne && !_anonymousUser ? true : false;
-			resetResultButton.visible = KSketch_Config.enableSynphne && !_anonymousUser ? true : false;
-			if(KSketch_Config.enableSynphne && !_anonymousUser)
-			{				
-				sendResultButton.init("Send all therapy data");
-				sendResultButton.initSkin();
-				resetResultButton.init("Reset all therapy data");
-				resetResultButton.initSkin();
-			}
+			_initControls(_anonymousUser);
 			_setupSketchListView();
 		}
-
+			
+		private function _initControls(anonymousUser:Boolean):void{
+			if(KSketch_Config.enableSynphne)
+			{
+				createButtonT.init(KSketchAssets.texture_new, KSketchAssets.texture_new_down, false);
+				createButtonT.initSkin();
+				
+				refreshButtonT.init(KSketchAssets.texture_therapy_refresh, KSketchAssets.texture_therapy_refresh_down, false);
+				refreshButtonT.initSkin();
+				
+				therapyButton.visible = KSketch_Config.enableSynphne && !anonymousUser ? true : false;
+				therapyLabel.visible = KSketch_Config.enableSynphne && !anonymousUser ? true : false;
+				if(!anonymousUser)
+				{
+					therapyButton.init(KSketchAssets.texture_therapy_option, KSketchAssets.texture_therapy_option_down, false);
+					therapyButton.initSkin();
+				}
+			
+				pnl_Main.visible = false;
+				pnl_Therapy.visible = true;
+				initializeAvatar();
+				
+				_mySound = new KSketchAssets.sound_doorbell();
+				_changeQuote();
+			}
+			else
+			{
+				createButton.init("Create a Sketch");
+				loadButton.init("Load Sketch from File");
+				createButton.initSkin();
+				loadButton.initSkin();
+				loginButton.initSkin();
+				refreshButton.initSkin();
+			}
+		}
+			
+		private function _setLoginButtonState(login:Boolean):void{
+			if(login)
+			{
+				loginButton.init("Login");
+				loginLabel.text = KSketch_Config.enableSynphne ? "Welcome! guest" : "Login";
+				refreshButton.visible = false;
+			}
+			else
+			{
+				loginButton.init("Logout, " + userData.userObject.u_realname);
+				loginLabel.text = KSketch_Config.enableSynphne ? userData.userObject.u_realname : "Logout, " + userData.userObject.u_realname;
+				refreshButton.init("Refresh");
+			}
+		}
+			
 		private function _startDisplayFailedNotification(time:Number):void {
 			_canvasTimer = new Timer(time, 1);
 			_canvasTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _displayFailedNotification);
@@ -378,7 +422,10 @@
 		}
 
 		private function _startProgressBar():void {
-			progressBar.visible = true;
+			if(KSketch_Config.enableSynphne)
+				progressBar_Therapy.visible = true;
+			else
+				progressBar.visible = true;
 
 			_progressTimer = new Timer(1);
 			_progressTimer.addEventListener(TimerEvent.TIMER, _progressBarHandler);
@@ -388,14 +435,26 @@
 		private function _stopProgressBar():void {
 			_progressTimer.stop();
 			_progressTimer.removeEventListener(TimerEvent.TIMER, _progressBarHandler);
-			progressBar.visible = false;
+			if(KSketch_Config.enableSynphne)
+				progressBar_Therapy.visible = false;
+			else
+				progressBar.visible = false;
 		}
 
 		private function _progressBarHandler(event:TimerEvent):void {
-			progressBar.value += .008;
+			if(KSketch_Config.enableSynphne)
+			{
+				progressBar_Therapy.value += .008;
+				if (progressBar_Therapy.value >= 1)
+					progressBar_Therapy.value = 0;
+			}
+			else
+			{
+				progressBar.value += .008;
 
-			if (progressBar.value >= 1)
-				progressBar.value = 0;
+				if (progressBar.value >= 1)
+					progressBar.value = 0;
+			}
 		}
 
 		private function createSketch():void {
@@ -494,10 +553,10 @@
 		}
 
 		protected function listSketches_deleteSketchHandler(event:KSwipeEvent):void {
-			_deleteSketchFlag = true;
-			var sketchName:String = KSketch_HomeView_IconItemRenderer.selectedSketchName;
-			var sketchId:String = KSketch_HomeView_IconItemRenderer.selectedSketchId;
-			var sketchVersion:String = KSketch_HomeView_IconItemRenderer.selectedVersion;
+			_deleteSketchFlag = true;			
+			var sketchName:String = KSketch_Config.enableSynphne ? KSketch_HomeView_IconItemRenderer_Therapy.selectedSketchName : KSketch_HomeView_IconItemRenderer.selectedSketchName;
+			var sketchId:String = KSketch_Config.enableSynphne ? KSketch_HomeView_IconItemRenderer_Therapy.selectedSketchId : KSketch_HomeView_IconItemRenderer.selectedSketchId;
+			var sketchVersion:String = KSketch_Config.enableSynphne ? KSketch_HomeView_IconItemRenderer_Therapy.selectedVersion : KSketch_HomeView_IconItemRenderer.selectedVersion;
 			_cacheControl.deleteSketch(sketchId, int(sketchVersion), sketchName);
 		}
 
@@ -574,7 +633,7 @@
 			//	_cacheControl.deleteSketch(sketchId, int(sketchVersion), sketchName);
 
 			closeMessageDialog();
-			_isSwipe = false;
+			_isSwipe = false;			
 		}
 
 		public function set createNewSketch(value:Boolean) {
@@ -589,6 +648,10 @@
 			return itemRender;
 		}
 
+		public function kSketchItemRendererFuntion_Therapy(item:*):IFactory {
+			return _itemRender_Therapy;
+		}
+			
 		public function handleExpiredSession() {
 			_notice = KSketch_DialogBox_Notifications.CANVASNOTICE_EXPIRED_SESSION;
 			showDialogBox("Notification");
@@ -623,7 +686,7 @@
 			return arrResult;
 		}
 			
-		private function showDialogBox(mode:String):void
+		public function showDialogBox(mode:String):void
 		{
 			var dialogPopUp:KSketch_DialogBox_Skin = new KSketch_DialogBox_Skin();
 			dialogPopUp.init(this, null, null, null, mode);
@@ -640,13 +703,61 @@
 			return _notice;
 		}
 			
-			private function _sendTherapyResult():void{
+			// THERAPY
+			protected function listSketchesTherapy_changeSelectedHandler(event:Event):void {
+				var sketchName:String = KSketch_HomeView_IconItemRenderer_Therapy.selectedSketchName;
+				var sketchId:String = KSketch_HomeView_IconItemRenderer_Therapy.selectedSketchId;
+				var sketchVersion:String = KSketch_HomeView_IconItemRenderer_Therapy.selectedVersion;
+				
+				if (_isSwipe) {
+					listSketches_Therapy.selectedIndex = -1;			
+					stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.TAP_ACTION));
+				}
+				
+				//if action bar is not displayed and there is a save sketch flag
+				if (!KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _saveSketchFlag)
+					_saveSketchFlag = false;
+				
+				if (!KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _deleteSketchFlag)
+					_deleteSketchFlag = false;
+				
+				//if action bar is displayed, reset selection to -1
+				if (KSketch_HomeView_IconItemRenderer_Therapy.openActionBar)
+					listSketches_Therapy.selectedIndex = -1;
+				
+				//if action bar is not displayed and there is no additional flag
+				if (!KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && !_deleteSketchFlag && !_isSwipe && !_logSketchFlag && !_saveSketchFlag)
+					_setupSketchLoad(sketchName, sketchId, sketchVersion); //_isXML = true;
+				
+				//if action bar is displayed and there is a log sketch flag
+				if (KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _logSketchFlag)
+					_setupSketchLog(); //_isXML = true;
+				
+				//if action bar is displayed and there is a save sketch flag
+				if (KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _saveSketchFlag)
+					_setupSketchSave(); //_isXML = true;				
+				
+				closeMessageDialog();
+				_isSwipe = false;
+				if(KSketch_Config.enableSynphne && _mySound)
+					_mySound.play();
+			}
+			
+			private function _processTherapyResult():void{
+				closeMessageDialog();
+				_dialogTherapy = new KSketch_DialogBox_TherapyResult();
+				_dialogTherapy.init(this, 0);
+				_dialogTherapy.showDialog();
+				PopUpManager.centerPopUp(_dialogTherapy);
+			}
+			
+			public function sendTherapyResult():void{
 				closeMessageDialog();
 				var therapyResult:KTherapyResult = new KTherapyResult(this);
 				therapyResult.sendAllTherapyResult();
 			}
 			
-			private function _resetTherapyResult():void{
+			public function resetTherapyResult():void{
 				closeMessageDialog();
 				dialogMessage = new KSketch_DialogBox_Message();
 				dialogMessage.init(this, KTherapyResult.CONFIRM_RESET,"Yes","No");
@@ -657,11 +768,162 @@
 			public function closeMessageDialog():void{
 				if(dialogMessage && dialogMessage.isOpen)
 					dialogMessage.close();
-				
+				if(_dialogAvatar && _dialogAvatar.isOpen)
+					_dialogAvatar.close();
+			}
+			
+			private function _changeQuote():void{
+				var timer:Timer = new Timer(30000);
+				timer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void {
+					_fetchQuote();
+				});
+				_fetchQuote();
+				timer.start();
+			}
+			
+			private function _fetchQuote():void{
+				var quote:String = KSketch_HomeView_IconItemRenderer_Therapy.getQuote();
+				var arr:Array = quote.split("|");
+				quoteText.text = arr[0];
+				quoteAuthor.text = arr[1];
+			}
+
+			private function initializeAvatar():void{
+				_avatar = SharedObject.getLocal("avatar");
+				if(_avatar.data.image == "undefined" || !imgAvatar.source)
+					setAvatar(KSketchAssets.texture_therapy_login);
+				else
+					imgAvatar.source = _avatar.data.image;				
+			}
+			
+			public function setAvatar(obj:Class):void
+			{
+				imgAvatar.source = obj;	
+				_avatar.data.image = obj;
+				_avatar.flush();
+			}
+			
+			private function onChangeAvatar( event:Event ):void
+			{
+				if(_dialogAvatar && _dialogAvatar.isOpen)
+					_dialogAvatar.close();
+				else
+				{
+					_dialogAvatar = new KSketch_Options_Profile();
+					_dialogAvatar.init(this, userData.userObject.id != "n.a" ? true : false);
+					_dialogAvatar.x = grpAvatar.x;
+					_dialogAvatar.y = grpAvatar.y + grpAvatar.height - 10;
+					_dialogAvatar.open(this, false);
+				}
 			}
 		]]>
 	</fx:Script>
-	<s:Group width="100%" height="100%">
+	
+	<!--THERAPY: start-->
+	<s:Group id="pnl_Therapy" width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout gap="{HOME_DIVIDER_GAP}"/>
+		</s:layout>
+		
+		<!-- start of first row: logo and login -->
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout paddingTop="{HOME_PADDING}" paddingBottom="{HOME_PADDING}" gap="{HOME_DIVIDER_GAP}" horizontalAlign="left"/>
+			</s:layout>
+			<!-- Alignment for logo button -->
+			<s:Group width="18%">
+				<s:layout> <s:HorizontalLayout horizontalAlign="center"/> </s:layout>
+				<s:Image id="logoHolder_Therapy" source="{KSketchAssets.texture_logo}"
+						 width="{HOME_LOGO_WIDTH}"
+						 height="{HOME_LOGO_HEIGHT}"/>
+			</s:Group>
+			<s:VGroup width="62%" height="100%" paddingTop="{HOME_PADDING}" paddingLeft="{HOME_PADDING}" paddingRight="{HOME_PADDING}" horizontalAlign="center" verticalAlign="bottom">
+				<mx:VBox width="100%" height="70%" verticalAlign="middle">
+					<mx:Text width="100%" id="quoteText" fontSize="{KSketchGlobals.FONT_SIZE_18}" color="#2f4f4f" textAlign="center"/>
+				</mx:VBox>				
+				<s:Label id="quoteAuthor" height="30%" paddingTop="{HOME_PADDING}" fontSize="{KSketchGlobals.FONT_SIZE_14}" color="#d2691e" textAlpha="1" fontStyle="italic" verticalAlign="top"/>
+			</s:VGroup>
+			<s:VGroup id="grpAvatar" width="20%" paddingTop="{HOME_PADDING}" paddingLeft="{HOME_PADDING}" paddingRight="{HOME_PADDING}" horizontalAlign="right" verticalAlign="top" 
+					  click="onChangeAvatar(event)">
+				<mx:Grid>
+					<mx:GridRow>
+						<mx:GridItem colSpan="2" horizontalAlign="center">      
+							<s:Image id="imgAvatar" height="{HOME_AVATAR_HEIGHT}" />
+						</mx:GridItem> 
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem colSpan="2" horizontalAlign="center">     
+							<s:Label id="loginLabel" text="Login" paddingTop="5"/>  
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>				
+			</s:VGroup>			
+		</s:Group>
+		
+		<!-- start of second row: Therapy templates -->
+		<s:Group width="100%" height="97%">			
+			<!-- Background for previewer -->
+			<s:Rect width="100%" height="97%">
+				<s:fill>
+					<s:SolidColor color="{KSketchGlobals.COLOR_GREY_VERYLIGHT}"/>
+				</s:fill>
+			</s:Rect>
+			
+			<!--Previewer portion-->
+			<s:Group top="{HOME_PADDING}" left="{HOME_PADDING}"  height="97%" 
+					 right="{HOME_PADDING}" bottom="{HOME_PADDING}" horizontalCenter="true">
+				<s:Group id="grpSketches" width="100%" height="100%" horizontalCenter="true">
+					<s:layout>
+						<s:VerticalLayout horizontalAlign="center"></s:VerticalLayout>
+					</s:layout>
+					
+					<s:List id="listSketches_Therapy" contentBackgroundAlpha="0" width="100%" height="100%" horizontalCenter="true"
+							itemRendererFunction="kSketchItemRendererFuntion_Therapy" useVirtualLayout="false"   
+							dataProvider="{arrDG}" horizontalScrollPolicy="off" mouseDown="listSketches_mouseDownHandler(event)" change="listSketchesTherapy_changeSelectedHandler(event)">
+						<s:layout>
+							<utils:KCustomLayout/>
+						</s:layout>
+					</s:List>
+				</s:Group>
+				<s:Image id="listSketches_unavailable_Therapy" source="{KSketchAssets.image_new}" width="100%" height="100%" visible="false"/>
+				<popup:DataProgressBar id="progressBar_Therapy" skinClass="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DataProgressBar"
+									   horizontalCenter="0" verticalCenter="0" visible="false"/>
+			</s:Group>
+			<!-- end of previewer portion-->			
+		</s:Group>	
+		
+		<!-- start of third row: image buttons -->
+		<s:Group width="100%">
+			<s:layout> <s:HorizontalLayout  paddingBottom="{HOME_PADDING}" verticalAlign="bottom" horizontalAlign="center"/> </s:layout>
+			<mx:Grid horizontalAlign="center" width="100%">
+				<mx:GridRow id="row1" horizontalAlign="center"> 					
+					<mx:GridItem colSpan="2" horizontalAlign="center" paddingLeft="{HOME_PADDING}">        
+						<buttons:KSketch_CanvasButton id="createButtonT" click="createSketch()" />
+					</mx:GridItem>    					
+					<mx:GridItem colSpan="2" horizontalAlign="center" paddingLeft="{HOME_PADDING}">
+						<buttons:KSketch_CanvasButton id="refreshButtonT" click="refresh()"/>
+					</mx:GridItem>
+					<mx:GridItem colSpan="2" horizontalAlign="center" paddingLeft="{HOME_PADDING}">
+						<buttons:KSketch_CanvasButton id="therapyButton" click="_processTherapyResult()"/>
+					</mx:GridItem>					
+				</mx:GridRow>    
+				<mx:GridRow id="row2" horizontalAlign="center">  					
+					<mx:GridItem colSpan="2" horizontalAlign="center" paddingLeft="{HOME_PADDING}">        
+						<s:Label text="New" paddingTop="5"/>   
+					</mx:GridItem>
+					<mx:GridItem colSpan="2" horizontalAlign="center" paddingLeft="{HOME_PADDING}">
+						<s:Label text="Refresh" paddingTop="5"/> 
+					</mx:GridItem>
+					<mx:GridItem colSpan="2" horizontalAlign="center" paddingLeft="{HOME_PADDING}">
+						<s:Label id="therapyLabel" text="Therapy" paddingTop="5"/> 
+					</mx:GridItem>					
+				</mx:GridRow>   
+			</mx:Grid>
+		</s:Group>
+	</s:Group>
+	<!--THERAPY: end-->
+	
+	<s:Group id="pnl_Main" width="100%" height="100%">
 		
 		<!-- start of first layer -->
 		<s:Group width="100%" height="100%">
@@ -711,15 +973,6 @@
 						<s:layout> <s:VerticalLayout paddingBottom="{HOME_PADDING}" verticalAlign="middle" horizontalAlign="center"/> </s:layout>
 						<buttons:KSketch_DialogButton id="refreshButton" click="refresh()" width="100%"/>
 					</s:Group>
-					
-					<!-- THERAPY ENABLE -->
-					<s:Group width="100%">
-						<s:layout> <s:VerticalLayout paddingBottom="{HOME_PADDING}" verticalAlign="middle" horizontalAlign="center"/> </s:layout>
-						<buttons:KSketch_DialogButton id="sendResultButton" click="_sendTherapyResult()" width="100%" visible="false"/>
-						<buttons:KSketch_DialogButton id="resetResultButton" click="_resetTherapyResult()" width="100%" visible="false"/>
-					</s:Group>
-					<!-- END OF THERAPY ENABLE -->
-					<!-- end alignment for buttons -->
 				</s:Group>
 			</s:Group>
 			<!-- end of first half -->

@@ -21,6 +21,9 @@
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Message"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.KCustomLayout"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_TherapyResult"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options_Profile"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

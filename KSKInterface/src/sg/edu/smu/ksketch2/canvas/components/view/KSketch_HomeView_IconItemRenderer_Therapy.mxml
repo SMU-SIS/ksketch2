@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2015 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:views="sg.edu.smu.ksketch2.canvas.components.view.*"
+				autoDrawBackground="false" cacheAsBitmap="true"
+				creationComplete="iconitemrenderer1_creationCompleteHandler(event)"
+				currentState="default">
+	<s:states>
+		<s:State name="default"/>
+		<s:State name="show"/>
+	</s:states>	
+	
+	<s:Group id="bc">
+		<s:layout>
+			<s:VerticalLayout paddingLeft="{PADDINGLEFT}" paddingTop="{PADDINGTOP}" horizontalAlign="center" verticalAlign="middle"/>
+		</s:layout>
+		<s:VGroup horizontalAlign="center">
+			<s:Image id="imgData" width="{RENDERER_IMAGE_WIDTH}" height="{RENDERER_IMAGE_HEIGHT}"/>
+			
+			<s:VGroup horizontalAlign="center" paddingTop="10" verticalAlign="bottom">
+				<s:Label id="sketchName"/>
+				<s:Label id="sketchDate"/>
+			</s:VGroup>	
+		</s:VGroup>
+		
+	</s:Group>
+	
+	<s:Group visible="false">
+		<s:Label id="sketchId"/>
+		<s:Label id="sketchVersion"/>
+	</s:Group>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.utils.Base64Decoder;
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
+			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
+			
+			public static var ARRAY_QUOTES:ArrayCollection = KSketch_HomeView_IconItemRenderer_Therapy.generateQuotes();
+			
+			private var RENDERER_LIST_HEIGHT:Number = 120 * KSketchGlobals.SCALE;
+			private var RENDERER_LIST_PADDING:Number = 15 * KSketchGlobals.SCALE;
+			private var RENDERER_IMAGE_WIDTH:Number = 260 * KSketchGlobals.SCALE;
+			private var RENDERER_IMAGE_HEIGHT:Number = 160 * KSketchGlobals.SCALE;
+			private var RENDERER_LINE:Number = 1000 * KSketchGlobals.SCALE;	
+			private var PADDINGLEFT:Number = 20 * KSketchGlobals.SCALE;
+			private var PADDINGRIGHT:Number = 20 * KSketchGlobals.SCALE;
+			private var PADDINGTOP:Number = 15 * KSketchGlobals.SCALE;
+			private var PADDINGBOTTOM:Number = 20 * KSketchGlobals.SCALE;
+			
+			private var _myIcon:Bitmap;
+			private var _oldSelection:String;
+			private var _loader:Loader
+			
+			public static var selectedSketchName:String;
+			public static var selectedSketchId:String;
+			public static var selectedVersion:String;
+			public static var openActionBar:Boolean = false;			
+					
+			override public function set data(value:Object):void {
+				if (value != null && value.thumbnailData) {
+					super.data = value;
+					
+					//set name and date properties
+					sketchName.text = value.fileName;
+					sketchName.setStyle("fontSize", KSketchGlobals.FONT_SIZE_20);
+					sketchDate.text = value.created;
+					sketchId.text = value.sketchId;
+					sketchVersion.text = value.version;
+					
+					//decode for Image
+					var decoder:Base64Decoder = new Base64Decoder();
+					decoder.decode(value.thumbnailData);
+					var bytes:ByteArray = decoder.toByteArray();
+					
+					_loader = new Loader();
+					_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
+					_loader.loadBytes(bytes);
+				}
+			}
+			
+			private function onComplete(event:Event):void {
+				_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onComplete);
+				_myIcon = new Bitmap();
+				_myIcon.bitmapData = Bitmap(LoaderInfo(event.target).content).bitmapData;
+				imgData.source = _myIcon;
+			}
+			
+			override public function set selected(value:Boolean):void {
+				if (value == selected)
+					return;
+				
+				super.selected = value;
+				
+				if (selected) {
+					selectedSketchName = sketchName.text;
+					selectedSketchId = sketchId.text;
+					selectedVersion = sketchVersion.text;
+					
+					if (!openActionBar)
+						autoDrawBackground = true;
+				}				
+				setCurrentState("default", true);
+			}
+			
+			override public function setCurrentState(stateName:String, playTransition:Boolean = true):void {
+				super.setCurrentState(stateName, playTransition);
+			}
+			
+			protected function iconitemrenderer1_creationCompleteHandler(event:FlexEvent):void {
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, iconitemrenderer1_creationCompleteHandler);
+				
+				Multitouch.inputMode = MultitouchInputMode.GESTURE;
+				this.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
+				this.addEventListener(MouseEvent.RIGHT_CLICK, onSwipe);
+				if (stage) {
+					stage.addEventListener(KSwipeEvent.TAP_ACTION, swipeTap);
+					stage.addEventListener(KSwipeEvent.SAVE_CLOSE_ACTION, closeActBar);
+				}
+				
+				if (KSketch_CanvasView_Preferences.mobileEnabled == KSketch_CanvasView_Preferences.MOBILE_ON)
+					actBar.listButtons.removeElementAt(1);
+				
+				if (KSketch_CanvasView_Preferences.autoLog == KSketch_CanvasView_Preferences.AUTOLOG_OFF)
+					actBar.listButtons.removeElementAt(0);
+			}
+			
+			public function closeActBar(event:Event):void {
+				if (actBar.stage) {
+					openActionBar = false;
+					wipeEffectOut.play();
+					this.removeElement(actBar);
+				}
+			}
+			
+			public function onSwipe(event:Event):void {
+				if (actBar.stage) {
+					openActionBar = false;
+					wipeEffectOut.play();
+					this.removeElement(actBar);
+				}
+				else {
+					var openBar:Boolean = false;
+					
+					if (event is MouseEvent)
+						openBar = true;
+					else if (event is TransformGestureEvent) {
+						if ((event as TransformGestureEvent).offsetX == -1)
+							openBar = true;
+					}
+					
+					if (openBar) {
+						this.addElement(actBar);
+						
+						actBar.visible = true;
+						openActionBar = true;
+						wipeEffect.play();
+					}
+				}
+			}
+			
+			public function swipeTap(event:KSwipeEvent):void {
+				autoDrawBackground = false;
+			}
+			
+			public function discardActionBar():void{
+				openActionBar = false;
+				wipeEffectOut.play();
+				this.removeElement(actBar);	
+			}
+			
+			public static function getQuote():String{
+				if(ARRAY_QUOTES && ARRAY_QUOTES.length > 0)
+				{
+					var idx:int=Math.floor(Math.random() * ARRAY_QUOTES.length);
+					return ARRAY_QUOTES[idx];
+				}
+				else
+					return "Where there's a will there's a way.|English Proverb";
+			}
+			
+			public static function generateQuotes():ArrayCollection{
+				var arrQuote:ArrayCollection = new ArrayCollection;	
+				arrQuote.addItem("Where there's a will, there's a way.|English Proverb");
+				arrQuote.addItem("Whatever the mind can conceive and believe, the mind can achieve.|Dr. Napoleon Hill");
+				arrQuote.addItem("Our greatest glory is not in never falling, but in rising every time we fall.|Confucius");
+				arrQuote.addItem("All our dreams can come true, if we have the courage to pursue them.|Walt Disney");
+				arrQuote.addItem("Nobody can go back and start a new beginning, but anyone can start today and make a new ending.|Maria Robinson");
+				return arrQuote;
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:Parallel id="wipeEffect" target="{actBar}">
+			<s:Fade alphaFrom="0.7" alphaTo="1" duration="800"/>
+			<s:Move duration="150" xFrom="0" xTo="-110" yFrom="0" yTo="30"/>
+		</s:Parallel>
+		<s:Parallel id="wipeEffectOut" target="{actBar}">
+			<s:Fade alphaFrom="0.7" alphaTo="1" duration="800"/>
+			<s:Move duration="150" xFrom="-110" xTo="0" yFrom="0" yTo="30"/>
+		</s:Parallel>
+		<views:KSketch_HomeView_ListActions id="actBar" width="100%" height="100%"/>
+	</fx:Declarations>
+</s:ItemRenderer>

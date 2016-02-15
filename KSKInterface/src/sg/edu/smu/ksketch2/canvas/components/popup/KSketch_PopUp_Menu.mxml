@@ -365,6 +365,8 @@
 			}			
 			else
 				_exit();
+			if(_canvasView.isTherapyObject)
+				_canvasView.sound_bye.play();
 		}
 
 		public function _exit():void {

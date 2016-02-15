@@ -409,12 +409,104 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var texture_instructions_prev:Class;
 		
+		[Embed("/assets/Button_Therapy_Delete.png")] 
+		[Bindable] 
+		public static var texture_therapy_delete:Class;
+		
+		[Embed("/assets/Button_Therapy_Delete_Down.png")] 
+		[Bindable] 
+		public static var texture_therapy_delete_down:Class;
+		
+		[Embed("/assets/Button_Therapy_Login.png")] 
+		[Bindable] 
+		public static var texture_therapy_login:Class;
+		
+		[Embed("/assets/Button_Therapy_Login_Down.png")] 
+		[Bindable] 
+		public static var texture_therapy_login_down:Class;
+		
+		[Embed("/assets/Button_Therapy_Next.png")] 
+		[Bindable] 
+		public static var texture_therapy_next:Class;
+		
+		[Embed("/assets/Button_Therapy_Next_Down.png")] 
+		[Bindable] 
+		public static var texture_therapy_next_down:Class;
+		
+		[Embed("/assets/Button_Therapy_Refresh.png")] 
+		[Bindable] 
+		public static var texture_therapy_refresh:Class;
+		
+		[Embed("/assets/Button_Therapy_Refresh_Down.png")] 
+		[Bindable] 
+		public static var texture_therapy_refresh_down:Class;
+		
+		[Embed("/assets/Button_Therapy_SendData.png")] 
+		[Bindable] 
+		public static var texture_therapy_sendData:Class;
+		
+		[Embed("/assets/Button_Therapy_SendData_Down.png")] 
+		[Bindable] 
+		public static var texture_therapy_sendData_down:Class;
+		
+		[Embed("/assets/Button_Therapy_TherapyOption.png")] 
+		[Bindable] 
+		public static var texture_therapy_option:Class;
+		
+		[Embed("/assets/Button_Therapy_TherapyOption_Down.png")] 
+		[Bindable] 
+		public static var texture_therapy_option_down:Class;
+		
+		[Embed("/assets/Button_Therapy_Time.png")] 
+		[Bindable] 
+		public static var texture_therapy_time:Class;
+		
 		[Embed("/assets/Star_Empty_KSketch.png")]
 		[Bindable] 
 		public static var star_empty:Class;
 		
 		[Embed("/assets/Star_Fill_KSketch.png")]
 		[Bindable] 
-		public static var star_fill:Class;
+		public static var star_fill:Class;		
+		
+		[Embed("/assets/Therapy_Result_0star.png")]
+		[Bindable] 
+		public static var therapy_0star:Class;
+		
+		[Embed("/assets/Therapy_Result_1star.png")]
+		[Bindable] 
+		public static var therapy_1star:Class;
+		
+		[Embed("/assets/Therapy_Result_2star.png")]
+		[Bindable] 
+		public static var therapy_2stars:Class;
+		
+		[Embed("/assets/Therapy_Result_3star.png")]
+		[Bindable] 
+		public static var therapy_3stars:Class;
+				
+		[Embed("/assets/Button_ActionList_Delete_Small.png")] 
+		[Bindable] 
+		public static var actionList_delete_small:Class;	
+		
+		[Embed("/assets/Therapy_Avatar_Boy.png")] 
+		[Bindable] 
+		public static var therapy_avatar_boy:Class;	
+		
+		[Embed("/assets/Therapy_Avatar_Girl.png")] 
+		[Bindable] 
+		public static var therapy_avatar_girl:Class;	
+		
+		[Embed("/assets/Sound_Doorbell.mp3")] 
+		[Bindable] 
+		public static var sound_doorbell:Class;
+		
+		[Embed("/assets/Sound_Byebye.mp3")] 
+		[Bindable] 
+		public static var sound_byebye:Class;
+		
+		[Embed("/assets/Sound_Cheering.mp3")]
+		[Bindable]
+		public static var sound_cheering:Class;
 	}
 }

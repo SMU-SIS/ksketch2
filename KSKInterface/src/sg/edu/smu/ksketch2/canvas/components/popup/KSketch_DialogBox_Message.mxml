@@ -10,7 +10,7 @@
 -->
 <s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 						   xmlns:s="library://ns.adobe.com/flex/spark" 
-						   backgroundColor="{KSketchGlobals.COLOR_GREY_MEDIUM}"
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
 						   backgroundAlpha="1"
 						   creationComplete="_initButtonComponent()">
 	<fx:Script>
@@ -22,13 +22,13 @@
 			import sg.edu.smu.ksketch2.utils.KTherapyResult;			
 			
 			private var GAP:Number = 20 * KSketchGlobals.SCALE;
-			private var PADDINGLEFT:Number = 5 * KSketchGlobals.SCALE;
-			private var PADDINGRIGHT:Number = 5 * KSketchGlobals.SCALE;
+			private var PADDINGLEFT:Number = 15 * KSketchGlobals.SCALE;
+			private var PADDINGRIGHT:Number = 15 * KSketchGlobals.SCALE;
 			private var PADDINGTOP:Number = 20 * KSketchGlobals.SCALE;
 			private var PADDINGBOTTOM:Number = 20 * KSketchGlobals.SCALE;
 			
 			private var _parentContainer:UIComponent;
-			private var _btnNo:Button;
+			private var _btnNo:KSketch_DialogButton;
 			private var _message:String;
 			private var _yesButtonLabel:String;
 			private var _noButtonLabel:String;
@@ -50,18 +50,19 @@
 				_setButtonLabel(btnYes, _yesButtonLabel);
 				if(_noButtonLabel != "")
 				{
-					_btnNo = new Button();
-					_btnNo.addEventListener(MouseEvent.CLICK, _btnNo_clickHandler);
-					panelButton.addElement(_btnNo);
+					_btnNo = new KSketch_DialogButton();
 					_setButtonLabel(_btnNo, _noButtonLabel);
+					_btnNo.addEventListener(MouseEvent.CLICK, _btnNo_clickHandler);
+					panelButton.addElement(_btnNo);					
 				}				
 			}
 			
-			private function _setButtonLabel(button:Button, value:String):void
+			private function _setButtonLabel(button:KSketch_DialogButton, value:String):void
 			{
 				if(button && value != "")
 				{
-					button.label = value; 
+					button.init(value);
+					button.initSkin();
 					button.visible = true;
 				}
 			}
@@ -97,19 +98,37 @@
 			
 		]]>
 	</fx:Script>
+	
+	<s:filters>
+		<s:DropShadowFilter
+			color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+			alpha="{KSketchGlobals.ALPHA_06}"
+			strength="{KSketchGlobals.RECT_STRENGTH}"
+			blurX="{KSketchGlobals.RECT_BLURX}"
+			blurY="{KSketchGlobals.RECT_BLURY}"/>
+	</s:filters>
 	<s:Group>
-		<s:layout>
-			<s:VerticalLayout gap="{GAP}" paddingLeft="{PADDINGLEFT}" 
-							  paddingRight="{PADDINGRIGHT}" paddingTop="{PADDINGTOP}" 
-							  paddingBottom="{PADDINGBOTTOM}" verticalAlign="middle" horizontalAlign="center"/>
-		</s:layout> 
-		<s:Label id="messageText" fontSize="{KSketchGlobals.FONT_SIZE_18}" fontFamily="{KSketchGlobals.FONT_FAMILY}"
-				 x="{-messageText.width/2}" y="{-(messageText.height*1.25)}"/>
-		<s:Group id="panelButton">
+		<s:Rect width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
+			<s:fill>
+				<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
+			</s:fill>
+		</s:Rect>
+		<s:Group>
 			<s:layout>
-				<s:HorizontalLayout horizontalAlign="center"/>
-			</s:layout>
-			<s:Button id="btnYes" label="Yes" click="_btnYes_clickHandler(event)"/>
+				<s:VerticalLayout gap="{GAP}" paddingLeft="{PADDINGLEFT}" 
+								  paddingRight="{PADDINGRIGHT}" paddingTop="{PADDINGTOP}" 
+								  paddingBottom="{PADDINGBOTTOM}" verticalAlign="middle" horizontalAlign="center"/>
+			</s:layout> 
+			<s:Label id="messageText" fontSize="{KSketchGlobals.FONT_SIZE_18}" fontFamily="{KSketchGlobals.FONT_FAMILY}"
+					 x="{-messageText.width/2}" y="{-(messageText.height*1.25)}"/>
+			<s:Group id="panelButton">
+				<s:layout>
+					<s:HorizontalLayout horizontalAlign="center"/>
+				</s:layout>
+				<buttons:KSketch_DialogButton id="btnYes" label="Yes" click="_btnYes_clickHandler(event)" 
+											  top="{PADDINGRIGHT}" right="{PADDINGRIGHT}"
+											  bottom="{PADDINGBOTTOM}"/>		
+			</s:Group>
 		</s:Group>
 	</s:Group>	
 </s:SkinnablePopUpContainer>

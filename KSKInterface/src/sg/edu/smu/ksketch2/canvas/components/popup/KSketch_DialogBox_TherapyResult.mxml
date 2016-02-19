@@ -15,9 +15,12 @@
 						   creationComplete="_initButtons()">
 	<fx:Script>
 		<![CDATA[
+			import flash.utils.getDefinitionByName;
+			
 			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchGlobals;
-			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;	
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.utils.KSketch_Avatar;	
 			
 			private var GAP:Number = 20 * KSketchGlobals.SCALE;
 			private var PADDINGLEFT:Number = 5 * KSketchGlobals.SCALE;
@@ -56,6 +59,7 @@
 				{
 					grpMain.removeElement(panelTherapyResult);
 					panelAvatar.visible = true;
+					_loadAvatars();
 				}
 									
 				_cancelButton.init("Cancel");
@@ -74,18 +78,33 @@
 				close();
 			}
 			
-			private function _changeAvatar(obj:Class):void
-			{
-				_homeView.setAvatar(obj);
-				close();
-			}
-			
 			private function _cancel():void
 			{
 				close();
 			}
 			
+			private function _changeAvatar(event:MouseEvent):void
+			{
+				_homeView.setAvatar((event.currentTarget as Image).id)
+				close();
+			}			
 			
+			private function _loadAvatars():void
+			{
+				var dict:Dictionary = KSketch_Avatar.AVATAR_XML;
+				if(dict)
+				{ 
+					for(var obj:Object in dict)
+					{
+						if(obj.toString() != KSketch_Avatar.AVATAR_DEFAULT)
+						{
+							var img:Image = KSketch_Avatar.generateAvatarImage(obj, BUTTON_WIDTH);
+							img.addEventListener(MouseEvent.CLICK,_changeAvatar);
+							panelAvatar.addElement(img);
+						}
+					}
+				}
+			}
 		]]>
 	</fx:Script>
 	
@@ -152,41 +171,12 @@
 				</s:Group>
 			</s:Group>
 			
+			<!--add avatar dynamically-->
 			<s:Group id="panelAvatar" visible="false">
 				<s:layout>
 					<s:HorizontalLayout horizontalAlign="center" gap="{GAP}" verticalAlign="baseline" 
 										paddingLeft="{PADDINGLEFT}" paddingRight="{PADDINGRIGHT}"/>
-				</s:layout>	
-				
-				<s:Rect>
-					<s:fill>
-						<s:SolidColor alpha="1" color="{KSketchGlobals.COLOR_GREY_LIGHT}"/>
-					</s:fill>
-				</s:Rect>
-				<s:Group id="grpAvatar1" >			
-					<s:layout>
-						<s:VerticalLayout horizontalAlign="center"
-										  paddingLeft="{PADDINGLEFT}"
-										  paddingRight="{PADDINGRIGHT}" 
-										  verticalAlign="bottom"/>
-					</s:layout> 
-					<s:Image source="{KSketchAssets.therapy_avatar_boy}" width="{BUTTON_WIDTH}" click="_changeAvatar(KSketchAssets.therapy_avatar_boy)"/>							
-				</s:Group>
-				
-				<s:Rect>
-					<s:fill>
-						<s:SolidColor alpha="1" color="{KSketchGlobals.COLOR_GREY_LIGHT}"/>
-					</s:fill>
-				</s:Rect>
-				<s:Group id="grpAvatar2" >			
-					<s:layout>
-						<s:VerticalLayout horizontalAlign="center"
-										  paddingLeft="{PADDINGLEFT}"
-										  paddingRight="{PADDINGRIGHT}" 
-										  verticalAlign="bottom"/>
-					</s:layout> 
-					<s:Image source="{KSketchAssets.therapy_avatar_girl}" width="{BUTTON_WIDTH}" click="_changeAvatar(KSketchAssets.therapy_avatar_girl)"/>
-				</s:Group>
+				</s:layout>					
 			</s:Group>
 			
 			<s:Group id="grpCancel" click="_cancel()" >			

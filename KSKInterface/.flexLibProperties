@@ -24,6 +24,7 @@
     <classEntry path="sg.edu.smu.ksketch2.utils.KCustomLayout"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_TherapyResult"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options_Profile"/>
+    <classEntry path="sg.edu.smu.ksketch2.utils.KSketch_Avatar"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

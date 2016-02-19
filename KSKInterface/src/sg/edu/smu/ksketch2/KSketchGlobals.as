@@ -18,6 +18,7 @@ package sg.edu.smu.ksketch2
 		public static const COLOR_RED_LIGHT:uint = 0xDD1F26;
 		public static const COLOR_RED:uint = 0xFF0000;
 		public static const COLOR_RED_DARK:uint = 0x6B0000;
+		public static const COLOR_ORANGE_DARK:uint = 0xECA745;
 		public static const COLOR_GREY_VERYLIGHT:uint = 0xD0D2D3;
 		public static const COLOR_GREY_LIGHT:uint = 0xC8CCCE;
 		public static const COLOR_GREY_MEDIUM:uint = 0xA6A8AB;

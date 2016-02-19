@@ -28,6 +28,7 @@
 			import com.google.analytics.GATracker;
 			
 			import flash.utils.getTimer;
+			import flash.utils.setTimeout;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
@@ -78,6 +79,7 @@
 			import sg.edu.smu.ksketch2.model.objects.KStroke;
 			import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 			import sg.edu.smu.ksketch2.utils.KIOEvent;
+			import sg.edu.smu.ksketch2.utils.KSketch_Avatar;
 			import sg.edu.smu.ksketch2.utils.KTherapyResult;
 			
 			public static const PLUG_IN:String = "PlugIn";
@@ -653,7 +655,8 @@
 			private function _setSynphneComponent():void
 			{
 				var avatar:SharedObject = SharedObject.getLocal("avatar");
-				instructionsButton.source = avatar.data.image;
+				instructionsButton.source = KSketch_Avatar.AVATAR_XML[avatar.data.imageClass] as Class;
+					
 				_isTiming = false;
 				timerLabel.text = "Time: 00:00";
 
@@ -975,7 +978,7 @@
 					</s:Rect>
 					
 					<!-- start of region -->
-					<s:Group id="region_group" height="100%" width="100%" alpha="0.5">
+					<s:Group id="region_group" height="100%" width="100%" alpha="1">
 						<s:layout>
 							<s:VerticalLayout/>
 						</s:layout>
@@ -986,23 +989,26 @@
 							<s:Group id="region_1" width="100%" height="100%" visible="false">
 								<s:Rect id="region_1_rect" width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+										<s:SolidColor color="{KSketchGlobals.COLOR_ORANGE_DARK}"/>
 									</s:fill>
 								</s:Rect>
+								<s:Image id="region_1_image" width="{region_1_rect.width}" height="{region_1_rect.height}" visible="false"/>
 							</s:Group>
 							<s:Group id="region_2" width="100%" height="100%" visible="false">
 								<s:Rect id="region_2_rect" width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+										<s:SolidColor color="{KSketchGlobals.COLOR_ORANGE_DARK}"/>
 									</s:fill>
 								</s:Rect>
+								<s:Image id="region_2_image" width="{region_1_rect.width}" height="{region_1_rect.height}" visible="false"/>
 							</s:Group>
 							<s:Group id="region_3" width="100%" height="100%" visible="false">
 								<s:Rect id="region_3_rect" width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+										<s:SolidColor color="{KSketchGlobals.COLOR_ORANGE_DARK}"/>
 									</s:fill>
 								</s:Rect>
+								<s:Image id="region_3_image" width="{region_1_rect.width}" height="{region_1_rect.height}" visible="false"/>
 							</s:Group>
 						</s:Group>
 						<s:Group height="100%" width="100%">
@@ -1012,23 +1018,26 @@
 							<s:Group id="region_4" width="100%" height="100%" visible="false">
 								<s:Rect id="region_4_rect" width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+										<s:SolidColor color="{KSketchGlobals.COLOR_ORANGE_DARK}"/>
 									</s:fill>
 								</s:Rect>
+								<s:Image id="region_4_image" width="{region_1_rect.width}" height="{region_1_rect.height}" visible="false"/>
 							</s:Group>
 							<s:Group id="region_5" width="100%" height="100%" visible="false">
 								<s:Rect id="region_5_rect" width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+										<s:SolidColor color="{KSketchGlobals.COLOR_ORANGE_DARK}"/>
 									</s:fill>
 								</s:Rect>
+								<s:Image id="region_5_image" width="{region_1_rect.width}" height="{region_1_rect.height}" visible="false"/>
 							</s:Group>
 							<s:Group id="region_6" width="100%" height="100%" visible="false">
 								<s:Rect id="region_6_rect" width="100%" height="100%">
 									<s:fill>
-										<s:SolidColor color="{KSketchGlobals.COLOR_RED_DARK}"/>
+										<s:SolidColor color="{KSketchGlobals.COLOR_ORANGE_DARK}"/>
 									</s:fill>
 								</s:Rect>
+								<s:Image id="region_6_image" width="{region_1_rect.width}" height="{region_1_rect.height}" visible="false"/>
 							</s:Group>
 						</s:Group>
 					</s:Group>
@@ -1059,7 +1068,7 @@
 						<s:HorizontalLayout paddingTop="{SYNPHNE_PADDINGTOP}" verticalAlign="middle" horizontalAlign="center"/>
 					</s:layout>
 					<s:Image id="instructionsButton" source="{KSketchAssets.therapy_avatar_boy}" width="{SYNPHNE_INSTRUCTIONS_WIDTH}" 
-							 height="{SYNPHNE_INSTRUCTIONS_HEIGHT}" click="actionInstructions()"/>
+							 height="{SYNPHNE_INSTRUCTIONS_HEIGHT}" click="actionInstructions()" />
 					<s:Group id="emptyGroup" width="55%"/>
 					<s:Group>
 						<s:layout>

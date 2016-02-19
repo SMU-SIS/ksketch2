@@ -9,9 +9,18 @@ package sg.edu.smu.ksketch2.canvas.controls
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
+	import flash.events.TimerEvent;
 	import flash.geom.Point;
+	import flash.net.SharedObject;
+	import flash.utils.Dictionary;
+	import flash.utils.Timer;
+	import flash.utils.getDefinitionByName;
+	import flash.utils.setTimeout;
+	
+	import spark.components.Image;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
+	import sg.edu.smu.ksketch2.KSketchAssets;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
@@ -24,6 +33,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
+	import sg.edu.smu.ksketch2.utils.KSketch_Avatar;
 	
 	public class KActivityControl
 	{
@@ -210,6 +220,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{
 				var tapRegion:int = getDrawnObjectRegion(tapPoint);
 				stars = computeQuadrantAccuracy(tapRegion,templateRegion);
+				showWrongResultForRecall(tapRegion);
 			}
 			
 			_interactionControl.selection = null;
@@ -709,6 +720,16 @@ package sg.edu.smu.ksketch2.canvas.controls
 			}			
 			_canvasView.modelDisplay.removeChild(selectionArea);
 			return 0;
+		}
+
+		private function showWrongResultForRecall(tapRegion:int):void
+		{
+			var so:SharedObject = SharedObject.getLocal("avatar");	
+			var imgContainerArr:Array = [_canvasView.region_1_image, _canvasView.region_2_image, _canvasView.region_3_image, _canvasView.region_4_image, _canvasView.region_5_image, _canvasView.region_6_image];
+			var img:Image = imgContainerArr[tapRegion-1];
+			img.source = KSketch_Avatar.AVATAR_NEGATIVE[so.data.imageClass] as Class;
+			img.visible = true;
+			setTimeout(function():void{ img.visible = false; }, 1000);			
 		}
 	}
 }

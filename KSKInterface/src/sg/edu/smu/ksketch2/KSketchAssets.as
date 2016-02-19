@@ -484,6 +484,10 @@ package sg.edu.smu.ksketch2
 		[Embed("/assets/Therapy_Result_3star.png")]
 		[Bindable] 
 		public static var therapy_3stars:Class;
+		
+		[Embed("/assets/Therapy_InstructionsBubble.png")]
+		[Bindable]
+		public static var therapy_instructions_bubble:Class;
 				
 		[Embed("/assets/Button_ActionList_Delete_Small.png")] 
 		[Bindable] 
@@ -493,9 +497,41 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var therapy_avatar_boy:Class;	
 		
+		[Embed("/assets/Therapy_Avatar_Boy_sad.png")] 
+		[Bindable] 
+		public static var therapy_avatar_boy_sad:Class;	
+		
 		[Embed("/assets/Therapy_Avatar_Girl.png")] 
 		[Bindable] 
 		public static var therapy_avatar_girl:Class;	
+		
+		[Embed("/assets/Therapy_Avatar_Girl_sad.png")] 
+		[Bindable] 
+		public static var therapy_avatar_girl_sad:Class;	
+
+		[Embed("/assets/Therapy_Avatar_Hamster1.png")] 
+		[Bindable] 
+		public static var therapy_avatar_hamster1:Class;		
+		
+		[Embed("/assets/Therapy_Avatar_Hamster1_sad.png")] 
+		[Bindable] 
+		public static var therapy_avatar_hamster1_sad:Class;
+		
+		[Embed("/assets/Therapy_Avatar_Hamster2.png")] 
+		[Bindable] 
+		public static var therapy_avatar_hamster2:Class;	
+		
+		[Embed("/assets/Therapy_Avatar_Hamster2_sad.png")] 
+		[Bindable] 
+		public static var therapy_avatar_hamster2_sad:Class;
+		
+		[Embed("/assets/Therapy_Avatar_Hamster3.png")] 
+		[Bindable] 
+		public static var therapy_avatar_hamster3:Class;
+		
+		[Embed("/assets/Therapy_Avatar_Hamster3_sad.png")] 
+		[Bindable] 
+		public static var therapy_avatar_hamster3_sad:Class;
 		
 		[Embed("/assets/Sound_Doorbell.mp3")] 
 		[Bindable] 

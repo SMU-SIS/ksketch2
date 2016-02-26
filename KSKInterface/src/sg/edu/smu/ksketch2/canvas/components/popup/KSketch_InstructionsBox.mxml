@@ -34,7 +34,10 @@
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 			import sg.edu.smu.ksketch2.canvas.controls.KActivityControl;
 			import sg.edu.smu.ksketch2.canvas.controls.KActivityResultControl;
+			import sg.edu.smu.ksketch2.model.data_structures.KPath;
+			import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 			import sg.edu.smu.ksketch2.model.objects.KInstructions;
+			import sg.edu.smu.ksketch2.model.objects.KObject;
 			
 			private var HEADER_GAP:Number = 20 * KSketchGlobals.SCALE;
 			private var HEADER_WIDTH:Number = 100 * KSketchGlobals.SCALE;
@@ -358,6 +361,119 @@
 				_dialogPopUp.init(null, _canvasView, null, _activityControl, "Results");
 				_dialogPopUp.open(_canvasView,true);
 				PopUpManager.centerPopUp(_dialogPopUp);
+			}
+			
+			/**
+			 * Return xml <path/> containing animation information, i.e. repeat, numRepeat
+			 */
+			private function _extractAnimationXML(xml:XML, objectId:int):XML
+			{
+				var xmlObjAnimation:XML;
+				
+				var xmlObjectList:XMLList = xml.KObject;
+				for(var obj:Object in xmlObjectList)
+				{
+					var objXML:XML = xmlObjectList[obj] as XML;
+					if(objXML.@id==objectId)
+					{
+						var myList:XMLList=objXML.transform.keylist.spatialkey.path;
+						for(var item:Object in myList) {   
+							var itemXml:XML = myList[item] as XML;
+							if(itemXml.@repeat.toXMLString() == "true")
+							{
+								xmlObjAnimation = itemXml;
+								break;
+							}
+						}
+					}
+				}
+				return xmlObjAnimation;
+			}
+			
+			/**
+			 * Returns a dictionary with time as key, direction [up/down/left/right] as value
+			 */
+			public function getTranslateDirectionDictionary(xml:XML, objectId:int):Dictionary
+			{
+				var dict:Dictionary = new Dictionary();
+				
+				var up:String = "up";
+				var down:String = "down";
+				var left:String = "left";
+				var right:String = "right";
+				
+				var currentValue:Number;
+				var nextValue:Number;
+				var diff:Number;
+				
+				var xmlObjAnimation:XML = _extractAnimationXML(xml, objectId);
+				
+				if(xmlObjAnimation != null)
+				{					
+					var translatePath:KPath = new KPath(KPath.TRANSLATE);
+					translatePath.deserialize(xmlObjAnimation.@points);
+					
+					var points:Vector.<KTimedPoint> = translatePath.points;
+					var translateDirection:String = _getPathTranslateDirection(points);
+					if(translateDirection != "")
+					{
+						var len:int = points.length;
+						for(var i:int = 0; i < len; i++)
+						{
+							currentValue = (translateDirection == "HORIZONTAL") ? points[i].x : points[i].y;
+							nextValue = (i == len-1) ? currentValue : (translateDirection == "HORIZONTAL") ? points[i+1].x : points[i+1].y;
+							
+							if(nextValue >= currentValue)
+								dict[points[i].time] = (translateDirection == "HORIZONTAL") ? KSketchGlobals.ARROW_LEFT : KSketchGlobals.ARROW_DOWN;
+							else
+								dict[points[i].time] = (translateDirection == "HORIZONTAL") ? KSketchGlobals.ARROW_RIGHT : KSketchGlobals.ARROW_UP;
+						}						
+					}
+				}
+				return dict;
+			}
+			
+			/**
+			 * Determines which direction [up/down, left/right] does the object translate.
+			 * Returns direction value "VERTICAL"/"HORIZONTAL"
+			 */
+			private function _getPathTranslateDirection(points:Vector.<KTimedPoint>):String
+			{
+				var result:String = "";
+				var minHorizontal:Number;
+				var maxHorizontal:Number;
+				var minVertical:Number;
+				var maxVertical:Number;
+				var currentPos:Number;
+
+				if(points)
+				{
+					var len:int = points.length;
+					for(var i:int = 0; i < len; i++)
+					{
+						if(i==0)
+						{
+							minHorizontal = maxHorizontal = points[i].x;
+							minVertical = maxVertical = points[i].y;
+						}
+						currentPos = points[i].x;
+						if(currentPos < minHorizontal)
+							minHorizontal = currentPos;							
+						if(currentPos >= maxHorizontal)
+							maxHorizontal = currentPos;								
+						
+						currentPos = points[i].y;
+						if(currentPos < minVertical)
+							minVertical = currentPos;								
+						if(currentPos >= maxVertical)
+							maxVertical = currentPos;
+					}
+					
+					var velocityHorizontal:Number = Math.abs(maxHorizontal - minHorizontal);
+					var velocityVertical:Number = Math.abs(maxVertical - minVertical);   
+					return (velocityHorizontal >= velocityVertical) ? "HORIZONTAL" : "VERTICAL";
+				}
+				return result;
 			}
 		]]>
 	</fx:Script>

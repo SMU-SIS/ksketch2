@@ -62,6 +62,8 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 		private function _retry(event:MouseEvent):void
 		{
 			_activityControl.retryActivity();
+			if(_activityControl.activityType == "TRACK")
+				_activityControl.removeAnimationLabel();
 			_dialogPopUp.close();
 			_retryButton.removeEventListener(MouseEvent.CLICK, _retry);
 		}
@@ -76,6 +78,7 @@ package sg.edu.smu.ksketch2.canvas.components.popup
 			{
 				_activityControl.continueActivity();				
 			}
+			_activityControl.removeAnimationLabel();
 			_dialogPopUp.close();
 			_closeButton.removeEventListener(MouseEvent.CLICK, _continue);
 		}

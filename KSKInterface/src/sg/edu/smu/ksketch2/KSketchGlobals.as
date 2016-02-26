@@ -64,6 +64,12 @@ package sg.edu.smu.ksketch2
 		public static var STAGE_WIDTH:Number;
 		public static var STAGE_HEIGHT:Number;
 		
+		//Arrow
+		public static var ARROW_LEFT:int = 8592;
+		public static var ARROW_RIGHT:int = 8594;
+		public static var ARROW_UP:int = 8593;
+		public static var ARROW_DOWN:int = 8595;
+		
 		public static function setView():void
 		{
 			

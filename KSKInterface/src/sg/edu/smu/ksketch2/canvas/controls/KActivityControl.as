@@ -12,6 +12,8 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.net.SharedObject;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
 	import flash.utils.getDefinitionByName;
@@ -21,6 +23,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.KSketchAssets;
+	import sg.edu.smu.ksketch2.KSketchGlobals;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
@@ -28,12 +31,15 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.IObjectView;
 	import sg.edu.smu.ksketch2.canvas.components.view.objects.KStrokeView;
 	import sg.edu.smu.ksketch2.events.KSketchEvent;
+	import sg.edu.smu.ksketch2.events.KTimeChangedEvent;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;
 	import sg.edu.smu.ksketch2.model.objects.KStroke;
 	import sg.edu.smu.ksketch2.operators.operations.KCompositeOperation;
 	import sg.edu.smu.ksketch2.utils.KSelection;
 	import sg.edu.smu.ksketch2.utils.KSketch_Avatar;
+	
+	import starling.utils.Color;
 	
 	public class KActivityControl
 	{
@@ -52,6 +58,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _stars:int;
 		private var _isRetry:Boolean = false;
 		public var recogniseDraw:Boolean;
+		
+		
+		private var _textfield:TextField;
+		private var _currentPosition:int=0;		
 		
 		public function KActivityControl(instructionsBox:KSketch_InstructionsBox, canvas:KSketch_CanvasView, ksketch:KSketch2, interaction:KInteractionControl)
 		{
@@ -179,8 +189,18 @@ package sg.edu.smu.ksketch2.canvas.controls
 						currObj.template = true;
 						(view as KStrokeView).changeActivityHighlight(_KSketch.time, false);
 						(view as KStrokeView).visible = true;
-					}
-					
+						
+						var translationDict:Dictionary = _instructionsBox.getTranslateDirectionDictionary(_canvasView.getTherapyTemplateXML(), _currentTemplateObject.id);
+						if(translationDict != null)
+						{
+							_createLabel(_currentTemplateObject.transformMatrix(_KSketch.time).transformPoint(_currentTemplateObject.center));
+							_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, function(e:KTimeChangedEvent):void
+							{
+								if(_currentTemplateObject)
+									_addLabelToTranslationObject(_currentTemplateObject as KStroke, translationDict);											
+							});
+						}
+					}					
 				}	
 			}
 		}
@@ -674,6 +694,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return _instructionsBox.currentInstructionMessage();
 		}
 		
+		public function get time():Number
+		{
+			return _KSketch.time;
+		}
+		
 		public function resetCanvas():void
 		{
 			_currentObjectID = _instructionsBox.currentObjectID();
@@ -730,6 +755,39 @@ package sg.edu.smu.ksketch2.canvas.controls
 			img.source = KSketch_Avatar.AVATAR_NEGATIVE[so.data.imageClass] as Class;
 			img.visible = true;
 			setTimeout(function():void{ img.visible = false; }, 1000);			
+		}		
+		
+		/**
+		 * Create and attach a text field to Therapy template object which is currently animated.
+		 * 
+		 * @param the target animation object
+		 */
+		private function _addLabelToTranslationObject(obj:KStroke, dictTranslate:Dictionary):void
+		{
+			if(dictTranslate != null)
+				_updateLabel(dictTranslate[_KSketch.time], obj.transformMatrix(_KSketch.time).transformPoint(obj.center));				
+		}
+		
+		private function _createLabel(point:Point):void{
+			removeAnimationLabel();		
+			_textfield = new TextField();
+			_canvasView.modelDisplay.addChild(_textfield);
+		}
+		
+		private function _updateLabel(content:int, point:Point):void{
+			_textfield.text = String.fromCharCode(content);
+			var textFormat:TextFormat = new TextFormat();
+			textFormat.size = 50;
+			textFormat.bold = true;
+			_textfield.textColor = Color.RED;			
+			_textfield.setTextFormat(textFormat);
+			_textfield.x = point.x;
+			_textfield.y = point.y;
+		}
+		
+		public function removeAnimationLabel():void{
+			if(_textfield  && _canvasView.modelDisplay.contains(_textfield))
+				_canvasView.modelDisplay.removeChild(_textfield);	
 		}
 	}
 }

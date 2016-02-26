@@ -876,6 +876,10 @@
 			public function getCurrentUserName():String{
 				return _cacheControl.user.u_name; 
 			}
+			
+			public function getTherapyTemplateXML():XML{
+				return new XML(_currentDocument.fileData.scene);
+			}
 			//END OF KSKETCH-SYNPHNE
 			
 		]]>

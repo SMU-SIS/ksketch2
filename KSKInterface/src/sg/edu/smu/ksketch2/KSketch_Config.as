@@ -10,8 +10,8 @@
  */
 package sg.edu.smu.ksketch2 {
 public class KSketch_Config {
-    public static const host_name = "http://ksketch.smu.edu.sg"
-    public static const email = "ksketch@smu.edu.sg"
+    public static const host_name:String = "http://ksketch.smu.edu.sg";
+    public static const email:String = "ksketch@smu.edu.sg";
     public static var isMobile:Boolean = true;
     public static var enableSynphne:Boolean = false;
 }

@@ -17,13 +17,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 	import mx.collections.ArrayCollection;
 	import mx.collections.ArrayList;
 	
-	import data.KSketch_DataListItem;
-	
 	import sg.edu.smu.ksketch2.KSketch2;
 	import sg.edu.smu.ksketch2.KSketchGlobals;
 	import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
-	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
 	import sg.edu.smu.ksketch2.model.data_structures.KModelObjectList;
 	import sg.edu.smu.ksketch2.model.objects.KObject;

@@ -37,15 +37,14 @@
 			import sg.edu.smu.ksketch2.model.data_structures.KPath;
 			import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 			import sg.edu.smu.ksketch2.model.objects.KInstructions;
-			import sg.edu.smu.ksketch2.model.objects.KObject;
 			
 			private var HEADER_GAP:Number = 20 * KSketchGlobals.SCALE;
 			private var HEADER_WIDTH:Number = 100 * KSketchGlobals.SCALE;
-			private var INST_BUTTONDIMENSION = 50 * KSketchGlobals.SCALE;
-			private var PADDING_TOP = 30 * KSketchGlobals.SCALE;
-			private var PADDING_BOTTOM = 30 * KSketchGlobals.SCALE;
-			private var PADDING_LEFT = 60 * KSketchGlobals.SCALE;
-			private var PADDING_RIGHT = 20 * KSketchGlobals.SCALE;
+			private var INST_BUTTONDIMENSION:Number = 50 * KSketchGlobals.SCALE;
+			private var PADDING_TOP:Number = 30 * KSketchGlobals.SCALE;
+			private var PADDING_BOTTOM:Number = 30 * KSketchGlobals.SCALE;
+			private var PADDING_LEFT:Number = 60 * KSketchGlobals.SCALE;
+			private var PADDING_RIGHT:Number = 20 * KSketchGlobals.SCALE;
 			
 			private var _canvasView:KSketch_CanvasView;
 			private var _dialogPopUp:KSketch_DialogBox_Skin;
@@ -53,7 +52,7 @@
 			private var _currentInstruction:int;
 			private var _currentActivity:int;
 			private var _activityTypes:Array = ['INTRO', 'RECALL', 'TRACE', 'TRACK', 'RECREATE'];
-			private var instructionObjectIDs:Array;
+			private var _instructionObjectIDs:Array;
 			private var instructionMessages:Array;
 			private var _kAlertBox:KSketch_Alert;
 			private var _activityControl:KActivityControl;
@@ -75,9 +74,9 @@
 				activityButton_Prev.enabled = false;
 				instructionButton_Prev.enabled = false;
 				
-				instructionObjectIDs = new Array();
+				_instructionObjectIDs = new Array();
 				instructionMessages = new Array();
-				instructionObjectIDs = _kInstructions.getObjectIDs();
+				_instructionObjectIDs = _kInstructions.getObjectIDs();
 				instructionMessages = _kInstructions.getInstructions();
 				
 				instructionMessage.text = instructionMessages[_currentActivity][_currentInstruction];
@@ -169,6 +168,9 @@
 						_activityControl.recogniseDraw = true;
 						_canvasView.startTimer();
 					}
+					
+					_activityControl.soundControl.activity = _activityTypes[_currentActivity];
+					_activityControl.soundControl.playSound(5);
 				}
 				else if (instructionButton_Start.label == "DONE") 
 				{
@@ -197,6 +199,8 @@
 						//compute result at the end of every activity
 						var stars:int = _resultControl.computeResult(activityHeader.text, _currentInstruction, currentObjectID());
 						showResult(stars);
+						
+						_activityControl.soundControl.result = stars;
 					}
 					else
 					{
@@ -206,7 +210,6 @@
 						}
 						
 						initNextInstruction();
-						trace("init next instructions");
 					}
 				}
 			}
@@ -335,8 +338,13 @@
 					activityButton_Next.enabled = true;
 			}
 			
+			public function get instructionObjectIDs():Array
+			{
+				return _instructionObjectIDs;
+			}
+			
 			public function currentObjectID():int {
-				return int(instructionObjectIDs[_currentActivity][_currentInstruction]);
+				return int(_instructionObjectIDs[_currentActivity][_currentInstruction]);
 			}
 			
 			public function currentInstruction():int {
@@ -353,8 +361,8 @@
 			}
 			
 			public function showResult(stars:int):void{
-				if(stars == 3)
-					_canvasView.sound_cheer.play();
+				//if(stars == 3)
+				//	_canvasView.sound_cheer.play();
 				
 				_activityControl.stars = stars;
 				_dialogPopUp = new KSketch_DialogBox_Skin();

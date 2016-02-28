@@ -25,43 +25,43 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
-			import com.adobe.serialization.json.JSON;
-			
-			import flash.utils.getDefinitionByName;
-			
-			import mx.collections.ArrayCollection;
-			import mx.collections.Sort;
-			import mx.collections.SortField;
-			import mx.containers.Grid;
-			import mx.containers.GridItem;
-			import mx.containers.GridRow;
-			import mx.controls.Text;
-			import mx.events.FlexEvent;
-			import mx.managers.PopUpManager;
-			
-			import data.KSketch_DataListItem;
-			import data.KSketch_ListItem;
-			
-			import org.as3commons.collections.SortedList;
-			import org.as3commons.collections.framework.IComparator;
-			
-			import sg.edu.smu.ksketch2.KSketch2;
-			import sg.edu.smu.ksketch2.KSketchAssets;
-			import sg.edu.smu.ksketch2.KSketchGlobals;
-			import sg.edu.smu.ksketch2.KSketch_Config;
-			import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
-			import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Message;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Notifications;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_TherapyResult;
-			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options_Profile;
-			import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
-			import sg.edu.smu.ksketch2.utils.KSketchDocument;
-			import sg.edu.smu.ksketch2.utils.KSketch_Avatar;
-			import sg.edu.smu.ksketch2.utils.KSwipeEvent;
-			import sg.edu.smu.ksketch2.utils.KTherapyResult;
-			import sg.edu.smu.ksketch2.utils.KWebData;
+		import com.adobe.serialization.json.JSON;
+		
+		import flash.utils.getDefinitionByName;
+		
+		import mx.collections.ArrayCollection;
+		import mx.collections.Sort;
+		import mx.collections.SortField;
+		import mx.containers.Grid;
+		import mx.containers.GridItem;
+		import mx.containers.GridRow;
+		import mx.controls.Text;
+		import mx.events.FlexEvent;
+		import mx.managers.PopUpManager;
+		import flash.media.SoundMixer;	
+		
+		import data.KSketch_DataListItem;
+		import data.KSketch_ListItem;
+		
+		import org.as3commons.collections.SortedList;
+		import org.as3commons.collections.framework.IComparator;
+		
+		import sg.edu.smu.ksketch2.KSketchAssets;
+		import sg.edu.smu.ksketch2.KSketchGlobals;
+		import sg.edu.smu.ksketch2.KSketch_Config;
+		import sg.edu.smu.ksketch2.canvas.KSketch_CanvasView_Preferences;
+		import sg.edu.smu.ksketch2.canvas.KSketch_LoginView;
+		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Message;
+		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Notifications;
+		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
+		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_TherapyResult;
+		import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options_Profile;
+		import sg.edu.smu.ksketch2.canvas.controls.KSketch_CacheControl;
+		import sg.edu.smu.ksketch2.utils.KSketchDocument;
+		import sg.edu.smu.ksketch2.utils.KSketch_Avatar;
+		import sg.edu.smu.ksketch2.utils.KSwipeEvent;
+		import sg.edu.smu.ksketch2.utils.KTherapyResult;
+		import sg.edu.smu.ksketch2.utils.KWebData;
 
 		private static const DISPLAY_FAILED_DEFAULT:int = -1;
 		private static const DISPLAY_FAILED_LOGIN:int = 0;
@@ -111,12 +111,16 @@
 		public var dialogMessage:KSketch_DialogBox_Message;
 		private var _dialogTherapy:KSketch_DialogBox_TherapyResult;
 		private var _dialogAvatar:KSketch_Options_Profile = new KSketch_Options_Profile();
-		private var _mySound:Sound;
 		private var _itemRender_Therapy:IFactory = new ClassFactory(KSketch_HomeView_IconItemRenderer_Therapy);	
 		private var _avatar:SharedObject;	
+		private var _backgroundSound:Sound;
+		private var _backgroundSoundChannel:SoundChannel;
+		private var _buttonSound:Sound;
 			
 		private function _init(isMobile:Boolean):void {
 
+			SoundMixer.stopAll();
+			
 			//Check for mobile version. Set false to export for Desktop version
 			if (isMobile) {
 				mainButtons.removeElementAt(2);
@@ -177,7 +181,8 @@
 			_canvasTimerDisabled = true;
 		}
 
-		private function _setupUser():void {
+		private function _setupUser():void 
+		{
 			//initialize login button based on the KUser object
 			var _anonymousUser:Boolean = false;
 
@@ -272,7 +277,10 @@
 				pnl_Therapy.visible = true;
 				initializeAvatar(anonymousUser);
 				
-				_mySound = new KSketchAssets.sound_doorbell();
+				_backgroundSound = new KSketchAssets.therapy_sound_background_home();
+				_backgroundSoundChannel = new SoundChannel();
+				_backgroundSoundChannel = _backgroundSound.play(0,100);
+				_buttonSound = new KSketchAssets.therapy_sound_button_special();
 				_changeQuote();
 			}
 			else
@@ -342,7 +350,7 @@
 			var docsDir:File = File.documentsDirectory;
 			try {
 				docsDir.browseForSave("Save As");
-				docsDir.addEventListener(Event.SELECT, saveData(sketchName,sketchId,sketchVersion));
+				docsDir.addEventListener(Event.SELECT, _saveData(sketchName,sketchId,sketchVersion));
 			}
 			catch (error:Error) {
 				trace("Failed:", error.message);
@@ -350,7 +358,7 @@
 			//stage.dispatchEvent(new MouseEvent(MouseEvent.RIGHT_CLICK));
 		}
 
-		function saveData(sketchName:String,sketchId:String,sketchVersion:String):Function {
+		private function _saveData(sketchName:String,sketchId:String,sketchVersion:String):Function {
 			return function(event:Event):void {
 				var newFile:File = event.target as File;
 				var finalFileName:String = newFile.name;
@@ -556,6 +564,11 @@
 				navigator.pushView(KSketch_CanvasView, userData);
 			}
 		}
+		
+		private function _remove():void
+		{
+			SoundMixer.stopAll();
+		}
 
 		protected function listSketches_deleteSketchHandler(event:KSwipeEvent):void {
 			_deleteSketchFlag = true;			
@@ -641,7 +654,7 @@
 			_isSwipe = false;			
 		}
 
-		public function set createNewSketch(value:Boolean) {
+		public function set createNewSketch(value:Boolean):void {
 			_createNewSketch = value;
 		}
 
@@ -657,7 +670,7 @@
 			return _itemRender_Therapy;
 		}
 			
-		public function handleExpiredSession() {
+		public function handleExpiredSession():void {
 			_notice = KSketch_DialogBox_Notifications.CANVASNOTICE_EXPIRED_SESSION;
 			showDialogBox("Notification");
 		}
@@ -708,124 +721,124 @@
 			return _notice;
 		}
 			
-			// THERAPY
-			protected function listSketchesTherapy_changeSelectedHandler(event:Event):void {
-				var sketchName:String = KSketch_HomeView_IconItemRenderer_Therapy.selectedSketchName;
-				var sketchId:String = KSketch_HomeView_IconItemRenderer_Therapy.selectedSketchId;
-				var sketchVersion:String = KSketch_HomeView_IconItemRenderer_Therapy.selectedVersion;
-				
-				if (_isSwipe) {
-					listSketches_Therapy.selectedIndex = -1;			
-					stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.TAP_ACTION));
-				}
-				
-				//if action bar is not displayed and there is a save sketch flag
-				if (!KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _saveSketchFlag)
-					_saveSketchFlag = false;
-				
-				if (!KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _deleteSketchFlag)
-					_deleteSketchFlag = false;
-				
-				//if action bar is displayed, reset selection to -1
-				if (KSketch_HomeView_IconItemRenderer_Therapy.openActionBar)
-					listSketches_Therapy.selectedIndex = -1;
-				
-				//if action bar is not displayed and there is no additional flag
-				if (!KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && !_deleteSketchFlag && !_isSwipe && !_logSketchFlag && !_saveSketchFlag)
-					_setupSketchLoad(sketchName, sketchId, sketchVersion); //_isXML = true;
-				
-				//if action bar is displayed and there is a log sketch flag
-				if (KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _logSketchFlag)
-					_setupSketchLog(); //_isXML = true;
-				
-				//if action bar is displayed and there is a save sketch flag
-				if (KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _saveSketchFlag)
-					_setupSketchSave(); //_isXML = true;				
-				
-				closeMessageDialog();
-				_isSwipe = false;
-				if(KSketch_Config.enableSynphne && _mySound)
-					_mySound.play();
+		// THERAPY
+		protected function listSketchesTherapy_changeSelectedHandler(event:Event):void {
+			var sketchName:String = KSketch_HomeView_IconItemRenderer_Therapy.selectedSketchName;
+			var sketchId:String = KSketch_HomeView_IconItemRenderer_Therapy.selectedSketchId;
+			var sketchVersion:String = KSketch_HomeView_IconItemRenderer_Therapy.selectedVersion;
+			
+			if (_isSwipe) {
+				listSketches_Therapy.selectedIndex = -1;			
+				stage.dispatchEvent(new KSwipeEvent(KSwipeEvent.TAP_ACTION));
 			}
 			
-			private function _processTherapyResult():void{
-				closeMessageDialog();
-				_dialogTherapy = new KSketch_DialogBox_TherapyResult();
-				_dialogTherapy.init(this, 0);
-				_dialogTherapy.showDialog();
-				PopUpManager.centerPopUp(_dialogTherapy);
-			}
+			//if action bar is not displayed and there is a save sketch flag
+			if (!KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _saveSketchFlag)
+				_saveSketchFlag = false;
 			
-			public function sendTherapyResult():void{
-				closeMessageDialog();
-				var therapyResult:KTherapyResult = new KTherapyResult(this);
-				therapyResult.sendAllTherapyResult();
-			}
+			if (!KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _deleteSketchFlag)
+				_deleteSketchFlag = false;
 			
-			public function resetTherapyResult():void{
-				closeMessageDialog();
-				dialogMessage = new KSketch_DialogBox_Message();
-				dialogMessage.init(this, KTherapyResult.CONFIRM_RESET,"Yes","No");
-				dialogMessage.showMessage();
-				PopUpManager.centerPopUp(dialogMessage);
-			}
+			//if action bar is displayed, reset selection to -1
+			if (KSketch_HomeView_IconItemRenderer_Therapy.openActionBar)
+				listSketches_Therapy.selectedIndex = -1;
 			
-			public function closeMessageDialog():void{
-				if(dialogMessage && dialogMessage.isOpen)
-					dialogMessage.close();
-				if(_dialogAvatar && _dialogAvatar.isOpen)
-					_dialogAvatar.close();
-			}
+			//if action bar is not displayed and there is no additional flag
+			if (!KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && !_deleteSketchFlag && !_isSwipe && !_logSketchFlag && !_saveSketchFlag)
+				_setupSketchLoad(sketchName, sketchId, sketchVersion); //_isXML = true;
 			
-			private function _changeQuote():void{
-				var timer:Timer = new Timer(30000);
-				timer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void {
-					_fetchQuote();
-				});
+			//if action bar is displayed and there is a log sketch flag
+			if (KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _logSketchFlag)
+				_setupSketchLog(); //_isXML = true;
+			
+			//if action bar is displayed and there is a save sketch flag
+			if (KSketch_HomeView_IconItemRenderer_Therapy.openActionBar && _saveSketchFlag)
+				_setupSketchSave(); //_isXML = true;				
+			
+			closeMessageDialog();
+			_isSwipe = false;
+			if(KSketch_Config.enableSynphne && _buttonSound)
+				_buttonSound.play();
+		}
+		
+		private function _processTherapyResult():void{
+			closeMessageDialog();
+			_dialogTherapy = new KSketch_DialogBox_TherapyResult();
+			_dialogTherapy.init(this, 0);
+			_dialogTherapy.showDialog();
+			PopUpManager.centerPopUp(_dialogTherapy);
+		}
+		
+		public function sendTherapyResult():void{
+			closeMessageDialog();
+			var therapyResult:KTherapyResult = new KTherapyResult(this);
+			therapyResult.sendAllTherapyResult();
+		}
+		
+		public function resetTherapyResult():void{
+			closeMessageDialog();
+			dialogMessage = new KSketch_DialogBox_Message();
+			dialogMessage.init(this, KTherapyResult.CONFIRM_RESET,"Yes","No");
+			dialogMessage.showMessage();
+			PopUpManager.centerPopUp(dialogMessage);
+		}
+		
+		public function closeMessageDialog():void{
+			if(dialogMessage && dialogMessage.isOpen)
+				dialogMessage.close();
+			if(_dialogAvatar && _dialogAvatar.isOpen)
+				_dialogAvatar.close();
+		}
+		
+		private function _changeQuote():void{
+			var timer:Timer = new Timer(30000);
+			timer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void {
 				_fetchQuote();
-				timer.start();
-			}
-			
-			private function _fetchQuote():void{
-				var quote:String = KSketch_HomeView_IconItemRenderer_Therapy.getQuote();
-				var arr:Array = quote.split("|");
-				quoteText.text = arr[0];
-				quoteAuthor.text = arr[1];
-			}
+			});
+			_fetchQuote();
+			timer.start();
+		}
+		
+		private function _fetchQuote():void{
+			var quote:String = KSketch_HomeView_IconItemRenderer_Therapy.getQuote();
+			var arr:Array = quote.split("|");
+			quoteText.text = arr[0];
+			quoteAuthor.text = arr[1];
+		}
 
-			private function initializeAvatar(anonymousUser:Boolean):void{	
-				_avatar = SharedObject.getLocal("avatar");	
-				var imageClassName:String = (!anonymousUser && _avatar.data.imageClass && _avatar.data.imageClass != 'undefined') ? 
-					_avatar.data.imageClass : KSketch_Avatar.AVATAR_DEFAULT;
-				setAvatar(imageClassName);		
-			}
-			
-			public function setAvatar(imageClassName:String):void
-			{				
-				if(imageClassName)
-				{
-					imgAvatar.source = KSketch_Avatar.AVATAR_XML[imageClassName] as Class;						
-					if(imageClassName != KSketch_Avatar.AVATAR_DEFAULT)
-					{
-						_avatar.data.imageClass = imageClassName;
-						_avatar.flush();
-					}						
-				}
-			}
-			
-			private function onChangeAvatar(event:Event):void
+		private function initializeAvatar(anonymousUser:Boolean):void{	
+			_avatar = SharedObject.getLocal("avatar");	
+			var imageClassName:String = (!anonymousUser && _avatar.data.imageClass && _avatar.data.imageClass != 'undefined') ? 
+				_avatar.data.imageClass : KSketch_Avatar.AVATAR_DEFAULT;
+			setAvatar(imageClassName);		
+		}
+		
+		public function setAvatar(imageClassName:String):void
+		{				
+			if(imageClassName)
 			{
-				if(_dialogAvatar && _dialogAvatar.isOpen)
-					_dialogAvatar.close();
-				else
+				imgAvatar.source = KSketch_Avatar.AVATAR_XML[imageClassName] as Class;						
+				if(imageClassName != KSketch_Avatar.AVATAR_DEFAULT)
 				{
-					_dialogAvatar = new KSketch_Options_Profile();
-					_dialogAvatar.init(this, userData.userObject.id != "n.a" ? true : false);
-					_dialogAvatar.x = grpAvatar.x;
-					_dialogAvatar.y = grpAvatar.y + grpAvatar.height - 10;
-					_dialogAvatar.open(this, false);
-				}
+					_avatar.data.imageClass = imageClassName;
+					_avatar.flush();
+				}						
 			}
+		}
+		
+		private function onChangeAvatar(event:Event):void
+		{
+			if(_dialogAvatar && _dialogAvatar.isOpen)
+				_dialogAvatar.close();
+			else
+			{
+				_dialogAvatar = new KSketch_Options_Profile();
+				_dialogAvatar.init(this, userData.userObject.id != "n.a" ? true : false);
+				_dialogAvatar.x = grpAvatar.x;
+				_dialogAvatar.y = grpAvatar.y + grpAvatar.height - 10;
+				_dialogAvatar.open(this, false);
+			}
+		}
 		]]>
 	</fx:Script>
 	

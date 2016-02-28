@@ -15,9 +15,12 @@
 		<![CDATA[
 			import spark.components.Image;
 			
+			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.KSketch_Config;
 			
 			private var _selected:Boolean;
+			private var _buttonSound:Sound;
 			
 			override public function initSkin():void
 			{
@@ -27,6 +30,12 @@
 				var textureControl:Image = (skin as KSketch_Canvas_Button_Skin).texture;
 				
 				selected = false;
+				
+				if(KSketch_Config.enableSynphne)
+				{
+					_buttonSound = new KSketchAssets.therapy_sound_button_main();
+					this.addEventListener(MouseEvent.MOUSE_DOWN, _playSound);
+				}
 			}
 			
 			public function set selected(value:Boolean):void
@@ -43,8 +52,12 @@
 					textureControl.source = _down;
 					(skin as KSketch_Canvas_Button_Skin).backgroundFill.color = KSketchGlobals.COLOR_GREY_DARK;
 					(skin as KSketch_Canvas_Button_Skin).upColor = KSketchGlobals.COLOR_GREY_DARK;
-				}
-				
+				}	
+			}
+			
+			private function _playSound(event:MouseEvent):void
+			{
+				_buttonSound.play();
 			}
 		]]>
 	</fx:Script>

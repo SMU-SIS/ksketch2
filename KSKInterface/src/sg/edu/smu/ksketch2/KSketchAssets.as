@@ -544,5 +544,46 @@ package sg.edu.smu.ksketch2
 		[Embed("/assets/Sound_Cheering.mp3")]
 		[Bindable]
 		public static var sound_cheering:Class;
+		
+		//new sounds
+		[Embed("/assets/Therapy_Sound_Background_Home.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_background_home:Class;
+		
+		[Embed("/assets/Therapy_Sound_Background_Canvas.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_background_canvas:Class;
+		
+		[Embed("/assets/Therapy_Sound_Background_Canvas2.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_background_canvas2:Class;
+		
+		[Embed("/assets/Therapy_Sound_Background_Lose.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_background_lose:Class;
+		
+		[Embed("/assets/Therapy_Sound_Background_Win.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_background_win:Class;
+		
+		[Embed("/assets/Therapy_Sound_Background_Win3.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_background_win3:Class;
+		
+		[Embed("/assets/Therapy_Sound_Button_Main.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_button_main:Class;
+		
+		[Embed("/assets/Therapy_Sound_Button_Special.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_button_special:Class;
+		
+		[Embed("/assets/Therapy_Sound_Button_Right.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_button_right:Class;
+		
+		[Embed("/assets/Therapy_Sound_Button_Wrong.mp3")] 
+		[Bindable] 
+		public static var therapy_sound_button_wrong:Class;
 	}
 }

@@ -9,21 +9,17 @@ package sg.edu.smu.ksketch2.canvas.controls
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
-	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.net.SharedObject;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
-	import flash.utils.Timer;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.setTimeout;
 	
 	import spark.components.Image;
 	
 	import sg.edu.smu.ksketch2.KSketch2;
-	import sg.edu.smu.ksketch2.KSketchAssets;
-	import sg.edu.smu.ksketch2.KSketchGlobals;
 	import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 	import sg.edu.smu.ksketch2.canvas.components.view.KModelDisplay;
 	import sg.edu.smu.ksketch2.canvas.components.view.KMotionDisplay;
@@ -47,6 +43,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _canvasView:KSketch_CanvasView;
 		private var _KSketch:KSketch2;
 		private var _interactionControl:KInteractionControl;
+		private var _soundControl:KSoundControl;
 		
 		private var _currentObjectID:int;
 		private var _currentManipulateObject:KObject;
@@ -59,7 +56,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private var _isRetry:Boolean = false;
 		public var recogniseDraw:Boolean;
 		
-		
 		private var _textfield:TextField;
 		private var _currentPosition:int=0;		
 		
@@ -69,6 +65,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_canvasView = canvas;
 			_KSketch = ksketch;
 			_interactionControl = interaction;
+			_soundControl = new KSoundControl();
 			recogniseDraw = true;
 		}
 		
@@ -79,7 +76,6 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_currentManipulateObject = getCurrentObject(_currentObjectID, false);
 			_currentTemplateObject = getCurrentObject(_currentObjectID, true);
 			
-			trace("CURRENT TEMPLATE OBJECT ID: " + _currentTemplateObject.id);
 			//Disable pens in INTRO, RECALL and TRACK mode
 			if(activity == "INTRO" || activity == "RECALL" || activity == "TRACK")
 				_canvasView.setPenAccessibility(false);
@@ -93,7 +89,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if(currentInstruction == 0)
 			{
 				_canvasView.setRegionVisibility(false);
-				_setObjectProperties(false, false, false);
+				_setObjectProperties(false, false, false,false);
 			}
 			_canvasView.resetTimeControl();
 			
@@ -109,7 +105,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{
 				_activityType = "RECALL";
 				_recallCounter = 0;
-				_setObjectProperties(true, false, false);
+				_setObjectProperties(true, false, false, false);
 				_hideObjects(true);
 				_canvasView.setRegionVisibility(true);
 			}
@@ -119,7 +115,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				_activityType = "TRACE";
 				//only discard sketch objects after the Start button is clicked.
 				//_discardSketchedObjects();
-				_setObjectProperties(false, true, false);
+				_setObjectProperties(false, true, false, false);
 			}
 			else if(activity == "TRACK")
 			{ 
@@ -133,9 +129,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 					_currentManipulateObject = _duplicateObject(_currentTemplateObject as KStroke);
 					trace("Implement duplicate object for track without trace");	
 				}
-				_setObjectProperties(false, false, true);
+				_setObjectProperties(false, false, true, false);
 				_hideObjects(true);
-				processTrack(_currentManipulateObject as KStroke);
+				_processTrack(_currentManipulateObject as KStroke);
 				autoSelectObjectToAnimate();
 				_canvasView.updateTrackWidget();
 			}
@@ -143,22 +139,23 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{ 
 				_interactionControl.selection = null;
 				_activityType = "RECREATE";
-				//only discard sketch objects after the Start button is clicked.
-				//_discardSketchedObjects(); 
 				_currentManipulateObject = null; 
-				_setObjectProperties(false, false, false);
-				_hideObjects(false);
-				//processTrack(_currentManipulateObject as KStroke);
+				_setObjectProperties(false, false, false, true);
+				_hideObjects(true);
 			}
 		}
 		
-		private function _setObjectProperties(isRecall:Boolean, isTrace:Boolean, isTrack:Boolean):void
+		private function _setObjectProperties(isRecall:Boolean, isTrace:Boolean, isTrack:Boolean, isRecreate:Boolean):void
 		{
+			var instructionObjectIDs:Array;
+			if(isRecreate)
+				instructionObjectIDs = _instructionsBox.instructionObjectIDs[2];
+				
 			for(var i:int=0; i<_KSketch.root.children.length(); i++)
 			{
 				var currObj:KObject = _KSketch.root.children.getObjectAt(i) as KObject;
 				if(currObj is KStroke)
-				{
+				{ 
 					var view:IObjectView = _canvasView.modelDisplay.viewsTable[currObj];
 					
 					//reset
@@ -200,7 +197,32 @@ package sg.edu.smu.ksketch2.canvas.controls
 									_addLabelToTranslationObject(_currentTemplateObject as KStroke, translationDict);											
 							});
 						}
-					}					
+					}
+					else if(isRecreate)
+					{
+						currObj.template = true;
+						
+						var hide:Boolean = false;
+						for(var x:int = 0; x<instructionObjectIDs.length; x++)
+						{		
+							if(currObj.originalId == instructionObjectIDs[x])
+							{
+								hide = true;
+								break;
+							}
+						}
+						
+						if(hide)
+						{
+							currObj.hide = true;
+							(view as DisplayObject).visible = false;
+						}
+						else
+						{
+							currObj.hide = false;
+							(view as DisplayObject).visible = true;
+						}	
+					}
 				}	
 			}
 		}
@@ -211,7 +233,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			{
 				_instructionsBox.startStopActivity();
 				
-				_setObjectProperties(false, false, false);	
+				_setObjectProperties(false, false, false, false);	
 				_canvasView.setRegionVisibility(true);	
 				_hideObjects(false);
 			}
@@ -243,6 +265,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 				showWrongResultForRecall(tapRegion);
 			}
 			
+			_soundControl.playSound_Recall(correctRecall);
 			_interactionControl.selection = null;
 		}
 		
@@ -319,7 +342,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_interactionControl.selection = null;
 		}
 		
-		public function processTrack(currObj:KStroke):void
+		private function _processTrack(currObj:KStroke):void
 		{
 			if(currObj)
 			{
@@ -619,6 +642,11 @@ package sg.edu.smu.ksketch2.canvas.controls
 			return regionsArr[index-1];
 		}
 		
+		public function get soundControl():KSoundControl
+		{
+			return _soundControl;
+		}
+		
 		public function get regions():Array
 		{
 			return _canvasView.regions;
@@ -709,7 +737,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			if(_activityType == "TRACE")
 			{
 				discardSketchedObjects();
-				_setObjectProperties(false, true, false);
+				_setObjectProperties(false, true, false, false);
 			}
 		}
 		
@@ -754,6 +782,7 @@ package sg.edu.smu.ksketch2.canvas.controls
 			var img:Image = imgContainerArr[tapRegion-1];
 			img.source = KSketch_Avatar.AVATAR_NEGATIVE[so.data.imageClass] as Class;
 			img.visible = true;
+			
 			setTimeout(function():void{ img.visible = false; }, 1000);			
 		}		
 		

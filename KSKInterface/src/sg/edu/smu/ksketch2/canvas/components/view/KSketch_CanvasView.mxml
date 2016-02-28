@@ -28,7 +28,6 @@
 			import com.google.analytics.GATracker;
 			
 			import flash.utils.getTimer;
-			import flash.utils.setTimeout;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
@@ -151,11 +150,12 @@
 			private var _resultControl:KActivityResultControl;
 			private var _activityControl:KActivityControl;
 			private var _kInstructions:KInstructions;
+			private var _backgroundSound:Sound;
+			private var _backgroundSoundChannel:SoundChannel;
+			public var _buttonSound:Sound;
 			public var isTherapyObject:Boolean = false;
 			public var dialogMessage:KSketch_DialogBox_Message;
 			public var therapyLevel:int=0;
-			public var sound_bye:Sound;
-			public var sound_cheer:Sound;
 			
 			//KSKETCH-DESKTOP
 			public static var loadedFromFile:Boolean = false;
@@ -190,6 +190,7 @@
 			//Starts up the canvas in the following order
 			public function _initCanvas(isView:Boolean, isSyn:Boolean):void
 			{	
+				SoundMixer.stopAll();
 				_scale();
 				
 				this.removeEventListener(FlexEvent.INITIALIZE, _initCanvas);
@@ -664,8 +665,11 @@
 					isTherapyObject = (userData.sketchData.fileData.activities == undefined || userData.sketchData.fileData.activities.children().length() == 0) ? false : true;	
 				if(isTherapyObject)
 				{
-					sound_bye = new KSketchAssets.sound_byebye();
-					sound_cheer = new KSketchAssets.sound_cheering();
+					_backgroundSound = new KSketchAssets.therapy_sound_background_canvas();
+					_backgroundSoundChannel = new SoundChannel();
+					_backgroundSoundChannel = _backgroundSound.play(0,5);
+					
+					_buttonSound = new KSketchAssets.therapy_sound_button_special();
 				}
 			}
 			
@@ -675,6 +679,8 @@
 					closeInstructions();
 				else
 					openInstructions();
+				
+				_buttonSound.play();
 			}
 			
 			public function openInstructions():void
@@ -765,6 +771,11 @@
 					_activityControl.startIntroductionAnimation();
 				else
 					_activityControl.stopIntroductionAnimation();					
+			}
+			
+			public function get sound():Sound
+			{
+				return _backgroundSound;
 			}
 			
 			public function get isTiming():Boolean

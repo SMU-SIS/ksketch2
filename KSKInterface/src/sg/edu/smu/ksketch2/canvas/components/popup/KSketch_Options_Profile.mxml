@@ -95,17 +95,15 @@
 								  paddingTop="{HEADER_GAP}" paddingBottom="{HEADER_GAP}"
 								  paddingLeft="{HEADER_GAP}" paddingRight="{HEADER_GAP}"/>
 			</s:layout>
-			
-			<s:Label id="lblLogin" text="Login" click="_login()" minWidth="180"/>	
-			<s:VGroup id="grpAvatar" visible="false" paddingTop="{HEADER_GAP}">
+			<s:VGroup id="grpAvatar" visible="false" paddingBottom="{HEADER_GAP}">				
+				<s:Label id="lblAvatar" text="Change avatar" click="_changeAvatar()" paddingBottom="{HEADER_GAP}"/>
 				<s:Line xFrom="0" xTo="180" yFrom="0" yTo="0">
 					<s:stroke>
 						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
 					</s:stroke>
 				</s:Line>
-				<s:Label id="lblAvatar" text="Change avatar" click="_changeAvatar()" paddingTop="{HEADER_GAP}"/>
 			</s:VGroup>
-			
+			<s:Label id="lblLogin" text="Login" click="_login()" minWidth="180"/>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

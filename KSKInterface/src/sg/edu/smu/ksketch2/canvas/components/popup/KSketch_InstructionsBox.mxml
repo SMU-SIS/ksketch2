@@ -13,6 +13,11 @@
 						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
 						   backgroundAlpha="0" initialize="_initStyle()"
 						   creationComplete="_initButtons()">
+	<fx:Script>
+		<![CDATA[
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+		]]>
+	</fx:Script>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<s:HTTPService id="httpService"
@@ -37,9 +42,10 @@
 			import sg.edu.smu.ksketch2.model.data_structures.KPath;
 			import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 			import sg.edu.smu.ksketch2.model.objects.KInstructions;
+			import sg.edu.smu.ksketch2.utils.KSketch_Avatar;
 			
 			private var HEADER_GAP:Number = 20 * KSketchGlobals.SCALE;
-			private var HEADER_WIDTH:Number = 100 * KSketchGlobals.SCALE;
+			private var HEADER_WIDTH:Number = 300 * KSketchGlobals.SCALE;
 			private var INST_BUTTONDIMENSION:Number = 50 * KSketchGlobals.SCALE;
 			private var PADDING_TOP:Number = 30 * KSketchGlobals.SCALE;
 			private var PADDING_BOTTOM:Number = 30 * KSketchGlobals.SCALE;
@@ -85,6 +91,9 @@
 				enableDisableButtons();
 				_canvasView.setPenAccessibility(false);
 				_canvasView.setControlAccessibility(false);
+				
+				var avatar:SharedObject = SharedObject.getLocal("avatar");
+				instructionsButton.source = KSketch_Avatar.AVATAR_XML[avatar.data.imageClass] as Class;
 			}
 			
 			private function _initButtons():void {
@@ -101,11 +110,6 @@
 			
 			private function _initStyle():void {
 				this.removeEventListener(FlexEvent.INITIALIZE, _initStyle);
-				
-				activityHeader.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
-				
-				instructionHeader.setStyle("fontSize", KSketchGlobals.FONT_SIZE_18);
-				instructionMessage.setStyle("fontSize", KSketchGlobals.FONT_SIZE_14);
 				
 				if (_canvasView.isTiming)
 					instructionButton_Start.init("DONE");
@@ -493,43 +497,51 @@
 			blurX="{KSketchGlobals.RECT_BLURX}"
 			blurY="{KSketchGlobals.RECT_BLURY}"/>
 	</s:filters>
-	<s:Group id="instructions" visible="true" top="-{PADDING_LEFT}" left="{PADDING_LEFT}">
-		<s:Rect id="instructionBox" width="200%" height="300%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}" >
-			<s:fill>
-				<s:BitmapFill source="{KSketchAssets.therapy_instructions_bubble}" fillMode="scale"/>
-			</s:fill>
-		</s:Rect>
-		<s:Group>
+	<s:Rect id="instructionBox" width="100%" height="100%" radiusX="50" radiusY="50">
+		<s:fill>
+			<s:SolidColor color="{KSketchGlobals.COLOR_GREY_LIGHT}"/>
+		</s:fill>		
+	</s:Rect>
+	<s:Group id="instructions" visible="true" width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"
+							  paddingLeft="{PADDING_RIGHT}" paddingRight="{PADDING_RIGHT}"
+							  paddingTop="{PADDING_TOP}" paddingBottom="{PADDING_BOTTOM}"/> 
+		</s:layout>
+		<s:Image id="instructionsButton"/>
+		<s:Group>			
 			<s:layout>
-				<s:VerticalLayout gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle" paddingLeft="{PADDING_LEFT}" paddingTop="{PADDING_TOP}" paddingRight="{PADDING_RIGHT}" paddingBottom="{PADDING_BOTTOM}"/>
+				<s:VerticalLayout gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle" paddingTop="{PADDING_TOP}"/>
 			</s:layout>
-			<s:Group width="80%">
-				<s:layout>
-					<s:HorizontalLayout  gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle"/>
-				</s:layout>
-				<buttons:KSketch_ListButton id="activityButton_Prev" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="previousActivity()"/>
-				<s:Label width="{HEADER_WIDTH}" id="activityHeader" textAlign="center"/>
-				<buttons:KSketch_ListButton id="activityButton_Next" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="nextActvity()"/>
-			</s:Group>			
 			
-			<s:Line xFrom="0" xTo="225" yFrom="0" yTo="0">
-				<s:stroke>
-					<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
-				</s:stroke>
-			</s:Line>
-			
-			<s:Group width="80%">
-				<s:layout>
-					<s:HorizontalLayout  gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle"/>
-				</s:layout>
-				<buttons:KSketch_ListButton id="instructionButton_Prev" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="previousInstruction()"/>
-				<s:Label width="{HEADER_WIDTH}" id="instructionHeader" text="Default" textAlign="center"/>
-				<buttons:KSketch_ListButton id="instructionButton_Next" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="nextInstruction()"/>
-			</s:Group>
-			
-			<s:Label id="instructionMessage" text="This is the default text. {'\n'}Set message according to activity."/>
-			<buttons:KSketch_DialogButton id="instructionButton_Start" click="startStopActivity()"/>
-			
+			<s:VGroup horizontalAlign="center" verticalAlign="middle">				
+				<s:Group >
+					<s:layout>
+						<s:HorizontalLayout  gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle"/>
+					</s:layout>
+					<buttons:KSketch_ListButton id="activityButton_Prev" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="previousActivity()"/>
+					<s:Label width="{HEADER_WIDTH}" id="activityHeader" textAlign="center" fontSize="{KSketchGlobals.FONT_SIZE_26}"/>
+					<buttons:KSketch_ListButton id="activityButton_Next" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="nextActvity()"/>
+				</s:Group>			
+				
+				<s:Line xFrom="0" xTo="{HEADER_WIDTH}" yFrom="0" yTo="0">
+					<s:stroke>
+						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
+					</s:stroke>
+				</s:Line>
+				
+				<s:Group width="100%">
+					<s:layout>
+						<s:HorizontalLayout  gap="{HEADER_GAP}" horizontalAlign="center" verticalAlign="middle"/>
+					</s:layout>
+					<buttons:KSketch_ListButton id="instructionButton_Prev" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="previousInstruction()"/>
+					<s:Label width="{HEADER_WIDTH}" id="instructionHeader" text="Default" textAlign="center" fontSize="{KSketchGlobals.FONT_SIZE_26}"/>
+					<buttons:KSketch_ListButton id="instructionButton_Next" width="{INST_BUTTONDIMENSION}" height="{INST_BUTTONDIMENSION}" click="nextInstruction()"/>
+				</s:Group>
+				
+				<s:Label id="instructionMessage" text="This is the default text. {'\n'}Set message according to activity." fontSize="{KSketchGlobals.FONT_SIZE_20}" paddingTop="{PADDING_TOP}" paddingBottom="{PADDING_BOTTOM}"/>
+				<buttons:KSketch_DialogButton id="instructionButton_Start" click="startStopActivity()"/>
+			</s:VGroup>
 		</s:Group>
 	</s:Group>
 </s:SkinnablePopUpContainer>

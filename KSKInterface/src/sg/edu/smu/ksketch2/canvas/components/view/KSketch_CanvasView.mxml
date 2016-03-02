@@ -21,7 +21,7 @@
 		creationPolicy="all"
 		destructionPolicy="auto" 
 		viewActivate="_enterView_ProcessData()" xmlns:ns="http://www.google.com/analytics/2009"
-		>
+		viewDeactivate="_onDeactivate(event)">
 	<fx:Script>
 		<![CDATA[
 			import com.google.analytics.AnalyticsTracker;
@@ -335,6 +335,8 @@
 					_setSynphneComponent();
 				else
 					synphne_component.visible = false;
+				
+				NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown, false, 0, true);
 			}
 			
 			private function _checkForImageData():void
@@ -348,6 +350,9 @@
 			//This should be the last process of canvas start up.
 			private function _enterView_ProcessData():void
 			{	
+				if(KSketch_Config.enableSynphne && _backgroundSoundChannel)
+					_backgroundSoundChannel = _backgroundSound.play(0,5);
+				
 				if(!tracker && !isWeb)
 					tracker = new GATracker(this, "UA-47832938-1", "AS3", false);
 				
@@ -652,12 +657,20 @@
 				}
 			}
 			
+			protected function _onKeyDown(event:KeyboardEvent):void
+			{
+				if( event.keyCode == Keyboard.BACK )
+				{
+					exit();
+				}
+			}
+			
 			//KSKETCH-SYNPHNE
 			private function _setSynphneComponent():void
 			{
 				var avatar:SharedObject = SharedObject.getLocal("avatar");
 				instructionsButton.source = KSketch_Avatar.AVATAR_XML[avatar.data.imageClass] as Class;
-					
+				
 				_isTiming = false;
 				timerLabel.text = "Time: 00:00";
 
@@ -686,9 +699,7 @@
 			public function openInstructions():void
 			{
 				_instructionsBox.open(this,false); 	
-				PopUpManager.centerPopUp(_instructionsBox);
-				_instructionsBox.x = instructionsButton.x;
-				_instructionsBox.y = instructionsButton.y + instructionsButton.height;
+				PopUpManager.centerPopUp(_instructionsBox);		
 			}
 			
 			public function closeInstructions():void
@@ -890,6 +901,11 @@
 			
 			public function getTherapyTemplateXML():XML{
 				return new XML(_currentDocument.fileData.scene);
+			}
+			
+			protected function _onDeactivate(event:Event):void{
+				if(KSketch_Config.enableSynphne && _backgroundSoundChannel)
+					SoundMixer.stopAll();						
 			}
 			//END OF KSKETCH-SYNPHNE
 			

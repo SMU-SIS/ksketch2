@@ -12,14 +12,15 @@
 		xmlns:s="library://ns.adobe.com/flex/spark" 
 		xmlns:mx="library://ns.adobe.com/flex/mx" 
 		actionBarVisible="false" 
-		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"
+		xmlns:view="sg.edu.smu.ksketch2.canvas.components.view.*"	
 		xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*" 
 		xmlns:popup="sg.edu.smu.ksketch2.canvas.components.popup.*"
 		xmlns:l="sg.edu.smu.ksketch2.canvas.utils.*"
 		initialize="_init(KSketch_Config.isMobile)"
 		addedToStage="_scale()"
 		destructionPolicy="auto" xmlns:utils="sg.edu.smu.ksketch2.utils.*"
-		>
+		viewDeactivate="_onDeactivate(event)"
+		viewActivate="_onActivate(event)">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -27,6 +28,7 @@
 		<![CDATA[
 		import com.adobe.serialization.json.JSON;
 		
+		import flash.media.SoundMixer;
 		import flash.utils.getDefinitionByName;
 		
 		import mx.collections.ArrayCollection;
@@ -38,7 +40,6 @@
 		import mx.controls.Text;
 		import mx.events.FlexEvent;
 		import mx.managers.PopUpManager;
-		import flash.media.SoundMixer;	
 		
 		import data.KSketch_DataListItem;
 		import data.KSketch_ListItem;
@@ -159,7 +160,7 @@
 			stage.addEventListener(KSwipeEvent.DELETE_ACTION, listSketches_deleteSketchHandler);
 			stage.addEventListener(KSwipeEvent.LOG_ACTION, listSketches_logSketchHandler);
 			stage.addEventListener(KSwipeEvent.SAVE_ACTION, listSketches_saveSketchHandler);
-
+			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown, false, 0, true);
 			_setupUser();
 		}
 
@@ -839,6 +840,27 @@
 				_dialogAvatar.open(this, false);
 			}
 		}
+			
+			protected function _onDeactivate(event:Event):void{
+				if(KSketch_Config.enableSynphne && _backgroundSoundChannel)
+					SoundMixer.stopAll();						
+			}
+			
+			protected function _onActivate(event:Event):void{
+				if(KSketch_Config.enableSynphne && _backgroundSoundChannel)
+					_backgroundSoundChannel = _backgroundSound.play(0,100);
+			}
+			
+			protected function _onKeyDown(event:KeyboardEvent):void
+			{
+				if( event.keyCode == Keyboard.BACK)
+				{
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					NativeApplication.nativeApplication.exit();
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	

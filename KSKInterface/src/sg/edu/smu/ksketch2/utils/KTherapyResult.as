@@ -218,7 +218,6 @@ package sg.edu.smu.ksketch2.utils
 		*/
 		private function _resultHandler(event:ResultEvent):void {
 			var status:int = (event.result.indexOf("error") > 0) ? 2 : 1;	
-			_currentCount++;
 			_showSendTherapyDataResult(status);	
 		}
 		
@@ -226,7 +225,6 @@ package sg.edu.smu.ksketch2.utils
 			Handlers of unsuccessful sending data using web service.
 		*/
 		private function _faultHandler(event:FaultEvent):void {
-			_currentCount++;
 			_showSendTherapyDataResult(-1);
 		}
 		

@@ -585,5 +585,9 @@ package sg.edu.smu.ksketch2
 		[Embed("/assets/Therapy_Sound_Button_Wrong.mp3")] 
 		[Bindable] 
 		public static var therapy_sound_button_wrong:Class;
+		
+		[Embed("/assets/Therapy_Temp_UserProfile.jpg")] 
+		[Bindable] 
+		public static var therapy_temp_userprofile:Class;
 	}
 }

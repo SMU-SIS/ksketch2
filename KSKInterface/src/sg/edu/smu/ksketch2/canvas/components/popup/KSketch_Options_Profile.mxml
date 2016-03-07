@@ -16,9 +16,11 @@
 
 	<fx:Script>
 		<![CDATA[
+			import mx.controls.Image;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
+			import sg.edu.smu.ksketch2.KSketchAssets;
 			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
 			
@@ -37,8 +39,12 @@
 			private function _initControls():void {
 				lblLogin.text = _isLogin ? "Logout" : "Login";
 				grpAvatar.visible = _homeView.loginLabel.text.indexOf("guest") == -1;
+				grpProfile.visible = _homeView.loginLabel.text.indexOf("guest") == -1;
 				if(!grpAvatar.visible)
 					grpOptions.removeElement(grpAvatar);
+				
+				if(!grpProfile.visible)
+					grpOptions.removeElement(grpProfile);
 			}
 			
 			private function _initStyle():void {
@@ -54,7 +60,23 @@
 			override public function close(commit:Boolean = false, data:* = null):void {
 				super.close(commit, data);
 			}
-						
+			
+			protected function _changeProfile():void
+			{
+				this.close();
+				
+				var img:Image = new Image();
+				img.addEventListener(MouseEvent.CLICK, _closeProfile);
+				img.load(KSketchAssets.therapy_temp_userprofile);
+				PopUpManager.addPopUp(img, _homeView, true);
+				PopUpManager.centerPopUp(img);
+			}
+			
+			private function _closeProfile(evt:MouseEvent):void {
+				var img:Image = evt.currentTarget as Image;
+				PopUpManager.removePopUp(img);
+			}
+			
 			protected function _changeAvatar():void
 			{
 				this.close();
@@ -95,6 +117,14 @@
 								  paddingTop="{HEADER_GAP}" paddingBottom="{HEADER_GAP}"
 								  paddingLeft="{HEADER_GAP}" paddingRight="{HEADER_GAP}"/>
 			</s:layout>
+			<s:VGroup id="grpProfile" visible="false" paddingBottom="{HEADER_GAP}">				
+				<s:Label id="lblProfile" text="My Profile" click="_changeProfile()" paddingBottom="{HEADER_GAP}"/>
+				<s:Line xFrom="0" xTo="180" yFrom="0" yTo="0">
+					<s:stroke>
+						<s:SolidColorStroke color="0x000000" weight="2" caps="square"/>
+					</s:stroke>
+				</s:Line>
+			</s:VGroup>
 			<s:VGroup id="grpAvatar" visible="false" paddingBottom="{HEADER_GAP}">				
 				<s:Label id="lblAvatar" text="Change avatar" click="_changeAvatar()" paddingBottom="{HEADER_GAP}"/>
 				<s:Line xFrom="0" xTo="180" yFrom="0" yTo="0">

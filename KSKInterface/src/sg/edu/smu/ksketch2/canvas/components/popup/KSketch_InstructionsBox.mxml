@@ -169,6 +169,9 @@
 					else {
 						if(_activityTypes[_currentActivity] == "TRACE" || _activityTypes[_currentActivity] == "RECREATE")
 							_activityControl.discardSketchedObjects();
+						if(_activityTypes[_currentActivity] == "INTRO")	
+							_canvasView.showTip(true);
+						
 						_activityControl.recogniseDraw = true;
 						_canvasView.startTimer();
 					}

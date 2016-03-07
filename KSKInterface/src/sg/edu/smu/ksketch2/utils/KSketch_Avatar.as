@@ -53,6 +53,7 @@ package sg.edu.smu.ksketch2.utils
 			imgDic["KSketchAssets.therapy_avatar_hamster2_sad"] = KSketchAssets.therapy_avatar_hamster2_sad;
 			imgDic["KSketchAssets.therapy_avatar_hamster3"] = KSketchAssets.therapy_avatar_hamster3;	
 			imgDic["KSketchAssets.therapy_avatar_hamster3_sad"] = KSketchAssets.therapy_avatar_hamster3_sad;
+			imgDic["KSketchAssets.therapy_finger_tap"] = KSketchAssets.therapy_finger_tap;
 			return imgDic;
 		}
 		

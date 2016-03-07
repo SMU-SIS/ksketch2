@@ -26,6 +26,7 @@
     <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options_Profile"/>
     <classEntry path="sg.edu.smu.ksketch2.utils.KSketch_Avatar"/>
     <classEntry path="sg.edu.smu.ksketch2.canvas.controls.KSoundControl"/>
+    <classEntry path="sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Image"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

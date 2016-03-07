@@ -51,6 +51,7 @@
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Message;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_DialogBox_Skin;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Feedback_Message;
+			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Image;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_InstructionsBox;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_Options;
 			import sg.edu.smu.ksketch2.canvas.components.popup.KSketch_OverwriteSaveOptions;
@@ -156,6 +157,7 @@
 			public var isTherapyObject:Boolean = false;
 			public var dialogMessage:KSketch_DialogBox_Message;
 			public var therapyLevel:int=0;
+			private var _dialogImage:KSketch_Image;
 			
 			//KSKETCH-DESKTOP
 			public static var loadedFromFile:Boolean = false;
@@ -906,6 +908,24 @@
 			protected function _onDeactivate(event:Event):void{
 				if(KSketch_Config.enableSynphne && _backgroundSoundChannel)
 					SoundMixer.stopAll();						
+			}
+			
+			public function showTip(show:Boolean):void{			
+				if(show){
+					_dialogImage = new KSketch_Image();
+					_dialogImage.init(this, "KSketchAssets.therapy_finger_tap");
+					_dialogImage.showTipMessage();
+					PopUpManager.centerPopUp(_dialogImage);	
+				}
+				else
+				{
+					if(_activityControl && _activityControl.activityType == "INTRO")
+					{
+						_activityControl.stopIntroductionAnimation();
+						_activityControl.processIntro(true);
+						_dialogImage.close();
+					}
+				}					
 			}
 			//END OF KSKETCH-SYNPHNE
 			

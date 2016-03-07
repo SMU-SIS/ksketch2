@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*Copyright 2010-2015 Singapore Management University
+*Developed under a grant from the Singapore-MIT GAMBIT Game Lab
+
+*This Source Code Form is subject to the terms of the
+*Mozilla Public License, v. 2.0. If a copy of the MPL was
+*not distributed with this file, You can obtain one at
+*http://mozilla.org/MPL/2.0/.
+-->
+<s:SkinnablePopUpContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" 
+						   xmlns:buttons="sg.edu.smu.ksketch2.canvas.components.buttons.*"
+						   backgroundAlpha="0">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;			
+			import spark.components.Image;
+			
+			import sg.edu.smu.ksketch2.KSketchGlobals;
+			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_CanvasView;
+			import sg.edu.smu.ksketch2.utils.KSketch_Avatar;		
+			
+			private var BUTTON_WIDTH:Number = 300 * KSketchGlobals.SCALE;			
+			private var _parentContainer:UIComponent;
+			private var _image:Image;
+			
+			/**
+			 * Initializes the message box content
+			 */
+			public function init(parentContainer:UIComponent, message:String):void
+			{
+				_parentContainer = parentContainer;
+				if(message.indexOf("KSketchAsset") > -1)
+				{
+					_image = new Image();
+					var imgClass:Class = KSketch_Avatar.AVATAR_DICTIONARY[message] as Class;
+					if(imgClass)
+						_image.source = imgClass;
+				}					
+			}			
+			
+			public function showTipMessage():void
+			{		
+				open(_parentContainer);		
+				image.source = _image.source;
+				image.width = BUTTON_WIDTH;
+				_createTip();
+			}			
+			
+			private function _createTip():void{
+				this.close();
+				var myTimer:Timer = new Timer(5000,3);				
+				myTimer.addEventListener(TimerEvent.TIMER, timerListener);
+				function timerListener (e:TimerEvent):void{
+					if(panelMain)
+					{
+						open(_parentContainer);
+						panelMain.visible = true;						
+					}
+					setTimeout(function():void{ 
+						if(panelMain){
+							panelMain.visible = false; close(); 
+						}
+					}, 1000);
+				}
+				this.addEventListener(MouseEvent.CLICK, stopTimer);
+				_parentContainer.addEventListener(MouseEvent.CLICK, stopTimer);
+				function stopTimer (e:MouseEvent):void{
+					myTimer.stop();
+					myTimer.removeEventListener(TimerEvent.TIMER, timerListener);
+					
+					if(_parentContainer is KSketch_CanvasView)
+						(_parentContainer as KSketch_CanvasView).showTip(false);
+					
+					if(this.isOpen)
+						this.close();
+				}
+				myTimer.start();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:filters>
+		<s:DropShadowFilter
+			color="{KSketchGlobals.COLOR_BLACK}" angle="{KSketchGlobals.ANGLE_50}"
+			alpha="{KSketchGlobals.ALPHA_06}"
+			strength="{KSketchGlobals.RECT_STRENGTH}"
+			blurX="{KSketchGlobals.RECT_BLURX}"
+			blurY="{KSketchGlobals.RECT_BLURY}"/>
+	</s:filters>
+	<s:Group id="panelMain">
+		<s:Image id="image"/>
+	</s:Group>	
+</s:SkinnablePopUpContainer>

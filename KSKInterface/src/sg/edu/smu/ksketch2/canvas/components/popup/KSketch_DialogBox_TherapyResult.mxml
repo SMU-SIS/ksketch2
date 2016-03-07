@@ -64,6 +64,10 @@
 									
 				_cancelButton.init("Cancel");
 				_cancelButton.initSkin();
+				
+				var avatar:SharedObject = SharedObject.getLocal("avatar");
+				var _image:Image = KSketch_Avatar.generateAvatarImage(avatar.data.imageClass, BUTTON_WIDTH);
+				image.source = _image.source;
 			}
 			
 			private function _sendTherapyResult():void
@@ -124,50 +128,57 @@
 		</s:Rect>	
 		<s:Group id="grpMain">
 			<s:layout>
-				<s:VerticalLayout gap="{GAP}" paddingLeft="{PADDINGLEFT}" 
+				<s:VerticalLayout gap="{GAP}" paddingLeft="{PADDINGLEFT}" paddingTop="{PADDINGTOP}"
 								  paddingRight="{PADDINGRIGHT}" paddingBottom="{PADDINGBOTTOM}" 
 								  verticalAlign="middle" horizontalAlign="center"/>
 			</s:layout> 
+			
 			<s:Group id="panelTherapyResult" visible="false">
 				<s:layout>
-					<s:HorizontalLayout horizontalAlign="center" gap="{GAP}" verticalAlign="baseline" 
-										paddingLeft="{PADDINGLEFT}" paddingRight="{PADDINGRIGHT}"/>
-				</s:layout>	
-		
-				<s:Rect>
-					<s:fill>
-						<s:SolidColor alpha="1" color="{KSketchGlobals.COLOR_GREY_LIGHT}"/>
-					</s:fill>
-				</s:Rect>
-				<s:Group id="grpSend" click="_sendTherapyResult()">			
+					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+				</s:layout>
+				<s:Image id="image"/>
+				<s:Group>
 					<s:layout>
-						<s:VerticalLayout horizontalAlign="center"
-										  paddingLeft="{PADDINGLEFT}"
-										  paddingRight="{PADDINGRIGHT}" 
-										  verticalAlign="bottom"/>
-					</s:layout> 
-					<s:Image source="{KSketchAssets.texture_therapy_sendData}" width="{BUTTON_WIDTH}" />
-					<s:Label text="Send results" paddingTop="{PADDINGTOP_IMAGE}"
-							 fontFamily="{KSketchGlobals.FONT_FAMILY}"
-							 fontSize="{KSketchGlobals.FONT_SIZE_18}"/>			
-				</s:Group>
+						<s:HorizontalLayout horizontalAlign="center" gap="{GAP}" verticalAlign="baseline" 
+											paddingLeft="{PADDINGLEFT}" paddingRight="{PADDINGRIGHT}"/>
+					</s:layout>	
 				
-				<s:Rect>
-					<s:fill>
-						<s:SolidColor alpha="1" color="{KSketchGlobals.COLOR_GREY_LIGHT}"/>
-					</s:fill>
-				</s:Rect>
-				<s:Group id="grpReset" click="_resetTherapyResult()">			
-					<s:layout>
-						<s:VerticalLayout horizontalAlign="center"
-										  paddingLeft="{PADDINGLEFT}"
-										  paddingRight="{PADDINGRIGHT}" 
-										  verticalAlign="bottom"/>
-					</s:layout> 
-					<s:Image source="{KSketchAssets.texture_therapy_delete}" width="{BUTTON_WIDTH}" />
-					<s:Label text="Reset results" paddingTop="{PADDINGTOP_IMAGE}"
-							 fontFamily="{KSketchGlobals.FONT_FAMILY}"
-							 fontSize="{KSketchGlobals.FONT_SIZE_18}"/>			
+					<s:Rect>
+						<s:fill>
+							<s:SolidColor alpha="1" color="{KSketchGlobals.COLOR_GREY_LIGHT}"/>
+						</s:fill>
+					</s:Rect>
+					<s:Group id="grpSend" click="_sendTherapyResult()">			
+						<s:layout>
+							<s:VerticalLayout horizontalAlign="center"
+											  paddingLeft="{PADDINGLEFT}"
+											  paddingRight="{PADDINGRIGHT}" 
+											  verticalAlign="bottom"/>
+						</s:layout> 
+						<s:Image source="{KSketchAssets.texture_therapy_sendData}" width="{BUTTON_WIDTH}" />
+						<s:Label text="Send results" paddingTop="{PADDINGTOP_IMAGE}"
+								 fontFamily="{KSketchGlobals.FONT_FAMILY}"
+								 fontSize="{KSketchGlobals.FONT_SIZE_18}"/>			
+					</s:Group>
+				
+					<s:Rect>
+						<s:fill>
+							<s:SolidColor alpha="1" color="{KSketchGlobals.COLOR_GREY_LIGHT}"/>
+						</s:fill>
+					</s:Rect>
+					<s:Group id="grpReset" click="_resetTherapyResult()">			
+						<s:layout>
+							<s:VerticalLayout horizontalAlign="center"
+											  paddingLeft="{PADDINGLEFT}"
+											  paddingRight="{PADDINGRIGHT}" 
+											  verticalAlign="bottom"/>
+						</s:layout> 
+						<s:Image source="{KSketchAssets.texture_therapy_delete}" width="{BUTTON_WIDTH}" />
+						<s:Label text="Reset results" paddingTop="{PADDINGTOP_IMAGE}"
+								 fontFamily="{KSketchGlobals.FONT_FAMILY}"
+								 fontSize="{KSketchGlobals.FONT_SIZE_18}"/>			
+					</s:Group>
 				</s:Group>
 			</s:Group>
 			

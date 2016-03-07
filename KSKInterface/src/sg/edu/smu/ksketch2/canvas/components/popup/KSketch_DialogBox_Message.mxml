@@ -16,9 +16,13 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.core.UIComponent;
+			
+			import spark.components.Image;
 			import spark.layouts.HorizontalLayout;
+			
 			import sg.edu.smu.ksketch2.KSketchGlobals;
 			import sg.edu.smu.ksketch2.canvas.components.view.KSketch_HomeView;
+			import sg.edu.smu.ksketch2.utils.KSketch_Avatar;
 			import sg.edu.smu.ksketch2.utils.KTherapyResult;			
 			
 			private var GAP:Number = 20 * KSketchGlobals.SCALE;
@@ -26,6 +30,7 @@
 			private var PADDINGRIGHT:Number = 15 * KSketchGlobals.SCALE;
 			private var PADDINGTOP:Number = 20 * KSketchGlobals.SCALE;
 			private var PADDINGBOTTOM:Number = 20 * KSketchGlobals.SCALE;
+			private var BUTTON_WIDTH:Number = 300 * KSketchGlobals.SCALE;
 			
 			private var _parentContainer:UIComponent;
 			private var _btnNo:KSketch_DialogButton;
@@ -33,6 +38,7 @@
 			private var _yesButtonLabel:String;
 			private var _noButtonLabel:String;
 			private var _numberOfButton:int = 1;
+			private var _image:Image;
 			
 			/**
 			 * Initializes the message box content
@@ -41,6 +47,8 @@
 			{
 				_parentContainer = parentContainer;
 				_message = message;
+				var avatar:SharedObject = SharedObject.getLocal("avatar");
+				_image = KSketch_Avatar.generateAvatarImage(avatar.data.imageClass, BUTTON_WIDTH);
 				_yesButtonLabel = yesButtonLabel;
 				_noButtonLabel = noButtonLabel;
 			}			
@@ -69,7 +77,8 @@
 			
 			public function showMessage():void
 			{		
-				open(_parentContainer);				
+				open(_parentContainer);		
+				image.source = _image.source;
 				messageText.text = _message;
 			}
 			
@@ -95,7 +104,6 @@
 			{
 				close();				
 			}
-			
 		]]>
 	</fx:Script>
 	
@@ -107,7 +115,7 @@
 			blurX="{KSketchGlobals.RECT_BLURX}"
 			blurY="{KSketchGlobals.RECT_BLURY}"/>
 	</s:filters>
-	<s:Group>
+	<s:Group id="panelMain">
 		<s:Rect width="100%" height="100%" radiusX="{KSketchGlobals.RECT_RADIUSX}" radiusY="{KSketchGlobals.RECT_RADIUSY}">
 			<s:fill>
 				<s:SolidColor color="{KSketchGlobals.COLOR_GREY_MEDIUM}"/>
@@ -119,6 +127,7 @@
 								  paddingRight="{PADDINGRIGHT}" paddingTop="{PADDINGTOP}" 
 								  paddingBottom="{PADDINGBOTTOM}" verticalAlign="middle" horizontalAlign="center"/>
 			</s:layout> 
+			<s:Image id="image"/>
 			<s:Label id="messageText" fontSize="{KSketchGlobals.FONT_SIZE_18}" fontFamily="{KSketchGlobals.FONT_FAMILY}"
 					 x="{-messageText.width/2}" y="{-(messageText.height*1.25)}"/>
 			<s:Group id="panelButton">

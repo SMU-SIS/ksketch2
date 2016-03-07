@@ -533,6 +533,10 @@ package sg.edu.smu.ksketch2
 		[Bindable] 
 		public static var therapy_avatar_hamster3_sad:Class;
 		
+		[Embed("/assets/Therapy_Finger_Tap.png")] 
+		[Bindable] 
+		public static var therapy_finger_tap:Class;
+		
 		[Embed("/assets/Sound_Doorbell.mp3")] 
 		[Bindable] 
 		public static var sound_doorbell:Class;

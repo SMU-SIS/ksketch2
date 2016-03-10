@@ -806,9 +806,9 @@ package sg.edu.smu.ksketch2.canvas.controls
 		private function _updateLabel(content:int, point:Point):void{
 			_textfield.text = String.fromCharCode(content);
 			var textFormat:TextFormat = new TextFormat();
-			textFormat.size = 50;
+			textFormat.size = 60;
 			textFormat.bold = true;
-			_textfield.textColor = Color.RED;			
+			_textfield.textColor = Color.BLACK;			
 			_textfield.setTextFormat(textFormat);
 			_textfield.x = point.x;
 			_textfield.y = point.y;

@@ -277,11 +277,7 @@
 				pnl_Main.visible = false;
 				pnl_Therapy.visible = true;
 				initializeAvatar(anonymousUser);
-				
-				_backgroundSound = new KSketchAssets.therapy_sound_background_home();
-				_backgroundSoundChannel = new SoundChannel();
-				_backgroundSoundChannel = _backgroundSound.play(0,100);
-				_buttonSound = new KSketchAssets.therapy_sound_button_special();
+							
 				_changeQuote();
 			}
 			else
@@ -847,8 +843,16 @@
 			}
 			
 			protected function _onActivate(event:Event):void{
-				if(KSketch_Config.enableSynphne && _backgroundSoundChannel)
-					_backgroundSoundChannel = _backgroundSound.play(0,100);
+				if(KSketch_Config.enableSynphne)
+				{
+					if(!_backgroundSound)
+						_backgroundSound = new KSketchAssets.therapy_sound_background_home();
+					if(!_buttonSound)
+						_buttonSound = new KSketchAssets.therapy_sound_button_special();
+					if(!_backgroundSoundChannel)
+						_backgroundSoundChannel = new SoundChannel();					
+					_backgroundSoundChannel = _backgroundSound.play(0,100);					
+				}
 			}
 			
 			protected function _onKeyDown(event:KeyboardEvent):void

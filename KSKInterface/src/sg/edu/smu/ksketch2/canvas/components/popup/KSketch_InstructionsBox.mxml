@@ -42,6 +42,7 @@
 			import sg.edu.smu.ksketch2.model.data_structures.KPath;
 			import sg.edu.smu.ksketch2.model.data_structures.KTimedPoint;
 			import sg.edu.smu.ksketch2.model.objects.KInstructions;
+			import sg.edu.smu.ksketch2.model.objects.KObject;
 			import sg.edu.smu.ksketch2.utils.KSketch_Avatar;
 			
 			private var HEADER_GAP:Number = 20 * KSketchGlobals.SCALE;
@@ -381,10 +382,10 @@
 			/**
 			 * Return xml <path/> containing animation information, i.e. repeat, numRepeat
 			 */
-			private function _extractAnimationXML(xml:XML, objectId:int):XML
+			private function _extractAnimationXML(xml:XML, objectId:int, isTranslation:Boolean):XML
 			{
 				var xmlObjAnimation:XML;
-				
+				var type:String = isTranslation ? "translate" : "rotate";
 				var xmlObjectList:XMLList = xml.KObject;
 				for(var obj:Object in xmlObjectList)
 				{
@@ -394,7 +395,7 @@
 						var myList:XMLList=objXML.transform.keylist.spatialkey.path;
 						for(var item:Object in myList) {   
 							var itemXml:XML = myList[item] as XML;
-							if(itemXml.@repeat.toXMLString() == "true")
+							if(itemXml.@type.toXMLString() == type && itemXml.@repeat.toXMLString() == "true")
 							{
 								xmlObjAnimation = itemXml;
 								break;
@@ -421,7 +422,7 @@
 				var nextValue:Number;
 				var diff:Number;
 				
-				var xmlObjAnimation:XML = _extractAnimationXML(xml, objectId);
+				var xmlObjAnimation:XML = _extractAnimationXML(xml, objectId, true);
 				
 				if(xmlObjAnimation != null)
 				{					
@@ -489,6 +490,37 @@
 					return (velocityHorizontal >= velocityVertical) ? "HORIZONTAL" : "VERTICAL";
 				}
 				return result;
+			}					
+			
+			/*
+				Returns a dictionary with time as key, current rotation count as value 
+			*/
+			public function getRotationDictionary(xml:XML, objectId:int):Dictionary
+			{
+				var dict:Dictionary = new Dictionary();
+				
+				var currentValue:Number;
+				var nextValue:Number;
+				var diff:Number;
+				
+				var xmlObjAnimation:XML = _extractAnimationXML(xml, objectId, false);
+				
+				if(xmlObjAnimation != null)
+				{					
+					var rotationPath:KPath = new KPath(KPath.ROTATE);
+					rotationPath.deserialize(xmlObjAnimation.@points);
+					
+					var points:Vector.<KTimedPoint> = rotationPath.points;
+					if(points)
+					{
+						var len:int = points.length;
+						for(var i:int = 0; i < len; i++)
+						{
+							dict[points[i].time] = Math.abs(Math.round(points[i].x/(2*Math.PI)));
+						}							
+					}
+				}
+				return dict;
 			}
 		]]>
 	</fx:Script>

@@ -186,15 +186,21 @@ package sg.edu.smu.ksketch2.canvas.controls
 						currObj.template = true;
 						(view as KStrokeView).changeActivityHighlight(_KSketch.time, false);
 						(view as KStrokeView).visible = true;
-						
+
 						var translationDict:Dictionary = _instructionsBox.getTranslateDirectionDictionary(_canvasView.getTherapyTemplateXML(), _currentTemplateObject.id);
-						if(translationDict != null)
+						var rotationDict:Dictionary = _instructionsBox.getRotationDictionary(_canvasView.getTherapyTemplateXML(), _currentTemplateObject.id);
+						if(rotationDict != null || translationDict != null)
 						{
 							_createLabel(_currentTemplateObject.transformMatrix(_KSketch.time).transformPoint(_currentTemplateObject.center));
 							_KSketch.addEventListener(KTimeChangedEvent.EVENT_TIME_CHANGED, function(e:KTimeChangedEvent):void
 							{
 								if(_currentTemplateObject)
-									_addLabelToTranslationObject(_currentTemplateObject as KStroke, translationDict);											
+								{
+									if(translationDict != null)
+										_addLabelToAnimationObject(_currentTemplateObject as KStroke, translationDict, true); 
+									if(rotationDict != null)
+										_addLabelToAnimationObject(_currentTemplateObject as KStroke, rotationDict, false); 
+								} 
 							});
 						}
 					}
@@ -791,10 +797,10 @@ package sg.edu.smu.ksketch2.canvas.controls
 		 * 
 		 * @param the target animation object
 		 */
-		private function _addLabelToTranslationObject(obj:KStroke, dictTranslate:Dictionary):void
+		private function _addLabelToAnimationObject(obj:KStroke, dict:Dictionary, isTranslation:Boolean):void
 		{
-			if(dictTranslate != null)
-				_updateLabel(dictTranslate[_KSketch.time], obj.transformMatrix(_KSketch.time).transformPoint(obj.center));				
+			if(dict != null)
+				_updateLabel(dict[_KSketch.time], obj.transformMatrix(_KSketch.time).transformPoint(obj.center), isTranslation); 
 		}
 		
 		private function _createLabel(point:Point):void{
@@ -803,8 +809,13 @@ package sg.edu.smu.ksketch2.canvas.controls
 			_canvasView.modelDisplay.addChild(_textfield);
 		}
 		
-		private function _updateLabel(content:int, point:Point):void{
-			_textfield.text = String.fromCharCode(content);
+		private function _updateLabel(content:int, point:Point, isTranslation:Boolean):void{
+			if(!isTranslation)
+			{
+				if(content == 0)
+					return;
+			}
+			_textfield.text =  isTranslation == true ? String.fromCharCode(content) : content.toString();
 			var textFormat:TextFormat = new TextFormat();
 			textFormat.size = 60;
 			textFormat.bold = true;

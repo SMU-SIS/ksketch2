@@ -64,13 +64,16 @@
 			
 			public function playToggle(activity:Boolean):void
 			{
-				_doubleClickTrigger = false;
-				
 				if(_buttonState == SHOW_PLAY)
 				{
 					_doubleClickTimer = new Timer(250,1);
 					_doubleClickTimer.addEventListener(TimerEvent.TIMER_COMPLETE, triggerPlay);
 					_doubleClickTimer.start();
+				}
+				else if(_buttonState == SHOW_PAUSE && _doubleClickTrigger)
+				{
+					_timeControl.play(_doubleClickTrigger);
+					_doubleClickTrigger = false;
 				}
 				else
 				{
@@ -80,9 +83,10 @@
 			
 			private function triggerPlay(event:TimerEvent):void
 			{
+				_doubleClickTrigger = false;
 				_doubleClickTimer.stop();
 				_doubleClickTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, triggerPlay);
-				
+
 				_timeControl.play(_doubleClickTrigger);
 			}
 			
@@ -90,6 +94,8 @@
 			{
 				//play from start
 				_doubleClickTrigger = true;
+				_doubleClickTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, triggerPlay);
+				_timeControl.play(_doubleClickTrigger);
 			}
 			
 			public function stopPlay():void
@@ -123,9 +129,7 @@
 					action = "Play";
 					KSketch_CanvasView.tracker.trackPageview("/timebar/play");
 					buttonState = SHOW_PLAY;	// IF IT IS PAUSING,THEN SHOW PLAY!
-					
-					if(_wasMenuOpen)
-						_menu.open(app);
+					_menu.open(app);
 				}
 				
 				//LOG

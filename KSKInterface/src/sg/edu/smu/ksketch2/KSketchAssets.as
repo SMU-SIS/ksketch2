@@ -301,15 +301,7 @@ package sg.edu.smu.ksketch2
 		
 		[Embed("/assets/Button_Texture_Save_Down.png")] 
 		[Bindable] 
-		public static var texture_save_down:Class;
-		
-		[Embed("/assets/Button_Texture_Debug.png")] 
-		[Bindable] 
-		public static var texture_debug:Class;
-		
-		[Embed("/assets/Button_Texture_Debug_Down.png")] 
-		[Bindable] 
-		public static var texture_debug_down:Class;
+		public static var texture_save_down:Class;			
 		
 		[Embed("/assets/Button_Texture_Share_Android.png")] 
 		[Bindable] 
@@ -535,19 +527,7 @@ package sg.edu.smu.ksketch2
 		
 		[Embed("/assets/Therapy_Finger_Tap.png")] 
 		[Bindable] 
-		public static var therapy_finger_tap:Class;
-		
-		[Embed("/assets/Sound_Doorbell.mp3")] 
-		[Bindable] 
-		public static var sound_doorbell:Class;
-		
-		[Embed("/assets/Sound_Byebye.mp3")] 
-		[Bindable] 
-		public static var sound_byebye:Class;
-		
-		[Embed("/assets/Sound_Cheering.mp3")]
-		[Bindable]
-		public static var sound_cheering:Class;
+		public static var therapy_finger_tap:Class;		
 		
 		//new sounds
 		[Embed("/assets/Therapy_Sound_Background_Home.mp3")] 

@@ -16,6 +16,10 @@ The files in the following directories are covered by different licenses:
   * Copyright 2011-2013, Pavel Pevnitskiy 
   * [MIT License](https://opensource.org/licenses/mit-license.php)
   * Code obtained from https://github.com/fljot/Gestouch. (unmodified)
+* /gaforflash
+  * Various Contributors 
+  * [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+  * Code obtained from https://code.google.com/archive/p/gaforflash/ (unmodified)
 * /KSKInterface/src/assets
   * The files in this directory have a variety of owners and licenses.
   * See /KSKInterface/src/assets/license.html for details.

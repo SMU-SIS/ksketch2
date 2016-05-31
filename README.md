@@ -1,3 +1,6 @@
+
+This README contains basic information only. For more information See the [K-Sketch Developer](https://sites.google.com/site/ksketchdev/) site. 
+
 K-Sketch Source Code Licenses
 =============================
 

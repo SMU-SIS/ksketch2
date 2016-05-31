@@ -1,3 +1,30 @@
+K-Sketch Source Code Licenses
+=============================
+
+Unless otherwise noted, the source code form contained in this repository is owned by Singapore Management University (copyright 2010-2016), and it has been licensed under the terms of the [Mozilla Public License, version 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
+
+The files in the following directories are covered by different licenses:
+* /CollisionDetectionKit_v15
+  * Copyright 2008, Corey O'Neil (www.coreyoneil.com)
+  * [MIT License](https://opensource.org/licenses/mit-license.php)
+  * Code obtained from http://code.google.com/p/collisiondetectionkit/. (unmodified)
+* /FLV Encoder
+  * Copyright 2011, Lee Felarca ([zero point nine](http://www.zeropointnine.com/blog/updated-flv-encoder-alchem/))
+  * [Creative Commons Attribution 3.0 License](http://creativecommons.org/licenses/by/3.0/)
+  * Code obtained from https://github.com/SMU-SIS/ksketch2. (unmodified)
+* /Gestouch 
+  * Copyright 2011-2013, Pavel Pevnitskiy 
+  * [MIT License](https://opensource.org/licenses/mit-license.php)
+  * Code obtained from https://github.com/fljot/Gestouch. (unmodified)
+* /gaforflash
+  * Various Contributors 
+  * [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+  * Code obtained from https://code.google.com/archive/p/gaforflash/ (unmodified)
+* /KSKInterface/src/assets
+  * The files in this directory have a variety of owners and licenses.
+  * See /KSKInterface/src/assets/license.html for details.
+
+
 Getting Started with KSketch2 Development
 =========================================
 
@@ -213,9 +240,6 @@ Projects
 
 * CollisionDetectionKit_v15 
     * Used in tap selection
-    * http://code.google.com/p/collisiondetectionkit/
-    * MIT License    
-    * Unmodified
     * Packages
         * com.coreyoneil.collision
     * Dependencies
@@ -225,10 +249,6 @@ Projects
 
 * FLV Encoder 
     * Used in FLV export
-    * https://github.com/zeropointnine/leelib
-    * http://www.zeropointnine.com/blog/updated-flv-encoder-alchem/
-    * Creative Commons Attribution 3.0 License (http://creativecommons.org/licenses/by/3.0/)
-    * Unmodified
     * Packages
         * leelib.util.flvEncoder.*
     * Dependencies
@@ -238,9 +258,6 @@ Projects
 
 * Gestouch 
     * Used for multi-touch gestures in mobile
-    * https://github.com/fljot/Gestouch
-    * MIT License
-    * Unmodified
     * Packages
         * org.gestouch.*
     * Dependencies

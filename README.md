@@ -27,6 +27,21 @@ The files in the following directories are covered by different licenses:
   * The files in this directory have a variety of owners and licenses.
   * See /KSKInterface/src/assets/license.html for details.
 
+Also, the following library files in the root folder are covered by different licenses:
+* as3commons-collections-1.3.2.swc
+  * Copyright Jens Struwe ([Russischer Bär Open Source Flash](http://sibirjak.com/osflash/projects/as3commons-collections/))
+  * [Apache License, Version 2.0](https://opensource.org/licenses/apache2.0.php)
+  * Code obtained from https://github.com/AS3Commons/as3commons-collections. (unmodified)
+* as3corelib.swc
+  * Copyright 2008 Adobe Systems Incorporated
+  * [BSD License](http://www.opensource.org/licenses/bsd-license.php)
+  * Code available at https://github.com/mikechambers/as3corelib (unmodified)
+* servicemonitor.swc
+  * Copyright Adobe Systems Incorporated
+  * Adobe Flex SDK (see license-adobesdk.htm)
+  * Binary available at http://labs.adobe.com/downloads/air.html (unmodified)
+  
+
 
 Getting Started with KSketch2 Development
 =========================================
